@@ -99,7 +99,7 @@ extern "C" {
     static mut netgame: boolean;
     static mut sfxVolume: ::core::ffi::c_int;
     static mut musicVolume: ::core::ffi::c_int;
-    static mut automapactive: boolean;
+    static mut automapactive: bool;
     static mut testcontrols: bool;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut usergame: bool;
@@ -3421,14 +3421,14 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
     }
     if !menuactive {
         if key == key_menu_decscreen {
-            if automapactive != 0 || chat_on {
+            if automapactive || chat_on {
                 return false_0 as boolean;
             }
             M_SizeDisplay(0 as ::core::ffi::c_int);
             S_StartSound(NULL, sfx_stnmov as ::core::ffi::c_int);
             return true_0 as boolean;
         } else if key == key_menu_incscreen {
-            if automapactive != 0 || chat_on {
+            if automapactive || chat_on {
                 return false_0 as boolean;
             }
             M_SizeDisplay(1 as ::core::ffi::c_int);

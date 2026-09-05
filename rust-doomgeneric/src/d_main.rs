@@ -56,7 +56,7 @@ extern "C" {
     static mut deathmatch: ::core::ffi::c_int;
     static mut sfxVolume: ::core::ffi::c_int;
     static mut musicVolume: ::core::ffi::c_int;
-    static mut automapactive: boolean;
+    static mut automapactive: bool;
     static mut menuactive: bool;
     static mut paused: bool;
     static mut viewactive: bool;
@@ -1788,7 +1788,7 @@ pub unsafe extern "C" fn D_Display() {
     match gamestate as ::core::ffi::c_uint {
         0 => {
             if !(gametic == 0) {
-                if automapactive != 0 {
+                if automapactive {
                     AM_Drawer();
                 }
                 if wipe != 0
@@ -1820,7 +1820,7 @@ pub unsafe extern "C" fn D_Display() {
     }
     I_UpdateNoBlit();
     if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && automapactive == 0
+        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && !automapactive
         && gametic != 0
     {
         R_RenderPlayerView(
@@ -1852,7 +1852,7 @@ pub unsafe extern "C" fn D_Display() {
         R_FillBackScreen();
     }
     if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && automapactive == 0
+        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && !automapactive
         && scaledviewwidth != 320 as ::core::ffi::c_int
     {
         if menuactive || menuactivestate || !viewactivestate {
@@ -1872,7 +1872,7 @@ pub unsafe extern "C" fn D_Display() {
     wipegamestate = gamestate;
     oldgamestate = wipegamestate;
     if paused {
-        if automapactive != 0 {
+        if automapactive {
             y = 4 as ::core::ffi::c_int;
         } else {
             y = viewwindowy + 4 as ::core::ffi::c_int;

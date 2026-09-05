@@ -30,7 +30,7 @@ extern "C" {
     static mut gameepisode: ::core::ffi::c_int;
     static mut gamemap: ::core::ffi::c_int;
     static mut netgame: boolean;
-    static mut automapactive: boolean;
+    static mut automapactive: bool;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
@@ -2034,7 +2034,7 @@ pub unsafe extern "C" fn HU_Start() {
 pub unsafe extern "C" fn HU_Drawer() {
     HUlib_drawSText(&raw mut w_message);
     HUlib_drawIText(&raw mut w_chat);
-    if automapactive != 0 {
+    if automapactive {
         HUlib_drawTextLine(&raw mut w_title, false_0 as boolean);
     }
 }

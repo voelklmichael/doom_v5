@@ -1772,7 +1772,7 @@ static mut cheating: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 static mut grid: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 static mut leveljuststarted: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
 #[no_mangle]
-pub static mut automapactive: boolean = false_0 as boolean;
+pub static mut automapactive: bool = false;
 static mut finit_width: ::core::ffi::c_int = SCREENWIDTH;
 static mut finit_height: ::core::ffi::c_int = SCREENHEIGHT - 32 as ::core::ffi::c_int;
 static mut f_x: ::core::ffi::c_int = 0;
@@ -1965,7 +1965,7 @@ pub unsafe extern "C" fn AM_initVariables() {
         data3: 0 as ::core::ffi::c_int,
         data4: 0,
     };
-    automapactive = true_0 as boolean;
+    automapactive = true;
     fb = I_VideoBuffer;
     f_oldloc.x = INT_MAX as fixed_t;
     amclock = 0 as ::core::ffi::c_int;
@@ -2077,7 +2077,7 @@ pub unsafe extern "C" fn AM_Stop() {
         data4: 0,
     };
     AM_unloadPics();
-    automapactive = false_0 as boolean;
+    automapactive = false;
     ST_Responder(&raw mut st_notify);
     stopped = true;
 }
@@ -2116,7 +2116,7 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
     static mut buffer: [::core::ffi::c_char; 20] = [0; 20];
     let mut key: ::core::ffi::c_int = 0;
     rc = false_0;
-    if automapactive == 0 {
+    if !automapactive {
         if (*ev).type_0 as ::core::ffi::c_uint
             == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
             && (*ev).data1 == key_map_toggle
@@ -2317,7 +2317,7 @@ pub unsafe extern "C" fn AM_updateLightLev() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_Ticker() {
-    if automapactive == 0 {
+    if !automapactive {
         return;
     }
     amclock += 1;
@@ -2849,7 +2849,7 @@ pub unsafe extern "C" fn AM_drawCrosshair(mut color: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_Drawer() {
-    if automapactive == 0 {
+    if !automapactive {
         return;
     }
     AM_clearFB(BACKGROUND);
