@@ -1,8 +1,5 @@
+use crate::src::m_config::M_BindVariable;
 extern "C" {
-    fn M_BindVariable(
-        name: *mut ::core::ffi::c_char,
-        variable: *mut ::core::ffi::c_void,
-    );
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
@@ -41,44 +38,28 @@ pub unsafe extern "C" fn I_UpdateJoystick() {}
 #[no_mangle]
 pub unsafe extern "C" fn I_BindJoystickVariables() {
     let mut i: ::core::ffi::c_int = 0;
-    M_BindVariable(
-        b"use_joystick\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("use_joystick",
         &raw mut usejoystick as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"joystick_index\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("joystick_index",
         &raw mut joystick_index as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"joystick_x_axis\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("joystick_x_axis",
         &raw mut joystick_x_axis as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"joystick_y_axis\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("joystick_y_axis",
         &raw mut joystick_y_axis as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"joystick_strafe_axis\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("joystick_strafe_axis",
         &raw mut joystick_strafe_axis as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"joystick_x_invert\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("joystick_x_invert",
         &raw mut joystick_x_invert as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"joystick_y_invert\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("joystick_y_invert",
         &raw mut joystick_y_invert as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"joystick_strafe_invert\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("joystick_strafe_invert",
         &raw mut joystick_strafe_invert as *mut ::core::ffi::c_void,
     );
     i = 0 as ::core::ffi::c_int;
@@ -91,7 +72,9 @@ pub unsafe extern "C" fn I_BindJoystickVariables() {
             i,
         );
         M_BindVariable(
-            &raw mut name as *mut ::core::ffi::c_char,
+            ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
+                .to_str()
+                .unwrap(),
             (&raw mut joystick_physical_buttons as *mut ::core::ffi::c_int)
                 .offset(i as isize) as *mut ::core::ffi::c_int
                 as *mut ::core::ffi::c_void,
