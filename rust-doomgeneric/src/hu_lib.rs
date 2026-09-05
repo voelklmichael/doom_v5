@@ -24,19 +24,16 @@ pub struct patch_t {
     pub topoffset: ::core::ffi::c_short,
     pub columnofs: [::core::ffi::c_int; 8],
 }
-#[derive(Copy, Clone)]
-#[repr(C)]
+#[derive(Clone)]
 pub struct hu_textline_t {
     pub x: ::core::ffi::c_int,
     pub y: ::core::ffi::c_int,
     pub f: *mut *mut patch_t,
     pub sc: ::core::ffi::c_int,
-    pub l: [::core::ffi::c_char; 81],
-    pub len: ::core::ffi::c_int,
+    pub l: String,
     pub needsupdate: ::core::ffi::c_int,
 }
-#[derive(Copy, Clone)]
-#[repr(C)]
+#[derive(Clone)]
 pub struct hu_stext_t {
     pub l: [hu_textline_t; 4],
     pub h: ::core::ffi::c_int,
@@ -44,8 +41,7 @@ pub struct hu_stext_t {
     pub on: *mut boolean,
     pub laston: boolean,
 }
-#[derive(Copy, Clone)]
-#[repr(C)]
+#[derive(Clone)]
 pub struct hu_itext_t {
     pub l: hu_textline_t,
     pub lm: ::core::ffi::c_int,
@@ -62,8 +58,7 @@ pub const HU_MAXLINELENGTH: ::core::ffi::c_int = 80 as ::core::ffi::c_int;
 pub unsafe extern "C" fn HUlib_init() {}
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_clearTextLine(mut t: *mut hu_textline_t) {
-    (*t).len = 0 as ::core::ffi::c_int;
-    (*t).l[0 as ::core::ffi::c_int as usize] = 0 as ::core::ffi::c_char;
+    (*t).l.clear();
     (*t).needsupdate = true_0;
 }
 #[no_mangle]
@@ -85,13 +80,10 @@ pub unsafe extern "C" fn HUlib_addCharToTextLine(
     mut t: *mut hu_textline_t,
     mut ch: ::core::ffi::c_char,
 ) -> boolean {
-    if (*t).len == HU_MAXLINELENGTH {
+    if (*t).l.len() as ::core::ffi::c_int == HU_MAXLINELENGTH {
         return false_0 as boolean
     } else {
-        let fresh0 = (*t).len;
-        (*t).len = (*t).len + 1;
-        (*t).l[fresh0 as usize] = ch;
-        (*t).l[(*t).len as usize] = 0 as ::core::ffi::c_char;
+        (*t).l.push(ch as u8 as char);
         (*t).needsupdate = 4 as ::core::ffi::c_int;
         return true_0 as boolean;
     };
@@ -100,11 +92,10 @@ pub unsafe extern "C" fn HUlib_addCharToTextLine(
 pub unsafe extern "C" fn HUlib_delCharFromTextLine(
     mut t: *mut hu_textline_t,
 ) -> boolean {
-    if (*t).len == 0 {
+    if (*t).l.is_empty() {
         return false_0 as boolean
     } else {
-        (*t).len -= 1;
-        (*t).l[(*t).len as usize] = 0 as ::core::ffi::c_char;
+        (*t).l.pop();
         (*t).needsupdate = 4 as ::core::ffi::c_int;
         return true_0 as boolean;
     };
@@ -120,30 +111,8 @@ pub unsafe extern "C" fn HUlib_drawTextLine(
     let mut c: ::core::ffi::c_uchar = 0;
     x = (*l).x;
     i = 0 as ::core::ffi::c_int;
-    while i < (*l).len {
-        c = ({
-            let mut __res: ::core::ffi::c_int = 0;
-            if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                if 0 != 0 {
-                    let mut __c: ::core::ffi::c_int = (*l).l[i as usize]
-                        as ::core::ffi::c_int;
-                    __res = (if __c < -(128 as ::core::ffi::c_int)
-                        || __c > 255 as ::core::ffi::c_int
-                    {
-                        __c as __int32_t
-                    } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
-                    }) as ::core::ffi::c_int;
-                } else {
-                    __res = toupper((*l).l[i as usize] as ::core::ffi::c_int);
-                }
-            } else {
-                __res = *(*__ctype_toupper_loc())
-                    .offset((*l).l[i as usize] as ::core::ffi::c_int as isize)
-                    as ::core::ffi::c_int;
-            }
-            __res
-        }) as ::core::ffi::c_uchar;
+    while i < (*l).l.len() as ::core::ffi::c_int {
+        c = toupper((*l).l.as_bytes()[i as usize] as ::core::ffi::c_int) as ::core::ffi::c_uchar;
         if c as ::core::ffi::c_int != ' ' as i32 && c as ::core::ffi::c_int >= (*l).sc
             && c as ::core::ffi::c_int <= '_' as i32
         {
@@ -250,11 +219,10 @@ pub unsafe extern "C" fn HUlib_addLineToSText(mut s: *mut hu_stext_t) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_addMessageToSText(
+pub unsafe fn HUlib_addMessageToSText(
     mut s: *mut hu_stext_t,
     mut prefix: *mut ::core::ffi::c_char,
-    mut msg: *mut ::core::ffi::c_char,
+    msg: &str,
 ) {
     HUlib_addLineToSText(s);
     if !prefix.is_null() {
@@ -268,13 +236,11 @@ pub unsafe extern "C" fn HUlib_addMessageToSText(
             );
         }
     }
-    while *msg != 0 {
-        let fresh2 = msg;
-        msg = msg.offset(1);
+    for b in msg.bytes() {
         HUlib_addCharToTextLine(
             (&raw mut (*s).l as *mut hu_textline_t).offset((*s).cl as isize)
                 as *mut hu_textline_t,
-            *fresh2,
+            b as ::core::ffi::c_char,
         );
     }
 }
@@ -330,13 +296,13 @@ pub unsafe extern "C" fn HUlib_initIText(
 }
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_delCharFromIText(mut it: *mut hu_itext_t) {
-    if (*it).l.len != (*it).lm {
+    if (*it).l.l.len() as ::core::ffi::c_int != (*it).lm {
         HUlib_delCharFromTextLine(&raw mut (*it).l);
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_eraseLineFromIText(mut it: *mut hu_itext_t) {
-    while (*it).lm != (*it).l.len {
+    while (*it).lm != (*it).l.l.len() as ::core::ffi::c_int {
         HUlib_delCharFromTextLine(&raw mut (*it).l);
     }
 }
@@ -345,17 +311,11 @@ pub unsafe extern "C" fn HUlib_resetIText(mut it: *mut hu_itext_t) {
     (*it).lm = 0 as ::core::ffi::c_int;
     HUlib_clearTextLine(&raw mut (*it).l);
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_addPrefixToIText(
-    mut it: *mut hu_itext_t,
-    mut str: *mut ::core::ffi::c_char,
-) {
-    while *str != 0 {
-        let fresh3 = str;
-        str = str.offset(1);
-        HUlib_addCharToTextLine(&raw mut (*it).l, *fresh3);
+pub unsafe fn HUlib_addPrefixToIText(it: *mut hu_itext_t, s: &str) {
+    for b in s.bytes() {
+        HUlib_addCharToTextLine(&raw mut (*it).l, b as ::core::ffi::c_char);
     }
-    (*it).lm = (*it).l.len;
+    (*it).lm = (*it).l.l.len() as ::core::ffi::c_int;
 }
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_keyInIText(
