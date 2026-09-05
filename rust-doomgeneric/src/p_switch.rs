@@ -1,5 +1,6 @@
+use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{button_t};
-use crate::src::p_mobj::{sector_t, degenmobj_t, line_t, actionf_t};
+use crate::src::p_mobj::{degenmobj_t, line_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
 extern "C" {
@@ -1305,16 +1306,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
 pub type bwhere_e = ::core::ffi::c_uint;
 pub const bottom: bwhere_e = 2;
 pub const middle: bwhere_e = 1;

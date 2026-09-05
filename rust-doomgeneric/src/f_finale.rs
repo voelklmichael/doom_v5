@@ -1,3 +1,4 @@
+use crate::src::r_defs::{spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
 use crate::src::p_mobj::{state_t, mobjinfo_t, actionf_t};
@@ -1581,19 +1582,6 @@ pub const sfx_sgcock: C2RustUnnamed_1 = 3;
 pub const sfx_shotgn: C2RustUnnamed_1 = 2;
 pub const sfx_pistol: C2RustUnnamed_1 = 1;
 pub const sfx_None: C2RustUnnamed_1 = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spriteframe_t {
-    pub rotate: boolean,
-    pub lump: [::core::ffi::c_short; 8],
-    pub flip: [byte; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spritedef_t {
-    pub numframes: ::core::ffi::c_int,
-    pub spriteframes: *mut spriteframe_t,
-}
 pub type finalestage_t = ::core::ffi::c_uint;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;

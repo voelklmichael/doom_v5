@@ -1,3 +1,4 @@
+use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{floormove_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 extern "C" {
@@ -1321,16 +1322,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
 pub type floor_e = ::core::ffi::c_uint;
 pub const raiseFloor512: floor_e = 12;
 pub const donutRaise: floor_e = 11;

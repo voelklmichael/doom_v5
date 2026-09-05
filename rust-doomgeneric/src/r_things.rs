@@ -1,5 +1,6 @@
+use crate::src::r_defs::{drawseg_t, seg_t, spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
-use crate::src::p_mobj::{sector_t, vertex_t, line_t, actionf_t};
+use crate::src::p_mobj::{sector_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::i_system::I_Error;
@@ -1442,46 +1443,7 @@ pub struct post_t {
     pub length: byte,
 }
 pub type column_t = post_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct seg_t {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub offset: fixed_t,
-    pub angle: angle_t,
-    pub sidedef: *mut side_t,
-    pub linedef: *mut line_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-}
 pub type lighttable_t = byte;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct drawseg_s {
-    pub curline: *mut seg_t,
-    pub x1: ::core::ffi::c_int,
-    pub x2: ::core::ffi::c_int,
-    pub scale1: fixed_t,
-    pub scale2: fixed_t,
-    pub scalestep: fixed_t,
-    pub silhouette: ::core::ffi::c_int,
-    pub bsilheight: fixed_t,
-    pub tsilheight: fixed_t,
-    pub sprtopclip: *mut ::core::ffi::c_short,
-    pub sprbottomclip: *mut ::core::ffi::c_short,
-    pub maskedtexturecol: *mut ::core::ffi::c_short,
-}
-pub type drawseg_t = drawseg_s;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct vissprite_s {
@@ -1502,19 +1464,6 @@ pub struct vissprite_s {
     pub mobjflags: ::core::ffi::c_int,
 }
 pub type vissprite_t = vissprite_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spriteframe_t {
-    pub rotate: boolean,
-    pub lump: [::core::ffi::c_short; 8],
-    pub flip: [byte; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spritedef_t {
-    pub numframes: ::core::ffi::c_int,
-    pub spriteframes: *mut spriteframe_t,
-}
 pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
 pub const NUMPSPRITES: C2RustUnnamed_2 = 2;
 pub const ps_flash: C2RustUnnamed_2 = 1;

@@ -1,3 +1,4 @@
+use crate::src::r_defs::{side_t};
 use crate::src::p_mobj::{thinker_t, mobjinfo_t, sector_t, line_s, ST_HORIZONTAL, vertex_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
@@ -1418,16 +1419,6 @@ pub const MF_NOSECTOR: C2RustUnnamed = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed = 4;
 pub const MF_SOLID: C2RustUnnamed = 2;
 pub const MF_SPECIAL: C2RustUnnamed = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
 pub type vldoor_e = ::core::ffi::c_uint;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;

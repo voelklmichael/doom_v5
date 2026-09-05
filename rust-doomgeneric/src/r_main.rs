@@ -1,4 +1,5 @@
-use crate::src::p_mobj::{sector_t, vertex_t, line_t, subsector_t, actionf_t};
+use crate::src::r_defs::{node_t, seg_t};
+use crate::src::p_mobj::{subsector_t, actionf_t};
 use crate::src::d_player::{player_t};
 extern "C" {
     fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
@@ -1329,38 +1330,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct seg_t {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub offset: fixed_t,
-    pub angle: angle_t,
-    pub sidedef: *mut side_t,
-    pub linedef: *mut line_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct node_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub bbox: [[fixed_t; 4]; 2],
-    pub children: [::core::ffi::c_ushort; 2],
-}
 pub type lighttable_t = byte;
 pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
 pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;

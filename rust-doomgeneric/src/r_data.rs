@@ -1,3 +1,4 @@
+use crate::src::r_defs::{side_t, spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{thinker_t, sector_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
@@ -1384,30 +1385,7 @@ pub struct post_t {
     pub length: byte,
 }
 pub type column_t = post_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
 pub type lighttable_t = byte;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spriteframe_t {
-    pub rotate: boolean,
-    pub lump: [::core::ffi::c_short; 8],
-    pub flip: [byte; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spritedef_t {
-    pub numframes: ::core::ffi::c_int,
-    pub spriteframes: *mut spriteframe_t,
-}
 pub type texture_t = texture_s;
 #[derive(Copy, Clone)]
 #[repr(C)]
