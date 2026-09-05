@@ -1971,21 +1971,27 @@ pub unsafe extern "C" fn R_DrawPlanes() {
                 planezlight = &raw mut *(&raw mut zlight
                     as *mut [*mut lighttable_t; 128])
                     .offset(light as isize) as *mut *mut lighttable_t;
-                (*pl).top[((*pl).maxx + 1 as ::core::ffi::c_int) as usize] = 0xff
+                *(&raw mut (*pl).top as *mut byte)
+                    .offset(((*pl).maxx + 1 as ::core::ffi::c_int) as isize) = 0xff
                     as byte;
-                (*pl).top[((*pl).minx - 1 as ::core::ffi::c_int) as usize] = 0xff
+                *(&raw mut (*pl).top as *mut byte)
+                    .offset(((*pl).minx - 1 as ::core::ffi::c_int) as isize) = 0xff
                     as byte;
                 stop = (*pl).maxx + 1 as ::core::ffi::c_int;
                 x = (*pl).minx;
                 while x <= stop {
                     R_MakeSpans(
                         x,
-                        (*pl).top[(x - 1 as ::core::ffi::c_int) as usize]
+                        *(&raw const (*pl).top as *const byte)
+                            .offset((x - 1 as ::core::ffi::c_int) as isize)
                             as ::core::ffi::c_int,
-                        (*pl).bottom[(x - 1 as ::core::ffi::c_int) as usize]
+                        *(&raw const (*pl).bottom as *const byte)
+                            .offset((x - 1 as ::core::ffi::c_int) as isize)
                             as ::core::ffi::c_int,
-                        (*pl).top[x as usize] as ::core::ffi::c_int,
-                        (*pl).bottom[x as usize] as ::core::ffi::c_int,
+                        *(&raw const (*pl).top as *const byte).offset(x as isize)
+                            as ::core::ffi::c_int,
+                        *(&raw const (*pl).bottom as *const byte).offset(x as isize)
+                            as ::core::ffi::c_int,
                     );
                     x += 1;
                 }

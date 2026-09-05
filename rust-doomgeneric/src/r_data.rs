@@ -1840,8 +1840,10 @@ pub unsafe extern "C" fn R_GenerateComposite(mut texnum: ::core::ffi::c_int) {
                 >= 0 as ::core::ffi::c_int)
             {
                 patchcol = (realpatch as *mut byte)
-                    .offset((*realpatch).columnofs[(x - x1) as usize] as isize)
-                    as *mut column_t;
+                    .offset(
+                        *(&raw const (*realpatch).columnofs as *const ::core::ffi::c_int)
+                            .offset((x - x1) as isize) as isize,
+                    ) as *mut column_t;
                 R_DrawColumnInCache(
                     patchcol,
                     block
@@ -1917,7 +1919,9 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: ::core::ffi::c_int) {
             let ref mut fresh5 = *patchcount.offset(x as isize);
             *fresh5 = (*fresh5).wrapping_add(1);
             *collump.offset(x as isize) = (*patch).patch as ::core::ffi::c_short;
-            *colofs.offset(x as isize) = ((*realpatch).columnofs[(x - x1) as usize]
+            *colofs.offset(x as isize) = (*(&raw const (*realpatch).columnofs
+                as *const ::core::ffi::c_int)
+                .offset((x - x1) as isize)
                 + 3 as ::core::ffi::c_int) as ::core::ffi::c_ushort;
             x += 1;
         }
