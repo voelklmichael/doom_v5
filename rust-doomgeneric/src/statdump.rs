@@ -1,10 +1,10 @@
+use crate::src::m_argv::M_ParmExists;
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn M_ParmExists(check: *mut ::core::ffi::c_char) -> boolean;
 }
 pub type size_t = usize;
 pub type boolean = ::core::ffi::c_uint;
@@ -59,11 +59,7 @@ static mut captured_stats: [wbstartstruct_t; 32] = [wbstartstruct_t {
 static mut num_captured_stats: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 #[no_mangle]
 pub unsafe extern "C" fn StatCopy(mut stats: *mut wbstartstruct_t) {
-    if M_ParmExists(
-        b"-statdump\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) != 0 && num_captured_stats < MAX_CAPTURES
-    {
+    if M_ParmExists("-statdump") != 0 && num_captured_stats < MAX_CAPTURES {
         memcpy(
             (&raw mut captured_stats as *mut wbstartstruct_t)
                 .offset(num_captured_stats as isize) as *mut wbstartstruct_t

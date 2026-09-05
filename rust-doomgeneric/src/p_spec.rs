@@ -1,3 +1,4 @@
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -23,11 +24,6 @@ extern "C" {
         tag: ::core::ffi::c_int,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
     fn M_StrToInt(
         str: *const ::core::ffi::c_char,
         result: *mut ::core::ffi::c_int,
@@ -2984,18 +2980,16 @@ unsafe extern "C" fn DonutOverrun(
         first = 0 as ::core::ffi::c_int;
         tmp_s3_floorheight = DONUT_FLOORHEIGHT_DEFAULT;
         tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
-        p = M_CheckParmWithArgs(
-            b"-donut\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            2 as ::core::ffi::c_int,
-        );
+        p = M_CheckParmWithArgs("-donut", 2 as ::core::ffi::c_int);
         if p > 0 as ::core::ffi::c_int {
             M_StrToInt(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 &raw mut tmp_s3_floorheight,
             );
             M_StrToInt(
-                *myargv.offset((p + 2 as ::core::ffi::c_int) as isize),
+                myargv[(p + 2 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 &raw mut tmp_s3_floorpic,
             );
             if tmp_s3_floorpic >= numflats {

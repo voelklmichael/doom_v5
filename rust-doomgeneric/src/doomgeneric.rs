@@ -1,7 +1,6 @@
+use crate::src::m_argv::{myargv, M_FindResponseFile};
+
 extern "C" {
-    static mut myargc: ::core::ffi::c_int;
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_FindResponseFile();
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn DG_Init();
     fn D_DoomMain();
@@ -18,13 +17,11 @@ pub const DOOMGENERIC_RESY: ::core::ffi::c_int = 400 as ::core::ffi::c_int;
 #[no_mangle]
 pub static mut DG_ScreenBuffer: *mut pixel_t = ::core::ptr::null::<pixel_t>()
     as *mut pixel_t;
-#[no_mangle]
-pub unsafe extern "C" fn doomgeneric_Create(
-    mut argc: ::core::ffi::c_int,
-    mut argv: *mut *mut ::core::ffi::c_char,
-) {
-    myargc = argc;
-    myargv = argv;
+pub unsafe fn doomgeneric_Create(args: Vec<String>) {
+    myargv = args
+        .into_iter()
+        .map(|arg| ::std::ffi::CString::new(arg).expect("argument contains a nul byte"))
+        .collect();
     M_FindResponseFile();
     DG_ScreenBuffer = malloc(
         (DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4 as ::core::ffi::c_int) as size_t,

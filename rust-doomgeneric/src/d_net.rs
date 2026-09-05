@@ -1,9 +1,9 @@
+use crate::src::m_argv::M_CheckParm;
 extern "C" {
     pub type subsector_s;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn D_ProcessEvents();
     fn D_DoAdvanceDemo();
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn M_Ticker();
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
@@ -1672,43 +1672,24 @@ unsafe extern "C" fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
     (*settings).fast_monsters = fastparm as ::core::ffi::c_int;
     (*settings).respawn_monsters = respawnparm as ::core::ffi::c_int;
     (*settings).timelimit = timelimit;
-    (*settings).lowres_turn = (M_CheckParm(
-        b"-record\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-        && M_CheckParm(
-            b"-longtics\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    (*settings).lowres_turn = (M_CheckParm("-record") > 0 as ::core::ffi::c_int
+        && M_CheckParm("-longtics") == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
 }
 unsafe extern "C" fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
     (*connect_data).max_players = MAXPLAYERS;
     (*connect_data).drone = false_0;
-    if M_CheckParm(
-        b"-left\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-    {
+    if M_CheckParm("-left") > 0 as ::core::ffi::c_int {
         viewangleoffset = ANG90;
         (*connect_data).drone = true_0;
     }
-    if M_CheckParm(
-        b"-right\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-    {
+    if M_CheckParm("-right") > 0 as ::core::ffi::c_int {
         viewangleoffset = ANG270 as ::core::ffi::c_int;
         (*connect_data).drone = true_0;
     }
     (*connect_data).gamemode = gamemode as ::core::ffi::c_int;
     (*connect_data).gamemission = gamemission as ::core::ffi::c_int;
-    (*connect_data).lowres_turn = (M_CheckParm(
-        b"-record\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-        && M_CheckParm(
-            b"-longtics\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    (*connect_data).lowres_turn = (M_CheckParm("-record") > 0 as ::core::ffi::c_int
+        && M_CheckParm("-longtics") == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
     W_Checksum(&raw mut (*connect_data).wad_sha1sum as *mut byte);
     (*connect_data).is_freedoom = (W_CheckNumForName(
         b"FREEDOOM\0" as *const u8 as *const ::core::ffi::c_char
@@ -1730,11 +1711,7 @@ pub unsafe extern "C" fn D_ConnectNetGame() {
     };
     InitConnectData(&raw mut connect_data);
     netgame = D_InitNetGame(&raw mut connect_data);
-    if M_CheckParm(
-        b"-solo-net\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-    {
+    if M_CheckParm("-solo-net") > 0 as ::core::ffi::c_int {
         netgame = true_0 as boolean;
     }
 }
@@ -1783,10 +1760,7 @@ pub unsafe extern "C" fn D_CheckNetGame() {
     );
     if timelimit > 0 as ::core::ffi::c_int && deathmatch != 0 {
         if timelimit == 20 as ::core::ffi::c_int
-            && M_CheckParm(
-                b"-avg\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-            ) != 0
+            && M_CheckParm("-avg") != 0
         {
             printf(
                 b"Austin Virtual Gaming: Levels will end after 20 minutes\n\0"

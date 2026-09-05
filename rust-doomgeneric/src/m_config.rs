@@ -1,3 +1,4 @@
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn sscanf(
@@ -13,11 +14,6 @@ extern "C" {
     ) -> ::core::ffi::c_int;
     fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
     fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
     fn M_MakeDirectory(dir: *mut ::core::ffi::c_char);
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }
@@ -2127,13 +2123,10 @@ pub unsafe extern "C" fn M_SaveDefaultsAlternate(
 #[no_mangle]
 pub unsafe extern "C" fn M_LoadDefaults() {
     let mut i: ::core::ffi::c_int = 0;
-    i = M_CheckParmWithArgs(
-        b"-config\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    i = M_CheckParmWithArgs("-config", 1 as ::core::ffi::c_int);
     if i != 0 {
-        doom_defaults.filename = *myargv.offset((i + 1 as ::core::ffi::c_int) as isize);
+        doom_defaults.filename = myargv[(i + 1 as ::core::ffi::c_int) as usize]
+            .as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"\tdefault file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
             doom_defaults.filename,
@@ -2145,13 +2138,10 @@ pub unsafe extern "C" fn M_LoadDefaults() {
         b"saving config in %s\n\0" as *const u8 as *const ::core::ffi::c_char,
         doom_defaults.filename,
     );
-    i = M_CheckParmWithArgs(
-        b"-extraconfig\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    i = M_CheckParmWithArgs("-extraconfig", 1 as ::core::ffi::c_int);
     if i != 0 {
-        extra_defaults.filename = *myargv.offset((i + 1 as ::core::ffi::c_int) as isize);
+        extra_defaults.filename = myargv[(i + 1 as ::core::ffi::c_int) as usize]
+            .as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"        extra configuration file: %s\n\0" as *const u8
                 as *const ::core::ffi::c_char,

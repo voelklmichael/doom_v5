@@ -1,5 +1,5 @@
+use crate::src::m_argv::M_CheckParm;
 extern "C" {
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     static mut stdc_wad_file: wad_file_class_t;
 }
 pub type size_t = usize;
@@ -42,10 +42,7 @@ pub unsafe extern "C" fn W_OpenFile(
 ) -> *mut wad_file_t {
     let mut result: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     let mut i: ::core::ffi::c_int = 0;
-    if M_CheckParm(
-        b"-mmap\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    ) == 0
-    {
+    if M_CheckParm("-mmap") == 0 {
         return stdc_wad_file.OpenFile.expect("non-null function pointer")(path);
     }
     result = ::core::ptr::null_mut::<wad_file_t>();

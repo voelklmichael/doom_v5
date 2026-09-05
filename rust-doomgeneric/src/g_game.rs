@@ -1,3 +1,4 @@
+use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -62,12 +63,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn Z_CheckHeap();
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
     static mut key_right: ::core::ffi::c_int;
     static mut key_left: ::core::ffi::c_int;
     static mut key_up: ::core::ffi::c_int;
@@ -3995,14 +3990,12 @@ pub unsafe extern "C" fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
         name,
     );
     maxsize = 0x20000 as ::core::ffi::c_int;
-    i = M_CheckParmWithArgs(
-        b"-maxdemo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    i = M_CheckParmWithArgs("-maxdemo", 1 as ::core::ffi::c_int);
     if i != 0 {
-        maxsize = atoi(*myargv.offset((i + 1 as ::core::ffi::c_int) as isize))
-            * 1024 as ::core::ffi::c_int;
+        maxsize = atoi(
+            myargv[(i + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        ) * 1024 as ::core::ffi::c_int;
     }
     demobuffer = Z_Malloc(maxsize, PU_STATIC as ::core::ffi::c_int, NULL) as *mut byte;
     demoend = demobuffer.offset(maxsize as isize);
@@ -4027,10 +4020,8 @@ pub unsafe extern "C" fn G_VanillaVersionCode() -> ::core::ffi::c_int {
 #[no_mangle]
 pub unsafe extern "C" fn G_BeginRecording() {
     let mut i: ::core::ffi::c_int = 0;
-    longtics = (M_CheckParm(
-        b"-longtics\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) != 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
+    longtics = (M_CheckParm("-longtics") != 0 as ::core::ffi::c_int) as ::core::ffi::c_int
+        as boolean;
     lowres_turn = (longtics == 0) as ::core::ffi::c_int as boolean;
     demo_p = demobuffer;
     if longtics != 0 {
@@ -4187,14 +4178,8 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
         i += 1;
     }
     if playeringame[1 as ::core::ffi::c_int as usize] != 0
-        || M_CheckParm(
-            b"-solo-net\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) > 0 as ::core::ffi::c_int
-        || M_CheckParm(
-            b"-netdemo\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) > 0 as ::core::ffi::c_int
+        || M_CheckParm("-solo-net") > 0 as ::core::ffi::c_int
+        || M_CheckParm("-netdemo") > 0 as ::core::ffi::c_int
     {
         netgame = true_0 as boolean;
         netdemo = true_0 as boolean;
@@ -4208,10 +4193,7 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
-    nodrawers = M_CheckParm(
-        b"-nodraw\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) as boolean;
+    nodrawers = M_CheckParm("-nodraw") as boolean;
     timingdemo = true_0 as boolean;
     singletics = true_0 as boolean;
     defdemoname = name;

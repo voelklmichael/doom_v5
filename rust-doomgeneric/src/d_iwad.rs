@@ -1,3 +1,4 @@
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
@@ -17,11 +18,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
     ) -> ::core::ffi::c_int;
     fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
     fn M_FileExists(file: *mut ::core::ffi::c_char) -> boolean;
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }
@@ -347,13 +343,10 @@ pub unsafe extern "C" fn D_FindIWAD(
     >();
     let mut iwadparm: ::core::ffi::c_int = 0;
     let mut i: ::core::ffi::c_int = 0;
-    iwadparm = M_CheckParmWithArgs(
-        b"-iwad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    iwadparm = M_CheckParmWithArgs("-iwad", 1 as ::core::ffi::c_int);
     if iwadparm != 0 {
-        iwadfile = *myargv.offset((iwadparm + 1 as ::core::ffi::c_int) as isize);
+        iwadfile = myargv[(iwadparm + 1 as ::core::ffi::c_int) as usize].as_ptr()
+            as *mut ::core::ffi::c_char;
         result = D_FindWADByName(iwadfile);
         if result.is_null() {
             I_Error(

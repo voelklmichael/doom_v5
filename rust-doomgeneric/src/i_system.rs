@@ -1,3 +1,4 @@
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -36,13 +37,6 @@ extern "C" {
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
     ) -> ::core::ffi::c_int;
-    static mut myargc: ::core::ffi::c_int;
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn M_ParmExists(check: *mut ::core::ffi::c_char) -> boolean;
     fn M_StrToInt(
         str: *const ::core::ffi::c_char,
         result: *mut ::core::ffi::c_int,
@@ -179,12 +173,12 @@ pub unsafe extern "C" fn I_ZoneBase(mut size: *mut ::core::ffi::c_int) -> *mut b
     let mut min_ram: ::core::ffi::c_int = 0;
     let mut default_ram: ::core::ffi::c_int = 0;
     let mut p: ::core::ffi::c_int = 0;
-    p = M_CheckParmWithArgs(
-        b"-mb\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-mb", 1 as ::core::ffi::c_int);
     if p > 0 as ::core::ffi::c_int {
-        default_ram = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+        default_ram = atoi(
+            myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
         min_ram = default_ram;
     } else {
         default_ram = DEFAULT_RAM;
@@ -363,10 +357,7 @@ pub unsafe extern "C" fn I_Error(mut error: *mut ::core::ffi::c_char, mut args: 
         }
         entry = (*entry).next;
     }
-    exit_gui_popup = (M_ParmExists(
-        b"-nogui\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) == 0) as ::core::ffi::c_int as boolean;
+    exit_gui_popup = (M_ParmExists("-nogui") == 0) as ::core::ffi::c_int as boolean;
     if exit_gui_popup != 0 && I_ConsoleStdout() == 0 {
         ZenityErrorBox(&raw mut msgbuf as *mut ::core::ffi::c_char);
     }
@@ -426,27 +417,23 @@ pub unsafe extern "C" fn I_GetMemoryValue(
         let mut val: ::core::ffi::c_int = 0;
         firsttime = false_0 as boolean;
         i = 0 as ::core::ffi::c_int;
-        p = M_CheckParmWithArgs(
-            b"-setmem\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            1 as ::core::ffi::c_int,
-        );
+        p = M_CheckParmWithArgs("-setmem", 1 as ::core::ffi::c_int);
         if p > 0 as ::core::ffi::c_int {
             if strcasecmp(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr(),
                 b"dos622\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
                 dos_mem_dump = &raw const mem_dump_dos622 as *const ::core::ffi::c_uchar;
             }
             if strcasecmp(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr(),
                 b"dos71\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
                 dos_mem_dump = &raw const mem_dump_win98 as *const ::core::ffi::c_uchar;
             } else if strcasecmp(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr(),
                 b"dosbox\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
@@ -455,14 +442,15 @@ pub unsafe extern "C" fn I_GetMemoryValue(
                 i = 0 as ::core::ffi::c_int;
                 while i < DOS_MEM_DUMP_SIZE {
                     p += 1;
-                    if p >= myargc
-                        || *(*myargv.offset(p as isize))
-                            .offset(0 as ::core::ffi::c_int as isize)
-                            as ::core::ffi::c_int == '-' as i32
+                    if p >= myargv.len() as ::core::ffi::c_int
+                        || myargv[p as usize].as_bytes().first() == Some(&b'-')
                     {
                         break;
                     }
-                    M_StrToInt(*myargv.offset(p as isize), &raw mut val);
+                    M_StrToInt(
+                        myargv[p as usize].as_ptr() as *mut ::core::ffi::c_char,
+                        &raw mut val,
+                    );
                     let fresh0 = i;
                     i = i + 1;
                     mem_dump_custom[fresh0 as usize] = val as ::core::ffi::c_uchar;
