@@ -11,7 +11,7 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut deathmatch: ::core::ffi::c_int;
     static mut automapactive: bool;
     static mut consoleplayer: ::core::ffi::c_int;
@@ -1641,7 +1641,7 @@ pub unsafe extern "C" fn P_GiveWeapon(
 ) -> boolean {
     let mut gaveammo: boolean = 0;
     let mut gaveweapon: boolean = 0;
-    if netgame != 0 && deathmatch != 2 as ::core::ffi::c_int && dropped == 0 {
+    if netgame && deathmatch != 2 as ::core::ffi::c_int && dropped == 0 {
         if (*player).weaponowned[weapon as usize] {
             return false_0 as boolean;
         }
@@ -1849,7 +1849,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_bluecard);
-            if !(netgame == 0) {
+            if netgame {
                 return;
             }
         }
@@ -1859,7 +1859,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_yellowcard);
-            if !(netgame == 0) {
+            if netgame {
                 return;
             }
         }
@@ -1869,7 +1869,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_redcard);
-            if !(netgame == 0) {
+            if netgame {
                 return;
             }
         }
@@ -1879,7 +1879,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_blueskull);
-            if !(netgame == 0) {
+            if netgame {
                 return;
             }
         }
@@ -1889,7 +1889,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_yellowskull);
-            if !(netgame == 0) {
+            if netgame {
                 return;
             }
         }
@@ -1899,7 +1899,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_redskull);
-            if !(netgame == 0) {
+            if netgame {
                 return;
             }
         }
@@ -2167,7 +2167,7 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
                 .frags[(*target).player.offset_from(&raw mut players as *mut player_t)
                 as ::core::ffi::c_long as usize] += 1;
         }
-    } else if netgame == 0 && (*target).flags & MF_COUNTKILL as ::core::ffi::c_int != 0 {
+    } else if !netgame && (*target).flags & MF_COUNTKILL as ::core::ffi::c_int != 0 {
         players[0 as ::core::ffi::c_int as usize].killcount += 1;
     }
     if !(*target).player.is_null() {

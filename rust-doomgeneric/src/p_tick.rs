@@ -6,7 +6,7 @@ extern "C" {
     fn P_PlayerThink(player: *mut player_t);
     fn P_RespawnSpecials();
     fn P_UpdateSpecials();
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut menuactive: bool;
     static mut paused: bool;
     static mut consoleplayer: ::core::ffi::c_int;
@@ -1347,7 +1347,7 @@ pub unsafe extern "C" fn P_Ticker() {
     if paused {
         return;
     }
-    if netgame == 0 && menuactive && !demoplayback
+    if !netgame && menuactive && !demoplayback
         && players[consoleplayer as usize].viewz != 1 as ::core::ffi::c_int
     {
         return;

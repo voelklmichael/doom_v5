@@ -29,7 +29,7 @@ extern "C" {
     static mut gameversion: GameVersion_t;
     static mut gameepisode: ::core::ffi::c_int;
     static mut gamemap: ::core::ffi::c_int;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut automapactive: bool;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut players: [player_t; 4];
@@ -2074,7 +2074,7 @@ pub unsafe extern "C" fn HU_Ticker() {
             message_dontfuckwithme = false;
         }
     }
-    if netgame != 0 {
+    if netgame {
         i = 0 as ::core::ffi::c_int;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
@@ -2195,12 +2195,12 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
             message_on = true;
             message_counter = HU_MSGTIMEOUT;
             eatkey = true_0 as boolean;
-        } else if netgame != 0 && (*ev).data2 == key_multi_msg {
+        } else if netgame && (*ev).data2 == key_multi_msg {
             chat_on = true;
             eatkey = chat_on as boolean;
             HUlib_resetIText(&raw mut w_chat);
             HU_queueChatChar(HU_BROADCAST as ::core::ffi::c_char);
-        } else if netgame != 0 && numplayers > 2 as ::core::ffi::c_int {
+        } else if netgame && numplayers > 2 as ::core::ffi::c_int {
             i = 0 as ::core::ffi::c_int;
             while i < MAXPLAYERS {
                 if (*ev).data2 == key_multi_msgplayer[i as usize] {

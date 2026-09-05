@@ -52,7 +52,7 @@ extern "C" {
     static mut gamedescription: *mut ::core::ffi::c_char;
     static mut modifiedgame: bool;
     static mut timelimit: ::core::ffi::c_int;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut deathmatch: ::core::ffi::c_int;
     static mut sfxVolume: ::core::ffi::c_int;
     static mut musicVolume: ::core::ffi::c_int;
@@ -2017,7 +2017,7 @@ pub unsafe extern "C" fn D_DoomLoop() {
         && (demorecording
             || gameaction as ::core::ffi::c_uint
                 == ga_playdemo as ::core::ffi::c_int as ::core::ffi::c_uint
-            || netgame != 0)
+            || netgame)
     {
         printf(
             b" WARNING: You are playing using one of the Doom Classic\n IWAD files shipped with the Doom 3: BFG Edition. These are\n known to be incompatible with the regular IWAD files and\n may cause demos and network games to get out of sync.\n\0"
@@ -3152,7 +3152,7 @@ pub unsafe extern "C" fn D_DoomMain() {
     if gameaction as ::core::ffi::c_uint
         != ga_loadgame as ::core::ffi::c_int as ::core::ffi::c_uint
     {
-        if autostart || netgame != 0 {
+        if autostart || netgame {
             G_InitNew(startskill, startepisode, startmap);
         } else {
             D_StartTitle();

@@ -35,7 +35,7 @@ extern "C" {
     static mut startloadgame: ::core::ffi::c_int;
     static mut autostart: bool;
     static mut timelimit: ::core::ffi::c_int;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut deathmatch: ::core::ffi::c_int;
     static mut viewangleoffset: ::core::ffi::c_int;
     static mut consoleplayer: ::core::ffi::c_int;
@@ -1498,9 +1498,9 @@ pub unsafe extern "C" fn D_ConnectNetGame() {
         player_class: 0,
     };
     InitConnectData(&raw mut connect_data);
-    netgame = D_InitNetGame(&raw mut connect_data);
+    netgame = D_InitNetGame(&raw mut connect_data) != 0;
     if M_CheckParm("-solo-net") > 0 as ::core::ffi::c_int {
-        netgame = true_0 as boolean;
+        netgame = true;
     }
 }
 #[no_mangle]
@@ -1525,7 +1525,7 @@ pub unsafe extern "C" fn D_CheckNetGame() {
         consoleplayer: 0,
         player_classes: [0; 8],
     };
-    if netgame != 0 {
+    if netgame {
         autostart = true;
     }
     D_RegisterLoopCallbacks(&raw mut doom_loop_interface);
