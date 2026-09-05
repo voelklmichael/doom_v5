@@ -1,3 +1,4 @@
+use crate::src::d_event::event_t;
 extern "C" {
     fn D_PostEvent(ev: *mut event_t);
     fn DG_GetKey(
@@ -11,15 +12,6 @@ pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
 #[no_mangle]
 pub static mut vanilla_keyboard_mapping: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
 static mut shiftdown: ::core::ffi::c_int = 0 as ::core::ffi::c_int;

@@ -1,3 +1,6 @@
+use crate::src::m_cheat::cheatseq_t;
+use crate::src::d_items::{weaponinfo_t, weaponinfo};
+use crate::src::d_event::event_t;
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{actionf_t};
 use crate::src::w_wad::{
@@ -76,7 +79,6 @@ extern "C" {
         on: *mut boolean,
     );
     fn STlib_updateBinIcon(bi: *mut st_binicon_t, refresh: boolean);
-    static mut weaponinfo: [weaponinfo_t; 9];
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn P_GivePower(_: *mut player_t, _: ::core::ffi::c_int) -> boolean;
     fn S_ChangeMusic(music_id: ::core::ffi::c_int, looping: ::core::ffi::c_int);
@@ -113,15 +115,6 @@ pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
 pub type C2RustUnnamed = ::core::ffi::c_uint;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
@@ -206,16 +199,6 @@ pub const pw_ironfeet: C2RustUnnamed_1 = 3;
 pub const pw_invisibility: C2RustUnnamed_1 = 2;
 pub const pw_strength: C2RustUnnamed_1 = 1;
 pub const pw_invulnerability: C2RustUnnamed_1 = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct cheatseq_t {
-    pub sequence: [::core::ffi::c_char; 25],
-    pub sequence_len: size_t,
-    pub parameter_chars: ::core::ffi::c_int,
-    pub chars_read: size_t,
-    pub param_chars_read: ::core::ffi::c_int,
-    pub parameter_buf: [::core::ffi::c_char; 5],
-}
 pub type fixed_t = ::core::ffi::c_int;
 pub type statenum_t = ::core::ffi::c_uint;
 pub const NUMSTATES: statenum_t = 967;
@@ -1499,16 +1482,6 @@ pub struct patch_t {
     pub leftoffset: ::core::ffi::c_short,
     pub topoffset: ::core::ffi::c_short,
     pub columnofs: [::core::ffi::c_int; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct weaponinfo_t {
-    pub ammo: ammotype_t,
-    pub upstate: ::core::ffi::c_int,
-    pub downstate: ::core::ffi::c_int,
-    pub readystate: ::core::ffi::c_int,
-    pub atkstate: ::core::ffi::c_int,
-    pub flashstate: ::core::ffi::c_int,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]

@@ -1,9 +1,9 @@
+use crate::src::d_items::weaponinfo;
 use crate::src::p_mobj::{state_t, actionf_t};
 use crate::src::d_player::{player_t, PST_DEAD};
 use crate::src::p_mobj::{mobj_s, mobj_t};
 use crate::src::i_system::I_Error;
 extern "C" {
-    static mut weaponinfo: [weaponinfo_t; 9];
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
@@ -218,16 +218,6 @@ pub const sfx_sgcock: C2RustUnnamed_1 = 3;
 pub const sfx_shotgn: C2RustUnnamed_1 = 2;
 pub const sfx_pistol: C2RustUnnamed_1 = 1;
 pub const sfx_None: C2RustUnnamed_1 = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct weaponinfo_t {
-    pub ammo: ammotype_t,
-    pub upstate: ::core::ffi::c_int,
-    pub downstate: ::core::ffi::c_int,
-    pub readystate: ::core::ffi::c_int,
-    pub atkstate: ::core::ffi::c_int,
-    pub flashstate: ::core::ffi::c_int,
-}
 pub type fixed_t = ::core::ffi::c_int;
 pub type angle_t = ::core::ffi::c_uint;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;

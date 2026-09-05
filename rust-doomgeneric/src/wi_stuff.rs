@@ -1,3 +1,4 @@
+use crate::src::d_event::event_t;
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{actionf_t};
 use crate::src::w_wad::{
@@ -53,15 +54,6 @@ pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
 pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
 pub const BTS_SAVESHIFT: C2RustUnnamed_0 = 2;
 pub const BTS_SAVEMASK: C2RustUnnamed_0 = 28;

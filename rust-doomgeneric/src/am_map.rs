@@ -1,3 +1,5 @@
+use crate::src::m_cheat::cheatseq_t;
+use crate::src::d_event::event_t;
 use crate::src::p_mobj::{sector_t, vertex_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
@@ -154,25 +156,6 @@ pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct cheatseq_t {
-    pub sequence: [::core::ffi::c_char; 25],
-    pub sequence_len: size_t,
-    pub parameter_chars: ::core::ffi::c_int,
-    pub chars_read: size_t,
-    pub param_chars_read: ::core::ffi::c_int,
-    pub parameter_buf: [::core::ffi::c_char; 5],
-}
 pub type fixed_t = ::core::ffi::c_int;
 pub type angle_t = ::core::ffi::c_uint;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
