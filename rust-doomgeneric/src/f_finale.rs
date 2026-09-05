@@ -48,7 +48,7 @@ extern "C" {
     static mut gameepisode: ::core::ffi::c_int;
     static mut gamemap: ::core::ffi::c_int;
     static mut automapactive: boolean;
-    static mut viewactive: boolean;
+    static mut viewactive: bool;
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     static mut wipegamestate: gamestate_t;
@@ -1814,7 +1814,7 @@ pub unsafe extern "C" fn F_StartFinale() {
     let mut i: size_t = 0;
     gameaction = ga_nothing;
     gamestate = GS_FINALE;
-    viewactive = false_0 as boolean;
+    viewactive = false;
     automapactive = false_0 as boolean;
     if (if gamemission as ::core::ffi::c_uint
         == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint

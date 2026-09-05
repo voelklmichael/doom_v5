@@ -79,7 +79,7 @@ extern "C" {
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
     fn G_ExitLevel();
     static mut gametic: ::core::ffi::c_int;
-    static mut fastparm: boolean;
+    static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
@@ -2143,7 +2143,7 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
     if (*actor).flags & MF_JUSTATTACKED as ::core::ffi::c_int != 0 {
         (*actor).flags &= !(MF_JUSTATTACKED as ::core::ffi::c_int);
         if gameskill as ::core::ffi::c_int != sk_nightmare as ::core::ffi::c_int
-            && fastparm == 0
+            && !fastparm
         {
             P_NewChaseDir(actor);
         }
@@ -2161,7 +2161,7 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
     }
     if (*(*actor).info).missilestate != 0 {
         if !((gameskill as ::core::ffi::c_int) < sk_nightmare as ::core::ffi::c_int
-            && fastparm == 0 && (*actor).movecount != 0)
+            && !fastparm && (*actor).movecount != 0)
         {
             if !(P_CheckMissileRange(actor) == 0) {
                 P_SetMobjState(actor, (*(*actor).info).missilestate as statenum_t);

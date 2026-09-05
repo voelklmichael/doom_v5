@@ -23,9 +23,9 @@ extern "C" {
         settings: *mut net_gamesettings_t,
         callback: netgame_startup_callback_t,
     );
-    static mut nomonsters: boolean;
+    static mut nomonsters: bool;
     static mut respawnparm: bool;
-    static mut fastparm: boolean;
+    static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
@@ -1433,8 +1433,8 @@ unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
     startskill = (*settings).skill as skill_t;
     startloadgame = (*settings).loadgame;
     lowres_turn = (*settings).lowres_turn != 0;
-    nomonsters = (*settings).nomonsters as boolean;
-    fastparm = (*settings).fast_monsters as boolean;
+    nomonsters = (*settings).nomonsters != 0;
+    fastparm = (*settings).fast_monsters != 0;
     respawnparm = (*settings).respawn_monsters != 0;
     timelimit = (*settings).timelimit;
     consoleplayer = (*settings).consoleplayer;
