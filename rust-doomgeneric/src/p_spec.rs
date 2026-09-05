@@ -1,4 +1,5 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::w_wad::{wad_name8_to_string, W_CheckNumForName};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -29,7 +30,6 @@ extern "C" {
         result: *mut ::core::ffi::c_int,
     ) -> boolean;
     fn P_Random() -> ::core::ffi::c_int;
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     static mut flattranslation: *mut ::core::ffi::c_int;
     static mut texturetranslation: *mut ::core::ffi::c_int;
     static mut numsectors: ::core::ffi::c_int;
@@ -2221,7 +2221,10 @@ pub unsafe extern "C" fn P_InitPicAnims() {
                 (*lastanim).basepic = R_TextureNumForName(startname);
                 current_block_13 = 11650488183268122163;
             }
-        } else if W_CheckNumForName(startname) == -(1 as ::core::ffi::c_int) {
+        } else if W_CheckNumForName(
+            &wad_name8_to_string(startname),
+        ) == -(1 as ::core::ffi::c_int)
+        {
             current_block_13 = 12237857397564741460;
         } else {
             (*lastanim).picnum = R_FlatNumForName(endname);

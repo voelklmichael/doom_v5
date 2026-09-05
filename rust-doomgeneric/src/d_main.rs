@@ -1,5 +1,6 @@
 use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_misc::M_StringEndsWith;
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_CheckNumForName};
 extern "C" {
     fn __ctype_b_loc() -> *mut *const ::core::ffi::c_ushort;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
@@ -81,11 +82,6 @@ extern "C" {
     static mut lumpinfo: *mut lumpinfo_t;
     static mut numlumps: ::core::ffi::c_uint;
     fn W_AddFile(filename: *mut ::core::ffi::c_char) -> *mut wad_file_t;
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
     fn W_GenerateHashTable();
     fn W_CheckCorrectIWAD(mission: GameMission_t);
     fn S_Init(sfxVolume_0: ::core::ffi::c_int, musicVolume_0: ::core::ffi::c_int);
@@ -2125,9 +2121,7 @@ pub unsafe extern "C" fn D_Display() {
             != GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
     {
         I_SetPalette(
-            W_CacheLumpName(
-                b"PLAYPAL\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
+            W_CacheLumpName("PLAYPAL",
                 PU_CACHE as ::core::ffi::c_int,
             ) as *mut byte,
         );
@@ -2170,9 +2164,7 @@ pub unsafe extern "C" fn D_Display() {
             viewwindowx
                 + (scaledviewwidth - 68 as ::core::ffi::c_int) / 2 as ::core::ffi::c_int,
             y,
-            W_CacheLumpName(
-                b"M_PAUSE\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
+            W_CacheLumpName("M_PAUSE",
                 PU_CACHE as ::core::ffi::c_int,
             ) as *mut patch_t,
         );
@@ -2373,7 +2365,10 @@ pub unsafe extern "C" fn D_PageDrawer() {
     V_DrawPatch(
         0 as ::core::ffi::c_int,
         0 as ::core::ffi::c_int,
-        W_CacheLumpName(pagename, PU_CACHE as ::core::ffi::c_int) as *mut patch_t,
+        W_CacheLumpName(
+            &wad_name8_to_string(pagename),
+            PU_CACHE as ::core::ffi::c_int,
+        ) as *mut patch_t,
     );
 }
 #[no_mangle]
@@ -2475,9 +2470,7 @@ pub unsafe extern "C" fn D_DoAdvanceDemo() {
     if bfgedition != 0
         && strcasecmp(pagename, b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char)
             == 0
-        && W_CheckNumForName(
-            b"titlepic\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        && W_CheckNumForName("titlepic",
         ) < 0 as ::core::ffi::c_int
     {
         pagename = b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char
@@ -2662,15 +2655,11 @@ pub unsafe extern "C" fn D_IdentifyVersion() {
         })
     }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
     {
-        if W_CheckNumForName(
-            b"E4M1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        if W_CheckNumForName("E4M1",
         ) > 0 as ::core::ffi::c_int
         {
             gamemode = retail;
-        } else if W_CheckNumForName(
-            b"E3M1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        } else if W_CheckNumForName("E3M1",
         ) > 0 as ::core::ffi::c_int
         {
             gamemode = registered;
@@ -2691,13 +2680,9 @@ pub unsafe extern "C" fn D_IdentifyVersion() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_SetGameDescription() {
-    let mut is_freedoom: boolean = (W_CheckNumForName(
-        b"FREEDOOM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    let mut is_freedoom: boolean = (W_CheckNumForName("FREEDOOM",
     ) >= 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
-    let mut is_freedm: boolean = (W_CheckNumForName(
-        b"FREEDM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    let mut is_freedm: boolean = (W_CheckNumForName("FREEDM",
     ) >= 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
     gamedescription = b"Unknown\0" as *const u8 as *const ::core::ffi::c_char
         as *mut ::core::ffi::c_char;
@@ -3027,9 +3012,7 @@ unsafe extern "C" fn D_Endoom() {
     {
         return;
     }
-    endoom = W_CacheLumpName(
-        b"ENDOOM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    endoom = W_CacheLumpName("ENDOOM",
         PU_STATIC as ::core::ffi::c_int,
     ) as *mut byte;
     I_Endoom(endoom);
@@ -3132,9 +3115,7 @@ pub unsafe extern "C" fn D_DoomMain() {
     W_CheckCorrectIWAD(doom);
     D_IdentifyVersion();
     InitGameVersion();
-    if W_CheckNumForName(
-        b"dmenupic\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    if W_CheckNumForName("dmenupic",
     ) >= 0 as ::core::ffi::c_int
     {
         printf(
@@ -3296,8 +3277,10 @@ pub unsafe extern "C" fn D_DoomMain() {
             i = 0 as ::core::ffi::c_int;
             while i < 23 as ::core::ffi::c_int {
                 if W_CheckNumForName(
-                    &raw mut *(&raw mut name as *mut [::core::ffi::c_char; 8])
-                        .offset(i as isize) as *mut ::core::ffi::c_char,
+                    &wad_name8_to_string(
+                        &raw mut *(&raw mut name as *mut [::core::ffi::c_char; 8])
+                            .offset(i as isize) as *mut ::core::ffi::c_char,
+                    ),
                 ) < 0 as ::core::ffi::c_int
                 {
                     I_Error(
@@ -3309,13 +3292,9 @@ pub unsafe extern "C" fn D_DoomMain() {
             }
         }
     }
-    if W_CheckNumForName(
-        b"SS_START\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    if W_CheckNumForName("SS_START",
     ) >= 0 as ::core::ffi::c_int
-        || W_CheckNumForName(
-            b"FF_END\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        || W_CheckNumForName("FF_END",
         ) >= 0 as ::core::ffi::c_int
     {
         I_PrintDivider();
@@ -3326,13 +3305,9 @@ pub unsafe extern "C" fn D_DoomMain() {
     }
     I_PrintStartupBanner(gamedescription);
     PrintDehackedBanners();
-    if W_CheckNumForName(
-        b"FREEDOOM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    if W_CheckNumForName("FREEDOOM",
     ) >= 0 as ::core::ffi::c_int
-        && W_CheckNumForName(
-            b"FREEDM\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        && W_CheckNumForName("FREEDM",
         ) < 0 as ::core::ffi::c_int
     {
         printf(
@@ -3448,9 +3423,7 @@ pub unsafe extern "C" fn D_DoomMain() {
     ST_Init();
     if gamemode as ::core::ffi::c_uint
         == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        && W_CheckNumForName(
-            b"map01\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        && W_CheckNumForName("map01",
         ) < 0 as ::core::ffi::c_int
     {
         storedemo = true_0 as boolean;

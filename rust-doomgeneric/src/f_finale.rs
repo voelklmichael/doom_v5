@@ -1,3 +1,4 @@
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -21,10 +22,6 @@ extern "C" {
     );
     fn W_CacheLumpNum(
         lump: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
         tag: ::core::ffi::c_int,
     ) -> *mut ::core::ffi::c_void;
     fn memcpy(
@@ -2449,7 +2446,10 @@ pub unsafe extern "C" fn F_TextWrite() {
     let mut c: ::core::ffi::c_int = 0;
     let mut cx: ::core::ffi::c_int = 0;
     let mut cy: ::core::ffi::c_int = 0;
-    src = W_CacheLumpName(finaleflat, PU_CACHE as ::core::ffi::c_int) as *mut byte;
+    src = W_CacheLumpName(
+        &wad_name8_to_string(finaleflat),
+        PU_CACHE as ::core::ffi::c_int,
+    ) as *mut byte;
     dest = I_VideoBuffer;
     y = 0 as ::core::ffi::c_int;
     while y < SCREENHEIGHT {
@@ -2986,9 +2986,7 @@ pub unsafe extern "C" fn F_CastDrawer() {
     V_DrawPatch(
         0 as ::core::ffi::c_int,
         0 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"BOSSBACK\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("BOSSBACK",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3054,14 +3052,10 @@ pub unsafe extern "C" fn F_BunnyScroll() {
     let mut name: [::core::ffi::c_char; 10] = [0; 10];
     let mut stage: ::core::ffi::c_int = 0;
     static mut laststage: ::core::ffi::c_int = 0;
-    p1 = W_CacheLumpName(
-        b"PFUB2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    p1 = W_CacheLumpName("PFUB2",
         PU_LEVEL as ::core::ffi::c_int,
     ) as *mut patch_t;
-    p2 = W_CacheLumpName(
-        b"PFUB1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    p2 = W_CacheLumpName("PFUB1",
         PU_LEVEL as ::core::ffi::c_int,
     ) as *mut patch_t;
     V_MarkRect(
@@ -3097,9 +3091,7 @@ pub unsafe extern "C" fn F_BunnyScroll() {
                 / 2 as ::core::ffi::c_int,
             (SCREENHEIGHT - 8 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
                 / 2 as ::core::ffi::c_int,
-            W_CacheLumpName(
-                b"END0\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
+            W_CacheLumpName("END0",
                 PU_CACHE as ::core::ffi::c_int,
             ) as *mut patch_t,
         );
@@ -3128,7 +3120,7 @@ pub unsafe extern "C" fn F_BunnyScroll() {
         (SCREENHEIGHT - 8 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
             / 2 as ::core::ffi::c_int,
         W_CacheLumpName(
-            &raw mut name as *mut ::core::ffi::c_char,
+            &wad_name8_to_string(&raw mut name as *mut ::core::ffi::c_char),
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3166,7 +3158,10 @@ unsafe extern "C" fn F_ArtScreenDrawer() {
         V_DrawPatch(
             0 as ::core::ffi::c_int,
             0 as ::core::ffi::c_int,
-            W_CacheLumpName(lumpname, PU_CACHE as ::core::ffi::c_int) as *mut patch_t,
+            W_CacheLumpName(
+                &wad_name8_to_string(lumpname),
+                PU_CACHE as ::core::ffi::c_int,
+            ) as *mut patch_t,
         );
     };
 }

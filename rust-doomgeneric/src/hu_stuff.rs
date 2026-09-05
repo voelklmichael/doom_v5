@@ -1,3 +1,4 @@
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -54,10 +55,6 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
@@ -2817,7 +2814,7 @@ pub unsafe extern "C" fn HU_Init() {
             fresh0,
         );
         hu_font[i as usize] = W_CacheLumpName(
-            &raw mut buffer as *mut ::core::ffi::c_char,
+            &wad_name8_to_string(&raw mut buffer as *mut ::core::ffi::c_char),
             PU_STATIC as ::core::ffi::c_int,
         ) as *mut patch_t;
         i += 1;

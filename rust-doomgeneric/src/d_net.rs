@@ -1,4 +1,5 @@
 use crate::src::m_argv::M_CheckParm;
+use crate::src::w_wad::W_CheckNumForName;
 extern "C" {
     pub type subsector_s;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
@@ -41,7 +42,6 @@ extern "C" {
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
     fn W_Checksum(digest: *mut byte);
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1691,10 +1691,8 @@ unsafe extern "C" fn InitConnectData(mut connect_data: *mut net_connect_data_t) 
     (*connect_data).lowres_turn = (M_CheckParm("-record") > 0 as ::core::ffi::c_int
         && M_CheckParm("-longtics") == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
     W_Checksum(&raw mut (*connect_data).wad_sha1sum as *mut byte);
-    (*connect_data).is_freedoom = (W_CheckNumForName(
-        b"FREEDOOM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) >= 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    (*connect_data).is_freedoom = (W_CheckNumForName("FREEDOOM")
+        >= 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_ConnectNetGame() {

@@ -1,3 +1,7 @@
+use crate::src::w_wad::{
+    wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_GetNumForName,
+    W_ReleaseLumpName,
+};
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn strncasecmp(
@@ -20,19 +24,12 @@ extern "C" {
         line: ::core::ffi::c_int,
     );
     static mut lumpinfo: *mut lumpinfo_t;
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn W_GetNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn W_LumpLength(lump: ::core::ffi::c_uint) -> ::core::ffi::c_int;
     fn W_CacheLumpNum(
         lump: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
     ) -> *mut ::core::ffi::c_void;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
     fn W_LumpNameHash(s: *const ::core::ffi::c_char) -> ::core::ffi::c_uint;
-    fn W_ReleaseLumpName(name: *mut ::core::ffi::c_char);
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
@@ -2055,9 +2052,7 @@ pub unsafe extern "C" fn R_InitTextures() {
     let mut temp2: ::core::ffi::c_int = 0;
     let mut temp3: ::core::ffi::c_int = 0;
     name[8 as ::core::ffi::c_int as usize] = 0 as ::core::ffi::c_char;
-    names = W_CacheLumpName(
-        b"PNAMES\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    names = W_CacheLumpName("PNAMES",
         PU_STATIC as ::core::ffi::c_int,
     ) as *mut ::core::ffi::c_char;
     nummappatches = *(names as *mut ::core::ffi::c_int);
@@ -2077,43 +2072,30 @@ pub unsafe extern "C" fn R_InitTextures() {
             ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
         );
         *patchlookup.offset(i as isize) = W_CheckNumForName(
-            &raw mut name as *mut ::core::ffi::c_char,
+            &wad_name8_to_string(&raw const name as *const ::core::ffi::c_char),
         );
         i += 1;
     }
-    W_ReleaseLumpName(
-        b"PNAMES\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    );
-    maptex1 = W_CacheLumpName(
-        b"TEXTURE1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    W_ReleaseLumpName("PNAMES");
+    maptex1 = W_CacheLumpName("TEXTURE1",
         PU_STATIC as ::core::ffi::c_int,
     ) as *mut ::core::ffi::c_int;
     maptex = maptex1;
     numtextures1 = *maptex;
     maxoff = W_LumpLength(
-        W_GetNumForName(
-            b"TEXTURE1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_GetNumForName("TEXTURE1",
         ) as ::core::ffi::c_uint,
     );
     directory = maptex.offset(1 as ::core::ffi::c_int as isize);
-    if W_CheckNumForName(
-        b"TEXTURE2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    if W_CheckNumForName("TEXTURE2",
     ) != -(1 as ::core::ffi::c_int)
     {
-        maptex2 = W_CacheLumpName(
-            b"TEXTURE2\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        maptex2 = W_CacheLumpName("TEXTURE2",
             PU_STATIC as ::core::ffi::c_int,
         ) as *mut ::core::ffi::c_int;
         numtextures2 = *maptex2;
         maxoff2 = W_LumpLength(
-            W_GetNumForName(
-                b"TEXTURE2\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
+            W_GetNumForName("TEXTURE2",
             ) as ::core::ffi::c_uint,
         );
     } else {
@@ -2170,12 +2152,9 @@ pub unsafe extern "C" fn R_InitTextures() {
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
     totalwidth = 0 as ::core::ffi::c_int;
-    temp1 = W_GetNumForName(
-        b"S_START\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    temp1 = W_GetNumForName("S_START",
     );
-    temp2 = W_GetNumForName(
-        b"S_END\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+    temp2 = W_GetNumForName("S_END",
     ) - 1 as ::core::ffi::c_int;
     temp3 = (temp2 - temp1 + 63 as ::core::ffi::c_int) / 64 as ::core::ffi::c_int
         + (numtextures + 63 as ::core::ffi::c_int) / 64 as ::core::ffi::c_int;
@@ -2283,15 +2262,9 @@ pub unsafe extern "C" fn R_InitTextures() {
         directory = directory.offset(1);
     }
     Z_Free(patchlookup as *mut ::core::ffi::c_void);
-    W_ReleaseLumpName(
-        b"TEXTURE1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    );
+    W_ReleaseLumpName("TEXTURE1");
     if !maptex2.is_null() {
-        W_ReleaseLumpName(
-            b"TEXTURE2\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        W_ReleaseLumpName("TEXTURE2");
     }
     i = 0 as ::core::ffi::c_int;
     while i < numtextures {
@@ -2315,12 +2288,9 @@ pub unsafe extern "C" fn R_InitTextures() {
 #[no_mangle]
 pub unsafe extern "C" fn R_InitFlats() {
     let mut i: ::core::ffi::c_int = 0;
-    firstflat = W_GetNumForName(
-        b"F_START\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    firstflat = W_GetNumForName("F_START",
     ) + 1 as ::core::ffi::c_int;
-    lastflat = W_GetNumForName(
-        b"F_END\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+    lastflat = W_GetNumForName("F_END",
     ) - 1 as ::core::ffi::c_int;
     numflats = lastflat - firstflat + 1 as ::core::ffi::c_int;
     flattranslation = Z_Malloc(
@@ -2340,12 +2310,9 @@ pub unsafe extern "C" fn R_InitFlats() {
 pub unsafe extern "C" fn R_InitSpriteLumps() {
     let mut i: ::core::ffi::c_int = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    firstspritelump = W_GetNumForName(
-        b"S_START\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    firstspritelump = W_GetNumForName("S_START",
     ) + 1 as ::core::ffi::c_int;
-    lastspritelump = W_GetNumForName(
-        b"S_END\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+    lastspritelump = W_GetNumForName("S_END",
     ) - 1 as ::core::ffi::c_int;
     numspritelumps = lastspritelump - firstspritelump + 1 as ::core::ffi::c_int;
     spritewidth = Z_Malloc(
@@ -2388,9 +2355,7 @@ pub unsafe extern "C" fn R_InitSpriteLumps() {
 #[no_mangle]
 pub unsafe extern "C" fn R_InitColormaps() {
     let mut lump: ::core::ffi::c_int = 0;
-    lump = W_GetNumForName(
-        b"COLORMAP\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    lump = W_GetNumForName("COLORMAP",
     );
     colormaps = W_CacheLumpNum(lump, PU_STATIC as ::core::ffi::c_int)
         as *mut lighttable_t;
@@ -2411,7 +2376,7 @@ pub unsafe extern "C" fn R_FlatNumForName(
 ) -> ::core::ffi::c_int {
     let mut i: ::core::ffi::c_int = 0;
     let mut namet: [::core::ffi::c_char; 9] = [0; 9];
-    i = W_CheckNumForName(name);
+    i = W_CheckNumForName(&wad_name8_to_string(name));
     if i == -(1 as ::core::ffi::c_int) {
         namet[8 as ::core::ffi::c_int as usize] = 0 as ::core::ffi::c_char;
         memcpy(

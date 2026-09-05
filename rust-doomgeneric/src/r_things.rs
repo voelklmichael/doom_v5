@@ -1,3 +1,4 @@
+use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
 extern "C" {
     fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
     fn strncasecmp(
@@ -22,7 +23,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     static mut lumpinfo: *mut lumpinfo_t;
-    fn W_GetNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn W_CacheLumpNum(
         lump: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -1933,8 +1933,10 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
                     - '0' as i32;
                 if modifiedgame != 0 {
                     patched = W_GetNumForName(
-                        &raw mut (*lumpinfo.offset(l as isize)).name
-                            as *mut ::core::ffi::c_char,
+                        &wad_name8_to_string(
+                            &raw const (*lumpinfo.offset(l as isize)).name
+                                as *const ::core::ffi::c_char,
+                        ),
                     );
                 } else {
                     patched = l;

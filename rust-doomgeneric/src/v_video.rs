@@ -1,3 +1,4 @@
+use crate::src::w_wad::W_CacheLumpName;
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -38,10 +39,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -593,17 +590,13 @@ pub unsafe extern "C" fn V_DrawShadowedPatch(
 }
 #[no_mangle]
 pub unsafe extern "C" fn V_LoadTintTable() {
-    tinttable = W_CacheLumpName(
-        b"TINTTAB\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    tinttable = W_CacheLumpName("TINTTAB",
         PU_STATIC as ::core::ffi::c_int,
     ) as *mut byte;
 }
 #[no_mangle]
 pub unsafe extern "C" fn V_LoadXlaTable() {
-    xlatab = W_CacheLumpName(
-        b"XLATAB\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    xlatab = W_CacheLumpName("XLATAB",
         PU_STATIC as ::core::ffi::c_int,
     ) as *mut byte;
 }
@@ -854,9 +847,7 @@ pub unsafe extern "C" fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
         I_VideoBuffer,
         SCREENWIDTH,
         SCREENHEIGHT,
-        W_CacheLumpName(
-            b"PLAYPAL\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("PLAYPAL",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut byte,
     );

@@ -146,10 +146,9 @@ pub struct wadinfo_t {
     pub infotableofs: ::core::ffi::c_int,
 }
 #[derive(Copy, Clone)]
-#[repr(C)]
 pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
-    pub lumpname: *mut ::core::ffi::c_char,
+    pub lumpname: &'static str,
 }
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
@@ -361,10 +360,20 @@ pub unsafe extern "C" fn W_AddFile(
 pub unsafe extern "C" fn W_NumLumps() -> ::core::ffi::c_int {
     return numlumps as ::core::ffi::c_int;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_CheckNumForName(
-    mut name: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+/// Reads up to 8 bytes at `ptr` as a WAD lump name and converts it to an
+/// owned `String`, stopping at the first nul (if any). WAD lump names are a
+/// fixed 8-byte field with no guaranteed nul terminator, so unlike
+/// `CStr::from_ptr` this never reads past the 8th byte; invalid UTF-8 is
+/// lossily replaced rather than panicking, since arbitrary WAD/PWAD data is
+/// not guaranteed to be valid UTF-8 (or even ASCII).
+pub unsafe fn wad_name8_to_string(ptr: *const ::core::ffi::c_char) -> String {
+    let bytes = ::core::slice::from_raw_parts(ptr as *const u8, 8);
+    let len = bytes.iter().position(|&b| b == 0).unwrap_or(8);
+    String::from_utf8_lossy(&bytes[..len]).into_owned()
+}
+pub unsafe fn W_CheckNumForName(name: &str) -> ::core::ffi::c_int {
+    let name_cstring = ::std::ffi::CString::new(name).unwrap();
+    let name = name_cstring.as_ptr() as *mut ::core::ffi::c_char;
     let mut lump_p: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     let mut i: ::core::ffi::c_int = 0;
     if !lumphash.is_null() {
@@ -399,17 +408,15 @@ pub unsafe extern "C" fn W_CheckNumForName(
     }
     return -(1 as ::core::ffi::c_int);
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_GetNumForName(
-    mut name: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+pub unsafe fn W_GetNumForName(name: &str) -> ::core::ffi::c_int {
     let mut i: ::core::ffi::c_int = 0;
     i = W_CheckNumForName(name);
     if i < 0 as ::core::ffi::c_int {
+        let name_cstring = ::std::ffi::CString::new(name).unwrap();
         I_Error(
             b"W_GetNumForName: %s not found!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            name,
+            name_cstring.as_ptr(),
         );
     }
     return i;
@@ -497,9 +504,8 @@ pub unsafe extern "C" fn W_CacheLumpNum(
     }
     return result as *mut ::core::ffi::c_void;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_CacheLumpName(
-    mut name: *mut ::core::ffi::c_char,
+pub unsafe fn W_CacheLumpName(
+    name: &str,
     mut tag: ::core::ffi::c_int,
 ) -> *mut ::core::ffi::c_void {
     return W_CacheLumpNum(W_GetNumForName(name), tag);
@@ -525,8 +531,7 @@ pub unsafe extern "C" fn W_ReleaseLumpNum(mut lumpnum: ::core::ffi::c_int) {
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_ReleaseLumpName(mut name: *mut ::core::ffi::c_char) {
+pub unsafe fn W_ReleaseLumpName(name: &str) {
     W_ReleaseLumpNum(W_GetNumForName(name));
 }
 #[no_mangle]
@@ -564,27 +569,11 @@ pub unsafe extern "C" fn W_GenerateHashTable() {
         }
     }
 }
-static mut unique_lumps: [C2RustUnnamed_0; 4] = [
-    C2RustUnnamed_0 {
-        mission: doom,
-        lumpname: b"POSSA1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    },
-    C2RustUnnamed_0 {
-        mission: heretic,
-        lumpname: b"IMPXA1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    },
-    C2RustUnnamed_0 {
-        mission: hexen,
-        lumpname: b"ETTNA1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    },
-    C2RustUnnamed_0 {
-        mission: strife,
-        lumpname: b"AGRDA1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    },
+static unique_lumps: [C2RustUnnamed_0; 4] = [
+    C2RustUnnamed_0 { mission: doom, lumpname: "POSSA1" },
+    C2RustUnnamed_0 { mission: heretic, lumpname: "IMPXA1" },
+    C2RustUnnamed_0 { mission: hexen, lumpname: "ETTNA1" },
+    C2RustUnnamed_0 { mission: strife, lumpname: "AGRDA1" },
 ];
 #[no_mangle]
 pub unsafe extern "C" fn W_CheckCorrectIWAD(mut mission: GameMission_t) {

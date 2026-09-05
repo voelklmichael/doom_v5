@@ -1,3 +1,6 @@
+use crate::src::w_wad::{
+    wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
+};
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn snprintf(
@@ -17,12 +20,6 @@ extern "C" {
         dest_size: size_t,
     ) -> boolean;
     fn M_Random() -> ::core::ffi::c_int;
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpName(name: *mut ::core::ffi::c_char);
     fn G_WorldDone();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
     fn S_ChangeMusic(music_id: ::core::ffi::c_int, looping: ::core::ffi::c_int);
@@ -3889,8 +3886,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             as *mut ::core::ffi::c_char,
         &raw mut sp_secret,
     );
-    if W_CheckNumForName(
-        b"WIOBJ\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+    if W_CheckNumForName("WIOBJ",
     ) >= 0 as ::core::ffi::c_int
     {
         if netgame != 0 && deathmatch == 0 {
@@ -4050,7 +4046,10 @@ unsafe extern "C" fn WI_loadCallback(
     mut name: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
-    *variable = W_CacheLumpName(name, PU_STATIC as ::core::ffi::c_int) as *mut patch_t;
+    *variable = W_CacheLumpName(
+        &wad_name8_to_string(name),
+        PU_STATIC as ::core::ffi::c_int,
+    ) as *mut patch_t;
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_loadData() {
@@ -4081,14 +4080,10 @@ pub unsafe extern "C" fn WI_loadData() {
                 ) -> (),
         ),
     );
-    star = W_CacheLumpName(
-        b"STFST01\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    star = W_CacheLumpName("STFST01",
         PU_STATIC as ::core::ffi::c_int,
     ) as *mut patch_t;
-    bstar = W_CacheLumpName(
-        b"STFDEAD0\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    bstar = W_CacheLumpName("STFDEAD0",
         PU_STATIC as ::core::ffi::c_int,
     ) as *mut patch_t;
 }
@@ -4096,7 +4091,7 @@ unsafe extern "C" fn WI_unloadCallback(
     mut name: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
-    W_ReleaseLumpName(name);
+    W_ReleaseLumpName(&wad_name8_to_string(name));
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
 #[no_mangle]

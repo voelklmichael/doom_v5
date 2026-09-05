@@ -1,3 +1,4 @@
+use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
 extern "C" {
     fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
     fn I_ShutdownSound();
@@ -48,7 +49,6 @@ extern "C" {
         ...
     ) -> ::core::ffi::c_int;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn W_GetNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn W_LumpLength(lump: ::core::ffi::c_uint) -> ::core::ffi::c_int;
     fn W_CacheLumpNum(
         lump: ::core::ffi::c_int,
@@ -2225,7 +2225,9 @@ pub unsafe extern "C" fn S_ChangeMusic(
             b"d_%s\0" as *const u8 as *const ::core::ffi::c_char,
             (*music).name,
         );
-        (*music).lumpnum = W_GetNumForName(&raw mut namebuf as *mut ::core::ffi::c_char);
+        (*music).lumpnum = W_GetNumForName(
+            &wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char),
+        );
     }
     (*music).data = W_CacheLumpNum((*music).lumpnum, PU_STATIC as ::core::ffi::c_int);
     handle = I_RegisterSong(
