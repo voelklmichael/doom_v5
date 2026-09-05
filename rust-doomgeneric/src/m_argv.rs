@@ -1,4 +1,3 @@
-pub type boolean = ::core::ffi::c_uint;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
@@ -20,9 +19,8 @@ pub unsafe fn M_CheckParmWithArgs(
     }
     return 0 as ::core::ffi::c_int;
 }
-pub unsafe fn M_ParmExists(check: &str) -> boolean {
-    return (M_CheckParm(check) != 0 as ::core::ffi::c_int) as ::core::ffi::c_int
-        as boolean;
+pub unsafe fn M_ParmExists(check: &str) -> bool {
+    return M_CheckParm(check) != 0 as ::core::ffi::c_int;
 }
 pub unsafe fn M_CheckParm(check: &str) -> ::core::ffi::c_int {
     return M_CheckParmWithArgs(check, 0 as ::core::ffi::c_int);

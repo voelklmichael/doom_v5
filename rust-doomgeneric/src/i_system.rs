@@ -343,7 +343,7 @@ pub unsafe fn I_Error(message: &str) {
         }
         entry = (*entry).next;
     }
-    exit_gui_popup = (M_ParmExists("-nogui") == 0) as ::core::ffi::c_int as boolean;
+    exit_gui_popup = (!M_ParmExists("-nogui")) as ::core::ffi::c_int as boolean;
     if exit_gui_popup != 0 && I_ConsoleStdout() == 0 {
         ZenityErrorBox(message_cstring.as_ptr() as *mut ::core::ffi::c_char);
     }

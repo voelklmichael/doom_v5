@@ -40,16 +40,13 @@ pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
 pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-static mut go: boolean = 0 as boolean;
+static mut go: bool = false;
 static mut wipe_scr_start: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr_end: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
@@ -105,11 +102,11 @@ pub unsafe extern "C" fn wipe_doColorXForm(
     mut height: ::core::ffi::c_int,
     mut ticks: ::core::ffi::c_int,
 ) -> ::core::ffi::c_int {
-    let mut changed: boolean = 0;
+    let mut changed: bool;
     let mut w: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut e: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut newval: ::core::ffi::c_int = 0;
-    changed = false_0 as boolean;
+    changed = false;
     w = wipe_scr;
     e = wipe_scr_end;
     while w != wipe_scr.offset((width * height) as isize) {
@@ -121,7 +118,7 @@ pub unsafe extern "C" fn wipe_doColorXForm(
                 } else {
                     *w = newval as byte;
                 }
-                changed = true_0 as boolean;
+                changed = true;
             } else if (*w as ::core::ffi::c_int) < *e as ::core::ffi::c_int {
                 newval = *w as ::core::ffi::c_int + ticks;
                 if newval > *e as ::core::ffi::c_int {
@@ -129,13 +126,13 @@ pub unsafe extern "C" fn wipe_doColorXForm(
                 } else {
                     *w = newval as byte;
                 }
-                changed = true_0 as boolean;
+                changed = true;
             }
         }
         w = w.offset(1);
         e = e.offset(1);
     }
-    return (changed == 0) as ::core::ffi::c_int;
+    return (!changed) as ::core::ffi::c_int;
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_exitColorXForm(
@@ -208,7 +205,7 @@ pub unsafe extern "C" fn wipe_doMelt(
     let mut d: *mut ::core::ffi::c_short = ::core::ptr::null_mut::<
         ::core::ffi::c_short,
     >();
-    let mut done: boolean = true_0 as boolean;
+    let mut done: bool = true;
     width /= 2 as ::core::ffi::c_int;
     loop {
         let fresh0 = ticks;
@@ -221,7 +218,7 @@ pub unsafe extern "C" fn wipe_doMelt(
             if *y.offset(i as isize) < 0 as ::core::ffi::c_int {
                 let ref mut fresh1 = *y.offset(i as isize);
                 *fresh1 += 1;
-                done = false_0 as boolean;
+                done = false;
             } else if *y.offset(i as isize) < height {
                 dy = if *y.offset(i as isize) < 16 as ::core::ffi::c_int {
                     *y.offset(i as isize) + 1 as ::core::ffi::c_int
@@ -261,7 +258,7 @@ pub unsafe extern "C" fn wipe_doMelt(
                     idx += width;
                     j -= 1;
                 }
-                done = false_0 as boolean;
+                done = false;
             }
             i += 1;
         }
@@ -378,8 +375,8 @@ pub unsafe extern "C" fn wipe_ScreenWipe(
             ),
         ]
     };
-    if go == 0 {
-        go = 1 as boolean;
+    if !go {
+        go = true;
         wipe_scr = I_VideoBuffer;
         Some(
                 (*(&raw mut wipes
@@ -412,7 +409,7 @@ pub unsafe extern "C" fn wipe_ScreenWipe(
         )
         .expect("non-null function pointer")(width, height, ticks);
     if rc != 0 {
-        go = 0 as boolean;
+        go = false;
         Some(
                 (*(&raw mut wipes
                     as *mut Option<
@@ -430,5 +427,5 @@ pub unsafe extern "C" fn wipe_ScreenWipe(
             )
             .expect("non-null function pointer")(width, height, ticks);
     }
-    return (go == 0) as ::core::ffi::c_int;
+    return (!go) as ::core::ffi::c_int;
 }
