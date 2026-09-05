@@ -106,12 +106,10 @@ pub const DIR_SEPARATOR: i32 = '/' as i32;
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
 };
-#[no_mangle]
-pub unsafe extern "C" fn M_MakeDirectory(mut path: *mut ::core::ffi::c_char) {
+pub unsafe fn M_MakeDirectory(mut path: *mut ::core::ffi::c_char) {
     mkdir(path, 0o755 as __mode_t);
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_FileExists(
+pub unsafe fn M_FileExists(
     mut filename: *mut ::core::ffi::c_char,
 ) -> boolean {
     let mut fstream: *mut FILE = ::core::ptr::null_mut::<FILE>();
@@ -124,8 +122,7 @@ pub unsafe extern "C" fn M_FileExists(
         return (*__errno_location() == EISDIR) as i32 as boolean
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_FileLength(mut handle: *mut FILE) -> i64 {
+pub unsafe fn M_FileLength(mut handle: *mut FILE) -> i64 {
     let mut savedpos: i64 = 0;
     let mut length: i64 = 0;
     savedpos = ftell(handle);
@@ -179,8 +176,7 @@ pub unsafe extern "C" fn M_ReadFile(
     *buffer = buf;
     return length;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_TempFile(
+pub unsafe fn M_TempFile(
     mut s: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut tempdir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
@@ -204,8 +200,7 @@ pub unsafe extern "C" fn M_StrToInt(
         || sscanf(str, b" %d\0" as *const u8 as *const ::core::ffi::c_char, result)
             == 1 as i32) as i32 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_ExtractFileBase(
+pub unsafe fn M_ExtractFileBase(
     mut path: *mut ::core::ffi::c_char,
     mut dest: *mut ::core::ffi::c_char,
 ) {
@@ -410,8 +405,7 @@ pub unsafe extern "C" fn M_StringJoin(
     }
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_vsnprintf(
+pub unsafe fn M_vsnprintf(
     mut buf: *mut ::core::ffi::c_char,
     mut buf_len: size_t,
     mut s: *const ::core::ffi::c_char,

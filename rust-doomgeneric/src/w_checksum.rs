@@ -66,8 +66,7 @@ unsafe extern "C" fn ChecksumAddLump(
     SHA1_UpdateInt32(sha1_context, (*lump).position as u32);
     SHA1_UpdateInt32(sha1_context, (*lump).size as u32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_Checksum(mut digest: *mut byte) {
+pub unsafe fn W_Checksum(mut digest: *mut byte) {
     let mut sha1_context: sha1_context_t = sha1_context_s {
         h0: 0,
         h1: 0,

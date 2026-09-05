@@ -5,6 +5,8 @@ use crate::src::p_mobj::{actionf_t};
 use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
 };
+use crate::src::g_game::G_WorldDone;
+
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn snprintf(
@@ -24,7 +26,6 @@ extern "C" {
         dest_size: size_t,
     ) -> boolean;
     fn M_Random() -> i32;
-    fn G_WorldDone();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     fn S_ChangeMusic(music_id: i32, looping: i32);
     static mut gamemode: GameMode_t;
@@ -2605,8 +2606,7 @@ pub unsafe extern "C" fn WI_drawTime(
         V_DrawPatch(x - (*sucks).width as i32, y, sucks);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_End() {
+pub unsafe fn WI_End() {
     #[export_name = "WI_unloadData"]
     pub unsafe extern "C" fn WI_unloadData_0() {
         WI_loadUnloadData(
@@ -3426,8 +3426,7 @@ pub unsafe extern "C" fn WI_checkForAccelerate() {
         player = player.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_Ticker() {
+pub unsafe fn WI_Ticker() {
     bcnt += 1;
     if bcnt == 1 as i32 {
         if gamemode as u32
@@ -3847,8 +3846,7 @@ unsafe extern "C" fn WI_unloadCallback(
     W_ReleaseLumpName(&wad_name8_to_string(name));
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_Drawer() {
+pub unsafe fn WI_Drawer() {
     match state as i32 {
         0 => {
             if deathmatch != 0 {
@@ -3894,8 +3892,7 @@ pub unsafe extern "C" fn WI_initVariables(mut wbstartstruct: *mut wbstartstruct_
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_Start(mut wbstartstruct: *mut wbstartstruct_t) {
+pub unsafe fn WI_Start(mut wbstartstruct: *mut wbstartstruct_t) {
     WI_initVariables(wbstartstruct);
     WI_loadData();
     if deathmatch != 0 {

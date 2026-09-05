@@ -8,6 +8,9 @@ use crate::src::hu_lib::{
     HUlib_eraseIText, HUlib_eraseSText, HUlib_eraseTextLine, HUlib_initIText, HUlib_initSText,
     HUlib_initTextLine, HUlib_keyInIText, HUlib_resetIText,
 };
+use crate::src::m_controls::key_message_refresh;
+use crate::src::m_controls::key_multi_msg;
+
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -15,8 +18,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    static mut key_message_refresh: i32;
-    static mut key_multi_msg: i32;
     static mut key_multi_msgplayer: [i32; 8];
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
@@ -1664,7 +1665,6 @@ pub const HUSTR_PLRRED: [::core::ffi::c_char; 6] = unsafe {
 };
 pub const HU_TITLEX: i32 = 0 as i32;
 pub const HU_INPUTX: i32 = HU_MSGX;
-#[no_mangle]
 pub static mut chat_macros: [*mut ::core::ffi::c_char; 10] = [
     HUSTR_CHATMACRO0.as_ptr() as *mut ::core::ffi::c_char,
     HUSTR_CHATMACRO1.as_ptr() as *mut ::core::ffi::c_char,
@@ -1677,7 +1677,6 @@ pub static mut chat_macros: [*mut ::core::ffi::c_char; 10] = [
     HUSTR_CHATMACRO8.as_ptr() as *mut ::core::ffi::c_char,
     HUSTR_CHATMACRO9.as_ptr() as *mut ::core::ffi::c_char,
 ];
-#[no_mangle]
 pub static mut player_names: [*mut ::core::ffi::c_char; 4] = [
     HUSTR_PLRGREEN.as_ptr() as *mut ::core::ffi::c_char,
     HUSTR_PLRINDIGO.as_ptr() as *mut ::core::ffi::c_char,
@@ -1698,7 +1697,6 @@ static mut w_title: hu_textline_t = hu_textline_t {
     l: String::new(),
     needsupdate: 0,
 };
-#[no_mangle]
 pub static mut chat_on: bool = false;
 static mut w_chat: hu_itext_t = hu_itext_t {
     l: hu_textline_t {
@@ -1737,7 +1735,6 @@ static mut w_inputbuffer: [hu_itext_t; 4] = [
     new_hu_itext_t(),
 ];
 static mut message_on: bool = false;
-#[no_mangle]
 pub static mut message_dontfuckwithme: bool = false;
 static mut message_nottobefuckedwith: bool = false;
 const fn new_hu_textline_t() -> hu_textline_t {
@@ -1936,8 +1933,7 @@ pub unsafe extern "C" fn HU_Init() {
 pub unsafe extern "C" fn HU_Stop() {
     headsupactive = false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Start() {
+pub unsafe fn HU_Start() {
     let mut i: i32 = 0;
     let mut s: &str = "";
     if headsupactive {
@@ -2030,22 +2026,19 @@ pub unsafe extern "C" fn HU_Start() {
     }
     headsupactive = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Drawer() {
+pub unsafe fn HU_Drawer() {
     HUlib_drawSText(&raw mut w_message);
     HUlib_drawIText(&raw mut w_chat);
     if automapactive {
         HUlib_drawTextLine(&raw mut w_title, false_0 as boolean);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Erase() {
+pub unsafe fn HU_Erase() {
     HUlib_eraseSText(&raw mut w_message);
     HUlib_eraseIText(&raw mut w_chat);
     HUlib_eraseTextLine(&raw mut w_title);
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Ticker() {
+pub unsafe fn HU_Ticker() {
     let mut i: i32 = 0;
     let mut rc: i32 = 0;
     let mut c: ::core::ffi::c_char = 0;
@@ -2148,8 +2141,7 @@ pub unsafe extern "C" fn HU_queueChatChar(mut c: ::core::ffi::c_char) {
         head = head + 1 as i32 & QUEUESIZE - 1 as i32;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_dequeueChatChar() -> ::core::ffi::c_char {
+pub unsafe fn HU_dequeueChatChar() -> ::core::ffi::c_char {
     let mut c: ::core::ffi::c_char = 0;
     if head != tail {
         c = chatchars[tail as usize];
@@ -2159,8 +2151,7 @@ pub unsafe extern "C" fn HU_dequeueChatChar() -> ::core::ffi::c_char {
     }
     return c;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn HU_Responder(mut ev: *mut event_t) -> boolean {
     static mut lastmessage: [::core::ffi::c_char; 81] = [0; 81];
     let mut macromessage: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,

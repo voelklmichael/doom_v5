@@ -1,5 +1,7 @@
 use crate::src::p_spec::{ceiling_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
+use crate::src::p_spec::P_FindHighestCeilingSurrounding;
+
 extern "C" {
     fn Z_Malloc(
         size: i32,
@@ -9,7 +11,6 @@ extern "C" {
     static mut sectors: *mut sector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_FindHighestCeilingSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindSectorFromLineTag(
         line: *mut line_t,
         start: i32,
@@ -1662,8 +1663,7 @@ pub unsafe extern "C" fn EV_DoCeiling(
     }
     return rtn;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_AddActiveCeiling(mut c: *mut ceiling_t) {
+pub unsafe fn P_AddActiveCeiling(mut c: *mut ceiling_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXCEILINGS {
@@ -1712,8 +1712,7 @@ pub unsafe extern "C" fn P_ActivateInStasisCeiling(mut line: *mut line_t) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_CeilingCrushStop(
+pub unsafe fn EV_CeilingCrushStop(
     mut line: *mut line_t,
 ) -> i32 {
     let mut i: i32 = 0;

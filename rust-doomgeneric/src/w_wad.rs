@@ -1,5 +1,12 @@
 use crate::src::w_file::wad_file_t;
 use crate::src::i_system::I_Error;
+use crate::src::d_mode::D_GameMissionString;
+use crate::src::d_iwad::D_SuggestGameName;
+use crate::src::i_video::I_BeginRead;
+use crate::src::i_video::I_EndRead;
+use crate::src::m_misc::M_ExtractFileBase;
+use crate::src::w_file::W_OpenFile;
+
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn toupper(__c: i32) -> i32;
@@ -36,14 +43,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
     ) -> i32;
-    fn D_GameMissionString(mission: GameMission_t) -> *mut ::core::ffi::c_char;
-    fn D_SuggestGameName(
-        mission: GameMission_t,
-        mode: GameMode_t,
-    ) -> *mut ::core::ffi::c_char;
-    fn I_BeginRead();
-    fn I_EndRead();
-    fn M_ExtractFileBase(path: *mut ::core::ffi::c_char, dest: *mut ::core::ffi::c_char);
     fn Z_Malloc(
         size: i32,
         tag: i32,
@@ -57,7 +56,6 @@ extern "C" {
         line: i32,
     );
     fn Z_ChangeUser(ptr: *mut ::core::ffi::c_void, user: *mut *mut ::core::ffi::c_void);
-    fn W_OpenFile(path: *mut ::core::ffi::c_char) -> *mut wad_file_t;
     fn W_Read(
         wad: *mut wad_file_t,
         offset: u32,
@@ -140,8 +138,7 @@ pub static mut lumpinfo: *mut lumpinfo_t = ::core::ptr::null::<lumpinfo_t>()
 pub static mut numlumps: u32 = 0 as u32;
 static mut lumphash: *mut *mut lumpinfo_t = ::core::ptr::null::<*mut lumpinfo_t>()
     as *mut *mut lumpinfo_t;
-#[no_mangle]
-pub unsafe extern "C" fn W_LumpNameHash(
+pub unsafe fn W_LumpNameHash(
     mut s: *const ::core::ffi::c_char,
 ) -> u32 {
     let mut result: u32 = 5381 as u32;
@@ -480,8 +477,7 @@ pub unsafe extern "C" fn W_ReleaseLumpNum(mut lumpnum: i32) {
 pub unsafe fn W_ReleaseLumpName(name: &str) {
     W_ReleaseLumpNum(W_GetNumForName(name));
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_GenerateHashTable() {
+pub unsafe fn W_GenerateHashTable() {
     let mut i: u32 = 0;
     if !lumphash.is_null() {
         Z_Free(lumphash as *mut ::core::ffi::c_void);
@@ -521,8 +517,7 @@ static unique_lumps: [C2RustUnnamed_0; 4] = [
     C2RustUnnamed_0 { mission: hexen, lumpname: "ETTNA1" },
     C2RustUnnamed_0 { mission: strife, lumpname: "AGRDA1" },
 ];
-#[no_mangle]
-pub unsafe extern "C" fn W_CheckCorrectIWAD(mut mission: GameMission_t) {
+pub unsafe fn W_CheckCorrectIWAD(mut mission: GameMission_t) {
     let mut i: i32 = 0;
     let mut lumpnum: i32 = 0;
     i = 0 as i32;

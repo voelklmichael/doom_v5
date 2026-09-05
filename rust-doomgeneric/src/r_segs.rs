@@ -1,7 +1,25 @@
 use crate::src::r_data::column_t;
-use crate::src::r_defs::{drawseg_t, seg_t, side_t, visplane_t};
-use crate::src::p_mobj::{sector_t, line_t, actionf_t};
+use crate::src::r_defs::{drawseg_t, visplane_t};
+use crate::src::p_mobj::{actionf_t};
 use crate::src::i_system::I_Error;
+use crate::src::r_main::R_PointToDist;
+use crate::src::r_main::R_ScaleFromGlobalAngle;
+use crate::src::r_bsp::curline;
+use crate::src::r_bsp::sidedef;
+use crate::src::r_bsp::linedef;
+use crate::src::r_bsp::frontsector;
+use crate::src::r_bsp::backsector;
+use crate::src::r_plane::lastopening;
+use crate::src::r_plane::floorclip;
+use crate::src::r_plane::ceilingclip;
+use crate::src::r_plane::R_CheckPlane;
+use crate::src::r_things::negonearray;
+use crate::src::r_things::mfloorclip;
+use crate::src::r_things::mceilingclip;
+use crate::src::r_things::spryscale;
+use crate::src::r_things::sprtopscreen;
+use crate::src::r_things::R_DrawMaskedColumn;
+
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn memcpy(
@@ -28,30 +46,9 @@ extern "C" {
     static mut extralight: i32;
     static mut fixedcolormap: *mut lighttable_t;
     static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
-    fn R_PointToDist(x: fixed_t, y: fixed_t) -> fixed_t;
-    fn R_ScaleFromGlobalAngle(visangle: angle_t) -> fixed_t;
-    static mut curline: *mut seg_t;
-    static mut sidedef: *mut side_t;
-    static mut linedef: *mut line_t;
-    static mut frontsector: *mut sector_t;
-    static mut backsector: *mut sector_t;
     static mut drawsegs: [drawseg_t; 256];
     static mut ds_p: *mut drawseg_t;
-    static mut lastopening: *mut i16;
-    static mut floorclip: [i16; 320];
-    static mut ceilingclip: [i16; 320];
-    fn R_CheckPlane(
-        pl: *mut visplane_t,
-        start: i32,
-        stop: i32,
-    ) -> *mut visplane_t;
-    static mut negonearray: [i16; 320];
     static mut screenheightarray: [i16; 320];
-    static mut mfloorclip: *mut i16;
-    static mut mceilingclip: *mut i16;
-    static mut spryscale: fixed_t;
-    static mut sprtopscreen: fixed_t;
-    fn R_DrawMaskedColumn(column: *mut column_t);
     static mut dc_colormap: *mut lighttable_t;
     static mut dc_x: i32;
     static mut dc_yl: i32;
@@ -1371,9 +1368,7 @@ pub static mut toptexture: i32 = 0;
 pub static mut bottomtexture: i32 = 0;
 #[no_mangle]
 pub static mut midtexture: i32 = 0;
-#[no_mangle]
 pub static mut rw_normalangle: angle_t = 0;
-#[no_mangle]
 pub static mut rw_angle1: i32 = 0;
 #[no_mangle]
 pub static mut rw_x: i32 = 0;
@@ -1383,7 +1378,6 @@ pub static mut rw_stopx: i32 = 0;
 pub static mut rw_centerangle: angle_t = 0;
 #[no_mangle]
 pub static mut rw_offset: fixed_t = 0;
-#[no_mangle]
 pub static mut rw_distance: fixed_t = 0;
 #[no_mangle]
 pub static mut rw_scale: fixed_t = 0;
@@ -1419,7 +1413,6 @@ pub static mut topstep: fixed_t = 0;
 pub static mut bottomfrac: fixed_t = 0;
 #[no_mangle]
 pub static mut bottomstep: fixed_t = 0;
-#[no_mangle]
 pub static mut walllights: *mut *mut lighttable_t = ::core::ptr::null::<
     *mut lighttable_t,
 >() as *mut *mut lighttable_t;
@@ -1427,8 +1420,7 @@ pub static mut walllights: *mut *mut lighttable_t = ::core::ptr::null::<
 pub static mut maskedtexturecol: *mut i16 = ::core::ptr::null::<
     i16,
 >() as *mut i16;
-#[no_mangle]
-pub unsafe extern "C" fn R_RenderMaskedSegRange(
+pub unsafe fn R_RenderMaskedSegRange(
     mut ds: *mut drawseg_t,
     mut x1: i32,
     mut x2: i32,
@@ -1650,8 +1642,7 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
         rw_x += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_StoreWallRange(
+pub unsafe fn R_StoreWallRange(
     mut start: i32,
     mut stop: i32,
 ) {

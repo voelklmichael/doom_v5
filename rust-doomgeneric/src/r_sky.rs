@@ -4,9 +4,7 @@ pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub static mut skyflatnum: i32 = 0;
 #[no_mangle]
 pub static mut skytexture: i32 = 0;
-#[no_mangle]
 pub static mut skytexturemid: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_InitSkyMap() {
+pub unsafe fn R_InitSkyMap() {
     skytexturemid = 100 as i32 * FRACUNIT;
 }

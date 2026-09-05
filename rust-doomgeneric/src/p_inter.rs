@@ -3,6 +3,9 @@ use crate::src::p_mobj::{state_t, actionf_t};
 use crate::src::d_player::{player_t, PST_DEAD};
 use crate::src::p_mobj::{mobj_s, mobj_t};
 use crate::src::i_system::I_Error;
+use crate::src::i_system::I_Tactile;
+use crate::src::p_pspr::P_DropWeapon;
+
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
@@ -17,14 +20,8 @@ extern "C" {
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
     fn P_Random() -> i32;
-    fn I_Tactile(
-        on: i32,
-        off: i32,
-        total: i32,
-    );
     fn AM_Stop();
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_DropWeapon(player: *mut player_t);
     fn P_SpawnMobj(
         x: fixed_t,
         y: fixed_t,
@@ -1532,7 +1529,6 @@ pub const MAXHEALTH: i32 = 100 as i32;
 pub const BASETHRESHOLD: i32 = 100 as i32;
 pub const ONFLOORZ: i32 = INT_MIN;
 pub const BONUSADD: i32 = 6 as i32;
-#[no_mangle]
 pub static mut maxammo: [i32; 4] = [
     200 as i32,
     50 as i32,
@@ -1734,8 +1730,7 @@ pub unsafe extern "C" fn P_GiveCard(mut player: *mut player_t, mut card: card_t)
     (*player).bonuscount = BONUSADD;
     (*player).cards[card as usize] = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_GivePower(
+pub unsafe fn P_GivePower(
     mut player: *mut player_t,
     mut power: i32,
 ) -> boolean {
@@ -1767,8 +1762,7 @@ pub unsafe extern "C" fn P_GivePower(
     (*player).powers[power as usize] = 1 as i32;
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_TouchSpecialThing(
+pub unsafe fn P_TouchSpecialThing(
     mut special: *mut mobj_t,
     mut toucher: *mut mobj_t,
 ) {

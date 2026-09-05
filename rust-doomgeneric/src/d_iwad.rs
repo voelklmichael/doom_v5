@@ -205,15 +205,13 @@ pub unsafe extern "C" fn D_FindWADByName(
     }
     ::core::ptr::null_mut::<::core::ffi::c_char>()
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_TryFindWADByName(
+pub unsafe fn D_TryFindWADByName(
     mut filename: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let result = D_FindWADByName(filename);
     if !result.is_null() { result } else { filename }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_FindIWAD(
+pub unsafe fn D_FindIWAD(
     mut mask: i32,
     mut mission: *mut GameMission_t,
 ) -> *mut ::core::ffi::c_char {
@@ -264,8 +262,7 @@ pub unsafe extern "C" fn D_FindAllIWADs(
     result.push(::core::ptr::null());
     Box::leak(result.into_boxed_slice()).as_mut_ptr()
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_SaveGameIWADName(
+pub unsafe fn D_SaveGameIWADName(
     mut gamemission: GameMission_t,
 ) -> *mut ::core::ffi::c_char {
     for iwad in iwads.iter() {
@@ -287,8 +284,7 @@ pub unsafe extern "C" fn D_SuggestIWADName(
     }
     ::std::ffi::CString::new("unknown.wad").unwrap().into_raw()
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_SuggestGameName(
+pub unsafe fn D_SuggestGameName(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
 ) -> *mut ::core::ffi::c_char {

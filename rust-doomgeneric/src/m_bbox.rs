@@ -4,8 +4,7 @@ pub const BOXRIGHT: C2RustUnnamed = 3;
 pub const BOXLEFT: C2RustUnnamed = 2;
 pub const BOXBOTTOM: C2RustUnnamed = 1;
 pub const BOXTOP: C2RustUnnamed = 0;
-#[no_mangle]
-pub unsafe extern "C" fn M_ClearBox(mut box_0: *mut fixed_t) {
+pub unsafe fn M_ClearBox(mut box_0: *mut fixed_t) {
     let ref mut fresh0 = *box_0.offset(BOXRIGHT as i32 as isize);
     *fresh0 = INT_MIN as fixed_t;
     *box_0.offset(BOXTOP as i32 as isize) = *fresh0;

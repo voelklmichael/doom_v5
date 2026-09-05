@@ -1,5 +1,12 @@
 use crate::src::p_mobj::{mapthing_t, subsector_s, sector_t, line_t, subsector_t, actionf_t};
 use crate::src::p_mobj::{mobj_s, mobj_t};
+use crate::src::p_setup::blockmaplump;
+use crate::src::p_setup::blockmap;
+use crate::src::p_setup::bmapwidth;
+use crate::src::p_setup::bmapheight;
+use crate::src::p_setup::blocklinks;
+use crate::src::p_pspr::bulletslope;
+
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
@@ -8,14 +15,8 @@ extern "C" {
     static mut lines: *mut line_t;
     static mut validcount: i32;
     fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
-    static mut blockmaplump: *mut i16;
-    static mut blockmap: *mut i16;
-    static mut bmapwidth: i32;
-    static mut bmapheight: i32;
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
-    static mut blocklinks: *mut *mut mobj_t;
-    static mut bulletslope: fixed_t;
 }
 pub type __uint8_t = u8;
 pub type fixed_t = i32;
@@ -1377,8 +1378,7 @@ pub unsafe extern "C" fn P_AproxDistance(mut dx: fixed_t, mut dy: fixed_t) -> fi
     }
     return dx + dy - (dy >> 1 as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_PointOnLineSide(
+pub unsafe fn P_PointOnLineSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut line: *mut line_t,
@@ -1408,8 +1408,7 @@ pub unsafe extern "C" fn P_PointOnLineSide(
     }
     return 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_BoxOnLineSide(
+pub unsafe fn P_BoxOnLineSide(
     mut tmbox: *mut fixed_t,
     mut ld: *mut line_t,
 ) -> i32 {
@@ -1539,13 +1538,10 @@ pub unsafe extern "C" fn P_InterceptVector(
     frac = FixedDiv(num, den);
     return frac;
 }
-#[no_mangle]
 pub static mut opentop: fixed_t = 0;
-#[no_mangle]
 pub static mut openbottom: fixed_t = 0;
 #[no_mangle]
 pub static mut openrange: fixed_t = 0;
-#[no_mangle]
 pub static mut lowfloor: fixed_t = 0;
 #[no_mangle]
 pub unsafe extern "C" fn P_LineOpening(mut linedef: *mut line_t) {
@@ -1644,8 +1640,7 @@ pub unsafe extern "C" fn P_SetThingPosition(mut thing: *mut mobj_t) {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_BlockLinesIterator(
+pub unsafe fn P_BlockLinesIterator(
     mut x: i32,
     mut y: i32,
     mut func: Option<unsafe extern "C" fn(*mut line_t) -> boolean>,
@@ -1707,7 +1702,6 @@ pub static mut intercepts: [intercept_t; 189] = [intercept_t {
 #[no_mangle]
 pub static mut intercept_p: *mut intercept_t = ::core::ptr::null::<intercept_t>()
     as *mut intercept_t;
-#[no_mangle]
 pub static mut trace: divline_t = divline_t {
     x: 0,
     y: 0,
@@ -2030,8 +2024,7 @@ unsafe extern "C" fn InterceptsOverrun(
         (*intercept).d.thing as i32,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_PathTraverse(
+pub unsafe fn P_PathTraverse(
     mut x1: fixed_t,
     mut y1: fixed_t,
     mut x2: fixed_t,

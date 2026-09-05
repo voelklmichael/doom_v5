@@ -1809,8 +1809,7 @@ static mut textscreens: [textscreen_t; 22] = [
 pub static mut finaletext: &str = "";
 #[no_mangle]
 pub static mut finaleflat: &str = "";
-#[no_mangle]
-pub unsafe extern "C" fn F_StartFinale() {
+pub unsafe fn F_StartFinale() {
     let mut i: size_t = 0;
     gameaction = ga_nothing;
     gamestate = GS_FINALE;
@@ -1886,8 +1885,7 @@ pub unsafe extern "C" fn F_StartFinale() {
     finalestage = F_STAGE_TEXT;
     finalecount = 0 as u32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_Responder(mut event: *mut event_t) -> boolean {
+pub unsafe fn F_Responder(mut event: *mut event_t) -> boolean {
     if finalestage as u32
         == F_STAGE_CAST as i32 as u32
     {
@@ -1895,8 +1893,7 @@ pub unsafe extern "C" fn F_Responder(mut event: *mut event_t) -> boolean {
     }
     return false_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_Ticker() {
+pub unsafe fn F_Ticker() {
     let mut i: size_t = 0;
     if gamemode as u32
         == commercial as i32 as u32
@@ -2594,8 +2591,7 @@ unsafe extern "C" fn F_ArtScreenDrawer() {
         );
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_Drawer() {
+pub unsafe fn F_Drawer() {
     match finalestage as u32 {
         2 => {
             F_CastDrawer();

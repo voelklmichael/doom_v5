@@ -6,6 +6,23 @@ use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::w_wad::{wad_name8_to_string, W_CheckNumForName};
+use crate::src::r_data::R_CheckTextureNumForName;
+use crate::src::p_lights::P_SpawnFireFlicker;
+use crate::src::p_lights::P_SpawnLightFlash;
+use crate::src::p_lights::P_SpawnStrobeFlash;
+use crate::src::p_lights::EV_StartLightStrobing;
+use crate::src::p_lights::EV_TurnTagLightsOff;
+use crate::src::p_lights::P_SpawnGlowingLight;
+use crate::src::p_switch::buttonlist;
+use crate::src::p_switch::P_ChangeSwitchTexture;
+use crate::src::p_plats::activeplats;
+use crate::src::p_plats::EV_StopPlat;
+use crate::src::p_doors::P_SpawnDoorCloseIn30;
+use crate::src::p_doors::P_SpawnDoorRaiseIn5Mins;
+use crate::src::p_ceilng::EV_CeilingCrushStop;
+use crate::src::p_telept::EV_Teleport;
+use crate::src::r_data::numflats;
+
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -41,7 +58,6 @@ extern "C" {
     static mut sides: *mut side_t;
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
-    fn R_CheckTextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_DamageMobj(
         target: *mut mobj_t,
@@ -49,40 +65,18 @@ extern "C" {
         source: *mut mobj_t,
         damage: i32,
     );
-    fn P_SpawnFireFlicker(sector: *mut sector_t);
-    fn P_SpawnLightFlash(sector: *mut sector_t);
-    fn P_SpawnStrobeFlash(
-        sector: *mut sector_t,
-        fastOrSlow: i32,
-        inSync: i32,
-    );
-    fn EV_StartLightStrobing(line: *mut line_t);
-    fn EV_TurnTagLightsOff(line: *mut line_t);
     fn EV_LightTurnOn(line: *mut line_t, bright: i32);
-    fn P_SpawnGlowingLight(sector: *mut sector_t);
-    static mut buttonlist: [button_t; 16];
-    fn P_ChangeSwitchTexture(line: *mut line_t, useAgain: i32);
-    static mut activeplats: [*mut plat_t; 30];
     fn EV_DoPlat(
         line: *mut line_t,
         type_0: plattype_e,
         amount: i32,
     ) -> i32;
-    fn EV_StopPlat(line: *mut line_t);
     fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
-    fn P_SpawnDoorCloseIn30(sec: *mut sector_t);
-    fn P_SpawnDoorRaiseIn5Mins(sec: *mut sector_t, secnum: i32);
     static mut activeceilings: [*mut ceiling_t; 30];
     fn EV_DoCeiling(line: *mut line_t, type_0: ceiling_e) -> i32;
-    fn EV_CeilingCrushStop(line: *mut line_t) -> i32;
     fn EV_BuildStairs(line: *mut line_t, type_0: stair_e) -> i32;
     fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
     fn T_MoveFloor(floor: *mut floormove_t);
-    fn EV_Teleport(
-        line: *mut line_t,
-        side: i32,
-        thing: *mut mobj_t,
-    ) -> i32;
     fn G_ExitLevel();
     fn G_SecretExitLevel();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
@@ -1973,8 +1967,7 @@ pub unsafe extern "C" fn P_InitPicAnims() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn getSide(
+pub unsafe fn getSide(
     mut currentSector: i32,
     mut line: i32,
     mut side: i32,
@@ -1988,8 +1981,7 @@ pub unsafe extern "C" fn getSide(
                 .offset(side as isize) as isize,
         ) as *mut side_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn getSector(
+pub unsafe fn getSector(
     mut currentSector: i32,
     mut line: i32,
     mut side: i32,
@@ -2001,16 +1993,14 @@ pub unsafe extern "C" fn getSector(
         ))
         .sector;
 }
-#[no_mangle]
-pub unsafe extern "C" fn twoSided(
+pub unsafe fn twoSided(
     mut sector: i32,
     mut line: i32,
 ) -> i32 {
     return (**(*sectors.offset(sector as isize)).lines.offset(line as isize)).flags
         as i32 & ML_TWOSIDED;
 }
-#[no_mangle]
-pub unsafe extern "C" fn getNextSector(
+pub unsafe fn getNextSector(
     mut line: *mut line_t,
     mut sec: *mut sector_t,
 ) -> *mut sector_t {
@@ -2130,8 +2120,7 @@ pub unsafe extern "C" fn P_FindLowestCeilingSurrounding(
     }
     return height;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindHighestCeilingSurrounding(
+pub unsafe fn P_FindHighestCeilingSurrounding(
     mut sec: *mut sector_t,
 ) -> fixed_t {
     let mut i: i32 = 0;
@@ -2168,8 +2157,7 @@ pub unsafe extern "C" fn P_FindSectorFromLineTag(
     }
     return -(1 as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindMinSurroundingLight(
+pub unsafe fn P_FindMinSurroundingLight(
     mut sector: *mut sector_t,
     mut max: i32,
 ) -> i32 {
@@ -2191,8 +2179,7 @@ pub unsafe extern "C" fn P_FindMinSurroundingLight(
     }
     return min;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CrossSpecialLine(
+pub unsafe fn P_CrossSpecialLine(
     mut linenum: i32,
     mut side: i32,
     mut thing: *mut mobj_t,
@@ -2479,8 +2466,7 @@ pub unsafe extern "C" fn P_CrossSpecialLine(
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ShootSpecialLine(
+pub unsafe fn P_ShootSpecialLine(
     mut thing: *mut mobj_t,
     mut line: *mut line_t,
 ) {
@@ -2589,8 +2575,7 @@ pub unsafe extern "C" fn P_PlayerInSpecialSector(mut player: *mut player_t) {
 pub static mut levelTimer: bool = false;
 #[no_mangle]
 pub static mut levelTimeCount: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn P_UpdateSpecials() {
+pub unsafe fn P_UpdateSpecials() {
     let mut anim: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
     let mut pic: i32 = 0;
     let mut i: i32 = 0;
@@ -2691,9 +2676,6 @@ unsafe extern "C" fn DonutOverrun(
     static mut first: i32 = 1 as i32;
     static mut tmp_s3_floorheight: i32 = 0;
     static mut tmp_s3_floorpic: i32 = 0;
-    extern "C" {
-        static mut numflats: i32;
-    }
     if first != 0 {
         let mut p: i32 = 0;
         first = 0 as i32;
@@ -2831,8 +2813,7 @@ pub static mut numlinespecials: i16 = 0;
 #[no_mangle]
 pub static mut linespeciallist: [*mut line_t; 64] = [::core::ptr::null::<line_t>()
     as *mut line_t; 64];
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnSpecials() {
+pub unsafe fn P_SpawnSpecials() {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: i32 = 0;
     if timelimit > 0 as i32 && deathmatch != 0 {

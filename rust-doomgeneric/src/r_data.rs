@@ -8,6 +8,11 @@ use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_GetNumForName,
     W_ReleaseLumpName,
 };
+use crate::src::i_system::I_ConsoleStdout;
+use crate::src::w_wad::W_LumpNameHash;
+use crate::src::r_things::numsprites;
+use crate::src::p_setup::numsides;
+
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn strncasecmp(
@@ -15,7 +20,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
     ) -> i32;
-    fn I_ConsoleStdout() -> boolean;
     fn Z_Malloc(
         size: i32,
         tag: i32,
@@ -34,7 +38,6 @@ extern "C" {
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn W_LumpNameHash(s: *const ::core::ffi::c_char) -> u32;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
@@ -50,11 +53,9 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    static mut numsprites: i32;
     static mut sprites: *mut spritedef_t;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut numsides: i32;
     static mut sides: *mut side_t;
     static mut thinkercap: thinker_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -1395,11 +1396,9 @@ pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
 pub const FRACBITS: i32 = 16 as i32;
-#[no_mangle]
 pub static mut firstflat: i32 = 0;
 #[no_mangle]
 pub static mut lastflat: i32 = 0;
-#[no_mangle]
 pub static mut numflats: i32 = 0;
 #[no_mangle]
 pub static mut firstpatch: i32 = 0;
@@ -1409,7 +1408,6 @@ pub static mut lastpatch: i32 = 0;
 pub static mut numpatches: i32 = 0;
 #[no_mangle]
 pub static mut firstspritelump: i32 = 0;
-#[no_mangle]
 pub static mut lastspritelump: i32 = 0;
 #[no_mangle]
 pub static mut numspritelumps: i32 = 0;
@@ -1452,13 +1450,10 @@ pub static mut flattranslation: *mut i32 = ::core::ptr::null::<
 pub static mut texturetranslation: *mut i32 = ::core::ptr::null::<
     i32,
 >() as *mut i32;
-#[no_mangle]
 pub static mut spritewidth: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
-#[no_mangle]
 pub static mut spriteoffset: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
-#[no_mangle]
 pub static mut spritetopoffset: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
 #[no_mangle]
@@ -2059,8 +2054,7 @@ pub unsafe extern "C" fn R_InitColormaps() {
     colormaps = W_CacheLumpNum(lump, PU_STATIC as i32)
         as *mut lighttable_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitData() {
+pub unsafe fn R_InitData() {
     R_InitTextures();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitFlats();
@@ -2090,8 +2084,7 @@ pub unsafe extern "C" fn R_FlatNumForName(
     }
     return i - firstflat;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_CheckTextureNumForName(
+pub unsafe fn R_CheckTextureNumForName(
     mut name: *mut ::core::ffi::c_char,
 ) -> i32 {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
@@ -2133,8 +2126,7 @@ pub static mut flatmemory: i32 = 0;
 pub static mut texturememory: i32 = 0;
 #[no_mangle]
 pub static mut spritememory: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_PrecacheLevel() {
+pub unsafe fn R_PrecacheLevel() {
     let mut flatpresent: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();

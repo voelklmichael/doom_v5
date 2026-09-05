@@ -1,6 +1,8 @@
 use crate::src::i_system::I_Error;
 use ::c2rust_bitfields;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::i_input::I_GetEvent;
+
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn memcpy(
@@ -28,7 +30,6 @@ extern "C" {
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn DG_DrawFrame();
     fn DG_SetWindowTitle(title: *const ::core::ffi::c_char);
-    fn I_GetEvent();
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -119,20 +120,15 @@ static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
 };
 #[no_mangle]
 pub static mut fb_scaling: i32 = 1 as i32;
-#[no_mangle]
 pub static mut usemouse: i32 = 0 as i32;
 static mut colors: [color; 256] = [color { b_g_r_a: [0; 4] }; 256];
 #[no_mangle]
 pub static mut I_VideoBuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut screensaver_mode: bool = false;
-#[no_mangle]
 pub static mut screenvisible: bool = false;
-#[no_mangle]
 pub static mut mouse_acceleration: f32 = 2.0f32;
-#[no_mangle]
 pub static mut mouse_threshold: i32 = 10 as i32;
-#[no_mangle]
 pub static mut usegamma: i32 = 0 as i32;
 static mut rgb565_palette: [uint16_t; 256] = [0; 256];
 #[no_mangle]
@@ -331,16 +327,12 @@ pub unsafe extern "C" fn I_InitGraphics() {
 pub unsafe extern "C" fn I_ShutdownGraphics() {
     Z_Free(I_VideoBuffer as *mut ::core::ffi::c_void);
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_StartFrame() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_StartTic() {
+pub unsafe fn I_StartFrame() {}
+pub unsafe fn I_StartTic() {
     I_GetEvent();
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_UpdateNoBlit() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_FinishUpdate() {
+pub unsafe fn I_UpdateNoBlit() {}
+pub unsafe fn I_FinishUpdate() {
     let mut y: i32 = 0;
     let mut x_offset: i32 = 0;
     let mut y_offset: i32 = 0;
@@ -399,8 +391,7 @@ pub unsafe extern "C" fn I_FinishUpdate() {
     }
     DG_DrawFrame();
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ReadScreen(mut scr: *mut byte) {
+pub unsafe fn I_ReadScreen(mut scr: *mut byte) {
     memcpy(
         scr as *mut ::core::ffi::c_void,
         I_VideoBuffer as *const ::core::ffi::c_void,
@@ -472,26 +463,17 @@ pub unsafe extern "C" fn I_GetPaletteIndex(
     }
     return best;
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_BeginRead() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_EndRead() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_SetWindowTitle(mut title: *mut ::core::ffi::c_char) {
+pub unsafe fn I_BeginRead() {}
+pub unsafe fn I_EndRead() {}
+pub unsafe fn I_SetWindowTitle(mut title: *mut ::core::ffi::c_char) {
     DG_SetWindowTitle(title);
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_GraphicsCheckCommandLine() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_SetGrabMouseCallback(mut func: grabmouse_callback_t) {}
-#[no_mangle]
-pub unsafe extern "C" fn I_EnableLoadingDisk() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_BindVideoVariables() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_DisplayFPSDots(mut dots_on: bool) {}
-#[no_mangle]
-pub unsafe extern "C" fn I_CheckIsScreensaver() {}
+pub unsafe fn I_GraphicsCheckCommandLine() {}
+pub unsafe fn I_SetGrabMouseCallback(mut func: grabmouse_callback_t) {}
+pub unsafe fn I_EnableLoadingDisk() {}
+pub unsafe fn I_BindVideoVariables() {}
+pub unsafe fn I_DisplayFPSDots(mut dots_on: bool) {}
+pub unsafe fn I_CheckIsScreensaver() {}
 pub const __INT_MAX__: i32 = 2147483647 as i32;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;

@@ -1,5 +1,15 @@
-use crate::src::i_system::I_Error;
 use ::libc;
+use crate::src::i_system::I_Error;
+use crate::src::p_pspr::P_SetupPsprites;
+use crate::src::p_map::ceilingline;
+use crate::src::p_map::P_SlideMove;
+use crate::src::st_stuff::ST_Start;
+use crate::src::hu_stuff::HU_Start;
+use crate::src::s_sound::S_StopSound;
+use crate::src::g_game::respawnmonsters;
+use crate::src::g_game::G_PlayerReborn;
+use crate::src::p_map::attackrange;
+
 extern "C" {
     fn Z_Malloc(
         size: i32,
@@ -26,24 +36,17 @@ extern "C" {
     fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_SetupPsprites(curplayer: *mut player_t);
     fn P_AproxDistance(dx: fixed_t, dy: fixed_t) -> fixed_t;
     fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
-    static mut ceilingline: *mut line_t;
     fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
     fn P_TryMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    fn P_SlideMove(mo: *mut mobj_t);
     static mut linetarget: *mut mobj_t;
     fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
-    fn ST_Start();
-    fn HU_Start();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    fn S_StopSound(origin: *mut mobj_t);
     static mut nomonsters: bool;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
-    static mut respawnmonsters: bool;
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut consoleplayer: i32;
@@ -56,8 +59,6 @@ extern "C" {
     static mut deathmatch_p: *mut mapthing_t;
     static mut playerstarts: [mapthing_t; 4];
     static mut skyflatnum: i32;
-    fn G_PlayerReborn(player: i32);
-    static mut attackrange: fixed_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -2125,9 +2126,7 @@ pub static mut itemrespawnque: [mapthing_t; 128] = [mapthing_t {
 }; 128];
 #[no_mangle]
 pub static mut itemrespawntime: [i32; 128] = [0; 128];
-#[no_mangle]
 pub static mut iquehead: i32 = 0;
-#[no_mangle]
 pub static mut iquetail: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn P_RemoveMobj(mut mobj: *mut mobj_t) {
@@ -2151,8 +2150,7 @@ pub unsafe extern "C" fn P_RemoveMobj(mut mobj: *mut mobj_t) {
     S_StopSound(mobj);
     P_RemoveThinker(mobj as *mut thinker_t);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_RespawnSpecials() {
+pub unsafe fn P_RespawnSpecials() {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
@@ -2371,8 +2369,7 @@ pub unsafe extern "C" fn P_SpawnPuff(mut x: fixed_t, mut y: fixed_t, mut z: fixe
         P_SetMobjState(th, S_PUFF3);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnBlood(
+pub unsafe fn P_SpawnBlood(
     mut x: fixed_t,
     mut y: fixed_t,
     mut z: fixed_t,
@@ -2463,8 +2460,7 @@ pub unsafe extern "C" fn P_SubstNullMobj(mut mobj: *mut mobj_t) -> *mut mobj_t {
     }
     return mobj;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnMissile(
+pub unsafe fn P_SpawnMissile(
     mut source: *mut mobj_t,
     mut dest: *mut mobj_t,
     mut type_0: mobjtype_t,
@@ -2507,8 +2503,7 @@ pub unsafe extern "C" fn P_SpawnMissile(
     P_CheckMissileSpawn(th);
     return th;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnPlayerMissile(
+pub unsafe fn P_SpawnPlayerMissile(
     mut source: *mut mobj_t,
     mut type_0: mobjtype_t,
 ) {

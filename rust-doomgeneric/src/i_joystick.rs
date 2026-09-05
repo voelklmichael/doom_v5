@@ -31,12 +31,10 @@ static mut joystick_physical_buttons: [i32; 10] = [
 ];
 #[no_mangle]
 pub unsafe extern "C" fn I_ShutdownJoystick() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_InitJoystick() {}
+pub unsafe fn I_InitJoystick() {}
 #[no_mangle]
 pub unsafe extern "C" fn I_UpdateJoystick() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_BindJoystickVariables() {
+pub unsafe fn I_BindJoystickVariables() {
     let mut i: i32 = 0;
     M_BindVariable("use_joystick",
         &raw mut usejoystick as *mut ::core::ffi::c_void,

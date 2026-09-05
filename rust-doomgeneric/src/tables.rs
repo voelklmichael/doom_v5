@@ -5,8 +5,7 @@ pub type fixed_t = i32;
 pub type angle_t = u32;
 pub const FINEANGLES: i32 = 8192 as i32;
 pub const SLOPERANGE: i32 = 2048 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn SlopeDiv(
+pub unsafe fn SlopeDiv(
     mut num: u32,
     mut den: u32,
 ) -> i32 {

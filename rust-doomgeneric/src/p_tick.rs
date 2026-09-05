@@ -1,11 +1,12 @@
+use ::libc;
 use crate::src::p_mobj::{thinker_s, thinker_t, actionf_t};
 use crate::src::d_player::{player_t};
-use ::libc;
+use crate::src::p_user::P_PlayerThink;
+use crate::src::p_mobj::P_RespawnSpecials;
+use crate::src::p_spec::P_UpdateSpecials;
+
 extern "C" {
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn P_PlayerThink(player: *mut player_t);
-    fn P_RespawnSpecials();
-    fn P_UpdateSpecials();
     static mut netgame: bool;
     static mut menuactive: bool;
     static mut paused: bool;
@@ -1341,8 +1342,7 @@ pub unsafe extern "C" fn P_RunThinkers() {
         currentthinker = (*currentthinker).next as *mut thinker_t;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_Ticker() {
+pub unsafe fn P_Ticker() {
     let mut i: i32 = 0;
     if paused {
         return;

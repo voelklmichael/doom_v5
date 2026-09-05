@@ -1,4 +1,8 @@
 use crate::src::i_system::I_Error;
+use crate::src::i_timer::I_GetTimeMS;
+use crate::src::i_video::I_StartTic;
+use crate::src::dummy::net_client_connected;
+
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -13,10 +17,7 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn I_GetTime() -> i32;
-    fn I_GetTimeMS() -> i32;
     fn I_Sleep(ms: i32);
-    fn I_StartTic();
-    static mut net_client_connected: bool;
     static mut drone: bool;
 }
 pub type size_t = usize;
@@ -123,11 +124,9 @@ static mut maketic: i32 = 0;
 static mut recvtic: i32 = 0;
 #[no_mangle]
 pub static mut gametic: i32 = 0;
-#[no_mangle]
 pub static mut singletics: bool = false;
 static mut localplayer: i32 = 0;
 static mut skiptics: i32 = 0 as i32;
-#[no_mangle]
 pub static mut ticdup: i32 = 0;
 #[no_mangle]
 pub static mut offsetms: fixed_t = 0;
@@ -252,12 +251,10 @@ pub unsafe extern "C" fn D_ReceiveTic(
     }
     recvtic += 1;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_StartGameLoop() {
+pub unsafe fn D_StartGameLoop() {
     lasttime = GetAdjustedTime() / ticdup;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_StartNetGame(
+pub unsafe fn D_StartNetGame(
     mut settings: *mut net_gamesettings_t,
     mut callback: netgame_startup_callback_t,
 ) {
@@ -270,8 +267,7 @@ pub unsafe extern "C" fn D_StartNetGame(
     ticdup = (*settings).ticdup;
     new_sync = (*settings).new_sync != 0;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_InitNetGame(
+pub unsafe fn D_InitNetGame(
     mut connect_data: *mut net_connect_data_t,
 ) -> boolean {
     let mut result: boolean = false_0 as boolean;
@@ -451,7 +447,6 @@ pub unsafe extern "C" fn TryRunTics() {
         NetUpdate();
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_RegisterLoopCallbacks(mut i: *mut loop_interface_t) {
+pub unsafe fn D_RegisterLoopCallbacks(mut i: *mut loop_interface_t) {
     loop_interface = i;
 }

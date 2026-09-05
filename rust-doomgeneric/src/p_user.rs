@@ -2,15 +2,16 @@ use crate::src::p_mobj::{state_t, actionf_t};
 use crate::src::d_player::{player_t, PST_LIVE, PST_DEAD, PST_REBORN};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::d_ticcmd::{ticcmd_t};
+use crate::src::p_pspr::P_MovePsprites;
+use crate::src::p_map::P_UseLines;
+
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut states: [state_t; 967];
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_MovePsprites(curplayer: *mut player_t);
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    fn P_UseLines(player: *mut player_t);
     fn P_PlayerInSpecialSector(player: *mut player_t);
     static mut gamemode: GameMode_t;
     static mut leveltime: i32;
@@ -1499,8 +1500,7 @@ pub unsafe extern "C" fn P_DeathThink(mut player: *mut player_t) {
         (*player).playerstate = PST_REBORN;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_PlayerThink(mut player: *mut player_t) {
+pub unsafe fn P_PlayerThink(mut player: *mut player_t) {
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     let mut newweapon: weapontype_t = wp_fist;
     if (*player).cheats & CF_NOCLIP as i32 != 0 {

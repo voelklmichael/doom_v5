@@ -1,12 +1,27 @@
 use crate::src::r_data::column_t;
 use crate::src::w_wad::lumpinfo_t;
-use crate::src::r_defs::{drawseg_t, seg_t, spritedef_t, spriteframe_t};
+use crate::src::r_defs::{drawseg_t, spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{sector_t, actionf_t};
-use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::r_data::spritewidth;
+use crate::src::r_data::spriteoffset;
+use crate::src::r_data::spritetopoffset;
+use crate::src::r_data::lastspritelump;
+use crate::src::r_main::viewplayer;
+use crate::src::r_main::viewcos;
+use crate::src::r_main::viewsin;
+use crate::src::r_main::projection;
+use crate::src::r_main::transcolfunc;
+use crate::src::r_main::basecolfunc;
+use crate::src::r_main::fuzzcolfunc;
+use crate::src::r_main::R_PointOnSegSide;
+use crate::src::r_segs::R_RenderMaskedSegRange;
+use crate::src::r_draw::translationtables;
+use crate::src::r_draw::dc_translation;
+
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn strncasecmp(
@@ -36,41 +51,24 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut spritewidth: *mut fixed_t;
-    static mut spriteoffset: *mut fixed_t;
-    static mut spritetopoffset: *mut fixed_t;
     static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
     static mut firstspritelump: i32;
-    static mut lastspritelump: i32;
     static mut viewx: fixed_t;
     static mut viewy: fixed_t;
     static mut viewz: fixed_t;
-    static mut viewplayer: *mut player_t;
-    static mut viewcos: fixed_t;
-    static mut viewsin: fixed_t;
     static mut centerxfrac: fixed_t;
     static mut centeryfrac: fixed_t;
-    static mut projection: fixed_t;
     static mut validcount: i32;
     static mut scalelight: [[*mut lighttable_t; 48]; 16];
     static mut extralight: i32;
     static mut fixedcolormap: *mut lighttable_t;
     static mut detailshift: i32;
     static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
-    static mut transcolfunc: Option<unsafe extern "C" fn() -> ()>;
-    static mut basecolfunc: Option<unsafe extern "C" fn() -> ()>;
-    static mut fuzzcolfunc: Option<unsafe extern "C" fn() -> ()>;
-    fn R_PointOnSegSide(x: fixed_t, y: fixed_t, line: *mut seg_t) -> i32;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
     static mut drawsegs: [drawseg_t; 256];
     static mut ds_p: *mut drawseg_t;
-    fn R_RenderMaskedSegRange(
-        ds: *mut drawseg_t,
-        x1: i32,
-        x2: i32,
-    );
     static mut dc_colormap: *mut lighttable_t;
     static mut dc_x: i32;
     static mut dc_yl: i32;
@@ -78,8 +76,6 @@ extern "C" {
     static mut dc_iscale: fixed_t;
     static mut dc_texturemid: fixed_t;
     static mut dc_source: *mut byte;
-    static mut translationtables: *mut byte;
-    static mut dc_translation: *mut byte;
     static mut modifiedgame: bool;
     static mut viewangleoffset: i32;
 }
@@ -1449,7 +1445,6 @@ pub const LIGHTSCALESHIFT: i32 = 12 as i32;
 pub const MAXVISSPRITES: i32 = 128 as i32;
 pub const MINZ: i32 = FRACUNIT * 4 as i32;
 pub const BASEYCENTER: i32 = 100 as i32;
-#[no_mangle]
 pub static mut pspritescale: fixed_t = 0;
 #[no_mangle]
 pub static mut pspriteiscale: fixed_t = 0;
@@ -1457,14 +1452,12 @@ pub static mut pspriteiscale: fixed_t = 0;
 pub static mut spritelights: *mut *mut lighttable_t = ::core::ptr::null::<
     *mut lighttable_t,
 >() as *mut *mut lighttable_t;
-#[no_mangle]
 pub static mut negonearray: [i16; 320] = [0; 320];
 #[no_mangle]
 pub static mut screenheightarray: [i16; 320] = [0; 320];
 #[no_mangle]
 pub static mut sprites: *mut spritedef_t = ::core::ptr::null::<spritedef_t>()
     as *mut spritedef_t;
-#[no_mangle]
 pub static mut numsprites: i32 = 0;
 #[no_mangle]
 pub static mut sprtemp: [spriteframe_t; 29] = [spriteframe_t {
@@ -1713,8 +1706,7 @@ pub unsafe extern "C" fn R_InitSprites(mut namelist: *mut *mut ::core::ffi::c_ch
     }
     R_InitSpriteDefs(namelist);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_ClearSprites() {
+pub unsafe fn R_ClearSprites() {
     vissprite_p = &raw mut vissprites as *mut vissprite_t;
 }
 #[no_mangle]
@@ -1746,20 +1738,15 @@ pub unsafe extern "C" fn R_NewVisSprite() -> *mut vissprite_t {
     vissprite_p = vissprite_p.offset(1);
     return vissprite_p.offset(-(1 as i32 as isize));
 }
-#[no_mangle]
 pub static mut mfloorclip: *mut i16 = ::core::ptr::null::<
     i16,
 >() as *mut i16;
-#[no_mangle]
 pub static mut mceilingclip: *mut i16 = ::core::ptr::null::<
     i16,
 >() as *mut i16;
-#[no_mangle]
 pub static mut spryscale: fixed_t = 0;
-#[no_mangle]
 pub static mut sprtopscreen: fixed_t = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawMaskedColumn(mut column: *mut column_t) {
+pub unsafe fn R_DrawMaskedColumn(mut column: *mut column_t) {
     let mut topscreen: i32 = 0;
     let mut bottomscreen: i32 = 0;
     let mut basetexturemid: fixed_t = 0;
@@ -1955,8 +1942,7 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
         (*vis).colormap = *spritelights.offset(index as isize);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_AddSprites(mut sec: *mut sector_t) {
+pub unsafe fn R_AddSprites(mut sec: *mut sector_t) {
     let mut thing: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut lightnum: i32 = 0;
     if (*sec).validcount == validcount {

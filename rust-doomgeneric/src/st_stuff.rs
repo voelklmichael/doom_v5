@@ -8,6 +8,17 @@ use crate::src::p_mobj::{actionf_t};
 use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_GetNumForName, W_ReleaseLumpName,
 };
+use crate::src::m_cheat::cht_GetParam;
+use crate::src::st_lib::STlib_initNum;
+use crate::src::st_lib::STlib_updateNum;
+use crate::src::st_lib::STlib_initPercent;
+use crate::src::st_lib::STlib_updatePercent;
+use crate::src::st_lib::STlib_initMultIcon;
+use crate::src::st_lib::STlib_updateMultIcon;
+use crate::src::st_lib::STlib_initBinIcon;
+use crate::src::st_lib::STlib_updateBinIcon;
+use crate::src::p_inter::P_GivePower;
+
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -41,48 +52,8 @@ extern "C" {
         cht: *mut cheatseq_t,
         key: ::core::ffi::c_char,
     ) -> i32;
-    fn cht_GetParam(cht: *mut cheatseq_t, buffer: *mut ::core::ffi::c_char);
     fn STlib_init();
-    fn STlib_initNum(
-        n: *mut st_number_t,
-        x: i32,
-        y: i32,
-        pl: *mut *mut patch_t,
-        num: *mut i32,
-        on: *mut bool,
-        width: i32,
-    );
-    fn STlib_updateNum(n: *mut st_number_t, refresh: boolean);
-    fn STlib_initPercent(
-        p: *mut st_percent_t,
-        x: i32,
-        y: i32,
-        pl: *mut *mut patch_t,
-        num: *mut i32,
-        on: *mut bool,
-        percent: *mut patch_t,
-    );
-    fn STlib_updatePercent(per: *mut st_percent_t, refresh: i32);
-    fn STlib_initMultIcon(
-        mi: *mut st_multicon_t,
-        x: i32,
-        y: i32,
-        il: *mut *mut patch_t,
-        inum: *mut i32,
-        on: *mut bool,
-    );
-    fn STlib_updateMultIcon(mi: *mut st_multicon_t, refresh: boolean);
-    fn STlib_initBinIcon(
-        b: *mut st_binicon_t,
-        x: i32,
-        y: i32,
-        i: *mut patch_t,
-        val: *mut bool,
-        on: *mut bool,
-    );
-    fn STlib_updateBinIcon(bi: *mut st_binicon_t, refresh: boolean);
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_GivePower(_: *mut player_t, _: i32) -> boolean;
     fn S_ChangeMusic(music_id: i32, looping: i32);
     fn V_CopyRect(
         srcx: i32,
@@ -1643,7 +1614,6 @@ pub const ST_MAXAMMO2Y: i32 = 191 as i32;
 pub const ST_MAXAMMO3WIDTH: i32 = ST_MAXAMMO0WIDTH;
 pub const ST_MAXAMMO3X: i32 = 314 as i32;
 pub const ST_MAXAMMO3Y: i32 = 185 as i32;
-#[no_mangle]
 pub static mut st_backing_screen: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut plyr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t;
 static mut st_firsttime: bool = false;
@@ -2376,8 +2346,7 @@ pub unsafe extern "C" fn ST_updateWidgets() {
         st_chat = st_oldchat;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Ticker() {
+pub unsafe fn ST_Ticker() {
     st_clock = st_clock.wrapping_add(1);
     st_randomnumber = M_Random();
     ST_updateWidgets();
@@ -2487,8 +2456,7 @@ pub unsafe extern "C" fn ST_doRefresh() {
 pub unsafe extern "C" fn ST_diffDraw() {
     ST_drawWidgets(false_0 as boolean);
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Drawer(mut fullscreen: boolean, mut refresh: boolean) {
+pub unsafe fn ST_Drawer(mut fullscreen: boolean, mut refresh: boolean) {
     st_statusbaron = fullscreen == 0 || automapactive;
     st_firsttime = st_firsttime || refresh != 0;
     ST_doPaletteStuff();
@@ -3002,8 +2970,7 @@ pub unsafe extern "C" fn ST_createWidgets() {
     );
 }
 static mut st_stopped: bool = true;
-#[no_mangle]
-pub unsafe extern "C" fn ST_Start() {
+pub unsafe fn ST_Start() {
     if !st_stopped {
         ST_Stop();
     }

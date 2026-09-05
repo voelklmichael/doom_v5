@@ -10,6 +10,91 @@ use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
 use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
 };
+use crate::src::d_loop::singletics;
+use crate::src::d_loop::ticdup;
+use crate::src::m_random::rndindex;
+use crate::src::d_net::netcmds;
+use crate::src::m_controls::key_right;
+use crate::src::m_controls::key_left;
+use crate::src::m_controls::key_up;
+use crate::src::m_controls::key_down;
+use crate::src::m_controls::key_strafeleft;
+use crate::src::m_controls::key_straferight;
+use crate::src::m_controls::key_fire;
+use crate::src::m_controls::key_use;
+use crate::src::m_controls::key_strafe;
+use crate::src::m_controls::key_speed;
+use crate::src::m_controls::key_pause;
+use crate::src::m_controls::key_weapon1;
+use crate::src::m_controls::key_weapon2;
+use crate::src::m_controls::key_weapon3;
+use crate::src::m_controls::key_weapon4;
+use crate::src::m_controls::key_weapon5;
+use crate::src::m_controls::key_weapon6;
+use crate::src::m_controls::key_weapon7;
+use crate::src::m_controls::key_weapon8;
+use crate::src::m_controls::key_demo_quit;
+use crate::src::m_controls::key_spy;
+use crate::src::m_controls::key_prevweapon;
+use crate::src::m_controls::key_nextweapon;
+use crate::src::m_controls::mousebfire;
+use crate::src::m_controls::mousebstrafe;
+use crate::src::m_controls::mousebforward;
+use crate::src::m_controls::mousebstrafeleft;
+use crate::src::m_controls::mousebstraferight;
+use crate::src::m_controls::mousebbackward;
+use crate::src::m_controls::mousebuse;
+use crate::src::m_controls::mousebprevweapon;
+use crate::src::m_controls::mousebnextweapon;
+use crate::src::m_controls::joybfire;
+use crate::src::m_controls::joybstrafe;
+use crate::src::m_controls::joybuse;
+use crate::src::m_controls::joybspeed;
+use crate::src::m_controls::joybstrafeleft;
+use crate::src::m_controls::joybstraferight;
+use crate::src::m_controls::joybprevweapon;
+use crate::src::m_controls::joybnextweapon;
+use crate::src::m_controls::dclick_use;
+use crate::src::m_misc::M_TempFile;
+use crate::src::m_menu::M_StartControlPanel;
+use crate::src::m_random::M_ClearRandom;
+use crate::src::p_setup::P_SetupLevel;
+use crate::src::p_saveg::P_TempSaveGameFile;
+use crate::src::p_saveg::P_ReadSaveGameHeader;
+use crate::src::p_saveg::P_WriteSaveGameHeader;
+use crate::src::p_saveg::P_ReadSaveGameEOF;
+use crate::src::p_saveg::P_WriteSaveGameEOF;
+use crate::src::p_saveg::P_ArchivePlayers;
+use crate::src::p_saveg::P_UnArchivePlayers;
+use crate::src::p_saveg::P_ArchiveWorld;
+use crate::src::p_saveg::P_UnArchiveWorld;
+use crate::src::p_saveg::P_ArchiveThinkers;
+use crate::src::p_saveg::P_UnArchiveThinkers;
+use crate::src::p_saveg::P_ArchiveSpecials;
+use crate::src::p_saveg::P_UnArchiveSpecials;
+use crate::src::p_saveg::save_stream;
+use crate::src::p_saveg::savegame_error;
+use crate::src::p_tick::P_Ticker;
+use crate::src::d_main::D_PageTicker;
+use crate::src::d_main::D_AdvanceDemo;
+use crate::src::wi_stuff::WI_Ticker;
+use crate::src::wi_stuff::WI_Start;
+use crate::src::wi_stuff::WI_End;
+use crate::src::hu_stuff::HU_Responder;
+use crate::src::hu_stuff::HU_Ticker;
+use crate::src::hu_stuff::HU_dequeueChatChar;
+use crate::src::st_stuff::ST_Ticker;
+use crate::src::am_map::AM_Responder;
+use crate::src::am_map::AM_Ticker;
+use crate::src::statdump::StatCopy;
+use crate::src::p_inter::maxammo;
+use crate::src::s_sound::S_PauseSound;
+use crate::src::s_sound::S_ResumeSound;
+use crate::src::f_finale::F_Responder;
+use crate::src::f_finale::F_Ticker;
+use crate::src::f_finale::F_StartFinale;
+use crate::src::hu_stuff::player_names;
+
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -37,9 +122,7 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn ftell(__stream: *mut FILE) -> i64;
     fn I_GetTime() -> i32;
-    static mut singletics: bool;
     static mut gametic: i32;
-    static mut ticdup: i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static finetangent: [fixed_t; 4096];
@@ -59,8 +142,6 @@ extern "C" {
     static mut wipegamestate: gamestate_t;
     static mut mouseSensitivity: i32;
     static mut skyflatnum: i32;
-    static mut rndindex: i32;
-    static mut netcmds: *mut ticcmd_t;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
     static mut setsizeneeded: bool;
     fn R_ExecuteSetViewSize();
@@ -71,53 +152,11 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn Z_CheckHeap();
-    static mut key_right: i32;
-    static mut key_left: i32;
-    static mut key_up: i32;
-    static mut key_down: i32;
-    static mut key_strafeleft: i32;
-    static mut key_straferight: i32;
-    static mut key_fire: i32;
-    static mut key_use: i32;
-    static mut key_strafe: i32;
-    static mut key_speed: i32;
-    static mut key_pause: i32;
-    static mut key_weapon1: i32;
-    static mut key_weapon2: i32;
-    static mut key_weapon3: i32;
-    static mut key_weapon4: i32;
-    static mut key_weapon5: i32;
-    static mut key_weapon6: i32;
-    static mut key_weapon7: i32;
-    static mut key_weapon8: i32;
-    static mut key_demo_quit: i32;
-    static mut key_spy: i32;
-    static mut key_prevweapon: i32;
-    static mut key_nextweapon: i32;
-    static mut mousebfire: i32;
-    static mut mousebstrafe: i32;
-    static mut mousebforward: i32;
-    static mut mousebstrafeleft: i32;
-    static mut mousebstraferight: i32;
-    static mut mousebbackward: i32;
-    static mut mousebuse: i32;
-    static mut mousebprevweapon: i32;
-    static mut mousebnextweapon: i32;
-    static mut joybfire: i32;
-    static mut joybstrafe: i32;
-    static mut joybuse: i32;
-    static mut joybspeed: i32;
-    static mut joybstrafeleft: i32;
-    static mut joybstraferight: i32;
-    static mut joybprevweapon: i32;
-    static mut joybnextweapon: i32;
-    static mut dclick_use: i32;
     fn M_WriteFile(
         name: *mut ::core::ffi::c_char,
         source: *mut ::core::ffi::c_void,
         length: i32,
     ) -> boolean;
-    fn M_TempFile(s: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
         src: *const ::core::ffi::c_char,
@@ -129,47 +168,11 @@ extern "C" {
         s: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn M_StartControlPanel();
     fn P_Random() -> i32;
-    fn M_ClearRandom();
     fn I_Quit();
-    fn P_SetupLevel(
-        episode: i32,
-        map: i32,
-        playermask: i32,
-        skill: skill_t,
-    );
-    fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char;
     fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
-    fn P_ReadSaveGameHeader() -> boolean;
-    fn P_WriteSaveGameHeader(description: *mut ::core::ffi::c_char);
-    fn P_ReadSaveGameEOF() -> boolean;
-    fn P_WriteSaveGameEOF();
-    fn P_ArchivePlayers();
-    fn P_UnArchivePlayers();
-    fn P_ArchiveWorld();
-    fn P_UnArchiveWorld();
-    fn P_ArchiveThinkers();
-    fn P_UnArchiveThinkers();
-    fn P_ArchiveSpecials();
-    fn P_UnArchiveSpecials();
-    static mut save_stream: *mut FILE;
-    static mut savegame_error: bool;
-    fn P_Ticker();
-    fn D_PageTicker();
-    fn D_AdvanceDemo();
-    fn WI_Ticker();
-    fn WI_Start(wbstartstruct: *mut wbstartstruct_t);
-    fn WI_End();
-    fn HU_Responder(ev: *mut event_t) -> boolean;
-    fn HU_Ticker();
-    fn HU_dequeueChatChar() -> ::core::ffi::c_char;
     fn ST_Responder(ev: *mut event_t) -> boolean;
-    fn ST_Ticker();
-    fn AM_Responder(ev: *mut event_t) -> boolean;
-    fn AM_Ticker();
     fn AM_Stop();
-    fn StatCopy(stats: *mut wbstartstruct_t);
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
@@ -183,14 +186,8 @@ extern "C" {
     ) -> *mut mobj_t;
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    static mut maxammo: [i32; 4];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    fn S_PauseSound();
-    fn S_ResumeSound();
     static mut skytexture: i32;
-    fn F_Responder(ev: *mut event_t) -> boolean;
-    fn F_Ticker();
-    fn F_StartFinale();
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1730,7 +1727,6 @@ pub static mut gameaction: gameaction_t = ga_nothing;
 pub static mut gamestate: gamestate_t = GS_LEVEL;
 #[no_mangle]
 pub static mut gameskill: skill_t = sk_baby;
-#[no_mangle]
 pub static mut respawnmonsters: bool = false;
 #[no_mangle]
 pub static mut gameepisode: i32 = 0;
@@ -1748,7 +1744,6 @@ pub static mut sendsave: bool = false;
 pub static mut usergame: bool = false;
 #[no_mangle]
 pub static mut timingdemo: bool = false;
-#[no_mangle]
 pub static mut nodrawers: bool = false;
 #[no_mangle]
 pub static mut starttime: i32 = 0;
@@ -1818,7 +1813,6 @@ pub static mut players: [player_t; 4] = [player_s {
 pub static mut turbodetected: [boolean; 4] = [0; 4];
 #[no_mangle]
 pub static mut consoleplayer: i32 = 0;
-#[no_mangle]
 pub static mut displayplayer: i32 = 0;
 #[no_mangle]
 pub static mut levelstarttic: i32 = 0;
@@ -1836,7 +1830,6 @@ pub static mut demoname: *mut ::core::ffi::c_char = ::core::ptr::null::<
 pub static mut demorecording: bool = false;
 #[no_mangle]
 pub static mut longtics: bool = false;
-#[no_mangle]
 pub static mut lowres_turn: bool = false;
 #[no_mangle]
 pub static mut demoplayback: bool = false;
@@ -1850,13 +1843,10 @@ pub static mut demo_p: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 pub static mut demoend: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut singledemo: bool = false;
-#[no_mangle]
 pub static mut precache: bool = true;
 #[no_mangle]
 pub static mut testcontrols: bool = false;
-#[no_mangle]
 pub static mut testcontrols_mousespeed: i32 = 0;
-#[no_mangle]
 pub static mut wminfo: wbstartstruct_t = wbstartstruct_t {
     epsd: 0,
     didsecret: false,
@@ -1881,12 +1871,10 @@ pub static mut wminfo: wbstartstruct_t = wbstartstruct_t {
 #[no_mangle]
 pub static mut consistancy: [[byte; 128]; 4] = [[0; 128]; 4];
 pub const TURBOTHRESHOLD: i32 = 0x32 as i32;
-#[no_mangle]
 pub static mut forwardmove: [fixed_t; 2] = [
     0x19 as i32,
     0x32 as i32,
 ];
-#[no_mangle]
 pub static mut sidemove: [fixed_t; 2] = [
     0x18 as i32,
     0x28 as i32,
@@ -1976,11 +1964,8 @@ pub const BODYQUESIZE: i32 = 32 as i32;
 #[no_mangle]
 pub static mut bodyque: [*mut mobj_t; 32] = [::core::ptr::null::<mobj_t>()
     as *mut mobj_t; 32];
-#[no_mangle]
 pub static mut bodyqueslot: i32 = 0;
-#[no_mangle]
 pub static mut vanilla_savegame_limit: i32 = 1 as i32;
-#[no_mangle]
 pub static mut vanilla_demo_limit: i32 = 1 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
@@ -2452,8 +2437,7 @@ unsafe extern "C" fn SetMouseButtons(mut buttons_mask: u32) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn G_Responder(mut ev: *mut event_t) -> boolean {
     if gamestate as u32
         == GS_LEVEL as i32 as u32
         && (*ev).type_0 as u32
@@ -2564,8 +2548,7 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
     }
     return false_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_Ticker() {
+pub unsafe fn G_Ticker() {
     let mut i: i32 = 0;
     let mut buf: i32 = 0;
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
@@ -2644,9 +2627,6 @@ pub unsafe extern "C" fn G_Ticker() {
                 && turbodetected[i as usize] != 0
             {
                 static mut turbomessage: [::core::ffi::c_char; 80] = [0; 80];
-                extern "C" {
-                    static mut player_names: [*mut ::core::ffi::c_char; 4];
-                }
                 M_snprintf(
                     &raw mut turbomessage as *mut ::core::ffi::c_char,
                     ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
@@ -2766,8 +2746,7 @@ pub unsafe extern "C" fn G_PlayerFinishLevel(mut player: i32) {
     (*p).damagecount = 0 as i32;
     (*p).bonuscount = 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_PlayerReborn(mut player: i32) {
+pub unsafe fn G_PlayerReborn(mut player: i32) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut i: i32 = 0;
     let mut frags: [i32; 4] = [0; 4];
@@ -2891,8 +2870,7 @@ pub unsafe extern "C" fn G_CheckSpot(
     }
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
+pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut selections: i32 = 0;
@@ -2974,8 +2952,7 @@ pub unsafe extern "C" fn G_DoReborn(mut playernum: i32) {
         );
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_ScreenShot() {
+pub unsafe fn G_ScreenShot() {
     gameaction = ga_screenshot;
 }
 #[no_mangle]
@@ -3215,8 +3192,7 @@ pub unsafe extern "C" fn G_DoCompleted() {
     StatCopy(&raw mut wminfo);
     WI_Start(&raw mut wminfo);
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_WorldDone() {
+pub unsafe fn G_WorldDone() {
     gameaction = ga_worlddone;
     if secretexit {
         players[consoleplayer as usize].didsecret = true;
@@ -3299,8 +3275,7 @@ pub unsafe extern "C" fn G_DoLoadGame() {
     }
     R_FillBackScreen();
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_SaveGame(
+pub unsafe fn G_SaveGame(
     mut slot: i32,
     mut description: *mut ::core::ffi::c_char,
 ) {
@@ -3414,8 +3389,7 @@ pub unsafe extern "C" fn G_DoNewGame() {
     G_InitNew(d_skill, d_episode, d_map);
     gameaction = ga_nothing;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_InitNew(
+pub unsafe fn G_InitNew(
     mut skill: skill_t,
     mut episode: i32,
     mut map: i32,
@@ -3648,8 +3622,7 @@ pub unsafe extern "C" fn G_WriteDemoTiccmd(mut cmd: *mut ticcmd_t) {
     }
     G_ReadDemoTiccmd(cmd);
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
+pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     let mut demoname_size: size_t = 0;
     let mut i: i32 = 0;
     let mut maxsize: i32 = 0;
@@ -3691,8 +3664,7 @@ pub unsafe extern "C" fn G_VanillaVersionCode() -> i32 {
     }
     return 106 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_BeginRecording() {
+pub unsafe fn G_BeginRecording() {
     let mut i: i32 = 0;
     longtics = M_CheckParm("-longtics") != 0 as i32;
     lowres_turn = !longtics;
@@ -3742,8 +3714,7 @@ pub unsafe extern "C" fn G_BeginRecording() {
 pub static mut defdemoname: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
-#[no_mangle]
-pub unsafe extern "C" fn G_DeferedPlayDemo(mut name: *mut ::core::ffi::c_char) {
+pub unsafe fn G_DeferedPlayDemo(mut name: *mut ::core::ffi::c_char) {
     defdemoname = name;
     gameaction = ga_playdemo;
 }
@@ -3867,8 +3838,7 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     usergame = false;
     demoplayback = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
+pub unsafe fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
     nodrawers = M_CheckParm("-nodraw") != 0;
     timingdemo = true;
     singletics = true;

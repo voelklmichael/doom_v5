@@ -6,6 +6,43 @@ use crate::src::p_mobj::{actionf_t};
 use crate::src::i_system::I_Error;
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::i_timer::I_WaitVBL;
+use crate::src::d_main::D_StartTitle;
+use crate::src::i_input::vanilla_keyboard_mapping;
+use crate::src::i_video::usegamma;
+use crate::src::r_main::R_SetViewSize;
+use crate::src::g_game::G_SaveGame;
+use crate::src::g_game::G_ScreenShot;
+use crate::src::m_controls::key_menu_activate;
+use crate::src::m_controls::key_menu_up;
+use crate::src::m_controls::key_menu_down;
+use crate::src::m_controls::key_menu_left;
+use crate::src::m_controls::key_menu_right;
+use crate::src::m_controls::key_menu_back;
+use crate::src::m_controls::key_menu_forward;
+use crate::src::m_controls::key_menu_confirm;
+use crate::src::m_controls::key_menu_abort;
+use crate::src::m_controls::key_menu_help;
+use crate::src::m_controls::key_menu_save;
+use crate::src::m_controls::key_menu_load;
+use crate::src::m_controls::key_menu_volume;
+use crate::src::m_controls::key_menu_detail;
+use crate::src::m_controls::key_menu_qsave;
+use crate::src::m_controls::key_menu_endgame;
+use crate::src::m_controls::key_menu_messages;
+use crate::src::m_controls::key_menu_qload;
+use crate::src::m_controls::key_menu_quit;
+use crate::src::m_controls::key_menu_gamma;
+use crate::src::m_controls::key_menu_incscreen;
+use crate::src::m_controls::key_menu_decscreen;
+use crate::src::m_controls::key_menu_screenshot;
+use crate::src::m_controls::joybmenu;
+use crate::src::s_sound::S_SetMusicVolume;
+use crate::src::s_sound::S_SetSfxVolume;
+use crate::src::d_main::devparm;
+use crate::src::hu_stuff::message_dontfuckwithme;
+use crate::src::hu_stuff::chat_on;
+
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn toupper(__c: i32) -> i32;
@@ -38,12 +75,8 @@ extern "C" {
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn I_GetTime() -> i32;
-    fn I_WaitVBL(count: i32);
-    fn D_StartTitle();
     fn I_Quit();
     fn I_SetPalette(palette: *mut byte);
-    static mut vanilla_keyboard_mapping: i32;
-    static mut usegamma: i32;
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
         src: *const ::core::ffi::c_char,
@@ -54,45 +87,15 @@ extern "C" {
         y: i32,
         patch: *mut patch_t,
     );
-    fn R_SetViewSize(blocks: i32, detail_0: i32);
     fn G_DeferedInitNew(
         skill: skill_t,
         episode: i32,
         map: i32,
     );
     fn G_LoadGame(name: *mut ::core::ffi::c_char);
-    fn G_SaveGame(slot: i32, description: *mut ::core::ffi::c_char);
-    fn G_ScreenShot();
-    static mut key_menu_activate: i32;
-    static mut key_menu_up: i32;
-    static mut key_menu_down: i32;
-    static mut key_menu_left: i32;
-    static mut key_menu_right: i32;
-    static mut key_menu_back: i32;
-    static mut key_menu_forward: i32;
-    static mut key_menu_confirm: i32;
-    static mut key_menu_abort: i32;
-    static mut key_menu_help: i32;
-    static mut key_menu_save: i32;
-    static mut key_menu_load: i32;
-    static mut key_menu_volume: i32;
-    static mut key_menu_detail: i32;
-    static mut key_menu_qsave: i32;
-    static mut key_menu_endgame: i32;
-    static mut key_menu_messages: i32;
-    static mut key_menu_qload: i32;
-    static mut key_menu_quit: i32;
-    static mut key_menu_gamma: i32;
-    static mut key_menu_incscreen: i32;
-    static mut key_menu_decscreen: i32;
-    static mut key_menu_screenshot: i32;
-    static mut joybmenu: i32;
     fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    fn S_SetMusicVolume(volume: i32);
-    fn S_SetSfxVolume(volume: i32);
     static mut gametic: i32;
-    static mut devparm: bool;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
@@ -107,8 +110,6 @@ extern "C" {
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     static mut hu_font: [*mut patch_t; 63];
-    static mut message_dontfuckwithme: bool;
-    static mut chat_on: bool;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1689,7 +1690,6 @@ pub static mut saveSlot: i32 = 0;
 pub static mut saveCharIndex: i32 = 0;
 #[no_mangle]
 pub static mut saveOldString: String = String::new();
-#[no_mangle]
 pub static mut inhelpscreens: bool = false;
 #[no_mangle]
 pub static mut menuactive: bool = false;
@@ -3217,8 +3217,7 @@ unsafe extern "C" fn IsNullKey(mut key: i32) -> boolean {
     return (key == KEY_PAUSE || key == KEY_CAPSLOCK || key == KEY_SCRLCK
         || key == KEY_NUMLOCK) as i32 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
     let mut ch: i32 = 0;
     let mut key: i32 = 0;
     let mut i: i32 = 0;
@@ -3624,8 +3623,7 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
     }
     return false_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StartControlPanel() {
+pub unsafe fn M_StartControlPanel() {
     if menuactive {
         return;
     }
@@ -3633,8 +3631,7 @@ pub unsafe extern "C" fn M_StartControlPanel() {
     currentMenu = &raw mut MainDef;
     itemOn = (*currentMenu).lastOn;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_Drawer() {
+pub unsafe fn M_Drawer() {
     static mut x: i16 = 0;
     static mut y: i16 = 0;
     let mut i: u32 = 0;

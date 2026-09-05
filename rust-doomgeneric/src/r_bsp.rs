@@ -1,6 +1,14 @@
 use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, side_t, visplane_t};
 use crate::src::p_mobj::{sector_t, line_t, subsector_t, actionf_t};
 use crate::src::i_system::I_Error;
+use crate::src::r_main::clipangle;
+use crate::src::r_main::viewangletox;
+use crate::src::r_segs::rw_angle1;
+use crate::src::r_main::sscount;
+use crate::src::r_main::R_PointOnSide;
+use crate::src::r_things::R_AddSprites;
+use crate::src::r_segs::R_StoreWallRange;
+
 extern "C" {
     static mut viewwidth: i32;
     static mut segs: *mut seg_t;
@@ -11,22 +19,15 @@ extern "C" {
     static mut viewy: fixed_t;
     static mut viewz: fixed_t;
     static mut viewangle: angle_t;
-    static mut clipangle: angle_t;
-    static mut viewangletox: [i32; 4096];
-    static mut rw_angle1: i32;
-    static mut sscount: i32;
     static mut floorplane: *mut visplane_t;
     static mut ceilingplane: *mut visplane_t;
-    fn R_PointOnSide(x: fixed_t, y: fixed_t, node: *mut node_t) -> i32;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
     fn R_FindPlane(
         height: fixed_t,
         picnum: i32,
         lightlevel: i32,
     ) -> *mut visplane_t;
-    fn R_AddSprites(sec: *mut sector_t);
     static mut skyflatnum: i32;
-    fn R_StoreWallRange(start: i32, stop: i32);
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -1320,16 +1321,11 @@ pub const ANGLETOFINESHIFT: i32 = 19 as i32;
 pub const ANG90: i32 = 0x40000000 as i32;
 pub const ANG180: u32 = 0x80000000 as u32;
 pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
-#[no_mangle]
 pub static mut curline: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
-#[no_mangle]
 pub static mut sidedef: *mut side_t = ::core::ptr::null::<side_t>() as *mut side_t;
-#[no_mangle]
 pub static mut linedef: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
-#[no_mangle]
 pub static mut frontsector: *mut sector_t = ::core::ptr::null::<sector_t>()
     as *mut sector_t;
-#[no_mangle]
 pub static mut backsector: *mut sector_t = ::core::ptr::null::<sector_t>()
     as *mut sector_t;
 #[no_mangle]
@@ -1351,8 +1347,7 @@ pub static mut drawsegs: [drawseg_t; 256] = [drawseg_s {
 }; 256];
 #[no_mangle]
 pub static mut ds_p: *mut drawseg_t = ::core::ptr::null::<drawseg_t>() as *mut drawseg_t;
-#[no_mangle]
-pub unsafe extern "C" fn R_ClearDrawSegs() {
+pub unsafe fn R_ClearDrawSegs() {
     ds_p = &raw mut drawsegs as *mut drawseg_t;
 }
 #[no_mangle]
@@ -1470,8 +1465,7 @@ pub unsafe extern "C" fn R_ClipPassWallSegment(
     }
     R_StoreWallRange((*start).last + 1 as i32, last);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_ClearClipSegs() {
+pub unsafe fn R_ClearClipSegs() {
     solidsegs[0 as i32 as usize].first = -(0x7fffffff
         as i32);
     solidsegs[0 as i32 as usize].last = -(1 as i32);
@@ -1732,8 +1726,7 @@ pub unsafe extern "C" fn R_Subsector(mut num: i32) {
         line = line.offset(1);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_RenderBSPNode(mut bspnum: i32) {
+pub unsafe fn R_RenderBSPNode(mut bspnum: i32) {
     let mut bsp: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     if bspnum & NF_SUBSECTOR != 0 {

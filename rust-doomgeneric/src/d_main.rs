@@ -3,12 +3,83 @@ use crate::src::w_wad::lumpinfo_t;
 use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
 use crate::src::d_player::{player_t, PST_LIVE};
-use crate::src::p_mobj::{mobj_t, actionf_t};
+use crate::src::p_mobj::{actionf_t};
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_StringEndsWith;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_CheckNumForName};
+use crate::src::i_timer::I_InitTimer;
+use crate::src::d_loop::D_StartGameLoop;
+use crate::src::doomstat::gamedescription;
+use crate::src::g_game::nodrawers;
+use crate::src::g_game::testcontrols_mousespeed;
+use crate::src::g_game::displayplayer;
+use crate::src::i_sound::I_InitSound;
+use crate::src::i_sound::I_InitMusic;
+use crate::src::i_sound::I_BindSoundVariables;
+use crate::src::d_iwad::D_FindIWAD;
+use crate::src::d_iwad::D_SaveGameIWADName;
+use crate::src::w_main::W_ParseCommandLine;
+use crate::src::w_wad::W_GenerateHashTable;
+use crate::src::w_wad::W_CheckCorrectIWAD;
+use crate::src::s_sound::S_UpdateSounds;
+use crate::src::s_sound::snd_channels;
+use crate::src::v_video::V_DrawMouseSpeedBox;
+use crate::src::d_event::D_PopEvent;
+use crate::src::f_finale::F_Drawer;
+use crate::src::f_wipe::wipe_StartScreen;
+use crate::src::f_wipe::wipe_EndScreen;
+use crate::src::f_wipe::wipe_ScreenWipe;
+use crate::src::m_config::M_SetConfigDir;
+use crate::src::m_config::M_SetConfigFilenames;
+use crate::src::m_config::M_GetSaveGameDir;
+use crate::src::m_controls::M_BindBaseControls;
+use crate::src::m_controls::M_BindWeaponControls;
+use crate::src::m_controls::M_BindMapControls;
+use crate::src::m_controls::M_BindMenuControls;
+use crate::src::m_controls::M_BindChatControls;
+use crate::src::m_controls::M_ApplyPlatformDefaults;
+use crate::src::m_menu::M_Responder;
+use crate::src::m_menu::M_Drawer;
+use crate::src::i_endoom::I_Endoom;
+use crate::src::i_joystick::I_InitJoystick;
+use crate::src::i_joystick::I_BindJoystickVariables;
+use crate::src::i_system::I_PrintStartupBanner;
+use crate::src::i_system::I_PrintBanner;
+use crate::src::i_system::I_PrintDivider;
+use crate::src::i_video::I_GraphicsCheckCommandLine;
+use crate::src::i_video::I_UpdateNoBlit;
+use crate::src::i_video::I_FinishUpdate;
+use crate::src::i_video::I_SetWindowTitle;
+use crate::src::i_video::I_CheckIsScreensaver;
+use crate::src::i_video::I_SetGrabMouseCallback;
+use crate::src::i_video::I_DisplayFPSDots;
+use crate::src::i_video::I_BindVideoVariables;
+use crate::src::i_video::I_StartFrame;
+use crate::src::i_video::I_EnableLoadingDisk;
+use crate::src::i_video::screenvisible;
+use crate::src::g_game::G_InitNew;
+use crate::src::g_game::G_DeferedPlayDemo;
+use crate::src::g_game::G_RecordDemo;
+use crate::src::g_game::G_BeginRecording;
+use crate::src::g_game::G_TimeDemo;
+use crate::src::g_game::G_Responder;
+use crate::src::g_game::vanilla_savegame_limit;
+use crate::src::g_game::vanilla_demo_limit;
+use crate::src::hu_stuff::HU_Drawer;
+use crate::src::hu_stuff::HU_Erase;
+use crate::src::hu_stuff::chat_macros;
+use crate::src::wi_stuff::WI_Drawer;
+use crate::src::st_stuff::ST_Drawer;
+use crate::src::am_map::AM_Drawer;
+use crate::src::r_main::R_RenderPlayerView;
+use crate::src::r_draw::R_DrawViewBorder;
+use crate::src::m_menu::inhelpscreens;
+use crate::src::d_net::D_ConnectNetGame;
+use crate::src::g_game::forwardmove;
+use crate::src::g_game::sidemove;
+
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -41,15 +112,12 @@ extern "C" {
     ) -> i32;
     fn I_GetTime() -> i32;
     fn I_Sleep(ms: i32);
-    fn I_InitTimer();
     fn NetUpdate();
     fn TryRunTics();
-    fn D_StartGameLoop();
     static mut gametic: i32;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut gamedescription: *mut ::core::ffi::c_char;
     static mut modifiedgame: bool;
     static mut timelimit: i32;
     static mut netgame: bool;
@@ -60,11 +128,8 @@ extern "C" {
     static mut menuactive: bool;
     static mut paused: bool;
     static mut viewactive: bool;
-    static mut nodrawers: bool;
     static mut testcontrols: bool;
-    static mut testcontrols_mousespeed: i32;
     static mut consoleplayer: i32;
-    static mut displayplayer: i32;
     static mut usergame: bool;
     static mut demoplayback: bool;
     static mut demorecording: bool;
@@ -72,30 +137,17 @@ extern "C" {
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     static mut mouseSensitivity: i32;
-    fn I_InitSound(use_sfx_prefix: boolean);
-    fn I_InitMusic();
-    fn I_BindSoundVariables();
-    fn D_FindIWAD(
-        mask: i32,
-        mission: *mut GameMission_t,
-    ) -> *mut ::core::ffi::c_char;
-    fn D_SaveGameIWADName(gamemission_0: GameMission_t) -> *mut ::core::ffi::c_char;
     fn Z_Init();
     fn Z_Malloc(
         size: i32,
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn W_ParseCommandLine() -> boolean;
     static mut lumpinfo: *mut lumpinfo_t;
     static mut numlumps: u32;
     fn W_AddFile(filename: *mut ::core::ffi::c_char) -> *mut wad_file_t;
-    fn W_GenerateHashTable();
-    fn W_CheckCorrectIWAD(mission: GameMission_t);
     fn S_Init(sfxVolume_0: i32, musicVolume_0: i32);
     fn S_StartMusic(music_id: i32);
-    fn S_UpdateSounds(listener: *mut mobj_t);
-    static mut snd_channels: i32;
     fn V_Init();
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     fn V_DrawPatchDirect(
@@ -104,44 +156,9 @@ extern "C" {
         patch: *mut patch_t,
     );
     fn V_RestoreBuffer();
-    fn V_DrawMouseSpeedBox(speed: i32);
-    fn D_PopEvent() -> *mut event_t;
-    fn F_Drawer();
-    fn wipe_StartScreen(
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-    ) -> i32;
-    fn wipe_EndScreen(
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-    ) -> i32;
-    fn wipe_ScreenWipe(
-        wipeno: i32,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        ticks: i32,
-    ) -> i32;
     fn M_LoadDefaults();
     fn M_SaveDefaults();
-    fn M_SetConfigDir(dir: *mut ::core::ffi::c_char);
-    fn M_SetConfigFilenames(
-        main_config: *mut ::core::ffi::c_char,
-        extra_config: *mut ::core::ffi::c_char,
-    );
-    fn M_GetSaveGameDir(iwadname: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
     static mut key_multi_msgplayer: [i32; 8];
-    fn M_BindBaseControls();
-    fn M_BindWeaponControls();
-    fn M_BindMapControls();
-    fn M_BindMenuControls();
-    fn M_BindChatControls(num_players: u32);
-    fn M_ApplyPlatformDefaults();
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
         src: *const ::core::ffi::c_char,
@@ -153,66 +170,29 @@ extern "C" {
         s: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn M_Responder(ev: *mut event_t) -> boolean;
-    fn M_Drawer();
     fn M_Init();
     static mut detailLevel: i32;
     static mut screenblocks: i32;
     fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
-    fn I_Endoom(data: *mut byte);
-    fn I_InitJoystick();
-    fn I_BindJoystickVariables();
     fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
-    fn I_PrintStartupBanner(gamedescription_0: *mut ::core::ffi::c_char);
-    fn I_PrintBanner(text: *mut ::core::ffi::c_char);
-    fn I_PrintDivider();
     fn I_InitGraphics();
-    fn I_GraphicsCheckCommandLine();
     fn I_SetPalette(palette: *mut byte);
-    fn I_UpdateNoBlit();
-    fn I_FinishUpdate();
-    fn I_SetWindowTitle(title_0: *mut ::core::ffi::c_char);
-    fn I_CheckIsScreensaver();
-    fn I_SetGrabMouseCallback(func: grabmouse_callback_t);
-    fn I_DisplayFPSDots(dots_on: bool);
-    fn I_BindVideoVariables();
-    fn I_StartFrame();
-    fn I_EnableLoadingDisk();
-    static mut screenvisible: bool;
     static mut screensaver_mode: bool;
-    fn G_InitNew(skill: skill_t, episode: i32, map: i32);
-    fn G_DeferedPlayDemo(demo: *mut ::core::ffi::c_char);
     fn G_LoadGame(name: *mut ::core::ffi::c_char);
-    fn G_RecordDemo(name: *mut ::core::ffi::c_char);
-    fn G_BeginRecording();
-    fn G_TimeDemo(name: *mut ::core::ffi::c_char);
     fn G_CheckDemoStatus() -> boolean;
-    fn G_Responder(ev: *mut event_t) -> boolean;
     fn G_VanillaVersionCode() -> i32;
-    static mut vanilla_savegame_limit: i32;
-    static mut vanilla_demo_limit: i32;
     fn HU_Init();
-    fn HU_Drawer();
-    fn HU_Erase();
-    static mut chat_macros: [*mut ::core::ffi::c_char; 10];
-    fn WI_Drawer();
-    fn ST_Drawer(fullscreen: boolean, refresh: boolean);
     fn ST_Init();
-    fn AM_Drawer();
     static mut drone: bool;
     fn P_Init();
     static mut scaledviewwidth: i32;
     static mut viewheight: i32;
     static mut viewwindowx: i32;
     static mut viewwindowy: i32;
-    fn R_RenderPlayerView(player: *mut player_t);
     fn R_Init();
     fn R_FillBackScreen();
-    fn R_DrawViewBorder();
     fn StatDump();
     static mut gameaction: gameaction_t;
-    static mut inhelpscreens: bool;
-    fn D_ConnectNetGame();
     fn D_CheckNetGame();
     static mut setsizeneeded: bool;
     static mut showMessages: i32;
@@ -1686,7 +1666,6 @@ pub const HUSTR_KEYBROWN: i32 = 'b' as i32;
 pub const HUSTR_KEYRED: i32 = 'r' as i32;
 pub const SCREENWIDTH: i32 = 320 as i32;
 pub const SCREENHEIGHT: i32 = 200 as i32;
-#[no_mangle]
 pub static mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
@@ -1694,7 +1673,6 @@ pub static mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null::<
 pub static mut iwadfile: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
-#[no_mangle]
 pub static mut devparm: bool = false;
 #[no_mangle]
 pub static mut nomonsters: bool = false;
@@ -1702,17 +1680,11 @@ pub static mut nomonsters: bool = false;
 pub static mut respawnparm: bool = false;
 #[no_mangle]
 pub static mut fastparm: bool = false;
-#[no_mangle]
 pub static mut startskill: skill_t = sk_baby;
-#[no_mangle]
 pub static mut startepisode: i32 = 0;
-#[no_mangle]
 pub static mut startmap: i32 = 0;
-#[no_mangle]
 pub static mut autostart: bool = false;
-#[no_mangle]
 pub static mut startloadgame: i32 = 0;
-#[no_mangle]
 pub static mut advancedemo: bool = false;
 #[no_mangle]
 pub static mut storedemo: bool = false;
@@ -2052,8 +2024,7 @@ pub static mut pagetic: i32 = 0;
 pub static mut pagename: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
-#[no_mangle]
-pub unsafe extern "C" fn D_PageTicker() {
+pub unsafe fn D_PageTicker() {
     pagetic -= 1;
     if pagetic < 0 as i32 {
         D_AdvanceDemo();
@@ -2070,12 +2041,10 @@ pub unsafe extern "C" fn D_PageDrawer() {
         ) as *mut patch_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_AdvanceDemo() {
+pub unsafe fn D_AdvanceDemo() {
     advancedemo = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_DoAdvanceDemo() {
+pub unsafe fn D_DoAdvanceDemo() {
     players[consoleplayer as usize].playerstate = PST_LIVE;
     advancedemo = false;
     usergame = false;
@@ -2176,8 +2145,7 @@ pub unsafe extern "C" fn D_DoAdvanceDemo() {
             as *mut ::core::ffi::c_char;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_StartTitle() {
+pub unsafe fn D_StartTitle() {
     gameaction = ga_nothing;
     demosequence = -(1 as i32);
     D_AdvanceDemo();
@@ -2711,8 +2679,7 @@ unsafe extern "C" fn D_Endoom() {
     I_Endoom(endoom);
     exit(0 as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_DoomMain() {
+pub unsafe fn D_DoomMain() {
     let mut p: i32 = 0;
     let mut file: [::core::ffi::c_char; 256] = [0; 256];
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
@@ -2741,12 +2708,6 @@ pub unsafe extern "C" fn D_DoomMain() {
     p = M_CheckParm("-turbo");
     if p != 0 {
         let mut scale: i32 = 200 as i32;
-        extern "C" {
-            static mut forwardmove: [i32; 2];
-        }
-        extern "C" {
-            static mut sidemove: [i32; 2];
-        }
         if p < myargv.len() as i32 - 1 as i32 {
             scale = atoi(
                 myargv[(p + 1 as i32) as usize].as_ptr()

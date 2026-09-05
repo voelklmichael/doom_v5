@@ -4,10 +4,23 @@ use crate::src::d_player::{player_t};
 use crate::src::d_ticcmd::{ticcmd_t};
 use crate::src::m_argv::M_CheckParm;
 use crate::src::w_wad::W_CheckNumForName;
+use crate::src::d_main::D_DoAdvanceDemo;
+use crate::src::g_game::G_Ticker;
+use crate::src::d_loop::D_RegisterLoopCallbacks;
+use crate::src::d_loop::D_InitNetGame;
+use crate::src::d_loop::D_StartNetGame;
+use crate::src::d_main::startskill;
+use crate::src::d_main::startepisode;
+use crate::src::d_main::startmap;
+use crate::src::d_main::startloadgame;
+use crate::src::d_main::autostart;
+use crate::src::g_game::lowres_turn;
+use crate::src::w_checksum::W_Checksum;
+use crate::src::d_main::advancedemo;
+
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn D_ProcessEvents();
-    fn D_DoAdvanceDemo();
     fn M_Ticker();
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
@@ -16,24 +29,12 @@ extern "C" {
     ) -> boolean;
     fn G_CheckDemoStatus() -> boolean;
     fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
-    fn G_Ticker();
-    fn D_RegisterLoopCallbacks(i: *mut loop_interface_t);
-    fn D_InitNetGame(connect_data: *mut net_connect_data_t) -> boolean;
-    fn D_StartNetGame(
-        settings: *mut net_gamesettings_t,
-        callback: netgame_startup_callback_t,
-    );
     static mut nomonsters: bool;
     static mut respawnparm: bool;
     static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut startskill: skill_t;
-    static mut startepisode: i32;
-    static mut startmap: i32;
-    static mut startloadgame: i32;
-    static mut autostart: bool;
     static mut timelimit: i32;
     static mut netgame: bool;
     static mut deathmatch: i32;
@@ -41,10 +42,8 @@ extern "C" {
     static mut consoleplayer: i32;
     static mut demoplayback: bool;
     static mut demorecording: bool;
-    static mut lowres_turn: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    fn W_Checksum(digest: *mut byte);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1370,7 +1369,6 @@ pub const false_0: i32 = 0 as i32;
 pub const MAXPLAYERS: i32 = 4 as i32;
 pub const ANG90: i32 = 0x40000000 as i32;
 pub const ANG270: u32 = 0xc0000000 as u32;
-#[no_mangle]
 pub static mut netcmds: *mut ticcmd_t = ::core::ptr::null::<ticcmd_t>() as *mut ticcmd_t;
 unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
@@ -1393,9 +1391,6 @@ unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
     }
 }
 unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
-    extern "C" {
-        static mut advancedemo: bool;
-    }
     let mut i: u32 = 0;
     i = 0 as u32;
     while i < MAXPLAYERS as u32 {
@@ -1484,8 +1479,7 @@ unsafe extern "C" fn InitConnectData(mut connect_data: *mut net_connect_data_t) 
     (*connect_data).is_freedoom = (W_CheckNumForName("FREEDOOM")
         >= 0 as i32) as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_ConnectNetGame() {
+pub unsafe fn D_ConnectNetGame() {
     let mut connect_data: net_connect_data_t = net_connect_data_t {
         gamemode: 0,
         gamemission: 0,

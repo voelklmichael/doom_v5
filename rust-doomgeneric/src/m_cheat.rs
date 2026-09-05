@@ -52,8 +52,7 @@ pub unsafe extern "C" fn cht_CheckCheat(
     }
     return false_0;
 }
-#[no_mangle]
-pub unsafe extern "C" fn cht_GetParam(
+pub unsafe fn cht_GetParam(
     mut cht: *mut cheatseq_t,
     mut buffer: *mut ::core::ffi::c_char,
 ) {
