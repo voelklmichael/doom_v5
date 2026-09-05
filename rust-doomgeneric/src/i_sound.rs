@@ -4,21 +4,7 @@ extern "C" {
     static mut screensaver_mode: boolean;
 }
 pub type boolean = ::core::ffi::c_uint;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sfxinfo_struct {
-    pub tagname: *mut ::core::ffi::c_char,
-    pub name: [::core::ffi::c_char; 9],
-    pub priority: ::core::ffi::c_int,
-    pub link: *mut sfxinfo_t,
-    pub pitch: ::core::ffi::c_int,
-    pub volume: ::core::ffi::c_int,
-    pub usefulness: ::core::ffi::c_int,
-    pub lumpnum: ::core::ffi::c_int,
-    pub numchannels: ::core::ffi::c_int,
-    pub driver_data: *mut ::core::ffi::c_void,
-}
-pub type sfxinfo_t = sfxinfo_struct;
+use crate::src::sounds::sfxinfo_t;
 pub type snddevice_t = ::core::ffi::c_uint;
 pub const SNDDEVICE_CD: snddevice_t = 10;
 pub const SNDDEVICE_AWE32: snddevice_t = 9;

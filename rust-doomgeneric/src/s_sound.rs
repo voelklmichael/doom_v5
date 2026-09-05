@@ -68,29 +68,7 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sfxinfo_struct {
-    pub tagname: *mut ::core::ffi::c_char,
-    pub name: [::core::ffi::c_char; 9],
-    pub priority: ::core::ffi::c_int,
-    pub link: *mut sfxinfo_t,
-    pub pitch: ::core::ffi::c_int,
-    pub volume: ::core::ffi::c_int,
-    pub usefulness: ::core::ffi::c_int,
-    pub lumpnum: ::core::ffi::c_int,
-    pub numchannels: ::core::ffi::c_int,
-    pub driver_data: *mut ::core::ffi::c_void,
-}
-pub type sfxinfo_t = sfxinfo_struct;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct musicinfo_t {
-    pub name: *mut ::core::ffi::c_char,
-    pub lumpnum: ::core::ffi::c_int,
-    pub data: *mut ::core::ffi::c_void,
-    pub handle: *mut ::core::ffi::c_void,
-}
+use crate::src::sounds::{sfxinfo_t, musicinfo_t};
 pub type C2RustUnnamed = ::core::ffi::c_uint;
 pub const SNDDEVICE_CD: C2RustUnnamed = 10;
 pub const SNDDEVICE_AWE32: C2RustUnnamed = 9;

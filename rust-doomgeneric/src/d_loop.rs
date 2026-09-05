@@ -36,20 +36,7 @@ pub const BT_SPECIALMASK: C2RustUnnamed = 3;
 pub const BT_SPECIAL: C2RustUnnamed = 128;
 pub const BT_USE: C2RustUnnamed = 2;
 pub const BT_ATTACK: C2RustUnnamed = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
+pub use crate::src::d_ticcmd::ticcmd_t;
 pub type sha1_digest_t = [byte; 20];
 #[derive(Copy, Clone)]
 #[repr(C)]

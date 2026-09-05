@@ -1,3 +1,4 @@
+use crate::src::sha1::{sha1_context_s, sha1_context_t, SHA1_Init, SHA1_Final, SHA1_UpdateInt32, SHA1_UpdateString};
 extern "C" {
     fn realloc(
         __ptr: *mut ::core::ffi::c_void,
@@ -8,10 +9,6 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    fn SHA1_Init(context: *mut sha1_context_t);
-    fn SHA1_Final(digest: *mut byte, context: *mut sha1_context_t);
-    fn SHA1_UpdateInt32(context: *mut sha1_context_t, val: ::core::ffi::c_uint);
-    fn SHA1_UpdateString(context: *mut sha1_context_t, str: *mut ::core::ffi::c_char);
     static mut lumpinfo: *mut lumpinfo_t;
     static mut numlumps: ::core::ffi::c_uint;
 }
@@ -22,19 +19,6 @@ pub type uint8_t = __uint8_t;
 pub type uint32_t = __uint32_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sha1_context_s {
-    pub h0: uint32_t,
-    pub h1: uint32_t,
-    pub h2: uint32_t,
-    pub h3: uint32_t,
-    pub h4: uint32_t,
-    pub nblocks: uint32_t,
-    pub buf: [byte; 64],
-    pub count: ::core::ffi::c_int,
-}
-pub type sha1_context_t = sha1_context_s;
 pub type lumpinfo_t = lumpinfo_s;
 #[derive(Copy, Clone)]
 #[repr(C)]
