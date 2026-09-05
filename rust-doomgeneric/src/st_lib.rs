@@ -1,3 +1,4 @@
+use crate::src::w_wad::W_CacheLumpName;
 extern "C" {
     fn V_CopyRect(
         srcx: ::core::ffi::c_int,
@@ -10,10 +11,6 @@ extern "C" {
     );
     fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
     fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
     static mut st_backing_screen: *mut byte;
 }
 pub type __uint8_t = u8;
@@ -87,9 +84,7 @@ pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
 pub static mut sttminus: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 #[no_mangle]
 pub unsafe extern "C" fn STlib_init() {
-    sttminus = W_CacheLumpName(
-        b"STTMINUS\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    sttminus = W_CacheLumpName("STTMINUS",
         PU_STATIC as ::core::ffi::c_int,
     ) as *mut patch_t;
 }

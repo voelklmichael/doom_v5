@@ -1,4 +1,7 @@
 use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
+use crate::src::w_wad::{
+    wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
+};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -164,12 +167,6 @@ extern "C" {
     fn AM_Stop();
     fn StatCopy(stats: *mut wbstartstruct_t);
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpName(name: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
@@ -3377,9 +3374,7 @@ pub unsafe extern "C" fn G_ExitLevel() {
 pub unsafe extern "C" fn G_SecretExitLevel() {
     if gamemode as ::core::ffi::c_uint
         == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        && W_CheckNumForName(
-            b"map31\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        && W_CheckNumForName("map31",
         ) < 0 as ::core::ffi::c_int
     {
         secretexit = false_0 as boolean;
@@ -4127,7 +4122,10 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     let mut map: ::core::ffi::c_int = 0;
     let mut demoversion: ::core::ffi::c_int = 0;
     gameaction = ga_nothing;
-    demo_p = W_CacheLumpName(defdemoname, PU_STATIC as ::core::ffi::c_int) as *mut byte;
+    demo_p = W_CacheLumpName(
+        &wad_name8_to_string(defdemoname),
+        PU_STATIC as ::core::ffi::c_int,
+    ) as *mut byte;
     demobuffer = demo_p;
     let fresh24 = demo_p;
     demo_p = demo_p.offset(1);
@@ -4220,7 +4218,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         );
     }
     if demoplayback != 0 {
-        W_ReleaseLumpName(defdemoname);
+        W_ReleaseLumpName(&wad_name8_to_string(defdemoname));
         demoplayback = false_0 as boolean;
         netdemo = false_0 as boolean;
         netgame = false_0 as boolean;

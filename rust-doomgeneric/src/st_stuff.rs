@@ -1,3 +1,6 @@
+use crate::src::w_wad::{
+    wad_name8_to_string, W_CacheLumpName, W_GetNumForName, W_ReleaseLumpName,
+};
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -18,16 +21,10 @@ extern "C" {
         ...
     ) -> ::core::ffi::c_int;
     fn M_Random() -> ::core::ffi::c_int;
-    fn W_GetNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn W_CacheLumpNum(
         lump: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
     ) -> *mut ::core::ffi::c_void;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpName(name: *mut ::core::ffi::c_char);
     fn G_DeferedInitNew(
         skill: skill_t,
         episode: ::core::ffi::c_int,
@@ -3038,8 +3035,10 @@ unsafe extern "C" fn ST_loadCallback(
     mut lumpname: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
-    *variable = W_CacheLumpName(lumpname, PU_STATIC as ::core::ffi::c_int)
-        as *mut patch_t;
+    *variable = W_CacheLumpName(
+        &wad_name8_to_string(lumpname),
+        PU_STATIC as ::core::ffi::c_int,
+    ) as *mut patch_t;
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_loadGraphics() {
@@ -3055,9 +3054,7 @@ pub unsafe extern "C" fn ST_loadGraphics() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_loadData() {
-    lu_palette = W_GetNumForName(
-        b"PLAYPAL\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    lu_palette = W_GetNumForName("PLAYPAL",
     );
     ST_loadGraphics();
 }
@@ -3065,7 +3062,7 @@ unsafe extern "C" fn ST_unloadCallback(
     mut lumpname: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
-    W_ReleaseLumpName(lumpname);
+    W_ReleaseLumpName(&wad_name8_to_string(lumpname));
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
 #[no_mangle]

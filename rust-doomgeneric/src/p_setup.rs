@@ -1,4 +1,5 @@
 use crate::src::m_argv::M_CheckParm;
+use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -35,7 +36,6 @@ extern "C" {
         value: *mut ::core::ffi::c_void,
         size: ::core::ffi::c_int,
     ) -> boolean;
-    fn W_GetNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn W_LumpLength(lump: ::core::ffi::c_uint) -> ::core::ffi::c_int;
     fn W_ReadLump(lump: ::core::ffi::c_uint, dest: *mut ::core::ffi::c_void);
     fn W_CacheLumpNum(
@@ -2658,7 +2658,9 @@ pub unsafe extern "C" fn P_SetupLevel(
             as ::core::ffi::c_char;
         lumpname[4 as ::core::ffi::c_int as usize] = 0 as ::core::ffi::c_char;
     }
-    lumpnum = W_GetNumForName(&raw mut lumpname as *mut ::core::ffi::c_char);
+    lumpnum = W_GetNumForName(
+        &wad_name8_to_string(&raw mut lumpname as *mut ::core::ffi::c_char),
+    );
     leveltime = 0 as ::core::ffi::c_int;
     P_LoadBlockMap(lumpnum + ML_BLOCKMAP as ::core::ffi::c_int);
     P_LoadVertexes(lumpnum + ML_VERTEXES as ::core::ffi::c_int);

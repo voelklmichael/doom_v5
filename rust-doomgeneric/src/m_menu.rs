@@ -1,4 +1,5 @@
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -51,10 +52,6 @@ extern "C" {
         y: ::core::ffi::c_int,
         patch: *mut patch_t,
     );
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
     fn R_SetViewSize(blocks: ::core::ffi::c_int, detail_0: ::core::ffi::c_int);
     fn G_DeferedInitNew(
         skill: skill_t,
@@ -2031,10 +2028,7 @@ pub static mut skullAnimCounter: ::core::ffi::c_short = 0;
 #[no_mangle]
 pub static mut whichSkull: ::core::ffi::c_short = 0;
 #[no_mangle]
-pub static mut skullName: [*mut ::core::ffi::c_char; 2] = [
-    b"M_SKULL1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"M_SKULL2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-];
+pub static skullName: [&str; 2] = ["M_SKULL1", "M_SKULL2"];
 #[no_mangle]
 pub static mut currentMenu: *mut menu_t = ::core::ptr::null::<menu_t>() as *mut menu_t;
 #[no_mangle]
@@ -2664,9 +2658,7 @@ pub unsafe extern "C" fn M_DrawLoad() {
     V_DrawPatchDirect(
         72 as ::core::ffi::c_int,
         28 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_LOADG\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_LOADG",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -2694,9 +2686,7 @@ pub unsafe extern "C" fn M_DrawSaveLoadBorder(
     V_DrawPatchDirect(
         x - 8 as ::core::ffi::c_int,
         y + 7 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_LSLEFT\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_LSLEFT",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -2705,9 +2695,7 @@ pub unsafe extern "C" fn M_DrawSaveLoadBorder(
         V_DrawPatchDirect(
             x,
             y + 7 as ::core::ffi::c_int,
-            W_CacheLumpName(
-                b"M_LSCNTR\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
+            W_CacheLumpName("M_LSCNTR",
                 PU_CACHE as ::core::ffi::c_int,
             ) as *mut patch_t,
         );
@@ -2717,9 +2705,7 @@ pub unsafe extern "C" fn M_DrawSaveLoadBorder(
     V_DrawPatchDirect(
         x,
         y + 7 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_LSRGHT\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_LSRGHT",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -2755,9 +2741,7 @@ pub unsafe extern "C" fn M_DrawSave() {
     V_DrawPatchDirect(
         72 as ::core::ffi::c_int,
         28 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_SAVEG\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_SAVEG",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -2972,7 +2956,10 @@ pub unsafe extern "C" fn M_DrawReadThis1() {
     V_DrawPatchDirect(
         0 as ::core::ffi::c_int,
         0 as ::core::ffi::c_int,
-        W_CacheLumpName(lumpname, PU_CACHE as ::core::ffi::c_int) as *mut patch_t,
+        W_CacheLumpName(
+            &wad_name8_to_string(lumpname),
+            PU_CACHE as ::core::ffi::c_int,
+        ) as *mut patch_t,
     );
     ReadDef1.x = skullx as ::core::ffi::c_short;
     ReadDef1.y = skully as ::core::ffi::c_short;
@@ -2983,9 +2970,7 @@ pub unsafe extern "C" fn M_DrawReadThis2() {
     V_DrawPatchDirect(
         0 as ::core::ffi::c_int,
         0 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"HELP1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("HELP1",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -2995,9 +2980,7 @@ pub unsafe extern "C" fn M_DrawSound() {
     V_DrawPatchDirect(
         60 as ::core::ffi::c_int,
         38 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_SVOL\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_SVOL",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3059,9 +3042,7 @@ pub unsafe extern "C" fn M_DrawMainMenu() {
     V_DrawPatchDirect(
         94 as ::core::ffi::c_int,
         2 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_DOOM\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_DOOM",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3071,18 +3052,14 @@ pub unsafe extern "C" fn M_DrawNewGame() {
     V_DrawPatchDirect(
         96 as ::core::ffi::c_int,
         14 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_NEWG\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_NEWG",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
     V_DrawPatchDirect(
         54 as ::core::ffi::c_int,
         38 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_SKILL\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_SKILL",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3115,9 +3092,7 @@ pub unsafe extern "C" fn M_DrawEpisode() {
     V_DrawPatchDirect(
         54 as ::core::ffi::c_int,
         38 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_EPISOD\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_EPISOD",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3183,22 +3158,14 @@ pub unsafe extern "C" fn M_Episode(mut choice: ::core::ffi::c_int) {
     epi = choice;
     M_SetupNextMenu(&raw mut NewDef);
 }
-static mut detailNames: [*mut ::core::ffi::c_char; 2] = [
-    b"M_GDHIGH\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"M_GDLOW\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-];
-static mut msgNames: [*mut ::core::ffi::c_char; 2] = [
-    b"M_MSGOFF\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"M_MSGON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-];
+static detailNames: [&str; 2] = ["M_GDHIGH", "M_GDLOW"];
+static msgNames: [&str; 2] = ["M_MSGOFF", "M_MSGON"];
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawOptions() {
     V_DrawPatchDirect(
         108 as ::core::ffi::c_int,
         15 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_OPTTTL\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_OPTTTL",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3453,9 +3420,7 @@ pub unsafe extern "C" fn M_DrawThermo(
     V_DrawPatchDirect(
         xx,
         y,
-        W_CacheLumpName(
-            b"M_THERML\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_THERML",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3465,9 +3430,7 @@ pub unsafe extern "C" fn M_DrawThermo(
         V_DrawPatchDirect(
             xx,
             y,
-            W_CacheLumpName(
-                b"M_THERMM\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
+            W_CacheLumpName("M_THERMM",
                 PU_CACHE as ::core::ffi::c_int,
             ) as *mut patch_t,
         );
@@ -3477,18 +3440,14 @@ pub unsafe extern "C" fn M_DrawThermo(
     V_DrawPatchDirect(
         xx,
         y,
-        W_CacheLumpName(
-            b"M_THERMR\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_THERMR",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
     V_DrawPatchDirect(
         x + 8 as ::core::ffi::c_int + thermDot * 8 as ::core::ffi::c_int,
         y,
-        W_CacheLumpName(
-            b"M_THERMO\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_THERMO",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3501,9 +3460,7 @@ pub unsafe extern "C" fn M_DrawEmptyCell(
     V_DrawPatchDirect(
         (*menu).x as ::core::ffi::c_int - 10 as ::core::ffi::c_int,
         (*menu).y as ::core::ffi::c_int + item * LINEHEIGHT - 1 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_CELL1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_CELL1",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3516,9 +3473,7 @@ pub unsafe extern "C" fn M_DrawSelCell(
     V_DrawPatchDirect(
         (*menu).x as ::core::ffi::c_int - 10 as ::core::ffi::c_int,
         (*menu).y as ::core::ffi::c_int + item * LINEHEIGHT - 1 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_CELL2\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("M_CELL2",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
@@ -3963,9 +3918,7 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
                 as *mut [::core::ffi::c_char; 26])
                 .offset(usegamma as isize) as *mut ::core::ffi::c_char;
             I_SetPalette(
-                W_CacheLumpName(
-                    b"PLAYPAL\0" as *const u8 as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char,
+                W_CacheLumpName("PLAYPAL",
                     PU_CACHE as ::core::ffi::c_int,
                 ) as *mut byte,
             );
@@ -4193,7 +4146,10 @@ pub unsafe extern "C" fn M_Drawer() {
             V_DrawPatchDirect(
                 x as ::core::ffi::c_int,
                 y as ::core::ffi::c_int,
-                W_CacheLumpName(name, PU_CACHE as ::core::ffi::c_int) as *mut patch_t,
+                W_CacheLumpName(
+                    &wad_name8_to_string(name),
+                    PU_CACHE as ::core::ffi::c_int,
+                ) as *mut patch_t,
             );
         }
         y = (y as ::core::ffi::c_int + LINEHEIGHT) as ::core::ffi::c_short;

@@ -1,3 +1,4 @@
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -11,10 +12,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
     static mut I_VideoBuffer: *mut byte;
     static mut colormaps: *mut lighttable_t;
     static mut centery: ::core::ffi::c_int;
@@ -664,7 +661,10 @@ pub unsafe extern "C" fn R_FillBackScreen() {
     } else {
         name = name1;
     }
-    src = W_CacheLumpName(name, PU_CACHE as ::core::ffi::c_int) as *mut byte;
+    src = W_CacheLumpName(
+        &wad_name8_to_string(name),
+        PU_CACHE as ::core::ffi::c_int,
+    ) as *mut byte;
     dest = background_buffer;
     y = 0 as ::core::ffi::c_int;
     while y < SCREENHEIGHT - SBARHEIGHT {
@@ -697,9 +697,7 @@ pub unsafe extern "C" fn R_FillBackScreen() {
         y += 1;
     }
     V_UseBuffer(background_buffer);
-    patch = W_CacheLumpName(
-        b"brdr_t\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    patch = W_CacheLumpName("brdr_t",
         PU_CACHE as ::core::ffi::c_int,
     ) as *mut patch_t;
     x = 0 as ::core::ffi::c_int;
@@ -707,9 +705,7 @@ pub unsafe extern "C" fn R_FillBackScreen() {
         V_DrawPatch(viewwindowx + x, viewwindowy - 8 as ::core::ffi::c_int, patch);
         x += 8 as ::core::ffi::c_int;
     }
-    patch = W_CacheLumpName(
-        b"brdr_b\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    patch = W_CacheLumpName("brdr_b",
         PU_CACHE as ::core::ffi::c_int,
     ) as *mut patch_t;
     x = 0 as ::core::ffi::c_int;
@@ -717,9 +713,7 @@ pub unsafe extern "C" fn R_FillBackScreen() {
         V_DrawPatch(viewwindowx + x, viewwindowy + viewheight, patch);
         x += 8 as ::core::ffi::c_int;
     }
-    patch = W_CacheLumpName(
-        b"brdr_l\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    patch = W_CacheLumpName("brdr_l",
         PU_CACHE as ::core::ffi::c_int,
     ) as *mut patch_t;
     y = 0 as ::core::ffi::c_int;
@@ -727,9 +721,7 @@ pub unsafe extern "C" fn R_FillBackScreen() {
         V_DrawPatch(viewwindowx - 8 as ::core::ffi::c_int, viewwindowy + y, patch);
         y += 8 as ::core::ffi::c_int;
     }
-    patch = W_CacheLumpName(
-        b"brdr_r\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    patch = W_CacheLumpName("brdr_r",
         PU_CACHE as ::core::ffi::c_int,
     ) as *mut patch_t;
     y = 0 as ::core::ffi::c_int;
@@ -740,36 +732,28 @@ pub unsafe extern "C" fn R_FillBackScreen() {
     V_DrawPatch(
         viewwindowx - 8 as ::core::ffi::c_int,
         viewwindowy - 8 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"brdr_tl\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("brdr_tl",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
     V_DrawPatch(
         viewwindowx + scaledviewwidth,
         viewwindowy - 8 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"brdr_tr\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("brdr_tr",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
     V_DrawPatch(
         viewwindowx - 8 as ::core::ffi::c_int,
         viewwindowy + viewheight,
-        W_CacheLumpName(
-            b"brdr_bl\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("brdr_bl",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
     V_DrawPatch(
         viewwindowx + scaledviewwidth,
         viewwindowy + viewheight,
-        W_CacheLumpName(
-            b"brdr_br\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        W_CacheLumpName("brdr_br",
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );

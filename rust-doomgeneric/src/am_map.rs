@@ -1,3 +1,4 @@
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_ReleaseLumpName};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -37,11 +38,6 @@ extern "C" {
     static mut lines: *mut line_t;
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpName(name: *mut ::core::ffi::c_char);
     static mut key_map_north: ::core::ffi::c_int;
     static mut key_map_south: ::core::ffi::c_int;
     static mut key_map_east: ::core::ffi::c_int;
@@ -2315,7 +2311,7 @@ pub unsafe extern "C" fn AM_loadPics() {
             i,
         );
         marknums[i as usize] = W_CacheLumpName(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
+            &wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char),
             PU_STATIC as ::core::ffi::c_int,
         ) as *mut patch_t;
         i += 1;
@@ -2333,7 +2329,7 @@ pub unsafe extern "C" fn AM_unloadPics() {
             b"AMMNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
             i,
         );
-        W_ReleaseLumpName(&raw mut namebuf as *mut ::core::ffi::c_char);
+        W_ReleaseLumpName(&wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char));
         i += 1;
     }
 }
