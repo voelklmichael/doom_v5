@@ -1,4 +1,5 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::w_file::wad_file_t;
 extern "C" {
     fn D_TryFindWADByName(
         filename: *mut ::core::ffi::c_char,
@@ -11,30 +12,6 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
-pub type wad_file_t = _wad_file_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _wad_file_s {
-    pub file_class: *mut wad_file_class_t,
-    pub mapped: *mut byte,
-    pub length: ::core::ffi::c_uint,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct wad_file_class_t {
-    pub OpenFile: Option<
-        unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-    >,
-    pub CloseFile: Option<unsafe extern "C" fn(*mut wad_file_t) -> ()>,
-    pub Read: Option<
-        unsafe extern "C" fn(
-            *mut wad_file_t,
-            ::core::ffi::c_uint,
-            *mut ::core::ffi::c_void,
-            size_t,
-        ) -> size_t,
-    >,
-}
 pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
 pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 #[no_mangle]

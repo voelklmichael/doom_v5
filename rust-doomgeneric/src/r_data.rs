@@ -1,3 +1,4 @@
+use crate::src::w_wad::lumpinfo_t;
 use crate::src::r_defs::{side_t, spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{thinker_t, sector_t, actionf_t};
@@ -75,41 +76,6 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _wad_file_s {
-    pub file_class: *mut wad_file_class_t,
-    pub mapped: *mut byte,
-    pub length: ::core::ffi::c_uint,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct wad_file_class_t {
-    pub OpenFile: Option<
-        unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-    >,
-    pub CloseFile: Option<unsafe extern "C" fn(*mut wad_file_t) -> ()>,
-    pub Read: Option<
-        unsafe extern "C" fn(
-            *mut wad_file_t,
-            ::core::ffi::c_uint,
-            *mut ::core::ffi::c_void,
-            size_t,
-        ) -> size_t,
-    >,
-}
-pub type wad_file_t = _wad_file_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lumpinfo_s {
-    pub name: [::core::ffi::c_char; 8],
-    pub wad_file: *mut wad_file_t,
-    pub position: ::core::ffi::c_int,
-    pub size: ::core::ffi::c_int,
-    pub cache: *mut ::core::ffi::c_void,
-    pub next: *mut lumpinfo_t,
-}
-pub type lumpinfo_t = lumpinfo_s;
 pub type weapontype_t = ::core::ffi::c_uint;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;

@@ -1,3 +1,4 @@
+use crate::src::r_data::column_t;
 use crate::src::r_defs::{spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
@@ -78,13 +79,6 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct post_t {
-    pub topdelta: byte,
-    pub length: byte,
-}
-pub type column_t = post_t;
 pub type GameMission_t = ::core::ffi::c_uint;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;

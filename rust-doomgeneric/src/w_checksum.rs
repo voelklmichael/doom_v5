@@ -1,4 +1,6 @@
 use crate::src::sha1::{sha1_context_s, sha1_context_t, SHA1_Init, SHA1_Final, SHA1_UpdateInt32, SHA1_UpdateString};
+use crate::src::w_wad::lumpinfo_t;
+use crate::src::w_file::wad_file_t;
 extern "C" {
     fn realloc(
         __ptr: *mut ::core::ffi::c_void,
@@ -19,41 +21,6 @@ pub type uint8_t = __uint8_t;
 pub type uint32_t = __uint32_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
-pub type lumpinfo_t = lumpinfo_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lumpinfo_s {
-    pub name: [::core::ffi::c_char; 8],
-    pub wad_file: *mut wad_file_t,
-    pub position: ::core::ffi::c_int,
-    pub size: ::core::ffi::c_int,
-    pub cache: *mut ::core::ffi::c_void,
-    pub next: *mut lumpinfo_t,
-}
-pub type wad_file_t = _wad_file_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _wad_file_s {
-    pub file_class: *mut wad_file_class_t,
-    pub mapped: *mut byte,
-    pub length: ::core::ffi::c_uint,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct wad_file_class_t {
-    pub OpenFile: Option<
-        unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-    >,
-    pub CloseFile: Option<unsafe extern "C" fn(*mut wad_file_t) -> ()>,
-    pub Read: Option<
-        unsafe extern "C" fn(
-            *mut wad_file_t,
-            ::core::ffi::c_uint,
-            *mut ::core::ffi::c_void,
-            size_t,
-        ) -> size_t,
-    >,
-}
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

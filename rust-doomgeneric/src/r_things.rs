@@ -1,3 +1,5 @@
+use crate::src::r_data::column_t;
+use crate::src::w_wad::lumpinfo_t;
 use crate::src::r_defs::{drawseg_t, seg_t, spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{sector_t, actionf_t};
@@ -116,41 +118,6 @@ pub const PU_FREE: C2RustUnnamed_0 = 4;
 pub const PU_MUSIC: C2RustUnnamed_0 = 3;
 pub const PU_SOUND: C2RustUnnamed_0 = 2;
 pub const PU_STATIC: C2RustUnnamed_0 = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _wad_file_s {
-    pub file_class: *mut wad_file_class_t,
-    pub mapped: *mut byte,
-    pub length: ::core::ffi::c_uint,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct wad_file_class_t {
-    pub OpenFile: Option<
-        unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-    >,
-    pub CloseFile: Option<unsafe extern "C" fn(*mut wad_file_t) -> ()>,
-    pub Read: Option<
-        unsafe extern "C" fn(
-            *mut wad_file_t,
-            ::core::ffi::c_uint,
-            *mut ::core::ffi::c_void,
-            size_t,
-        ) -> size_t,
-    >,
-}
-pub type wad_file_t = _wad_file_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lumpinfo_s {
-    pub name: [::core::ffi::c_char; 8],
-    pub wad_file: *mut wad_file_t,
-    pub position: ::core::ffi::c_int,
-    pub size: ::core::ffi::c_int,
-    pub cache: *mut ::core::ffi::c_void,
-    pub next: *mut lumpinfo_t,
-}
-pub type lumpinfo_t = lumpinfo_s;
 pub type fixed_t = ::core::ffi::c_int;
 pub type angle_t = ::core::ffi::c_uint;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
@@ -1436,13 +1403,6 @@ pub const MF_NOSECTOR: C2RustUnnamed_1 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_1 = 4;
 pub const MF_SOLID: C2RustUnnamed_1 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_1 = 1;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct post_t {
-    pub topdelta: byte,
-    pub length: byte,
-}
-pub type column_t = post_t;
 pub type lighttable_t = byte;
 #[derive(Copy, Clone)]
 #[repr(C)]

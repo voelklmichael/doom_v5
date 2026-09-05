@@ -1,3 +1,4 @@
+use crate::src::r_data::column_t;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
@@ -47,13 +48,6 @@ pub type uint8_t = __uint8_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
 pub type fixed_t = ::core::ffi::c_int;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct post_t {
-    pub topdelta: byte,
-    pub length: byte,
-}
-pub type column_t = post_t;
 pub type vpatchclipfunc_t = Option<
     unsafe extern "C" fn(*mut patch_t, ::core::ffi::c_int, ::core::ffi::c_int) -> boolean,
 >;

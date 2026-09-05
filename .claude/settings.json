@@ -38,7 +38,9 @@
       "Bash(find *)",
       "Bash(cat *)",
       "Bash(head *)",
-      "Bash(tail *)"
+      "Bash(tail *)",
+      "Bash(cd /home/michael/doom_v5/rust-doomgeneric*)",
+      "Bash(cd /home/michael/doom_v5*)"
     ]
   }
 }
