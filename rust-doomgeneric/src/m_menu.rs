@@ -1,3 +1,4 @@
+use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{actionf_t};
@@ -216,15 +217,6 @@ pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
 pub type C2RustUnnamed = ::core::ffi::c_uint;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;

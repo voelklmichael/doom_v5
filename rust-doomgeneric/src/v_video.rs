@@ -1,3 +1,4 @@
+use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
 extern "C" {
@@ -46,15 +47,6 @@ pub type uint8_t = __uint8_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
 pub type fixed_t = ::core::ffi::c_int;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct post_t {

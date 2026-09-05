@@ -1,3 +1,4 @@
+use crate::src::p_maputl::{divline_t, intercept_t};
 use crate::src::p_mobj::{sector_t, ST_VERTICAL, ST_HORIZONTAL, line_t, subsector_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
@@ -1443,27 +1444,6 @@ pub const MF_NOSECTOR: C2RustUnnamed_0 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_0 = 4;
 pub const MF_SOLID: C2RustUnnamed_0 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_0 = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct divline_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct intercept_t {
-    pub frac: fixed_t,
-    pub isaline: boolean,
-    pub d: C2RustUnnamed_1,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union C2RustUnnamed_1 {
-    pub thing: *mut mobj_t,
-    pub line: *mut line_t,
-}
 pub const sfx_noway: C2RustUnnamed_2 = 81;
 pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
 pub const NUMSFX: C2RustUnnamed_2 = 109;
@@ -2058,7 +2038,7 @@ pub unsafe extern "C" fn P_HitSlideLine(mut ld: *mut line_t) {
 #[no_mangle]
 pub unsafe extern "C" fn PTR_SlideTraverse(mut in_0: *mut intercept_t) -> boolean {
     let mut li: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    if (*in_0).isaline == 0 {
+    if !(*in_0).isaline {
         I_Error("PTR_SlideTraverse: not a line?");
     }
     li = (*in_0).d.line;
@@ -2193,7 +2173,7 @@ pub unsafe extern "C" fn PTR_AimTraverse(mut in_0: *mut intercept_t) -> boolean 
     let mut thingtopslope: fixed_t = 0;
     let mut thingbottomslope: fixed_t = 0;
     let mut dist: fixed_t = 0;
-    if (*in_0).isaline != 0 {
+    if (*in_0).isaline {
         li = (*in_0).d.line;
         if (*li).flags as ::core::ffi::c_int & ML_TWOSIDED == 0 {
             return false_0 as boolean;
@@ -2264,7 +2244,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
     let mut dist: fixed_t = 0;
     let mut thingtopslope: fixed_t = 0;
     let mut thingbottomslope: fixed_t = 0;
-    if (*in_0).isaline != 0 {
+    if (*in_0).isaline {
         li = (*in_0).d.line;
         if (*li).special != 0 {
             P_ShootSpecialLine(shootthing, li);

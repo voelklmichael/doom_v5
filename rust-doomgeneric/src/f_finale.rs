@@ -1,3 +1,4 @@
+use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
 use crate::src::p_mobj::{state_t, mobjinfo_t, actionf_t};
 use crate::src::d_player::{player_t};
@@ -76,15 +77,6 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct post_t {

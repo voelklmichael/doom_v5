@@ -1,3 +1,4 @@
+use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
 use crate::src::d_player::{player_t, PST_LIVE};
 use crate::src::p_mobj::{mobj_t, actionf_t};
@@ -1671,15 +1672,6 @@ pub struct lumpinfo_s {
     pub next: *mut lumpinfo_t,
 }
 pub type lumpinfo_t = lumpinfo_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
 pub type evtype_t = ::core::ffi::c_uint;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
