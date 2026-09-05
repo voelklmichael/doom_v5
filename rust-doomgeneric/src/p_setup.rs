@@ -1,3 +1,4 @@
+use crate::src::m_argv::M_CheckParm;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -20,7 +21,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> ::core::ffi::c_int;
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     fn M_ClearBox(box_0: *mut fixed_t);
     fn M_AddToBox(box_0: *mut fixed_t, x: fixed_t, y: fixed_t);
@@ -2559,11 +2559,7 @@ unsafe extern "C" fn PadRejectArray(mut array: *mut byte, mut len: ::core::ffi::
             len,
             ::core::mem::size_of::<[::core::ffi::c_uint; 4]>() as ::core::ffi::c_int,
         );
-        if M_CheckParm(
-            b"-reject_pad_with_ff\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) != 0
-        {
+        if M_CheckParm("-reject_pad_with_ff") != 0 {
             padvalue = 0xff as ::core::ffi::c_uint;
         } else {
             padvalue = 0xf00 as ::core::ffi::c_uint;

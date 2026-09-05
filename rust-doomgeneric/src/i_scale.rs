@@ -1,3 +1,4 @@
+use crate::src::m_argv::M_CheckParm;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -16,7 +17,6 @@ extern "C" {
         __c: ::core::ffi::c_int,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -1293,11 +1293,7 @@ unsafe extern "C" fn I_Stretch5x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1 as ::core::ffi::c_int;
     }
-    if M_CheckParm(
-        b"-scanline\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-    {
+    if M_CheckParm("-scanline") > 0 as ::core::ffi::c_int {
         screenp = dest_buffer.offset((2 as ::core::ffi::c_int * dest_pitch) as isize);
         y = 0 as ::core::ffi::c_int;
         while y < 1198 as ::core::ffi::c_int {

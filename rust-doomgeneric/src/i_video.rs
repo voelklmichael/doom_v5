@@ -1,10 +1,6 @@
 use ::c2rust_bitfields;
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -233,13 +229,10 @@ pub unsafe extern "C" fn I_InitGraphics() {
     s_Fb.yres = DOOMGENERIC_RESY as uint32_t;
     s_Fb.xres_virtual = s_Fb.xres;
     s_Fb.yres_virtual = s_Fb.yres;
-    gfxmodeparm = M_CheckParmWithArgs(
-        b"-gfxmode\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1 as ::core::ffi::c_int);
     if gfxmodeparm != 0 {
-        mode = *myargv.offset((gfxmodeparm + 1 as ::core::ffi::c_int) as isize);
+        mode = myargv[(gfxmodeparm + 1 as ::core::ffi::c_int) as usize].as_ptr()
+            as *mut ::core::ffi::c_char;
     } else {
         mode = b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char;
@@ -302,13 +295,12 @@ pub unsafe extern "C" fn I_InitGraphics() {
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    i = M_CheckParmWithArgs(
-        b"-scaling\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    i = M_CheckParmWithArgs("-scaling", 1 as ::core::ffi::c_int);
     if i > 0 as ::core::ffi::c_int {
-        i = atoi(*myargv.offset((i + 1 as ::core::ffi::c_int) as isize));
+        i = atoi(
+            myargv[(i + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
         fb_scaling = i;
         printf(
             b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8

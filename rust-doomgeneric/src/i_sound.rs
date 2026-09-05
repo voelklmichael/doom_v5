@@ -1,6 +1,6 @@
+use crate::src::m_argv::M_CheckParm;
 extern "C" {
     static mut screensaver_mode: boolean;
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn M_BindVariable(
         name: *mut ::core::ffi::c_char,
         variable: *mut ::core::ffi::c_void,
@@ -163,18 +163,12 @@ pub unsafe extern "C" fn I_InitSound(mut use_sfx_prefix: boolean) {
     let mut nosound: boolean = 0;
     let mut nosfx: boolean = 0;
     let mut nomusic: boolean = 0;
-    nosound = (M_CheckParm(
-        b"-nosound\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
-    nosfx = (M_CheckParm(
-        b"-nosfx\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
-    nomusic = (M_CheckParm(
-        b"-nomusic\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
+    nosound = (M_CheckParm("-nosound") > 0 as ::core::ffi::c_int) as ::core::ffi::c_int
+        as boolean;
+    nosfx = (M_CheckParm("-nosfx") > 0 as ::core::ffi::c_int) as ::core::ffi::c_int
+        as boolean;
+    nomusic = (M_CheckParm("-nomusic") > 0 as ::core::ffi::c_int) as ::core::ffi::c_int
+        as boolean;
     if nosound == 0 && screensaver_mode == 0 {
         nomusic == 0
             && (snd_musicdevice == SNDDEVICE_GENMIDI as ::core::ffi::c_int

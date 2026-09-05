@@ -1,3 +1,4 @@
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -13,11 +14,6 @@ extern "C" {
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     fn P_Random() -> ::core::ffi::c_int;
     fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
     fn M_StrToInt(
         str: *const ::core::ffi::c_char,
         result: *mut ::core::ffi::c_int,
@@ -2865,14 +2861,11 @@ unsafe extern "C" fn SpechitOverrun(mut ld: *mut line_t) {
     let mut addr: ::core::ffi::c_uint = 0;
     if baseaddr == 0 as ::core::ffi::c_uint {
         let mut p: ::core::ffi::c_int = 0;
-        p = M_CheckParmWithArgs(
-            b"-spechit\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            1 as ::core::ffi::c_int,
-        );
+        p = M_CheckParmWithArgs("-spechit", 1 as ::core::ffi::c_int);
         if p > 0 as ::core::ffi::c_int {
             M_StrToInt(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 &raw mut baseaddr as *mut ::core::ffi::c_int,
             );
         } else {

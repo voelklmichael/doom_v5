@@ -15,7 +15,6 @@ extern "C" {
     pub type _XrmHashBucketRec;
     pub type _XPrivate;
     static mut DG_ScreenBuffer: *mut pixel_t;
-    fn doomgeneric_Create(argc: ::core::ffi::c_int, argv: *mut *mut ::core::ffi::c_char);
     fn doomgeneric_Tick();
     fn __ctype_tolower_loc() -> *mut *const __int32_t;
     fn tolower(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
@@ -1150,34 +1149,13 @@ pub unsafe extern "C" fn DG_SetWindowTitle(mut title: *const ::core::ffi::c_char
         );
     }
 }
-unsafe fn main_0(
-    mut argc: ::core::ffi::c_int,
-    mut argv: *mut *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    doomgeneric_Create(argc, argv);
-    loop {
-        doomgeneric_Tick();
-    };
-}
 pub fn main() {
-    let mut args_strings: Vec<Vec<u8>> = ::std::env::args()
-        .map(|arg| {
-            ::std::ffi::CString::new(arg)
-                .expect("Failed to convert argument into CString.")
-                .into_bytes_with_nul()
-        })
-        .collect();
-    let mut args_ptrs: Vec<*mut ::core::ffi::c_char> = args_strings
-        .iter_mut()
-        .map(|arg| arg.as_mut_ptr() as *mut ::core::ffi::c_char)
-        .chain(::core::iter::once(::core::ptr::null_mut()))
-        .collect();
     unsafe {
-        ::std::process::exit(
-            main_0(
-                (args_ptrs.len() - 1) as ::core::ffi::c_int,
-                args_ptrs.as_mut_ptr() as *mut *mut ::core::ffi::c_char,
-            ) as i32,
-        )
+        ::rust_doomgeneric::src::doomgeneric::doomgeneric_Create(
+            ::std::env::args().collect(),
+        );
+        loop {
+            doomgeneric_Tick();
+        }
     }
 }

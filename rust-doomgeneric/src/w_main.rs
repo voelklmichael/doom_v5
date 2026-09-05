@@ -1,13 +1,8 @@
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
     fn D_TryFindWADByName(
         filename: *mut ::core::ffi::c_char,
     ) -> *mut ::core::ffi::c_char;
-    static mut myargc: ::core::ffi::c_int;
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn W_AddFile(filename: *mut ::core::ffi::c_char) -> *mut wad_file_t;
 }
@@ -46,25 +41,22 @@ pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 pub unsafe extern "C" fn W_ParseCommandLine() -> boolean {
     let mut modifiedgame: boolean = false_0 as boolean;
     let mut p: ::core::ffi::c_int = 0;
-    p = M_CheckParmWithArgs(
-        b"-file\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-file", 1 as ::core::ffi::c_int);
     if p != 0 {
         modifiedgame = true_0 as boolean;
         loop {
             p += 1;
-            if !(p != myargc
-                && *(*myargv.offset(p as isize)).offset(0 as ::core::ffi::c_int as isize)
-                    as ::core::ffi::c_int != '-' as i32)
+            if !(p != myargv.len() as ::core::ffi::c_int
+                && myargv[p as usize].as_bytes().first() != Some(&b'-'))
             {
                 break;
             }
             let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
                 ::core::ffi::c_char,
             >();
-            filename = D_TryFindWADByName(*myargv.offset(p as isize));
+            filename = D_TryFindWADByName(
+                myargv[p as usize].as_ptr() as *mut ::core::ffi::c_char,
+            );
             printf(
                 b" adding %s\n\0" as *const u8 as *const ::core::ffi::c_char,
                 filename,

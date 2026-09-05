@@ -1,3 +1,4 @@
+use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
 extern "C" {
     fn __ctype_b_loc() -> *mut *const ::core::ffi::c_ushort;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
@@ -120,13 +121,6 @@ extern "C" {
         width: ::core::ffi::c_int,
         height: ::core::ffi::c_int,
         ticks: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    static mut myargc: ::core::ffi::c_int;
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
     ) -> ::core::ffi::c_int;
     fn M_LoadDefaults();
     fn M_SaveDefaults();
@@ -2689,14 +2683,11 @@ pub unsafe extern "C" fn D_IdentifyVersion() {
     } else {
         let mut p: ::core::ffi::c_int = 0;
         gamemode = commercial;
-        p = M_CheckParmWithArgs(
-            b"-pack\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            1 as ::core::ffi::c_int,
-        );
+        p = M_CheckParmWithArgs("-pack", 1 as ::core::ffi::c_int);
         if p > 0 as ::core::ffi::c_int {
             SetMissionForPackName(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
             );
         }
     };
@@ -2929,16 +2920,12 @@ static mut gameversions: [C2RustUnnamed_4; 10] = [
 unsafe extern "C" fn InitGameVersion() {
     let mut p: ::core::ffi::c_int = 0;
     let mut i: ::core::ffi::c_int = 0;
-    p = M_CheckParmWithArgs(
-        b"-gameversion\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-gameversion", 1 as ::core::ffi::c_int);
     if p != 0 {
         i = 0 as ::core::ffi::c_int;
         while !gameversions[i as usize].description.is_null() {
             if strcmp(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr(),
                 gameversions[i as usize].cmdline,
             ) == 0
             {
@@ -2965,7 +2952,8 @@ unsafe extern "C" fn InitGameVersion() {
             I_Error(
                 b"Unknown game version '%s'\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
             );
         }
     } else if gamemission as ::core::ffi::c_uint
@@ -3038,10 +3026,7 @@ pub unsafe extern "C" fn PrintGameVersion() {
 unsafe extern "C" fn D_Endoom() {
     let mut endoom: *mut byte = ::core::ptr::null_mut::<byte>();
     if show_endoom == 0 || main_loop_started == 0 || screensaver_mode != 0
-        || M_CheckParm(
-            b"-testcontrols\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) > 0 as ::core::ffi::c_int
+        || M_CheckParm("-testcontrols") > 0 as ::core::ffi::c_int
     {
         return;
     }
@@ -3065,44 +3050,22 @@ pub unsafe extern "C" fn D_DoomMain() {
             as *const ::core::ffi::c_char,
     );
     Z_Init();
-    nomonsters = M_CheckParm(
-        b"-nomonsters\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) as boolean;
-    respawnparm = M_CheckParm(
-        b"-respawn\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) as boolean;
-    fastparm = M_CheckParm(
-        b"-fast\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    ) as boolean;
-    devparm = M_CheckParm(
-        b"-devparm\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) as boolean;
+    nomonsters = M_CheckParm("-nomonsters") as boolean;
+    respawnparm = M_CheckParm("-respawn") as boolean;
+    fastparm = M_CheckParm("-fast") as boolean;
+    devparm = M_CheckParm("-devparm") as boolean;
     I_DisplayFPSDots(devparm);
-    if M_CheckParm(
-        b"-deathmatch\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) != 0
-    {
+    if M_CheckParm("-deathmatch") != 0 {
         deathmatch = 1 as ::core::ffi::c_int;
     }
-    if M_CheckParm(
-        b"-altdeath\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) != 0
-    {
+    if M_CheckParm("-altdeath") != 0 {
         deathmatch = 2 as ::core::ffi::c_int;
     }
     if devparm != 0 {
         printf(D_DEVSTR.as_ptr());
     }
     M_SetConfigDir(::core::ptr::null_mut::<::core::ffi::c_char>());
-    p = M_CheckParm(
-        b"-turbo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    );
+    p = M_CheckParm("-turbo");
     if p != 0 {
         let mut scale: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
         extern "C" {
@@ -3111,8 +3074,11 @@ pub unsafe extern "C" fn D_DoomMain() {
         extern "C" {
             static mut sidemove: [::core::ffi::c_int; 2];
         }
-        if p < myargc - 1 as ::core::ffi::c_int {
-            scale = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+        if p < myargv.len() as ::core::ffi::c_int - 1 as ::core::ffi::c_int {
+            scale = atoi(
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
+            );
         }
         if scale < 10 as ::core::ffi::c_int {
             scale = 10 as ::core::ffi::c_int;
@@ -3181,27 +3147,21 @@ pub unsafe extern "C" fn D_DoomMain() {
         bfgedition = true_0 as boolean;
     }
     modifiedgame = W_ParseCommandLine();
-    p = M_CheckParmWithArgs(
-        b"-playdemo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-playdemo", 1 as ::core::ffi::c_int);
     if p == 0 {
-        p = M_CheckParmWithArgs(
-            b"-timedemo\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            1 as ::core::ffi::c_int,
-        );
+        p = M_CheckParmWithArgs("-timedemo", 1 as ::core::ffi::c_int);
     }
     if p != 0 {
         if M_StringEndsWith(
-            *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+            myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
             b".lmp\0" as *const u8 as *const ::core::ffi::c_char,
         ) != 0
         {
             M_StringCopy(
                 &raw mut file as *mut ::core::ffi::c_char,
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
             );
         } else {
@@ -3209,7 +3169,8 @@ pub unsafe extern "C" fn D_DoomMain() {
                 &raw mut file as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
                 b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
             );
         }
         if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) != 0 {
@@ -3223,7 +3184,8 @@ pub unsafe extern "C" fn D_DoomMain() {
         } else {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         }
@@ -3397,84 +3359,65 @@ pub unsafe extern "C" fn D_DoomMain() {
     startepisode = 1 as ::core::ffi::c_int;
     startmap = 1 as ::core::ffi::c_int;
     autostart = false_0 as boolean;
-    p = M_CheckParmWithArgs(
-        b"-skill\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-skill", 1 as ::core::ffi::c_int);
     if p != 0 {
-        startskill = (*(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize))
-            .offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int - '1' as i32)
-            as skill_t;
+        startskill = (myargv[(p + 1 as ::core::ffi::c_int) as usize].as_bytes().first().copied().unwrap_or(0)
+            as ::core::ffi::c_int - '1' as i32) as skill_t;
         autostart = true_0 as boolean;
     }
-    p = M_CheckParmWithArgs(
-        b"-episode\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-episode", 1 as ::core::ffi::c_int);
     if p != 0 {
-        startepisode = *(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize))
-            .offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int - '0' as i32;
+        startepisode = myargv[(p + 1 as ::core::ffi::c_int) as usize].as_bytes().first().copied().unwrap_or(0)
+            as ::core::ffi::c_int - '0' as i32;
         startmap = 1 as ::core::ffi::c_int;
         autostart = true_0 as boolean;
     }
     timelimit = 0 as ::core::ffi::c_int;
-    p = M_CheckParmWithArgs(
-        b"-timer\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-timer", 1 as ::core::ffi::c_int);
     if p != 0 {
-        timelimit = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+        timelimit = atoi(
+            myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
     }
-    p = M_CheckParm(
-        b"-avg\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    );
+    p = M_CheckParm("-avg");
     if p != 0 {
         timelimit = 20 as ::core::ffi::c_int;
     }
-    p = M_CheckParmWithArgs(
-        b"-warp\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-warp", 1 as ::core::ffi::c_int);
     if p != 0 {
         if gamemode as ::core::ffi::c_uint
             == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
         {
-            startmap = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+            startmap = atoi(
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
+            );
         } else {
-            startepisode = *(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize))
-                .offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int
-                - '0' as i32;
-            if (p + 2 as ::core::ffi::c_int) < myargc {
-                startmap = *(*myargv.offset((p + 2 as ::core::ffi::c_int) as isize))
-                    .offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int
-                    - '0' as i32;
+            startepisode = myargv[(p + 1 as ::core::ffi::c_int) as usize].as_bytes().first().copied().unwrap_or(0)
+                as ::core::ffi::c_int - '0' as i32;
+            if (p + 2 as ::core::ffi::c_int) < myargv.len() as ::core::ffi::c_int {
+                startmap = myargv[(p + 2 as ::core::ffi::c_int) as usize].as_bytes().first().copied().unwrap_or(0)
+                    as ::core::ffi::c_int - '0' as i32;
             } else {
                 startmap = 1 as ::core::ffi::c_int;
             }
         }
         autostart = true_0 as boolean;
     }
-    p = M_CheckParm(
-        b"-testcontrols\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    );
+    p = M_CheckParm("-testcontrols");
     if p > 0 as ::core::ffi::c_int {
         startepisode = 1 as ::core::ffi::c_int;
         startmap = 1 as ::core::ffi::c_int;
         autostart = true_0 as boolean;
         testcontrols = true_0 as boolean;
     }
-    p = M_CheckParmWithArgs(
-        b"-loadgame\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-loadgame", 1 as ::core::ffi::c_int);
     if p != 0 {
-        startloadgame = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+        startloadgame = atoi(
+            myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
     } else {
         startloadgame = -(1 as ::core::ffi::c_int);
     }
@@ -3516,43 +3459,29 @@ pub unsafe extern "C" fn D_DoomMain() {
     {
         storedemo = true_0 as boolean;
     }
-    if M_CheckParmWithArgs(
-        b"-statdump\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    ) != 0
-    {
+    if M_CheckParmWithArgs("-statdump", 1 as ::core::ffi::c_int) != 0 {
         I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true_0 as boolean);
         printf(
             b"External statistics registered.\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
     }
-    p = M_CheckParmWithArgs(
-        b"-record\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-record", 1 as ::core::ffi::c_int);
     if p != 0 {
-        G_RecordDemo(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+        G_RecordDemo(
+            myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
         autostart = true_0 as boolean;
     }
-    p = M_CheckParmWithArgs(
-        b"-playdemo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-playdemo", 1 as ::core::ffi::c_int);
     if p != 0 {
         singledemo = true_0 as boolean;
         G_DeferedPlayDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop();
         return;
     }
-    p = M_CheckParmWithArgs(
-        b"-timedemo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-timedemo", 1 as ::core::ffi::c_int);
     if p != 0 {
         G_TimeDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop();
