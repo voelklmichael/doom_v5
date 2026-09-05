@@ -1850,13 +1850,13 @@ pub struct textscreen_t {
     pub mission: GameMission_t,
     pub episode: ::core::ffi::c_int,
     pub level: ::core::ffi::c_int,
-    pub background: *mut ::core::ffi::c_char,
-    pub text: *mut ::core::ffi::c_char,
+    pub background: &'static str,
+    pub text: &'static str,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct castinfo_t {
-    pub name: *mut ::core::ffi::c_char,
+    pub name: Option<&'static str>,
     pub type_0: mobjtype_t,
 }
 pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
@@ -1865,239 +1865,45 @@ pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
 pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const E1TEXT: [::core::ffi::c_char; 441] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 441],
-        [::core::ffi::c_char; 441],
-    >(
-        *b"Once you beat the big badasses and\nclean out the moon base you're supposed\nto win, aren't you? Aren't you? Where's\nyour fat reward and ticket home? What\nthe hell is this? It's not supposed to\nend this way!\n\nIt stinks like rotten meat, but looks\nlike the lost Deimos base.  Looks like\nyou're stuck on The Shores of Hell.\nThe only way out is through.\n\nTo continue the DOOM experience, play\nThe Shores of Hell and its amazing\nsequel, Inferno!\n\0",
-    )
-};
-pub const E2TEXT: [::core::ffi::c_char; 467] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 467],
-        [::core::ffi::c_char; 467],
-    >(
-        *b"You've done it! The hideous cyber-\ndemon lord that ruled the lost Deimos\nmoon base has been slain and you\nare triumphant! But ... where are\nyou? You clamber to the edge of the\nmoon and look down to see the awful\ntruth.\n\nDeimos floats above Hell itself!\nYou've never heard of anyone escaping\nfrom Hell, but you'll make the bastards\nsorry they ever heard of you! Quickly,\nyou rappel down to  the surface of\nHell.\n\nNow, it's on to the final chapter of\nDOOM! -- Inferno.\0",
-    )
-};
-pub const E3TEXT: [::core::ffi::c_char; 493] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 493],
-        [::core::ffi::c_char; 493],
-    >(
-        *b"The loathsome spiderdemon that\nmasterminded the invasion of the moon\nbases and caused so much death has had\nits ass kicked for all time.\n\nA hidden doorway opens and you enter.\nYou've proven too tough for Hell to\ncontain, and now Hell at last plays\nfair -- for you emerge from the door\nto see the green fields of Earth!\nHome at last.\n\nYou wonder what's been happening on\nEarth while you were battling evil\nunleashed. It's good that no Hell-\nspawn could have come through that\ndoor with you ...\0",
-    )
-};
-pub const E4TEXT: [::core::ffi::c_char; 504] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 504],
-        [::core::ffi::c_char; 504],
-    >(
-        *b"the spider mastermind must have sent forth\nits legions of hellspawn before your\nfinal confrontation with that terrible\nbeast from hell.  but you stepped forward\nand brought forth eternal damnation and\nsuffering upon the horde as a true hero\nwould in the face of something so evil.\n\nbesides, someone was gonna pay for what\nhappened to daisy, your pet rabbit.\n\nbut now, you see spread before you more\npotential pain and gibbitude as a nation\nof demons run amok among our cities.\n\nnext stop, hell on earth!\0",
-    )
-};
-pub const C1TEXT: [::core::ffi::c_char; 406] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 406],
-        [::core::ffi::c_char; 406],
-    >(
-        *b"YOU HAVE ENTERED DEEPLY INTO THE INFESTED\nSTARPORT. BUT SOMETHING IS WRONG. THE\nMONSTERS HAVE BROUGHT THEIR OWN REALITY\nWITH THEM, AND THE STARPORT'S TECHNOLOGY\nIS BEING SUBVERTED BY THEIR PRESENCE.\n\nAHEAD, YOU SEE AN OUTPOST OF HELL, A\nFORTIFIED ZONE. IF YOU CAN GET PAST IT,\nYOU CAN PENETRATE INTO THE HAUNTED HEART\nOF THE STARBASE AND FIND THE CONTROLLING\nSWITCH WHICH HOLDS EARTH'S POPULATION\nHOSTAGE.\0",
-    )
-};
-pub const C2TEXT: [::core::ffi::c_char; 618] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 618],
-        [::core::ffi::c_char; 618],
-    >(
-        *b"YOU HAVE WON! YOUR VICTORY HAS ENABLED\nHUMANKIND TO EVACUATE EARTH AND ESCAPE\nTHE NIGHTMARE.  NOW YOU ARE THE ONLY\nHUMAN LEFT ON THE FACE OF THE PLANET.\nCANNIBAL MUTATIONS, CARNIVOROUS ALIENS,\nAND EVIL SPIRITS ARE YOUR ONLY NEIGHBORS.\nYOU SIT BACK AND WAIT FOR DEATH, CONTENT\nTHAT YOU HAVE SAVED YOUR SPECIES.\n\nBUT THEN, EARTH CONTROL BEAMS DOWN A\nMESSAGE FROM SPACE: \"SENSORS HAVE LOCATED\nTHE SOURCE OF THE ALIEN INVASION. IF YOU\nGO THERE, YOU MAY BE ABLE TO BLOCK THEIR\nENTRY.  THE ALIEN BASE IS IN THE HEART OF\nYOUR OWN HOME CITY, NOT FAR FROM THE\nSTARPORT.\" SLOWLY AND PAINFULLY YOU GET\nUP AND RETURN TO THE FRAY.\0",
-    )
-};
-pub const C3TEXT: [::core::ffi::c_char; 313] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 313],
-        [::core::ffi::c_char; 313],
-    >(
-        *b"YOU ARE AT THE CORRUPT HEART OF THE CITY,\nSURROUNDED BY THE CORPSES OF YOUR ENEMIES.\nYOU SEE NO WAY TO DESTROY THE CREATURES'\nENTRYWAY ON THIS SIDE, SO YOU CLENCH YOUR\nTEETH AND PLUNGE THROUGH IT.\n\nTHERE MUST BE A WAY TO CLOSE IT ON THE\nOTHER SIDE. WHAT DO YOU CARE IF YOU'VE\nGOT TO GO THROUGH HELL TO GET TO IT?\0",
-    )
-};
-pub const C4TEXT: [::core::ffi::c_char; 495] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 495],
-        [::core::ffi::c_char; 495],
-    >(
-        *b"THE HORRENDOUS VISAGE OF THE BIGGEST\nDEMON YOU'VE EVER SEEN CRUMBLES BEFORE\nYOU, AFTER YOU PUMP YOUR ROCKETS INTO\nHIS EXPOSED BRAIN. THE MONSTER SHRIVELS\nUP AND DIES, ITS THRASHING LIMBS\nDEVASTATING UNTOLD MILES OF HELL'S\nSURFACE.\n\nYOU'VE DONE IT. THE INVASION IS OVER.\nEARTH IS SAVED. HELL IS A WRECK. YOU\nWONDER WHERE BAD FOLKS WILL GO WHEN THEY\nDIE, NOW. WIPING THE SWEAT FROM YOUR\nFOREHEAD YOU BEGIN THE LONG TREK BACK\nHOME. REBUILDING EARTH OUGHT TO BE A\nLOT MORE FUN THAN RUINING IT WAS.\n\0",
-    )
-};
-pub const C5TEXT: [::core::ffi::c_char; 165] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 165],
-        [::core::ffi::c_char; 165],
-    >(
-        *b"CONGRATULATIONS, YOU'VE FOUND THE SECRET\nLEVEL! LOOKS LIKE IT'S BEEN BUILT BY\nHUMANS, RATHER THAN DEMONS. YOU WONDER\nWHO THE INMATES OF THIS CORNER OF HELL\nWILL BE.\0",
-    )
-};
-pub const C6TEXT: [::core::ffi::c_char; 93] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 93],
-        [::core::ffi::c_char; 93],
-    >(
-        *b"CONGRATULATIONS, YOU'VE FOUND THE\nSUPER SECRET LEVEL!  YOU'D BETTER\nBLAZE THROUGH THIS ONE!\n\0",
-    )
-};
-pub const P1TEXT: [::core::ffi::c_char; 434] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 434],
-        [::core::ffi::c_char; 434],
-    >(
-        *b"You gloat over the steaming carcass of the\nGuardian.  With its death, you've wrested\nthe Accelerator from the stinking claws\nof Hell.  You relax and glance around the\nroom.  Damn!  There was supposed to be at\nleast one working prototype, but you can't\nsee it. The demons must have taken it.\n\nYou must find the prototype, or all your\nstruggles will have been wasted. Keep\nmoving, keep fighting, keep killing.\nOh yes, keep living, too.\0",
-    )
-};
-pub const P2TEXT: [::core::ffi::c_char; 194] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 194],
-        [::core::ffi::c_char; 194],
-    >(
-        *b"Even the deadly Arch-Vile labyrinth could\nnot stop you, and you've gotten to the\nprototype Accelerator which is soon\nefficiently and permanently deactivated.\n\nYou're good at that kind of thing.\0",
-    )
-};
-pub const P3TEXT: [::core::ffi::c_char; 329] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 329],
-        [::core::ffi::c_char; 329],
-    >(
-        *b"You've bashed and battered your way into\nthe heart of the devil-hive.  Time for a\nSearch-and-Destroy mission, aimed at the\nGatekeeper, whose foul offspring is\ncascading to Earth.  Yeah, he's bad. But\nyou know who's worse!\n\nGrinning evilly, you check your gear, and\nget ready to give the bastard a little Hell\nof your own making!\0",
-    )
-};
-pub const P4TEXT: [::core::ffi::c_char; 461] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 461],
-        [::core::ffi::c_char; 461],
-    >(
-        *b"The Gatekeeper's evil face is splattered\nall over the place.  As its tattered corpse\ncollapses, an inverted Gate forms and\nsucks down the shards of the last\nprototype Accelerator, not to mention the\nfew remaining demons.  You're done. Hell\nhas gone back to pounding bad dead folks \ninstead of good live ones.  Remember to\ntell your grandkids to put a rocket\nlauncher in your coffin. If you go to Hell\nwhen you die, you'll need it for some\nfinal cleaning-up ...\0",
-    )
-};
-pub const P5TEXT: [::core::ffi::c_char; 160] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 160],
-        [::core::ffi::c_char; 160],
-    >(
-        *b"You've found the second-hardest level we\ngot. Hope you have a saved game a level or\ntwo previous.  If not, be prepared to die\naplenty. For master marines only.\0",
-    )
-};
-pub const P6TEXT: [::core::ffi::c_char; 107] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 107],
-        [::core::ffi::c_char; 107],
-    >(
-        *b"Betcha wondered just what WAS the hardest\nlevel we had ready for ya?  Now you know.\nNo one gets out alive.\0",
-    )
-};
-pub const T1TEXT: [::core::ffi::c_char; 390] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 390],
-        [::core::ffi::c_char; 390],
-    >(
-        *b"You've fought your way out of the infested\nexperimental labs.   It seems that UAC has\nonce again gulped it down.  With their\nhigh turnover, it must be hard for poor\nold UAC to buy corporate health insurance\nnowadays..\n\nAhead lies the military complex, now\nswarming with diseased horrors hot to get\ntheir teeth into you. With luck, the\ncomplex still has some warlike ordnance\nlaying around.\0",
-    )
-};
-pub const T2TEXT: [::core::ffi::c_char; 311] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 311],
-        [::core::ffi::c_char; 311],
-    >(
-        *b"You hear the grinding of heavy machinery\nahead.  You sure hope they're not stamping\nout new hellspawn, but you're ready to\nream out a whole herd if you have to.\nThey might be planning a blood feast, but\nyou feel about as mean as two thousand\nmaniacs packed into one mad killer.\n\nYou don't plan to go down easy.\0",
-    )
-};
-pub const T3TEXT: [::core::ffi::c_char; 310] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 310],
-        [::core::ffi::c_char; 310],
-    >(
-        *b"The vista opening ahead looks real damn\nfamiliar. Smells familiar, too -- like\nfried excrement. You didn't like this\nplace before, and you sure as hell ain't\nplanning to like it now. The more you\nbrood on it, the madder you get.\nHefting your gun, an evil grin trickles\nonto your face. Time to take some names.\0",
-    )
-};
-pub const T4TEXT: [::core::ffi::c_char; 386] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 386],
-        [::core::ffi::c_char; 386],
-    >(
-        *b"Suddenly, all is silent, from one horizon\nto the other. The agonizing echo of Hell\nfades away, the nightmare sky turns to\nblue, the heaps of monster corpses start \nto evaporate along with the evil stench \nthat filled the air. Jeeze, maybe you've\ndone it. Have you really won?\n\nSomething rumbles in the distance.\nA blue light begins to glow inside the\nruined skull of the demon-spitter.\0",
-    )
-};
-pub const T5TEXT: [::core::ffi::c_char; 174] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 174],
-        [::core::ffi::c_char; 174],
-    >(
-        *b"What now? Looks totally different. Kind\nof like King Tut's condo. Well,\nwhatever's here can't be any worse\nthan usual. Can it?  Or maybe it's best\nto let sleeping gods lie..\0",
-    )
-};
-pub const T6TEXT: [::core::ffi::c_char; 354] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 354],
-        [::core::ffi::c_char; 354],
-    >(
-        *b"Time for a vacation. You've burst the\nbowels of hell and by golly you're ready\nfor a break. You mutter to yourself,\nMaybe someone else can kick Hell's ass\nnext time around. Ahead lies a quiet town,\nwith peaceful flowing water, quaint\nbuildings, and presumably no Hellspawn.\n\nAs you step off the transport, you hear\nthe stomp of a cyberdemon's iron shoe.\0",
-    )
-};
-pub const CC_ZOMBIE: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"ZOMBIEMAN\0")
-};
-pub const CC_SHOTGUN: [::core::ffi::c_char; 12] = unsafe {
-    ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"SHOTGUN GUY\0")
-};
-pub const CC_HEAVY: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"HEAVY WEAPON DUDE\0")
-};
-pub const CC_IMP: [::core::ffi::c_char; 4] = unsafe {
-    ::core::mem::transmute::<[u8; 4], [::core::ffi::c_char; 4]>(*b"IMP\0")
-};
-pub const CC_DEMON: [::core::ffi::c_char; 6] = unsafe {
-    ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"DEMON\0")
-};
-pub const CC_LOST: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"LOST SOUL\0")
-};
-pub const CC_CACO: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"CACODEMON\0")
-};
-pub const CC_HELL: [::core::ffi::c_char; 12] = unsafe {
-    ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"HELL KNIGHT\0")
-};
-pub const CC_BARON: [::core::ffi::c_char; 14] = unsafe {
-    ::core::mem::transmute::<[u8; 14], [::core::ffi::c_char; 14]>(*b"BARON OF HELL\0")
-};
-pub const CC_ARACH: [::core::ffi::c_char; 12] = unsafe {
-    ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"ARACHNOTRON\0")
-};
-pub const CC_PAIN: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"PAIN ELEMENTAL\0")
-};
-pub const CC_REVEN: [::core::ffi::c_char; 9] = unsafe {
-    ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"REVENANT\0")
-};
-pub const CC_MANCU: [::core::ffi::c_char; 9] = unsafe {
-    ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"MANCUBUS\0")
-};
-pub const CC_ARCH: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"ARCH-VILE\0")
-};
-pub const CC_SPIDER: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"THE SPIDER MASTERMIND\0")
-};
-pub const CC_CYBER: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"THE CYBERDEMON\0")
-};
-pub const CC_HERO: [::core::ffi::c_char; 9] = unsafe {
-    ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"OUR HERO\0")
-};
+pub const E1TEXT: &str = "Once you beat the big badasses and\nclean out the moon base you're supposed\nto win, aren't you? Aren't you? Where's\nyour fat reward and ticket home? What\nthe hell is this? It's not supposed to\nend this way!\n\nIt stinks like rotten meat, but looks\nlike the lost Deimos base.  Looks like\nyou're stuck on The Shores of Hell.\nThe only way out is through.\n\nTo continue the DOOM experience, play\nThe Shores of Hell and its amazing\nsequel, Inferno!\n";
+pub const E2TEXT: &str = "You've done it! The hideous cyber-\ndemon lord that ruled the lost Deimos\nmoon base has been slain and you\nare triumphant! But ... where are\nyou? You clamber to the edge of the\nmoon and look down to see the awful\ntruth.\n\nDeimos floats above Hell itself!\nYou've never heard of anyone escaping\nfrom Hell, but you'll make the bastards\nsorry they ever heard of you! Quickly,\nyou rappel down to  the surface of\nHell.\n\nNow, it's on to the final chapter of\nDOOM! -- Inferno.";
+pub const E3TEXT: &str = "The loathsome spiderdemon that\nmasterminded the invasion of the moon\nbases and caused so much death has had\nits ass kicked for all time.\n\nA hidden doorway opens and you enter.\nYou've proven too tough for Hell to\ncontain, and now Hell at last plays\nfair -- for you emerge from the door\nto see the green fields of Earth!\nHome at last.\n\nYou wonder what's been happening on\nEarth while you were battling evil\nunleashed. It's good that no Hell-\nspawn could have come through that\ndoor with you ...";
+pub const E4TEXT: &str = "the spider mastermind must have sent forth\nits legions of hellspawn before your\nfinal confrontation with that terrible\nbeast from hell.  but you stepped forward\nand brought forth eternal damnation and\nsuffering upon the horde as a true hero\nwould in the face of something so evil.\n\nbesides, someone was gonna pay for what\nhappened to daisy, your pet rabbit.\n\nbut now, you see spread before you more\npotential pain and gibbitude as a nation\nof demons run amok among our cities.\n\nnext stop, hell on earth!";
+pub const C1TEXT: &str = "YOU HAVE ENTERED DEEPLY INTO THE INFESTED\nSTARPORT. BUT SOMETHING IS WRONG. THE\nMONSTERS HAVE BROUGHT THEIR OWN REALITY\nWITH THEM, AND THE STARPORT'S TECHNOLOGY\nIS BEING SUBVERTED BY THEIR PRESENCE.\n\nAHEAD, YOU SEE AN OUTPOST OF HELL, A\nFORTIFIED ZONE. IF YOU CAN GET PAST IT,\nYOU CAN PENETRATE INTO THE HAUNTED HEART\nOF THE STARBASE AND FIND THE CONTROLLING\nSWITCH WHICH HOLDS EARTH'S POPULATION\nHOSTAGE.";
+pub const C2TEXT: &str = "YOU HAVE WON! YOUR VICTORY HAS ENABLED\nHUMANKIND TO EVACUATE EARTH AND ESCAPE\nTHE NIGHTMARE.  NOW YOU ARE THE ONLY\nHUMAN LEFT ON THE FACE OF THE PLANET.\nCANNIBAL MUTATIONS, CARNIVOROUS ALIENS,\nAND EVIL SPIRITS ARE YOUR ONLY NEIGHBORS.\nYOU SIT BACK AND WAIT FOR DEATH, CONTENT\nTHAT YOU HAVE SAVED YOUR SPECIES.\n\nBUT THEN, EARTH CONTROL BEAMS DOWN A\nMESSAGE FROM SPACE: \"SENSORS HAVE LOCATED\nTHE SOURCE OF THE ALIEN INVASION. IF YOU\nGO THERE, YOU MAY BE ABLE TO BLOCK THEIR\nENTRY.  THE ALIEN BASE IS IN THE HEART OF\nYOUR OWN HOME CITY, NOT FAR FROM THE\nSTARPORT.\" SLOWLY AND PAINFULLY YOU GET\nUP AND RETURN TO THE FRAY.";
+pub const C3TEXT: &str = "YOU ARE AT THE CORRUPT HEART OF THE CITY,\nSURROUNDED BY THE CORPSES OF YOUR ENEMIES.\nYOU SEE NO WAY TO DESTROY THE CREATURES'\nENTRYWAY ON THIS SIDE, SO YOU CLENCH YOUR\nTEETH AND PLUNGE THROUGH IT.\n\nTHERE MUST BE A WAY TO CLOSE IT ON THE\nOTHER SIDE. WHAT DO YOU CARE IF YOU'VE\nGOT TO GO THROUGH HELL TO GET TO IT?";
+pub const C4TEXT: &str = "THE HORRENDOUS VISAGE OF THE BIGGEST\nDEMON YOU'VE EVER SEEN CRUMBLES BEFORE\nYOU, AFTER YOU PUMP YOUR ROCKETS INTO\nHIS EXPOSED BRAIN. THE MONSTER SHRIVELS\nUP AND DIES, ITS THRASHING LIMBS\nDEVASTATING UNTOLD MILES OF HELL'S\nSURFACE.\n\nYOU'VE DONE IT. THE INVASION IS OVER.\nEARTH IS SAVED. HELL IS A WRECK. YOU\nWONDER WHERE BAD FOLKS WILL GO WHEN THEY\nDIE, NOW. WIPING THE SWEAT FROM YOUR\nFOREHEAD YOU BEGIN THE LONG TREK BACK\nHOME. REBUILDING EARTH OUGHT TO BE A\nLOT MORE FUN THAN RUINING IT WAS.\n";
+pub const C5TEXT: &str = "CONGRATULATIONS, YOU'VE FOUND THE SECRET\nLEVEL! LOOKS LIKE IT'S BEEN BUILT BY\nHUMANS, RATHER THAN DEMONS. YOU WONDER\nWHO THE INMATES OF THIS CORNER OF HELL\nWILL BE.";
+pub const C6TEXT: &str = "CONGRATULATIONS, YOU'VE FOUND THE\nSUPER SECRET LEVEL!  YOU'D BETTER\nBLAZE THROUGH THIS ONE!\n";
+pub const P1TEXT: &str = "You gloat over the steaming carcass of the\nGuardian.  With its death, you've wrested\nthe Accelerator from the stinking claws\nof Hell.  You relax and glance around the\nroom.  Damn!  There was supposed to be at\nleast one working prototype, but you can't\nsee it. The demons must have taken it.\n\nYou must find the prototype, or all your\nstruggles will have been wasted. Keep\nmoving, keep fighting, keep killing.\nOh yes, keep living, too.";
+pub const P2TEXT: &str = "Even the deadly Arch-Vile labyrinth could\nnot stop you, and you've gotten to the\nprototype Accelerator which is soon\nefficiently and permanently deactivated.\n\nYou're good at that kind of thing.";
+pub const P3TEXT: &str = "You've bashed and battered your way into\nthe heart of the devil-hive.  Time for a\nSearch-and-Destroy mission, aimed at the\nGatekeeper, whose foul offspring is\ncascading to Earth.  Yeah, he's bad. But\nyou know who's worse!\n\nGrinning evilly, you check your gear, and\nget ready to give the bastard a little Hell\nof your own making!";
+pub const P4TEXT: &str = "The Gatekeeper's evil face is splattered\nall over the place.  As its tattered corpse\ncollapses, an inverted Gate forms and\nsucks down the shards of the last\nprototype Accelerator, not to mention the\nfew remaining demons.  You're done. Hell\nhas gone back to pounding bad dead folks \ninstead of good live ones.  Remember to\ntell your grandkids to put a rocket\nlauncher in your coffin. If you go to Hell\nwhen you die, you'll need it for some\nfinal cleaning-up ...";
+pub const P5TEXT: &str = "You've found the second-hardest level we\ngot. Hope you have a saved game a level or\ntwo previous.  If not, be prepared to die\naplenty. For master marines only.";
+pub const P6TEXT: &str = "Betcha wondered just what WAS the hardest\nlevel we had ready for ya?  Now you know.\nNo one gets out alive.";
+pub const T1TEXT: &str = "You've fought your way out of the infested\nexperimental labs.   It seems that UAC has\nonce again gulped it down.  With their\nhigh turnover, it must be hard for poor\nold UAC to buy corporate health insurance\nnowadays..\n\nAhead lies the military complex, now\nswarming with diseased horrors hot to get\ntheir teeth into you. With luck, the\ncomplex still has some warlike ordnance\nlaying around.";
+pub const T2TEXT: &str = "You hear the grinding of heavy machinery\nahead.  You sure hope they're not stamping\nout new hellspawn, but you're ready to\nream out a whole herd if you have to.\nThey might be planning a blood feast, but\nyou feel about as mean as two thousand\nmaniacs packed into one mad killer.\n\nYou don't plan to go down easy.";
+pub const T3TEXT: &str = "The vista opening ahead looks real damn\nfamiliar. Smells familiar, too -- like\nfried excrement. You didn't like this\nplace before, and you sure as hell ain't\nplanning to like it now. The more you\nbrood on it, the madder you get.\nHefting your gun, an evil grin trickles\nonto your face. Time to take some names.";
+pub const T4TEXT: &str = "Suddenly, all is silent, from one horizon\nto the other. The agonizing echo of Hell\nfades away, the nightmare sky turns to\nblue, the heaps of monster corpses start \nto evaporate along with the evil stench \nthat filled the air. Jeeze, maybe you've\ndone it. Have you really won?\n\nSomething rumbles in the distance.\nA blue light begins to glow inside the\nruined skull of the demon-spitter.";
+pub const T5TEXT: &str = "What now? Looks totally different. Kind\nof like King Tut's condo. Well,\nwhatever's here can't be any worse\nthan usual. Can it?  Or maybe it's best\nto let sleeping gods lie..";
+pub const T6TEXT: &str = "Time for a vacation. You've burst the\nbowels of hell and by golly you're ready\nfor a break. You mutter to yourself,\nMaybe someone else can kick Hell's ass\nnext time around. Ahead lies a quiet town,\nwith peaceful flowing water, quaint\nbuildings, and presumably no Hellspawn.\n\nAs you step off the transport, you hear\nthe stomp of a cyberdemon's iron shoe.";
+pub const CC_ZOMBIE: &str = "ZOMBIEMAN";
+pub const CC_SHOTGUN: &str = "SHOTGUN GUY";
+pub const CC_HEAVY: &str = "HEAVY WEAPON DUDE";
+pub const CC_IMP: &str = "IMP";
+pub const CC_DEMON: &str = "DEMON";
+pub const CC_LOST: &str = "LOST SOUL";
+pub const CC_CACO: &str = "CACODEMON";
+pub const CC_HELL: &str = "HELL KNIGHT";
+pub const CC_BARON: &str = "BARON OF HELL";
+pub const CC_ARACH: &str = "ARACHNOTRON";
+pub const CC_PAIN: &str = "PAIN ELEMENTAL";
+pub const CC_REVEN: &str = "REVENANT";
+pub const CC_MANCU: &str = "MANCUBUS";
+pub const CC_ARCH: &str = "ARCH-VILE";
+pub const CC_SPIDER: &str = "THE SPIDER MASTERMIND";
+pub const CC_CYBER: &str = "THE CYBERDEMON";
+pub const CC_HERO: &str = "OUR HERO";
 pub const FF_FRAMEMASK: ::core::ffi::c_int = 0x7fff as ::core::ffi::c_int;
 pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
 pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
@@ -2112,187 +1918,161 @@ static mut textscreens: [textscreen_t; 22] = [
         mission: doom,
         episode: 1 as ::core::ffi::c_int,
         level: 8 as ::core::ffi::c_int,
-        background: b"FLOOR4_8\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: E1TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "FLOOR4_8",
+        text: E1TEXT,
     },
     textscreen_t {
         mission: doom,
         episode: 2 as ::core::ffi::c_int,
         level: 8 as ::core::ffi::c_int,
-        background: b"SFLR6_1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: E2TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "SFLR6_1",
+        text: E2TEXT,
     },
     textscreen_t {
         mission: doom,
         episode: 3 as ::core::ffi::c_int,
         level: 8 as ::core::ffi::c_int,
-        background: b"MFLR8_4\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: E3TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "MFLR8_4",
+        text: E3TEXT,
     },
     textscreen_t {
         mission: doom,
         episode: 4 as ::core::ffi::c_int,
         level: 8 as ::core::ffi::c_int,
-        background: b"MFLR8_3\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: E4TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "MFLR8_3",
+        text: E4TEXT,
     },
     textscreen_t {
         mission: doom2,
         episode: 1 as ::core::ffi::c_int,
         level: 6 as ::core::ffi::c_int,
-        background: b"SLIME16\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C1TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "SLIME16",
+        text: C1TEXT,
     },
     textscreen_t {
         mission: doom2,
         episode: 1 as ::core::ffi::c_int,
         level: 11 as ::core::ffi::c_int,
-        background: b"RROCK14\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C2TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK14",
+        text: C2TEXT,
     },
     textscreen_t {
         mission: doom2,
         episode: 1 as ::core::ffi::c_int,
         level: 20 as ::core::ffi::c_int,
-        background: b"RROCK07\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C3TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK07",
+        text: C3TEXT,
     },
     textscreen_t {
         mission: doom2,
         episode: 1 as ::core::ffi::c_int,
         level: 30 as ::core::ffi::c_int,
-        background: b"RROCK17\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C4TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK17",
+        text: C4TEXT,
     },
     textscreen_t {
         mission: doom2,
         episode: 1 as ::core::ffi::c_int,
         level: 15 as ::core::ffi::c_int,
-        background: b"RROCK13\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C5TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK13",
+        text: C5TEXT,
     },
     textscreen_t {
         mission: doom2,
         episode: 1 as ::core::ffi::c_int,
         level: 31 as ::core::ffi::c_int,
-        background: b"RROCK19\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C6TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK19",
+        text: C6TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
         episode: 1 as ::core::ffi::c_int,
         level: 6 as ::core::ffi::c_int,
-        background: b"SLIME16\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T1TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "SLIME16",
+        text: T1TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
         episode: 1 as ::core::ffi::c_int,
         level: 11 as ::core::ffi::c_int,
-        background: b"RROCK14\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T2TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK14",
+        text: T2TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
         episode: 1 as ::core::ffi::c_int,
         level: 20 as ::core::ffi::c_int,
-        background: b"RROCK07\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T3TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK07",
+        text: T3TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
         episode: 1 as ::core::ffi::c_int,
         level: 30 as ::core::ffi::c_int,
-        background: b"RROCK17\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T4TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK17",
+        text: T4TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
         episode: 1 as ::core::ffi::c_int,
         level: 15 as ::core::ffi::c_int,
-        background: b"RROCK13\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T5TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK13",
+        text: T5TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
         episode: 1 as ::core::ffi::c_int,
         level: 31 as ::core::ffi::c_int,
-        background: b"RROCK19\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T6TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK19",
+        text: T6TEXT,
     },
     textscreen_t {
         mission: pack_plut,
         episode: 1 as ::core::ffi::c_int,
         level: 6 as ::core::ffi::c_int,
-        background: b"SLIME16\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P1TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "SLIME16",
+        text: P1TEXT,
     },
     textscreen_t {
         mission: pack_plut,
         episode: 1 as ::core::ffi::c_int,
         level: 11 as ::core::ffi::c_int,
-        background: b"RROCK14\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P2TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK14",
+        text: P2TEXT,
     },
     textscreen_t {
         mission: pack_plut,
         episode: 1 as ::core::ffi::c_int,
         level: 20 as ::core::ffi::c_int,
-        background: b"RROCK07\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P3TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK07",
+        text: P3TEXT,
     },
     textscreen_t {
         mission: pack_plut,
         episode: 1 as ::core::ffi::c_int,
         level: 30 as ::core::ffi::c_int,
-        background: b"RROCK17\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P4TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK17",
+        text: P4TEXT,
     },
     textscreen_t {
         mission: pack_plut,
         episode: 1 as ::core::ffi::c_int,
         level: 15 as ::core::ffi::c_int,
-        background: b"RROCK13\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P5TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK13",
+        text: P5TEXT,
     },
     textscreen_t {
         mission: pack_plut,
         episode: 1 as ::core::ffi::c_int,
         level: 31 as ::core::ffi::c_int,
-        background: b"RROCK19\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P6TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        background: "RROCK19",
+        text: P6TEXT,
     },
 ];
 #[no_mangle]
-pub static mut finaletext: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
+pub static mut finaletext: &str = "";
 #[no_mangle]
-pub static mut finaleflat: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
+pub static mut finaleflat: &str = "";
 #[no_mangle]
 pub unsafe extern "C" fn F_StartFinale() {
     let mut i: size_t = 0;
@@ -2416,7 +2196,7 @@ pub unsafe extern "C" fn F_Ticker() {
     if finalestage as ::core::ffi::c_uint
         == F_STAGE_TEXT as ::core::ffi::c_int as ::core::ffi::c_uint
         && finalecount as size_t
-            > strlen(finaletext)
+            > (finaletext.len() as size_t)
                 .wrapping_mul(TEXTSPEED as size_t)
                 .wrapping_add(TEXTWAIT as size_t)
     {
@@ -2440,16 +2220,10 @@ pub unsafe extern "C" fn F_TextWrite() {
     let mut y: ::core::ffi::c_int = 0;
     let mut w: ::core::ffi::c_int = 0;
     let mut count: ::core::ffi::c_int = 0;
-    let mut ch: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
     let mut c: ::core::ffi::c_int = 0;
     let mut cx: ::core::ffi::c_int = 0;
     let mut cy: ::core::ffi::c_int = 0;
-    src = W_CacheLumpName(
-        &wad_name8_to_string(finaleflat),
-        PU_CACHE as ::core::ffi::c_int,
-    ) as *mut byte;
+    src = W_CacheLumpName(finaleflat, PU_CACHE as ::core::ffi::c_int) as *mut byte;
     dest = I_VideoBuffer;
     y = 0 as ::core::ffi::c_int;
     while y < SCREENHEIGHT {
@@ -2489,43 +2263,21 @@ pub unsafe extern "C" fn F_TextWrite() {
     );
     cx = 10 as ::core::ffi::c_int;
     cy = 10 as ::core::ffi::c_int;
-    ch = finaletext;
+    let mut chars = finaletext.bytes();
     count = (finalecount as ::core::ffi::c_int - 10 as ::core::ffi::c_int) / TEXTSPEED;
     if count < 0 as ::core::ffi::c_int {
         count = 0 as ::core::ffi::c_int;
     }
     while count != 0 {
-        let fresh2 = ch;
-        ch = ch.offset(1);
-        c = *fresh2 as ::core::ffi::c_int;
-        if c == 0 {
-            break;
-        }
+        c = match chars.next() {
+            Some(b) => b as ::core::ffi::c_int,
+            None => break,
+        };
         if c == '\n' as i32 {
             cx = 10 as ::core::ffi::c_int;
             cy += 11 as ::core::ffi::c_int;
         } else {
-            c = ({
-                let mut __res: ::core::ffi::c_int = 0;
-                if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                    if 0 != 0 {
-                        let mut __c: ::core::ffi::c_int = c;
-                        __res = (if __c < -(128 as ::core::ffi::c_int)
-                            || __c > 255 as ::core::ffi::c_int
-                        {
-                            __c as __int32_t
-                        } else {
-                            *(*__ctype_toupper_loc()).offset(__c as isize)
-                        }) as ::core::ffi::c_int;
-                    } else {
-                        __res = toupper(c);
-                    }
-                } else {
-                    __res = *(*__ctype_toupper_loc()).offset(c as isize)
-                        as ::core::ffi::c_int;
-                }
-                __res
-            }) - HU_FONTSTART;
+            c = toupper(c) - HU_FONTSTART;
             if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
                 cx += 4 as ::core::ffi::c_int;
             } else {
@@ -2543,75 +2295,75 @@ pub unsafe extern "C" fn F_TextWrite() {
 #[no_mangle]
 pub static mut castorder: [castinfo_t; 18] = [
     castinfo_t {
-        name: CC_ZOMBIE.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_ZOMBIE),
         type_0: MT_POSSESSED,
     },
     castinfo_t {
-        name: CC_SHOTGUN.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_SHOTGUN),
         type_0: MT_SHOTGUY,
     },
     castinfo_t {
-        name: CC_HEAVY.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_HEAVY),
         type_0: MT_CHAINGUY,
     },
     castinfo_t {
-        name: CC_IMP.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_IMP),
         type_0: MT_TROOP,
     },
     castinfo_t {
-        name: CC_DEMON.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_DEMON),
         type_0: MT_SERGEANT,
     },
     castinfo_t {
-        name: CC_LOST.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_LOST),
         type_0: MT_SKULL,
     },
     castinfo_t {
-        name: CC_CACO.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_CACO),
         type_0: MT_HEAD,
     },
     castinfo_t {
-        name: CC_HELL.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_HELL),
         type_0: MT_KNIGHT,
     },
     castinfo_t {
-        name: CC_BARON.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_BARON),
         type_0: MT_BRUISER,
     },
     castinfo_t {
-        name: CC_ARACH.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_ARACH),
         type_0: MT_BABY,
     },
     castinfo_t {
-        name: CC_PAIN.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_PAIN),
         type_0: MT_PAIN,
     },
     castinfo_t {
-        name: CC_REVEN.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_REVEN),
         type_0: MT_UNDEAD,
     },
     castinfo_t {
-        name: CC_MANCU.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_MANCU),
         type_0: MT_FATSO,
     },
     castinfo_t {
-        name: CC_ARCH.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_ARCH),
         type_0: MT_VILE,
     },
     castinfo_t {
-        name: CC_SPIDER.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_SPIDER),
         type_0: MT_SPIDER,
     },
     castinfo_t {
-        name: CC_CYBER.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_CYBER),
         type_0: MT_CYBORG,
     },
     castinfo_t {
-        name: CC_HERO.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_HERO),
         type_0: MT_PLAYER,
     },
     castinfo_t {
-        name: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+        name: None,
         type_0: MT_PLAYER,
     },
 ];
@@ -2665,7 +2417,7 @@ pub unsafe extern "C" fn F_CastTicker() {
     {
         castnum += 1;
         castdeath = false_0 as boolean;
-        if castorder[castnum as usize].name.is_null() {
+        if castorder[castnum as usize].name.is_none() {
             castnum = 0 as ::core::ffi::c_int;
         }
         if mobjinfo[castorder[castnum as usize].type_0 as usize].seesound != 0 {
@@ -2891,45 +2643,13 @@ pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
     }
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_CastPrint(mut text: *mut ::core::ffi::c_char) {
-    let mut ch: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+pub unsafe fn F_CastPrint(text: &str) {
     let mut c: ::core::ffi::c_int = 0;
     let mut cx: ::core::ffi::c_int = 0;
     let mut w: ::core::ffi::c_int = 0;
     let mut width: ::core::ffi::c_int = 0;
-    ch = text;
-    width = 0 as ::core::ffi::c_int;
-    while !ch.is_null() {
-        let fresh0 = ch;
-        ch = ch.offset(1);
-        c = *fresh0 as ::core::ffi::c_int;
-        if c == 0 {
-            break;
-        }
-        c = ({
-            let mut __res: ::core::ffi::c_int = 0;
-            if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                if 0 != 0 {
-                    let mut __c: ::core::ffi::c_int = c;
-                    __res = (if __c < -(128 as ::core::ffi::c_int)
-                        || __c > 255 as ::core::ffi::c_int
-                    {
-                        __c as __int32_t
-                    } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
-                    }) as ::core::ffi::c_int;
-                } else {
-                    __res = toupper(c);
-                }
-            } else {
-                __res = *(*__ctype_toupper_loc()).offset(c as isize)
-                    as ::core::ffi::c_int;
-            }
-            __res
-        }) - HU_FONTSTART;
+    for b in text.bytes() {
+        c = toupper(b as ::core::ffi::c_int) - HU_FONTSTART;
         if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
             width += 4 as ::core::ffi::c_int;
         } else {
@@ -2938,35 +2658,8 @@ pub unsafe extern "C" fn F_CastPrint(mut text: *mut ::core::ffi::c_char) {
         }
     }
     cx = 160 as ::core::ffi::c_int - width / 2 as ::core::ffi::c_int;
-    ch = text;
-    while !ch.is_null() {
-        let fresh1 = ch;
-        ch = ch.offset(1);
-        c = *fresh1 as ::core::ffi::c_int;
-        if c == 0 {
-            break;
-        }
-        c = ({
-            let mut __res: ::core::ffi::c_int = 0;
-            if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                if 0 != 0 {
-                    let mut __c: ::core::ffi::c_int = c;
-                    __res = (if __c < -(128 as ::core::ffi::c_int)
-                        || __c > 255 as ::core::ffi::c_int
-                    {
-                        __c as __int32_t
-                    } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
-                    }) as ::core::ffi::c_int;
-                } else {
-                    __res = toupper(c);
-                }
-            } else {
-                __res = *(*__ctype_toupper_loc()).offset(c as isize)
-                    as ::core::ffi::c_int;
-            }
-            __res
-        }) - HU_FONTSTART;
+    for b in text.bytes() {
+        c = toupper(b as ::core::ffi::c_int) - HU_FONTSTART;
         if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
             cx += 4 as ::core::ffi::c_int;
         } else {
@@ -2990,7 +2683,7 @@ pub unsafe extern "C" fn F_CastDrawer() {
             PU_CACHE as ::core::ffi::c_int,
         ) as *mut patch_t,
     );
-    F_CastPrint(castorder[castnum as usize].name);
+    F_CastPrint(castorder[castnum as usize].name.unwrap());
     sprdef = sprites.offset((*caststate).sprite as isize) as *mut spritedef_t;
     sprframe = (*sprdef)
         .spriteframes
