@@ -329,75 +329,16 @@ pub unsafe extern "C" fn M_ExtractFileBase(
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_ForceUppercase(mut text: *mut ::core::ffi::c_char) {
-    let mut p: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    p = text;
-    while *p as ::core::ffi::c_int != '\0' as i32 {
-        *p = ({
-            let mut __res: ::core::ffi::c_int = 0;
-            if ::core::mem::size_of::<::core::ffi::c_char>() as usize > 1 as usize {
-                if 0 != 0 {
-                    let mut __c: ::core::ffi::c_int = *p as ::core::ffi::c_int;
-                    __res = (if __c < -(128 as ::core::ffi::c_int)
-                        || __c > 255 as ::core::ffi::c_int
-                    {
-                        __c as __int32_t
-                    } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
-                    }) as ::core::ffi::c_int;
-                } else {
-                    __res = toupper(*p as ::core::ffi::c_int);
-                }
-            } else {
-                __res = *(*__ctype_toupper_loc())
-                    .offset(*p as ::core::ffi::c_int as isize) as ::core::ffi::c_int;
-            }
-            __res
-        }) as ::core::ffi::c_char;
-        p = p.offset(1);
-    }
+pub fn M_ForceUppercase(text: &str) -> String {
+    text.to_uppercase()
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StrCaseStr(
-    mut haystack: *mut ::core::ffi::c_char,
-    mut needle: *mut ::core::ffi::c_char,
-) -> *mut ::core::ffi::c_char {
-    let mut haystack_len: ::core::ffi::c_uint = 0;
-    let mut needle_len: ::core::ffi::c_uint = 0;
-    let mut len: ::core::ffi::c_uint = 0;
-    let mut i: ::core::ffi::c_uint = 0;
-    haystack_len = strlen(haystack) as ::core::ffi::c_uint;
-    needle_len = strlen(needle) as ::core::ffi::c_uint;
-    if haystack_len < needle_len {
-        return ::core::ptr::null_mut::<::core::ffi::c_char>();
-    }
-    len = haystack_len.wrapping_sub(needle_len);
-    i = 0 as ::core::ffi::c_uint;
-    while i <= len {
-        if strncasecmp(haystack.offset(i as isize), needle, needle_len as size_t) == 0 {
-            return haystack.offset(i as isize);
-        }
-        i = i.wrapping_add(1);
-    }
-    return ::core::ptr::null_mut::<::core::ffi::c_char>();
+pub fn M_StrCaseStr<'a>(haystack: &'a str, needle: &str) -> Option<&'a str> {
+    let haystack_lower = haystack.to_lowercase();
+    let needle_lower = needle.to_lowercase();
+    haystack_lower.find(&needle_lower).map(|i| &haystack[i..])
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringDuplicate(
-    mut orig: *const ::core::ffi::c_char,
-) -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    result = strdup(orig);
-    if result.is_null() {
-        I_Error(
-            b"Failed to duplicate string (length %i)\n\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            strlen(orig),
-        );
-    }
-    return result;
+pub fn M_StringDuplicate(orig: &str) -> String {
+    orig.to_string()
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_StringReplace(
@@ -488,25 +429,11 @@ pub unsafe extern "C" fn M_StringConcat(
         dest_size.wrapping_sub(offset),
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringStartsWith(
-    mut s: *const ::core::ffi::c_char,
-    mut prefix: *const ::core::ffi::c_char,
-) -> boolean {
-    return (strlen(s) > strlen(prefix)
-        && strncmp(s, prefix, strlen(prefix)) == 0 as ::core::ffi::c_int)
-        as ::core::ffi::c_int as boolean;
+pub fn M_StringStartsWith(s: &str, prefix: &str) -> bool {
+    s.len() > prefix.len() && s.starts_with(prefix)
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringEndsWith(
-    mut s: *const ::core::ffi::c_char,
-    mut suffix: *const ::core::ffi::c_char,
-) -> boolean {
-    return (strlen(s) >= strlen(suffix)
-        && strcmp(
-            s.offset(strlen(s) as isize).offset(-(strlen(suffix) as isize)),
-            suffix,
-        ) == 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
+pub fn M_StringEndsWith(s: &str, suffix: &str) -> bool {
+    s.ends_with(suffix)
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_StringJoin(

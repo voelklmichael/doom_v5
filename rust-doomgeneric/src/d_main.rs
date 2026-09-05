@@ -1,4 +1,5 @@
 use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
+use crate::src::m_misc::M_StringEndsWith;
 extern "C" {
     fn __ctype_b_loc() -> *mut *const ::core::ffi::c_ushort;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
@@ -145,10 +146,6 @@ extern "C" {
         dest: *mut ::core::ffi::c_char,
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
-    ) -> boolean;
-    fn M_StringEndsWith(
-        s: *const ::core::ffi::c_char,
-        suffix: *const ::core::ffi::c_char,
     ) -> boolean;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
@@ -3153,10 +3150,9 @@ pub unsafe extern "C" fn D_DoomMain() {
     }
     if p != 0 {
         if M_StringEndsWith(
-            myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
-                as *mut ::core::ffi::c_char,
-            b".lmp\0" as *const u8 as *const ::core::ffi::c_char,
-        ) != 0
+            myargv[(p + 1 as ::core::ffi::c_int) as usize].to_str().unwrap(),
+            ".lmp",
+        )
         {
             M_StringCopy(
                 &raw mut file as *mut ::core::ffi::c_char,
