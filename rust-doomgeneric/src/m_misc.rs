@@ -1,23 +1,23 @@
 use crate::src::i_system::FILE;
 use crate::src::i_system::I_Error;
 extern "C" {
-    fn fclose(__stream: *mut FILE) -> ::core::ffi::c_int;
+    fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
         __filename: *const ::core::ffi::c_char,
         __modes: *const ::core::ffi::c_char,
     ) -> *mut FILE;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         __arg: ::core::ffi::VaList,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn sscanf(
         __s: *const ::core::ffi::c_char,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn fread(
         __ptr: *mut ::core::ffi::c_void,
         __size: size_t,
@@ -33,13 +33,13 @@ extern "C" {
     fn fseek(
         __stream: *mut FILE,
         __off: ::core::ffi::c_long,
-        __whence: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        __whence: i32,
+    ) -> i32;
     fn ftell(__stream: *mut FILE) -> ::core::ffi::c_long;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strncpy(
@@ -50,12 +50,12 @@ extern "C" {
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strncmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
     fn strstr(
         __haystack: *const ::core::ffi::c_char,
@@ -66,26 +66,26 @@ extern "C" {
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn __errno_location() -> *mut ::core::ffi::c_int;
-    fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> ::core::ffi::c_int;
+    fn toupper(__c: i32) -> i32;
+    fn __errno_location() -> *mut i32;
+    fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type __int32_t = i32;
-pub type __mode_t = ::core::ffi::c_uint;
+pub type __mode_t = u32;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -94,15 +94,15 @@ pub const PU_LEVEL: C2RustUnnamed = 5;
 pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
-pub const SEEK_SET: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const SEEK_END: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
+pub const SEEK_SET: i32 = 0 as i32;
+pub const SEEK_END: i32 = 2 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const EISDIR: ::core::ffi::c_int = 21 as ::core::ffi::c_int;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const DIR_SEPARATOR: ::core::ffi::c_int = '/' as i32;
+pub const EISDIR: i32 = 21 as i32;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const DIR_SEPARATOR: i32 = '/' as i32;
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
 };
@@ -121,7 +121,7 @@ pub unsafe extern "C" fn M_FileExists(
         fclose(fstream);
         return true_0 as boolean;
     } else {
-        return (*__errno_location() == EISDIR) as ::core::ffi::c_int as boolean
+        return (*__errno_location() == EISDIR) as i32 as boolean
     };
 }
 #[no_mangle]
@@ -138,16 +138,16 @@ pub unsafe extern "C" fn M_FileLength(mut handle: *mut FILE) -> ::core::ffi::c_l
 pub unsafe extern "C" fn M_WriteFile(
     mut name: *mut ::core::ffi::c_char,
     mut source: *mut ::core::ffi::c_void,
-    mut length: ::core::ffi::c_int,
+    mut length: i32,
 ) -> boolean {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     handle = fopen(name, b"wb\0" as *const u8 as *const ::core::ffi::c_char)
         as *mut FILE;
     if handle.is_null() {
         return false_0 as boolean;
     }
-    count = fwrite(source, 1 as size_t, length as size_t, handle) as ::core::ffi::c_int;
+    count = fwrite(source, 1 as size_t, length as size_t, handle) as i32;
     fclose(handle);
     if count < length {
         return false_0 as boolean;
@@ -158,20 +158,20 @@ pub unsafe extern "C" fn M_WriteFile(
 pub unsafe extern "C" fn M_ReadFile(
     mut name: *mut ::core::ffi::c_char,
     mut buffer: *mut *mut byte,
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    let mut count: ::core::ffi::c_int = 0;
-    let mut length: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
+    let mut length: i32 = 0;
     let mut buf: *mut byte = ::core::ptr::null_mut::<byte>();
     handle = fopen(name, b"rb\0" as *const u8 as *const ::core::ffi::c_char)
         as *mut FILE;
     if handle.is_null() {
         I_Error(&format!("Couldn't read file {}", ::std::ffi::CStr::from_ptr(name).to_str().unwrap()));
     }
-    length = M_FileLength(handle) as ::core::ffi::c_int;
-    buf = Z_Malloc(length, PU_STATIC as ::core::ffi::c_int, NULL) as *mut byte;
+    length = M_FileLength(handle) as i32;
+    buf = Z_Malloc(length, PU_STATIC as i32, NULL) as *mut byte;
     count = fread(buf as *mut ::core::ffi::c_void, 1 as size_t, length as size_t, handle)
-        as ::core::ffi::c_int;
+        as i32;
     fclose(handle);
     if count < length {
         I_Error(&format!("Couldn't read file {}", ::std::ffi::CStr::from_ptr(name).to_str().unwrap()));
@@ -193,16 +193,16 @@ pub unsafe extern "C" fn M_TempFile(
 #[no_mangle]
 pub unsafe extern "C" fn M_StrToInt(
     mut str: *const ::core::ffi::c_char,
-    mut result: *mut ::core::ffi::c_int,
+    mut result: *mut i32,
 ) -> boolean {
     return (sscanf(str, b" 0x%x\0" as *const u8 as *const ::core::ffi::c_char, result)
-        == 1 as ::core::ffi::c_int
+        == 1 as i32
         || sscanf(str, b" 0X%x\0" as *const u8 as *const ::core::ffi::c_char, result)
-            == 1 as ::core::ffi::c_int
+            == 1 as i32
         || sscanf(str, b" 0%o\0" as *const u8 as *const ::core::ffi::c_char, result)
-            == 1 as ::core::ffi::c_int
+            == 1 as i32
         || sscanf(str, b" %d\0" as *const u8 as *const ::core::ffi::c_char, result)
-            == 1 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
+            == 1 as i32) as i32 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ExtractFileBase(
@@ -215,21 +215,21 @@ pub unsafe extern "C" fn M_ExtractFileBase(
     let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    let mut length: ::core::ffi::c_int = 0;
-    src = path.offset(strlen(path) as isize).offset(-(1 as ::core::ffi::c_int as isize));
+    let mut length: i32 = 0;
+    src = path.offset(strlen(path) as isize).offset(-(1 as i32 as isize));
     while src != path
-        && *src.offset(-(1 as ::core::ffi::c_int as isize)) as ::core::ffi::c_int
+        && *src.offset(-(1 as i32 as isize)) as i32
             != DIR_SEPARATOR
     {
         src = src.offset(-1);
     }
     filename = src;
-    length = 0 as ::core::ffi::c_int;
-    memset(dest as *mut ::core::ffi::c_void, 0 as ::core::ffi::c_int, 8 as size_t);
-    while *src as ::core::ffi::c_int != '\0' as i32
-        && *src as ::core::ffi::c_int != '.' as i32
+    length = 0 as i32;
+    memset(dest as *mut ::core::ffi::c_void, 0 as i32, 8 as size_t);
+    while *src as i32 != '\0' as i32
+        && *src as i32 != '.' as i32
     {
-        if length >= 8 as ::core::ffi::c_int {
+        if length >= 8 as i32 {
             printf(
                 b"Warning: Truncated '%s' lump name to '%.8s'.\n\0" as *const u8
                     as *const ::core::ffi::c_char,
@@ -241,30 +241,30 @@ pub unsafe extern "C" fn M_ExtractFileBase(
             let fresh3 = length;
             length = length + 1;
             *dest.offset(fresh3 as isize) = ({
-                let mut __res: ::core::ffi::c_int = 0;
-                if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
+                let mut __res: i32 = 0;
+                if ::core::mem::size_of::<i32>() as usize > 1 as usize {
                     if 0 != 0 {
                         let fresh0 = src;
                         src = src.offset(1);
-                        let mut __c: ::core::ffi::c_int = *fresh0 as ::core::ffi::c_int;
-                        __res = (if __c < -(128 as ::core::ffi::c_int)
-                            || __c > 255 as ::core::ffi::c_int
+                        let mut __c: i32 = *fresh0 as i32;
+                        __res = (if __c < -(128 as i32)
+                            || __c > 255 as i32
                         {
                             __c as __int32_t
                         } else {
                             *(*__ctype_toupper_loc()).offset(__c as isize)
-                        }) as ::core::ffi::c_int;
+                        }) as i32;
                     } else {
                         let fresh1 = src;
                         src = src.offset(1);
-                        __res = toupper(*fresh1 as ::core::ffi::c_int);
+                        __res = toupper(*fresh1 as i32);
                     }
                 } else {
                     let fresh2 = src;
                     src = src.offset(1);
                     __res = *(*__ctype_toupper_loc())
-                        .offset(*fresh2 as ::core::ffi::c_int as isize)
-                        as ::core::ffi::c_int;
+                        .offset(*fresh2 as i32 as isize)
+                        as i32;
                 }
                 __res
             }) as ::core::ffi::c_char;
@@ -317,7 +317,7 @@ pub unsafe extern "C" fn M_StringReplace(
     dst = result;
     dst_len = result_len;
     p = haystack;
-    while *p as ::core::ffi::c_int != '\0' as i32 {
+    while *p as i32 != '\0' as i32 {
         if strncmp(p, needle, needle_len) == 0 {
             M_StringCopy(dst, replacement, dst_len);
             p = p.offset(needle_len as isize);
@@ -348,8 +348,8 @@ pub unsafe extern "C" fn M_StringCopy(
         return false_0 as boolean
     }
     len = strlen(dest);
-    return (*src.offset(len as isize) as ::core::ffi::c_int == '\0' as i32)
-        as ::core::ffi::c_int as boolean;
+    return (*src.offset(len as isize) as i32 == '\0' as i32)
+        as i32 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_StringConcat(
@@ -416,16 +416,16 @@ pub unsafe extern "C" fn M_vsnprintf(
     mut buf_len: size_t,
     mut s: *const ::core::ffi::c_char,
     mut args: ::core::ffi::VaList,
-) -> ::core::ffi::c_int {
-    let mut result: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut result: i32 = 0;
     if buf_len < 1 as size_t {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
     result = vsnprintf(buf, buf_len, s, args.as_va_list());
-    if result < 0 as ::core::ffi::c_int || result as size_t >= buf_len {
+    if result < 0 as i32 || result as size_t >= buf_len {
         *buf.offset(buf_len.wrapping_sub(1 as size_t) as isize) = '\0' as i32
             as ::core::ffi::c_char;
-        result = buf_len.wrapping_sub(1 as size_t) as ::core::ffi::c_int;
+        result = buf_len.wrapping_sub(1 as size_t) as i32;
     }
     return result;
 }
@@ -435,9 +435,9 @@ pub unsafe extern "C" fn M_snprintf(
     mut buf_len: size_t,
     mut s: *const ::core::ffi::c_char,
     mut args: ...
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut args_0: ::core::ffi::VaListImpl;
-    let mut result: ::core::ffi::c_int = 0;
+    let mut result: i32 = 0;
     args_0 = args.clone();
     result = M_vsnprintf(buf, buf_len, s, args_0.as_va_list());
     return result;

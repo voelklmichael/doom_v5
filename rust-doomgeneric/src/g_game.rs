@@ -18,28 +18,28 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn remove(__filename: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
+    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
+    fn abs(__x: i32) -> i32;
+    fn remove(__filename: *const ::core::ffi::c_char) -> i32;
     fn rename(
         __old: *const ::core::ffi::c_char,
         __new: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    fn fclose(__stream: *mut FILE) -> ::core::ffi::c_int;
+    ) -> i32;
+    fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
         __filename: *const ::core::ffi::c_char,
         __modes: *const ::core::ffi::c_char,
     ) -> *mut FILE;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn ftell(__stream: *mut FILE) -> ::core::ffi::c_long;
-    fn I_GetTime() -> ::core::ffi::c_int;
+    fn I_GetTime() -> i32;
     static mut singletics: bool;
-    static mut gametic: ::core::ffi::c_int;
-    static mut ticdup: ::core::ffi::c_int;
+    static mut gametic: i32;
+    static mut ticdup: i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static finetangent: [fixed_t; 4096];
@@ -52,70 +52,70 @@ extern "C" {
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut automapactive: bool;
-    static mut leveltime: ::core::ffi::c_int;
+    static mut leveltime: i32;
     static mut deathmatchstarts: [mapthing_t; 10];
     static mut deathmatch_p: *mut mapthing_t;
     static mut playerstarts: [mapthing_t; 4];
     static mut wipegamestate: gamestate_t;
-    static mut mouseSensitivity: ::core::ffi::c_int;
-    static mut skyflatnum: ::core::ffi::c_int;
-    static mut rndindex: ::core::ffi::c_int;
+    static mut mouseSensitivity: i32;
+    static mut skyflatnum: i32;
+    static mut rndindex: i32;
     static mut netcmds: *mut ticcmd_t;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
     static mut setsizeneeded: bool;
     fn R_ExecuteSetViewSize();
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn Z_CheckHeap();
-    static mut key_right: ::core::ffi::c_int;
-    static mut key_left: ::core::ffi::c_int;
-    static mut key_up: ::core::ffi::c_int;
-    static mut key_down: ::core::ffi::c_int;
-    static mut key_strafeleft: ::core::ffi::c_int;
-    static mut key_straferight: ::core::ffi::c_int;
-    static mut key_fire: ::core::ffi::c_int;
-    static mut key_use: ::core::ffi::c_int;
-    static mut key_strafe: ::core::ffi::c_int;
-    static mut key_speed: ::core::ffi::c_int;
-    static mut key_pause: ::core::ffi::c_int;
-    static mut key_weapon1: ::core::ffi::c_int;
-    static mut key_weapon2: ::core::ffi::c_int;
-    static mut key_weapon3: ::core::ffi::c_int;
-    static mut key_weapon4: ::core::ffi::c_int;
-    static mut key_weapon5: ::core::ffi::c_int;
-    static mut key_weapon6: ::core::ffi::c_int;
-    static mut key_weapon7: ::core::ffi::c_int;
-    static mut key_weapon8: ::core::ffi::c_int;
-    static mut key_demo_quit: ::core::ffi::c_int;
-    static mut key_spy: ::core::ffi::c_int;
-    static mut key_prevweapon: ::core::ffi::c_int;
-    static mut key_nextweapon: ::core::ffi::c_int;
-    static mut mousebfire: ::core::ffi::c_int;
-    static mut mousebstrafe: ::core::ffi::c_int;
-    static mut mousebforward: ::core::ffi::c_int;
-    static mut mousebstrafeleft: ::core::ffi::c_int;
-    static mut mousebstraferight: ::core::ffi::c_int;
-    static mut mousebbackward: ::core::ffi::c_int;
-    static mut mousebuse: ::core::ffi::c_int;
-    static mut mousebprevweapon: ::core::ffi::c_int;
-    static mut mousebnextweapon: ::core::ffi::c_int;
-    static mut joybfire: ::core::ffi::c_int;
-    static mut joybstrafe: ::core::ffi::c_int;
-    static mut joybuse: ::core::ffi::c_int;
-    static mut joybspeed: ::core::ffi::c_int;
-    static mut joybstrafeleft: ::core::ffi::c_int;
-    static mut joybstraferight: ::core::ffi::c_int;
-    static mut joybprevweapon: ::core::ffi::c_int;
-    static mut joybnextweapon: ::core::ffi::c_int;
-    static mut dclick_use: ::core::ffi::c_int;
+    static mut key_right: i32;
+    static mut key_left: i32;
+    static mut key_up: i32;
+    static mut key_down: i32;
+    static mut key_strafeleft: i32;
+    static mut key_straferight: i32;
+    static mut key_fire: i32;
+    static mut key_use: i32;
+    static mut key_strafe: i32;
+    static mut key_speed: i32;
+    static mut key_pause: i32;
+    static mut key_weapon1: i32;
+    static mut key_weapon2: i32;
+    static mut key_weapon3: i32;
+    static mut key_weapon4: i32;
+    static mut key_weapon5: i32;
+    static mut key_weapon6: i32;
+    static mut key_weapon7: i32;
+    static mut key_weapon8: i32;
+    static mut key_demo_quit: i32;
+    static mut key_spy: i32;
+    static mut key_prevweapon: i32;
+    static mut key_nextweapon: i32;
+    static mut mousebfire: i32;
+    static mut mousebstrafe: i32;
+    static mut mousebforward: i32;
+    static mut mousebstrafeleft: i32;
+    static mut mousebstraferight: i32;
+    static mut mousebbackward: i32;
+    static mut mousebuse: i32;
+    static mut mousebprevweapon: i32;
+    static mut mousebnextweapon: i32;
+    static mut joybfire: i32;
+    static mut joybstrafe: i32;
+    static mut joybuse: i32;
+    static mut joybspeed: i32;
+    static mut joybstrafeleft: i32;
+    static mut joybstraferight: i32;
+    static mut joybprevweapon: i32;
+    static mut joybnextweapon: i32;
+    static mut dclick_use: i32;
     fn M_WriteFile(
         name: *mut ::core::ffi::c_char,
         source: *mut ::core::ffi::c_void,
-        length: ::core::ffi::c_int,
+        length: i32,
     ) -> boolean;
     fn M_TempFile(s: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
     fn M_StringCopy(
@@ -128,19 +128,19 @@ extern "C" {
         buf_len: size_t,
         s: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn M_StartControlPanel();
-    fn P_Random() -> ::core::ffi::c_int;
+    fn P_Random() -> i32;
     fn M_ClearRandom();
     fn I_Quit();
     fn P_SetupLevel(
-        episode: ::core::ffi::c_int,
-        map: ::core::ffi::c_int,
-        playermask: ::core::ffi::c_int,
+        episode: i32,
+        map: i32,
+        playermask: i32,
         skill: skill_t,
     );
     fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char;
-    fn P_SaveGameFile(slot: ::core::ffi::c_int) -> *mut ::core::ffi::c_char;
+    fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
     fn P_ReadSaveGameHeader() -> boolean;
     fn P_WriteSaveGameHeader(description: *mut ::core::ffi::c_char);
     fn P_ReadSaveGameEOF() -> boolean;
@@ -171,8 +171,8 @@ extern "C" {
     fn AM_Stop();
     fn StatCopy(stats: *mut wbstartstruct_t);
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
-    fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
+    fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
+    fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
     fn R_FillBackScreen();
     fn P_SpawnMobj(
@@ -183,11 +183,11 @@ extern "C" {
     ) -> *mut mobj_t;
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    static mut maxammo: [::core::ffi::c_int; 4];
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
+    static mut maxammo: [i32; 4];
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     fn S_PauseSound();
     fn S_ResumeSound();
-    static mut skytexture: ::core::ffi::c_int;
+    static mut skytexture: i32;
     fn F_Responder(ev: *mut event_t) -> boolean;
     fn F_Ticker();
     fn F_StartFinale();
@@ -195,9 +195,9 @@ extern "C" {
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -208,13 +208,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -229,19 +229,19 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type skill_t = ::core::ffi::c_int;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type gamestate_t = ::core::ffi::c_uint;
+pub type gamestate_t = u32;
 pub const GS_DEMOSCREEN: gamestate_t = 3;
 pub const GS_FINALE: gamestate_t = 2;
 pub const GS_INTERMISSION: gamestate_t = 1;
 pub const GS_LEVEL: gamestate_t = 0;
-pub type gameaction_t = ::core::ffi::c_uint;
+pub type gameaction_t = u32;
 pub const ga_screenshot: gameaction_t = 9;
 pub const ga_worlddone: gameaction_t = 8;
 pub const ga_victory: gameaction_t = 7;
@@ -252,7 +252,7 @@ pub const ga_loadgame: gameaction_t = 3;
 pub const ga_newgame: gameaction_t = 2;
 pub const ga_loadlevel: gameaction_t = 1;
 pub const ga_nothing: gameaction_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -264,14 +264,14 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const am_noammo: C2RustUnnamed = 5;
 pub const NUMAMMO: C2RustUnnamed = 4;
 pub const am_misl: C2RustUnnamed = 3;
 pub const am_cell: C2RustUnnamed = 2;
 pub const am_shell: C2RustUnnamed = 1;
 pub const am_clip: C2RustUnnamed = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMPOWERS: C2RustUnnamed_0 = 6;
 pub const pw_infrared: C2RustUnnamed_0 = 5;
 pub const pw_allmap: C2RustUnnamed_0 = 4;
@@ -279,15 +279,15 @@ pub const pw_ironfeet: C2RustUnnamed_0 = 3;
 pub const pw_invisibility: C2RustUnnamed_0 = 2;
 pub const pw_strength: C2RustUnnamed_0 = 1;
 pub const pw_invulnerability: C2RustUnnamed_0 = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -427,7 +427,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1396,7 +1396,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1535,7 +1535,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const MF_TRANSSHIFT: C2RustUnnamed_1 = 26;
 pub const MF_TRANSLATION: C2RustUnnamed_1 = 201326592;
 pub const MF_NOTDMATCH: C2RustUnnamed_1 = 33554432;
@@ -1564,7 +1564,7 @@ pub const MF_NOSECTOR: C2RustUnnamed_1 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_1 = 4;
 pub const MF_SOLID: C2RustUnnamed_1 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_1 = 1;
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed_2 = 9;
 pub const PU_CACHE: C2RustUnnamed_2 = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed_2 = 7;
@@ -1574,13 +1574,13 @@ pub const PU_FREE: C2RustUnnamed_2 = 4;
 pub const PU_MUSIC: C2RustUnnamed_2 = 3;
 pub const PU_SOUND: C2RustUnnamed_2 = 2;
 pub const PU_STATIC: C2RustUnnamed_2 = 1;
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-pub type C2RustUnnamed_3 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_3 = u32;
 pub const BTS_SAVESHIFT: C2RustUnnamed_3 = 2;
 pub const BTS_SAVEMASK: C2RustUnnamed_3 = 28;
 pub const BTS_SAVEGAME: C2RustUnnamed_3 = 2;
@@ -1592,7 +1592,7 @@ pub const BT_SPECIALMASK: C2RustUnnamed_3 = 3;
 pub const BT_SPECIAL: C2RustUnnamed_3 = 128;
 pub const BT_USE: C2RustUnnamed_3 = 2;
 pub const BT_ATTACK: C2RustUnnamed_3 = 1;
-pub type C2RustUnnamed_4 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_4 = u32;
 pub const NUMSFX: C2RustUnnamed_4 = 109;
 pub const sfx_radio: C2RustUnnamed_4 = 108;
 pub const sfx_skeatk: C2RustUnnamed_4 = 107;
@@ -1709,19 +1709,19 @@ pub struct C2RustUnnamed_5 {
     pub weapon: weapontype_t,
     pub weapon_num: weapontype_t,
 }
-pub const DEH_DEFAULT_INITIAL_HEALTH: ::core::ffi::c_int = 100 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_INITIAL_BULLETS: ::core::ffi::c_int = 50 as ::core::ffi::c_int;
-pub const deh_initial_health: ::core::ffi::c_int = DEH_DEFAULT_INITIAL_HEALTH;
-pub const deh_initial_bullets: ::core::ffi::c_int = DEH_DEFAULT_INITIAL_BULLETS;
-pub const TICRATE: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const DOOM_191_VERSION: ::core::ffi::c_int = 111 as ::core::ffi::c_int;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const BACKUPTICS: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ANG45: ::core::ffi::c_int = 0x20000000 as ::core::ffi::c_int;
-pub const SAVEGAMESIZE: ::core::ffi::c_int = 0x2c000 as ::core::ffi::c_int;
+pub const DEH_DEFAULT_INITIAL_HEALTH: i32 = 100 as i32;
+pub const DEH_DEFAULT_INITIAL_BULLETS: i32 = 50 as i32;
+pub const deh_initial_health: i32 = DEH_DEFAULT_INITIAL_HEALTH;
+pub const deh_initial_bullets: i32 = DEH_DEFAULT_INITIAL_BULLETS;
+pub const TICRATE: i32 = 35 as i32;
+pub const DOOM_191_VERSION: i32 = 111 as i32;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const BACKUPTICS: i32 = 128 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ANG45: i32 = 0x20000000 as i32;
+pub const SAVEGAMESIZE: i32 = 0x2c000 as i32;
 #[no_mangle]
 pub static mut oldgamestate: gamestate_t = GS_LEVEL;
 #[no_mangle]
@@ -1733,11 +1733,11 @@ pub static mut gameskill: skill_t = sk_baby;
 #[no_mangle]
 pub static mut respawnmonsters: bool = false;
 #[no_mangle]
-pub static mut gameepisode: ::core::ffi::c_int = 0;
+pub static mut gameepisode: i32 = 0;
 #[no_mangle]
-pub static mut gamemap: ::core::ffi::c_int = 0;
+pub static mut gamemap: i32 = 0;
 #[no_mangle]
-pub static mut timelimit: ::core::ffi::c_int = 0;
+pub static mut timelimit: i32 = 0;
 #[no_mangle]
 pub static mut paused: bool = false;
 #[no_mangle]
@@ -1751,11 +1751,11 @@ pub static mut timingdemo: bool = false;
 #[no_mangle]
 pub static mut nodrawers: bool = false;
 #[no_mangle]
-pub static mut starttime: ::core::ffi::c_int = 0;
+pub static mut starttime: i32 = 0;
 #[no_mangle]
 pub static mut viewactive: bool = false;
 #[no_mangle]
-pub static mut deathmatch: ::core::ffi::c_int = 0;
+pub static mut deathmatch: i32 = 0;
 #[no_mangle]
 pub static mut netgame: bool = false;
 #[no_mangle]
@@ -1817,17 +1817,17 @@ pub static mut players: [player_t; 4] = [player_s {
 #[no_mangle]
 pub static mut turbodetected: [boolean; 4] = [0; 4];
 #[no_mangle]
-pub static mut consoleplayer: ::core::ffi::c_int = 0;
+pub static mut consoleplayer: i32 = 0;
 #[no_mangle]
-pub static mut displayplayer: ::core::ffi::c_int = 0;
+pub static mut displayplayer: i32 = 0;
 #[no_mangle]
-pub static mut levelstarttic: ::core::ffi::c_int = 0;
+pub static mut levelstarttic: i32 = 0;
 #[no_mangle]
-pub static mut totalsecret: ::core::ffi::c_int = 0;
+pub static mut totalsecret: i32 = 0;
 #[no_mangle]
-pub static mut totalkills: ::core::ffi::c_int = 0;
+pub static mut totalkills: i32 = 0;
 #[no_mangle]
-pub static mut totalitems: ::core::ffi::c_int = 0;
+pub static mut totalitems: i32 = 0;
 #[no_mangle]
 pub static mut demoname: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
@@ -1855,7 +1855,7 @@ pub static mut precache: bool = true;
 #[no_mangle]
 pub static mut testcontrols: bool = false;
 #[no_mangle]
-pub static mut testcontrols_mousespeed: ::core::ffi::c_int = 0;
+pub static mut testcontrols_mousespeed: i32 = 0;
 #[no_mangle]
 pub static mut wminfo: wbstartstruct_t = wbstartstruct_t {
     epsd: 0,
@@ -1880,36 +1880,36 @@ pub static mut wminfo: wbstartstruct_t = wbstartstruct_t {
 };
 #[no_mangle]
 pub static mut consistancy: [[byte; 128]; 4] = [[0; 128]; 4];
-pub const TURBOTHRESHOLD: ::core::ffi::c_int = 0x32 as ::core::ffi::c_int;
+pub const TURBOTHRESHOLD: i32 = 0x32 as i32;
 #[no_mangle]
 pub static mut forwardmove: [fixed_t; 2] = [
-    0x19 as ::core::ffi::c_int,
-    0x32 as ::core::ffi::c_int,
+    0x19 as i32,
+    0x32 as i32,
 ];
 #[no_mangle]
 pub static mut sidemove: [fixed_t; 2] = [
-    0x18 as ::core::ffi::c_int,
-    0x28 as ::core::ffi::c_int,
+    0x18 as i32,
+    0x28 as i32,
 ];
 #[no_mangle]
 pub static mut angleturn: [fixed_t; 3] = [
-    640 as ::core::ffi::c_int,
-    1280 as ::core::ffi::c_int,
-    320 as ::core::ffi::c_int,
+    640 as i32,
+    1280 as i32,
+    320 as i32,
 ];
-static mut weapon_keys: [*mut ::core::ffi::c_int; 8] = unsafe {
+static mut weapon_keys: [*mut i32; 8] = unsafe {
     [
-        &raw const key_weapon1 as *mut ::core::ffi::c_int,
-        &raw const key_weapon2 as *mut ::core::ffi::c_int,
-        &raw const key_weapon3 as *mut ::core::ffi::c_int,
-        &raw const key_weapon4 as *mut ::core::ffi::c_int,
-        &raw const key_weapon5 as *mut ::core::ffi::c_int,
-        &raw const key_weapon6 as *mut ::core::ffi::c_int,
-        &raw const key_weapon7 as *mut ::core::ffi::c_int,
-        &raw const key_weapon8 as *mut ::core::ffi::c_int,
+        &raw const key_weapon1 as *mut i32,
+        &raw const key_weapon2 as *mut i32,
+        &raw const key_weapon3 as *mut i32,
+        &raw const key_weapon4 as *mut i32,
+        &raw const key_weapon5 as *mut i32,
+        &raw const key_weapon6 as *mut i32,
+        &raw const key_weapon7 as *mut i32,
+        &raw const key_weapon8 as *mut i32,
     ]
 };
-static mut next_weapon: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+static mut next_weapon: i32 = 0 as i32;
 static mut weapon_order_table: [C2RustUnnamed_5; 9] = [
     C2RustUnnamed_5 {
         weapon: wp_fist,
@@ -1948,119 +1948,119 @@ static mut weapon_order_table: [C2RustUnnamed_5; 9] = [
         weapon_num: wp_bfg,
     },
 ];
-pub const SLOWTURNTICS: ::core::ffi::c_int = 6 as ::core::ffi::c_int;
-pub const NUMKEYS: ::core::ffi::c_int = 256 as ::core::ffi::c_int;
-pub const MAX_JOY_BUTTONS: ::core::ffi::c_int = 20 as ::core::ffi::c_int;
+pub const SLOWTURNTICS: i32 = 6 as i32;
+pub const NUMKEYS: i32 = 256 as i32;
+pub const MAX_JOY_BUTTONS: i32 = 20 as i32;
 static mut gamekeydown: [boolean; 256] = [0; 256];
-static mut turnheld: ::core::ffi::c_int = 0;
+static mut turnheld: i32 = 0;
 static mut mousearray: [boolean; 9] = [0; 9];
 static mut mousebuttons: *mut boolean = ::core::ptr::null::<boolean>() as *mut boolean;
 #[no_mangle]
-pub static mut mousex: ::core::ffi::c_int = 0;
+pub static mut mousex: i32 = 0;
 #[no_mangle]
-pub static mut mousey: ::core::ffi::c_int = 0;
-static mut dclicktime: ::core::ffi::c_int = 0;
+pub static mut mousey: i32 = 0;
+static mut dclicktime: i32 = 0;
 static mut dclickstate: boolean = 0;
-static mut dclicks: ::core::ffi::c_int = 0;
-static mut dclicktime2: ::core::ffi::c_int = 0;
+static mut dclicks: i32 = 0;
+static mut dclicktime2: i32 = 0;
 static mut dclickstate2: boolean = 0;
-static mut dclicks2: ::core::ffi::c_int = 0;
-static mut joyxmove: ::core::ffi::c_int = 0;
-static mut joyymove: ::core::ffi::c_int = 0;
-static mut joystrafemove: ::core::ffi::c_int = 0;
+static mut dclicks2: i32 = 0;
+static mut joyxmove: i32 = 0;
+static mut joyymove: i32 = 0;
+static mut joystrafemove: i32 = 0;
 static mut joyarray: [boolean; 21] = [0; 21];
 static mut joybuttons: *mut boolean = ::core::ptr::null::<boolean>() as *mut boolean;
-static mut savegameslot: ::core::ffi::c_int = 0;
+static mut savegameslot: i32 = 0;
 static mut savedescription: [::core::ffi::c_char; 32] = [0; 32];
-pub const BODYQUESIZE: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
+pub const BODYQUESIZE: i32 = 32 as i32;
 #[no_mangle]
 pub static mut bodyque: [*mut mobj_t; 32] = [::core::ptr::null::<mobj_t>()
     as *mut mobj_t; 32];
 #[no_mangle]
-pub static mut bodyqueslot: ::core::ffi::c_int = 0;
+pub static mut bodyqueslot: i32 = 0;
 #[no_mangle]
-pub static mut vanilla_savegame_limit: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
+pub static mut vanilla_savegame_limit: i32 = 1 as i32;
 #[no_mangle]
-pub static mut vanilla_demo_limit: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
+pub static mut vanilla_demo_limit: i32 = 1 as i32;
 #[no_mangle]
-pub unsafe extern "C" fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
     let mut i: size_t = 0;
-    let mut sum: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+    let mut sum: i32 = 0 as i32;
     i = 0 as size_t;
     while i
         < (::core::mem::size_of::<ticcmd_t>() as usize)
             .wrapping_div(4 as usize)
             .wrapping_sub(1 as usize)
     {
-        sum += *(cmd as *mut ::core::ffi::c_int).offset(i as isize);
+        sum += *(cmd as *mut i32).offset(i as isize);
         i = i.wrapping_add(1);
     }
     return sum;
 }
 unsafe extern "C" fn WeaponSelectable(mut weapon: weapontype_t) -> boolean {
-    if weapon as ::core::ffi::c_uint
-        == wp_supershotgun as ::core::ffi::c_int as ::core::ffi::c_uint
-        && (if gamemission as ::core::ffi::c_uint
-            == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    if weapon as u32
+        == wp_supershotgun as i32 as u32
+        && (if gamemission as u32
+            == pack_chex as i32 as u32
         {
-            doom as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom as i32 as u32
         } else {
-            (if gamemission as ::core::ffi::c_uint
-                == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+            (if gamemission as u32
+                == pack_hacx as i32 as u32
             {
-                doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+                doom2 as i32 as u32
             } else {
-                gamemission as ::core::ffi::c_uint
+                gamemission as u32
             })
-        }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        }) == doom as i32 as u32
     {
         return false_0 as boolean;
     }
-    if (weapon as ::core::ffi::c_uint
-        == wp_plasma as ::core::ffi::c_int as ::core::ffi::c_uint
-        || weapon as ::core::ffi::c_uint
-            == wp_bfg as ::core::ffi::c_int as ::core::ffi::c_uint)
-        && gamemission as ::core::ffi::c_uint
-            == doom as ::core::ffi::c_int as ::core::ffi::c_uint
-        && gamemode as ::core::ffi::c_uint
-            == shareware as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (weapon as u32
+        == wp_plasma as i32 as u32
+        || weapon as u32
+            == wp_bfg as i32 as u32)
+        && gamemission as u32
+            == doom as i32 as u32
+        && gamemode as u32
+            == shareware as i32 as u32
     {
         return false_0 as boolean;
     }
     if !players[consoleplayer as usize].weaponowned[weapon as usize] {
         return false_0 as boolean;
     }
-    if weapon as ::core::ffi::c_uint
-        == wp_fist as ::core::ffi::c_int as ::core::ffi::c_uint
+    if weapon as u32
+        == wp_fist as i32 as u32
         && players[consoleplayer as usize]
-            .weaponowned[wp_chainsaw as ::core::ffi::c_int as usize]
+            .weaponowned[wp_chainsaw as i32 as usize]
         && players[consoleplayer as usize]
-            .powers[pw_strength as ::core::ffi::c_int as usize] == 0
+            .powers[pw_strength as i32 as usize] == 0
     {
         return false_0 as boolean;
     }
     return true_0 as boolean;
 }
 unsafe extern "C" fn G_NextWeapon(
-    mut direction: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut direction: i32,
+) -> i32 {
     let mut weapon: weapontype_t = wp_fist;
-    let mut start_i: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    if players[consoleplayer as usize].pendingweapon as ::core::ffi::c_uint
-        == wp_nochange as ::core::ffi::c_int as ::core::ffi::c_uint
+    let mut start_i: i32 = 0;
+    let mut i: i32 = 0;
+    if players[consoleplayer as usize].pendingweapon as u32
+        == wp_nochange as i32 as u32
     {
         weapon = players[consoleplayer as usize].readyweapon;
     } else {
         weapon = players[consoleplayer as usize].pendingweapon;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while (i as usize)
         < (::core::mem::size_of::<[C2RustUnnamed_5; 9]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_5>() as usize)
     {
-        if weapon_order_table[i as usize].weapon as ::core::ffi::c_uint
-            == weapon as ::core::ffi::c_uint
+        if weapon_order_table[i as usize].weapon as u32
+            == weapon as u32
         {
             break;
         }
@@ -2077,280 +2077,280 @@ unsafe extern "C" fn G_NextWeapon(
             .wrapping_rem(
                 (::core::mem::size_of::<[C2RustUnnamed_5; 9]>() as usize)
                     .wrapping_div(::core::mem::size_of::<C2RustUnnamed_5>() as usize),
-            ) as ::core::ffi::c_int;
+            ) as i32;
         if !(i != start_i
             && WeaponSelectable(weapon_order_table[i as usize].weapon) == 0)
         {
             break;
         }
     }
-    return weapon_order_table[i as usize].weapon_num as ::core::ffi::c_int;
+    return weapon_order_table[i as usize].weapon_num as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_BuildTiccmd(
     mut cmd: *mut ticcmd_t,
-    mut maketic: ::core::ffi::c_int,
+    mut maketic: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut strafe: boolean = 0;
     let mut bstrafe: boolean = 0;
-    let mut speed: ::core::ffi::c_int = 0;
-    let mut tspeed: ::core::ffi::c_int = 0;
-    let mut forward: ::core::ffi::c_int = 0;
-    let mut side: ::core::ffi::c_int = 0;
+    let mut speed: i32 = 0;
+    let mut tspeed: i32 = 0;
+    let mut forward: i32 = 0;
+    let mut side: i32 = 0;
     memset(
         cmd as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<ticcmd_t>() as size_t,
     );
     (*cmd).consistancy = consistancy[consoleplayer
         as usize][(maketic % BACKUPTICS) as usize];
     strafe = (gamekeydown[key_strafe as usize] != 0
         || *mousebuttons.offset(mousebstrafe as isize) != 0
-        || *joybuttons.offset(joybstrafe as isize) != 0) as ::core::ffi::c_int
+        || *joybuttons.offset(joybstrafe as isize) != 0) as i32
         as boolean;
     speed = (key_speed >= NUMKEYS || joybspeed >= MAX_JOY_BUTTONS
         || gamekeydown[key_speed as usize] != 0
-        || *joybuttons.offset(joybspeed as isize) != 0) as ::core::ffi::c_int;
-    side = 0 as ::core::ffi::c_int;
+        || *joybuttons.offset(joybspeed as isize) != 0) as i32;
+    side = 0 as i32;
     forward = side;
-    if joyxmove < 0 as ::core::ffi::c_int || joyxmove > 0 as ::core::ffi::c_int
+    if joyxmove < 0 as i32 || joyxmove > 0 as i32
         || gamekeydown[key_right as usize] != 0 || gamekeydown[key_left as usize] != 0
     {
         turnheld += ticdup;
     } else {
-        turnheld = 0 as ::core::ffi::c_int;
+        turnheld = 0 as i32;
     }
     if turnheld < SLOWTURNTICS {
-        tspeed = 2 as ::core::ffi::c_int;
+        tspeed = 2 as i32;
     } else {
         tspeed = speed;
     }
     if strafe != 0 {
         if gamekeydown[key_right as usize] != 0 {
-            side += sidemove[speed as usize] as ::core::ffi::c_int;
+            side += sidemove[speed as usize] as i32;
         }
         if gamekeydown[key_left as usize] != 0 {
-            side -= sidemove[speed as usize] as ::core::ffi::c_int;
+            side -= sidemove[speed as usize] as i32;
         }
-        if joyxmove > 0 as ::core::ffi::c_int {
-            side += sidemove[speed as usize] as ::core::ffi::c_int;
+        if joyxmove > 0 as i32 {
+            side += sidemove[speed as usize] as i32;
         }
-        if joyxmove < 0 as ::core::ffi::c_int {
-            side -= sidemove[speed as usize] as ::core::ffi::c_int;
+        if joyxmove < 0 as i32 {
+            side -= sidemove[speed as usize] as i32;
         }
     } else {
         if gamekeydown[key_right as usize] != 0 {
-            (*cmd).angleturn = ((*cmd).angleturn as ::core::ffi::c_int
-                - angleturn[tspeed as usize] as ::core::ffi::c_int)
-                as ::core::ffi::c_short;
+            (*cmd).angleturn = ((*cmd).angleturn as i32
+                - angleturn[tspeed as usize] as i32)
+                as i16;
         }
         if gamekeydown[key_left as usize] != 0 {
-            (*cmd).angleturn = ((*cmd).angleturn as ::core::ffi::c_int
-                + angleturn[tspeed as usize] as ::core::ffi::c_int)
-                as ::core::ffi::c_short;
+            (*cmd).angleturn = ((*cmd).angleturn as i32
+                + angleturn[tspeed as usize] as i32)
+                as i16;
         }
-        if joyxmove > 0 as ::core::ffi::c_int {
-            (*cmd).angleturn = ((*cmd).angleturn as ::core::ffi::c_int
-                - angleturn[tspeed as usize] as ::core::ffi::c_int)
-                as ::core::ffi::c_short;
+        if joyxmove > 0 as i32 {
+            (*cmd).angleturn = ((*cmd).angleturn as i32
+                - angleturn[tspeed as usize] as i32)
+                as i16;
         }
-        if joyxmove < 0 as ::core::ffi::c_int {
-            (*cmd).angleturn = ((*cmd).angleturn as ::core::ffi::c_int
-                + angleturn[tspeed as usize] as ::core::ffi::c_int)
-                as ::core::ffi::c_short;
+        if joyxmove < 0 as i32 {
+            (*cmd).angleturn = ((*cmd).angleturn as i32
+                + angleturn[tspeed as usize] as i32)
+                as i16;
         }
     }
     if gamekeydown[key_up as usize] != 0 {
-        forward += forwardmove[speed as usize] as ::core::ffi::c_int;
+        forward += forwardmove[speed as usize] as i32;
     }
     if gamekeydown[key_down as usize] != 0 {
-        forward -= forwardmove[speed as usize] as ::core::ffi::c_int;
+        forward -= forwardmove[speed as usize] as i32;
     }
-    if joyymove < 0 as ::core::ffi::c_int {
-        forward += forwardmove[speed as usize] as ::core::ffi::c_int;
+    if joyymove < 0 as i32 {
+        forward += forwardmove[speed as usize] as i32;
     }
-    if joyymove > 0 as ::core::ffi::c_int {
-        forward -= forwardmove[speed as usize] as ::core::ffi::c_int;
+    if joyymove > 0 as i32 {
+        forward -= forwardmove[speed as usize] as i32;
     }
     if gamekeydown[key_strafeleft as usize] != 0
         || *joybuttons.offset(joybstrafeleft as isize) != 0
         || *mousebuttons.offset(mousebstrafeleft as isize) != 0
-        || joystrafemove < 0 as ::core::ffi::c_int
+        || joystrafemove < 0 as i32
     {
-        side -= sidemove[speed as usize] as ::core::ffi::c_int;
+        side -= sidemove[speed as usize] as i32;
     }
     if gamekeydown[key_straferight as usize] != 0
         || *joybuttons.offset(joybstraferight as isize) != 0
         || *mousebuttons.offset(mousebstraferight as isize) != 0
-        || joystrafemove > 0 as ::core::ffi::c_int
+        || joystrafemove > 0 as i32
     {
-        side += sidemove[speed as usize] as ::core::ffi::c_int;
+        side += sidemove[speed as usize] as i32;
     }
     (*cmd).chatchar = HU_dequeueChatChar() as byte;
     if gamekeydown[key_fire as usize] != 0
         || *mousebuttons.offset(mousebfire as isize) != 0
         || *joybuttons.offset(joybfire as isize) != 0
     {
-        (*cmd).buttons = ((*cmd).buttons as ::core::ffi::c_int
-            | BT_ATTACK as ::core::ffi::c_int) as byte;
+        (*cmd).buttons = ((*cmd).buttons as i32
+            | BT_ATTACK as i32) as byte;
     }
     if gamekeydown[key_use as usize] != 0 || *joybuttons.offset(joybuse as isize) != 0
         || *mousebuttons.offset(mousebuse as isize) != 0
     {
-        (*cmd).buttons = ((*cmd).buttons as ::core::ffi::c_int
-            | BT_USE as ::core::ffi::c_int) as byte;
-        dclicks = 0 as ::core::ffi::c_int;
+        (*cmd).buttons = ((*cmd).buttons as i32
+            | BT_USE as i32) as byte;
+        dclicks = 0 as i32;
     }
-    if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
-        && next_weapon != 0 as ::core::ffi::c_int
+    if gamestate as u32
+        == GS_LEVEL as i32 as u32
+        && next_weapon != 0 as i32
     {
         i = G_NextWeapon(next_weapon);
-        (*cmd).buttons = ((*cmd).buttons as ::core::ffi::c_int
-            | BT_CHANGE as ::core::ffi::c_int) as byte;
-        (*cmd).buttons = ((*cmd).buttons as ::core::ffi::c_int
-            | i << BT_WEAPONSHIFT as ::core::ffi::c_int) as byte;
+        (*cmd).buttons = ((*cmd).buttons as i32
+            | BT_CHANGE as i32) as byte;
+        (*cmd).buttons = ((*cmd).buttons as i32
+            | i << BT_WEAPONSHIFT as i32) as byte;
     } else {
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while (i as usize)
-            < (::core::mem::size_of::<[*mut ::core::ffi::c_int; 8]>() as usize)
-                .wrapping_div(::core::mem::size_of::<*mut ::core::ffi::c_int>() as usize)
+            < (::core::mem::size_of::<[*mut i32; 8]>() as usize)
+                .wrapping_div(::core::mem::size_of::<*mut i32>() as usize)
         {
-            let mut key: ::core::ffi::c_int = *weapon_keys[i as usize];
+            let mut key: i32 = *weapon_keys[i as usize];
             if gamekeydown[key as usize] != 0 {
-                (*cmd).buttons = ((*cmd).buttons as ::core::ffi::c_int
-                    | BT_CHANGE as ::core::ffi::c_int) as byte;
-                (*cmd).buttons = ((*cmd).buttons as ::core::ffi::c_int
-                    | i << BT_WEAPONSHIFT as ::core::ffi::c_int) as byte;
+                (*cmd).buttons = ((*cmd).buttons as i32
+                    | BT_CHANGE as i32) as byte;
+                (*cmd).buttons = ((*cmd).buttons as i32
+                    | i << BT_WEAPONSHIFT as i32) as byte;
                 break;
             } else {
                 i += 1;
             }
         }
     }
-    next_weapon = 0 as ::core::ffi::c_int;
+    next_weapon = 0 as i32;
     if *mousebuttons.offset(mousebforward as isize) != 0 {
-        forward += forwardmove[speed as usize] as ::core::ffi::c_int;
+        forward += forwardmove[speed as usize] as i32;
     }
     if *mousebuttons.offset(mousebbackward as isize) != 0 {
-        forward -= forwardmove[speed as usize] as ::core::ffi::c_int;
+        forward -= forwardmove[speed as usize] as i32;
     }
     if dclick_use != 0 {
         if *mousebuttons.offset(mousebforward as isize) != dclickstate
-            && dclicktime > 1 as ::core::ffi::c_int
+            && dclicktime > 1 as i32
         {
             dclickstate = *mousebuttons.offset(mousebforward as isize);
             if dclickstate != 0 {
                 dclicks += 1;
             }
-            if dclicks == 2 as ::core::ffi::c_int {
-                (*cmd).buttons = ((*cmd).buttons as ::core::ffi::c_int
-                    | BT_USE as ::core::ffi::c_int) as byte;
-                dclicks = 0 as ::core::ffi::c_int;
+            if dclicks == 2 as i32 {
+                (*cmd).buttons = ((*cmd).buttons as i32
+                    | BT_USE as i32) as byte;
+                dclicks = 0 as i32;
             } else {
-                dclicktime = 0 as ::core::ffi::c_int;
+                dclicktime = 0 as i32;
             }
         } else {
             dclicktime += ticdup;
-            if dclicktime > 20 as ::core::ffi::c_int {
-                dclicks = 0 as ::core::ffi::c_int;
+            if dclicktime > 20 as i32 {
+                dclicks = 0 as i32;
                 dclickstate = 0 as boolean;
             }
         }
         bstrafe = (*mousebuttons.offset(mousebstrafe as isize) != 0
-            || *joybuttons.offset(joybstrafe as isize) != 0) as ::core::ffi::c_int
+            || *joybuttons.offset(joybstrafe as isize) != 0) as i32
             as boolean;
-        if bstrafe != dclickstate2 && dclicktime2 > 1 as ::core::ffi::c_int {
+        if bstrafe != dclickstate2 && dclicktime2 > 1 as i32 {
             dclickstate2 = bstrafe;
             if dclickstate2 != 0 {
                 dclicks2 += 1;
             }
-            if dclicks2 == 2 as ::core::ffi::c_int {
-                (*cmd).buttons = ((*cmd).buttons as ::core::ffi::c_int
-                    | BT_USE as ::core::ffi::c_int) as byte;
-                dclicks2 = 0 as ::core::ffi::c_int;
+            if dclicks2 == 2 as i32 {
+                (*cmd).buttons = ((*cmd).buttons as i32
+                    | BT_USE as i32) as byte;
+                dclicks2 = 0 as i32;
             } else {
-                dclicktime2 = 0 as ::core::ffi::c_int;
+                dclicktime2 = 0 as i32;
             }
         } else {
             dclicktime2 += ticdup;
-            if dclicktime2 > 20 as ::core::ffi::c_int {
-                dclicks2 = 0 as ::core::ffi::c_int;
+            if dclicktime2 > 20 as i32 {
+                dclicks2 = 0 as i32;
                 dclickstate2 = 0 as boolean;
             }
         }
     }
     forward += mousey;
     if strafe != 0 {
-        side += mousex * 2 as ::core::ffi::c_int;
+        side += mousex * 2 as i32;
     } else {
-        (*cmd).angleturn = ((*cmd).angleturn as ::core::ffi::c_int
-            - mousex * 0x8 as ::core::ffi::c_int) as ::core::ffi::c_short;
+        (*cmd).angleturn = ((*cmd).angleturn as i32
+            - mousex * 0x8 as i32) as i16;
     }
-    if mousex == 0 as ::core::ffi::c_int {
-        testcontrols_mousespeed = 0 as ::core::ffi::c_int;
+    if mousex == 0 as i32 {
+        testcontrols_mousespeed = 0 as i32;
     }
-    mousey = 0 as ::core::ffi::c_int;
+    mousey = 0 as i32;
     mousex = mousey;
-    if forward > forwardmove[1 as ::core::ffi::c_int as usize] {
-        forward = forwardmove[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
-    } else if forward < -forwardmove[1 as ::core::ffi::c_int as usize] {
-        forward = -forwardmove[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
+    if forward > forwardmove[1 as i32 as usize] {
+        forward = forwardmove[1 as i32 as usize] as i32;
+    } else if forward < -forwardmove[1 as i32 as usize] {
+        forward = -forwardmove[1 as i32 as usize] as i32;
     }
-    if side > forwardmove[1 as ::core::ffi::c_int as usize] {
-        side = forwardmove[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
-    } else if side < -forwardmove[1 as ::core::ffi::c_int as usize] {
-        side = -forwardmove[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
+    if side > forwardmove[1 as i32 as usize] {
+        side = forwardmove[1 as i32 as usize] as i32;
+    } else if side < -forwardmove[1 as i32 as usize] {
+        side = -forwardmove[1 as i32 as usize] as i32;
     }
-    (*cmd).forwardmove = ((*cmd).forwardmove as ::core::ffi::c_int + forward)
+    (*cmd).forwardmove = ((*cmd).forwardmove as i32 + forward)
         as ::core::ffi::c_schar;
-    (*cmd).sidemove = ((*cmd).sidemove as ::core::ffi::c_int + side)
+    (*cmd).sidemove = ((*cmd).sidemove as i32 + side)
         as ::core::ffi::c_schar;
     if sendpause {
         sendpause = false;
-        (*cmd).buttons = (BT_SPECIAL as ::core::ffi::c_int
-            | BTS_PAUSE as ::core::ffi::c_int) as byte;
+        (*cmd).buttons = (BT_SPECIAL as i32
+            | BTS_PAUSE as i32) as byte;
     }
     if sendsave {
         sendsave = false;
-        (*cmd).buttons = (BT_SPECIAL as ::core::ffi::c_int
-            | BTS_SAVEGAME as ::core::ffi::c_int
-            | savegameslot << BTS_SAVESHIFT as ::core::ffi::c_int) as byte;
+        (*cmd).buttons = (BT_SPECIAL as i32
+            | BTS_SAVEGAME as i32
+            | savegameslot << BTS_SAVESHIFT as i32) as byte;
     }
     if lowres_turn {
-        static mut carry: ::core::ffi::c_short = 0 as ::core::ffi::c_short;
-        let mut desired_angleturn: ::core::ffi::c_short = 0;
-        desired_angleturn = ((*cmd).angleturn as ::core::ffi::c_int
-            + carry as ::core::ffi::c_int) as ::core::ffi::c_short;
-        (*cmd).angleturn = (desired_angleturn as ::core::ffi::c_int
-            + 128 as ::core::ffi::c_int & 0xff00 as ::core::ffi::c_int)
-            as ::core::ffi::c_short;
-        carry = (desired_angleturn as ::core::ffi::c_int
-            - (*cmd).angleturn as ::core::ffi::c_int) as ::core::ffi::c_short;
+        static mut carry: i16 = 0 as i16;
+        let mut desired_angleturn: i16 = 0;
+        desired_angleturn = ((*cmd).angleturn as i32
+            + carry as i32) as i16;
+        (*cmd).angleturn = (desired_angleturn as i32
+            + 128 as i32 & 0xff00 as i32)
+            as i16;
+        carry = (desired_angleturn as i32
+            - (*cmd).angleturn as i32) as i16;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_DoLoadLevel() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     skyflatnum = R_FlatNumForName(
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char,
     );
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        && (gameversion as ::core::ffi::c_uint
-            == exe_final2 as ::core::ffi::c_int as ::core::ffi::c_uint
-            || gameversion as ::core::ffi::c_uint
-                == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint)
+    if gamemode as u32
+        == commercial as i32 as u32
+        && (gameversion as u32
+            == exe_final2 as i32 as u32
+            || gameversion as u32
+                == exe_chex as i32 as u32)
     {
         let mut skytexturename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
             ::core::ffi::c_char,
         >();
-        if gamemap < 12 as ::core::ffi::c_int {
+        if gamemap < 12 as i32 {
             skytexturename = b"SKY1\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-        } else if gamemap < 21 as ::core::ffi::c_int {
+        } else if gamemap < 21 as i32 {
             skytexturename = b"SKY2\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
         } else {
@@ -2361,54 +2361,54 @@ pub unsafe extern "C" fn G_DoLoadLevel() {
         skytexture = R_TextureNumForName(skytexturename);
     }
     levelstarttic = gametic;
-    if wipegamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if wipegamestate as u32
+        == GS_LEVEL as i32 as u32
     {
         wipegamestate = 4294967295 as gamestate_t;
     }
     gamestate = GS_LEVEL;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         turbodetected[i as usize] = false_0 as boolean;
         if playeringame[i as usize] != 0
-            && players[i as usize].playerstate as ::core::ffi::c_uint
-                == PST_DEAD as ::core::ffi::c_int as ::core::ffi::c_uint
+            && players[i as usize].playerstate as u32
+                == PST_DEAD as i32 as u32
         {
             players[i as usize].playerstate = PST_REBORN;
         }
         memset(
             &raw mut (*(&raw mut players as *mut player_t).offset(i as isize)).frags
-                as *mut ::core::ffi::c_int as *mut ::core::ffi::c_void,
-            0 as ::core::ffi::c_int,
-            ::core::mem::size_of::<[::core::ffi::c_int; 4]>() as size_t,
+                as *mut i32 as *mut ::core::ffi::c_void,
+            0 as i32,
+            ::core::mem::size_of::<[i32; 4]>() as size_t,
         );
         i += 1;
     }
-    P_SetupLevel(gameepisode, gamemap, 0 as ::core::ffi::c_int, gameskill);
+    P_SetupLevel(gameepisode, gamemap, 0 as i32, gameskill);
     displayplayer = consoleplayer;
     gameaction = ga_nothing;
     Z_CheckHeap();
     memset(
         &raw mut gamekeydown as *mut boolean as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<[boolean; 256]>() as size_t,
     );
-    joystrafemove = 0 as ::core::ffi::c_int;
+    joystrafemove = 0 as i32;
     joyymove = joystrafemove;
     joyxmove = joyymove;
-    mousey = 0 as ::core::ffi::c_int;
+    mousey = 0 as i32;
     mousex = mousey;
     paused = false;
     sendsave = paused;
     sendpause = sendsave;
     memset(
         &raw mut mousearray as *mut boolean as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<[boolean; 9]>() as size_t,
     );
     memset(
         &raw mut joyarray as *mut boolean as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<[boolean; 21]>() as size_t,
     );
     if testcontrols {
@@ -2416,36 +2416,36 @@ pub unsafe extern "C" fn G_DoLoadLevel() {
             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
 }
-unsafe extern "C" fn SetJoyButtons(mut buttons_mask: ::core::ffi::c_uint) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+unsafe extern "C" fn SetJoyButtons(mut buttons_mask: u32) {
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAX_JOY_BUTTONS {
-        let mut button_on: ::core::ffi::c_int = (buttons_mask
-            & ((1 as ::core::ffi::c_int) << i) as ::core::ffi::c_uint
-            != 0 as ::core::ffi::c_uint) as ::core::ffi::c_int;
+        let mut button_on: i32 = (buttons_mask
+            & ((1 as i32) << i) as u32
+            != 0 as u32) as i32;
         if *joybuttons.offset(i as isize) == 0 && button_on != 0 {
             if i == joybprevweapon {
-                next_weapon = -(1 as ::core::ffi::c_int);
+                next_weapon = -(1 as i32);
             } else if i == joybnextweapon {
-                next_weapon = 1 as ::core::ffi::c_int;
+                next_weapon = 1 as i32;
             }
         }
         *joybuttons.offset(i as isize) = button_on as boolean;
         i += 1;
     }
 }
-unsafe extern "C" fn SetMouseButtons(mut buttons_mask: ::core::ffi::c_uint) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+unsafe extern "C" fn SetMouseButtons(mut buttons_mask: u32) {
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAX_MOUSE_BUTTONS {
-        let mut button_on: ::core::ffi::c_uint = (buttons_mask
-            & ((1 as ::core::ffi::c_int) << i) as ::core::ffi::c_uint
-            != 0 as ::core::ffi::c_uint) as ::core::ffi::c_int as ::core::ffi::c_uint;
+        let mut button_on: u32 = (buttons_mask
+            & ((1 as i32) << i) as u32
+            != 0 as u32) as i32 as u32;
         if *mousebuttons.offset(i as isize) == 0 && button_on != 0 {
             if i == mousebprevweapon {
-                next_weapon = -(1 as ::core::ffi::c_int);
+                next_weapon = -(1 as i32);
             } else if i == mousebnextweapon {
-                next_weapon = 1 as ::core::ffi::c_int;
+                next_weapon = 1 as i32;
             }
         }
         *mousebuttons.offset(i as isize) = button_on as boolean;
@@ -2454,16 +2454,16 @@ unsafe extern "C" fn SetMouseButtons(mut buttons_mask: ::core::ffi::c_uint) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
-    if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
-        && (*ev).type_0 as ::core::ffi::c_uint
-            == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamestate as u32
+        == GS_LEVEL as i32 as u32
+        && (*ev).type_0 as u32
+            == ev_keydown as i32 as u32
         && (*ev).data1 == key_spy && (singledemo || deathmatch == 0)
     {
         loop {
             displayplayer += 1;
             if displayplayer == MAXPLAYERS {
-                displayplayer = 0 as ::core::ffi::c_int;
+                displayplayer = 0 as i32;
             }
             if !(playeringame[displayplayer as usize] == 0
                 && displayplayer != consoleplayer)
@@ -2473,19 +2473,19 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
         }
         return true_0 as boolean;
     }
-    if gameaction as ::core::ffi::c_uint
-        == ga_nothing as ::core::ffi::c_int as ::core::ffi::c_uint && !singledemo
+    if gameaction as u32
+        == ga_nothing as i32 as u32 && !singledemo
         && (demoplayback
-            || gamestate as ::core::ffi::c_uint
-                == GS_DEMOSCREEN as ::core::ffi::c_int as ::core::ffi::c_uint)
+            || gamestate as u32
+                == GS_DEMOSCREEN as i32 as u32)
     {
-        if (*ev).type_0 as ::core::ffi::c_uint
-            == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
-            || (*ev).type_0 as ::core::ffi::c_uint
-                == ev_mouse as ::core::ffi::c_int as ::core::ffi::c_uint
+        if (*ev).type_0 as u32
+            == ev_keydown as i32 as u32
+            || (*ev).type_0 as u32
+                == ev_mouse as i32 as u32
                 && (*ev).data1 != 0
-            || (*ev).type_0 as ::core::ffi::c_uint
-                == ev_joystick as ::core::ffi::c_int as ::core::ffi::c_uint
+            || (*ev).type_0 as u32
+                == ev_joystick as i32 as u32
                 && (*ev).data1 != 0
         {
             M_StartControlPanel();
@@ -2493,8 +2493,8 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
         }
         return false_0 as boolean;
     }
-    if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamestate as u32
+        == GS_LEVEL as i32 as u32
     {
         if HU_Responder(ev) != 0 {
             return true_0 as boolean;
@@ -2506,31 +2506,31 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
             return true_0 as boolean;
         }
     }
-    if gamestate as ::core::ffi::c_uint
-        == GS_FINALE as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamestate as u32
+        == GS_FINALE as i32 as u32
     {
         if F_Responder(ev) != 0 {
             return true_0 as boolean;
         }
     }
     if testcontrols
-        && (*ev).type_0 as ::core::ffi::c_uint
-            == ev_mouse as ::core::ffi::c_int as ::core::ffi::c_uint
+        && (*ev).type_0 as u32
+            == ev_mouse as i32 as u32
     {
         testcontrols_mousespeed = abs((*ev).data2);
     }
-    if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*ev).type_0 as u32
+        == ev_keydown as i32 as u32
         && (*ev).data1 == key_prevweapon
     {
-        next_weapon = -(1 as ::core::ffi::c_int);
-    } else if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+        next_weapon = -(1 as i32);
+    } else if (*ev).type_0 as u32
+        == ev_keydown as i32 as u32
         && (*ev).data1 == key_nextweapon
     {
-        next_weapon = 1 as ::core::ffi::c_int;
+        next_weapon = 1 as i32;
     }
-    match (*ev).type_0 as ::core::ffi::c_uint {
+    match (*ev).type_0 as u32 {
         0 => {
             if (*ev).data1 == key_pause {
                 sendpause = true;
@@ -2546,15 +2546,15 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
             return false_0 as boolean;
         }
         2 => {
-            SetMouseButtons((*ev).data1 as ::core::ffi::c_uint);
-            mousex = (*ev).data2 * (mouseSensitivity + 5 as ::core::ffi::c_int)
-                / 10 as ::core::ffi::c_int;
-            mousey = (*ev).data3 * (mouseSensitivity + 5 as ::core::ffi::c_int)
-                / 10 as ::core::ffi::c_int;
+            SetMouseButtons((*ev).data1 as u32);
+            mousex = (*ev).data2 * (mouseSensitivity + 5 as i32)
+                / 10 as i32;
+            mousey = (*ev).data3 * (mouseSensitivity + 5 as i32)
+                / 10 as i32;
             return true_0 as boolean;
         }
         3 => {
-            SetJoyButtons((*ev).data1 as ::core::ffi::c_uint);
+            SetJoyButtons((*ev).data1 as u32);
             joyxmove = (*ev).data2;
             joyymove = (*ev).data3;
             joystrafemove = (*ev).data4;
@@ -2566,23 +2566,23 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_Ticker() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut buf: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut buf: i32 = 0;
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0
-            && players[i as usize].playerstate as ::core::ffi::c_uint
-                == PST_REBORN as ::core::ffi::c_int as ::core::ffi::c_uint
+            && players[i as usize].playerstate as u32
+                == PST_REBORN as i32 as u32
         {
             G_DoReborn(i);
         }
         i += 1;
     }
-    while gameaction as ::core::ffi::c_uint
-        != ga_nothing as ::core::ffi::c_int as ::core::ffi::c_uint
+    while gameaction as u32
+        != ga_nothing as i32 as u32
     {
-        match gameaction as ::core::ffi::c_uint {
+        match gameaction as u32 {
             1 => {
                 G_DoLoadLevel();
             }
@@ -2620,7 +2620,7 @@ pub unsafe extern "C" fn G_Ticker() {
         }
     }
     buf = gametic / ticdup % BACKUPTICS;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
             cmd = &raw mut (*(&raw mut players as *mut player_t).offset(i as isize)).cmd;
@@ -2636,11 +2636,11 @@ pub unsafe extern "C" fn G_Ticker() {
             if demorecording {
                 G_WriteDemoTiccmd(cmd);
             }
-            if (*cmd).forwardmove as ::core::ffi::c_int > TURBOTHRESHOLD {
+            if (*cmd).forwardmove as i32 > TURBOTHRESHOLD {
                 turbodetected[i as usize] = true_0 as boolean;
             }
-            if gametic & 31 as ::core::ffi::c_int == 0 as ::core::ffi::c_int
-                && (gametic >> 5 as ::core::ffi::c_int) % MAXPLAYERS == i
+            if gametic & 31 as i32 == 0 as i32
+                && (gametic >> 5 as i32) % MAXPLAYERS == i
                 && turbodetected[i as usize] != 0
             {
                 static mut turbomessage: [::core::ffi::c_char; 80] = [0; 80];
@@ -2659,13 +2659,13 @@ pub unsafe extern "C" fn G_Ticker() {
             }
             if netgame && !netdemo && gametic % ticdup == 0 {
                 if gametic > BACKUPTICS
-                    && consistancy[i as usize][buf as usize] as ::core::ffi::c_int
-                        != (*cmd).consistancy as ::core::ffi::c_int
+                    && consistancy[i as usize][buf as usize] as i32
+                        != (*cmd).consistancy as i32
                 {
                     I_Error(&format!(
                         "consistency failure ({} should be {})",
-                        (*cmd).consistancy as ::core::ffi::c_int,
-                        consistancy[i as usize][buf as usize] as ::core::ffi::c_int,
+                        (*cmd).consistancy as i32,
+                        consistancy[i as usize][buf as usize] as i32,
                     ));
                 }
                 if !players[i as usize].mo.is_null() {
@@ -2678,14 +2678,14 @@ pub unsafe extern "C" fn G_Ticker() {
         }
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
-            if players[i as usize].cmd.buttons as ::core::ffi::c_int
-                & BT_SPECIAL as ::core::ffi::c_int != 0
+            if players[i as usize].cmd.buttons as i32
+                & BT_SPECIAL as i32 != 0
             {
-                match players[i as usize].cmd.buttons as ::core::ffi::c_int
-                    & BT_SPECIALMASK as ::core::ffi::c_int
+                match players[i as usize].cmd.buttons as i32
+                    & BT_SPECIALMASK as i32
                 {
                     1 => {
                         paused = !paused;
@@ -2696,7 +2696,7 @@ pub unsafe extern "C" fn G_Ticker() {
                         }
                     }
                     2 => {
-                        if savedescription[0 as ::core::ffi::c_int as usize] == 0 {
+                        if savedescription[0 as i32 as usize] == 0 {
                             M_StringCopy(
                                 &raw mut savedescription as *mut ::core::ffi::c_char,
                                 b"NET GAME\0" as *const u8 as *const ::core::ffi::c_char,
@@ -2705,8 +2705,8 @@ pub unsafe extern "C" fn G_Ticker() {
                             );
                         }
                         savegameslot = (players[i as usize].cmd.buttons
-                            as ::core::ffi::c_int & BTS_SAVEMASK as ::core::ffi::c_int)
-                            >> BTS_SAVESHIFT as ::core::ffi::c_int;
+                            as i32 & BTS_SAVEMASK as i32)
+                            >> BTS_SAVESHIFT as i32;
                         gameaction = ga_savegame;
                     }
                     _ => {}
@@ -2715,15 +2715,15 @@ pub unsafe extern "C" fn G_Ticker() {
         }
         i += 1;
     }
-    if oldgamestate as ::core::ffi::c_uint
-        == GS_INTERMISSION as ::core::ffi::c_int as ::core::ffi::c_uint
-        && gamestate as ::core::ffi::c_uint
-            != GS_INTERMISSION as ::core::ffi::c_int as ::core::ffi::c_uint
+    if oldgamestate as u32
+        == GS_INTERMISSION as i32 as u32
+        && gamestate as u32
+            != GS_INTERMISSION as i32 as u32
     {
         WI_End();
     }
     oldgamestate = gamestate;
-    match gamestate as ::core::ffi::c_uint {
+    match gamestate as u32 {
         0 => {
             P_Ticker();
             ST_Ticker();
@@ -2743,42 +2743,42 @@ pub unsafe extern "C" fn G_Ticker() {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn G_InitPlayer(mut player: ::core::ffi::c_int) {
+pub unsafe extern "C" fn G_InitPlayer(mut player: i32) {
     G_PlayerReborn(player);
 }
 #[no_mangle]
-pub unsafe extern "C" fn G_PlayerFinishLevel(mut player: ::core::ffi::c_int) {
+pub unsafe extern "C" fn G_PlayerFinishLevel(mut player: i32) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     p = (&raw mut players as *mut player_t).offset(player as isize) as *mut player_t;
     memset(
-        &raw mut (*p).powers as *mut ::core::ffi::c_int as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
-        ::core::mem::size_of::<[::core::ffi::c_int; 6]>() as size_t,
+        &raw mut (*p).powers as *mut i32 as *mut ::core::ffi::c_void,
+        0 as i32,
+        ::core::mem::size_of::<[i32; 6]>() as size_t,
     );
     memset(
         &raw mut (*p).cards as *mut bool as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<[bool; 6]>() as size_t,
     );
-    (*(*p).mo).flags &= !(MF_SHADOW as ::core::ffi::c_int);
-    (*p).extralight = 0 as ::core::ffi::c_int;
-    (*p).fixedcolormap = 0 as ::core::ffi::c_int;
-    (*p).damagecount = 0 as ::core::ffi::c_int;
-    (*p).bonuscount = 0 as ::core::ffi::c_int;
+    (*(*p).mo).flags &= !(MF_SHADOW as i32);
+    (*p).extralight = 0 as i32;
+    (*p).fixedcolormap = 0 as i32;
+    (*p).damagecount = 0 as i32;
+    (*p).bonuscount = 0 as i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn G_PlayerReborn(mut player: ::core::ffi::c_int) {
+pub unsafe extern "C" fn G_PlayerReborn(mut player: i32) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
-    let mut i: ::core::ffi::c_int = 0;
-    let mut frags: [::core::ffi::c_int; 4] = [0; 4];
-    let mut killcount: ::core::ffi::c_int = 0;
-    let mut itemcount: ::core::ffi::c_int = 0;
-    let mut secretcount: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut frags: [i32; 4] = [0; 4];
+    let mut killcount: i32 = 0;
+    let mut itemcount: i32 = 0;
+    let mut secretcount: i32 = 0;
     memcpy(
-        &raw mut frags as *mut ::core::ffi::c_int as *mut ::core::ffi::c_void,
+        &raw mut frags as *mut i32 as *mut ::core::ffi::c_void,
         &raw mut (*(&raw mut players as *mut player_t).offset(player as isize)).frags
-            as *mut ::core::ffi::c_int as *const ::core::ffi::c_void,
-        ::core::mem::size_of::<[::core::ffi::c_int; 4]>() as size_t,
+            as *mut i32 as *const ::core::ffi::c_void,
+        ::core::mem::size_of::<[i32; 4]>() as size_t,
     );
     killcount = players[player as usize].killcount;
     itemcount = players[player as usize].itemcount;
@@ -2786,14 +2786,14 @@ pub unsafe extern "C" fn G_PlayerReborn(mut player: ::core::ffi::c_int) {
     p = (&raw mut players as *mut player_t).offset(player as isize) as *mut player_t;
     memset(
         p as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<player_t>() as size_t,
     );
     memcpy(
         &raw mut (*(&raw mut players as *mut player_t).offset(player as isize)).frags
-            as *mut ::core::ffi::c_int as *mut ::core::ffi::c_void,
-        &raw mut frags as *mut ::core::ffi::c_int as *const ::core::ffi::c_void,
-        ::core::mem::size_of::<[::core::ffi::c_int; 4]>() as size_t,
+            as *mut i32 as *mut ::core::ffi::c_void,
+        &raw mut frags as *mut i32 as *const ::core::ffi::c_void,
+        ::core::mem::size_of::<[i32; 4]>() as size_t,
     );
     players[player as usize].killcount = killcount;
     players[player as usize].itemcount = itemcount;
@@ -2804,32 +2804,32 @@ pub unsafe extern "C" fn G_PlayerReborn(mut player: ::core::ffi::c_int) {
     (*p).health = deh_initial_health;
     (*p).pendingweapon = wp_pistol;
     (*p).readyweapon = (*p).pendingweapon;
-    (*p).weaponowned[wp_fist as ::core::ffi::c_int as usize] = true;
-    (*p).weaponowned[wp_pistol as ::core::ffi::c_int as usize] = true;
-    (*p).ammo[am_clip as ::core::ffi::c_int as usize] = deh_initial_bullets;
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMAMMO as ::core::ffi::c_int {
+    (*p).weaponowned[wp_fist as i32 as usize] = true;
+    (*p).weaponowned[wp_pistol as i32 as usize] = true;
+    (*p).ammo[am_clip as i32 as usize] = deh_initial_bullets;
+    i = 0 as i32;
+    while i < NUMAMMO as i32 {
         (*p).maxammo[i as usize] = maxammo[i as usize];
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_CheckSpot(
-    mut playernum: ::core::ffi::c_int,
+    mut playernum: i32,
     mut mthing: *mut mapthing_t,
 ) -> boolean {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     if players[playernum as usize].mo.is_null() {
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < playernum {
             if (*players[i as usize].mo).x
-                == ((*mthing).x as ::core::ffi::c_int) << FRACBITS
+                == ((*mthing).x as i32) << FRACBITS
                 && (*players[i as usize].mo).y
-                    == ((*mthing).y as ::core::ffi::c_int) << FRACBITS
+                    == ((*mthing).y as i32) << FRACBITS
             {
                 return false_0 as boolean;
             }
@@ -2837,8 +2837,8 @@ pub unsafe extern "C" fn G_CheckSpot(
         }
         return true_0 as boolean;
     }
-    x = (((*mthing).x as ::core::ffi::c_int) << FRACBITS) as fixed_t;
-    y = (((*mthing).y as ::core::ffi::c_int) << FRACBITS) as fixed_t;
+    x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
+    y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
     if P_CheckPosition(players[playernum as usize].mo, x, y) == 0 {
         return false_0 as boolean;
     }
@@ -2850,25 +2850,25 @@ pub unsafe extern "C" fn G_CheckSpot(
     ss = R_PointInSubsector(x, y);
     let mut xa: fixed_t = 0;
     let mut ya: fixed_t = 0;
-    let mut an: ::core::ffi::c_int = 0;
+    let mut an: i32 = 0;
     an = (ANG45 >> ANGLETOFINESHIFT)
-        * ((*mthing).angle as ::core::ffi::c_int / 45 as ::core::ffi::c_int);
+        * ((*mthing).angle as i32 / 45 as i32);
     match an {
         4096 => {
-            xa = finetangent[2048 as ::core::ffi::c_int as usize];
-            ya = finetangent[0 as ::core::ffi::c_int as usize];
+            xa = finetangent[2048 as i32 as usize];
+            ya = finetangent[0 as i32 as usize];
         }
         5120 => {
-            xa = finetangent[3072 as ::core::ffi::c_int as usize];
-            ya = finetangent[1024 as ::core::ffi::c_int as usize];
+            xa = finetangent[3072 as i32 as usize];
+            ya = finetangent[1024 as i32 as usize];
         }
         6144 => {
-            xa = finesine[0 as ::core::ffi::c_int as usize];
-            ya = finetangent[2048 as ::core::ffi::c_int as usize];
+            xa = finesine[0 as i32 as usize];
+            ya = finetangent[2048 as i32 as usize];
         }
         7168 => {
-            xa = finesine[1024 as ::core::ffi::c_int as usize];
-            ya = finetangent[3072 as ::core::ffi::c_int as usize];
+            xa = finesine[1024 as i32 as usize];
+            ya = finetangent[3072 as i32 as usize];
         }
         0 | 1024 | 2048 | 3072 => {
             xa = *finecosine.offset(an as isize);
@@ -2876,7 +2876,7 @@ pub unsafe extern "C" fn G_CheckSpot(
         }
         _ => {
             I_Error(&format!("G_CheckSpot: unexpected angle {}\n", an));
-            ya = 0 as ::core::ffi::c_int as fixed_t;
+            ya = 0 as i32 as fixed_t;
             xa = ya;
         }
     }
@@ -2886,23 +2886,23 @@ pub unsafe extern "C" fn G_CheckSpot(
         (*(*ss).sector).floorheight,
         MT_TFOG,
     );
-    if players[consoleplayer as usize].viewz != 1 as ::core::ffi::c_int {
-        S_StartSound(mo as *mut ::core::ffi::c_void, sfx_telept as ::core::ffi::c_int);
+    if players[consoleplayer as usize].viewz != 1 as i32 {
+        S_StartSound(mo as *mut ::core::ffi::c_void, sfx_telept as i32);
     }
     return true_0 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn G_DeathMatchSpawnPlayer(mut playernum: ::core::ffi::c_int) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut selections: ::core::ffi::c_int = 0;
+pub unsafe extern "C" fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut selections: i32 = 0;
     selections = deathmatch_p.offset_from(&raw mut deathmatchstarts as *mut mapthing_t)
-        as ::core::ffi::c_long as ::core::ffi::c_int;
-    if selections < 4 as ::core::ffi::c_int {
+        as ::core::ffi::c_long as i32;
+    if selections < 4 as i32 {
         I_Error(&format!("Only {} deathmatch spots, 4 required", selections));
     }
-    j = 0 as ::core::ffi::c_int;
-    while j < 20 as ::core::ffi::c_int {
+    j = 0 as i32;
+    while j < 20 as i32 {
         i = P_Random() % selections;
         if G_CheckSpot(
             playernum,
@@ -2910,8 +2910,8 @@ pub unsafe extern "C" fn G_DeathMatchSpawnPlayer(mut playernum: ::core::ffi::c_i
                 as *mut mapthing_t,
         ) != 0
         {
-            deathmatchstarts[i as usize].type_0 = (playernum + 1 as ::core::ffi::c_int)
-                as ::core::ffi::c_short;
+            deathmatchstarts[i as usize].type_0 = (playernum + 1 as i32)
+                as i16;
             P_SpawnPlayer(
                 (&raw mut deathmatchstarts as *mut mapthing_t).offset(i as isize)
                     as *mut mapthing_t,
@@ -2926,8 +2926,8 @@ pub unsafe extern "C" fn G_DeathMatchSpawnPlayer(mut playernum: ::core::ffi::c_i
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn G_DoReborn(mut playernum: ::core::ffi::c_int) {
-    let mut i: ::core::ffi::c_int = 0;
+pub unsafe extern "C" fn G_DoReborn(mut playernum: i32) {
+    let mut i: i32 = 0;
     if !netgame {
         gameaction = ga_loadlevel;
     } else {
@@ -2948,7 +2948,7 @@ pub unsafe extern "C" fn G_DoReborn(mut playernum: ::core::ffi::c_int) {
             );
             return;
         }
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if G_CheckSpot(
                 playernum,
@@ -2956,14 +2956,14 @@ pub unsafe extern "C" fn G_DoReborn(mut playernum: ::core::ffi::c_int) {
                     as *mut mapthing_t,
             ) != 0
             {
-                playerstarts[i as usize].type_0 = (playernum + 1 as ::core::ffi::c_int)
-                    as ::core::ffi::c_short;
+                playerstarts[i as usize].type_0 = (playernum + 1 as i32)
+                    as i16;
                 P_SpawnPlayer(
                     (&raw mut playerstarts as *mut mapthing_t).offset(i as isize)
                         as *mut mapthing_t,
                 );
-                playerstarts[i as usize].type_0 = (i + 1 as ::core::ffi::c_int)
-                    as ::core::ffi::c_short;
+                playerstarts[i as usize].type_0 = (i + 1 as i32)
+                    as i16;
                 return;
             }
             i += 1;
@@ -2979,79 +2979,79 @@ pub unsafe extern "C" fn G_ScreenShot() {
     gameaction = ga_screenshot;
 }
 #[no_mangle]
-pub static mut pars: [[::core::ffi::c_int; 10]; 4] = [
-    [0 as ::core::ffi::c_int; 10],
+pub static mut pars: [[i32; 10]; 4] = [
+    [0 as i32; 10],
     [
-        0 as ::core::ffi::c_int,
-        30 as ::core::ffi::c_int,
-        75 as ::core::ffi::c_int,
-        120 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        165 as ::core::ffi::c_int,
-        180 as ::core::ffi::c_int,
-        180 as ::core::ffi::c_int,
-        30 as ::core::ffi::c_int,
-        165 as ::core::ffi::c_int,
+        0 as i32,
+        30 as i32,
+        75 as i32,
+        120 as i32,
+        90 as i32,
+        165 as i32,
+        180 as i32,
+        180 as i32,
+        30 as i32,
+        165 as i32,
     ],
     [
-        0 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        120 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        360 as ::core::ffi::c_int,
-        240 as ::core::ffi::c_int,
-        30 as ::core::ffi::c_int,
-        170 as ::core::ffi::c_int,
+        0 as i32,
+        90 as i32,
+        90 as i32,
+        90 as i32,
+        120 as i32,
+        90 as i32,
+        360 as i32,
+        240 as i32,
+        30 as i32,
+        170 as i32,
     ],
     [
-        0 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        45 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        150 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        90 as ::core::ffi::c_int,
-        165 as ::core::ffi::c_int,
-        30 as ::core::ffi::c_int,
-        135 as ::core::ffi::c_int,
+        0 as i32,
+        90 as i32,
+        45 as i32,
+        90 as i32,
+        150 as i32,
+        90 as i32,
+        90 as i32,
+        165 as i32,
+        30 as i32,
+        135 as i32,
     ],
 ];
 #[no_mangle]
-pub static mut cpars: [::core::ffi::c_int; 32] = [
-    30 as ::core::ffi::c_int,
-    90 as ::core::ffi::c_int,
-    120 as ::core::ffi::c_int,
-    120 as ::core::ffi::c_int,
-    90 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    120 as ::core::ffi::c_int,
-    120 as ::core::ffi::c_int,
-    270 as ::core::ffi::c_int,
-    90 as ::core::ffi::c_int,
-    210 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    210 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    420 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    210 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    240 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    180 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    150 as ::core::ffi::c_int,
-    300 as ::core::ffi::c_int,
-    330 as ::core::ffi::c_int,
-    420 as ::core::ffi::c_int,
-    300 as ::core::ffi::c_int,
-    180 as ::core::ffi::c_int,
-    120 as ::core::ffi::c_int,
-    30 as ::core::ffi::c_int,
+pub static mut cpars: [i32; 32] = [
+    30 as i32,
+    90 as i32,
+    120 as i32,
+    120 as i32,
+    90 as i32,
+    150 as i32,
+    120 as i32,
+    120 as i32,
+    270 as i32,
+    90 as i32,
+    210 as i32,
+    150 as i32,
+    150 as i32,
+    150 as i32,
+    210 as i32,
+    150 as i32,
+    420 as i32,
+    150 as i32,
+    210 as i32,
+    150 as i32,
+    240 as i32,
+    150 as i32,
+    180 as i32,
+    150 as i32,
+    150 as i32,
+    300 as i32,
+    330 as i32,
+    420 as i32,
+    300 as i32,
+    180 as i32,
+    120 as i32,
+    30 as i32,
 ];
 #[no_mangle]
 pub static mut secretexit: bool = false;
@@ -3062,10 +3062,10 @@ pub unsafe extern "C" fn G_ExitLevel() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_SecretExitLevel() {
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
         && W_CheckNumForName("map31",
-        ) < 0 as ::core::ffi::c_int
+        ) < 0 as i32
     {
         secretexit = false;
     } else {
@@ -3075,9 +3075,9 @@ pub unsafe extern "C" fn G_SecretExitLevel() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_DoCompleted() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     gameaction = ga_nothing;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
             G_PlayerFinishLevel(i);
@@ -3087,13 +3087,13 @@ pub unsafe extern "C" fn G_DoCompleted() {
     if automapactive {
         AM_Stop();
     }
-    if gamemode as ::core::ffi::c_uint
-        != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        != commercial as i32 as u32
     {
-        if gameversion as ::core::ffi::c_uint
-            == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gameversion as u32
+            == exe_chex as i32 as u32
         {
-            if gamemap == 5 as ::core::ffi::c_int {
+            if gamemap == 5 as i32 {
                 gameaction = ga_victory;
                 return;
             }
@@ -3104,7 +3104,7 @@ pub unsafe extern "C" fn G_DoCompleted() {
                     return;
                 }
                 9 => {
-                    i = 0 as ::core::ffi::c_int;
+                    i = 0 as i32;
                     while i < MAXPLAYERS {
                         players[i as usize].didsecret = true;
                         i += 1;
@@ -3114,43 +3114,43 @@ pub unsafe extern "C" fn G_DoCompleted() {
             }
         }
     }
-    if gamemap == 8 as ::core::ffi::c_int
-        && gamemode as ::core::ffi::c_uint
-            != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemap == 8 as i32
+        && gamemode as u32
+            != commercial as i32 as u32
     {
         gameaction = ga_victory;
         return;
     }
-    if gamemap == 9 as ::core::ffi::c_int
-        && gamemode as ::core::ffi::c_uint
-            != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemap == 9 as i32
+        && gamemode as u32
+            != commercial as i32 as u32
     {
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             players[i as usize].didsecret = true;
             i += 1;
         }
     }
     wminfo.didsecret = players[consoleplayer as usize].didsecret;
-    wminfo.epsd = gameepisode - 1 as ::core::ffi::c_int;
-    wminfo.last = gamemap - 1 as ::core::ffi::c_int;
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    wminfo.epsd = gameepisode - 1 as i32;
+    wminfo.last = gamemap - 1 as i32;
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         if secretexit {
             match gamemap {
                 15 => {
-                    wminfo.next = 30 as ::core::ffi::c_int;
+                    wminfo.next = 30 as i32;
                 }
                 31 => {
-                    wminfo.next = 31 as ::core::ffi::c_int;
+                    wminfo.next = 31 as i32;
                 }
                 _ => {}
             }
         } else {
             match gamemap {
                 31 | 32 => {
-                    wminfo.next = 15 as ::core::ffi::c_int;
+                    wminfo.next = 15 as i32;
                 }
                 _ => {
                     wminfo.next = gamemap;
@@ -3158,20 +3158,20 @@ pub unsafe extern "C" fn G_DoCompleted() {
             }
         }
     } else if secretexit {
-        wminfo.next = 8 as ::core::ffi::c_int;
-    } else if gamemap == 9 as ::core::ffi::c_int {
+        wminfo.next = 8 as i32;
+    } else if gamemap == 9 as i32 {
         match gameepisode {
             1 => {
-                wminfo.next = 3 as ::core::ffi::c_int;
+                wminfo.next = 3 as i32;
             }
             2 => {
-                wminfo.next = 5 as ::core::ffi::c_int;
+                wminfo.next = 5 as i32;
             }
             3 => {
-                wminfo.next = 6 as ::core::ffi::c_int;
+                wminfo.next = 6 as i32;
             }
             4 => {
-                wminfo.next = 2 as ::core::ffi::c_int;
+                wminfo.next = 2 as i32;
             }
             _ => {}
         }
@@ -3181,18 +3181,18 @@ pub unsafe extern "C" fn G_DoCompleted() {
     wminfo.maxkills = totalkills;
     wminfo.maxitems = totalitems;
     wminfo.maxsecret = totalsecret;
-    wminfo.maxfrags = 0 as ::core::ffi::c_int;
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    wminfo.maxfrags = 0 as i32;
+    if gamemode as u32
+        == commercial as i32 as u32
     {
-        wminfo.partime = TICRATE * cpars[(gamemap - 1 as ::core::ffi::c_int) as usize];
-    } else if gameepisode < 4 as ::core::ffi::c_int {
+        wminfo.partime = TICRATE * cpars[(gamemap - 1 as i32) as usize];
+    } else if gameepisode < 4 as i32 {
         wminfo.partime = TICRATE * pars[gameepisode as usize][gamemap as usize];
     } else {
         wminfo.partime = TICRATE * cpars[gamemap as usize];
     }
     wminfo.pnum = consoleplayer;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         wminfo.plyr[i as usize].in_0 = playeringame[i as usize] != 0;
         wminfo.plyr[i as usize].skills = players[i as usize].killcount;
@@ -3202,10 +3202,10 @@ pub unsafe extern "C" fn G_DoCompleted() {
         memcpy(
             &raw mut (*(&raw mut wminfo.plyr as *mut wbplayerstruct_t)
                 .offset(i as isize))
-                .frags as *mut ::core::ffi::c_int as *mut ::core::ffi::c_void,
+                .frags as *mut i32 as *mut ::core::ffi::c_void,
             &raw mut (*(&raw mut players as *mut player_t).offset(i as isize)).frags
-                as *mut ::core::ffi::c_int as *const ::core::ffi::c_void,
-            ::core::mem::size_of::<[::core::ffi::c_int; 4]>() as size_t,
+                as *mut i32 as *const ::core::ffi::c_void,
+            ::core::mem::size_of::<[i32; 4]>() as size_t,
         );
         i += 1;
     }
@@ -3221,8 +3221,8 @@ pub unsafe extern "C" fn G_WorldDone() {
     if secretexit {
         players[consoleplayer as usize].didsecret = true;
     }
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         let mut current_block_3: u64;
         match gamemap {
@@ -3251,7 +3251,7 @@ pub unsafe extern "C" fn G_WorldDone() {
 #[no_mangle]
 pub unsafe extern "C" fn G_DoWorldDone() {
     gamestate = GS_LEVEL;
-    gamemap = wminfo.next + 1 as ::core::ffi::c_int;
+    gamemap = wminfo.next + 1 as i32;
     G_DoLoadLevel();
     gameaction = ga_nothing;
     viewactive = true;
@@ -3269,7 +3269,7 @@ pub unsafe extern "C" fn G_LoadGame(mut name: *mut ::core::ffi::c_char) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_DoLoadGame() {
-    let mut savedleveltime: ::core::ffi::c_int = 0;
+    let mut savedleveltime: i32 = 0;
     gameaction = ga_nothing;
     save_stream = fopen(
         &raw mut savename as *mut ::core::ffi::c_char,
@@ -3301,7 +3301,7 @@ pub unsafe extern "C" fn G_DoLoadGame() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_SaveGame(
-    mut slot: ::core::ffi::c_int,
+    mut slot: i32,
     mut description: *mut ::core::ffi::c_char,
 ) {
     savegameslot = slot;
@@ -3382,14 +3382,14 @@ pub unsafe extern "C" fn G_DoSaveGame() {
 #[no_mangle]
 pub static mut d_skill: skill_t = sk_baby;
 #[no_mangle]
-pub static mut d_episode: ::core::ffi::c_int = 0;
+pub static mut d_episode: i32 = 0;
 #[no_mangle]
-pub static mut d_map: ::core::ffi::c_int = 0;
+pub static mut d_map: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn G_DeferedInitNew(
     mut skill: skill_t,
-    mut episode: ::core::ffi::c_int,
-    mut map: ::core::ffi::c_int,
+    mut episode: i32,
+    mut map: i32,
 ) {
     d_skill = skill;
     d_episode = episode;
@@ -3402,66 +3402,66 @@ pub unsafe extern "C" fn G_DoNewGame() {
     netdemo = false;
     netgame = false;
     deathmatch = false_0;
-    playeringame[3 as ::core::ffi::c_int as usize] = 0 as boolean;
-    playeringame[2 as ::core::ffi::c_int as usize] = playeringame[3 as ::core::ffi::c_int
+    playeringame[3 as i32 as usize] = 0 as boolean;
+    playeringame[2 as i32 as usize] = playeringame[3 as i32
         as usize];
-    playeringame[1 as ::core::ffi::c_int as usize] = playeringame[2 as ::core::ffi::c_int
+    playeringame[1 as i32 as usize] = playeringame[2 as i32
         as usize];
     respawnparm = false;
     fastparm = false;
     nomonsters = false;
-    consoleplayer = 0 as ::core::ffi::c_int;
+    consoleplayer = 0 as i32;
     G_InitNew(d_skill, d_episode, d_map);
     gameaction = ga_nothing;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_InitNew(
     mut skill: skill_t,
-    mut episode: ::core::ffi::c_int,
-    mut map: ::core::ffi::c_int,
+    mut episode: i32,
+    mut map: i32,
 ) {
     let mut skytexturename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     if paused {
         paused = false;
         S_ResumeSound();
     }
-    if skill as ::core::ffi::c_int > sk_nightmare as ::core::ffi::c_int {
+    if skill as i32 > sk_nightmare as i32 {
         skill = sk_nightmare;
     }
-    if gameversion as ::core::ffi::c_uint
-        >= exe_ultimate as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gameversion as u32
+        >= exe_ultimate as i32 as u32
     {
-        if episode == 0 as ::core::ffi::c_int {
-            episode = 4 as ::core::ffi::c_int;
+        if episode == 0 as i32 {
+            episode = 4 as i32;
         }
     } else {
-        if episode < 1 as ::core::ffi::c_int {
-            episode = 1 as ::core::ffi::c_int;
+        if episode < 1 as i32 {
+            episode = 1 as i32;
         }
-        if episode > 3 as ::core::ffi::c_int {
-            episode = 3 as ::core::ffi::c_int;
+        if episode > 3 as i32 {
+            episode = 3 as i32;
         }
     }
-    if episode > 1 as ::core::ffi::c_int
-        && gamemode as ::core::ffi::c_uint
-            == shareware as ::core::ffi::c_int as ::core::ffi::c_uint
+    if episode > 1 as i32
+        && gamemode as u32
+            == shareware as i32 as u32
     {
-        episode = 1 as ::core::ffi::c_int;
+        episode = 1 as i32;
     }
-    if map < 1 as ::core::ffi::c_int {
-        map = 1 as ::core::ffi::c_int;
+    if map < 1 as i32 {
+        map = 1 as i32;
     }
-    if map > 9 as ::core::ffi::c_int
-        && gamemode as ::core::ffi::c_uint
-            != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if map > 9 as i32
+        && gamemode as u32
+            != commercial as i32 as u32
     {
-        map = 9 as ::core::ffi::c_int;
+        map = 9 as i32;
     }
     M_ClearRandom();
-    if skill as ::core::ffi::c_int == sk_nightmare as ::core::ffi::c_int
+    if skill as i32 == sk_nightmare as i32
         || respawnparm
     {
         respawnmonsters = true;
@@ -3469,36 +3469,36 @@ pub unsafe extern "C" fn G_InitNew(
         respawnmonsters = false;
     }
     if fastparm
-        || skill as ::core::ffi::c_int == sk_nightmare as ::core::ffi::c_int
-            && gameskill as ::core::ffi::c_int != sk_nightmare as ::core::ffi::c_int
+        || skill as i32 == sk_nightmare as i32
+            && gameskill as i32 != sk_nightmare as i32
     {
-        i = S_SARG_RUN1 as ::core::ffi::c_int;
-        while i <= S_SARG_PAIN2 as ::core::ffi::c_int {
-            states[i as usize].tics >>= 1 as ::core::ffi::c_int;
+        i = S_SARG_RUN1 as i32;
+        while i <= S_SARG_PAIN2 as i32 {
+            states[i as usize].tics >>= 1 as i32;
             i += 1;
         }
-        mobjinfo[MT_BRUISERSHOT as ::core::ffi::c_int as usize].speed = 20
-            as ::core::ffi::c_int * FRACUNIT;
-        mobjinfo[MT_HEADSHOT as ::core::ffi::c_int as usize].speed = 20
-            as ::core::ffi::c_int * FRACUNIT;
-        mobjinfo[MT_TROOPSHOT as ::core::ffi::c_int as usize].speed = 20
-            as ::core::ffi::c_int * FRACUNIT;
-    } else if skill as ::core::ffi::c_int != sk_nightmare as ::core::ffi::c_int
-        && gameskill as ::core::ffi::c_int == sk_nightmare as ::core::ffi::c_int
+        mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 20
+            as i32 * FRACUNIT;
+        mobjinfo[MT_HEADSHOT as i32 as usize].speed = 20
+            as i32 * FRACUNIT;
+        mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 20
+            as i32 * FRACUNIT;
+    } else if skill as i32 != sk_nightmare as i32
+        && gameskill as i32 == sk_nightmare as i32
     {
-        i = S_SARG_RUN1 as ::core::ffi::c_int;
-        while i <= S_SARG_PAIN2 as ::core::ffi::c_int {
-            states[i as usize].tics <<= 1 as ::core::ffi::c_int;
+        i = S_SARG_RUN1 as i32;
+        while i <= S_SARG_PAIN2 as i32 {
+            states[i as usize].tics <<= 1 as i32;
             i += 1;
         }
-        mobjinfo[MT_BRUISERSHOT as ::core::ffi::c_int as usize].speed = 15
-            as ::core::ffi::c_int * FRACUNIT;
-        mobjinfo[MT_HEADSHOT as ::core::ffi::c_int as usize].speed = 10
-            as ::core::ffi::c_int * FRACUNIT;
-        mobjinfo[MT_TROOPSHOT as ::core::ffi::c_int as usize].speed = 10
-            as ::core::ffi::c_int * FRACUNIT;
+        mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 15
+            as i32 * FRACUNIT;
+        mobjinfo[MT_HEADSHOT as i32 as usize].speed = 10
+            as i32 * FRACUNIT;
+        mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 10
+            as i32 * FRACUNIT;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         players[i as usize].playerstate = PST_REBORN;
         i += 1;
@@ -3512,13 +3512,13 @@ pub unsafe extern "C" fn G_InitNew(
     gamemap = map;
     gameskill = skill;
     viewactive = true;
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
-        if gamemap < 12 as ::core::ffi::c_int {
+        if gamemap < 12 as i32 {
             skytexturename = b"SKY1\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-        } else if gamemap < 21 as ::core::ffi::c_int {
+        } else if gamemap < 21 as i32 {
             skytexturename = b"SKY2\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
         } else {
@@ -3549,10 +3549,10 @@ pub unsafe extern "C" fn G_InitNew(
     skytexture = R_TextureNumForName(skytexturename);
     G_DoLoadLevel();
 }
-pub const DEMOMARKER: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int;
+pub const DEMOMARKER: i32 = 0x80 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
-    if *demo_p as ::core::ffi::c_int == DEMOMARKER {
+    if *demo_p as i32 == DEMOMARKER {
         G_CheckDemoStatus();
         return;
     }
@@ -3565,33 +3565,33 @@ pub unsafe extern "C" fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
     if longtics {
         let fresh20 = demo_p;
         demo_p = demo_p.offset(1);
-        (*cmd).angleturn = *fresh20 as ::core::ffi::c_short;
+        (*cmd).angleturn = *fresh20 as i16;
         let fresh21 = demo_p;
         demo_p = demo_p.offset(1);
-        (*cmd).angleturn = ((*cmd).angleturn as ::core::ffi::c_int
-            | (*fresh21 as ::core::ffi::c_int) << 8 as ::core::ffi::c_int)
-            as ::core::ffi::c_short;
+        (*cmd).angleturn = ((*cmd).angleturn as i32
+            | (*fresh21 as i32) << 8 as i32)
+            as i16;
     } else {
         let fresh22 = demo_p;
         demo_p = demo_p.offset(1);
-        (*cmd).angleturn = ((*fresh22 as ::core::ffi::c_uchar as ::core::ffi::c_int)
-            << 8 as ::core::ffi::c_int) as ::core::ffi::c_short;
+        (*cmd).angleturn = ((*fresh22 as ::core::ffi::c_uchar as i32)
+            << 8 as i32) as i16;
     }
     let fresh23 = demo_p;
     demo_p = demo_p.offset(1);
     (*cmd).buttons = *fresh23 as ::core::ffi::c_uchar as byte;
 }
 unsafe extern "C" fn IncreaseDemoBuffer() {
-    let mut current_length: ::core::ffi::c_int = 0;
+    let mut current_length: i32 = 0;
     let mut new_demobuffer: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut new_demop: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut new_length: ::core::ffi::c_int = 0;
+    let mut new_length: i32 = 0;
     current_length = demoend.offset_from(demobuffer) as ::core::ffi::c_long
-        as ::core::ffi::c_int;
-    new_length = current_length * 2 as ::core::ffi::c_int;
+        as i32;
+    new_length = current_length * 2 as i32;
     new_demobuffer = Z_Malloc(
         new_length,
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut byte;
     new_demop = new_demobuffer
@@ -3622,23 +3622,23 @@ pub unsafe extern "C" fn G_WriteDemoTiccmd(mut cmd: *mut ticcmd_t) {
     if longtics {
         let fresh14 = demo_p;
         demo_p = demo_p.offset(1);
-        *fresh14 = ((*cmd).angleturn as ::core::ffi::c_int & 0xff as ::core::ffi::c_int)
+        *fresh14 = ((*cmd).angleturn as i32 & 0xff as i32)
             as byte;
         let fresh15 = demo_p;
         demo_p = demo_p.offset(1);
-        *fresh15 = ((*cmd).angleturn as ::core::ffi::c_int >> 8 as ::core::ffi::c_int
-            & 0xff as ::core::ffi::c_int) as byte;
+        *fresh15 = ((*cmd).angleturn as i32 >> 8 as i32
+            & 0xff as i32) as byte;
     } else {
         let fresh16 = demo_p;
         demo_p = demo_p.offset(1);
-        *fresh16 = ((*cmd).angleturn as ::core::ffi::c_int >> 8 as ::core::ffi::c_int)
+        *fresh16 = ((*cmd).angleturn as i32 >> 8 as i32)
             as byte;
     }
     let fresh17 = demo_p;
     demo_p = demo_p.offset(1);
     *fresh17 = (*cmd).buttons;
     demo_p = demo_start;
-    if demo_p > demoend.offset(-(16 as ::core::ffi::c_int as isize)) {
+    if demo_p > demoend.offset(-(16 as i32 as isize)) {
         if vanilla_demo_limit != 0 {
             G_CheckDemoStatus();
             return;
@@ -3651,13 +3651,13 @@ pub unsafe extern "C" fn G_WriteDemoTiccmd(mut cmd: *mut ticcmd_t) {
 #[no_mangle]
 pub unsafe extern "C" fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     let mut demoname_size: size_t = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    let mut maxsize: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut maxsize: i32 = 0;
     usergame = false;
     demoname_size = strlen(name).wrapping_add(5 as size_t);
     demoname = Z_Malloc(
-        demoname_size as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+        demoname_size as i32,
+        PU_STATIC as i32,
         NULL,
     ) as *mut ::core::ffi::c_char;
     M_snprintf(
@@ -3666,35 +3666,35 @@ pub unsafe extern "C" fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
         b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
         name,
     );
-    maxsize = 0x20000 as ::core::ffi::c_int;
-    i = M_CheckParmWithArgs("-maxdemo", 1 as ::core::ffi::c_int);
+    maxsize = 0x20000 as i32;
+    i = M_CheckParmWithArgs("-maxdemo", 1 as i32);
     if i != 0 {
         maxsize = atoi(
-            myargv[(i + 1 as ::core::ffi::c_int) as usize].as_ptr()
+            myargv[(i + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
-        ) * 1024 as ::core::ffi::c_int;
+        ) * 1024 as i32;
     }
-    demobuffer = Z_Malloc(maxsize, PU_STATIC as ::core::ffi::c_int, NULL) as *mut byte;
+    demobuffer = Z_Malloc(maxsize, PU_STATIC as i32, NULL) as *mut byte;
     demoend = demobuffer.offset(maxsize as isize);
     demorecording = true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn G_VanillaVersionCode() -> ::core::ffi::c_int {
-    match gameversion as ::core::ffi::c_uint {
+pub unsafe extern "C" fn G_VanillaVersionCode() -> i32 {
+    match gameversion as u32 {
         0 => {
             I_Error("Doom 1.2 does not have a version code!");
         }
         1 => {}
-        2 => return 107 as ::core::ffi::c_int,
-        3 => return 108 as ::core::ffi::c_int,
-        4 | _ => return 109 as ::core::ffi::c_int,
+        2 => return 107 as i32,
+        3 => return 108 as i32,
+        4 | _ => return 109 as i32,
     }
-    return 106 as ::core::ffi::c_int;
+    return 106 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_BeginRecording() {
-    let mut i: ::core::ffi::c_int = 0;
-    longtics = M_CheckParm("-longtics") != 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    longtics = M_CheckParm("-longtics") != 0 as i32;
     lowres_turn = !longtics;
     demo_p = demobuffer;
     if longtics {
@@ -3730,7 +3730,7 @@ pub unsafe extern "C" fn G_BeginRecording() {
     let fresh9 = demo_p;
     demo_p = demo_p.offset(1);
     *fresh9 = consoleplayer as byte;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         let fresh10 = demo_p;
         demo_p = demo_p.offset(1);
@@ -3748,7 +3748,7 @@ pub unsafe extern "C" fn G_DeferedPlayDemo(mut name: *mut ::core::ffi::c_char) {
     gameaction = ga_playdemo;
 }
 unsafe extern "C" fn DemoVersionDescription(
-    mut version: ::core::ffi::c_int,
+    mut version: i32,
 ) -> *mut ::core::ffi::c_char {
     static mut resultbuf: [::core::ffi::c_char; 16] = [0; 16];
     match version {
@@ -3778,7 +3778,7 @@ unsafe extern "C" fn DemoVersionDescription(
         }
         _ => {}
     }
-    if version >= 0 as ::core::ffi::c_int && version <= 4 as ::core::ffi::c_int {
+    if version >= 0 as i32 && version <= 4 as i32 {
         return b"v1.0/v1.1/v1.2\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char
     } else {
@@ -3786,8 +3786,8 @@ unsafe extern "C" fn DemoVersionDescription(
             &raw mut resultbuf as *mut ::core::ffi::c_char,
             ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
             b"%i.%i (unknown)\0" as *const u8 as *const ::core::ffi::c_char,
-            version / 100 as ::core::ffi::c_int,
-            version % 100 as ::core::ffi::c_int,
+            version / 100 as i32,
+            version % 100 as i32,
         );
         return &raw mut resultbuf as *mut ::core::ffi::c_char;
     };
@@ -3795,19 +3795,19 @@ unsafe extern "C" fn DemoVersionDescription(
 #[no_mangle]
 pub unsafe extern "C" fn G_DoPlayDemo() {
     let mut skill: skill_t = sk_baby;
-    let mut i: ::core::ffi::c_int = 0;
-    let mut episode: ::core::ffi::c_int = 0;
-    let mut map: ::core::ffi::c_int = 0;
-    let mut demoversion: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut episode: i32 = 0;
+    let mut map: i32 = 0;
+    let mut demoversion: i32 = 0;
     gameaction = ga_nothing;
     demo_p = W_CacheLumpName(
         &wad_name8_to_string(defdemoname),
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
     ) as *mut byte;
     demobuffer = demo_p;
     let fresh24 = demo_p;
     demo_p = demo_p.offset(1);
-    demoversion = *fresh24 as ::core::ffi::c_int;
+    demoversion = *fresh24 as i32;
     if demoversion == G_VanillaVersionCode() {
         longtics = false;
     } else if demoversion == DOOM_191_VERSION {
@@ -3827,13 +3827,13 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     skill = *fresh25 as skill_t;
     let fresh26 = demo_p;
     demo_p = demo_p.offset(1);
-    episode = *fresh26 as ::core::ffi::c_int;
+    episode = *fresh26 as i32;
     let fresh27 = demo_p;
     demo_p = demo_p.offset(1);
-    map = *fresh27 as ::core::ffi::c_int;
+    map = *fresh27 as i32;
     let fresh28 = demo_p;
     demo_p = demo_p.offset(1);
-    deathmatch = *fresh28 as ::core::ffi::c_int;
+    deathmatch = *fresh28 as i32;
     let fresh29 = demo_p;
     demo_p = demo_p.offset(1);
     respawnparm = *fresh29 != 0;
@@ -3845,17 +3845,17 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     nomonsters = *fresh31 != 0;
     let fresh32 = demo_p;
     demo_p = demo_p.offset(1);
-    consoleplayer = *fresh32 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    consoleplayer = *fresh32 as i32;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         let fresh33 = demo_p;
         demo_p = demo_p.offset(1);
         playeringame[i as usize] = *fresh33 as boolean;
         i += 1;
     }
-    if playeringame[1 as ::core::ffi::c_int as usize] != 0
-        || M_CheckParm("-solo-net") > 0 as ::core::ffi::c_int
-        || M_CheckParm("-netdemo") > 0 as ::core::ffi::c_int
+    if playeringame[1 as i32 as usize] != 0
+        || M_CheckParm("-solo-net") > 0 as i32
+        || M_CheckParm("-netdemo") > 0 as i32
     {
         netgame = true;
         netdemo = true;
@@ -3877,10 +3877,10 @@ pub unsafe extern "C" fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
-    let mut endtime: ::core::ffi::c_int = 0;
+    let mut endtime: i32 = 0;
     if timingdemo {
         let mut fps: ::core::ffi::c_float = 0.;
-        let mut realtics: ::core::ffi::c_int = 0;
+        let mut realtics: i32 = 0;
         endtime = I_GetTime();
         realtics = endtime - starttime;
         fps = gametic as ::core::ffi::c_float * TICRATE as ::core::ffi::c_float
@@ -3900,15 +3900,15 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         netdemo = false;
         netgame = false;
         deathmatch = false_0;
-        playeringame[3 as ::core::ffi::c_int as usize] = 0 as boolean;
-        playeringame[2 as ::core::ffi::c_int as usize] = playeringame[3
-            as ::core::ffi::c_int as usize];
-        playeringame[1 as ::core::ffi::c_int as usize] = playeringame[2
-            as ::core::ffi::c_int as usize];
+        playeringame[3 as i32 as usize] = 0 as boolean;
+        playeringame[2 as i32 as usize] = playeringame[3
+            as i32 as usize];
+        playeringame[1 as i32 as usize] = playeringame[2
+            as i32 as usize];
         respawnparm = false;
         fastparm = false;
         nomonsters = false;
-        consoleplayer = 0 as ::core::ffi::c_int;
+        consoleplayer = 0 as i32;
         if singledemo {
             I_Quit();
         } else {
@@ -3923,7 +3923,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         M_WriteFile(
             demoname,
             demobuffer as *mut ::core::ffi::c_void,
-            demo_p.offset_from(demobuffer) as ::core::ffi::c_long as ::core::ffi::c_int,
+            demo_p.offset_from(demobuffer) as ::core::ffi::c_long as i32,
         );
         Z_Free(demobuffer as *mut ::core::ffi::c_void);
         demorecording = false;
@@ -3934,17 +3934,17 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
     }
     return false_0 as boolean;
 }
-pub const MAX_MOUSE_BUTTONS: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
+pub const MAX_MOUSE_BUTTONS: i32 = 8 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 unsafe extern "C" fn run_static_initializers() {
     joybuttons = (&raw mut joyarray as *mut boolean)
-        .offset(1 as ::core::ffi::c_int as isize) as *mut boolean;
+        .offset(1 as i32 as isize) as *mut boolean;
     mousebuttons = (&raw mut mousearray as *mut boolean)
-        .offset(1 as ::core::ffi::c_int as isize) as *mut boolean;
+        .offset(1 as i32 as isize) as *mut boolean;
 }
 #[used]
 #[cfg_attr(target_os = "linux", link_section = ".init_array")]

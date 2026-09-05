@@ -12,15 +12,15 @@ extern "C" {
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
     static mut netgame: bool;
-    static mut deathmatch: ::core::ffi::c_int;
+    static mut deathmatch: i32;
     static mut automapactive: bool;
-    static mut consoleplayer: ::core::ffi::c_int;
+    static mut consoleplayer: i32;
     static mut players: [player_t; 4];
-    fn P_Random() -> ::core::ffi::c_int;
+    fn P_Random() -> i32;
     fn I_Tactile(
-        on: ::core::ffi::c_int,
-        off: ::core::ffi::c_int,
-        total: ::core::ffi::c_int,
+        on: i32,
+        off: i32,
+        total: i32,
     );
     fn AM_Stop();
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
@@ -33,19 +33,19 @@ extern "C" {
     ) -> *mut mobj_t;
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -60,14 +60,14 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type skill_t = ::core::ffi::c_int;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type card_t = ::core::ffi::c_uint;
+pub type card_t = u32;
 pub const NUMCARDS: card_t = 6;
 pub const it_redskull: card_t = 5;
 pub const it_yellowskull: card_t = 4;
@@ -75,7 +75,7 @@ pub const it_blueskull: card_t = 3;
 pub const it_redcard: card_t = 2;
 pub const it_yellowcard: card_t = 1;
 pub const it_bluecard: card_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -87,14 +87,14 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type ammotype_t = ::core::ffi::c_uint;
+pub type ammotype_t = u32;
 pub const am_noammo: ammotype_t = 5;
 pub const NUMAMMO: ammotype_t = 4;
 pub const am_misl: ammotype_t = 3;
 pub const am_cell: ammotype_t = 2;
 pub const am_shell: ammotype_t = 1;
 pub const am_clip: ammotype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const NUMPOWERS: C2RustUnnamed = 6;
 pub const pw_infrared: C2RustUnnamed = 5;
 pub const pw_allmap: C2RustUnnamed = 4;
@@ -102,12 +102,12 @@ pub const pw_ironfeet: C2RustUnnamed = 3;
 pub const pw_invisibility: C2RustUnnamed = 2;
 pub const pw_strength: C2RustUnnamed = 1;
 pub const pw_invulnerability: C2RustUnnamed = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const IRONTICS: C2RustUnnamed_0 = 2100;
 pub const INFRATICS: C2RustUnnamed_0 = 4200;
 pub const INVISTICS: C2RustUnnamed_0 = 2100;
 pub const INVULNTICS: C2RustUnnamed_0 = 1050;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const NUMSFX: C2RustUnnamed_1 = 109;
 pub const sfx_radio: C2RustUnnamed_1 = 108;
 pub const sfx_skeatk: C2RustUnnamed_1 = 107;
@@ -218,15 +218,15 @@ pub const sfx_sgcock: C2RustUnnamed_1 = 3;
 pub const sfx_shotgn: C2RustUnnamed_1 = 2;
 pub const sfx_pistol: C2RustUnnamed_1 = 1;
 pub const sfx_None: C2RustUnnamed_1 = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -366,7 +366,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1335,7 +1335,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1474,7 +1474,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const MF_TRANSSHIFT: C2RustUnnamed_2 = 26;
 pub const MF_TRANSLATION: C2RustUnnamed_2 = 201326592;
 pub const MF_NOTDMATCH: C2RustUnnamed_2 = 33554432;
@@ -1503,64 +1503,64 @@ pub const MF_NOSECTOR: C2RustUnnamed_2 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_2 = 4;
 pub const MF_SOLID: C2RustUnnamed_2 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_2 = 1;
-pub type C2RustUnnamed_3 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_3 = u32;
 pub const CF_NOMOMENTUM: C2RustUnnamed_3 = 4;
 pub const CF_GODMODE: C2RustUnnamed_3 = 2;
 pub const CF_NOCLIP: C2RustUnnamed_3 = 1;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const INT_MIN: ::core::ffi::c_int = -__INT_MAX__ - 1 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_MAX_HEALTH: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_MAX_ARMOR: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_GREEN_ARMOR_CLASS: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_BLUE_ARMOR_CLASS: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_MAX_SOULSPHERE: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_SOULSPHERE_HEALTH: ::core::ffi::c_int = 100 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_MEGASPHERE_HEALTH: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const deh_max_health: ::core::ffi::c_int = DEH_DEFAULT_MAX_HEALTH;
-pub const deh_max_armor: ::core::ffi::c_int = DEH_DEFAULT_MAX_ARMOR;
-pub const deh_green_armor_class: ::core::ffi::c_int = DEH_DEFAULT_GREEN_ARMOR_CLASS;
-pub const deh_blue_armor_class: ::core::ffi::c_int = DEH_DEFAULT_BLUE_ARMOR_CLASS;
-pub const deh_max_soulsphere: ::core::ffi::c_int = DEH_DEFAULT_MAX_SOULSPHERE;
-pub const deh_soulsphere_health: ::core::ffi::c_int = DEH_DEFAULT_SOULSPHERE_HEALTH;
-pub const deh_megasphere_health: ::core::ffi::c_int = DEH_DEFAULT_MEGASPHERE_HEALTH;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ANG180: ::core::ffi::c_uint = 0x80000000 as ::core::ffi::c_uint;
-pub const MAXHEALTH: ::core::ffi::c_int = 100 as ::core::ffi::c_int;
-pub const BASETHRESHOLD: ::core::ffi::c_int = 100 as ::core::ffi::c_int;
-pub const ONFLOORZ: ::core::ffi::c_int = INT_MIN;
-pub const BONUSADD: ::core::ffi::c_int = 6 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
+pub const DEH_DEFAULT_MAX_HEALTH: i32 = 200 as i32;
+pub const DEH_DEFAULT_MAX_ARMOR: i32 = 200 as i32;
+pub const DEH_DEFAULT_GREEN_ARMOR_CLASS: i32 = 1 as i32;
+pub const DEH_DEFAULT_BLUE_ARMOR_CLASS: i32 = 2 as i32;
+pub const DEH_DEFAULT_MAX_SOULSPHERE: i32 = 200 as i32;
+pub const DEH_DEFAULT_SOULSPHERE_HEALTH: i32 = 100 as i32;
+pub const DEH_DEFAULT_MEGASPHERE_HEALTH: i32 = 200 as i32;
+pub const deh_max_health: i32 = DEH_DEFAULT_MAX_HEALTH;
+pub const deh_max_armor: i32 = DEH_DEFAULT_MAX_ARMOR;
+pub const deh_green_armor_class: i32 = DEH_DEFAULT_GREEN_ARMOR_CLASS;
+pub const deh_blue_armor_class: i32 = DEH_DEFAULT_BLUE_ARMOR_CLASS;
+pub const deh_max_soulsphere: i32 = DEH_DEFAULT_MAX_SOULSPHERE;
+pub const deh_soulsphere_health: i32 = DEH_DEFAULT_SOULSPHERE_HEALTH;
+pub const deh_megasphere_health: i32 = DEH_DEFAULT_MEGASPHERE_HEALTH;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ANG180: u32 = 0x80000000 as u32;
+pub const MAXHEALTH: i32 = 100 as i32;
+pub const BASETHRESHOLD: i32 = 100 as i32;
+pub const ONFLOORZ: i32 = INT_MIN;
+pub const BONUSADD: i32 = 6 as i32;
 #[no_mangle]
-pub static mut maxammo: [::core::ffi::c_int; 4] = [
-    200 as ::core::ffi::c_int,
-    50 as ::core::ffi::c_int,
-    300 as ::core::ffi::c_int,
-    50 as ::core::ffi::c_int,
+pub static mut maxammo: [i32; 4] = [
+    200 as i32,
+    50 as i32,
+    300 as i32,
+    50 as i32,
 ];
 #[no_mangle]
-pub static mut clipammo: [::core::ffi::c_int; 4] = [
-    10 as ::core::ffi::c_int,
-    4 as ::core::ffi::c_int,
-    20 as ::core::ffi::c_int,
-    1 as ::core::ffi::c_int,
+pub static mut clipammo: [i32; 4] = [
+    10 as i32,
+    4 as i32,
+    20 as i32,
+    1 as i32,
 ];
 #[no_mangle]
 pub unsafe extern "C" fn P_GiveAmmo(
     mut player: *mut player_t,
     mut ammo: ammotype_t,
-    mut num: ::core::ffi::c_int,
+    mut num: i32,
 ) -> boolean {
-    let mut oldammo: ::core::ffi::c_int = 0;
-    if ammo as ::core::ffi::c_uint
-        == am_noammo as ::core::ffi::c_int as ::core::ffi::c_uint
+    let mut oldammo: i32 = 0;
+    if ammo as u32
+        == am_noammo as i32 as u32
     {
         return false_0 as boolean;
     }
-    if ammo as ::core::ffi::c_uint > NUMAMMO as ::core::ffi::c_int as ::core::ffi::c_uint
+    if ammo as u32 > NUMAMMO as i32 as u32
     {
-        I_Error(&format!("P_GiveAmmo: bad type {}", ammo as ::core::ffi::c_uint));
+        I_Error(&format!("P_GiveAmmo: bad type {}", ammo as u32));
     }
     if (*player).ammo[ammo as usize] == (*player).maxammo[ammo as usize] {
         return false_0 as boolean;
@@ -1568,12 +1568,12 @@ pub unsafe extern "C" fn P_GiveAmmo(
     if num != 0 {
         num *= clipammo[ammo as usize];
     } else {
-        num = clipammo[ammo as usize] / 2 as ::core::ffi::c_int;
+        num = clipammo[ammo as usize] / 2 as i32;
     }
-    if gameskill as ::core::ffi::c_int == sk_baby as ::core::ffi::c_int
-        || gameskill as ::core::ffi::c_int == sk_nightmare as ::core::ffi::c_int
+    if gameskill as i32 == sk_baby as i32
+        || gameskill as i32 == sk_nightmare as i32
     {
-        num <<= 1 as ::core::ffi::c_int;
+        num <<= 1 as i32;
     }
     oldammo = (*player).ammo[ammo as usize];
     (*player).ammo[ammo as usize] += num;
@@ -1583,12 +1583,12 @@ pub unsafe extern "C" fn P_GiveAmmo(
     if oldammo != 0 {
         return true_0 as boolean;
     }
-    match ammo as ::core::ffi::c_uint {
+    match ammo as u32 {
         0 => {
-            if (*player).readyweapon as ::core::ffi::c_uint
-                == wp_fist as ::core::ffi::c_int as ::core::ffi::c_uint
+            if (*player).readyweapon as u32
+                == wp_fist as i32 as u32
             {
-                if (*player).weaponowned[wp_chaingun as ::core::ffi::c_int as usize]
+                if (*player).weaponowned[wp_chaingun as i32 as usize]
                 {
                     (*player).pendingweapon = wp_chaingun;
                 } else {
@@ -1597,33 +1597,33 @@ pub unsafe extern "C" fn P_GiveAmmo(
             }
         }
         1 => {
-            if (*player).readyweapon as ::core::ffi::c_uint
-                == wp_fist as ::core::ffi::c_int as ::core::ffi::c_uint
-                || (*player).readyweapon as ::core::ffi::c_uint
-                    == wp_pistol as ::core::ffi::c_int as ::core::ffi::c_uint
+            if (*player).readyweapon as u32
+                == wp_fist as i32 as u32
+                || (*player).readyweapon as u32
+                    == wp_pistol as i32 as u32
             {
-                if (*player).weaponowned[wp_shotgun as ::core::ffi::c_int as usize]
+                if (*player).weaponowned[wp_shotgun as i32 as usize]
                 {
                     (*player).pendingweapon = wp_shotgun;
                 }
             }
         }
         2 => {
-            if (*player).readyweapon as ::core::ffi::c_uint
-                == wp_fist as ::core::ffi::c_int as ::core::ffi::c_uint
-                || (*player).readyweapon as ::core::ffi::c_uint
-                    == wp_pistol as ::core::ffi::c_int as ::core::ffi::c_uint
+            if (*player).readyweapon as u32
+                == wp_fist as i32 as u32
+                || (*player).readyweapon as u32
+                    == wp_pistol as i32 as u32
             {
-                if (*player).weaponowned[wp_plasma as ::core::ffi::c_int as usize] {
+                if (*player).weaponowned[wp_plasma as i32 as usize] {
                     (*player).pendingweapon = wp_plasma;
                 }
             }
         }
         3 => {
-            if (*player).readyweapon as ::core::ffi::c_uint
-                == wp_fist as ::core::ffi::c_int as ::core::ffi::c_uint
+            if (*player).readyweapon as u32
+                == wp_fist as i32 as u32
             {
-                if (*player).weaponowned[wp_missile as ::core::ffi::c_int as usize]
+                if (*player).weaponowned[wp_missile as i32 as usize]
                 {
                     (*player).pendingweapon = wp_missile;
                 }
@@ -1641,7 +1641,7 @@ pub unsafe extern "C" fn P_GiveWeapon(
 ) -> boolean {
     let mut gaveammo: boolean = 0;
     let mut gaveweapon: boolean = 0;
-    if netgame && deathmatch != 2 as ::core::ffi::c_int && dropped == 0 {
+    if netgame && deathmatch != 2 as i32 && dropped == 0 {
         if (*player).weaponowned[weapon as usize] {
             return false_0 as boolean;
         }
@@ -1651,13 +1651,13 @@ pub unsafe extern "C" fn P_GiveWeapon(
             P_GiveAmmo(
                 player,
                 weaponinfo[weapon as usize].ammo,
-                5 as ::core::ffi::c_int,
+                5 as i32,
             );
         } else {
             P_GiveAmmo(
                 player,
                 weaponinfo[weapon as usize].ammo,
-                2 as ::core::ffi::c_int,
+                2 as i32,
             );
         }
         (*player).pendingweapon = weapon;
@@ -1665,24 +1665,24 @@ pub unsafe extern "C" fn P_GiveWeapon(
             == (&raw mut players as *mut player_t).offset(consoleplayer as isize)
                 as *mut player_t
         {
-            S_StartSound(NULL, sfx_wpnup as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_wpnup as i32);
         }
         return false_0 as boolean;
     }
-    if weaponinfo[weapon as usize].ammo as ::core::ffi::c_uint
-        != am_noammo as ::core::ffi::c_int as ::core::ffi::c_uint
+    if weaponinfo[weapon as usize].ammo as u32
+        != am_noammo as i32 as u32
     {
         if dropped != 0 {
             gaveammo = P_GiveAmmo(
                 player,
                 weaponinfo[weapon as usize].ammo,
-                1 as ::core::ffi::c_int,
+                1 as i32,
             );
         } else {
             gaveammo = P_GiveAmmo(
                 player,
                 weaponinfo[weapon as usize].ammo,
-                2 as ::core::ffi::c_int,
+                2 as i32,
             );
         }
     } else {
@@ -1695,12 +1695,12 @@ pub unsafe extern "C" fn P_GiveWeapon(
         (*player).weaponowned[weapon as usize] = true;
         (*player).pendingweapon = weapon;
     }
-    return (gaveweapon != 0 || gaveammo != 0) as ::core::ffi::c_int as boolean;
+    return (gaveweapon != 0 || gaveammo != 0) as i32 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_GiveBody(
     mut player: *mut player_t,
-    mut num: ::core::ffi::c_int,
+    mut num: i32,
 ) -> boolean {
     if (*player).health >= MAXHEALTH {
         return false_0 as boolean;
@@ -1715,10 +1715,10 @@ pub unsafe extern "C" fn P_GiveBody(
 #[no_mangle]
 pub unsafe extern "C" fn P_GiveArmor(
     mut player: *mut player_t,
-    mut armortype: ::core::ffi::c_int,
+    mut armortype: i32,
 ) -> boolean {
-    let mut hits: ::core::ffi::c_int = 0;
-    hits = armortype * 100 as ::core::ffi::c_int;
+    let mut hits: i32 = 0;
+    hits = armortype * 100 as i32;
     if (*player).armorpoints >= hits {
         return false_0 as boolean;
     }
@@ -1737,34 +1737,34 @@ pub unsafe extern "C" fn P_GiveCard(mut player: *mut player_t, mut card: card_t)
 #[no_mangle]
 pub unsafe extern "C" fn P_GivePower(
     mut player: *mut player_t,
-    mut power: ::core::ffi::c_int,
+    mut power: i32,
 ) -> boolean {
-    if power == pw_invulnerability as ::core::ffi::c_int {
-        (*player).powers[power as usize] = INVULNTICS as ::core::ffi::c_int;
+    if power == pw_invulnerability as i32 {
+        (*player).powers[power as usize] = INVULNTICS as i32;
         return true_0 as boolean;
     }
-    if power == pw_invisibility as ::core::ffi::c_int {
-        (*player).powers[power as usize] = INVISTICS as ::core::ffi::c_int;
-        (*(*player).mo).flags |= MF_SHADOW as ::core::ffi::c_int;
+    if power == pw_invisibility as i32 {
+        (*player).powers[power as usize] = INVISTICS as i32;
+        (*(*player).mo).flags |= MF_SHADOW as i32;
         return true_0 as boolean;
     }
-    if power == pw_infrared as ::core::ffi::c_int {
-        (*player).powers[power as usize] = INFRATICS as ::core::ffi::c_int;
+    if power == pw_infrared as i32 {
+        (*player).powers[power as usize] = INFRATICS as i32;
         return true_0 as boolean;
     }
-    if power == pw_ironfeet as ::core::ffi::c_int {
-        (*player).powers[power as usize] = IRONTICS as ::core::ffi::c_int;
+    if power == pw_ironfeet as i32 {
+        (*player).powers[power as usize] = IRONTICS as i32;
         return true_0 as boolean;
     }
-    if power == pw_strength as ::core::ffi::c_int {
-        P_GiveBody(player, 100 as ::core::ffi::c_int);
-        (*player).powers[power as usize] = 1 as ::core::ffi::c_int;
+    if power == pw_strength as i32 {
+        P_GiveBody(player, 100 as i32);
+        (*player).powers[power as usize] = 1 as i32;
         return true_0 as boolean;
     }
     if (*player).powers[power as usize] != 0 {
         return false_0 as boolean;
     }
-    (*player).powers[power as usize] = 1 as ::core::ffi::c_int;
+    (*player).powers[power as usize] = 1 as i32;
     return true_0 as boolean;
 }
 #[no_mangle]
@@ -1773,19 +1773,19 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
     mut toucher: *mut mobj_t,
 ) {
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut delta: fixed_t = 0;
-    let mut sound: ::core::ffi::c_int = 0;
+    let mut sound: i32 = 0;
     delta = (*special).z - (*toucher).z;
-    if delta > (*toucher).height || delta < -(8 as ::core::ffi::c_int) * FRACUNIT {
+    if delta > (*toucher).height || delta < -(8 as i32) * FRACUNIT {
         return;
     }
-    sound = sfx_itemup as ::core::ffi::c_int;
+    sound = sfx_itemup as i32;
     player = (*toucher).player as *mut player_t;
-    if (*toucher).health <= 0 as ::core::ffi::c_int {
+    if (*toucher).health <= 0 as i32 {
         return;
     }
-    match (*special).sprite as ::core::ffi::c_uint {
+    match (*special).sprite as u32 {
         55 => {
             if P_GiveArmor(player, deh_green_armor_class) == 0 {
                 return;
@@ -1815,7 +1815,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
                 (*player).armorpoints = deh_max_armor;
             }
             if (*player).armortype == 0 {
-                (*player).armortype = 1 as ::core::ffi::c_int;
+                (*player).armortype = 1 as i32;
             }
             (*player).message = b"Picked up an armor bonus.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -1828,23 +1828,23 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             (*(*player).mo).health = (*player).health;
             (*player).message = b"Supercharge!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_getpow as ::core::ffi::c_int;
+            sound = sfx_getpow as i32;
         }
         74 => {
-            if gamemode as ::core::ffi::c_uint
-                != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                != commercial as i32 as u32
             {
                 return;
             }
             (*player).health = deh_megasphere_health;
             (*(*player).mo).health = (*player).health;
-            P_GiveArmor(player, 2 as ::core::ffi::c_int);
+            P_GiveArmor(player, 2 as i32);
             (*player).message = b"MegaSphere!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_getpow as ::core::ffi::c_int;
+            sound = sfx_getpow as i32;
         }
         62 => {
-            if !(*player).cards[it_bluecard as ::core::ffi::c_int as usize] {
+            if !(*player).cards[it_bluecard as i32 as usize] {
                 (*player).message = b"Picked up a blue keycard.\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
@@ -1854,7 +1854,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
         }
         64 => {
-            if !(*player).cards[it_yellowcard as ::core::ffi::c_int as usize] {
+            if !(*player).cards[it_yellowcard as i32 as usize] {
                 (*player).message = b"Picked up a yellow keycard.\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
@@ -1864,7 +1864,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
         }
         63 => {
-            if !(*player).cards[it_redcard as ::core::ffi::c_int as usize] {
+            if !(*player).cards[it_redcard as i32 as usize] {
                 (*player).message = b"Picked up a red keycard.\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
@@ -1874,7 +1874,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
         }
         65 => {
-            if !(*player).cards[it_blueskull as ::core::ffi::c_int as usize] {
+            if !(*player).cards[it_blueskull as i32 as usize] {
                 (*player).message = b"Picked up a blue skull key.\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
@@ -1884,7 +1884,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
         }
         67 => {
-            if !(*player).cards[it_yellowskull as ::core::ffi::c_int as usize] {
+            if !(*player).cards[it_yellowskull as i32 as usize] {
                 (*player).message = b"Picked up a yellow skull key.\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
@@ -1894,7 +1894,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
         }
         66 => {
-            if !(*player).cards[it_redskull as ::core::ffi::c_int as usize] {
+            if !(*player).cards[it_redskull as i32 as usize] {
                 (*player).message = b"Picked up a red skull key.\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
@@ -1904,17 +1904,17 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
         }
         68 => {
-            if P_GiveBody(player, 10 as ::core::ffi::c_int) == 0 {
+            if P_GiveBody(player, 10 as i32) == 0 {
                 return;
             }
             (*player).message = b"Picked up a stimpack.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         69 => {
-            if P_GiveBody(player, 25 as ::core::ffi::c_int) == 0 {
+            if P_GiveBody(player, 25 as i32) == 0 {
                 return;
             }
-            if (*player).health < 25 as ::core::ffi::c_int {
+            if (*player).health < 25 as i32 {
                 (*player).message = b"Picked up a medikit that you REALLY need!\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
@@ -1924,113 +1924,113 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
         }
         71 => {
-            if P_GivePower(player, pw_invulnerability as ::core::ffi::c_int) == 0 {
+            if P_GivePower(player, pw_invulnerability as i32) == 0 {
                 return;
             }
             (*player).message = b"Invulnerability!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_getpow as ::core::ffi::c_int;
+            sound = sfx_getpow as i32;
         }
         72 => {
-            if P_GivePower(player, pw_strength as ::core::ffi::c_int) == 0 {
+            if P_GivePower(player, pw_strength as i32) == 0 {
                 return;
             }
             (*player).message = b"Berserk!\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-            if (*player).readyweapon as ::core::ffi::c_uint
-                != wp_fist as ::core::ffi::c_int as ::core::ffi::c_uint
+            if (*player).readyweapon as u32
+                != wp_fist as i32 as u32
             {
                 (*player).pendingweapon = wp_fist;
             }
-            sound = sfx_getpow as ::core::ffi::c_int;
+            sound = sfx_getpow as i32;
         }
         73 => {
-            if P_GivePower(player, pw_invisibility as ::core::ffi::c_int) == 0 {
+            if P_GivePower(player, pw_invisibility as i32) == 0 {
                 return;
             }
             (*player).message = b"Partial Invisibility\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_getpow as ::core::ffi::c_int;
+            sound = sfx_getpow as i32;
         }
         75 => {
-            if P_GivePower(player, pw_ironfeet as ::core::ffi::c_int) == 0 {
+            if P_GivePower(player, pw_ironfeet as i32) == 0 {
                 return;
             }
             (*player).message = b"Radiation Shielding Suit\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_getpow as ::core::ffi::c_int;
+            sound = sfx_getpow as i32;
         }
         76 => {
-            if P_GivePower(player, pw_allmap as ::core::ffi::c_int) == 0 {
+            if P_GivePower(player, pw_allmap as i32) == 0 {
                 return;
             }
             (*player).message = b"Computer Area Map\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_getpow as ::core::ffi::c_int;
+            sound = sfx_getpow as i32;
         }
         77 => {
-            if P_GivePower(player, pw_infrared as ::core::ffi::c_int) == 0 {
+            if P_GivePower(player, pw_infrared as i32) == 0 {
                 return;
             }
             (*player).message = b"Light Amplification Visor\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_getpow as ::core::ffi::c_int;
+            sound = sfx_getpow as i32;
         }
         78 => {
-            if (*special).flags & MF_DROPPED as ::core::ffi::c_int != 0 {
-                if P_GiveAmmo(player, am_clip, 0 as ::core::ffi::c_int) == 0 {
+            if (*special).flags & MF_DROPPED as i32 != 0 {
+                if P_GiveAmmo(player, am_clip, 0 as i32) == 0 {
                     return;
                 }
-            } else if P_GiveAmmo(player, am_clip, 1 as ::core::ffi::c_int) == 0 {
+            } else if P_GiveAmmo(player, am_clip, 1 as i32) == 0 {
                 return
             }
             (*player).message = b"Picked up a clip.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         79 => {
-            if P_GiveAmmo(player, am_clip, 5 as ::core::ffi::c_int) == 0 {
+            if P_GiveAmmo(player, am_clip, 5 as i32) == 0 {
                 return;
             }
             (*player).message = b"Picked up a box of bullets.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         80 => {
-            if P_GiveAmmo(player, am_misl, 1 as ::core::ffi::c_int) == 0 {
+            if P_GiveAmmo(player, am_misl, 1 as i32) == 0 {
                 return;
             }
             (*player).message = b"Picked up a rocket.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         81 => {
-            if P_GiveAmmo(player, am_misl, 5 as ::core::ffi::c_int) == 0 {
+            if P_GiveAmmo(player, am_misl, 5 as i32) == 0 {
                 return;
             }
             (*player).message = b"Picked up a box of rockets.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         82 => {
-            if P_GiveAmmo(player, am_cell, 1 as ::core::ffi::c_int) == 0 {
+            if P_GiveAmmo(player, am_cell, 1 as i32) == 0 {
                 return;
             }
             (*player).message = b"Picked up an energy cell.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         83 => {
-            if P_GiveAmmo(player, am_cell, 5 as ::core::ffi::c_int) == 0 {
+            if P_GiveAmmo(player, am_cell, 5 as i32) == 0 {
                 return;
             }
             (*player).message = b"Picked up an energy cell pack.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         84 => {
-            if P_GiveAmmo(player, am_shell, 1 as ::core::ffi::c_int) == 0 {
+            if P_GiveAmmo(player, am_shell, 1 as i32) == 0 {
                 return;
             }
             (*player).message = b"Picked up 4 shotgun shells.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         85 => {
-            if P_GiveAmmo(player, am_shell, 5 as ::core::ffi::c_int) == 0 {
+            if P_GiveAmmo(player, am_shell, 5 as i32) == 0 {
                 return;
             }
             (*player).message = b"Picked up a box of shotgun shells.\0" as *const u8
@@ -2038,16 +2038,16 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
         }
         86 => {
             if !(*player).backpack {
-                i = 0 as ::core::ffi::c_int;
-                while i < NUMAMMO as ::core::ffi::c_int {
-                    (*player).maxammo[i as usize] *= 2 as ::core::ffi::c_int;
+                i = 0 as i32;
+                while i < NUMAMMO as i32 {
+                    (*player).maxammo[i as usize] *= 2 as i32;
                     i += 1;
                 }
                 (*player).backpack = true;
             }
-            i = 0 as ::core::ffi::c_int;
-            while i < NUMAMMO as ::core::ffi::c_int {
-                P_GiveAmmo(player, i as ammotype_t, 1 as ::core::ffi::c_int);
+            i = 0 as i32;
+            while i < NUMAMMO as i32 {
+                P_GiveAmmo(player, i as ammotype_t, 1 as i32);
                 i += 1;
             }
             (*player).message = b"Picked up a backpack full of ammo!\0" as *const u8
@@ -2059,21 +2059,21 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
             (*player).message = b"You got the BFG9000!  Oh, yes.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_wpnup as ::core::ffi::c_int;
+            sound = sfx_wpnup as i32;
         }
         88 => {
             if P_GiveWeapon(
                 player,
                 wp_chaingun,
-                ((*special).flags & MF_DROPPED as ::core::ffi::c_int
-                    != 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean,
+                ((*special).flags & MF_DROPPED as i32
+                    != 0 as i32) as i32 as boolean,
             ) == 0
             {
                 return;
             }
             (*player).message = b"You got the chaingun!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_wpnup as ::core::ffi::c_int;
+            sound = sfx_wpnup as i32;
         }
         89 => {
             if P_GiveWeapon(player, wp_chainsaw, false_0 as boolean) == 0 {
@@ -2081,7 +2081,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
             (*player).message = b"A chainsaw!  Find some meat!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_wpnup as ::core::ffi::c_int;
+            sound = sfx_wpnup as i32;
         }
         90 => {
             if P_GiveWeapon(player, wp_missile, false_0 as boolean) == 0 {
@@ -2089,7 +2089,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
             (*player).message = b"You got the rocket launcher!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_wpnup as ::core::ffi::c_int;
+            sound = sfx_wpnup as i32;
         }
         91 => {
             if P_GiveWeapon(player, wp_plasma, false_0 as boolean) == 0 {
@@ -2097,41 +2097,41 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             }
             (*player).message = b"You got the plasma gun!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_wpnup as ::core::ffi::c_int;
+            sound = sfx_wpnup as i32;
         }
         92 => {
             if P_GiveWeapon(
                 player,
                 wp_shotgun,
-                ((*special).flags & MF_DROPPED as ::core::ffi::c_int
-                    != 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean,
+                ((*special).flags & MF_DROPPED as i32
+                    != 0 as i32) as i32 as boolean,
             ) == 0
             {
                 return;
             }
             (*player).message = b"You got the shotgun!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_wpnup as ::core::ffi::c_int;
+            sound = sfx_wpnup as i32;
         }
         93 => {
             if P_GiveWeapon(
                 player,
                 wp_supershotgun,
-                ((*special).flags & MF_DROPPED as ::core::ffi::c_int
-                    != 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean,
+                ((*special).flags & MF_DROPPED as i32
+                    != 0 as i32) as i32 as boolean,
             ) == 0
             {
                 return;
             }
             (*player).message = b"You got the super shotgun!\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-            sound = sfx_wpnup as ::core::ffi::c_int;
+            sound = sfx_wpnup as i32;
         }
         _ => {
             I_Error("P_SpecialThing: Unknown gettable thing");
         }
     }
-    if (*special).flags & MF_COUNTITEM as ::core::ffi::c_int != 0 {
+    if (*special).flags & MF_COUNTITEM as i32 != 0 {
         (*player).itemcount += 1;
     }
     P_RemoveMobj(special);
@@ -2148,18 +2148,18 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
     let mut item: mobjtype_t = MT_PLAYER;
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     (*target).flags
-        &= !(MF_SHOOTABLE as ::core::ffi::c_int | MF_FLOAT as ::core::ffi::c_int
-            | MF_SKULLFLY as ::core::ffi::c_int);
-    if (*target).type_0 as ::core::ffi::c_uint
-        != MT_SKULL as ::core::ffi::c_int as ::core::ffi::c_uint
+        &= !(MF_SHOOTABLE as i32 | MF_FLOAT as i32
+            | MF_SKULLFLY as i32);
+    if (*target).type_0 as u32
+        != MT_SKULL as i32 as u32
     {
-        (*target).flags &= !(MF_NOGRAVITY as ::core::ffi::c_int);
+        (*target).flags &= !(MF_NOGRAVITY as i32);
     }
     (*target).flags
-        |= MF_CORPSE as ::core::ffi::c_int | MF_DROPOFF as ::core::ffi::c_int;
-    (*target).height >>= 2 as ::core::ffi::c_int;
+        |= MF_CORPSE as i32 | MF_DROPOFF as i32;
+    (*target).height >>= 2 as i32;
     if !source.is_null() && !(*source).player.is_null() {
-        if (*target).flags & MF_COUNTKILL as ::core::ffi::c_int != 0 {
+        if (*target).flags & MF_COUNTKILL as i32 != 0 {
             (*(*source).player).killcount += 1;
         }
         if !(*target).player.is_null() {
@@ -2167,8 +2167,8 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
                 .frags[(*target).player.offset_from(&raw mut players as *mut player_t)
                 as ::core::ffi::c_long as usize] += 1;
         }
-    } else if !netgame && (*target).flags & MF_COUNTKILL as ::core::ffi::c_int != 0 {
-        players[0 as ::core::ffi::c_int as usize].killcount += 1;
+    } else if !netgame && (*target).flags & MF_COUNTKILL as i32 != 0 {
+        players[0 as i32 as usize].killcount += 1;
     }
     if !(*target).player.is_null() {
         if source.is_null() {
@@ -2176,7 +2176,7 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
                 .frags[(*target).player.offset_from(&raw mut players as *mut player_t)
                 as ::core::ffi::c_long as usize] += 1;
         }
-        (*target).flags &= !(MF_SOLID as ::core::ffi::c_int);
+        (*target).flags &= !(MF_SOLID as i32);
         (*(*target).player).playerstate = PST_DEAD;
         P_DropWeapon((*target).player as *mut player_t);
         if (*target).player
@@ -2193,16 +2193,16 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
     } else {
         P_SetMobjState(target, (*(*target).info).deathstate as statenum_t);
     }
-    (*target).tics -= P_Random() & 3 as ::core::ffi::c_int;
-    if (*target).tics < 1 as ::core::ffi::c_int {
-        (*target).tics = 1 as ::core::ffi::c_int;
+    (*target).tics -= P_Random() & 3 as i32;
+    if (*target).tics < 1 as i32 {
+        (*target).tics = 1 as i32;
     }
-    if gameversion as ::core::ffi::c_uint
-        == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gameversion as u32
+        == exe_chex as i32 as u32
     {
         return;
     }
-    match (*target).type_0 as ::core::ffi::c_uint {
+    match (*target).type_0 as u32 {
         23 | 1 => {
             item = MT_CLIP;
         }
@@ -2215,139 +2215,139 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
         _ => return,
     }
     mo = P_SpawnMobj((*target).x, (*target).y, ONFLOORZ, item);
-    (*mo).flags |= MF_DROPPED as ::core::ffi::c_int;
+    (*mo).flags |= MF_DROPPED as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_DamageMobj(
     mut target: *mut mobj_t,
     mut inflictor: *mut mobj_t,
     mut source: *mut mobj_t,
-    mut damage: ::core::ffi::c_int,
+    mut damage: i32,
 ) {
-    let mut ang: ::core::ffi::c_uint = 0;
-    let mut saved: ::core::ffi::c_int = 0;
+    let mut ang: u32 = 0;
+    let mut saved: i32 = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut thrust: fixed_t = 0;
-    let mut temp: ::core::ffi::c_int = 0;
-    if (*target).flags & MF_SHOOTABLE as ::core::ffi::c_int == 0 {
+    let mut temp: i32 = 0;
+    if (*target).flags & MF_SHOOTABLE as i32 == 0 {
         return;
     }
-    if (*target).health <= 0 as ::core::ffi::c_int {
+    if (*target).health <= 0 as i32 {
         return;
     }
-    if (*target).flags & MF_SKULLFLY as ::core::ffi::c_int != 0 {
-        (*target).momz = 0 as ::core::ffi::c_int as fixed_t;
+    if (*target).flags & MF_SKULLFLY as i32 != 0 {
+        (*target).momz = 0 as i32 as fixed_t;
         (*target).momy = (*target).momz;
         (*target).momx = (*target).momy;
     }
     player = (*target).player as *mut player_t;
     if !player.is_null()
-        && gameskill as ::core::ffi::c_int == sk_baby as ::core::ffi::c_int
+        && gameskill as i32 == sk_baby as i32
     {
-        damage >>= 1 as ::core::ffi::c_int;
+        damage >>= 1 as i32;
     }
-    if !inflictor.is_null() && (*target).flags & MF_NOCLIP as ::core::ffi::c_int == 0
+    if !inflictor.is_null() && (*target).flags & MF_NOCLIP as i32 == 0
         && (source.is_null() || (*source).player.is_null()
-            || (*(*source).player).readyweapon as ::core::ffi::c_uint
-                != wp_chainsaw as ::core::ffi::c_int as ::core::ffi::c_uint)
+            || (*(*source).player).readyweapon as u32
+                != wp_chainsaw as i32 as u32)
     {
         ang = R_PointToAngle2((*inflictor).x, (*inflictor).y, (*target).x, (*target).y)
-            as ::core::ffi::c_uint;
-        thrust = (damage * (FRACUNIT >> 3 as ::core::ffi::c_int)
-            * 100 as ::core::ffi::c_int / (*(*target).info).mass) as fixed_t;
-        if damage < 40 as ::core::ffi::c_int && damage > (*target).health
-            && (*target).z - (*inflictor).z > 64 as ::core::ffi::c_int * FRACUNIT
-            && P_Random() & 1 as ::core::ffi::c_int != 0
+            as u32;
+        thrust = (damage * (FRACUNIT >> 3 as i32)
+            * 100 as i32 / (*(*target).info).mass) as fixed_t;
+        if damage < 40 as i32 && damage > (*target).health
+            && (*target).z - (*inflictor).z > 64 as i32 * FRACUNIT
+            && P_Random() & 1 as i32 != 0
         {
             ang = ang.wrapping_add(ANG180);
-            thrust *= 4 as ::core::ffi::c_int;
+            thrust *= 4 as i32;
         }
         ang >>= ANGLETOFINESHIFT;
         (*target).momx += FixedMul(thrust, *finecosine.offset(ang as isize));
         (*target).momy += FixedMul(thrust, finesine[ang as usize]);
     }
     if !player.is_null() {
-        if (*(*(*target).subsector).sector).special as ::core::ffi::c_int
-            == 11 as ::core::ffi::c_int && damage >= (*target).health
+        if (*(*(*target).subsector).sector).special as i32
+            == 11 as i32 && damage >= (*target).health
         {
-            damage = (*target).health - 1 as ::core::ffi::c_int;
+            damage = (*target).health - 1 as i32;
         }
-        if damage < 1000 as ::core::ffi::c_int
-            && ((*player).cheats & CF_GODMODE as ::core::ffi::c_int != 0
-                || (*player).powers[pw_invulnerability as ::core::ffi::c_int as usize]
+        if damage < 1000 as i32
+            && ((*player).cheats & CF_GODMODE as i32 != 0
+                || (*player).powers[pw_invulnerability as i32 as usize]
                     != 0)
         {
             return;
         }
         if (*player).armortype != 0 {
-            if (*player).armortype == 1 as ::core::ffi::c_int {
-                saved = damage / 3 as ::core::ffi::c_int;
+            if (*player).armortype == 1 as i32 {
+                saved = damage / 3 as i32;
             } else {
-                saved = damage / 2 as ::core::ffi::c_int;
+                saved = damage / 2 as i32;
             }
             if (*player).armorpoints <= saved {
                 saved = (*player).armorpoints;
-                (*player).armortype = 0 as ::core::ffi::c_int;
+                (*player).armortype = 0 as i32;
             }
             (*player).armorpoints -= saved;
             damage -= saved;
         }
         (*player).health -= damage;
-        if (*player).health < 0 as ::core::ffi::c_int {
-            (*player).health = 0 as ::core::ffi::c_int;
+        if (*player).health < 0 as i32 {
+            (*player).health = 0 as i32;
         }
         (*player).attacker = source;
         (*player).damagecount += damage;
-        if (*player).damagecount > 100 as ::core::ffi::c_int {
-            (*player).damagecount = 100 as ::core::ffi::c_int;
+        if (*player).damagecount > 100 as i32 {
+            (*player).damagecount = 100 as i32;
         }
-        temp = if damage < 100 as ::core::ffi::c_int {
+        temp = if damage < 100 as i32 {
             damage
         } else {
-            100 as ::core::ffi::c_int
+            100 as i32
         };
         if player
             == (&raw mut players as *mut player_t).offset(consoleplayer as isize)
                 as *mut player_t
         {
             I_Tactile(
-                40 as ::core::ffi::c_int,
-                10 as ::core::ffi::c_int,
-                40 as ::core::ffi::c_int + temp * 2 as ::core::ffi::c_int,
+                40 as i32,
+                10 as i32,
+                40 as i32 + temp * 2 as i32,
             );
         }
     }
     (*target).health -= damage;
-    if (*target).health <= 0 as ::core::ffi::c_int {
+    if (*target).health <= 0 as i32 {
         P_KillMobj(source, target);
         return;
     }
     if P_Random() < (*(*target).info).painchance
-        && (*target).flags & MF_SKULLFLY as ::core::ffi::c_int == 0
+        && (*target).flags & MF_SKULLFLY as i32 == 0
     {
-        (*target).flags |= MF_JUSTHIT as ::core::ffi::c_int;
+        (*target).flags |= MF_JUSTHIT as i32;
         P_SetMobjState(target, (*(*target).info).painstate as statenum_t);
     }
-    (*target).reactiontime = 0 as ::core::ffi::c_int;
+    (*target).reactiontime = 0 as i32;
     if ((*target).threshold == 0
-        || (*target).type_0 as ::core::ffi::c_uint
-            == MT_VILE as ::core::ffi::c_int as ::core::ffi::c_uint) && !source.is_null()
+        || (*target).type_0 as u32
+            == MT_VILE as i32 as u32) && !source.is_null()
         && source != target
-        && (*source).type_0 as ::core::ffi::c_uint
-            != MT_VILE as ::core::ffi::c_int as ::core::ffi::c_uint
+        && (*source).type_0 as u32
+            != MT_VILE as i32 as u32
     {
         (*target).target = source as *mut mobj_s;
         (*target).threshold = BASETHRESHOLD;
         if (*target).state
             == (&raw mut states as *mut state_t)
                 .offset((*(*target).info).spawnstate as isize) as *mut state_t
-            && (*(*target).info).seestate != S_NULL as ::core::ffi::c_int
+            && (*(*target).info).seestate != S_NULL as i32
         {
             P_SetMobjState(target, (*(*target).info).seestate as statenum_t);
         }
     }
 }
-pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
+pub const __INT_MAX__: i32 = 2147483647 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

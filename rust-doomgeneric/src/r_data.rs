@@ -9,32 +9,32 @@ use crate::src::w_wad::{
     W_ReleaseLumpName,
 };
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn strncasecmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn I_ConsoleStdout() -> boolean;
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn Z_ChangeTag2(
         ptr: *mut ::core::ffi::c_void,
-        tag: ::core::ffi::c_int,
+        tag: i32,
         file: *mut ::core::ffi::c_char,
-        line: ::core::ffi::c_int,
+        line: i32,
     );
     static mut lumpinfo: *mut lumpinfo_t;
-    fn W_LumpLength(lump: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
-        lump: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        lump: i32,
+        tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn W_LumpNameHash(s: *const ::core::ffi::c_char) -> ::core::ffi::c_uint;
+    fn W_LumpNameHash(s: *const ::core::ffi::c_char) -> u32;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
@@ -42,7 +42,7 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn M_StringCopy(
@@ -50,23 +50,23 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    static mut numsprites: ::core::ffi::c_int;
+    static mut numsprites: i32;
     static mut sprites: *mut spritedef_t;
-    static mut numsectors: ::core::ffi::c_int;
+    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut numsides: ::core::ffi::c_int;
+    static mut numsides: i32;
     static mut sides: *mut side_t;
     static mut thinkercap: thinker_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
     static mut demoplayback: bool;
-    static mut skytexture: ::core::ffi::c_int;
+    static mut skytexture: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -76,7 +76,7 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -88,15 +88,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -236,7 +236,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1205,7 +1205,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1357,64 +1357,64 @@ pub type texture_t = texture_s;
 #[repr(C)]
 pub struct texture_s {
     pub name: [::core::ffi::c_char; 8],
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub index: ::core::ffi::c_int,
+    pub width: i16,
+    pub height: i16,
+    pub index: i32,
     pub next: *mut texture_t,
-    pub patchcount: ::core::ffi::c_short,
+    pub patchcount: i16,
     pub patches: [texpatch_t; 1],
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct texpatch_t {
-    pub originx: ::core::ffi::c_short,
-    pub originy: ::core::ffi::c_short,
-    pub patch: ::core::ffi::c_int,
+    pub originx: i16,
+    pub originy: i16,
+    pub patch: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct mappatch_t {
-    pub originx: ::core::ffi::c_short,
-    pub originy: ::core::ffi::c_short,
-    pub patch: ::core::ffi::c_short,
-    pub stepdir: ::core::ffi::c_short,
-    pub colormap: ::core::ffi::c_short,
+    pub originx: i16,
+    pub originy: i16,
+    pub patch: i16,
+    pub stepdir: i16,
+    pub colormap: i16,
 }
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct maptexture_t {
     pub name: [::core::ffi::c_char; 8],
-    pub masked: ::core::ffi::c_int,
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub obsolete: ::core::ffi::c_int,
-    pub patchcount: ::core::ffi::c_short,
+    pub masked: i32,
+    pub width: i16,
+    pub height: i16,
+    pub obsolete: i32,
+    pub patchcount: i16,
     pub patches: [mappatch_t; 1],
 }
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
+pub const FRACBITS: i32 = 16 as i32;
 #[no_mangle]
-pub static mut firstflat: ::core::ffi::c_int = 0;
+pub static mut firstflat: i32 = 0;
 #[no_mangle]
-pub static mut lastflat: ::core::ffi::c_int = 0;
+pub static mut lastflat: i32 = 0;
 #[no_mangle]
-pub static mut numflats: ::core::ffi::c_int = 0;
+pub static mut numflats: i32 = 0;
 #[no_mangle]
-pub static mut firstpatch: ::core::ffi::c_int = 0;
+pub static mut firstpatch: i32 = 0;
 #[no_mangle]
-pub static mut lastpatch: ::core::ffi::c_int = 0;
+pub static mut lastpatch: i32 = 0;
 #[no_mangle]
-pub static mut numpatches: ::core::ffi::c_int = 0;
+pub static mut numpatches: i32 = 0;
 #[no_mangle]
-pub static mut firstspritelump: ::core::ffi::c_int = 0;
+pub static mut firstspritelump: i32 = 0;
 #[no_mangle]
-pub static mut lastspritelump: ::core::ffi::c_int = 0;
+pub static mut lastspritelump: i32 = 0;
 #[no_mangle]
-pub static mut numspritelumps: ::core::ffi::c_int = 0;
+pub static mut numspritelumps: i32 = 0;
 #[no_mangle]
-pub static mut numtextures: ::core::ffi::c_int = 0;
+pub static mut numtextures: i32 = 0;
 #[no_mangle]
 pub static mut textures: *mut *mut texture_t = ::core::ptr::null::<*mut texture_t>()
     as *mut *mut texture_t;
@@ -1423,20 +1423,20 @@ pub static mut textures_hashtable: *mut *mut texture_t = ::core::ptr::null::<
     *mut texture_t,
 >() as *mut *mut texture_t;
 #[no_mangle]
-pub static mut texturewidthmask: *mut ::core::ffi::c_int = ::core::ptr::null::<
-    ::core::ffi::c_int,
->() as *mut ::core::ffi::c_int;
+pub static mut texturewidthmask: *mut i32 = ::core::ptr::null::<
+    i32,
+>() as *mut i32;
 #[no_mangle]
 pub static mut textureheight: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
 #[no_mangle]
-pub static mut texturecompositesize: *mut ::core::ffi::c_int = ::core::ptr::null::<
-    ::core::ffi::c_int,
->() as *mut ::core::ffi::c_int;
+pub static mut texturecompositesize: *mut i32 = ::core::ptr::null::<
+    i32,
+>() as *mut i32;
 #[no_mangle]
-pub static mut texturecolumnlump: *mut *mut ::core::ffi::c_short = ::core::ptr::null::<
-    *mut ::core::ffi::c_short,
->() as *mut *mut ::core::ffi::c_short;
+pub static mut texturecolumnlump: *mut *mut i16 = ::core::ptr::null::<
+    *mut i16,
+>() as *mut *mut i16;
 #[no_mangle]
 pub static mut texturecolumnofs: *mut *mut ::core::ffi::c_ushort = ::core::ptr::null::<
     *mut ::core::ffi::c_ushort,
@@ -1445,13 +1445,13 @@ pub static mut texturecolumnofs: *mut *mut ::core::ffi::c_ushort = ::core::ptr::
 pub static mut texturecomposite: *mut *mut byte = ::core::ptr::null::<*mut byte>()
     as *mut *mut byte;
 #[no_mangle]
-pub static mut flattranslation: *mut ::core::ffi::c_int = ::core::ptr::null::<
-    ::core::ffi::c_int,
->() as *mut ::core::ffi::c_int;
+pub static mut flattranslation: *mut i32 = ::core::ptr::null::<
+    i32,
+>() as *mut i32;
 #[no_mangle]
-pub static mut texturetranslation: *mut ::core::ffi::c_int = ::core::ptr::null::<
-    ::core::ffi::c_int,
->() as *mut ::core::ffi::c_int;
+pub static mut texturetranslation: *mut i32 = ::core::ptr::null::<
+    i32,
+>() as *mut i32;
 #[no_mangle]
 pub static mut spritewidth: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
@@ -1468,24 +1468,24 @@ pub static mut colormaps: *mut lighttable_t = ::core::ptr::null::<lighttable_t>(
 pub unsafe extern "C" fn R_DrawColumnInCache(
     mut patch: *mut column_t,
     mut cache: *mut byte,
-    mut originy: ::core::ffi::c_int,
-    mut cacheheight: ::core::ffi::c_int,
+    mut originy: i32,
+    mut cacheheight: i32,
 ) {
-    let mut count: ::core::ffi::c_int = 0;
-    let mut position: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
+    let mut position: i32 = 0;
     let mut source: *mut byte = ::core::ptr::null_mut::<byte>();
-    while (*patch).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
-        source = (patch as *mut byte).offset(3 as ::core::ffi::c_int as isize);
-        count = (*patch).length as ::core::ffi::c_int;
-        position = originy + (*patch).topdelta as ::core::ffi::c_int;
-        if position < 0 as ::core::ffi::c_int {
+    while (*patch).topdelta as i32 != 0xff as i32 {
+        source = (patch as *mut byte).offset(3 as i32 as isize);
+        count = (*patch).length as i32;
+        position = originy + (*patch).topdelta as i32;
+        if position < 0 as i32 {
             count += position;
-            position = 0 as ::core::ffi::c_int;
+            position = 0 as i32;
         }
         if position + count > cacheheight {
             count = cacheheight - position;
         }
-        if count > 0 as ::core::ffi::c_int {
+        if count > 0 as i32 {
             memcpy(
                 cache.offset(position as isize) as *mut ::core::ffi::c_void,
                 source as *const ::core::ffi::c_void,
@@ -1493,23 +1493,23 @@ pub unsafe extern "C" fn R_DrawColumnInCache(
             );
         }
         patch = (patch as *mut byte)
-            .offset((*patch).length as ::core::ffi::c_int as isize)
-            .offset(4 as ::core::ffi::c_int as isize) as *mut column_t;
+            .offset((*patch).length as i32 as isize)
+            .offset(4 as i32 as isize) as *mut column_t;
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn R_GenerateComposite(mut texnum: ::core::ffi::c_int) {
+pub unsafe extern "C" fn R_GenerateComposite(mut texnum: i32) {
     let mut block: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut patch: *mut texpatch_t = ::core::ptr::null_mut::<texpatch_t>();
     let mut realpatch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    let mut x: ::core::ffi::c_int = 0;
-    let mut x1: ::core::ffi::c_int = 0;
-    let mut x2: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+    let mut x: i32 = 0;
+    let mut x1: i32 = 0;
+    let mut x2: i32 = 0;
+    let mut i: i32 = 0;
     let mut patchcol: *mut column_t = ::core::ptr::null_mut::<column_t>();
-    let mut collump: *mut ::core::ffi::c_short = ::core::ptr::null_mut::<
-        ::core::ffi::c_short,
+    let mut collump: *mut i16 = ::core::ptr::null_mut::<
+        i16,
     >();
     let mut colofs: *mut ::core::ffi::c_ushort = ::core::ptr::null_mut::<
         ::core::ffi::c_ushort,
@@ -1517,45 +1517,45 @@ pub unsafe extern "C" fn R_GenerateComposite(mut texnum: ::core::ffi::c_int) {
     texture = *textures.offset(texnum as isize);
     block = Z_Malloc(
         *texturecompositesize.offset(texnum as isize),
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
         texturecomposite.offset(texnum as isize) as *mut *mut byte
             as *mut ::core::ffi::c_void,
     ) as *mut byte;
     collump = *texturecolumnlump.offset(texnum as isize);
     colofs = *texturecolumnofs.offset(texnum as isize);
     patch = &raw mut (*texture).patches as *mut texpatch_t;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     patch = &raw mut (*texture).patches as *mut texpatch_t;
-    while i < (*texture).patchcount as ::core::ffi::c_int {
-        realpatch = W_CacheLumpNum((*patch).patch, PU_CACHE as ::core::ffi::c_int)
+    while i < (*texture).patchcount as i32 {
+        realpatch = W_CacheLumpNum((*patch).patch, PU_CACHE as i32)
             as *mut patch_t;
-        x1 = (*patch).originx as ::core::ffi::c_int;
-        x2 = x1 + (*realpatch).width as ::core::ffi::c_int;
-        if x1 < 0 as ::core::ffi::c_int {
-            x = 0 as ::core::ffi::c_int;
+        x1 = (*patch).originx as i32;
+        x2 = x1 + (*realpatch).width as i32;
+        if x1 < 0 as i32 {
+            x = 0 as i32;
         } else {
             x = x1;
         }
-        if x2 > (*texture).width as ::core::ffi::c_int {
-            x2 = (*texture).width as ::core::ffi::c_int;
+        if x2 > (*texture).width as i32 {
+            x2 = (*texture).width as i32;
         }
         while x < x2 {
-            if !(*collump.offset(x as isize) as ::core::ffi::c_int
-                >= 0 as ::core::ffi::c_int)
+            if !(*collump.offset(x as isize) as i32
+                >= 0 as i32)
             {
                 patchcol = (realpatch as *mut byte)
                     .offset(
-                        *(&raw const (*realpatch).columnofs as *const ::core::ffi::c_int)
+                        *(&raw const (*realpatch).columnofs as *const i32)
                             .offset((x - x1) as isize) as isize,
                     ) as *mut column_t;
                 R_DrawColumnInCache(
                     patchcol,
                     block
                         .offset(
-                            *colofs.offset(x as isize) as ::core::ffi::c_int as isize,
+                            *colofs.offset(x as isize) as i32 as isize,
                         ),
-                    (*patch).originy as ::core::ffi::c_int,
-                    (*texture).height as ::core::ffi::c_int,
+                    (*patch).originy as i32,
+                    (*texture).height as i32,
                 );
             }
             x += 1;
@@ -1565,24 +1565,24 @@ pub unsafe extern "C" fn R_GenerateComposite(mut texnum: ::core::ffi::c_int) {
     }
     Z_ChangeTag2(
         block as *mut ::core::ffi::c_void,
-        PU_CACHE as ::core::ffi::c_int,
+        PU_CACHE as i32,
         b"r_data.c\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char,
-        286 as ::core::ffi::c_int,
+        286 as i32,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn R_GenerateLookup(mut texnum: ::core::ffi::c_int) {
+pub unsafe extern "C" fn R_GenerateLookup(mut texnum: i32) {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut patchcount: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut patch: *mut texpatch_t = ::core::ptr::null_mut::<texpatch_t>();
     let mut realpatch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    let mut x: ::core::ffi::c_int = 0;
-    let mut x1: ::core::ffi::c_int = 0;
-    let mut x2: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    let mut collump: *mut ::core::ffi::c_short = ::core::ptr::null_mut::<
-        ::core::ffi::c_short,
+    let mut x: i32 = 0;
+    let mut x1: i32 = 0;
+    let mut x2: i32 = 0;
+    let mut i: i32 = 0;
+    let mut collump: *mut i16 = ::core::ptr::null_mut::<
+        i16,
     >();
     let mut colofs: *mut ::core::ffi::c_ushort = ::core::ptr::null_mut::<
         ::core::ffi::c_ushort,
@@ -1590,50 +1590,50 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: ::core::ffi::c_int) {
     texture = *textures.offset(texnum as isize);
     let ref mut fresh4 = *texturecomposite.offset(texnum as isize);
     *fresh4 = ::core::ptr::null_mut::<byte>();
-    *texturecompositesize.offset(texnum as isize) = 0 as ::core::ffi::c_int;
+    *texturecompositesize.offset(texnum as isize) = 0 as i32;
     collump = *texturecolumnlump.offset(texnum as isize);
     colofs = *texturecolumnofs.offset(texnum as isize);
     patchcount = Z_Malloc(
-        (*texture).width as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+        (*texture).width as i32,
+        PU_STATIC as i32,
         &raw mut patchcount as *mut ::core::ffi::c_void,
     ) as *mut byte;
     memset(
         patchcount as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         (*texture).width as size_t,
     );
     patch = &raw mut (*texture).patches as *mut texpatch_t;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     patch = &raw mut (*texture).patches as *mut texpatch_t;
-    while i < (*texture).patchcount as ::core::ffi::c_int {
-        realpatch = W_CacheLumpNum((*patch).patch, PU_CACHE as ::core::ffi::c_int)
+    while i < (*texture).patchcount as i32 {
+        realpatch = W_CacheLumpNum((*patch).patch, PU_CACHE as i32)
             as *mut patch_t;
-        x1 = (*patch).originx as ::core::ffi::c_int;
-        x2 = x1 + (*realpatch).width as ::core::ffi::c_int;
-        if x1 < 0 as ::core::ffi::c_int {
-            x = 0 as ::core::ffi::c_int;
+        x1 = (*patch).originx as i32;
+        x2 = x1 + (*realpatch).width as i32;
+        if x1 < 0 as i32 {
+            x = 0 as i32;
         } else {
             x = x1;
         }
-        if x2 > (*texture).width as ::core::ffi::c_int {
-            x2 = (*texture).width as ::core::ffi::c_int;
+        if x2 > (*texture).width as i32 {
+            x2 = (*texture).width as i32;
         }
         while x < x2 {
             let ref mut fresh5 = *patchcount.offset(x as isize);
             *fresh5 = (*fresh5).wrapping_add(1);
-            *collump.offset(x as isize) = (*patch).patch as ::core::ffi::c_short;
+            *collump.offset(x as isize) = (*patch).patch as i16;
             *colofs.offset(x as isize) = (*(&raw const (*realpatch).columnofs
-                as *const ::core::ffi::c_int)
+                as *const i32)
                 .offset((x - x1) as isize)
-                + 3 as ::core::ffi::c_int) as ::core::ffi::c_ushort;
+                + 3 as i32) as ::core::ffi::c_ushort;
             x += 1;
         }
         i += 1;
         patch = patch.offset(1);
     }
-    x = 0 as ::core::ffi::c_int;
-    while x < (*texture).width as ::core::ffi::c_int {
+    x = 0 as i32;
+    while x < (*texture).width as i32 {
         if *patchcount.offset(x as isize) == 0 {
             printf(
                 b"R_GenerateLookup: column without a patch (%s)\n\0" as *const u8
@@ -1642,19 +1642,19 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: ::core::ffi::c_int) {
             );
             return;
         }
-        if *patchcount.offset(x as isize) as ::core::ffi::c_int > 1 as ::core::ffi::c_int
+        if *patchcount.offset(x as isize) as i32 > 1 as i32
         {
-            *collump.offset(x as isize) = -(1 as ::core::ffi::c_int)
-                as ::core::ffi::c_short;
+            *collump.offset(x as isize) = -(1 as i32)
+                as i16;
             *colofs.offset(x as isize) = *texturecompositesize.offset(texnum as isize)
                 as ::core::ffi::c_ushort;
             if *texturecompositesize.offset(texnum as isize)
-                > 0x10000 as ::core::ffi::c_int - (*texture).height as ::core::ffi::c_int
+                > 0x10000 as i32 - (*texture).height as i32
             {
                 I_Error(&format!("R_GenerateLookup: texture {} is >64k", texnum));
             }
             *texturecompositesize.offset(texnum as isize)
-                += (*texture).height as ::core::ffi::c_int;
+                += (*texture).height as i32;
         }
         x += 1;
     }
@@ -1662,18 +1662,18 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_GetColumn(
-    mut tex: ::core::ffi::c_int,
-    mut col: ::core::ffi::c_int,
+    mut tex: i32,
+    mut col: i32,
 ) -> *mut byte {
-    let mut lump: ::core::ffi::c_int = 0;
-    let mut ofs: ::core::ffi::c_int = 0;
+    let mut lump: i32 = 0;
+    let mut ofs: i32 = 0;
     col &= *texturewidthmask.offset(tex as isize);
     lump = *(*texturecolumnlump.offset(tex as isize)).offset(col as isize)
-        as ::core::ffi::c_int;
+        as i32;
     ofs = *(*texturecolumnofs.offset(tex as isize)).offset(col as isize)
-        as ::core::ffi::c_int;
-    if lump > 0 as ::core::ffi::c_int {
-        return (W_CacheLumpNum(lump, PU_CACHE as ::core::ffi::c_int) as *mut byte)
+        as i32;
+    if lump > 0 as i32 {
+        return (W_CacheLumpNum(lump, PU_CACHE as i32) as *mut byte)
             .offset(ofs as isize);
     }
     if (*texturecomposite.offset(tex as isize)).is_null() {
@@ -1683,27 +1683,27 @@ pub unsafe extern "C" fn R_GetColumn(
 }
 unsafe extern "C" fn GenerateTextureHashTable() {
     let mut rover: *mut *mut texture_t = ::core::ptr::null_mut::<*mut texture_t>();
-    let mut i: ::core::ffi::c_int = 0;
-    let mut key: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut key: i32 = 0;
     textures_hashtable = Z_Malloc(
         (::core::mem::size_of::<*mut texture_t>() as usize)
-            .wrapping_mul(numtextures as usize) as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            .wrapping_mul(numtextures as usize) as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut texture_t;
     memset(
         textures_hashtable as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         (::core::mem::size_of::<*mut texture_t>() as size_t)
             .wrapping_mul(numtextures as size_t),
     );
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numtextures {
         (**textures.offset(i as isize)).index = i;
         key = W_LumpNameHash(
                 &raw mut (**textures.offset(i as isize)).name as *mut ::core::ffi::c_char,
             )
-            .wrapping_rem(numtextures as ::core::ffi::c_uint) as ::core::ffi::c_int;
+            .wrapping_rem(numtextures as u32) as i32;
         rover = textures_hashtable.offset(key as isize) as *mut *mut texture_t;
         while !(*rover).is_null() {
             rover = &raw mut (**rover).next;
@@ -1720,16 +1720,16 @@ pub unsafe extern "C" fn R_InitTextures() {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut mpatch: *mut mappatch_t = ::core::ptr::null_mut::<mappatch_t>();
     let mut patch: *mut texpatch_t = ::core::ptr::null_mut::<texpatch_t>();
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut maptex: *mut ::core::ffi::c_int = ::core::ptr::null_mut::<
-        ::core::ffi::c_int,
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut maptex: *mut i32 = ::core::ptr::null_mut::<
+        i32,
     >();
-    let mut maptex2: *mut ::core::ffi::c_int = ::core::ptr::null_mut::<
-        ::core::ffi::c_int,
+    let mut maptex2: *mut i32 = ::core::ptr::null_mut::<
+        i32,
     >();
-    let mut maptex1: *mut ::core::ffi::c_int = ::core::ptr::null_mut::<
-        ::core::ffi::c_int,
+    let mut maptex1: *mut i32 = ::core::ptr::null_mut::<
+        i32,
     >();
     let mut name: [::core::ffi::c_char; 9] = [0; 9];
     let mut names: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
@@ -1738,40 +1738,40 @@ pub unsafe extern "C" fn R_InitTextures() {
     let mut name_p: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    let mut patchlookup: *mut ::core::ffi::c_int = ::core::ptr::null_mut::<
-        ::core::ffi::c_int,
+    let mut patchlookup: *mut i32 = ::core::ptr::null_mut::<
+        i32,
     >();
-    let mut totalwidth: ::core::ffi::c_int = 0;
-    let mut nummappatches: ::core::ffi::c_int = 0;
-    let mut offset: ::core::ffi::c_int = 0;
-    let mut maxoff: ::core::ffi::c_int = 0;
-    let mut maxoff2: ::core::ffi::c_int = 0;
-    let mut numtextures1: ::core::ffi::c_int = 0;
-    let mut numtextures2: ::core::ffi::c_int = 0;
-    let mut directory: *mut ::core::ffi::c_int = ::core::ptr::null_mut::<
-        ::core::ffi::c_int,
+    let mut totalwidth: i32 = 0;
+    let mut nummappatches: i32 = 0;
+    let mut offset: i32 = 0;
+    let mut maxoff: i32 = 0;
+    let mut maxoff2: i32 = 0;
+    let mut numtextures1: i32 = 0;
+    let mut numtextures2: i32 = 0;
+    let mut directory: *mut i32 = ::core::ptr::null_mut::<
+        i32,
     >();
-    let mut temp1: ::core::ffi::c_int = 0;
-    let mut temp2: ::core::ffi::c_int = 0;
-    let mut temp3: ::core::ffi::c_int = 0;
-    name[8 as ::core::ffi::c_int as usize] = 0 as ::core::ffi::c_char;
+    let mut temp1: i32 = 0;
+    let mut temp2: i32 = 0;
+    let mut temp3: i32 = 0;
+    name[8 as i32 as usize] = 0 as ::core::ffi::c_char;
     names = W_CacheLumpName("PNAMES",
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
     ) as *mut ::core::ffi::c_char;
-    nummappatches = *(names as *mut ::core::ffi::c_int);
-    name_p = names.offset(4 as ::core::ffi::c_int as isize);
+    nummappatches = *(names as *mut i32);
+    name_p = names.offset(4 as i32 as isize);
     patchlookup = Z_Malloc(
         (nummappatches as usize)
-            .wrapping_mul(::core::mem::size_of::<::core::ffi::c_int>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            .wrapping_mul(::core::mem::size_of::<i32>() as usize)
+            as i32,
+        PU_STATIC as i32,
         NULL,
-    ) as *mut ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    ) as *mut i32;
+    i = 0 as i32;
     while i < nummappatches {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
-            name_p.offset((i * 8 as ::core::ffi::c_int) as isize),
+            name_p.offset((i * 8 as i32) as isize),
             ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
         );
         *patchlookup.offset(i as isize) = W_CheckNumForName(
@@ -1781,109 +1781,109 @@ pub unsafe extern "C" fn R_InitTextures() {
     }
     W_ReleaseLumpName("PNAMES");
     maptex1 = W_CacheLumpName("TEXTURE1",
-        PU_STATIC as ::core::ffi::c_int,
-    ) as *mut ::core::ffi::c_int;
+        PU_STATIC as i32,
+    ) as *mut i32;
     maptex = maptex1;
     numtextures1 = *maptex;
     maxoff = W_LumpLength(
         W_GetNumForName("TEXTURE1",
-        ) as ::core::ffi::c_uint,
+        ) as u32,
     );
-    directory = maptex.offset(1 as ::core::ffi::c_int as isize);
+    directory = maptex.offset(1 as i32 as isize);
     if W_CheckNumForName("TEXTURE2",
-    ) != -(1 as ::core::ffi::c_int)
+    ) != -(1 as i32)
     {
         maptex2 = W_CacheLumpName("TEXTURE2",
-            PU_STATIC as ::core::ffi::c_int,
-        ) as *mut ::core::ffi::c_int;
+            PU_STATIC as i32,
+        ) as *mut i32;
         numtextures2 = *maptex2;
         maxoff2 = W_LumpLength(
             W_GetNumForName("TEXTURE2",
-            ) as ::core::ffi::c_uint,
+            ) as u32,
         );
     } else {
-        maptex2 = ::core::ptr::null_mut::<::core::ffi::c_int>();
-        numtextures2 = 0 as ::core::ffi::c_int;
-        maxoff2 = 0 as ::core::ffi::c_int;
+        maptex2 = ::core::ptr::null_mut::<i32>();
+        numtextures2 = 0 as i32;
+        maxoff2 = 0 as i32;
     }
     numtextures = numtextures1 + numtextures2;
     textures = Z_Malloc(
         (numtextures as usize)
             .wrapping_mul(::core::mem::size_of::<*mut texture_t>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut texture_t;
     texturecolumnlump = Z_Malloc(
         (numtextures as usize)
-            .wrapping_mul(::core::mem::size_of::<*mut ::core::ffi::c_short>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            .wrapping_mul(::core::mem::size_of::<*mut i16>() as usize)
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut *mut ::core::ffi::c_short;
+    ) as *mut *mut i16;
     texturecolumnofs = Z_Malloc(
         (numtextures as usize)
             .wrapping_mul(::core::mem::size_of::<*mut ::core::ffi::c_ushort>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut ::core::ffi::c_ushort;
     texturecomposite = Z_Malloc(
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<*mut byte>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut byte;
     texturecompositesize = Z_Malloc(
         (numtextures as usize)
-            .wrapping_mul(::core::mem::size_of::<::core::ffi::c_int>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            .wrapping_mul(::core::mem::size_of::<i32>() as usize)
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut ::core::ffi::c_int;
+    ) as *mut i32;
     texturewidthmask = Z_Malloc(
         (numtextures as usize)
-            .wrapping_mul(::core::mem::size_of::<::core::ffi::c_int>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            .wrapping_mul(::core::mem::size_of::<i32>() as usize)
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut ::core::ffi::c_int;
+    ) as *mut i32;
     textureheight = Z_Malloc(
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<fixed_t>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
-    totalwidth = 0 as ::core::ffi::c_int;
+    totalwidth = 0 as i32;
     temp1 = W_GetNumForName("S_START",
     );
     temp2 = W_GetNumForName("S_END",
-    ) - 1 as ::core::ffi::c_int;
-    temp3 = (temp2 - temp1 + 63 as ::core::ffi::c_int) / 64 as ::core::ffi::c_int
-        + (numtextures + 63 as ::core::ffi::c_int) / 64 as ::core::ffi::c_int;
+    ) - 1 as i32;
+    temp3 = (temp2 - temp1 + 63 as i32) / 64 as i32
+        + (numtextures + 63 as i32) / 64 as i32;
     if I_ConsoleStdout() != 0 {
         printf(b"[\0" as *const u8 as *const ::core::ffi::c_char);
-        i = 0 as ::core::ffi::c_int;
-        while i < temp3 + 9 as ::core::ffi::c_int {
+        i = 0 as i32;
+        while i < temp3 + 9 as i32 {
             printf(b" \0" as *const u8 as *const ::core::ffi::c_char);
             i += 1;
         }
         printf(b"]\0" as *const u8 as *const ::core::ffi::c_char);
-        i = 0 as ::core::ffi::c_int;
-        while i < temp3 + 10 as ::core::ffi::c_int {
+        i = 0 as i32;
+        while i < temp3 + 10 as i32 {
             printf(b"\x08\0" as *const u8 as *const ::core::ffi::c_char);
             i += 1;
         }
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numtextures {
-        if i & 63 as ::core::ffi::c_int == 0 {
+        if i & 63 as i32 == 0 {
             printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
         }
         if i == numtextures1 {
             maptex = maptex2;
             maxoff = maxoff2;
-            directory = maptex.offset(1 as ::core::ffi::c_int as isize);
+            directory = maptex.offset(1 as i32 as isize);
         }
         offset = *directory;
         if offset > maxoff {
@@ -1896,11 +1896,11 @@ pub unsafe extern "C" fn R_InitTextures() {
                 .wrapping_add(
                     (::core::mem::size_of::<texpatch_t>() as usize)
                         .wrapping_mul(
-                            ((*mtexture).patchcount as ::core::ffi::c_int
-                                - 1 as ::core::ffi::c_int) as usize,
+                            ((*mtexture).patchcount as i32
+                                - 1 as i32) as usize,
                         ),
-                ) as ::core::ffi::c_int,
-            PU_STATIC as ::core::ffi::c_int,
+                ) as i32,
+            PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut texture_t;
         texture = *fresh0;
@@ -1915,15 +1915,15 @@ pub unsafe extern "C" fn R_InitTextures() {
             ::core::mem::size_of::<[::core::ffi::c_char; 8]>() as size_t,
         );
         mpatch = (&raw mut (*mtexture).patches as *mut mappatch_t)
-            .offset(0 as ::core::ffi::c_int as isize) as *mut mappatch_t;
+            .offset(0 as i32 as isize) as *mut mappatch_t;
         patch = (&raw mut (*texture).patches as *mut texpatch_t)
-            .offset(0 as ::core::ffi::c_int as isize) as *mut texpatch_t;
-        j = 0 as ::core::ffi::c_int;
-        while j < (*texture).patchcount as ::core::ffi::c_int {
+            .offset(0 as i32 as isize) as *mut texpatch_t;
+        j = 0 as i32;
+        while j < (*texture).patchcount as i32 {
             (*patch).originx = (*mpatch).originx;
             (*patch).originy = (*mpatch).originy;
             (*patch).patch = *patchlookup.offset((*mpatch).patch as isize);
-            if (*patch).patch == -(1 as ::core::ffi::c_int) {
+            if (*patch).patch == -(1 as i32) {
                 I_Error(&format!(
                     "R_InitTextures: Missing patch in texture {}",
                     wad_name8_to_string(&raw mut (*texture).name as *mut ::core::ffi::c_char),
@@ -1936,27 +1936,27 @@ pub unsafe extern "C" fn R_InitTextures() {
         let ref mut fresh1 = *texturecolumnlump.offset(i as isize);
         *fresh1 = Z_Malloc(
             ((*texture).width as usize)
-                .wrapping_mul(::core::mem::size_of::<::core::ffi::c_short>() as usize)
-                as ::core::ffi::c_int,
-            PU_STATIC as ::core::ffi::c_int,
+                .wrapping_mul(::core::mem::size_of::<i16>() as usize)
+                as i32,
+            PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
-        ) as *mut ::core::ffi::c_short;
+        ) as *mut i16;
         let ref mut fresh2 = *texturecolumnofs.offset(i as isize);
         *fresh2 = Z_Malloc(
             ((*texture).width as usize)
                 .wrapping_mul(::core::mem::size_of::<::core::ffi::c_ushort>() as usize)
-                as ::core::ffi::c_int,
-            PU_STATIC as ::core::ffi::c_int,
+                as i32,
+            PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut ::core::ffi::c_ushort;
-        j = 1 as ::core::ffi::c_int;
-        while j * 2 as ::core::ffi::c_int <= (*texture).width as ::core::ffi::c_int {
-            j <<= 1 as ::core::ffi::c_int;
+        j = 1 as i32;
+        while j * 2 as i32 <= (*texture).width as i32 {
+            j <<= 1 as i32;
         }
-        *texturewidthmask.offset(i as isize) = j - 1 as ::core::ffi::c_int;
-        *textureheight.offset(i as isize) = (((*texture).height as ::core::ffi::c_int)
+        *texturewidthmask.offset(i as isize) = j - 1 as i32;
+        *textureheight.offset(i as isize) = (((*texture).height as i32)
             << FRACBITS) as fixed_t;
-        totalwidth += (*texture).width as ::core::ffi::c_int;
+        totalwidth += (*texture).width as i32;
         i += 1;
         directory = directory.offset(1);
     }
@@ -1965,19 +1965,19 @@ pub unsafe extern "C" fn R_InitTextures() {
     if !maptex2.is_null() {
         W_ReleaseLumpName("TEXTURE2");
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numtextures {
         R_GenerateLookup(i);
         i += 1;
     }
     texturetranslation = Z_Malloc(
-        ((numtextures + 1 as ::core::ffi::c_int) as usize)
-            .wrapping_mul(::core::mem::size_of::<::core::ffi::c_int>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+        ((numtextures + 1 as i32) as usize)
+            .wrapping_mul(::core::mem::size_of::<i32>() as usize)
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    ) as *mut i32;
+    i = 0 as i32;
     while i < numtextures {
         *texturetranslation.offset(i as isize) = i;
         i += 1;
@@ -1986,20 +1986,20 @@ pub unsafe extern "C" fn R_InitTextures() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_InitFlats() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     firstflat = W_GetNumForName("F_START",
-    ) + 1 as ::core::ffi::c_int;
+    ) + 1 as i32;
     lastflat = W_GetNumForName("F_END",
-    ) - 1 as ::core::ffi::c_int;
-    numflats = lastflat - firstflat + 1 as ::core::ffi::c_int;
+    ) - 1 as i32;
+    numflats = lastflat - firstflat + 1 as i32;
     flattranslation = Z_Malloc(
-        ((numflats + 1 as ::core::ffi::c_int) as usize)
-            .wrapping_mul(::core::mem::size_of::<::core::ffi::c_int>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+        ((numflats + 1 as i32) as usize)
+            .wrapping_mul(::core::mem::size_of::<i32>() as usize)
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    ) as *mut i32;
+    i = 0 as i32;
     while i < numflats {
         *flattranslation.offset(i as isize) = i;
         i += 1;
@@ -2007,56 +2007,56 @@ pub unsafe extern "C" fn R_InitFlats() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_InitSpriteLumps() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     firstspritelump = W_GetNumForName("S_START",
-    ) + 1 as ::core::ffi::c_int;
+    ) + 1 as i32;
     lastspritelump = W_GetNumForName("S_END",
-    ) - 1 as ::core::ffi::c_int;
-    numspritelumps = lastspritelump - firstspritelump + 1 as ::core::ffi::c_int;
+    ) - 1 as i32;
+    numspritelumps = lastspritelump - firstspritelump + 1 as i32;
     spritewidth = Z_Malloc(
         (numspritelumps as usize)
             .wrapping_mul(::core::mem::size_of::<fixed_t>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
     spriteoffset = Z_Malloc(
         (numspritelumps as usize)
             .wrapping_mul(::core::mem::size_of::<fixed_t>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
     spritetopoffset = Z_Malloc(
         (numspritelumps as usize)
             .wrapping_mul(::core::mem::size_of::<fixed_t>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numspritelumps {
-        if i & 63 as ::core::ffi::c_int == 0 {
+        if i & 63 as i32 == 0 {
             printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
         }
-        patch = W_CacheLumpNum(firstspritelump + i, PU_CACHE as ::core::ffi::c_int)
+        patch = W_CacheLumpNum(firstspritelump + i, PU_CACHE as i32)
             as *mut patch_t;
-        *spritewidth.offset(i as isize) = (((*patch).width as ::core::ffi::c_int)
+        *spritewidth.offset(i as isize) = (((*patch).width as i32)
             << FRACBITS) as fixed_t;
-        *spriteoffset.offset(i as isize) = (((*patch).leftoffset as ::core::ffi::c_int)
+        *spriteoffset.offset(i as isize) = (((*patch).leftoffset as i32)
             << FRACBITS) as fixed_t;
-        *spritetopoffset.offset(i as isize) = (((*patch).topoffset as ::core::ffi::c_int)
+        *spritetopoffset.offset(i as isize) = (((*patch).topoffset as i32)
             << FRACBITS) as fixed_t;
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_InitColormaps() {
-    let mut lump: ::core::ffi::c_int = 0;
+    let mut lump: i32 = 0;
     lump = W_GetNumForName("COLORMAP",
     );
-    colormaps = W_CacheLumpNum(lump, PU_STATIC as ::core::ffi::c_int)
+    colormaps = W_CacheLumpNum(lump, PU_STATIC as i32)
         as *mut lighttable_t;
 }
 #[no_mangle]
@@ -2072,12 +2072,12 @@ pub unsafe extern "C" fn R_InitData() {
 #[no_mangle]
 pub unsafe extern "C" fn R_FlatNumForName(
     mut name: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut i: i32 = 0;
     let mut namet: [::core::ffi::c_char; 9] = [0; 9];
     i = W_CheckNumForName(&wad_name8_to_string(name));
-    if i == -(1 as ::core::ffi::c_int) {
-        namet[8 as ::core::ffi::c_int as usize] = 0 as ::core::ffi::c_char;
+    if i == -(1 as i32) {
+        namet[8 as i32 as usize] = 0 as ::core::ffi::c_char;
         memcpy(
             &raw mut namet as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
             name as *const ::core::ffi::c_void,
@@ -2093,15 +2093,15 @@ pub unsafe extern "C" fn R_FlatNumForName(
 #[no_mangle]
 pub unsafe extern "C" fn R_CheckTextureNumForName(
     mut name: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
-    let mut key: ::core::ffi::c_int = 0;
-    if *name.offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int == '-' as i32
+    let mut key: i32 = 0;
+    if *name.offset(0 as i32 as isize) as i32 == '-' as i32
     {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
-    key = W_LumpNameHash(name).wrapping_rem(numtextures as ::core::ffi::c_uint)
-        as ::core::ffi::c_int;
+    key = W_LumpNameHash(name).wrapping_rem(numtextures as u32)
+        as i32;
     texture = *textures_hashtable.offset(key as isize);
     while !texture.is_null() {
         if strncasecmp(
@@ -2114,25 +2114,25 @@ pub unsafe extern "C" fn R_CheckTextureNumForName(
         }
         texture = (*texture).next;
     }
-    return -(1 as ::core::ffi::c_int);
+    return -(1 as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_TextureNumForName(
     mut name: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut i: i32 = 0;
     i = R_CheckTextureNumForName(name);
-    if i == -(1 as ::core::ffi::c_int) {
+    if i == -(1 as i32) {
         I_Error(&format!("R_TextureNumForName: {} not found", wad_name8_to_string(name)));
     }
     return i;
 }
 #[no_mangle]
-pub static mut flatmemory: ::core::ffi::c_int = 0;
+pub static mut flatmemory: i32 = 0;
 #[no_mangle]
-pub static mut texturememory: ::core::ffi::c_int = 0;
+pub static mut texturememory: i32 = 0;
 #[no_mangle]
-pub static mut spritememory: ::core::ffi::c_int = 0;
+pub static mut spritememory: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn R_PrecacheLevel() {
     let mut flatpresent: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
@@ -2144,24 +2144,24 @@ pub unsafe extern "C" fn R_PrecacheLevel() {
     let mut spritepresent: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut k: ::core::ffi::c_int = 0;
-    let mut lump: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut k: i32 = 0;
+    let mut lump: i32 = 0;
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut sf: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
     if demoplayback {
         return;
     }
-    flatpresent = Z_Malloc(numflats, PU_STATIC as ::core::ffi::c_int, NULL)
+    flatpresent = Z_Malloc(numflats, PU_STATIC as i32, NULL)
         as *mut ::core::ffi::c_char;
     memset(
         flatpresent as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         numflats as size_t,
     );
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numsectors {
         *flatpresent.offset((*sectors.offset(i as isize)).floorpic as isize) = 1
             as ::core::ffi::c_char;
@@ -2169,25 +2169,25 @@ pub unsafe extern "C" fn R_PrecacheLevel() {
             as ::core::ffi::c_char;
         i += 1;
     }
-    flatmemory = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    flatmemory = 0 as i32;
+    i = 0 as i32;
     while i < numflats {
         if *flatpresent.offset(i as isize) != 0 {
             lump = firstflat + i;
             flatmemory += (*lumpinfo.offset(lump as isize)).size;
-            W_CacheLumpNum(lump, PU_CACHE as ::core::ffi::c_int);
+            W_CacheLumpNum(lump, PU_CACHE as i32);
         }
         i += 1;
     }
     Z_Free(flatpresent as *mut ::core::ffi::c_void);
-    texturepresent = Z_Malloc(numtextures, PU_STATIC as ::core::ffi::c_int, NULL)
+    texturepresent = Z_Malloc(numtextures, PU_STATIC as i32, NULL)
         as *mut ::core::ffi::c_char;
     memset(
         texturepresent as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         numtextures as size_t,
     );
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numsides {
         *texturepresent.offset((*sides.offset(i as isize)).toptexture as isize) = 1
             as ::core::ffi::c_char;
@@ -2198,29 +2198,29 @@ pub unsafe extern "C" fn R_PrecacheLevel() {
         i += 1;
     }
     *texturepresent.offset(skytexture as isize) = 1 as ::core::ffi::c_char;
-    texturememory = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    texturememory = 0 as i32;
+    i = 0 as i32;
     while i < numtextures {
         if !(*texturepresent.offset(i as isize) == 0) {
             texture = *textures.offset(i as isize);
-            j = 0 as ::core::ffi::c_int;
-            while j < (*texture).patchcount as ::core::ffi::c_int {
+            j = 0 as i32;
+            while j < (*texture).patchcount as i32 {
                 lump = (*(&raw mut (*texture).patches as *mut texpatch_t)
                     .offset(j as isize))
                     .patch;
                 texturememory += (*lumpinfo.offset(lump as isize)).size;
-                W_CacheLumpNum(lump, PU_CACHE as ::core::ffi::c_int);
+                W_CacheLumpNum(lump, PU_CACHE as i32);
                 j += 1;
             }
         }
         i += 1;
     }
     Z_Free(texturepresent as *mut ::core::ffi::c_void);
-    spritepresent = Z_Malloc(numsprites, PU_STATIC as ::core::ffi::c_int, NULL)
+    spritepresent = Z_Malloc(numsprites, PU_STATIC as i32, NULL)
         as *mut ::core::ffi::c_char;
     memset(
         spritepresent as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         numsprites as size_t,
     );
     th = thinkercap.next as *mut thinker_t;
@@ -2236,20 +2236,20 @@ pub unsafe extern "C" fn R_PrecacheLevel() {
         }
         th = (*th).next as *mut thinker_t;
     }
-    spritememory = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    spritememory = 0 as i32;
+    i = 0 as i32;
     while i < numsprites {
         if !(*spritepresent.offset(i as isize) == 0) {
-            j = 0 as ::core::ffi::c_int;
+            j = 0 as i32;
             while j < (*sprites.offset(i as isize)).numframes {
                 sf = (*sprites.offset(i as isize)).spriteframes.offset(j as isize)
                     as *mut spriteframe_t;
-                k = 0 as ::core::ffi::c_int;
-                while k < 8 as ::core::ffi::c_int {
+                k = 0 as i32;
+                while k < 8 as i32 {
                     lump = firstspritelump
-                        + (*sf).lump[k as usize] as ::core::ffi::c_int;
+                        + (*sf).lump[k as usize] as i32;
                     spritememory += (*lumpinfo.offset(lump as isize)).size;
-                    W_CacheLumpNum(lump, PU_CACHE as ::core::ffi::c_int);
+                    W_CacheLumpNum(lump, PU_CACHE as i32);
                     k += 1;
                 }
                 j += 1;

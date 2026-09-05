@@ -8,20 +8,20 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     static mut I_VideoBuffer: *mut byte;
     static mut colormaps: *mut lighttable_t;
-    static mut centery: ::core::ffi::c_int;
-    fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
+    static mut centery: i32;
+    fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     fn V_MarkRect(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
     );
     fn V_UseBuffer(buffer: *mut byte);
     fn V_RestoreBuffer();
@@ -31,13 +31,13 @@ pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type byte = uint8_t;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -47,32 +47,32 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type fixed_t = ::core::ffi::c_int;
+pub type fixed_t = i32;
 pub type lighttable_t = byte;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const SBARHEIGHT: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
+pub const FRACBITS: i32 = 16 as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
+pub const SBARHEIGHT: i32 = 32 as i32;
 #[no_mangle]
 pub static mut viewimage: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
-pub static mut viewwidth: ::core::ffi::c_int = 0;
+pub static mut viewwidth: i32 = 0;
 #[no_mangle]
-pub static mut scaledviewwidth: ::core::ffi::c_int = 0;
+pub static mut scaledviewwidth: i32 = 0;
 #[no_mangle]
-pub static mut viewheight: ::core::ffi::c_int = 0;
+pub static mut viewheight: i32 = 0;
 #[no_mangle]
-pub static mut viewwindowx: ::core::ffi::c_int = 0;
+pub static mut viewwindowx: i32 = 0;
 #[no_mangle]
-pub static mut viewwindowy: ::core::ffi::c_int = 0;
+pub static mut viewwindowy: i32 = 0;
 #[no_mangle]
 pub static mut ylookup: [*mut byte; 832] = [::core::ptr::null::<byte>()
     as *mut byte; 832];
 #[no_mangle]
-pub static mut columnofs: [::core::ffi::c_int; 1120] = [0; 1120];
+pub static mut columnofs: [i32; 1120] = [0; 1120];
 #[no_mangle]
 pub static mut translations: [[byte; 256]; 3] = [[0; 256]; 3];
 static mut background_buffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
@@ -80,11 +80,11 @@ static mut background_buffer: *mut byte = ::core::ptr::null::<byte>() as *mut by
 pub static mut dc_colormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
 #[no_mangle]
-pub static mut dc_x: ::core::ffi::c_int = 0;
+pub static mut dc_x: i32 = 0;
 #[no_mangle]
-pub static mut dc_yl: ::core::ffi::c_int = 0;
+pub static mut dc_yl: i32 = 0;
 #[no_mangle]
-pub static mut dc_yh: ::core::ffi::c_int = 0;
+pub static mut dc_yh: i32 = 0;
 #[no_mangle]
 pub static mut dc_iscale: fixed_t = 0;
 #[no_mangle]
@@ -92,19 +92,19 @@ pub static mut dc_texturemid: fixed_t = 0;
 #[no_mangle]
 pub static mut dc_source: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
-pub static mut dccount: ::core::ffi::c_int = 0;
+pub static mut dccount: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawColumn() {
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
     count = dc_yh - dc_yl;
-    if count < 0 as ::core::ffi::c_int {
+    if count < 0 as i32 {
         return;
     }
-    if dc_x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
-        || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
+    if dc_x as u32 >= SCREENWIDTH as u32
+        || dc_yl < 0 as i32 || dc_yh >= SCREENHEIGHT
     {
         I_Error(&format!("R_DrawColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
@@ -116,8 +116,8 @@ pub unsafe extern "C" fn R_DrawColumn() {
             .offset(
                 *dc_source
                     .offset(
-                        (frac as ::core::ffi::c_int >> FRACBITS
-                            & 127 as ::core::ffi::c_int) as isize,
+                        (frac as i32 >> FRACBITS
+                            & 127 as i32) as isize,
                     ) as isize,
             ) as byte;
         dest = dest.offset(SCREENWIDTH as isize);
@@ -131,25 +131,25 @@ pub unsafe extern "C" fn R_DrawColumn() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawColumnLow() {
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
-    let mut x: ::core::ffi::c_int = 0;
+    let mut x: i32 = 0;
     count = dc_yh - dc_yl;
-    if count < 0 as ::core::ffi::c_int {
+    if count < 0 as i32 {
         return;
     }
-    if dc_x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
-        || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
+    if dc_x as u32 >= SCREENWIDTH as u32
+        || dc_yl < 0 as i32 || dc_yh >= SCREENHEIGHT
     {
         I_Error(&format!("R_DrawColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
-    x = dc_x << 1 as ::core::ffi::c_int;
+    x = dc_x << 1 as i32;
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
     dest2 = ylookup[dc_yl as usize]
-        .offset(columnofs[(x + 1 as ::core::ffi::c_int) as usize] as isize);
+        .offset(columnofs[(x + 1 as i32) as usize] as isize);
     fracstep = dc_iscale;
     frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
     loop {
@@ -157,8 +157,8 @@ pub unsafe extern "C" fn R_DrawColumnLow() {
             .offset(
                 *dc_source
                     .offset(
-                        (frac as ::core::ffi::c_int >> FRACBITS
-                            & 127 as ::core::ffi::c_int) as isize,
+                        (frac as i32 >> FRACBITS
+                            & 127 as i32) as isize,
                     ) as isize,
             ) as byte;
         *dest2 = *dest;
@@ -172,10 +172,10 @@ pub unsafe extern "C" fn R_DrawColumnLow() {
         }
     };
 }
-pub const FUZZTABLE: ::core::ffi::c_int = 50 as ::core::ffi::c_int;
-pub const FUZZOFF: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
+pub const FUZZTABLE: i32 = 50 as i32;
+pub const FUZZOFF: i32 = 320 as i32;
 #[no_mangle]
-pub static mut fuzzoffset: [::core::ffi::c_int; 50] = [
+pub static mut fuzzoffset: [i32; 50] = [
     FUZZOFF,
     -FUZZOFF,
     FUZZOFF,
@@ -228,25 +228,25 @@ pub static mut fuzzoffset: [::core::ffi::c_int; 50] = [
     FUZZOFF,
 ];
 #[no_mangle]
-pub static mut fuzzpos: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub static mut fuzzpos: i32 = 0 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawFuzzColumn() {
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
     if dc_yl == 0 {
-        dc_yl = 1 as ::core::ffi::c_int;
+        dc_yl = 1 as i32;
     }
-    if dc_yh == viewheight - 1 as ::core::ffi::c_int {
-        dc_yh = viewheight - 2 as ::core::ffi::c_int;
+    if dc_yh == viewheight - 1 as i32 {
+        dc_yh = viewheight - 2 as i32;
     }
     count = dc_yh - dc_yl;
-    if count < 0 as ::core::ffi::c_int {
+    if count < 0 as i32 {
         return;
     }
-    if dc_x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
-        || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
+    if dc_x as u32 >= SCREENWIDTH as u32
+        || dc_yl < 0 as i32 || dc_yh >= SCREENHEIGHT
     {
         I_Error(&format!("R_DrawFuzzColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
@@ -256,13 +256,13 @@ pub unsafe extern "C" fn R_DrawFuzzColumn() {
     loop {
         *dest = *colormaps
             .offset(
-                (6 as ::core::ffi::c_int * 256 as ::core::ffi::c_int
+                (6 as i32 * 256 as i32
                     + *dest.offset(fuzzoffset[fuzzpos as usize] as isize)
-                        as ::core::ffi::c_int) as isize,
+                        as i32) as isize,
             ) as byte;
         fuzzpos += 1;
         if fuzzpos == FUZZTABLE {
-            fuzzpos = 0 as ::core::ffi::c_int;
+            fuzzpos = 0 as i32;
         }
         dest = dest.offset(SCREENWIDTH as isize);
         frac += fracstep;
@@ -275,49 +275,49 @@ pub unsafe extern "C" fn R_DrawFuzzColumn() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawFuzzColumnLow() {
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
-    let mut x: ::core::ffi::c_int = 0;
+    let mut x: i32 = 0;
     if dc_yl == 0 {
-        dc_yl = 1 as ::core::ffi::c_int;
+        dc_yl = 1 as i32;
     }
-    if dc_yh == viewheight - 1 as ::core::ffi::c_int {
-        dc_yh = viewheight - 2 as ::core::ffi::c_int;
+    if dc_yh == viewheight - 1 as i32 {
+        dc_yh = viewheight - 2 as i32;
     }
     count = dc_yh - dc_yl;
-    if count < 0 as ::core::ffi::c_int {
+    if count < 0 as i32 {
         return;
     }
-    x = dc_x << 1 as ::core::ffi::c_int;
-    if x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
-        || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
+    x = dc_x << 1 as i32;
+    if x as u32 >= SCREENWIDTH as u32
+        || dc_yl < 0 as i32 || dc_yh >= SCREENHEIGHT
     {
         I_Error(&format!("R_DrawFuzzColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
     dest2 = ylookup[dc_yl as usize]
-        .offset(columnofs[(x + 1 as ::core::ffi::c_int) as usize] as isize);
+        .offset(columnofs[(x + 1 as i32) as usize] as isize);
     fracstep = dc_iscale;
     frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
     loop {
         *dest = *colormaps
             .offset(
-                (6 as ::core::ffi::c_int * 256 as ::core::ffi::c_int
+                (6 as i32 * 256 as i32
                     + *dest.offset(fuzzoffset[fuzzpos as usize] as isize)
-                        as ::core::ffi::c_int) as isize,
+                        as i32) as isize,
             ) as byte;
         *dest2 = *colormaps
             .offset(
-                (6 as ::core::ffi::c_int * 256 as ::core::ffi::c_int
+                (6 as i32 * 256 as i32
                     + *dest2.offset(fuzzoffset[fuzzpos as usize] as isize)
-                        as ::core::ffi::c_int) as isize,
+                        as i32) as isize,
             ) as byte;
         fuzzpos += 1;
         if fuzzpos == FUZZTABLE {
-            fuzzpos = 0 as ::core::ffi::c_int;
+            fuzzpos = 0 as i32;
         }
         dest = dest.offset(SCREENWIDTH as isize);
         dest2 = dest2.offset(SCREENWIDTH as isize);
@@ -335,16 +335,16 @@ pub static mut dc_translation: *mut byte = ::core::ptr::null::<byte>() as *mut b
 pub static mut translationtables: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawTranslatedColumn() {
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
     count = dc_yh - dc_yl;
-    if count < 0 as ::core::ffi::c_int {
+    if count < 0 as i32 {
         return;
     }
-    if dc_x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
-        || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
+    if dc_x as u32 >= SCREENWIDTH as u32
+        || dc_yl < 0 as i32 || dc_yh >= SCREENHEIGHT
     {
         I_Error(&format!("R_DrawColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
@@ -369,25 +369,25 @@ pub unsafe extern "C" fn R_DrawTranslatedColumn() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawTranslatedColumnLow() {
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
-    let mut x: ::core::ffi::c_int = 0;
+    let mut x: i32 = 0;
     count = dc_yh - dc_yl;
-    if count < 0 as ::core::ffi::c_int {
+    if count < 0 as i32 {
         return;
     }
-    x = dc_x << 1 as ::core::ffi::c_int;
-    if x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
-        || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
+    x = dc_x << 1 as i32;
+    if x as u32 >= SCREENWIDTH as u32
+        || dc_yl < 0 as i32 || dc_yh >= SCREENHEIGHT
     {
         I_Error(&format!("R_DrawColumn: {} to {} at {}", dc_yl, dc_yh, x));
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
     dest2 = ylookup[dc_yl as usize]
-        .offset(columnofs[(x + 1 as ::core::ffi::c_int) as usize] as isize);
+        .offset(columnofs[(x + 1 as i32) as usize] as isize);
     fracstep = dc_iscale;
     frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
     loop {
@@ -415,27 +415,27 @@ pub unsafe extern "C" fn R_DrawTranslatedColumnLow() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_InitTranslationTables() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     translationtables = Z_Malloc(
-        256 as ::core::ffi::c_int * 3 as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+        256 as i32 * 3 as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut byte;
-    i = 0 as ::core::ffi::c_int;
-    while i < 256 as ::core::ffi::c_int {
-        if i >= 0x70 as ::core::ffi::c_int && i <= 0x7f as ::core::ffi::c_int {
-            *translationtables.offset(i as isize) = (0x60 as ::core::ffi::c_int
-                + (i & 0xf as ::core::ffi::c_int)) as byte;
-            *translationtables.offset((i + 256 as ::core::ffi::c_int) as isize) = (0x40
-                as ::core::ffi::c_int + (i & 0xf as ::core::ffi::c_int)) as byte;
-            *translationtables.offset((i + 512 as ::core::ffi::c_int) as isize) = (0x20
-                as ::core::ffi::c_int + (i & 0xf as ::core::ffi::c_int)) as byte;
+    i = 0 as i32;
+    while i < 256 as i32 {
+        if i >= 0x70 as i32 && i <= 0x7f as i32 {
+            *translationtables.offset(i as isize) = (0x60 as i32
+                + (i & 0xf as i32)) as byte;
+            *translationtables.offset((i + 256 as i32) as isize) = (0x40
+                as i32 + (i & 0xf as i32)) as byte;
+            *translationtables.offset((i + 512 as i32) as isize) = (0x20
+                as i32 + (i & 0xf as i32)) as byte;
         } else {
             let ref mut fresh11 = *translationtables
-                .offset((i + 512 as ::core::ffi::c_int) as isize);
+                .offset((i + 512 as i32) as isize);
             *fresh11 = i as byte;
             let ref mut fresh12 = *translationtables
-                .offset((i + 256 as ::core::ffi::c_int) as isize);
+                .offset((i + 256 as i32) as isize);
             *fresh12 = *fresh11;
             *translationtables.offset(i as isize) = *fresh12;
         }
@@ -443,11 +443,11 @@ pub unsafe extern "C" fn R_InitTranslationTables() {
     }
 }
 #[no_mangle]
-pub static mut ds_y: ::core::ffi::c_int = 0;
+pub static mut ds_y: i32 = 0;
 #[no_mangle]
-pub static mut ds_x1: ::core::ffi::c_int = 0;
+pub static mut ds_x1: i32 = 0;
 #[no_mangle]
-pub static mut ds_x2: ::core::ffi::c_int = 0;
+pub static mut ds_x2: i32 = 0;
 #[no_mangle]
 pub static mut ds_colormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
@@ -462,35 +462,35 @@ pub static mut ds_ystep: fixed_t = 0;
 #[no_mangle]
 pub static mut ds_source: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
-pub static mut dscount: ::core::ffi::c_int = 0;
+pub static mut dscount: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawSpan() {
-    let mut position: ::core::ffi::c_uint = 0;
-    let mut step: ::core::ffi::c_uint = 0;
+    let mut position: u32 = 0;
+    let mut step: u32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut count: ::core::ffi::c_int = 0;
-    let mut spot: ::core::ffi::c_int = 0;
-    let mut xtemp: ::core::ffi::c_uint = 0;
-    let mut ytemp: ::core::ffi::c_uint = 0;
-    if ds_x2 < ds_x1 || ds_x1 < 0 as ::core::ffi::c_int || ds_x2 >= SCREENWIDTH
-        || ds_y as ::core::ffi::c_uint > SCREENHEIGHT as ::core::ffi::c_uint
+    let mut count: i32 = 0;
+    let mut spot: i32 = 0;
+    let mut xtemp: u32 = 0;
+    let mut ytemp: u32 = 0;
+    if ds_x2 < ds_x1 || ds_x1 < 0 as i32 || ds_x2 >= SCREENWIDTH
+        || ds_y as u32 > SCREENHEIGHT as u32
     {
         I_Error(&format!("R_DrawSpan: {} to {} at {}", ds_x1, ds_x2, ds_y));
     }
-    position = (ds_xfrac << 10 as ::core::ffi::c_int) as ::core::ffi::c_uint
-        & 0xffff0000 as ::core::ffi::c_uint
-        | (ds_yfrac as ::core::ffi::c_int >> 6 as ::core::ffi::c_int
-            & 0xffff as ::core::ffi::c_int) as ::core::ffi::c_uint;
-    step = (ds_xstep << 10 as ::core::ffi::c_int) as ::core::ffi::c_uint
-        & 0xffff0000 as ::core::ffi::c_uint
-        | (ds_ystep as ::core::ffi::c_int >> 6 as ::core::ffi::c_int
-            & 0xffff as ::core::ffi::c_int) as ::core::ffi::c_uint;
+    position = (ds_xfrac << 10 as i32) as u32
+        & 0xffff0000 as u32
+        | (ds_yfrac as i32 >> 6 as i32
+            & 0xffff as i32) as u32;
+    step = (ds_xstep << 10 as i32) as u32
+        & 0xffff0000 as u32
+        | (ds_ystep as i32 >> 6 as i32
+            & 0xffff as i32) as u32;
     dest = ylookup[ds_y as usize].offset(columnofs[ds_x1 as usize] as isize);
     count = ds_x2 - ds_x1;
     loop {
-        ytemp = position >> 4 as ::core::ffi::c_int & 0xfc0 as ::core::ffi::c_uint;
-        xtemp = position >> 26 as ::core::ffi::c_int;
-        spot = (xtemp | ytemp) as ::core::ffi::c_int;
+        ytemp = position >> 4 as i32 & 0xfc0 as u32;
+        xtemp = position >> 26 as i32;
+        spot = (xtemp | ytemp) as i32;
         let fresh6 = dest;
         dest = dest.offset(1);
         *fresh6 = *ds_colormap.offset(*ds_source.offset(spot as isize) as isize) as byte;
@@ -504,34 +504,34 @@ pub unsafe extern "C" fn R_DrawSpan() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawSpanLow() {
-    let mut position: ::core::ffi::c_uint = 0;
-    let mut step: ::core::ffi::c_uint = 0;
-    let mut xtemp: ::core::ffi::c_uint = 0;
-    let mut ytemp: ::core::ffi::c_uint = 0;
+    let mut position: u32 = 0;
+    let mut step: u32 = 0;
+    let mut xtemp: u32 = 0;
+    let mut ytemp: u32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut count: ::core::ffi::c_int = 0;
-    let mut spot: ::core::ffi::c_int = 0;
-    if ds_x2 < ds_x1 || ds_x1 < 0 as ::core::ffi::c_int || ds_x2 >= SCREENWIDTH
-        || ds_y as ::core::ffi::c_uint > SCREENHEIGHT as ::core::ffi::c_uint
+    let mut count: i32 = 0;
+    let mut spot: i32 = 0;
+    if ds_x2 < ds_x1 || ds_x1 < 0 as i32 || ds_x2 >= SCREENWIDTH
+        || ds_y as u32 > SCREENHEIGHT as u32
     {
         I_Error(&format!("R_DrawSpan: {} to {} at {}", ds_x1, ds_x2, ds_y));
     }
-    position = (ds_xfrac << 10 as ::core::ffi::c_int) as ::core::ffi::c_uint
-        & 0xffff0000 as ::core::ffi::c_uint
-        | (ds_yfrac as ::core::ffi::c_int >> 6 as ::core::ffi::c_int
-            & 0xffff as ::core::ffi::c_int) as ::core::ffi::c_uint;
-    step = (ds_xstep << 10 as ::core::ffi::c_int) as ::core::ffi::c_uint
-        & 0xffff0000 as ::core::ffi::c_uint
-        | (ds_ystep as ::core::ffi::c_int >> 6 as ::core::ffi::c_int
-            & 0xffff as ::core::ffi::c_int) as ::core::ffi::c_uint;
+    position = (ds_xfrac << 10 as i32) as u32
+        & 0xffff0000 as u32
+        | (ds_yfrac as i32 >> 6 as i32
+            & 0xffff as i32) as u32;
+    step = (ds_xstep << 10 as i32) as u32
+        & 0xffff0000 as u32
+        | (ds_ystep as i32 >> 6 as i32
+            & 0xffff as i32) as u32;
     count = ds_x2 - ds_x1;
-    ds_x1 <<= 1 as ::core::ffi::c_int;
-    ds_x2 <<= 1 as ::core::ffi::c_int;
+    ds_x1 <<= 1 as i32;
+    ds_x2 <<= 1 as i32;
     dest = ylookup[ds_y as usize].offset(columnofs[ds_x1 as usize] as isize);
     loop {
-        ytemp = position >> 4 as ::core::ffi::c_int & 0xfc0 as ::core::ffi::c_uint;
-        xtemp = position >> 26 as ::core::ffi::c_int;
-        spot = (xtemp | ytemp) as ::core::ffi::c_int;
+        ytemp = position >> 4 as i32 & 0xfc0 as u32;
+        xtemp = position >> 26 as i32;
+        spot = (xtemp | ytemp) as i32;
         let fresh8 = dest;
         dest = dest.offset(1);
         *fresh8 = *ds_colormap.offset(*ds_source.offset(spot as isize) as isize) as byte;
@@ -548,22 +548,22 @@ pub unsafe extern "C" fn R_DrawSpanLow() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_InitBuffer(
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
+    mut width: i32,
+    mut height: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
-    viewwindowx = SCREENWIDTH - width >> 1 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    viewwindowx = SCREENWIDTH - width >> 1 as i32;
+    i = 0 as i32;
     while i < width {
         columnofs[i as usize] = viewwindowx + i;
         i += 1;
     }
     if width == SCREENWIDTH {
-        viewwindowy = 0 as ::core::ffi::c_int;
+        viewwindowy = 0 as i32;
     } else {
-        viewwindowy = SCREENHEIGHT - SBARHEIGHT - height >> 1 as ::core::ffi::c_int;
+        viewwindowy = SCREENHEIGHT - SBARHEIGHT - height >> 1 as i32;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < height {
         ylookup[i as usize] = I_VideoBuffer
             .offset(((i + viewwindowy) * SCREENWIDTH) as isize);
@@ -574,8 +574,8 @@ pub unsafe extern "C" fn R_InitBuffer(
 pub unsafe extern "C" fn R_FillBackScreen() {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     let mut name1: *mut ::core::ffi::c_char = b"FLOOR7_2\0" as *const u8
         as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -594,12 +594,12 @@ pub unsafe extern "C" fn R_FillBackScreen() {
     if background_buffer.is_null() {
         background_buffer = Z_Malloc(
             SCREENWIDTH * (SCREENHEIGHT - SBARHEIGHT),
-            PU_STATIC as ::core::ffi::c_int,
+            PU_STATIC as i32,
             NULL,
         ) as *mut byte;
     }
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         name = name2;
     } else {
@@ -607,106 +607,106 @@ pub unsafe extern "C" fn R_FillBackScreen() {
     }
     src = W_CacheLumpName(
         &wad_name8_to_string(name),
-        PU_CACHE as ::core::ffi::c_int,
+        PU_CACHE as i32,
     ) as *mut byte;
     dest = background_buffer;
-    y = 0 as ::core::ffi::c_int;
+    y = 0 as i32;
     while y < SCREENHEIGHT - SBARHEIGHT {
-        x = 0 as ::core::ffi::c_int;
-        while x < SCREENWIDTH / 64 as ::core::ffi::c_int {
+        x = 0 as i32;
+        while x < SCREENWIDTH / 64 as i32 {
             memcpy(
                 dest as *mut ::core::ffi::c_void,
                 src
                     .offset(
-                        ((y & 63 as ::core::ffi::c_int) << 6 as ::core::ffi::c_int)
+                        ((y & 63 as i32) << 6 as i32)
                             as isize,
                     ) as *const ::core::ffi::c_void,
                 64 as size_t,
             );
-            dest = dest.offset(64 as ::core::ffi::c_int as isize);
+            dest = dest.offset(64 as i32 as isize);
             x += 1;
         }
-        if SCREENWIDTH & 63 as ::core::ffi::c_int != 0 {
+        if SCREENWIDTH & 63 as i32 != 0 {
             memcpy(
                 dest as *mut ::core::ffi::c_void,
                 src
                     .offset(
-                        ((y & 63 as ::core::ffi::c_int) << 6 as ::core::ffi::c_int)
+                        ((y & 63 as i32) << 6 as i32)
                             as isize,
                     ) as *const ::core::ffi::c_void,
-                (SCREENWIDTH & 63 as ::core::ffi::c_int) as size_t,
+                (SCREENWIDTH & 63 as i32) as size_t,
             );
-            dest = dest.offset((SCREENWIDTH & 63 as ::core::ffi::c_int) as isize);
+            dest = dest.offset((SCREENWIDTH & 63 as i32) as isize);
         }
         y += 1;
     }
     V_UseBuffer(background_buffer);
     patch = W_CacheLumpName("brdr_t",
-        PU_CACHE as ::core::ffi::c_int,
+        PU_CACHE as i32,
     ) as *mut patch_t;
-    x = 0 as ::core::ffi::c_int;
+    x = 0 as i32;
     while x < scaledviewwidth {
-        V_DrawPatch(viewwindowx + x, viewwindowy - 8 as ::core::ffi::c_int, patch);
-        x += 8 as ::core::ffi::c_int;
+        V_DrawPatch(viewwindowx + x, viewwindowy - 8 as i32, patch);
+        x += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_b",
-        PU_CACHE as ::core::ffi::c_int,
+        PU_CACHE as i32,
     ) as *mut patch_t;
-    x = 0 as ::core::ffi::c_int;
+    x = 0 as i32;
     while x < scaledviewwidth {
         V_DrawPatch(viewwindowx + x, viewwindowy + viewheight, patch);
-        x += 8 as ::core::ffi::c_int;
+        x += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_l",
-        PU_CACHE as ::core::ffi::c_int,
+        PU_CACHE as i32,
     ) as *mut patch_t;
-    y = 0 as ::core::ffi::c_int;
+    y = 0 as i32;
     while y < viewheight {
-        V_DrawPatch(viewwindowx - 8 as ::core::ffi::c_int, viewwindowy + y, patch);
-        y += 8 as ::core::ffi::c_int;
+        V_DrawPatch(viewwindowx - 8 as i32, viewwindowy + y, patch);
+        y += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_r",
-        PU_CACHE as ::core::ffi::c_int,
+        PU_CACHE as i32,
     ) as *mut patch_t;
-    y = 0 as ::core::ffi::c_int;
+    y = 0 as i32;
     while y < viewheight {
         V_DrawPatch(viewwindowx + scaledviewwidth, viewwindowy + y, patch);
-        y += 8 as ::core::ffi::c_int;
+        y += 8 as i32;
     }
     V_DrawPatch(
-        viewwindowx - 8 as ::core::ffi::c_int,
-        viewwindowy - 8 as ::core::ffi::c_int,
+        viewwindowx - 8 as i32,
+        viewwindowy - 8 as i32,
         W_CacheLumpName("brdr_tl",
-            PU_CACHE as ::core::ffi::c_int,
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     V_DrawPatch(
         viewwindowx + scaledviewwidth,
-        viewwindowy - 8 as ::core::ffi::c_int,
+        viewwindowy - 8 as i32,
         W_CacheLumpName("brdr_tr",
-            PU_CACHE as ::core::ffi::c_int,
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     V_DrawPatch(
-        viewwindowx - 8 as ::core::ffi::c_int,
+        viewwindowx - 8 as i32,
         viewwindowy + viewheight,
         W_CacheLumpName("brdr_bl",
-            PU_CACHE as ::core::ffi::c_int,
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     V_DrawPatch(
         viewwindowx + scaledviewwidth,
         viewwindowy + viewheight,
         W_CacheLumpName("brdr_br",
-            PU_CACHE as ::core::ffi::c_int,
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     V_RestoreBuffer();
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_VideoErase(
-    mut ofs: ::core::ffi::c_uint,
-    mut count: ::core::ffi::c_int,
+    mut ofs: u32,
+    mut count: i32,
 ) {
     if !background_buffer.is_null() {
         memcpy(
@@ -718,29 +718,29 @@ pub unsafe extern "C" fn R_VideoErase(
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawViewBorder() {
-    let mut top: ::core::ffi::c_int = 0;
-    let mut side: ::core::ffi::c_int = 0;
-    let mut ofs: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+    let mut top: i32 = 0;
+    let mut side: i32 = 0;
+    let mut ofs: i32 = 0;
+    let mut i: i32 = 0;
     if scaledviewwidth == SCREENWIDTH {
         return;
     }
-    top = (SCREENHEIGHT - SBARHEIGHT - viewheight) / 2 as ::core::ffi::c_int;
-    side = (SCREENWIDTH - scaledviewwidth) / 2 as ::core::ffi::c_int;
-    R_VideoErase(0 as ::core::ffi::c_uint, top * SCREENWIDTH + side);
+    top = (SCREENHEIGHT - SBARHEIGHT - viewheight) / 2 as i32;
+    side = (SCREENWIDTH - scaledviewwidth) / 2 as i32;
+    R_VideoErase(0 as u32, top * SCREENWIDTH + side);
     ofs = (viewheight + top) * SCREENWIDTH - side;
-    R_VideoErase(ofs as ::core::ffi::c_uint, top * SCREENWIDTH + side);
+    R_VideoErase(ofs as u32, top * SCREENWIDTH + side);
     ofs = top * SCREENWIDTH + SCREENWIDTH - side;
-    side <<= 1 as ::core::ffi::c_int;
-    i = 1 as ::core::ffi::c_int;
+    side <<= 1 as i32;
+    i = 1 as i32;
     while i < viewheight {
-        R_VideoErase(ofs as ::core::ffi::c_uint, side);
+        R_VideoErase(ofs as u32, side);
         ofs += SCREENWIDTH;
         i += 1;
     }
     V_MarkRect(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
         SCREENWIDTH,
         SCREENHEIGHT - SBARHEIGHT,
     );

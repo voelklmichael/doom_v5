@@ -1,7 +1,7 @@
 use crate::src::i_system::FILE;
 use crate::src::w_file::{wad_file_class_t, wad_file_t};
 extern "C" {
-    fn fclose(__stream: *mut FILE) -> ::core::ffi::c_int;
+    fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
         __filename: *const ::core::ffi::c_char,
         __modes: *const ::core::ffi::c_char,
@@ -15,12 +15,12 @@ extern "C" {
     fn fseek(
         __stream: *mut FILE,
         __off: ::core::ffi::c_long,
-        __whence: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        __whence: i32,
+    ) -> i32;
     fn M_FileLength(handle: *mut FILE) -> ::core::ffi::c_long;
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
@@ -29,7 +29,7 @@ pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type byte = uint8_t;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -48,7 +48,7 @@ pub struct stdc_wad_file_t {
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const SEEK_SET: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const SEEK_SET: i32 = 0 as i32;
 unsafe extern "C" fn W_StdC_OpenFile(
     mut path: *mut ::core::ffi::c_char,
 ) -> *mut wad_file_t {
@@ -60,13 +60,13 @@ unsafe extern "C" fn W_StdC_OpenFile(
         return ::core::ptr::null_mut::<wad_file_t>();
     }
     result = Z_Malloc(
-        ::core::mem::size_of::<stdc_wad_file_t>() as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+        ::core::mem::size_of::<stdc_wad_file_t>() as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut stdc_wad_file_t;
     (*result).wad.file_class = &raw mut stdc_wad_file;
     (*result).wad.mapped = ::core::ptr::null_mut::<byte>();
-    (*result).wad.length = M_FileLength(fstream) as ::core::ffi::c_uint;
+    (*result).wad.length = M_FileLength(fstream) as u32;
     (*result).fstream = fstream;
     return &raw mut (*result).wad;
 }
@@ -79,7 +79,7 @@ unsafe extern "C" fn W_StdC_CloseFile(mut wad: *mut wad_file_t) {
 #[no_mangle]
 pub unsafe extern "C" fn W_StdC_Read(
     mut wad: *mut wad_file_t,
-    mut offset: ::core::ffi::c_uint,
+    mut offset: u32,
     mut buffer: *mut ::core::ffi::c_void,
     mut buffer_len: size_t,
 ) -> size_t {
@@ -102,7 +102,7 @@ pub static mut stdc_wad_file: wad_file_class_t = unsafe {
             W_StdC_Read
                 as unsafe extern "C" fn(
                     *mut wad_file_t,
-                    ::core::ffi::c_uint,
+                    u32,
                     *mut ::core::ffi::c_void,
                     size_t,
                 ) -> size_t,

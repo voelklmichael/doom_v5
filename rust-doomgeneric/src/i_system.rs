@@ -1,61 +1,61 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
 extern "C" {
     pub type FILE;
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
+    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn free(__ptr: *mut ::core::ffi::c_void);
-    fn exit(__status: ::core::ffi::c_int) -> !;
-    fn system(__command: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
+    fn exit(__status: i32) -> !;
+    fn system(__command: *const ::core::ffi::c_char) -> i32;
     static mut stderr: *mut FILE;
-    fn fflush(__stream: *mut FILE) -> ::core::ffi::c_int;
+    fn fflush(__stream: *mut FILE) -> i32;
     fn fprintf(
         __stream: *mut FILE,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    ) -> i32;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn vfprintf(
         __s: *mut FILE,
         __format: *const ::core::ffi::c_char,
         __arg: ::core::ffi::VaList,
-    ) -> ::core::ffi::c_int;
-    fn putchar(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn puts(__s: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
+    ) -> i32;
+    fn putchar(__c: i32) -> i32;
+    fn puts(__s: *const ::core::ffi::c_char) -> i32;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strchr(
         __s: *const ::core::ffi::c_char,
-        __c: ::core::ffi::c_int,
+        __c: i32,
     ) -> *mut ::core::ffi::c_char;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn strcasecmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn M_StrToInt(
         str: *const ::core::ffi::c_char,
-        result: *mut ::core::ffi::c_int,
+        result: *mut i32,
     ) -> boolean;
     fn M_vsnprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
         s: *const ::core::ffi::c_char,
         args: ::core::ffi::VaList,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
         s: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
 pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
 pub type atexit_listentry_t = atexit_listentry_s;
@@ -69,10 +69,10 @@ pub struct atexit_listentry_s {
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const DEFAULT_RAM: ::core::ffi::c_int = 6 as ::core::ffi::c_int;
-pub const MIN_RAM: ::core::ffi::c_int = 6 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const DEFAULT_RAM: i32 = 6 as i32;
+pub const MIN_RAM: i32 = 6 as i32;
 static mut exit_funcs: *mut atexit_listentry_t = ::core::ptr::null::<
     atexit_listentry_t,
 >() as *mut atexit_listentry_t;
@@ -90,14 +90,14 @@ pub unsafe extern "C" fn I_AtExit(mut func: atexit_func_t, mut run_on_error: boo
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_Tactile(
-    mut on: ::core::ffi::c_int,
-    mut off: ::core::ffi::c_int,
-    mut total: ::core::ffi::c_int,
+    mut on: i32,
+    mut off: i32,
+    mut total: i32,
 ) {}
 unsafe extern "C" fn AutoAllocMemory(
-    mut size: *mut ::core::ffi::c_int,
-    mut default_ram: ::core::ffi::c_int,
-    mut min_ram: ::core::ffi::c_int,
+    mut size: *mut i32,
+    mut default_ram: i32,
+    mut min_ram: i32,
 ) -> *mut byte {
     let mut zonemem: *mut byte = ::core::ptr::null_mut::<byte>();
     zonemem = ::core::ptr::null_mut::<byte>();
@@ -105,24 +105,24 @@ unsafe extern "C" fn AutoAllocMemory(
         if default_ram < min_ram {
             I_Error(&format!("Unable to allocate {} MiB of RAM for zone", default_ram));
         }
-        *size = default_ram * 1024 as ::core::ffi::c_int * 1024 as ::core::ffi::c_int;
+        *size = default_ram * 1024 as i32 * 1024 as i32;
         zonemem = malloc(*size as size_t) as *mut byte;
         if zonemem.is_null() {
-            default_ram -= 1 as ::core::ffi::c_int;
+            default_ram -= 1 as i32;
         }
     }
     return zonemem;
 }
 #[no_mangle]
-pub unsafe extern "C" fn I_ZoneBase(mut size: *mut ::core::ffi::c_int) -> *mut byte {
+pub unsafe extern "C" fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
     let mut zonemem: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut min_ram: ::core::ffi::c_int = 0;
-    let mut default_ram: ::core::ffi::c_int = 0;
-    let mut p: ::core::ffi::c_int = 0;
-    p = M_CheckParmWithArgs("-mb", 1 as ::core::ffi::c_int);
-    if p > 0 as ::core::ffi::c_int {
+    let mut min_ram: i32 = 0;
+    let mut default_ram: i32 = 0;
+    let mut p: i32 = 0;
+    p = M_CheckParmWithArgs("-mb", 1 as i32);
+    if p > 0 as i32 {
         default_ram = atoi(
-            myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
+            myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
         min_ram = default_ram;
@@ -141,10 +141,10 @@ pub unsafe extern "C" fn I_ZoneBase(mut size: *mut ::core::ffi::c_int) -> *mut b
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut spaces: ::core::ffi::c_int = (35 as size_t)
-        .wrapping_sub(strlen(msg).wrapping_div(2 as size_t)) as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    let mut spaces: i32 = (35 as size_t)
+        .wrapping_sub(strlen(msg).wrapping_div(2 as size_t)) as i32;
+    i = 0 as i32;
     while i < spaces {
         putchar(' ' as i32);
         i += 1;
@@ -153,9 +153,9 @@ pub unsafe extern "C" fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_PrintDivider() {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
-    while i < 75 as ::core::ffi::c_int {
+    let mut i: i32 = 0;
+    i = 0 as i32;
+    while i < 75 as i32 {
         putchar('=' as i32);
         i += 1;
     }
@@ -192,11 +192,11 @@ pub unsafe extern "C" fn I_Quit() {
 pub const ZENITY_BINARY: [::core::ffi::c_char; 16] = unsafe {
     ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"/usr/bin/zenity\0")
 };
-unsafe extern "C" fn ZenityAvailable() -> ::core::ffi::c_int {
+unsafe extern "C" fn ZenityAvailable() -> i32 {
     return (system(
         b"/usr/bin/zenity --help >/dev/null 2>&1\0" as *const u8
             as *const ::core::ffi::c_char,
-    ) == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    ) == 0 as i32) as i32;
 }
 unsafe extern "C" fn EscapeShellString(
     mut string: *mut ::core::ffi::c_char,
@@ -212,10 +212,10 @@ unsafe extern "C" fn EscapeShellString(
     *r = '"' as i32 as ::core::ffi::c_char;
     r = r.offset(1);
     s = string;
-    while *s as ::core::ffi::c_int != '\0' as i32 {
+    while *s as i32 != '\0' as i32 {
         if !strchr(
                 b"$`\\!\0" as *const u8 as *const ::core::ffi::c_char,
-                *s as ::core::ffi::c_int,
+                *s as i32,
             )
             .is_null()
         {
@@ -233,8 +233,8 @@ unsafe extern "C" fn EscapeShellString(
 }
 unsafe extern "C" fn ZenityErrorBox(
     mut message: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    let mut result: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut result: i32 = 0;
     let mut escaped_message: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
@@ -243,7 +243,7 @@ unsafe extern "C" fn ZenityErrorBox(
     >();
     static mut errorboxpath_size: size_t = 0;
     if ZenityAvailable() == 0 {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
     escaped_message = EscapeShellString(message);
     errorboxpath_size = strlen(ZENITY_BINARY.as_ptr())
@@ -293,48 +293,48 @@ pub unsafe fn I_Error(message: &str) {
         }
         entry = (*entry).next;
     }
-    exit_gui_popup = (!M_ParmExists("-nogui")) as ::core::ffi::c_int as boolean;
+    exit_gui_popup = (!M_ParmExists("-nogui")) as i32 as boolean;
     if exit_gui_popup != 0 && I_ConsoleStdout() == 0 {
         ZenityErrorBox(message_cstring.as_ptr() as *mut ::core::ffi::c_char);
     }
-    exit(-(1 as ::core::ffi::c_int));
+    exit(-(1 as i32));
 }
-pub const DOS_MEM_DUMP_SIZE: ::core::ffi::c_int = 10 as ::core::ffi::c_int;
+pub const DOS_MEM_DUMP_SIZE: i32 = 10 as i32;
 static mut mem_dump_dos622: [::core::ffi::c_uchar; 10] = [
-    0x57 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x92 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x19 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0xf4 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x6 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x70 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x16 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
+    0x57 as i32 as ::core::ffi::c_uchar,
+    0x92 as i32 as ::core::ffi::c_uchar,
+    0x19 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0xf4 as i32 as ::core::ffi::c_uchar,
+    0x6 as i32 as ::core::ffi::c_uchar,
+    0x70 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0x16 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
 ];
 static mut mem_dump_win98: [::core::ffi::c_uchar; 10] = [
-    0x9e as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0xf as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0xc9 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x65 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x4 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x70 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x16 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
+    0x9e as i32 as ::core::ffi::c_uchar,
+    0xf as i32 as ::core::ffi::c_uchar,
+    0xc9 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0x65 as i32 as ::core::ffi::c_uchar,
+    0x4 as i32 as ::core::ffi::c_uchar,
+    0x70 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0x16 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
 ];
 static mut mem_dump_dosbox: [::core::ffi::c_uchar; 10] = [
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0xf1 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0x7 as ::core::ffi::c_int as ::core::ffi::c_uchar,
-    0 as ::core::ffi::c_int as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0xf1 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
+    0x7 as i32 as ::core::ffi::c_uchar,
+    0 as i32 as ::core::ffi::c_uchar,
 ];
 static mut mem_dump_custom: [::core::ffi::c_uchar; 10] = [0; 10];
 static mut dos_mem_dump: *const ::core::ffi::c_uchar = unsafe {
@@ -342,43 +342,43 @@ static mut dos_mem_dump: *const ::core::ffi::c_uchar = unsafe {
 };
 #[no_mangle]
 pub unsafe extern "C" fn I_GetMemoryValue(
-    mut offset: ::core::ffi::c_uint,
+    mut offset: u32,
     mut value: *mut ::core::ffi::c_void,
-    mut size: ::core::ffi::c_int,
+    mut size: i32,
 ) -> boolean {
     static mut firsttime: bool = true;
     if firsttime {
-        let mut p: ::core::ffi::c_int = 0;
-        let mut i: ::core::ffi::c_int = 0;
-        let mut val: ::core::ffi::c_int = 0;
+        let mut p: i32 = 0;
+        let mut i: i32 = 0;
+        let mut val: i32 = 0;
         firsttime = false;
-        i = 0 as ::core::ffi::c_int;
-        p = M_CheckParmWithArgs("-setmem", 1 as ::core::ffi::c_int);
-        if p > 0 as ::core::ffi::c_int {
+        i = 0 as i32;
+        p = M_CheckParmWithArgs("-setmem", 1 as i32);
+        if p > 0 as i32 {
             if strcasecmp(
-                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr(),
+                myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos622\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
                 dos_mem_dump = &raw const mem_dump_dos622 as *const ::core::ffi::c_uchar;
             }
             if strcasecmp(
-                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr(),
+                myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos71\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
                 dos_mem_dump = &raw const mem_dump_win98 as *const ::core::ffi::c_uchar;
             } else if strcasecmp(
-                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr(),
+                myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dosbox\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
                 dos_mem_dump = &raw const mem_dump_dosbox as *const ::core::ffi::c_uchar;
             } else {
-                i = 0 as ::core::ffi::c_int;
+                i = 0 as i32;
                 while i < DOS_MEM_DUMP_SIZE {
                     p += 1;
-                    if p >= myargv.len() as ::core::ffi::c_int
+                    if p >= myargv.len() as i32
                         || myargv[p as usize].as_bytes().first() == Some(&b'-')
                     {
                         break;
@@ -404,26 +404,26 @@ pub unsafe extern "C" fn I_GetMemoryValue(
         }
         2 => {
             *(value as *mut ::core::ffi::c_ushort) = (*dos_mem_dump
-                .offset(offset as isize) as ::core::ffi::c_int
+                .offset(offset as isize) as i32
                 | (*dos_mem_dump
-                    .offset(offset.wrapping_add(1 as ::core::ffi::c_uint) as isize)
-                    as ::core::ffi::c_int) << 8 as ::core::ffi::c_int)
+                    .offset(offset.wrapping_add(1 as u32) as isize)
+                    as i32) << 8 as i32)
                 as ::core::ffi::c_ushort;
             return true_0 as boolean;
         }
         4 => {
-            *(value as *mut ::core::ffi::c_uint) = (*dos_mem_dump.offset(offset as isize)
-                as ::core::ffi::c_int
+            *(value as *mut u32) = (*dos_mem_dump.offset(offset as isize)
+                as i32
                 | (*dos_mem_dump
-                    .offset(offset.wrapping_add(1 as ::core::ffi::c_uint) as isize)
-                    as ::core::ffi::c_int) << 8 as ::core::ffi::c_int
+                    .offset(offset.wrapping_add(1 as u32) as isize)
+                    as i32) << 8 as i32
                 | (*dos_mem_dump
-                    .offset(offset.wrapping_add(2 as ::core::ffi::c_uint) as isize)
-                    as ::core::ffi::c_int) << 16 as ::core::ffi::c_int
+                    .offset(offset.wrapping_add(2 as u32) as isize)
+                    as i32) << 16 as i32
                 | (*dos_mem_dump
-                    .offset(offset.wrapping_add(3 as ::core::ffi::c_uint) as isize)
-                    as ::core::ffi::c_int) << 24 as ::core::ffi::c_int)
-                as ::core::ffi::c_uint;
+                    .offset(offset.wrapping_add(3 as u32) as isize)
+                    as i32) << 24 as i32)
+                as u32;
             return true_0 as boolean;
         }
         _ => {}

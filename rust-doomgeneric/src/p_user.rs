@@ -13,19 +13,19 @@ extern "C" {
     fn P_UseLines(player: *mut player_t);
     fn P_PlayerInSpecialSector(player: *mut player_t);
     static mut gamemode: GameMode_t;
-    static mut leveltime: ::core::ffi::c_int;
+    static mut leveltime: i32;
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -37,7 +37,7 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const NUMPOWERS: C2RustUnnamed = 6;
 pub const pw_infrared: C2RustUnnamed = 5;
 pub const pw_allmap: C2RustUnnamed = 4;
@@ -45,7 +45,7 @@ pub const pw_ironfeet: C2RustUnnamed = 3;
 pub const pw_invisibility: C2RustUnnamed = 2;
 pub const pw_strength: C2RustUnnamed = 1;
 pub const pw_invulnerability: C2RustUnnamed = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const BTS_SAVESHIFT: C2RustUnnamed_0 = 2;
 pub const BTS_SAVEMASK: C2RustUnnamed_0 = 28;
 pub const BTS_SAVEGAME: C2RustUnnamed_0 = 2;
@@ -57,15 +57,15 @@ pub const BT_SPECIALMASK: C2RustUnnamed_0 = 3;
 pub const BT_SPECIAL: C2RustUnnamed_0 = 128;
 pub const BT_USE: C2RustUnnamed_0 = 2;
 pub const BT_ATTACK: C2RustUnnamed_0 = 1;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -205,7 +205,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1174,7 +1174,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1313,7 +1313,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const MF_TRANSSHIFT: C2RustUnnamed_1 = 26;
 pub const MF_TRANSLATION: C2RustUnnamed_1 = 201326592;
 pub const MF_NOTDMATCH: C2RustUnnamed_1 = 33554432;
@@ -1342,22 +1342,22 @@ pub const MF_NOSECTOR: C2RustUnnamed_1 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_1 = 4;
 pub const MF_SOLID: C2RustUnnamed_1 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_1 = 1;
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const CF_NOMOMENTUM: C2RustUnnamed_2 = 4;
 pub const CF_GODMODE: C2RustUnnamed_2 = 2;
 pub const CF_NOCLIP: C2RustUnnamed_2 = 1;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const FINEANGLES: ::core::ffi::c_int = 8192 as ::core::ffi::c_int;
-pub const FINEMASK: ::core::ffi::c_int = FINEANGLES - 1 as ::core::ffi::c_int;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const ANG180: ::core::ffi::c_uint = 0x80000000 as ::core::ffi::c_uint;
-pub const VIEWHEIGHT: ::core::ffi::c_int = 41 as ::core::ffi::c_int * FRACUNIT;
-pub const INVERSECOLORMAP: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
-pub const MAXBOB: ::core::ffi::c_int = 0x100000 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const FINEANGLES: i32 = 8192 as i32;
+pub const FINEMASK: i32 = FINEANGLES - 1 as i32;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const ANG180: u32 = 0x80000000 as u32;
+pub const VIEWHEIGHT: i32 = 41 as i32 * FRACUNIT;
+pub const INVERSECOLORMAP: i32 = 32 as i32;
+pub const MAXBOB: i32 = 0x100000 as i32;
 #[no_mangle]
 pub static mut onground: bool = false;
 #[no_mangle]
@@ -1372,57 +1372,57 @@ pub unsafe extern "C" fn P_Thrust(
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_CalcHeight(mut player: *mut player_t) {
-    let mut angle: ::core::ffi::c_int = 0;
+    let mut angle: i32 = 0;
     let mut bob: fixed_t = 0;
     (*player).bob = FixedMul((*(*player).mo).momx, (*(*player).mo).momx)
         + FixedMul((*(*player).mo).momy, (*(*player).mo).momy);
-    (*player).bob >>= 2 as ::core::ffi::c_int;
+    (*player).bob >>= 2 as i32;
     if (*player).bob > MAXBOB {
         (*player).bob = MAXBOB as fixed_t;
     }
-    if (*player).cheats & CF_NOMOMENTUM as ::core::ffi::c_int != 0 || !onground {
-        (*player).viewz = ((*(*player).mo).z as ::core::ffi::c_int + VIEWHEIGHT)
+    if (*player).cheats & CF_NOMOMENTUM as i32 != 0 || !onground {
+        (*player).viewz = ((*(*player).mo).z as i32 + VIEWHEIGHT)
             as fixed_t;
         if (*player).viewz
-            > (*(*player).mo).ceilingz as ::core::ffi::c_int
-                - 4 as ::core::ffi::c_int * FRACUNIT
+            > (*(*player).mo).ceilingz as i32
+                - 4 as i32 * FRACUNIT
         {
-            (*player).viewz = ((*(*player).mo).ceilingz as ::core::ffi::c_int
-                - 4 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+            (*player).viewz = ((*(*player).mo).ceilingz as i32
+                - 4 as i32 * FRACUNIT) as fixed_t;
         }
         (*player).viewz = (*(*player).mo).z + (*player).viewheight;
         return;
     }
-    angle = FINEANGLES / 20 as ::core::ffi::c_int * leveltime & FINEMASK;
+    angle = FINEANGLES / 20 as i32 * leveltime & FINEMASK;
     bob = FixedMul((*player).bob / 2 as fixed_t, finesine[angle as usize]);
-    if (*player).playerstate as ::core::ffi::c_uint
-        == PST_LIVE as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).playerstate as u32
+        == PST_LIVE as i32 as u32
     {
         (*player).viewheight += (*player).deltaviewheight;
         if (*player).viewheight > VIEWHEIGHT {
             (*player).viewheight = VIEWHEIGHT as fixed_t;
-            (*player).deltaviewheight = 0 as ::core::ffi::c_int as fixed_t;
+            (*player).deltaviewheight = 0 as i32 as fixed_t;
         }
-        if (*player).viewheight < VIEWHEIGHT / 2 as ::core::ffi::c_int {
-            (*player).viewheight = (VIEWHEIGHT / 2 as ::core::ffi::c_int) as fixed_t;
-            if (*player).deltaviewheight <= 0 as ::core::ffi::c_int {
-                (*player).deltaviewheight = 1 as ::core::ffi::c_int as fixed_t;
+        if (*player).viewheight < VIEWHEIGHT / 2 as i32 {
+            (*player).viewheight = (VIEWHEIGHT / 2 as i32) as fixed_t;
+            if (*player).deltaviewheight <= 0 as i32 {
+                (*player).deltaviewheight = 1 as i32 as fixed_t;
             }
         }
         if (*player).deltaviewheight != 0 {
-            (*player).deltaviewheight += FRACUNIT / 4 as ::core::ffi::c_int;
+            (*player).deltaviewheight += FRACUNIT / 4 as i32;
             if (*player).deltaviewheight == 0 {
-                (*player).deltaviewheight = 1 as ::core::ffi::c_int as fixed_t;
+                (*player).deltaviewheight = 1 as i32 as fixed_t;
             }
         }
     }
     (*player).viewz = (*(*player).mo).z + (*player).viewheight + bob;
     if (*player).viewz
-        > (*(*player).mo).ceilingz as ::core::ffi::c_int
-            - 4 as ::core::ffi::c_int * FRACUNIT
+        > (*(*player).mo).ceilingz as i32
+            - 4 as i32 * FRACUNIT
     {
-        (*player).viewz = ((*(*player).mo).ceilingz as ::core::ffi::c_int
-            - 4 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+        (*player).viewz = ((*(*player).mo).ceilingz as i32
+            - 4 as i32 * FRACUNIT) as fixed_t;
     }
 }
 #[no_mangle]
@@ -1432,46 +1432,46 @@ pub unsafe extern "C" fn P_MovePlayer(mut player: *mut player_t) {
     (*(*player).mo).angle = (*(*player).mo)
         .angle
         .wrapping_add(
-            (((*cmd).angleturn as ::core::ffi::c_int) << 16 as ::core::ffi::c_int)
+            (((*cmd).angleturn as i32) << 16 as i32)
                 as angle_t,
         );
     onground = (*(*player).mo).z <= (*(*player).mo).floorz;
-    if (*cmd).forwardmove as ::core::ffi::c_int != 0 && onground {
+    if (*cmd).forwardmove as i32 != 0 && onground {
         P_Thrust(
             player,
             (*(*player).mo).angle,
             (*cmd).forwardmove as fixed_t * 2048 as fixed_t,
         );
     }
-    if (*cmd).sidemove as ::core::ffi::c_int != 0 && onground {
+    if (*cmd).sidemove as i32 != 0 && onground {
         P_Thrust(
             player,
             (*(*player).mo).angle.wrapping_sub(ANG90 as angle_t),
             (*cmd).sidemove as fixed_t * 2048 as fixed_t,
         );
     }
-    if ((*cmd).forwardmove as ::core::ffi::c_int != 0
-        || (*cmd).sidemove as ::core::ffi::c_int != 0)
+    if ((*cmd).forwardmove as i32 != 0
+        || (*cmd).sidemove as i32 != 0)
         && (*(*player).mo).state
             == (&raw mut states as *mut state_t)
-                .offset(S_PLAY as ::core::ffi::c_int as isize) as *mut state_t
+                .offset(S_PLAY as i32 as isize) as *mut state_t
     {
         P_SetMobjState((*player).mo, S_PLAY_RUN1);
     }
 }
-pub const ANG5: ::core::ffi::c_int = ANG90 / 18 as ::core::ffi::c_int;
+pub const ANG5: i32 = ANG90 / 18 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn P_DeathThink(mut player: *mut player_t) {
     let mut angle: angle_t = 0;
     let mut delta: angle_t = 0;
     P_MovePsprites(player);
-    if (*player).viewheight > 6 as ::core::ffi::c_int * FRACUNIT {
+    if (*player).viewheight > 6 as i32 * FRACUNIT {
         (*player).viewheight -= FRACUNIT;
     }
-    if (*player).viewheight < 6 as ::core::ffi::c_int * FRACUNIT {
-        (*player).viewheight = (6 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+    if (*player).viewheight < 6 as i32 * FRACUNIT {
+        (*player).viewheight = (6 as i32 * FRACUNIT) as fixed_t;
     }
-    (*player).deltaviewheight = 0 as ::core::ffi::c_int as fixed_t;
+    (*player).deltaviewheight = 0 as i32 as fixed_t;
     onground = (*(*player).mo).z <= (*(*player).mo).floorz;
     P_CalcHeight(player);
     if !(*player).attacker.is_null() && (*player).attacker != (*player).mo {
@@ -1482,7 +1482,7 @@ pub unsafe extern "C" fn P_DeathThink(mut player: *mut player_t) {
             (*(*player).attacker).y,
         );
         delta = angle.wrapping_sub((*(*player).mo).angle);
-        if delta < ANG5 as angle_t || delta > -ANG5 as ::core::ffi::c_uint {
+        if delta < ANG5 as angle_t || delta > -ANG5 as u32 {
             (*(*player).mo).angle = angle;
             if (*player).damagecount != 0 {
                 (*player).damagecount -= 1;
@@ -1495,7 +1495,7 @@ pub unsafe extern "C" fn P_DeathThink(mut player: *mut player_t) {
     } else if (*player).damagecount != 0 {
         (*player).damagecount -= 1;
     }
-    if (*player).cmd.buttons as ::core::ffi::c_int & BT_USE as ::core::ffi::c_int != 0 {
+    if (*player).cmd.buttons as i32 & BT_USE as i32 != 0 {
         (*player).playerstate = PST_REBORN;
     }
 }
@@ -1503,21 +1503,21 @@ pub unsafe extern "C" fn P_DeathThink(mut player: *mut player_t) {
 pub unsafe extern "C" fn P_PlayerThink(mut player: *mut player_t) {
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     let mut newweapon: weapontype_t = wp_fist;
-    if (*player).cheats & CF_NOCLIP as ::core::ffi::c_int != 0 {
-        (*(*player).mo).flags |= MF_NOCLIP as ::core::ffi::c_int;
+    if (*player).cheats & CF_NOCLIP as i32 != 0 {
+        (*(*player).mo).flags |= MF_NOCLIP as i32;
     } else {
-        (*(*player).mo).flags &= !(MF_NOCLIP as ::core::ffi::c_int);
+        (*(*player).mo).flags &= !(MF_NOCLIP as i32);
     }
     cmd = &raw mut (*player).cmd;
-    if (*(*player).mo).flags & MF_JUSTATTACKED as ::core::ffi::c_int != 0 {
-        (*cmd).angleturn = 0 as ::core::ffi::c_short;
-        (*cmd).forwardmove = (0xc800 as ::core::ffi::c_int / 512 as ::core::ffi::c_int)
+    if (*(*player).mo).flags & MF_JUSTATTACKED as i32 != 0 {
+        (*cmd).angleturn = 0 as i16;
+        (*cmd).forwardmove = (0xc800 as i32 / 512 as i32)
             as ::core::ffi::c_schar;
         (*cmd).sidemove = 0 as ::core::ffi::c_schar;
-        (*(*player).mo).flags &= !(MF_JUSTATTACKED as ::core::ffi::c_int);
+        (*(*player).mo).flags &= !(MF_JUSTATTACKED as i32);
     }
-    if (*player).playerstate as ::core::ffi::c_uint
-        == PST_DEAD as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).playerstate as u32
+        == PST_DEAD as i32 as u32
     {
         P_DeathThink(player);
         return;
@@ -1531,48 +1531,48 @@ pub unsafe extern "C" fn P_PlayerThink(mut player: *mut player_t) {
     if (*(*(*(*player).mo).subsector).sector).special != 0 {
         P_PlayerInSpecialSector(player);
     }
-    if (*cmd).buttons as ::core::ffi::c_int & BT_SPECIAL as ::core::ffi::c_int != 0 {
+    if (*cmd).buttons as i32 & BT_SPECIAL as i32 != 0 {
         (*cmd).buttons = 0 as byte;
     }
-    if (*cmd).buttons as ::core::ffi::c_int & BT_CHANGE as ::core::ffi::c_int != 0 {
-        newweapon = (((*cmd).buttons as ::core::ffi::c_int
-            & BT_WEAPONMASK as ::core::ffi::c_int)
-            >> BT_WEAPONSHIFT as ::core::ffi::c_int) as weapontype_t;
-        if newweapon as ::core::ffi::c_uint
-            == wp_fist as ::core::ffi::c_int as ::core::ffi::c_uint
-            && (*player).weaponowned[wp_chainsaw as ::core::ffi::c_int as usize]
-            && !((*player).readyweapon as ::core::ffi::c_uint
-                == wp_chainsaw as ::core::ffi::c_int as ::core::ffi::c_uint
-                && (*player).powers[pw_strength as ::core::ffi::c_int as usize] != 0)
+    if (*cmd).buttons as i32 & BT_CHANGE as i32 != 0 {
+        newweapon = (((*cmd).buttons as i32
+            & BT_WEAPONMASK as i32)
+            >> BT_WEAPONSHIFT as i32) as weapontype_t;
+        if newweapon as u32
+            == wp_fist as i32 as u32
+            && (*player).weaponowned[wp_chainsaw as i32 as usize]
+            && !((*player).readyweapon as u32
+                == wp_chainsaw as i32 as u32
+                && (*player).powers[pw_strength as i32 as usize] != 0)
         {
             newweapon = wp_chainsaw;
         }
-        if gamemode as ::core::ffi::c_uint
-            == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-            && newweapon as ::core::ffi::c_uint
-                == wp_shotgun as ::core::ffi::c_int as ::core::ffi::c_uint
-            && (*player).weaponowned[wp_supershotgun as ::core::ffi::c_int as usize]
-            && (*player).readyweapon as ::core::ffi::c_uint
-                != wp_supershotgun as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gamemode as u32
+            == commercial as i32 as u32
+            && newweapon as u32
+                == wp_shotgun as i32 as u32
+            && (*player).weaponowned[wp_supershotgun as i32 as usize]
+            && (*player).readyweapon as u32
+                != wp_supershotgun as i32 as u32
         {
             newweapon = wp_supershotgun;
         }
         if (*player).weaponowned[newweapon as usize]
-            && newweapon as ::core::ffi::c_uint
-                != (*player).readyweapon as ::core::ffi::c_uint
+            && newweapon as u32
+                != (*player).readyweapon as u32
         {
-            if newweapon as ::core::ffi::c_uint
-                != wp_plasma as ::core::ffi::c_int as ::core::ffi::c_uint
-                && newweapon as ::core::ffi::c_uint
-                    != wp_bfg as ::core::ffi::c_int as ::core::ffi::c_uint
-                || gamemode as ::core::ffi::c_uint
-                    != shareware as ::core::ffi::c_int as ::core::ffi::c_uint
+            if newweapon as u32
+                != wp_plasma as i32 as u32
+                && newweapon as u32
+                    != wp_bfg as i32 as u32
+                || gamemode as u32
+                    != shareware as i32 as u32
             {
                 (*player).pendingweapon = newweapon;
             }
         }
     }
-    if (*cmd).buttons as ::core::ffi::c_int & BT_USE as ::core::ffi::c_int != 0 {
+    if (*cmd).buttons as i32 & BT_USE as i32 != 0 {
         if (*player).usedown == 0 {
             P_UseLines(player);
             (*player).usedown = true_0;
@@ -1581,23 +1581,23 @@ pub unsafe extern "C" fn P_PlayerThink(mut player: *mut player_t) {
         (*player).usedown = false_0;
     }
     P_MovePsprites(player);
-    if (*player).powers[pw_strength as ::core::ffi::c_int as usize] != 0 {
-        (*player).powers[pw_strength as ::core::ffi::c_int as usize] += 1;
+    if (*player).powers[pw_strength as i32 as usize] != 0 {
+        (*player).powers[pw_strength as i32 as usize] += 1;
     }
-    if (*player).powers[pw_invulnerability as ::core::ffi::c_int as usize] != 0 {
-        (*player).powers[pw_invulnerability as ::core::ffi::c_int as usize] -= 1;
+    if (*player).powers[pw_invulnerability as i32 as usize] != 0 {
+        (*player).powers[pw_invulnerability as i32 as usize] -= 1;
     }
-    if (*player).powers[pw_invisibility as ::core::ffi::c_int as usize] != 0 {
-        (*player).powers[pw_invisibility as ::core::ffi::c_int as usize] -= 1;
-        if (*player).powers[pw_invisibility as ::core::ffi::c_int as usize] == 0 {
-            (*(*player).mo).flags &= !(MF_SHADOW as ::core::ffi::c_int);
+    if (*player).powers[pw_invisibility as i32 as usize] != 0 {
+        (*player).powers[pw_invisibility as i32 as usize] -= 1;
+        if (*player).powers[pw_invisibility as i32 as usize] == 0 {
+            (*(*player).mo).flags &= !(MF_SHADOW as i32);
         }
     }
-    if (*player).powers[pw_infrared as ::core::ffi::c_int as usize] != 0 {
-        (*player).powers[pw_infrared as ::core::ffi::c_int as usize] -= 1;
+    if (*player).powers[pw_infrared as i32 as usize] != 0 {
+        (*player).powers[pw_infrared as i32 as usize] -= 1;
     }
-    if (*player).powers[pw_ironfeet as ::core::ffi::c_int as usize] != 0 {
-        (*player).powers[pw_ironfeet as ::core::ffi::c_int as usize] -= 1;
+    if (*player).powers[pw_ironfeet as i32 as usize] != 0 {
+        (*player).powers[pw_ironfeet as i32 as usize] -= 1;
     }
     if (*player).damagecount != 0 {
         (*player).damagecount -= 1;
@@ -1605,27 +1605,27 @@ pub unsafe extern "C" fn P_PlayerThink(mut player: *mut player_t) {
     if (*player).bonuscount != 0 {
         (*player).bonuscount -= 1;
     }
-    if (*player).powers[pw_invulnerability as ::core::ffi::c_int as usize] != 0 {
-        if (*player).powers[pw_invulnerability as ::core::ffi::c_int as usize]
-            > 4 as ::core::ffi::c_int * 32 as ::core::ffi::c_int
-            || (*player).powers[pw_invulnerability as ::core::ffi::c_int as usize]
-                & 8 as ::core::ffi::c_int != 0
+    if (*player).powers[pw_invulnerability as i32 as usize] != 0 {
+        if (*player).powers[pw_invulnerability as i32 as usize]
+            > 4 as i32 * 32 as i32
+            || (*player).powers[pw_invulnerability as i32 as usize]
+                & 8 as i32 != 0
         {
             (*player).fixedcolormap = INVERSECOLORMAP;
         } else {
-            (*player).fixedcolormap = 0 as ::core::ffi::c_int;
+            (*player).fixedcolormap = 0 as i32;
         }
-    } else if (*player).powers[pw_infrared as ::core::ffi::c_int as usize] != 0 {
-        if (*player).powers[pw_infrared as ::core::ffi::c_int as usize]
-            > 4 as ::core::ffi::c_int * 32 as ::core::ffi::c_int
-            || (*player).powers[pw_infrared as ::core::ffi::c_int as usize]
-                & 8 as ::core::ffi::c_int != 0
+    } else if (*player).powers[pw_infrared as i32 as usize] != 0 {
+        if (*player).powers[pw_infrared as i32 as usize]
+            > 4 as i32 * 32 as i32
+            || (*player).powers[pw_infrared as i32 as usize]
+                & 8 as i32 != 0
         {
-            (*player).fixedcolormap = 1 as ::core::ffi::c_int;
+            (*player).fixedcolormap = 1 as i32;
         } else {
-            (*player).fixedcolormap = 0 as ::core::ffi::c_int;
+            (*player).fixedcolormap = 0 as i32;
         }
     } else {
-        (*player).fixedcolormap = 0 as ::core::ffi::c_int;
+        (*player).fixedcolormap = 0 as i32;
     };
 }

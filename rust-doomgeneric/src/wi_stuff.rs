@@ -6,16 +6,16 @@ use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
 };
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn M_StringCopy(
@@ -23,20 +23,20 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    fn M_Random() -> ::core::ffi::c_int;
+    fn M_Random() -> i32;
     fn G_WorldDone();
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    fn S_ChangeMusic(music_id: ::core::ffi::c_int, looping: ::core::ffi::c_int);
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
+    fn S_ChangeMusic(music_id: i32, looping: i32);
     static mut gamemode: GameMode_t;
     static mut netgame: bool;
-    static mut deathmatch: ::core::ffi::c_int;
+    static mut deathmatch: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
+    fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -47,15 +47,15 @@ pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const BTS_SAVESHIFT: C2RustUnnamed_0 = 2;
 pub const BTS_SAVEMASK: C2RustUnnamed_0 = 28;
 pub const BTS_SAVEGAME: C2RustUnnamed_0 = 2;
@@ -67,13 +67,13 @@ pub const BT_SPECIALMASK: C2RustUnnamed_0 = 3;
 pub const BT_SPECIAL: C2RustUnnamed_0 = 128;
 pub const BT_USE: C2RustUnnamed_0 = 2;
 pub const BT_ATTACK: C2RustUnnamed_0 = 1;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -85,15 +85,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -233,7 +233,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1202,7 +1202,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1345,29 +1345,29 @@ pub const MT_PLAYER: mobjtype_t = 0;
 #[repr(C)]
 pub struct wbplayerstruct_t {
     pub in_0: bool,
-    pub skills: ::core::ffi::c_int,
-    pub sitems: ::core::ffi::c_int,
-    pub ssecret: ::core::ffi::c_int,
-    pub stime: ::core::ffi::c_int,
-    pub frags: [::core::ffi::c_int; 4],
-    pub score: ::core::ffi::c_int,
+    pub skills: i32,
+    pub sitems: i32,
+    pub ssecret: i32,
+    pub stime: i32,
+    pub frags: [i32; 4],
+    pub score: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct wbstartstruct_t {
-    pub epsd: ::core::ffi::c_int,
+    pub epsd: i32,
     pub didsecret: bool,
-    pub last: ::core::ffi::c_int,
-    pub next: ::core::ffi::c_int,
-    pub maxkills: ::core::ffi::c_int,
-    pub maxitems: ::core::ffi::c_int,
-    pub maxsecret: ::core::ffi::c_int,
-    pub maxfrags: ::core::ffi::c_int,
-    pub partime: ::core::ffi::c_int,
-    pub pnum: ::core::ffi::c_int,
+    pub last: i32,
+    pub next: i32,
+    pub maxkills: i32,
+    pub maxitems: i32,
+    pub maxsecret: i32,
+    pub maxfrags: i32,
+    pub partime: i32,
+    pub pnum: i32,
     pub plyr: [wbplayerstruct_t; 4],
 }
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const NUMMUSIC: C2RustUnnamed_1 = 68;
 pub const mus_dm2int: C2RustUnnamed_1 = 67;
 pub const mus_dm2ttl: C2RustUnnamed_1 = 66;
@@ -1437,7 +1437,7 @@ pub const mus_e1m3: C2RustUnnamed_1 = 3;
 pub const mus_e1m2: C2RustUnnamed_1 = 2;
 pub const mus_e1m1: C2RustUnnamed_1 = 1;
 pub const mus_None: C2RustUnnamed_1 = 0;
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const NUMSFX: C2RustUnnamed_2 = 109;
 pub const sfx_radio: C2RustUnnamed_2 = 108;
 pub const sfx_skeatk: C2RustUnnamed_2 = 107;
@@ -1548,7 +1548,7 @@ pub const sfx_sgcock: C2RustUnnamed_2 = 3;
 pub const sfx_shotgn: C2RustUnnamed_2 = 2;
 pub const sfx_pistol: C2RustUnnamed_2 = 1;
 pub const sfx_None: C2RustUnnamed_2 = 0;
-pub type stateenum_t = ::core::ffi::c_int;
+pub type stateenum_t = i32;
 pub const ShowNextLoc: stateenum_t = 1;
 pub const StatCount: stateenum_t = 0;
 pub const NoState: stateenum_t = -1;
@@ -1556,169 +1556,169 @@ pub const NoState: stateenum_t = -1;
 #[repr(C)]
 pub struct anim_t {
     pub type_0: animenum_t,
-    pub period: ::core::ffi::c_int,
-    pub nanims: ::core::ffi::c_int,
+    pub period: i32,
+    pub nanims: i32,
     pub loc: point_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
+    pub data1: i32,
+    pub data2: i32,
     pub p: [*mut patch_t; 3],
-    pub nexttic: ::core::ffi::c_int,
-    pub lastdrawn: ::core::ffi::c_int,
-    pub ctr: ::core::ffi::c_int,
-    pub state: ::core::ffi::c_int,
+    pub nexttic: i32,
+    pub lastdrawn: i32,
+    pub ctr: i32,
+    pub state: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct point_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
 }
-pub type animenum_t = ::core::ffi::c_uint;
+pub type animenum_t = u32;
 pub const ANIM_LEVEL: animenum_t = 2;
 pub const ANIM_RANDOM: animenum_t = 1;
 pub const ANIM_ALWAYS: animenum_t = 0;
 pub type load_callback_t = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
 >;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const TICRATE: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const NUMMAPS: ::core::ffi::c_int = 9 as ::core::ffi::c_int;
-pub const WI_TITLEY: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const WI_SPACINGY: ::core::ffi::c_int = 33 as ::core::ffi::c_int;
-pub const SP_STATSX: ::core::ffi::c_int = 50 as ::core::ffi::c_int;
-pub const SP_STATSY: ::core::ffi::c_int = 50 as ::core::ffi::c_int;
-pub const SP_TIMEX: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const SP_TIMEY: ::core::ffi::c_int = SCREENHEIGHT - 32 as ::core::ffi::c_int;
-pub const NG_STATSY: ::core::ffi::c_int = 50 as ::core::ffi::c_int;
-pub const NG_SPACINGX: ::core::ffi::c_int = 64 as ::core::ffi::c_int;
-pub const DM_MATRIXX: ::core::ffi::c_int = 42 as ::core::ffi::c_int;
-pub const DM_MATRIXY: ::core::ffi::c_int = 68 as ::core::ffi::c_int;
-pub const DM_SPACINGX: ::core::ffi::c_int = 40 as ::core::ffi::c_int;
-pub const DM_TOTALSX: ::core::ffi::c_int = 269 as ::core::ffi::c_int;
-pub const DM_KILLERSX: ::core::ffi::c_int = 10 as ::core::ffi::c_int;
-pub const DM_KILLERSY: ::core::ffi::c_int = 100 as ::core::ffi::c_int;
-pub const DM_VICTIMSX: ::core::ffi::c_int = 5 as ::core::ffi::c_int;
-pub const DM_VICTIMSY: ::core::ffi::c_int = 50 as ::core::ffi::c_int;
+pub const TICRATE: i32 = 35 as i32;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
+pub const NUMMAPS: i32 = 9 as i32;
+pub const WI_TITLEY: i32 = 2 as i32;
+pub const WI_SPACINGY: i32 = 33 as i32;
+pub const SP_STATSX: i32 = 50 as i32;
+pub const SP_STATSY: i32 = 50 as i32;
+pub const SP_TIMEX: i32 = 16 as i32;
+pub const SP_TIMEY: i32 = SCREENHEIGHT - 32 as i32;
+pub const NG_STATSY: i32 = 50 as i32;
+pub const NG_SPACINGX: i32 = 64 as i32;
+pub const DM_MATRIXX: i32 = 42 as i32;
+pub const DM_MATRIXY: i32 = 68 as i32;
+pub const DM_SPACINGX: i32 = 40 as i32;
+pub const DM_TOTALSX: i32 = 269 as i32;
+pub const DM_KILLERSX: i32 = 10 as i32;
+pub const DM_KILLERSY: i32 = 100 as i32;
+pub const DM_VICTIMSX: i32 = 5 as i32;
+pub const DM_VICTIMSY: i32 = 50 as i32;
 static mut lnodes: [[point_t; 9]; 4] = [
     [
         point_t {
-            x: 185 as ::core::ffi::c_int,
-            y: 164 as ::core::ffi::c_int,
+            x: 185 as i32,
+            y: 164 as i32,
         },
         point_t {
-            x: 148 as ::core::ffi::c_int,
-            y: 143 as ::core::ffi::c_int,
+            x: 148 as i32,
+            y: 143 as i32,
         },
         point_t {
-            x: 69 as ::core::ffi::c_int,
-            y: 122 as ::core::ffi::c_int,
+            x: 69 as i32,
+            y: 122 as i32,
         },
         point_t {
-            x: 209 as ::core::ffi::c_int,
-            y: 102 as ::core::ffi::c_int,
+            x: 209 as i32,
+            y: 102 as i32,
         },
         point_t {
-            x: 116 as ::core::ffi::c_int,
-            y: 89 as ::core::ffi::c_int,
+            x: 116 as i32,
+            y: 89 as i32,
         },
         point_t {
-            x: 166 as ::core::ffi::c_int,
-            y: 55 as ::core::ffi::c_int,
+            x: 166 as i32,
+            y: 55 as i32,
         },
         point_t {
-            x: 71 as ::core::ffi::c_int,
-            y: 56 as ::core::ffi::c_int,
+            x: 71 as i32,
+            y: 56 as i32,
         },
         point_t {
-            x: 135 as ::core::ffi::c_int,
-            y: 29 as ::core::ffi::c_int,
+            x: 135 as i32,
+            y: 29 as i32,
         },
         point_t {
-            x: 71 as ::core::ffi::c_int,
-            y: 24 as ::core::ffi::c_int,
-        },
-    ],
-    [
-        point_t {
-            x: 254 as ::core::ffi::c_int,
-            y: 25 as ::core::ffi::c_int,
-        },
-        point_t {
-            x: 97 as ::core::ffi::c_int,
-            y: 50 as ::core::ffi::c_int,
-        },
-        point_t {
-            x: 188 as ::core::ffi::c_int,
-            y: 64 as ::core::ffi::c_int,
-        },
-        point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 78 as ::core::ffi::c_int,
-        },
-        point_t {
-            x: 214 as ::core::ffi::c_int,
-            y: 92 as ::core::ffi::c_int,
-        },
-        point_t {
-            x: 133 as ::core::ffi::c_int,
-            y: 130 as ::core::ffi::c_int,
-        },
-        point_t {
-            x: 208 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
-        },
-        point_t {
-            x: 148 as ::core::ffi::c_int,
-            y: 140 as ::core::ffi::c_int,
-        },
-        point_t {
-            x: 235 as ::core::ffi::c_int,
-            y: 158 as ::core::ffi::c_int,
+            x: 71 as i32,
+            y: 24 as i32,
         },
     ],
     [
         point_t {
-            x: 156 as ::core::ffi::c_int,
-            y: 168 as ::core::ffi::c_int,
+            x: 254 as i32,
+            y: 25 as i32,
         },
         point_t {
-            x: 48 as ::core::ffi::c_int,
-            y: 154 as ::core::ffi::c_int,
+            x: 97 as i32,
+            y: 50 as i32,
         },
         point_t {
-            x: 174 as ::core::ffi::c_int,
-            y: 95 as ::core::ffi::c_int,
+            x: 188 as i32,
+            y: 64 as i32,
         },
         point_t {
-            x: 265 as ::core::ffi::c_int,
-            y: 75 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 78 as i32,
         },
         point_t {
-            x: 130 as ::core::ffi::c_int,
-            y: 48 as ::core::ffi::c_int,
+            x: 214 as i32,
+            y: 92 as i32,
         },
         point_t {
-            x: 279 as ::core::ffi::c_int,
-            y: 23 as ::core::ffi::c_int,
+            x: 133 as i32,
+            y: 130 as i32,
         },
         point_t {
-            x: 198 as ::core::ffi::c_int,
-            y: 48 as ::core::ffi::c_int,
+            x: 208 as i32,
+            y: 136 as i32,
         },
         point_t {
-            x: 140 as ::core::ffi::c_int,
-            y: 25 as ::core::ffi::c_int,
+            x: 148 as i32,
+            y: 140 as i32,
         },
         point_t {
-            x: 281 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 235 as i32,
+            y: 158 as i32,
+        },
+    ],
+    [
+        point_t {
+            x: 156 as i32,
+            y: 168 as i32,
+        },
+        point_t {
+            x: 48 as i32,
+            y: 154 as i32,
+        },
+        point_t {
+            x: 174 as i32,
+            y: 95 as i32,
+        },
+        point_t {
+            x: 265 as i32,
+            y: 75 as i32,
+        },
+        point_t {
+            x: 130 as i32,
+            y: 48 as i32,
+        },
+        point_t {
+            x: 279 as i32,
+            y: 23 as i32,
+        },
+        point_t {
+            x: 198 as i32,
+            y: 48 as i32,
+        },
+        point_t {
+            x: 140 as i32,
+            y: 25 as i32,
+        },
+        point_t {
+            x: 281 as i32,
+            y: 136 as i32,
         },
     ],
     [point_t { x: 0, y: 0 }; 9],
@@ -1726,510 +1726,510 @@ static mut lnodes: [[point_t; 9]; 4] = [
 static mut epsd0animinfo: [anim_t; 10] = [
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 224 as ::core::ffi::c_int,
-            y: 104 as ::core::ffi::c_int,
+            x: 224 as i32,
+            y: 104 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 184 as ::core::ffi::c_int,
-            y: 160 as ::core::ffi::c_int,
+            x: 184 as i32,
+            y: 160 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 112 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 112 as i32,
+            y: 136 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 72 as ::core::ffi::c_int,
-            y: 112 as ::core::ffi::c_int,
+            x: 72 as i32,
+            y: 112 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 88 as ::core::ffi::c_int,
-            y: 96 as ::core::ffi::c_int,
+            x: 88 as i32,
+            y: 96 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 64 as ::core::ffi::c_int,
-            y: 48 as ::core::ffi::c_int,
+            x: 64 as i32,
+            y: 48 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 192 as ::core::ffi::c_int,
-            y: 40 as ::core::ffi::c_int,
+            x: 192 as i32,
+            y: 40 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 136 as ::core::ffi::c_int,
-            y: 16 as ::core::ffi::c_int,
+            x: 136 as i32,
+            y: 16 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 80 as ::core::ffi::c_int,
-            y: 16 as ::core::ffi::c_int,
+            x: 80 as i32,
+            y: 16 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 64 as ::core::ffi::c_int,
-            y: 24 as ::core::ffi::c_int,
+            x: 64 as i32,
+            y: 24 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
 ];
 static mut epsd1animinfo: [anim_t; 9] = [
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 1 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 1 as i32,
         loc: point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 136 as i32,
         },
-        data1: 1 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 1 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 1 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 1 as i32,
         loc: point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 136 as i32,
         },
-        data1: 2 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 2 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 1 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 1 as i32,
         loc: point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 136 as i32,
         },
-        data1: 3 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 3 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 1 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 1 as i32,
         loc: point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 136 as i32,
         },
-        data1: 4 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 4 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 1 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 1 as i32,
         loc: point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 136 as i32,
         },
-        data1: 5 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 5 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 1 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 1 as i32,
         loc: point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 136 as i32,
         },
-        data1: 6 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 6 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 1 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 1 as i32,
         loc: point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 136 as i32,
         },
-        data1: 7 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 7 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 192 as ::core::ffi::c_int,
-            y: 144 as ::core::ffi::c_int,
+            x: 192 as i32,
+            y: 144 as i32,
         },
-        data1: 8 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 8 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_LEVEL,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 1 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 1 as i32,
         loc: point_t {
-            x: 128 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 128 as i32,
+            y: 136 as i32,
         },
-        data1: 8 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 8 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
 ];
 static mut epsd2animinfo: [anim_t; 6] = [
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 104 as ::core::ffi::c_int,
-            y: 168 as ::core::ffi::c_int,
+            x: 104 as i32,
+            y: 168 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 40 as ::core::ffi::c_int,
-            y: 136 as ::core::ffi::c_int,
+            x: 40 as i32,
+            y: 136 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 160 as ::core::ffi::c_int,
-            y: 96 as ::core::ffi::c_int,
+            x: 160 as i32,
+            y: 96 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 104 as ::core::ffi::c_int,
-            y: 80 as ::core::ffi::c_int,
+            x: 104 as i32,
+            y: 80 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 3 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 3 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 120 as ::core::ffi::c_int,
-            y: 32 as ::core::ffi::c_int,
+            x: 120 as i32,
+            y: 32 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
     anim_t {
         type_0: ANIM_ALWAYS,
-        period: 35 as ::core::ffi::c_int / 4 as ::core::ffi::c_int,
-        nanims: 3 as ::core::ffi::c_int,
+        period: 35 as i32 / 4 as i32,
+        nanims: 3 as i32,
         loc: point_t {
-            x: 40 as ::core::ffi::c_int,
-            y: 0 as ::core::ffi::c_int,
+            x: 40 as i32,
+            y: 0 as i32,
         },
-        data1: 0 as ::core::ffi::c_int,
-        data2: 0 as ::core::ffi::c_int,
+        data1: 0 as i32,
+        data2: 0 as i32,
         p: [
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
             ::core::ptr::null::<patch_t>() as *mut patch_t,
         ],
-        nexttic: 0 as ::core::ffi::c_int,
-        lastdrawn: 0 as ::core::ffi::c_int,
-        ctr: 0 as ::core::ffi::c_int,
-        state: 0 as ::core::ffi::c_int,
+        nexttic: 0 as i32,
+        lastdrawn: 0 as i32,
+        ctr: 0 as i32,
+        state: 0 as i32,
     },
 ];
-static mut NUMANIMS: [::core::ffi::c_int; 4] = [0; 4];
+static mut NUMANIMS: [i32; 4] = [0; 4];
 static mut anims: [*mut anim_t; 4] = unsafe {
     [
         &raw const epsd0animinfo as *mut anim_t,
@@ -2238,24 +2238,24 @@ static mut anims: [*mut anim_t; 4] = unsafe {
         ::core::ptr::null::<anim_t>() as *mut anim_t,
     ]
 };
-pub const SHOWNEXTLOCDELAY: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-static mut acceleratestage: ::core::ffi::c_int = 0;
-static mut me: ::core::ffi::c_int = 0;
+pub const SHOWNEXTLOCDELAY: i32 = 4 as i32;
+static mut acceleratestage: i32 = 0;
+static mut me: i32 = 0;
 static mut state: stateenum_t = StatCount;
 static mut wbs: *mut wbstartstruct_t = ::core::ptr::null::<wbstartstruct_t>()
     as *mut wbstartstruct_t;
 static mut plrs: *mut wbplayerstruct_t = ::core::ptr::null::<wbplayerstruct_t>()
     as *mut wbplayerstruct_t;
-static mut cnt: ::core::ffi::c_int = 0;
-static mut bcnt: ::core::ffi::c_int = 0;
-static mut firstrefresh: ::core::ffi::c_int = 0;
-static mut cnt_kills: [::core::ffi::c_int; 4] = [0; 4];
-static mut cnt_items: [::core::ffi::c_int; 4] = [0; 4];
-static mut cnt_secret: [::core::ffi::c_int; 4] = [0; 4];
-static mut cnt_time: ::core::ffi::c_int = 0;
-static mut cnt_par: ::core::ffi::c_int = 0;
-static mut cnt_pause: ::core::ffi::c_int = 0;
-static mut NUMCMAPS: ::core::ffi::c_int = 0;
+static mut cnt: i32 = 0;
+static mut bcnt: i32 = 0;
+static mut firstrefresh: i32 = 0;
+static mut cnt_kills: [i32; 4] = [0; 4];
+static mut cnt_items: [i32; 4] = [0; 4];
+static mut cnt_secret: [i32; 4] = [0; 4];
+static mut cnt_time: i32 = 0;
+static mut cnt_par: i32 = 0;
+static mut cnt_pause: i32 = 0;
+static mut NUMCMAPS: i32 = 0;
 static mut yah: [*mut patch_t; 3] = [
     ::core::ptr::null::<patch_t>() as *mut patch_t,
     ::core::ptr::null::<patch_t>() as *mut patch_t,
@@ -2292,7 +2292,7 @@ static mut lnames: *mut *mut patch_t = ::core::ptr::null::<*mut patch_t>()
 static mut background: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 #[no_mangle]
 pub unsafe extern "C" fn WI_slamBackground() {
-    V_DrawPatch(0 as ::core::ffi::c_int, 0 as ::core::ffi::c_int, background);
+    V_DrawPatch(0 as i32, 0 as i32, background);
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_Responder(mut ev: *mut event_t) -> boolean {
@@ -2300,104 +2300,104 @@ pub unsafe extern "C" fn WI_Responder(mut ev: *mut event_t) -> boolean {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawLF() {
-    let mut y: ::core::ffi::c_int = WI_TITLEY;
-    if gamemode as ::core::ffi::c_uint
-        != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    let mut y: i32 = WI_TITLEY;
+    if gamemode as u32
+        != commercial as i32 as u32
         || (*wbs).last < NUMCMAPS
     {
         V_DrawPatch(
             (SCREENWIDTH
-                - (**lnames.offset((*wbs).last as isize)).width as ::core::ffi::c_int)
-                / 2 as ::core::ffi::c_int,
+                - (**lnames.offset((*wbs).last as isize)).width as i32)
+                / 2 as i32,
             y,
             *lnames.offset((*wbs).last as isize),
         );
         y
-            += 5 as ::core::ffi::c_int
-                * (**lnames.offset((*wbs).last as isize)).height as ::core::ffi::c_int
-                / 4 as ::core::ffi::c_int;
+            += 5 as i32
+                * (**lnames.offset((*wbs).last as isize)).height as i32
+                / 4 as i32;
         V_DrawPatch(
-            (SCREENWIDTH - (*finished).width as ::core::ffi::c_int)
-                / 2 as ::core::ffi::c_int,
+            (SCREENWIDTH - (*finished).width as i32)
+                / 2 as i32,
             y,
             finished,
         );
     } else if !((*wbs).last == NUMCMAPS) {
         if (*wbs).last > NUMCMAPS {
             let mut tmp: patch_t = patch_t {
-                width: SCREENWIDTH as ::core::ffi::c_short,
-                height: SCREENHEIGHT as ::core::ffi::c_short,
-                leftoffset: 1 as ::core::ffi::c_short,
-                topoffset: 1 as ::core::ffi::c_short,
+                width: SCREENWIDTH as i16,
+                height: SCREENHEIGHT as i16,
+                leftoffset: 1 as i16,
+                topoffset: 1 as i16,
                 columnofs: [
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
+                    0 as i32,
+                    0 as i32,
+                    0 as i32,
+                    0 as i32,
+                    0 as i32,
+                    0 as i32,
+                    0 as i32,
+                    0 as i32,
                 ],
             };
-            V_DrawPatch(0 as ::core::ffi::c_int, y, &raw mut tmp);
+            V_DrawPatch(0 as i32, y, &raw mut tmp);
         }
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawEL() {
-    let mut y: ::core::ffi::c_int = WI_TITLEY;
+    let mut y: i32 = WI_TITLEY;
     V_DrawPatch(
-        (SCREENWIDTH - (*entering).width as ::core::ffi::c_int)
-            / 2 as ::core::ffi::c_int,
+        (SCREENWIDTH - (*entering).width as i32)
+            / 2 as i32,
         y,
         entering,
     );
     y
-        += 5 as ::core::ffi::c_int
-            * (**lnames.offset((*wbs).next as isize)).height as ::core::ffi::c_int
-            / 4 as ::core::ffi::c_int;
+        += 5 as i32
+            * (**lnames.offset((*wbs).next as isize)).height as i32
+            / 4 as i32;
     V_DrawPatch(
         (SCREENWIDTH
-            - (**lnames.offset((*wbs).next as isize)).width as ::core::ffi::c_int)
-            / 2 as ::core::ffi::c_int,
+            - (**lnames.offset((*wbs).next as isize)).width as i32)
+            / 2 as i32,
         y,
         *lnames.offset((*wbs).next as isize),
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawOnLnode(
-    mut n: ::core::ffi::c_int,
+    mut n: i32,
     mut c: *mut *mut patch_t,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut left: ::core::ffi::c_int = 0;
-    let mut top: ::core::ffi::c_int = 0;
-    let mut right: ::core::ffi::c_int = 0;
-    let mut bottom: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut left: i32 = 0;
+    let mut top: i32 = 0;
+    let mut right: i32 = 0;
+    let mut bottom: i32 = 0;
     let mut fits: boolean = false_0 as boolean;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     loop {
         left = lnodes[(*wbs).epsd as usize][n as usize].x
-            - (**c.offset(i as isize)).leftoffset as ::core::ffi::c_int;
+            - (**c.offset(i as isize)).leftoffset as i32;
         top = lnodes[(*wbs).epsd as usize][n as usize].y
-            - (**c.offset(i as isize)).topoffset as ::core::ffi::c_int;
-        right = left + (**c.offset(i as isize)).width as ::core::ffi::c_int;
-        bottom = top + (**c.offset(i as isize)).height as ::core::ffi::c_int;
-        if left >= 0 as ::core::ffi::c_int && right < SCREENWIDTH
-            && top >= 0 as ::core::ffi::c_int && bottom < SCREENHEIGHT
+            - (**c.offset(i as isize)).topoffset as i32;
+        right = left + (**c.offset(i as isize)).width as i32;
+        bottom = top + (**c.offset(i as isize)).height as i32;
+        if left >= 0 as i32 && right < SCREENWIDTH
+            && top >= 0 as i32 && bottom < SCREENHEIGHT
         {
             fits = true_0 as boolean;
         } else {
             i += 1;
         }
-        if !(fits == 0 && i != 2 as ::core::ffi::c_int
+        if !(fits == 0 && i != 2 as i32
             && !(*c.offset(i as isize)).is_null())
         {
             break;
         }
     }
-    if fits != 0 && i < 2 as ::core::ffi::c_int {
+    if fits != 0 && i < 2 as i32 {
         V_DrawPatch(
             lnodes[(*wbs).epsd as usize][n as usize].x,
             lnodes[(*wbs).epsd as usize][n as usize].y,
@@ -2407,81 +2407,81 @@ pub unsafe extern "C" fn WI_drawOnLnode(
         printf(
             b"Could not place patch on level %d\0" as *const u8
                 as *const ::core::ffi::c_char,
-            n + 1 as ::core::ffi::c_int,
+            n + 1 as i32,
         );
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_initAnimatedBack() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         return;
     }
-    if (*wbs).epsd > 2 as ::core::ffi::c_int {
+    if (*wbs).epsd > 2 as i32 {
         return;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < NUMANIMS[(*wbs).epsd as usize] {
         a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize))
             .offset(i as isize) as *mut anim_t;
-        (*a).ctr = -(1 as ::core::ffi::c_int);
-        if (*a).type_0 as ::core::ffi::c_uint
-            == ANIM_ALWAYS as ::core::ffi::c_int as ::core::ffi::c_uint
+        (*a).ctr = -(1 as i32);
+        if (*a).type_0 as u32
+            == ANIM_ALWAYS as i32 as u32
         {
-            (*a).nexttic = bcnt + 1 as ::core::ffi::c_int + M_Random() % (*a).period;
-        } else if (*a).type_0 as ::core::ffi::c_uint
-            == ANIM_RANDOM as ::core::ffi::c_int as ::core::ffi::c_uint
+            (*a).nexttic = bcnt + 1 as i32 + M_Random() % (*a).period;
+        } else if (*a).type_0 as u32
+            == ANIM_RANDOM as i32 as u32
         {
-            (*a).nexttic = bcnt + 1 as ::core::ffi::c_int + (*a).data2
+            (*a).nexttic = bcnt + 1 as i32 + (*a).data2
                 + M_Random() % (*a).data1;
-        } else if (*a).type_0 as ::core::ffi::c_uint
-            == ANIM_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
+        } else if (*a).type_0 as u32
+            == ANIM_LEVEL as i32 as u32
         {
-            (*a).nexttic = bcnt + 1 as ::core::ffi::c_int;
+            (*a).nexttic = bcnt + 1 as i32;
         }
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_updateAnimatedBack() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         return;
     }
-    if (*wbs).epsd > 2 as ::core::ffi::c_int {
+    if (*wbs).epsd > 2 as i32 {
         return;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < NUMANIMS[(*wbs).epsd as usize] {
         a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize))
             .offset(i as isize) as *mut anim_t;
         if bcnt == (*a).nexttic {
-            match (*a).type_0 as ::core::ffi::c_uint {
+            match (*a).type_0 as u32 {
                 0 => {
                     (*a).ctr += 1;
                     if (*a).ctr >= (*a).nanims {
-                        (*a).ctr = 0 as ::core::ffi::c_int;
+                        (*a).ctr = 0 as i32;
                     }
                     (*a).nexttic = bcnt + (*a).period;
                 }
                 1 => {
                     (*a).ctr += 1;
                     if (*a).ctr == (*a).nanims {
-                        (*a).ctr = -(1 as ::core::ffi::c_int);
+                        (*a).ctr = -(1 as i32);
                         (*a).nexttic = bcnt + (*a).data2 + M_Random() % (*a).data1;
                     } else {
                         (*a).nexttic = bcnt + (*a).period;
                     }
                 }
                 2 => {
-                    if !(state as ::core::ffi::c_int == StatCount as ::core::ffi::c_int
-                        && i == 7 as ::core::ffi::c_int) && (*wbs).next == (*a).data1
+                    if !(state as i32 == StatCount as i32
+                        && i == 7 as i32) && (*wbs).next == (*a).data1
                     {
                         (*a).ctr += 1;
                         if (*a).ctr == (*a).nanims {
@@ -2498,21 +2498,21 @@ pub unsafe extern "C" fn WI_updateAnimatedBack() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawAnimatedBack() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         return;
     }
-    if (*wbs).epsd > 2 as ::core::ffi::c_int {
+    if (*wbs).epsd > 2 as i32 {
         return;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < NUMANIMS[(*wbs).epsd as usize] {
         a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize))
             .offset(i as isize) as *mut anim_t;
-        if (*a).ctr >= 0 as ::core::ffi::c_int {
+        if (*a).ctr >= 0 as i32 {
             V_DrawPatch((*a).loc.x, (*a).loc.y, (*a).p[(*a).ctr as usize]);
         }
         i += 1;
@@ -2520,33 +2520,33 @@ pub unsafe extern "C" fn WI_drawAnimatedBack() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawNum(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
-    mut n: ::core::ffi::c_int,
-    mut digits: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut fontwidth: ::core::ffi::c_int = (*num[0 as ::core::ffi::c_int as usize])
-        .width as ::core::ffi::c_int;
-    let mut neg: ::core::ffi::c_int = 0;
-    let mut temp: ::core::ffi::c_int = 0;
-    if digits < 0 as ::core::ffi::c_int {
+    mut x: i32,
+    mut y: i32,
+    mut n: i32,
+    mut digits: i32,
+) -> i32 {
+    let mut fontwidth: i32 = (*num[0 as i32 as usize])
+        .width as i32;
+    let mut neg: i32 = 0;
+    let mut temp: i32 = 0;
+    if digits < 0 as i32 {
         if n == 0 {
-            digits = 1 as ::core::ffi::c_int;
+            digits = 1 as i32;
         } else {
-            digits = 0 as ::core::ffi::c_int;
+            digits = 0 as i32;
             temp = n;
             while temp != 0 {
-                temp /= 10 as ::core::ffi::c_int;
+                temp /= 10 as i32;
                 digits += 1;
             }
         }
     }
-    neg = (n < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    neg = (n < 0 as i32) as i32;
     if neg != 0 {
         n = -n;
     }
-    if n == 1994 as ::core::ffi::c_int {
-        return 0 as ::core::ffi::c_int;
+    if n == 1994 as i32 {
+        return 0 as i32;
     }
     loop {
         let fresh0 = digits;
@@ -2555,46 +2555,46 @@ pub unsafe extern "C" fn WI_drawNum(
             break;
         }
         x -= fontwidth;
-        V_DrawPatch(x, y, num[(n % 10 as ::core::ffi::c_int) as usize]);
-        n /= 10 as ::core::ffi::c_int;
+        V_DrawPatch(x, y, num[(n % 10 as i32) as usize]);
+        n /= 10 as i32;
     }
     if neg != 0 {
-        x -= 8 as ::core::ffi::c_int;
+        x -= 8 as i32;
         V_DrawPatch(x, y, wiminus);
     }
     return x;
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawPercent(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
-    mut p_0: ::core::ffi::c_int,
+    mut x: i32,
+    mut y: i32,
+    mut p_0: i32,
 ) {
-    if p_0 < 0 as ::core::ffi::c_int {
+    if p_0 < 0 as i32 {
         return;
     }
     V_DrawPatch(x, y, percent);
-    WI_drawNum(x, y, p_0, -(1 as ::core::ffi::c_int));
+    WI_drawNum(x, y, p_0, -(1 as i32));
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawTime(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
-    mut t: ::core::ffi::c_int,
+    mut x: i32,
+    mut y: i32,
+    mut t: i32,
 ) {
-    let mut div: ::core::ffi::c_int = 0;
-    let mut n: ::core::ffi::c_int = 0;
-    if t < 0 as ::core::ffi::c_int {
+    let mut div: i32 = 0;
+    let mut n: i32 = 0;
+    if t < 0 as i32 {
         return;
     }
-    if t <= 61 as ::core::ffi::c_int * 59 as ::core::ffi::c_int {
-        div = 1 as ::core::ffi::c_int;
+    if t <= 61 as i32 * 59 as i32 {
+        div = 1 as i32;
         loop {
-            n = t / div % 60 as ::core::ffi::c_int;
-            x = WI_drawNum(x, y, n, 2 as ::core::ffi::c_int)
-                - (*colon).width as ::core::ffi::c_int;
-            div *= 60 as ::core::ffi::c_int;
-            if div == 60 as ::core::ffi::c_int || t / div != 0 {
+            n = t / div % 60 as i32;
+            x = WI_drawNum(x, y, n, 2 as i32)
+                - (*colon).width as i32;
+            div *= 60 as i32;
+            if div == 60 as i32 || t / div != 0 {
                 V_DrawPatch(x, y, colon);
             }
             if !(t / div != 0) {
@@ -2602,7 +2602,7 @@ pub unsafe extern "C" fn WI_drawTime(
             }
         }
     } else {
-        V_DrawPatch(x - (*sucks).width as ::core::ffi::c_int, y, sucks);
+        V_DrawPatch(x - (*sucks).width as i32, y, sucks);
     };
 }
 #[no_mangle]
@@ -2624,8 +2624,8 @@ pub unsafe extern "C" fn WI_End() {
 #[no_mangle]
 pub unsafe extern "C" fn WI_initNoState() {
     state = NoState;
-    acceleratestage = 0 as ::core::ffi::c_int;
-    cnt = 10 as ::core::ffi::c_int;
+    acceleratestage = 0 as i32;
+    cnt = 10 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_updateNoState() {
@@ -2639,7 +2639,7 @@ static mut snl_pointeron: bool = false;
 #[no_mangle]
 pub unsafe extern "C" fn WI_initShowNextLoc() {
     state = ShowNextLoc;
-    acceleratestage = 0 as ::core::ffi::c_int;
+    acceleratestage = 0 as i32;
     cnt = SHOWNEXTLOCDELAY * TICRATE;
     WI_initAnimatedBack();
 }
@@ -2650,42 +2650,42 @@ pub unsafe extern "C" fn WI_updateShowNextLoc() {
     if cnt == 0 || acceleratestage != 0 {
         WI_initNoState();
     } else {
-        snl_pointeron = (cnt & 31 as ::core::ffi::c_int) < 20 as ::core::ffi::c_int;
+        snl_pointeron = (cnt & 31 as i32) < 20 as i32;
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawShowNextLoc() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut last: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut last: i32 = 0;
     WI_slamBackground();
     WI_drawAnimatedBack();
-    if gamemode as ::core::ffi::c_uint
-        != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        != commercial as i32 as u32
     {
-        if (*wbs).epsd > 2 as ::core::ffi::c_int {
+        if (*wbs).epsd > 2 as i32 {
             WI_drawEL();
             return;
         }
-        last = if (*wbs).last == 8 as ::core::ffi::c_int {
-            (*wbs).next - 1 as ::core::ffi::c_int
+        last = if (*wbs).last == 8 as i32 {
+            (*wbs).next - 1 as i32
         } else {
             (*wbs).last
         };
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i <= last {
             WI_drawOnLnode(i, &raw mut splat as *mut *mut patch_t);
             i += 1;
         }
         if (*wbs).didsecret {
-            WI_drawOnLnode(8 as ::core::ffi::c_int, &raw mut splat as *mut *mut patch_t);
+            WI_drawOnLnode(8 as i32, &raw mut splat as *mut *mut patch_t);
         }
         if snl_pointeron {
             WI_drawOnLnode((*wbs).next, &raw mut yah as *mut *mut patch_t);
         }
     }
-    if gamemode as ::core::ffi::c_uint
-        != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        || (*wbs).next != 30 as ::core::ffi::c_int
+    if gamemode as u32
+        != commercial as i32 as u32
+        || (*wbs).next != 30 as i32
     {
         WI_drawEL();
     }
@@ -2697,11 +2697,11 @@ pub unsafe extern "C" fn WI_drawNoState() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_fragSum(
-    mut playernum: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut frags_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    mut playernum: i32,
+) -> i32 {
+    let mut i: i32 = 0;
+    let mut frags_0: i32 = 0 as i32;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 && i != playernum {
             frags_0 += (*plrs.offset(playernum as isize)).frags[i as usize];
@@ -2711,28 +2711,28 @@ pub unsafe extern "C" fn WI_fragSum(
     frags_0 -= (*plrs.offset(playernum as isize)).frags[playernum as usize];
     return frags_0;
 }
-static mut dm_state: ::core::ffi::c_int = 0;
-static mut dm_frags: [[::core::ffi::c_int; 4]; 4] = [[0; 4]; 4];
-static mut dm_totals: [::core::ffi::c_int; 4] = [0; 4];
+static mut dm_state: i32 = 0;
+static mut dm_frags: [[i32; 4]; 4] = [[0; 4]; 4];
+static mut dm_totals: [i32; 4] = [0; 4];
 #[no_mangle]
 pub unsafe extern "C" fn WI_initDeathmatchStats() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
     state = StatCount;
-    acceleratestage = 0 as ::core::ffi::c_int;
-    dm_state = 1 as ::core::ffi::c_int;
+    acceleratestage = 0 as i32;
+    dm_state = 1 as i32;
     cnt_pause = TICRATE;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
-            j = 0 as ::core::ffi::c_int;
+            j = 0 as i32;
             while j < MAXPLAYERS {
                 if playeringame[j as usize] != 0 {
-                    dm_frags[i as usize][j as usize] = 0 as ::core::ffi::c_int;
+                    dm_frags[i as usize][j as usize] = 0 as i32;
                 }
                 j += 1;
             }
-            dm_totals[i as usize] = 0 as ::core::ffi::c_int;
+            dm_totals[i as usize] = 0 as i32;
         }
         i += 1;
     }
@@ -2740,16 +2740,16 @@ pub unsafe extern "C" fn WI_initDeathmatchStats() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_updateDeathmatchStats() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
     let mut stillticking: boolean = 0;
     WI_updateAnimatedBack();
-    if acceleratestage != 0 && dm_state != 4 as ::core::ffi::c_int {
-        acceleratestage = 0 as ::core::ffi::c_int;
-        i = 0 as ::core::ffi::c_int;
+    if acceleratestage != 0 && dm_state != 4 as i32 {
+        acceleratestage = 0 as i32;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if playeringame[i as usize] != 0 {
-                j = 0 as ::core::ffi::c_int;
+                j = 0 as i32;
                 while j < MAXPLAYERS {
                     if playeringame[j as usize] != 0 {
                         dm_frags[i as usize][j as usize] = (*plrs.offset(i as isize))
@@ -2763,52 +2763,52 @@ pub unsafe extern "C" fn WI_updateDeathmatchStats() {
         }
         S_StartSound(
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
-            sfx_barexp as ::core::ffi::c_int,
+            sfx_barexp as i32,
         );
-        dm_state = 4 as ::core::ffi::c_int;
+        dm_state = 4 as i32;
     }
-    if dm_state == 2 as ::core::ffi::c_int {
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    if dm_state == 2 as i32 {
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
         stillticking = false_0 as boolean;
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if playeringame[i as usize] != 0 {
-                j = 0 as ::core::ffi::c_int;
+                j = 0 as i32;
                 while j < MAXPLAYERS {
                     if playeringame[j as usize] != 0
                         && dm_frags[i as usize][j as usize]
                             != (*plrs.offset(i as isize)).frags[j as usize]
                     {
                         if (*plrs.offset(i as isize)).frags[j as usize]
-                            < 0 as ::core::ffi::c_int
+                            < 0 as i32
                         {
                             dm_frags[i as usize][j as usize] -= 1;
                         } else {
                             dm_frags[i as usize][j as usize] += 1;
                         }
-                        if dm_frags[i as usize][j as usize] > 99 as ::core::ffi::c_int {
-                            dm_frags[i as usize][j as usize] = 99 as ::core::ffi::c_int;
+                        if dm_frags[i as usize][j as usize] > 99 as i32 {
+                            dm_frags[i as usize][j as usize] = 99 as i32;
                         }
-                        if dm_frags[i as usize][j as usize] < -(99 as ::core::ffi::c_int)
+                        if dm_frags[i as usize][j as usize] < -(99 as i32)
                         {
                             dm_frags[i as usize][j as usize] = -(99
-                                as ::core::ffi::c_int);
+                                as i32);
                         }
                         stillticking = true_0 as boolean;
                     }
                     j += 1;
                 }
                 dm_totals[i as usize] = WI_fragSum(i);
-                if dm_totals[i as usize] > 99 as ::core::ffi::c_int {
-                    dm_totals[i as usize] = 99 as ::core::ffi::c_int;
+                if dm_totals[i as usize] > 99 as i32 {
+                    dm_totals[i as usize] = 99 as i32;
                 }
-                if dm_totals[i as usize] < -(99 as ::core::ffi::c_int) {
-                    dm_totals[i as usize] = -(99 as ::core::ffi::c_int);
+                if dm_totals[i as usize] < -(99 as i32) {
+                    dm_totals[i as usize] = -(99 as i32);
                 }
             }
             i += 1;
@@ -2816,25 +2816,25 @@ pub unsafe extern "C" fn WI_updateDeathmatchStats() {
         if stillticking == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_barexp as ::core::ffi::c_int,
+                sfx_barexp as i32,
             );
             dm_state += 1;
         }
-    } else if dm_state == 4 as ::core::ffi::c_int {
+    } else if dm_state == 4 as i32 {
         if acceleratestage != 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_slop as ::core::ffi::c_int,
+                sfx_slop as i32,
             );
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == commercial as i32 as u32
             {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
             }
         }
-    } else if dm_state & 1 as ::core::ffi::c_int != 0 {
+    } else if dm_state & 1 as i32 != 0 {
         cnt_pause -= 1;
         if cnt_pause == 0 {
             dm_state += 1;
@@ -2844,52 +2844,52 @@ pub unsafe extern "C" fn WI_updateDeathmatchStats() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawDeathmatchStats() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
-    let mut w: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
+    let mut w: i32 = 0;
     WI_slamBackground();
     WI_drawAnimatedBack();
     WI_drawLF();
     V_DrawPatch(
-        DM_TOTALSX - (*total).width as ::core::ffi::c_int / 2 as ::core::ffi::c_int,
-        DM_MATRIXY - WI_SPACINGY + 10 as ::core::ffi::c_int,
+        DM_TOTALSX - (*total).width as i32 / 2 as i32,
+        DM_MATRIXY - WI_SPACINGY + 10 as i32,
         total,
     );
     V_DrawPatch(DM_KILLERSX, DM_KILLERSY, killers);
     V_DrawPatch(DM_VICTIMSX, DM_VICTIMSY, victims);
     x = DM_MATRIXX + DM_SPACINGX;
     y = DM_MATRIXY;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
             V_DrawPatch(
                 x
-                    - (*p[i as usize]).width as ::core::ffi::c_int
-                        / 2 as ::core::ffi::c_int,
+                    - (*p[i as usize]).width as i32
+                        / 2 as i32,
                 DM_MATRIXY - WI_SPACINGY,
                 p[i as usize],
             );
             V_DrawPatch(
                 DM_MATRIXX
-                    - (*p[i as usize]).width as ::core::ffi::c_int
-                        / 2 as ::core::ffi::c_int,
+                    - (*p[i as usize]).width as i32
+                        / 2 as i32,
                 y,
                 p[i as usize],
             );
             if i == me {
                 V_DrawPatch(
                     x
-                        - (*p[i as usize]).width as ::core::ffi::c_int
-                            / 2 as ::core::ffi::c_int,
+                        - (*p[i as usize]).width as i32
+                            / 2 as i32,
                     DM_MATRIXY - WI_SPACINGY,
                     bstar,
                 );
                 V_DrawPatch(
                     DM_MATRIXX
-                        - (*p[i as usize]).width as ::core::ffi::c_int
-                            / 2 as ::core::ffi::c_int,
+                        - (*p[i as usize]).width as i32
+                            / 2 as i32,
                     y,
                     star,
                 );
@@ -2899,20 +2899,20 @@ pub unsafe extern "C" fn WI_drawDeathmatchStats() {
         y += WI_SPACINGY;
         i += 1;
     }
-    y = DM_MATRIXY + 10 as ::core::ffi::c_int;
-    w = (*num[0 as ::core::ffi::c_int as usize]).width as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    y = DM_MATRIXY + 10 as i32;
+    w = (*num[0 as i32 as usize]).width as i32;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         x = DM_MATRIXX + DM_SPACINGX;
         if playeringame[i as usize] != 0 {
-            j = 0 as ::core::ffi::c_int;
+            j = 0 as i32;
             while j < MAXPLAYERS {
                 if playeringame[j as usize] != 0 {
                     WI_drawNum(
                         x + w,
                         y,
                         dm_frags[i as usize][j as usize],
-                        2 as ::core::ffi::c_int,
+                        2 as i32,
                     );
                 }
                 x += DM_SPACINGX;
@@ -2922,27 +2922,27 @@ pub unsafe extern "C" fn WI_drawDeathmatchStats() {
                 DM_TOTALSX + w,
                 y,
                 dm_totals[i as usize],
-                2 as ::core::ffi::c_int,
+                2 as i32,
             );
         }
         y += WI_SPACINGY;
         i += 1;
     }
 }
-static mut cnt_frags: [::core::ffi::c_int; 4] = [0; 4];
-static mut dofrags: ::core::ffi::c_int = 0;
-static mut ng_state: ::core::ffi::c_int = 0;
+static mut cnt_frags: [i32; 4] = [0; 4];
+static mut dofrags: i32 = 0;
+static mut ng_state: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn WI_initNetgameStats() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     state = StatCount;
-    acceleratestage = 0 as ::core::ffi::c_int;
-    ng_state = 1 as ::core::ffi::c_int;
+    acceleratestage = 0 as i32;
+    ng_state = 1 as i32;
     cnt_pause = TICRATE;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if !(playeringame[i as usize] == 0) {
-            cnt_frags[i as usize] = 0 as ::core::ffi::c_int;
+            cnt_frags[i as usize] = 0 as i32;
             cnt_secret[i as usize] = cnt_frags[i as usize];
             cnt_items[i as usize] = cnt_secret[i as usize];
             cnt_kills[i as usize] = cnt_items[i as usize];
@@ -2950,26 +2950,26 @@ pub unsafe extern "C" fn WI_initNetgameStats() {
         }
         i += 1;
     }
-    dofrags = (dofrags != 0) as ::core::ffi::c_int;
+    dofrags = (dofrags != 0) as i32;
     WI_initAnimatedBack();
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_updateNetgameStats() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut fsum: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut fsum: i32 = 0;
     let mut stillticking: boolean = 0;
     WI_updateAnimatedBack();
-    if acceleratestage != 0 && ng_state != 10 as ::core::ffi::c_int {
-        acceleratestage = 0 as ::core::ffi::c_int;
-        i = 0 as ::core::ffi::c_int;
+    if acceleratestage != 0 && ng_state != 10 as i32 {
+        acceleratestage = 0 as i32;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
                 cnt_kills[i as usize] = (*plrs.offset(i as isize)).skills
-                    * 100 as ::core::ffi::c_int / (*wbs).maxkills;
+                    * 100 as i32 / (*wbs).maxkills;
                 cnt_items[i as usize] = (*plrs.offset(i as isize)).sitems
-                    * 100 as ::core::ffi::c_int / (*wbs).maxitems;
+                    * 100 as i32 / (*wbs).maxitems;
                 cnt_secret[i as usize] = (*plrs.offset(i as isize)).ssecret
-                    * 100 as ::core::ffi::c_int / (*wbs).maxsecret;
+                    * 100 as i32 / (*wbs).maxsecret;
                 if dofrags != 0 {
                     cnt_frags[i as usize] = WI_fragSum(i);
                 }
@@ -2978,28 +2978,28 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
         }
         S_StartSound(
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
-            sfx_barexp as ::core::ffi::c_int,
+            sfx_barexp as i32,
         );
-        ng_state = 10 as ::core::ffi::c_int;
+        ng_state = 10 as i32;
     }
-    if ng_state == 2 as ::core::ffi::c_int {
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    if ng_state == 2 as i32 {
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
         stillticking = false_0 as boolean;
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
-                cnt_kills[i as usize] += 2 as ::core::ffi::c_int;
+                cnt_kills[i as usize] += 2 as i32;
                 if cnt_kills[i as usize]
-                    >= (*plrs.offset(i as isize)).skills * 100 as ::core::ffi::c_int
+                    >= (*plrs.offset(i as isize)).skills * 100 as i32
                         / (*wbs).maxkills
                 {
                     cnt_kills[i as usize] = (*plrs.offset(i as isize)).skills
-                        * 100 as ::core::ffi::c_int / (*wbs).maxkills;
+                        * 100 as i32 / (*wbs).maxkills;
                 } else {
                     stillticking = true_0 as boolean;
                 }
@@ -3009,28 +3009,28 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
         if stillticking == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_barexp as ::core::ffi::c_int,
+                sfx_barexp as i32,
             );
             ng_state += 1;
         }
-    } else if ng_state == 4 as ::core::ffi::c_int {
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    } else if ng_state == 4 as i32 {
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
         stillticking = false_0 as boolean;
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
-                cnt_items[i as usize] += 2 as ::core::ffi::c_int;
+                cnt_items[i as usize] += 2 as i32;
                 if cnt_items[i as usize]
-                    >= (*plrs.offset(i as isize)).sitems * 100 as ::core::ffi::c_int
+                    >= (*plrs.offset(i as isize)).sitems * 100 as i32
                         / (*wbs).maxitems
                 {
                     cnt_items[i as usize] = (*plrs.offset(i as isize)).sitems
-                        * 100 as ::core::ffi::c_int / (*wbs).maxitems;
+                        * 100 as i32 / (*wbs).maxitems;
                 } else {
                     stillticking = true_0 as boolean;
                 }
@@ -3040,28 +3040,28 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
         if stillticking == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_barexp as ::core::ffi::c_int,
+                sfx_barexp as i32,
             );
             ng_state += 1;
         }
-    } else if ng_state == 6 as ::core::ffi::c_int {
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    } else if ng_state == 6 as i32 {
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
         stillticking = false_0 as boolean;
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
-                cnt_secret[i as usize] += 2 as ::core::ffi::c_int;
+                cnt_secret[i as usize] += 2 as i32;
                 if cnt_secret[i as usize]
-                    >= (*plrs.offset(i as isize)).ssecret * 100 as ::core::ffi::c_int
+                    >= (*plrs.offset(i as isize)).ssecret * 100 as i32
                         / (*wbs).maxsecret
                 {
                     cnt_secret[i as usize] = (*plrs.offset(i as isize)).ssecret
-                        * 100 as ::core::ffi::c_int / (*wbs).maxsecret;
+                        * 100 as i32 / (*wbs).maxsecret;
                 } else {
                     stillticking = true_0 as boolean;
                 }
@@ -3071,24 +3071,24 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
         if stillticking == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_barexp as ::core::ffi::c_int,
+                sfx_barexp as i32,
             );
             ng_state
-                += 1 as ::core::ffi::c_int
-                    + 2 as ::core::ffi::c_int * (dofrags == 0) as ::core::ffi::c_int;
+                += 1 as i32
+                    + 2 as i32 * (dofrags == 0) as i32;
         }
-    } else if ng_state == 8 as ::core::ffi::c_int {
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    } else if ng_state == 8 as i32 {
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
         stillticking = false_0 as boolean;
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
-                cnt_frags[i as usize] += 1 as ::core::ffi::c_int;
+                cnt_frags[i as usize] += 1 as i32;
                 fsum = WI_fragSum(i);
                 if cnt_frags[i as usize] >= fsum {
                     cnt_frags[i as usize] = fsum;
@@ -3101,25 +3101,25 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
         if stillticking == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pldeth as ::core::ffi::c_int,
+                sfx_pldeth as i32,
             );
             ng_state += 1;
         }
-    } else if ng_state == 10 as ::core::ffi::c_int {
+    } else if ng_state == 10 as i32 {
         if acceleratestage != 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_sgcock as ::core::ffi::c_int,
+                sfx_sgcock as i32,
             );
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == commercial as i32 as u32
             {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
             }
         }
-    } else if ng_state & 1 as ::core::ffi::c_int != 0 {
+    } else if ng_state & 1 as i32 != 0 {
         cnt_pause -= 1;
         if cnt_pause == 0 {
             ng_state += 1;
@@ -3129,90 +3129,90 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawNetgameStats() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
-    let mut pwidth: ::core::ffi::c_int = (*percent).width as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
+    let mut pwidth: i32 = (*percent).width as i32;
     WI_slamBackground();
     WI_drawAnimatedBack();
     WI_drawLF();
     V_DrawPatch(
-        32 as ::core::ffi::c_int
-            + (*star).width as ::core::ffi::c_int / 2 as ::core::ffi::c_int
-            + 32 as ::core::ffi::c_int * (dofrags == 0) as ::core::ffi::c_int
-            + NG_SPACINGX - (*kills).width as ::core::ffi::c_int,
+        32 as i32
+            + (*star).width as i32 / 2 as i32
+            + 32 as i32 * (dofrags == 0) as i32
+            + NG_SPACINGX - (*kills).width as i32,
         NG_STATSY,
         kills,
     );
     V_DrawPatch(
-        32 as ::core::ffi::c_int
-            + (*star).width as ::core::ffi::c_int / 2 as ::core::ffi::c_int
-            + 32 as ::core::ffi::c_int * (dofrags == 0) as ::core::ffi::c_int
-            + 2 as ::core::ffi::c_int * NG_SPACINGX
-            - (*items).width as ::core::ffi::c_int,
+        32 as i32
+            + (*star).width as i32 / 2 as i32
+            + 32 as i32 * (dofrags == 0) as i32
+            + 2 as i32 * NG_SPACINGX
+            - (*items).width as i32,
         NG_STATSY,
         items,
     );
     V_DrawPatch(
-        32 as ::core::ffi::c_int
-            + (*star).width as ::core::ffi::c_int / 2 as ::core::ffi::c_int
-            + 32 as ::core::ffi::c_int * (dofrags == 0) as ::core::ffi::c_int
-            + 3 as ::core::ffi::c_int * NG_SPACINGX
-            - (*secret).width as ::core::ffi::c_int,
+        32 as i32
+            + (*star).width as i32 / 2 as i32
+            + 32 as i32 * (dofrags == 0) as i32
+            + 3 as i32 * NG_SPACINGX
+            - (*secret).width as i32,
         NG_STATSY,
         secret,
     );
     if dofrags != 0 {
         V_DrawPatch(
-            32 as ::core::ffi::c_int
-                + (*star).width as ::core::ffi::c_int / 2 as ::core::ffi::c_int
-                + 32 as ::core::ffi::c_int * (dofrags == 0) as ::core::ffi::c_int
-                + 4 as ::core::ffi::c_int * NG_SPACINGX
-                - (*frags).width as ::core::ffi::c_int,
+            32 as i32
+                + (*star).width as i32 / 2 as i32
+                + 32 as i32 * (dofrags == 0) as i32
+                + 4 as i32 * NG_SPACINGX
+                - (*frags).width as i32,
             NG_STATSY,
             frags,
         );
     }
-    y = NG_STATSY + (*kills).height as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    y = NG_STATSY + (*kills).height as i32;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if !(playeringame[i as usize] == 0) {
-            x = 32 as ::core::ffi::c_int
-                + (*star).width as ::core::ffi::c_int / 2 as ::core::ffi::c_int
-                + 32 as ::core::ffi::c_int * (dofrags == 0) as ::core::ffi::c_int;
+            x = 32 as i32
+                + (*star).width as i32 / 2 as i32
+                + 32 as i32 * (dofrags == 0) as i32;
             V_DrawPatch(
-                x - (*p[i as usize]).width as ::core::ffi::c_int,
+                x - (*p[i as usize]).width as i32,
                 y,
                 p[i as usize],
             );
             if i == me {
-                V_DrawPatch(x - (*p[i as usize]).width as ::core::ffi::c_int, y, star);
+                V_DrawPatch(x - (*p[i as usize]).width as i32, y, star);
             }
             x += NG_SPACINGX;
             WI_drawPercent(
                 x - pwidth,
-                y + 10 as ::core::ffi::c_int,
+                y + 10 as i32,
                 cnt_kills[i as usize],
             );
             x += NG_SPACINGX;
             WI_drawPercent(
                 x - pwidth,
-                y + 10 as ::core::ffi::c_int,
+                y + 10 as i32,
                 cnt_items[i as usize],
             );
             x += NG_SPACINGX;
             WI_drawPercent(
                 x - pwidth,
-                y + 10 as ::core::ffi::c_int,
+                y + 10 as i32,
                 cnt_secret[i as usize],
             );
             x += NG_SPACINGX;
             if dofrags != 0 {
                 WI_drawNum(
                     x,
-                    y + 10 as ::core::ffi::c_int,
+                    y + 10 as i32,
                     cnt_frags[i as usize],
-                    -(1 as ::core::ffi::c_int),
+                    -(1 as i32),
                 );
             }
             y += WI_SPACINGY;
@@ -3220,18 +3220,18 @@ pub unsafe extern "C" fn WI_drawNetgameStats() {
         i += 1;
     }
 }
-static mut sp_state: ::core::ffi::c_int = 0;
+static mut sp_state: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn WI_initStats() {
     state = StatCount;
-    acceleratestage = 0 as ::core::ffi::c_int;
-    sp_state = 1 as ::core::ffi::c_int;
-    cnt_secret[0 as ::core::ffi::c_int as usize] = -(1 as ::core::ffi::c_int);
-    cnt_items[0 as ::core::ffi::c_int as usize] = cnt_secret[0 as ::core::ffi::c_int
+    acceleratestage = 0 as i32;
+    sp_state = 1 as i32;
+    cnt_secret[0 as i32 as usize] = -(1 as i32);
+    cnt_items[0 as i32 as usize] = cnt_secret[0 as i32
         as usize];
-    cnt_kills[0 as ::core::ffi::c_int as usize] = cnt_items[0 as ::core::ffi::c_int
+    cnt_kills[0 as i32 as usize] = cnt_items[0 as i32
         as usize];
-    cnt_par = -(1 as ::core::ffi::c_int);
+    cnt_par = -(1 as i32);
     cnt_time = cnt_par;
     cnt_pause = TICRATE;
     WI_initAnimatedBack();
@@ -3239,119 +3239,119 @@ pub unsafe extern "C" fn WI_initStats() {
 #[no_mangle]
 pub unsafe extern "C" fn WI_updateStats() {
     WI_updateAnimatedBack();
-    if acceleratestage != 0 && sp_state != 10 as ::core::ffi::c_int {
-        acceleratestage = 0 as ::core::ffi::c_int;
-        cnt_kills[0 as ::core::ffi::c_int as usize] = (*plrs.offset(me as isize)).skills
-            * 100 as ::core::ffi::c_int / (*wbs).maxkills;
-        cnt_items[0 as ::core::ffi::c_int as usize] = (*plrs.offset(me as isize)).sitems
-            * 100 as ::core::ffi::c_int / (*wbs).maxitems;
-        cnt_secret[0 as ::core::ffi::c_int as usize] = (*plrs.offset(me as isize))
-            .ssecret * 100 as ::core::ffi::c_int / (*wbs).maxsecret;
+    if acceleratestage != 0 && sp_state != 10 as i32 {
+        acceleratestage = 0 as i32;
+        cnt_kills[0 as i32 as usize] = (*plrs.offset(me as isize)).skills
+            * 100 as i32 / (*wbs).maxkills;
+        cnt_items[0 as i32 as usize] = (*plrs.offset(me as isize)).sitems
+            * 100 as i32 / (*wbs).maxitems;
+        cnt_secret[0 as i32 as usize] = (*plrs.offset(me as isize))
+            .ssecret * 100 as i32 / (*wbs).maxsecret;
         cnt_time = (*plrs.offset(me as isize)).stime / TICRATE;
         cnt_par = (*wbs).partime / TICRATE;
         S_StartSound(
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
-            sfx_barexp as ::core::ffi::c_int,
+            sfx_barexp as i32,
         );
-        sp_state = 10 as ::core::ffi::c_int;
+        sp_state = 10 as i32;
     }
-    if sp_state == 2 as ::core::ffi::c_int {
-        cnt_kills[0 as ::core::ffi::c_int as usize] += 2 as ::core::ffi::c_int;
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    if sp_state == 2 as i32 {
+        cnt_kills[0 as i32 as usize] += 2 as i32;
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
-        if cnt_kills[0 as ::core::ffi::c_int as usize]
-            >= (*plrs.offset(me as isize)).skills * 100 as ::core::ffi::c_int
+        if cnt_kills[0 as i32 as usize]
+            >= (*plrs.offset(me as isize)).skills * 100 as i32
                 / (*wbs).maxkills
         {
-            cnt_kills[0 as ::core::ffi::c_int as usize] = (*plrs.offset(me as isize))
-                .skills * 100 as ::core::ffi::c_int / (*wbs).maxkills;
+            cnt_kills[0 as i32 as usize] = (*plrs.offset(me as isize))
+                .skills * 100 as i32 / (*wbs).maxkills;
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_barexp as ::core::ffi::c_int,
+                sfx_barexp as i32,
             );
             sp_state += 1;
         }
-    } else if sp_state == 4 as ::core::ffi::c_int {
-        cnt_items[0 as ::core::ffi::c_int as usize] += 2 as ::core::ffi::c_int;
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    } else if sp_state == 4 as i32 {
+        cnt_items[0 as i32 as usize] += 2 as i32;
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
-        if cnt_items[0 as ::core::ffi::c_int as usize]
-            >= (*plrs.offset(me as isize)).sitems * 100 as ::core::ffi::c_int
+        if cnt_items[0 as i32 as usize]
+            >= (*plrs.offset(me as isize)).sitems * 100 as i32
                 / (*wbs).maxitems
         {
-            cnt_items[0 as ::core::ffi::c_int as usize] = (*plrs.offset(me as isize))
-                .sitems * 100 as ::core::ffi::c_int / (*wbs).maxitems;
+            cnt_items[0 as i32 as usize] = (*plrs.offset(me as isize))
+                .sitems * 100 as i32 / (*wbs).maxitems;
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_barexp as ::core::ffi::c_int,
+                sfx_barexp as i32,
             );
             sp_state += 1;
         }
-    } else if sp_state == 6 as ::core::ffi::c_int {
-        cnt_secret[0 as ::core::ffi::c_int as usize] += 2 as ::core::ffi::c_int;
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    } else if sp_state == 6 as i32 {
+        cnt_secret[0 as i32 as usize] += 2 as i32;
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
-        if cnt_secret[0 as ::core::ffi::c_int as usize]
-            >= (*plrs.offset(me as isize)).ssecret * 100 as ::core::ffi::c_int
+        if cnt_secret[0 as i32 as usize]
+            >= (*plrs.offset(me as isize)).ssecret * 100 as i32
                 / (*wbs).maxsecret
         {
-            cnt_secret[0 as ::core::ffi::c_int as usize] = (*plrs.offset(me as isize))
-                .ssecret * 100 as ::core::ffi::c_int / (*wbs).maxsecret;
+            cnt_secret[0 as i32 as usize] = (*plrs.offset(me as isize))
+                .ssecret * 100 as i32 / (*wbs).maxsecret;
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_barexp as ::core::ffi::c_int,
+                sfx_barexp as i32,
             );
             sp_state += 1;
         }
-    } else if sp_state == 8 as ::core::ffi::c_int {
-        if bcnt & 3 as ::core::ffi::c_int == 0 {
+    } else if sp_state == 8 as i32 {
+        if bcnt & 3 as i32 == 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_pistol as ::core::ffi::c_int,
+                sfx_pistol as i32,
             );
         }
-        cnt_time += 3 as ::core::ffi::c_int;
+        cnt_time += 3 as i32;
         if cnt_time >= (*plrs.offset(me as isize)).stime / TICRATE {
             cnt_time = (*plrs.offset(me as isize)).stime / TICRATE;
         }
-        cnt_par += 3 as ::core::ffi::c_int;
+        cnt_par += 3 as i32;
         if cnt_par >= (*wbs).partime / TICRATE {
             cnt_par = (*wbs).partime / TICRATE;
             if cnt_time >= (*plrs.offset(me as isize)).stime / TICRATE {
                 S_StartSound(
                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                    sfx_barexp as ::core::ffi::c_int,
+                    sfx_barexp as i32,
                 );
                 sp_state += 1;
             }
         }
-    } else if sp_state == 10 as ::core::ffi::c_int {
+    } else if sp_state == 10 as i32 {
         if acceleratestage != 0 {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                sfx_sgcock as ::core::ffi::c_int,
+                sfx_sgcock as i32,
             );
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == commercial as i32 as u32
             {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
             }
         }
-    } else if sp_state & 1 as ::core::ffi::c_int != 0 {
+    } else if sp_state & 1 as i32 != 0 {
         cnt_pause -= 1;
         if cnt_pause == 0 {
             sp_state += 1;
@@ -3361,10 +3361,10 @@ pub unsafe extern "C" fn WI_updateStats() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawStats() {
-    let mut lh: ::core::ffi::c_int = 0;
-    lh = 3 as ::core::ffi::c_int
-        * (*num[0 as ::core::ffi::c_int as usize]).height as ::core::ffi::c_int
-        / 2 as ::core::ffi::c_int;
+    let mut lh: i32 = 0;
+    lh = 3 as i32
+        * (*num[0 as i32 as usize]).height as i32
+        / 2 as i32;
     WI_slamBackground();
     WI_drawAnimatedBack();
     WI_drawLF();
@@ -3372,50 +3372,50 @@ pub unsafe extern "C" fn WI_drawStats() {
     WI_drawPercent(
         SCREENWIDTH - SP_STATSX,
         SP_STATSY,
-        cnt_kills[0 as ::core::ffi::c_int as usize],
+        cnt_kills[0 as i32 as usize],
     );
     V_DrawPatch(SP_STATSX, SP_STATSY + lh, items);
     WI_drawPercent(
         SCREENWIDTH - SP_STATSX,
         SP_STATSY + lh,
-        cnt_items[0 as ::core::ffi::c_int as usize],
+        cnt_items[0 as i32 as usize],
     );
-    V_DrawPatch(SP_STATSX, SP_STATSY + 2 as ::core::ffi::c_int * lh, sp_secret);
+    V_DrawPatch(SP_STATSX, SP_STATSY + 2 as i32 * lh, sp_secret);
     WI_drawPercent(
         SCREENWIDTH - SP_STATSX,
-        SP_STATSY + 2 as ::core::ffi::c_int * lh,
-        cnt_secret[0 as ::core::ffi::c_int as usize],
+        SP_STATSY + 2 as i32 * lh,
+        cnt_secret[0 as i32 as usize],
     );
     V_DrawPatch(SP_TIMEX, SP_TIMEY, timepatch);
-    WI_drawTime(SCREENWIDTH / 2 as ::core::ffi::c_int - SP_TIMEX, SP_TIMEY, cnt_time);
-    if (*wbs).epsd < 3 as ::core::ffi::c_int {
-        V_DrawPatch(SCREENWIDTH / 2 as ::core::ffi::c_int + SP_TIMEX, SP_TIMEY, par);
+    WI_drawTime(SCREENWIDTH / 2 as i32 - SP_TIMEX, SP_TIMEY, cnt_time);
+    if (*wbs).epsd < 3 as i32 {
+        V_DrawPatch(SCREENWIDTH / 2 as i32 + SP_TIMEX, SP_TIMEY, par);
         WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_checkForAccelerate() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     player = &raw mut players as *mut player_t;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
-            if (*player).cmd.buttons as ::core::ffi::c_int
-                & BT_ATTACK as ::core::ffi::c_int != 0
+            if (*player).cmd.buttons as i32
+                & BT_ATTACK as i32 != 0
             {
                 if (*player).attackdown == 0 {
-                    acceleratestage = 1 as ::core::ffi::c_int;
+                    acceleratestage = 1 as i32;
                 }
                 (*player).attackdown = true_0;
             } else {
                 (*player).attackdown = false_0;
             }
-            if (*player).cmd.buttons as ::core::ffi::c_int & BT_USE as ::core::ffi::c_int
+            if (*player).cmd.buttons as i32 & BT_USE as i32
                 != 0
             {
                 if (*player).usedown == 0 {
-                    acceleratestage = 1 as ::core::ffi::c_int;
+                    acceleratestage = 1 as i32;
                 }
                 (*player).usedown = true_0;
             } else {
@@ -3429,17 +3429,17 @@ pub unsafe extern "C" fn WI_checkForAccelerate() {
 #[no_mangle]
 pub unsafe extern "C" fn WI_Ticker() {
     bcnt += 1;
-    if bcnt == 1 as ::core::ffi::c_int {
-        if gamemode as ::core::ffi::c_uint
-            == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if bcnt == 1 as i32 {
+        if gamemode as u32
+            == commercial as i32 as u32
         {
-            S_ChangeMusic(mus_dm2int as ::core::ffi::c_int, true_0);
+            S_ChangeMusic(mus_dm2int as i32, true_0);
         } else {
-            S_ChangeMusic(mus_inter as ::core::ffi::c_int, true_0);
+            S_ChangeMusic(mus_inter as i32, true_0);
         }
     }
     WI_checkForAccelerate();
-    match state as ::core::ffi::c_int {
+    match state as i32 {
         0 => {
             if deathmatch != 0 {
                 WI_updateDeathmatchStats();
@@ -3459,14 +3459,14 @@ pub unsafe extern "C" fn WI_Ticker() {
     };
 }
 unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
     let mut name: [::core::ffi::c_char; 9] = [0; 9];
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < NUMCMAPS {
             snprintf(
                 &raw mut name as *mut ::core::ffi::c_char,
@@ -3484,7 +3484,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             i += 1;
         }
     } else {
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < NUMMAPS {
             snprintf(
                 &raw mut name as *mut ::core::ffi::c_char,
@@ -3508,7 +3508,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             )(
             b"WIURH0\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
-            (&raw mut yah as *mut *mut patch_t).offset(0 as ::core::ffi::c_int as isize)
+            (&raw mut yah as *mut *mut patch_t).offset(0 as i32 as isize)
                 as *mut *mut patch_t,
         );
         callback
@@ -3517,7 +3517,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             )(
             b"WIURH1\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
-            (&raw mut yah as *mut *mut patch_t).offset(1 as ::core::ffi::c_int as isize)
+            (&raw mut yah as *mut *mut patch_t).offset(1 as i32 as isize)
                 as *mut *mut patch_t,
         );
         callback
@@ -3527,17 +3527,17 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             b"WISPLAT\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
             (&raw mut splat as *mut *mut patch_t)
-                .offset(0 as ::core::ffi::c_int as isize) as *mut *mut patch_t,
+                .offset(0 as i32 as isize) as *mut *mut patch_t,
         );
-        if (*wbs).epsd < 3 as ::core::ffi::c_int {
-            j = 0 as ::core::ffi::c_int;
+        if (*wbs).epsd < 3 as i32 {
+            j = 0 as i32;
             while j < NUMANIMS[(*wbs).epsd as usize] {
                 a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize))
                     .offset(j as isize) as *mut anim_t;
-                i = 0 as ::core::ffi::c_int;
+                i = 0 as i32;
                 while i < (*a).nanims {
-                    if (*wbs).epsd != 1 as ::core::ffi::c_int
-                        || j != 8 as ::core::ffi::c_int
+                    if (*wbs).epsd != 1 as i32
+                        || j != 8 as i32
                     {
                         snprintf(
                             &raw mut name as *mut ::core::ffi::c_char,
@@ -3557,8 +3557,8 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
                                 as *mut *mut patch_t,
                         );
                     } else {
-                        (*a).p[i as usize] = (*anims[1 as ::core::ffi::c_int as usize]
-                            .offset(4 as ::core::ffi::c_int as isize))
+                        (*a).p[i as usize] = (*anims[1 as i32 as usize]
+                            .offset(4 as i32 as isize))
                             .p[i as usize];
                     }
                     i += 1;
@@ -3575,8 +3575,8 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             as *mut ::core::ffi::c_char,
         &raw mut wiminus,
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < 10 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 10 as i32 {
         snprintf(
             &raw mut name as *mut ::core::ffi::c_char,
             9 as size_t,
@@ -3640,7 +3640,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
         &raw mut sp_secret,
     );
     if W_CheckNumForName("WIOBJ",
-    ) >= 0 as ::core::ffi::c_int
+    ) >= 0 as i32
     {
         if netgame && deathmatch == 0 {
             callback
@@ -3735,7 +3735,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             as *mut ::core::ffi::c_char,
         &raw mut total,
     );
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         snprintf(
             &raw mut name as *mut ::core::ffi::c_char,
@@ -3754,7 +3754,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             &raw mut name as *mut ::core::ffi::c_char,
             9 as size_t,
             b"WIBP%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i + 1 as ::core::ffi::c_int,
+            i + 1 as i32,
         );
         callback
             .expect(
@@ -3765,17 +3765,17 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
         );
         i += 1;
     }
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
             b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char,
             ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
         );
-    } else if gamemode as ::core::ffi::c_uint
-        == retail as ::core::ffi::c_int as ::core::ffi::c_uint
-        && (*wbs).epsd == 3 as ::core::ffi::c_int
+    } else if gamemode as u32
+        == retail as i32 as u32
+        && (*wbs).epsd == 3 as i32
     {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
@@ -3801,26 +3801,26 @@ unsafe extern "C" fn WI_loadCallback(
 ) {
     *variable = W_CacheLumpName(
         &wad_name8_to_string(name),
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
     ) as *mut patch_t;
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_loadData() {
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
-        NUMCMAPS = 32 as ::core::ffi::c_int;
+        NUMCMAPS = 32 as i32;
         lnames = Z_Malloc(
             (::core::mem::size_of::<*mut patch_t>() as usize)
-                .wrapping_mul(NUMCMAPS as usize) as ::core::ffi::c_int,
-            PU_STATIC as ::core::ffi::c_int,
+                .wrapping_mul(NUMCMAPS as usize) as i32,
+            PU_STATIC as i32,
             NULL,
         ) as *mut *mut patch_t;
     } else {
         lnames = Z_Malloc(
             (::core::mem::size_of::<*mut patch_t>() as usize)
-                .wrapping_mul(NUMMAPS as usize) as ::core::ffi::c_int,
-            PU_STATIC as ::core::ffi::c_int,
+                .wrapping_mul(NUMMAPS as usize) as i32,
+            PU_STATIC as i32,
             NULL,
         ) as *mut *mut patch_t;
     }
@@ -3834,10 +3834,10 @@ pub unsafe extern "C" fn WI_loadData() {
         ),
     );
     star = W_CacheLumpName("STFST01",
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
     ) as *mut patch_t;
     bstar = W_CacheLumpName("STFDEAD0",
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
     ) as *mut patch_t;
 }
 unsafe extern "C" fn WI_unloadCallback(
@@ -3849,7 +3849,7 @@ unsafe extern "C" fn WI_unloadCallback(
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_Drawer() {
-    match state as ::core::ffi::c_int {
+    match state as i32 {
         0 => {
             if deathmatch != 0 {
                 WI_drawDeathmatchStats();
@@ -3871,26 +3871,26 @@ pub unsafe extern "C" fn WI_Drawer() {
 #[no_mangle]
 pub unsafe extern "C" fn WI_initVariables(mut wbstartstruct: *mut wbstartstruct_t) {
     wbs = wbstartstruct;
-    acceleratestage = 0 as ::core::ffi::c_int;
-    bcnt = 0 as ::core::ffi::c_int;
+    acceleratestage = 0 as i32;
+    bcnt = 0 as i32;
     cnt = bcnt;
-    firstrefresh = 1 as ::core::ffi::c_int;
+    firstrefresh = 1 as i32;
     me = (*wbs).pnum;
     plrs = &raw mut (*wbs).plyr as *mut wbplayerstruct_t;
     if (*wbs).maxkills == 0 {
-        (*wbs).maxkills = 1 as ::core::ffi::c_int;
+        (*wbs).maxkills = 1 as i32;
     }
     if (*wbs).maxitems == 0 {
-        (*wbs).maxitems = 1 as ::core::ffi::c_int;
+        (*wbs).maxitems = 1 as i32;
     }
     if (*wbs).maxsecret == 0 {
-        (*wbs).maxsecret = 1 as ::core::ffi::c_int;
+        (*wbs).maxsecret = 1 as i32;
     }
-    if gamemode as ::core::ffi::c_uint
-        != retail as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        != retail as i32 as u32
     {
-        if (*wbs).epsd > 2 as ::core::ffi::c_int {
-            (*wbs).epsd -= 3 as ::core::ffi::c_int;
+        if (*wbs).epsd > 2 as i32 {
+            (*wbs).epsd -= 3 as i32;
         }
     }
 }
@@ -3910,13 +3910,13 @@ unsafe extern "C" fn run_static_initializers() {
     NUMANIMS = [
         (::core::mem::size_of::<[anim_t; 10]>() as usize)
             .wrapping_div(::core::mem::size_of::<anim_t>() as usize)
-            as ::core::ffi::c_int,
+            as i32,
         (::core::mem::size_of::<[anim_t; 9]>() as usize)
             .wrapping_div(::core::mem::size_of::<anim_t>() as usize)
-            as ::core::ffi::c_int,
+            as i32,
         (::core::mem::size_of::<[anim_t; 6]>() as usize)
             .wrapping_div(::core::mem::size_of::<anim_t>() as usize)
-            as ::core::ffi::c_int,
+            as i32,
         0,
     ];
 }

@@ -8,8 +8,8 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
-pub type boolean = ::core::ffi::c_uint;
-pub const MAX_CAPTURES: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
+pub type boolean = u32;
+pub const MAX_CAPTURES: i32 = 32 as i32;
 static mut captured_stats: [wbstartstruct_t; 32] = [wbstartstruct_t {
     epsd: 0,
     didsecret: false,
@@ -31,7 +31,7 @@ static mut captured_stats: [wbstartstruct_t; 32] = [wbstartstruct_t {
         score: 0,
     }; 4],
 }; 32];
-static mut num_captured_stats: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+static mut num_captured_stats: i32 = 0 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn StatCopy(mut stats: *mut wbstartstruct_t) {
     if M_ParmExists("-statdump") && num_captured_stats < MAX_CAPTURES {

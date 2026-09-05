@@ -9,18 +9,18 @@ extern "C" {
     static mut netgame: bool;
     static mut menuactive: bool;
     static mut paused: bool;
-    static mut consoleplayer: ::core::ffi::c_int;
+    static mut consoleplayer: i32;
     static mut demoplayback: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -38,7 +38,7 @@ pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -178,7 +178,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1147,7 +1147,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1286,9 +1286,9 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
+pub const MAXPLAYERS: i32 = 4 as i32;
 #[no_mangle]
-pub static mut leveltime: ::core::ffi::c_int = 0;
+pub static mut leveltime: i32 = 0;
 #[no_mangle]
 pub static mut thinkercap: thinker_t = thinker_s {
     prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
@@ -1312,7 +1312,7 @@ pub unsafe extern "C" fn P_RemoveThinker(mut thinker: *mut thinker_t) {
     (*thinker).function.acv = ::core::mem::transmute::<
         ::libc::intptr_t,
         actionf_v,
-    >(-(1 as ::core::ffi::c_int) as ::libc::intptr_t);
+    >(-(1 as i32) as ::libc::intptr_t);
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_AllocateThinker(mut thinker: *mut thinker_t) {}
@@ -1325,7 +1325,7 @@ pub unsafe extern "C" fn P_RunThinkers() {
             == ::core::mem::transmute::<
                 ::libc::intptr_t,
                 actionf_v,
-            >(-(1 as ::core::ffi::c_int) as ::libc::intptr_t)
+            >(-(1 as i32) as ::libc::intptr_t)
         {
             (*(*currentthinker).next).prev = (*currentthinker).prev;
             (*(*currentthinker).prev).next = (*currentthinker).next;
@@ -1343,16 +1343,16 @@ pub unsafe extern "C" fn P_RunThinkers() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_Ticker() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     if paused {
         return;
     }
     if !netgame && menuactive && !demoplayback
-        && players[consoleplayer as usize].viewz != 1 as ::core::ffi::c_int
+        && players[consoleplayer as usize].viewz != 1 as i32
     {
         return;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
             P_PlayerThink(

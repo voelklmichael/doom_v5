@@ -4,11 +4,11 @@ use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::i_system::I_Error;
 extern "C" {
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn P_Random() -> ::core::ffi::c_int;
+    fn P_Random() -> i32;
     static mut sectors: *mut sector_t;
     static mut sides: *mut side_t;
     fn P_AddThinker(thinker: *mut thinker_t);
@@ -17,28 +17,28 @@ extern "C" {
     fn P_FindHighestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindNextHighestFloor(
         sec: *mut sector_t,
-        currentheight: ::core::ffi::c_int,
+        currentheight: i32,
     ) -> fixed_t;
     fn P_FindSectorFromLineTag(
         line: *mut line_t,
-        start: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        start: i32,
+    ) -> i32;
     fn T_MovePlane(
         sector: *mut sector_t,
         speed: fixed_t,
         dest: fixed_t,
         crush: boolean,
-        floorOrCeiling: ::core::ffi::c_int,
-        direction: ::core::ffi::c_int,
+        floorOrCeiling: i32,
+        direction: i32,
     ) -> result_e;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    static mut leveltime: ::core::ffi::c_int;
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
+    static mut leveltime: i32;
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -48,7 +48,7 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -60,15 +60,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -208,7 +208,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1177,7 +1177,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1316,12 +1316,12 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type plat_e = ::core::ffi::c_uint;
+pub type plat_e = u32;
 pub const in_stasis: plat_e = 3;
 pub const waiting: plat_e = 2;
 pub const down: plat_e = 1;
 pub const up: plat_e = 0;
-pub type plattype_e = ::core::ffi::c_uint;
+pub type plattype_e = u32;
 pub const blazeDWUS: plattype_e = 4;
 pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
@@ -1330,11 +1330,11 @@ pub const perpetualRaise: plattype_e = 0;
 pub const sfx_pstart: C2RustUnnamed_0 = 18;
 pub const sfx_pstop: C2RustUnnamed_0 = 19;
 pub const pastdest: result_e = 2;
-pub type result_e = ::core::ffi::c_uint;
+pub type result_e = u32;
 pub const crushed: result_e = 1;
 pub const ok: result_e = 0;
 pub const sfx_stnmov: C2RustUnnamed_0 = 22;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMSFX: C2RustUnnamed_0 = 109;
 pub const sfx_radio: C2RustUnnamed_0 = 108;
 pub const sfx_skeatk: C2RustUnnamed_0 = 107;
@@ -1442,65 +1442,65 @@ pub const sfx_sgcock: C2RustUnnamed_0 = 3;
 pub const sfx_shotgn: C2RustUnnamed_0 = 2;
 pub const sfx_pistol: C2RustUnnamed_0 = 1;
 pub const sfx_None: C2RustUnnamed_0 = 0;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const TICRATE: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const PLATWAIT: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const PLATSPEED: ::core::ffi::c_int = FRACUNIT;
-pub const MAXPLATS: ::core::ffi::c_int = 30 as ::core::ffi::c_int;
+pub const TICRATE: i32 = 35 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const PLATWAIT: i32 = 3 as i32;
+pub const PLATSPEED: i32 = FRACUNIT;
+pub const MAXPLATS: i32 = 30 as i32;
 #[no_mangle]
 pub static mut activeplats: [*mut plat_t; 30] = [::core::ptr::null::<plat_t>()
     as *mut plat_t; 30];
 #[no_mangle]
 pub unsafe extern "C" fn T_PlatRaise(mut plat: *mut plat_t) {
     let mut res: result_e = ok;
-    match (*plat).status as ::core::ffi::c_uint {
+    match (*plat).status as u32 {
         0 => {
             res = T_MovePlane(
                 (*plat).sector,
                 (*plat).speed,
                 (*plat).high,
                 (*plat).crush,
-                0 as ::core::ffi::c_int,
-                1 as ::core::ffi::c_int,
+                0 as i32,
+                1 as i32,
             );
-            if (*plat).type_0 as ::core::ffi::c_uint
-                == raiseAndChange as ::core::ffi::c_int as ::core::ffi::c_uint
-                || (*plat).type_0 as ::core::ffi::c_uint
-                    == raiseToNearestAndChange as ::core::ffi::c_int
-                        as ::core::ffi::c_uint
+            if (*plat).type_0 as u32
+                == raiseAndChange as i32 as u32
+                || (*plat).type_0 as u32
+                    == raiseToNearestAndChange as i32
+                        as u32
             {
-                if leveltime & 7 as ::core::ffi::c_int == 0 {
+                if leveltime & 7 as i32 == 0 {
                     S_StartSound(
                         &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
-                        sfx_stnmov as ::core::ffi::c_int,
+                        sfx_stnmov as i32,
                     );
                 }
             }
-            if res as ::core::ffi::c_uint
-                == crushed as ::core::ffi::c_int as ::core::ffi::c_uint
+            if res as u32
+                == crushed as i32 as u32
                 && (*plat).crush == 0
             {
                 (*plat).count = (*plat).wait;
                 (*plat).status = down;
                 S_StartSound(
                     &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
-                    sfx_pstart as ::core::ffi::c_int,
+                    sfx_pstart as i32,
                 );
-            } else if res as ::core::ffi::c_uint
-                == pastdest as ::core::ffi::c_int as ::core::ffi::c_uint
+            } else if res as u32
+                == pastdest as i32 as u32
             {
                 (*plat).count = (*plat).wait;
                 (*plat).status = waiting;
                 S_StartSound(
                     &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
-                    sfx_pstop as ::core::ffi::c_int,
+                    sfx_pstop as i32,
                 );
-                match (*plat).type_0 as ::core::ffi::c_uint {
+                match (*plat).type_0 as u32 {
                     4 | 1 => {
                         P_RemoveActivePlat(plat);
                     }
@@ -1517,17 +1517,17 @@ pub unsafe extern "C" fn T_PlatRaise(mut plat: *mut plat_t) {
                 (*plat).speed,
                 (*plat).low,
                 false_0 as boolean,
-                0 as ::core::ffi::c_int,
-                -(1 as ::core::ffi::c_int),
+                0 as i32,
+                -(1 as i32),
             );
-            if res as ::core::ffi::c_uint
-                == pastdest as ::core::ffi::c_int as ::core::ffi::c_uint
+            if res as u32
+                == pastdest as i32 as u32
             {
                 (*plat).count = (*plat).wait;
                 (*plat).status = waiting;
                 S_StartSound(
                     &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
-                    sfx_pstop as ::core::ffi::c_int,
+                    sfx_pstop as i32,
                 );
             }
         }
@@ -1541,7 +1541,7 @@ pub unsafe extern "C" fn T_PlatRaise(mut plat: *mut plat_t) {
                 }
                 S_StartSound(
                     &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
-                    sfx_pstart as ::core::ffi::c_int,
+                    sfx_pstart as i32,
                 );
             }
         }
@@ -1552,33 +1552,33 @@ pub unsafe extern "C" fn T_PlatRaise(mut plat: *mut plat_t) {
 pub unsafe extern "C" fn EV_DoPlat(
     mut line: *mut line_t,
     mut type_0: plattype_e,
-    mut amount: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut amount: i32,
+) -> i32 {
     let mut plat: *mut plat_t = ::core::ptr::null_mut::<plat_t>();
-    let mut secnum: ::core::ffi::c_int = 0;
-    let mut rtn: ::core::ffi::c_int = 0;
+    let mut secnum: i32 = 0;
+    let mut rtn: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    secnum = -(1 as ::core::ffi::c_int);
-    rtn = 0 as ::core::ffi::c_int;
-    match type_0 as ::core::ffi::c_uint {
+    secnum = -(1 as i32);
+    rtn = 0 as i32;
+    match type_0 as u32 {
         0 => {
-            P_ActivateInStasis((*line).tag as ::core::ffi::c_int);
+            P_ActivateInStasis((*line).tag as i32);
         }
         _ => {}
     }
     loop {
         secnum = P_FindSectorFromLineTag(line, secnum);
-        if !(secnum >= 0 as ::core::ffi::c_int) {
+        if !(secnum >= 0 as i32) {
             break;
         }
         sec = sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
-        rtn = 1 as ::core::ffi::c_int;
+        rtn = 1 as i32;
         plat = Z_Malloc(
-            ::core::mem::size_of::<plat_t>() as ::core::ffi::c_int,
-            PU_LEVSPEC as ::core::ffi::c_int,
+            ::core::mem::size_of::<plat_t>() as i32,
+            PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut plat_t;
         P_AddThinker(&raw mut (*plat).thinker);
@@ -1590,43 +1590,43 @@ pub unsafe extern "C" fn EV_DoPlat(
             actionf_p1,
         >(Some(T_PlatRaise as unsafe extern "C" fn(*mut plat_t) -> ()));
         (*plat).crush = false_0 as boolean;
-        (*plat).tag = (*line).tag as ::core::ffi::c_int;
-        match type_0 as ::core::ffi::c_uint {
+        (*plat).tag = (*line).tag as i32;
+        match type_0 as u32 {
             3 => {
-                (*plat).speed = (PLATSPEED / 2 as ::core::ffi::c_int) as fixed_t;
+                (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
                 (*sec).floorpic = (*(*sides
-                    .offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
+                    .offset((*line).sidenum[0 as i32 as usize] as isize))
                     .sector)
                     .floorpic;
                 (*plat).high = P_FindNextHighestFloor(
                     sec,
-                    (*sec).floorheight as ::core::ffi::c_int,
+                    (*sec).floorheight as i32,
                 );
-                (*plat).wait = 0 as ::core::ffi::c_int;
+                (*plat).wait = 0 as i32;
                 (*plat).status = up;
-                (*sec).special = 0 as ::core::ffi::c_short;
+                (*sec).special = 0 as i16;
                 S_StartSound(
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
-                    sfx_stnmov as ::core::ffi::c_int,
+                    sfx_stnmov as i32,
                 );
             }
             2 => {
-                (*plat).speed = (PLATSPEED / 2 as ::core::ffi::c_int) as fixed_t;
+                (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
                 (*sec).floorpic = (*(*sides
-                    .offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
+                    .offset((*line).sidenum[0 as i32 as usize] as isize))
                     .sector)
                     .floorpic;
-                (*plat).high = ((*sec).floorheight as ::core::ffi::c_int
+                (*plat).high = ((*sec).floorheight as i32
                     + amount * FRACUNIT) as fixed_t;
-                (*plat).wait = 0 as ::core::ffi::c_int;
+                (*plat).wait = 0 as i32;
                 (*plat).status = up;
                 S_StartSound(
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
-                    sfx_stnmov as ::core::ffi::c_int,
+                    sfx_stnmov as i32,
                 );
             }
             1 => {
-                (*plat).speed = (PLATSPEED * 4 as ::core::ffi::c_int) as fixed_t;
+                (*plat).speed = (PLATSPEED * 4 as i32) as fixed_t;
                 (*plat).low = P_FindLowestFloorSurrounding(sec);
                 if (*plat).low > (*sec).floorheight {
                     (*plat).low = (*sec).floorheight;
@@ -1636,11 +1636,11 @@ pub unsafe extern "C" fn EV_DoPlat(
                 (*plat).status = down;
                 S_StartSound(
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
-                    sfx_pstart as ::core::ffi::c_int,
+                    sfx_pstart as i32,
                 );
             }
             4 => {
-                (*plat).speed = (PLATSPEED * 8 as ::core::ffi::c_int) as fixed_t;
+                (*plat).speed = (PLATSPEED * 8 as i32) as fixed_t;
                 (*plat).low = P_FindLowestFloorSurrounding(sec);
                 if (*plat).low > (*sec).floorheight {
                     (*plat).low = (*sec).floorheight;
@@ -1650,7 +1650,7 @@ pub unsafe extern "C" fn EV_DoPlat(
                 (*plat).status = down;
                 S_StartSound(
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
-                    sfx_pstart as ::core::ffi::c_int,
+                    sfx_pstart as i32,
                 );
             }
             0 => {
@@ -1664,10 +1664,10 @@ pub unsafe extern "C" fn EV_DoPlat(
                     (*plat).high = (*sec).floorheight;
                 }
                 (*plat).wait = TICRATE * PLATWAIT;
-                (*plat).status = (P_Random() & 1 as ::core::ffi::c_int) as plat_e;
+                (*plat).status = (P_Random() & 1 as i32) as plat_e;
                 S_StartSound(
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
-                    sfx_pstart as ::core::ffi::c_int,
+                    sfx_pstart as i32,
                 );
             }
             _ => {}
@@ -1677,13 +1677,13 @@ pub unsafe extern "C" fn EV_DoPlat(
     return rtn;
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_ActivateInStasis(mut tag: ::core::ffi::c_int) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+pub unsafe extern "C" fn P_ActivateInStasis(mut tag: i32) {
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXPLATS {
         if !activeplats[i as usize].is_null() && (*activeplats[i as usize]).tag == tag
-            && (*activeplats[i as usize]).status as ::core::ffi::c_uint
-                == in_stasis as ::core::ffi::c_int as ::core::ffi::c_uint
+            && (*activeplats[i as usize]).status as u32
+                == in_stasis as i32 as u32
         {
             (*activeplats[i as usize]).status = (*activeplats[i as usize]).oldstatus;
             (*activeplats[i as usize]).thinker.function.acp1 = ::core::mem::transmute::<
@@ -1696,13 +1696,13 @@ pub unsafe extern "C" fn P_ActivateInStasis(mut tag: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn EV_StopPlat(mut line: *mut line_t) {
-    let mut j: ::core::ffi::c_int = 0;
-    j = 0 as ::core::ffi::c_int;
+    let mut j: i32 = 0;
+    j = 0 as i32;
     while j < MAXPLATS {
         if !activeplats[j as usize].is_null()
-            && (*activeplats[j as usize]).status as ::core::ffi::c_uint
-                != in_stasis as ::core::ffi::c_int as ::core::ffi::c_uint
-            && (*activeplats[j as usize]).tag == (*line).tag as ::core::ffi::c_int
+            && (*activeplats[j as usize]).status as u32
+                != in_stasis as i32 as u32
+            && (*activeplats[j as usize]).tag == (*line).tag as i32
         {
             (*activeplats[j as usize]).oldstatus = (*activeplats[j as usize]).status;
             (*activeplats[j as usize]).status = in_stasis;
@@ -1716,8 +1716,8 @@ pub unsafe extern "C" fn EV_StopPlat(mut line: *mut line_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_AddActivePlat(mut plat: *mut plat_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXPLATS {
         if activeplats[i as usize].is_null() {
             activeplats[i as usize] = plat;
@@ -1729,8 +1729,8 @@ pub unsafe extern "C" fn P_AddActivePlat(mut plat: *mut plat_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_RemoveActivePlat(mut plat: *mut plat_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXPLATS {
         if plat == activeplats[i as usize] {
             (*(*activeplats[i as usize]).sector).specialdata = NULL;

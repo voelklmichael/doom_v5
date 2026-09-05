@@ -1,33 +1,33 @@
 use crate::src::p_mobj::{mapthing_t, subsector_s, sector_t, line_t, subsector_t, actionf_t};
 use crate::src::p_mobj::{mobj_s, mobj_t};
 extern "C" {
-    fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static mut playerstarts: [mapthing_t; 4];
     static mut lines: *mut line_t;
-    static mut validcount: ::core::ffi::c_int;
+    static mut validcount: i32;
     fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
-    static mut blockmaplump: *mut ::core::ffi::c_short;
-    static mut blockmap: *mut ::core::ffi::c_short;
-    static mut bmapwidth: ::core::ffi::c_int;
-    static mut bmapheight: ::core::ffi::c_int;
+    static mut blockmaplump: *mut i16;
+    static mut blockmap: *mut i16;
+    static mut bmapwidth: i32;
+    static mut bmapheight: i32;
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
     static mut blocklinks: *mut *mut mobj_t;
     static mut bulletslope: fixed_t;
 }
 pub type __uint8_t = u8;
-pub type fixed_t = ::core::ffi::c_int;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type C2RustUnnamed = u32;
 pub const BOXRIGHT: C2RustUnnamed = 3;
 pub const BOXLEFT: C2RustUnnamed = 2;
 pub const BOXBOTTOM: C2RustUnnamed = 1;
 pub const BOXTOP: C2RustUnnamed = 0;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -39,14 +39,14 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type angle_t = ::core::ffi::c_uint;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -186,7 +186,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1155,7 +1155,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1294,7 +1294,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const MF_TRANSSHIFT: C2RustUnnamed_0 = 26;
 pub const MF_TRANSLATION: C2RustUnnamed_0 = 201326592;
 pub const MF_NOTDMATCH: C2RustUnnamed_0 = 33554432;
@@ -1348,115 +1348,115 @@ pub type traverser_t = Option<unsafe extern "C" fn(*mut intercept_t) -> boolean>
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct intercepts_overrun_t {
-    pub len: ::core::ffi::c_int,
+    pub len: i32,
     pub addr: *mut ::core::ffi::c_void,
     pub int16_array: bool,
 }
-pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
+pub const INT_MAX: i32 = __INT_MAX__;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const MAPBLOCKUNITS: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-pub const MAPBLOCKSIZE: ::core::ffi::c_int = MAPBLOCKUNITS * FRACUNIT;
-pub const MAPBLOCKSHIFT: ::core::ffi::c_int = FRACBITS + 7 as ::core::ffi::c_int;
-pub const MAPBTOFRAC: ::core::ffi::c_int = MAPBLOCKSHIFT - FRACBITS;
-pub const MAXINTERCEPTS_ORIGINAL: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-pub const PT_ADDLINES: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const PT_ADDTHINGS: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const PT_EARLYOUT: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const MAPBLOCKUNITS: i32 = 128 as i32;
+pub const MAPBLOCKSIZE: i32 = MAPBLOCKUNITS * FRACUNIT;
+pub const MAPBLOCKSHIFT: i32 = FRACBITS + 7 as i32;
+pub const MAPBTOFRAC: i32 = MAPBLOCKSHIFT - FRACBITS;
+pub const MAXINTERCEPTS_ORIGINAL: i32 = 128 as i32;
+pub const PT_ADDLINES: i32 = 1 as i32;
+pub const PT_ADDTHINGS: i32 = 2 as i32;
+pub const PT_EARLYOUT: i32 = 4 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn P_AproxDistance(mut dx: fixed_t, mut dy: fixed_t) -> fixed_t {
-    dx = abs(dx as ::core::ffi::c_int) as fixed_t;
-    dy = abs(dy as ::core::ffi::c_int) as fixed_t;
+    dx = abs(dx as i32) as fixed_t;
+    dy = abs(dy as i32) as fixed_t;
     if dx < dy {
-        return dx + dy - (dx >> 1 as ::core::ffi::c_int);
+        return dx + dy - (dx >> 1 as i32);
     }
-    return dx + dy - (dy >> 1 as ::core::ffi::c_int);
+    return dx + dy - (dy >> 1 as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_PointOnLineSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut line: *mut line_t,
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut left: fixed_t = 0;
     let mut right: fixed_t = 0;
     if (*line).dx == 0 {
         if x <= (*(*line).v1).x {
-            return ((*line).dy > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return ((*line).dy > 0 as i32) as i32;
         }
-        return ((*line).dy < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return ((*line).dy < 0 as i32) as i32;
     }
     if (*line).dy == 0 {
         if y <= (*(*line).v1).y {
-            return ((*line).dx < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return ((*line).dx < 0 as i32) as i32;
         }
-        return ((*line).dx > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return ((*line).dx > 0 as i32) as i32;
     }
     dx = x - (*(*line).v1).x;
     dy = y - (*(*line).v1).y;
     left = FixedMul((*line).dy >> FRACBITS, dx);
     right = FixedMul(dy, (*line).dx >> FRACBITS);
     if right < left {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
-    return 1 as ::core::ffi::c_int;
+    return 1 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_BoxOnLineSide(
     mut tmbox: *mut fixed_t,
     mut ld: *mut line_t,
-) -> ::core::ffi::c_int {
-    let mut p1: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    let mut p2: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    match (*ld).slopetype as ::core::ffi::c_uint {
+) -> i32 {
+    let mut p1: i32 = 0 as i32;
+    let mut p2: i32 = 0 as i32;
+    match (*ld).slopetype as u32 {
         0 => {
-            p1 = (*tmbox.offset(BOXTOP as ::core::ffi::c_int as isize) > (*(*ld).v1).y)
-                as ::core::ffi::c_int;
-            p2 = (*tmbox.offset(BOXBOTTOM as ::core::ffi::c_int as isize)
-                > (*(*ld).v1).y) as ::core::ffi::c_int;
-            if (*ld).dx < 0 as ::core::ffi::c_int {
-                p1 ^= 1 as ::core::ffi::c_int;
-                p2 ^= 1 as ::core::ffi::c_int;
+            p1 = (*tmbox.offset(BOXTOP as i32 as isize) > (*(*ld).v1).y)
+                as i32;
+            p2 = (*tmbox.offset(BOXBOTTOM as i32 as isize)
+                > (*(*ld).v1).y) as i32;
+            if (*ld).dx < 0 as i32 {
+                p1 ^= 1 as i32;
+                p2 ^= 1 as i32;
             }
         }
         1 => {
-            p1 = (*tmbox.offset(BOXRIGHT as ::core::ffi::c_int as isize) < (*(*ld).v1).x)
-                as ::core::ffi::c_int;
-            p2 = (*tmbox.offset(BOXLEFT as ::core::ffi::c_int as isize) < (*(*ld).v1).x)
-                as ::core::ffi::c_int;
-            if (*ld).dy < 0 as ::core::ffi::c_int {
-                p1 ^= 1 as ::core::ffi::c_int;
-                p2 ^= 1 as ::core::ffi::c_int;
+            p1 = (*tmbox.offset(BOXRIGHT as i32 as isize) < (*(*ld).v1).x)
+                as i32;
+            p2 = (*tmbox.offset(BOXLEFT as i32 as isize) < (*(*ld).v1).x)
+                as i32;
+            if (*ld).dy < 0 as i32 {
+                p1 ^= 1 as i32;
+                p2 ^= 1 as i32;
             }
         }
         2 => {
             p1 = P_PointOnLineSide(
-                *tmbox.offset(BOXLEFT as ::core::ffi::c_int as isize),
-                *tmbox.offset(BOXTOP as ::core::ffi::c_int as isize),
+                *tmbox.offset(BOXLEFT as i32 as isize),
+                *tmbox.offset(BOXTOP as i32 as isize),
                 ld,
             );
             p2 = P_PointOnLineSide(
-                *tmbox.offset(BOXRIGHT as ::core::ffi::c_int as isize),
-                *tmbox.offset(BOXBOTTOM as ::core::ffi::c_int as isize),
+                *tmbox.offset(BOXRIGHT as i32 as isize),
+                *tmbox.offset(BOXBOTTOM as i32 as isize),
                 ld,
             );
         }
         3 => {
             p1 = P_PointOnLineSide(
-                *tmbox.offset(BOXRIGHT as ::core::ffi::c_int as isize),
-                *tmbox.offset(BOXTOP as ::core::ffi::c_int as isize),
+                *tmbox.offset(BOXRIGHT as i32 as isize),
+                *tmbox.offset(BOXTOP as i32 as isize),
                 ld,
             );
             p2 = P_PointOnLineSide(
-                *tmbox.offset(BOXLEFT as ::core::ffi::c_int as isize),
-                *tmbox.offset(BOXBOTTOM as ::core::ffi::c_int as isize),
+                *tmbox.offset(BOXLEFT as i32 as isize),
+                *tmbox.offset(BOXBOTTOM as i32 as isize),
                 ld,
             );
         }
@@ -1465,54 +1465,54 @@ pub unsafe extern "C" fn P_BoxOnLineSide(
     if p1 == p2 {
         return p1;
     }
-    return -(1 as ::core::ffi::c_int);
+    return -(1 as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_PointOnDivlineSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut line: *mut divline_t,
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut left: fixed_t = 0;
     let mut right: fixed_t = 0;
     if (*line).dx == 0 {
         if x <= (*line).x {
-            return ((*line).dy > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return ((*line).dy > 0 as i32) as i32;
         }
-        return ((*line).dy < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return ((*line).dy < 0 as i32) as i32;
     }
     if (*line).dy == 0 {
         if y <= (*line).y {
-            return ((*line).dx < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return ((*line).dx < 0 as i32) as i32;
         }
-        return ((*line).dx > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return ((*line).dx > 0 as i32) as i32;
     }
     dx = x - (*line).x;
     dy = y - (*line).y;
-    if ((*line).dy ^ (*line).dx ^ dx ^ dy) as ::core::ffi::c_uint
-        & 0x80000000 as ::core::ffi::c_uint != 0
+    if ((*line).dy ^ (*line).dx ^ dx ^ dy) as u32
+        & 0x80000000 as u32 != 0
     {
-        if ((*line).dy ^ dx) as ::core::ffi::c_uint & 0x80000000 as ::core::ffi::c_uint
+        if ((*line).dy ^ dx) as u32 & 0x80000000 as u32
             != 0
         {
-            return 1 as ::core::ffi::c_int;
+            return 1 as i32;
         }
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
     left = FixedMul(
-        (*line).dy >> 8 as ::core::ffi::c_int,
-        dx >> 8 as ::core::ffi::c_int,
+        (*line).dy >> 8 as i32,
+        dx >> 8 as i32,
     );
     right = FixedMul(
-        dy >> 8 as ::core::ffi::c_int,
-        (*line).dx >> 8 as ::core::ffi::c_int,
+        dy >> 8 as i32,
+        (*line).dx >> 8 as i32,
     );
     if right < left {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
-    return 1 as ::core::ffi::c_int;
+    return 1 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_MakeDivline(mut li: *mut line_t, mut dl: *mut divline_t) {
@@ -1529,13 +1529,13 @@ pub unsafe extern "C" fn P_InterceptVector(
     let mut frac: fixed_t = 0;
     let mut num: fixed_t = 0;
     let mut den: fixed_t = 0;
-    den = FixedMul((*v1).dy >> 8 as ::core::ffi::c_int, (*v2).dx)
-        - FixedMul((*v1).dx >> 8 as ::core::ffi::c_int, (*v2).dy);
-    if den == 0 as ::core::ffi::c_int {
+    den = FixedMul((*v1).dy >> 8 as i32, (*v2).dx)
+        - FixedMul((*v1).dx >> 8 as i32, (*v2).dy);
+    if den == 0 as i32 {
         return 0 as fixed_t;
     }
-    num = FixedMul((*v1).x - (*v2).x >> 8 as ::core::ffi::c_int, (*v1).dy)
-        + FixedMul((*v2).y - (*v1).y >> 8 as ::core::ffi::c_int, (*v1).dx);
+    num = FixedMul((*v1).x - (*v2).x >> 8 as i32, (*v1).dy)
+        + FixedMul((*v2).y - (*v1).y >> 8 as i32, (*v1).dx);
     frac = FixedDiv(num, den);
     return frac;
 }
@@ -1551,10 +1551,10 @@ pub static mut lowfloor: fixed_t = 0;
 pub unsafe extern "C" fn P_LineOpening(mut linedef: *mut line_t) {
     let mut front: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut back: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    if (*linedef).sidenum[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-        == -(1 as ::core::ffi::c_int)
+    if (*linedef).sidenum[1 as i32 as usize] as i32
+        == -(1 as i32)
     {
-        openrange = 0 as ::core::ffi::c_int as fixed_t;
+        openrange = 0 as i32 as fixed_t;
         return;
     }
     front = (*linedef).frontsector;
@@ -1575,9 +1575,9 @@ pub unsafe extern "C" fn P_LineOpening(mut linedef: *mut line_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
-    let mut blockx: ::core::ffi::c_int = 0;
-    let mut blocky: ::core::ffi::c_int = 0;
-    if (*thing).flags & MF_NOSECTOR as ::core::ffi::c_int == 0 {
+    let mut blockx: i32 = 0;
+    let mut blocky: i32 = 0;
+    if (*thing).flags & MF_NOSECTOR as i32 == 0 {
         if !(*thing).snext.is_null() {
             (*(*thing).snext).sprev = (*thing).sprev;
         }
@@ -1587,17 +1587,17 @@ pub unsafe extern "C" fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
             (*(*(*thing).subsector).sector).thinglist = (*thing).snext as *mut mobj_t;
         }
     }
-    if (*thing).flags & MF_NOBLOCKMAP as ::core::ffi::c_int == 0 {
+    if (*thing).flags & MF_NOBLOCKMAP as i32 == 0 {
         if !(*thing).bnext.is_null() {
             (*(*thing).bnext).bprev = (*thing).bprev;
         }
         if !(*thing).bprev.is_null() {
             (*(*thing).bprev).bnext = (*thing).bnext;
         } else {
-            blockx = ((*thing).x - bmaporgx >> MAPBLOCKSHIFT) as ::core::ffi::c_int;
-            blocky = ((*thing).y - bmaporgy >> MAPBLOCKSHIFT) as ::core::ffi::c_int;
-            if blockx >= 0 as ::core::ffi::c_int && blockx < bmapwidth
-                && blocky >= 0 as ::core::ffi::c_int && blocky < bmapheight
+            blockx = ((*thing).x - bmaporgx >> MAPBLOCKSHIFT) as i32;
+            blocky = ((*thing).y - bmaporgy >> MAPBLOCKSHIFT) as i32;
+            if blockx >= 0 as i32 && blockx < bmapwidth
+                && blocky >= 0 as i32 && blocky < bmapheight
             {
                 let ref mut fresh1 = *blocklinks
                     .offset((blocky * bmapwidth + blockx) as isize);
@@ -1610,12 +1610,12 @@ pub unsafe extern "C" fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
 pub unsafe extern "C" fn P_SetThingPosition(mut thing: *mut mobj_t) {
     let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    let mut blockx: ::core::ffi::c_int = 0;
-    let mut blocky: ::core::ffi::c_int = 0;
+    let mut blockx: i32 = 0;
+    let mut blocky: i32 = 0;
     let mut link: *mut *mut mobj_t = ::core::ptr::null_mut::<*mut mobj_t>();
     ss = R_PointInSubsector((*thing).x, (*thing).y);
     (*thing).subsector = ss as *mut subsector_s;
-    if (*thing).flags & MF_NOSECTOR as ::core::ffi::c_int == 0 {
+    if (*thing).flags & MF_NOSECTOR as i32 == 0 {
         sec = (*ss).sector;
         (*thing).sprev = ::core::ptr::null_mut::<mobj_s>();
         (*thing).snext = (*sec).thinglist as *mut mobj_s;
@@ -1624,11 +1624,11 @@ pub unsafe extern "C" fn P_SetThingPosition(mut thing: *mut mobj_t) {
         }
         (*sec).thinglist = thing;
     }
-    if (*thing).flags & MF_NOBLOCKMAP as ::core::ffi::c_int == 0 {
-        blockx = ((*thing).x - bmaporgx >> MAPBLOCKSHIFT) as ::core::ffi::c_int;
-        blocky = ((*thing).y - bmaporgy >> MAPBLOCKSHIFT) as ::core::ffi::c_int;
-        if blockx >= 0 as ::core::ffi::c_int && blockx < bmapwidth
-            && blocky >= 0 as ::core::ffi::c_int && blocky < bmapheight
+    if (*thing).flags & MF_NOBLOCKMAP as i32 == 0 {
+        blockx = ((*thing).x - bmaporgx >> MAPBLOCKSHIFT) as i32;
+        blocky = ((*thing).y - bmaporgy >> MAPBLOCKSHIFT) as i32;
+        if blockx >= 0 as i32 && blockx < bmapwidth
+            && blocky >= 0 as i32 && blocky < bmapheight
         {
             link = blocklinks.offset((blocky * bmapwidth + blockx) as isize)
                 as *mut *mut mobj_t;
@@ -1646,24 +1646,24 @@ pub unsafe extern "C" fn P_SetThingPosition(mut thing: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_BlockLinesIterator(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
+    mut x: i32,
+    mut y: i32,
     mut func: Option<unsafe extern "C" fn(*mut line_t) -> boolean>,
 ) -> boolean {
-    let mut offset: ::core::ffi::c_int = 0;
-    let mut list: *mut ::core::ffi::c_short = ::core::ptr::null_mut::<
-        ::core::ffi::c_short,
+    let mut offset: i32 = 0;
+    let mut list: *mut i16 = ::core::ptr::null_mut::<
+        i16,
     >();
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    if x < 0 as ::core::ffi::c_int || y < 0 as ::core::ffi::c_int || x >= bmapwidth
+    if x < 0 as i32 || y < 0 as i32 || x >= bmapwidth
         || y >= bmapheight
     {
         return true_0 as boolean;
     }
     offset = y * bmapwidth + x;
-    offset = *blockmap.offset(offset as isize) as ::core::ffi::c_int;
+    offset = *blockmap.offset(offset as isize) as i32;
     list = blockmaplump.offset(offset as isize);
-    while *list as ::core::ffi::c_int != -(1 as ::core::ffi::c_int) {
+    while *list as i32 != -(1 as i32) {
         ld = lines.offset(*list as isize) as *mut line_t;
         if !((*ld).validcount == validcount) {
             (*ld).validcount = validcount;
@@ -1677,12 +1677,12 @@ pub unsafe extern "C" fn P_BlockLinesIterator(
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_BlockThingsIterator(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
+    mut x: i32,
+    mut y: i32,
     mut func: Option<unsafe extern "C" fn(*mut mobj_t) -> boolean>,
 ) -> boolean {
     let mut mobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    if x < 0 as ::core::ffi::c_int || y < 0 as ::core::ffi::c_int || x >= bmapwidth
+    if x < 0 as i32 || y < 0 as i32 || x >= bmapwidth
         || y >= bmapheight
     {
         return true_0 as boolean;
@@ -1717,11 +1717,11 @@ pub static mut trace: divline_t = divline_t {
 #[no_mangle]
 pub static mut earlyout: bool = false;
 #[no_mangle]
-pub static mut ptflags: ::core::ffi::c_int = 0;
+pub static mut ptflags: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
-    let mut s1: ::core::ffi::c_int = 0;
-    let mut s2: ::core::ffi::c_int = 0;
+    let mut s1: i32 = 0;
+    let mut s2: i32 = 0;
     let mut frac: fixed_t = 0;
     let mut dl: divline_t = divline_t {
         x: 0,
@@ -1729,10 +1729,10 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
         dx: 0,
         dy: 0,
     };
-    if trace.dx > FRACUNIT * 16 as ::core::ffi::c_int
-        || trace.dy > FRACUNIT * 16 as ::core::ffi::c_int
-        || trace.dx < -FRACUNIT * 16 as ::core::ffi::c_int
-        || trace.dy < -FRACUNIT * 16 as ::core::ffi::c_int
+    if trace.dx > FRACUNIT * 16 as i32
+        || trace.dy > FRACUNIT * 16 as i32
+        || trace.dx < -FRACUNIT * 16 as i32
+        || trace.dy < -FRACUNIT * 16 as i32
     {
         s1 = P_PointOnDivlineSide((*(*ld).v1).x, (*(*ld).v1).y, &raw mut trace);
         s2 = P_PointOnDivlineSide((*(*ld).v2).x, (*(*ld).v2).y, &raw mut trace);
@@ -1745,7 +1745,7 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
     }
     P_MakeDivline(ld, &raw mut dl);
     frac = P_InterceptVector(&raw mut trace, &raw mut dl);
-    if frac < 0 as ::core::ffi::c_int {
+    if frac < 0 as i32 {
         return true_0 as boolean;
     }
     if earlyout && frac < FRACUNIT && (*ld).backsector.is_null() {
@@ -1756,7 +1756,7 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
     (*intercept_p).d.line = ld;
     InterceptsOverrun(
         intercept_p.offset_from(&raw mut intercepts as *mut intercept_t)
-            as ::core::ffi::c_long as ::core::ffi::c_int,
+            as ::core::ffi::c_long as i32,
         intercept_p,
     );
     intercept_p = intercept_p.offset(1);
@@ -1768,8 +1768,8 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
     let mut y1: fixed_t = 0;
     let mut x2: fixed_t = 0;
     let mut y2: fixed_t = 0;
-    let mut s1: ::core::ffi::c_int = 0;
-    let mut s2: ::core::ffi::c_int = 0;
+    let mut s1: i32 = 0;
+    let mut s2: i32 = 0;
     let mut tracepositive: boolean = 0;
     let mut dl: divline_t = divline_t {
         x: 0,
@@ -1778,7 +1778,7 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
         dy: 0,
     };
     let mut frac: fixed_t = 0;
-    tracepositive = (trace.dx ^ trace.dy > 0 as ::core::ffi::c_int) as ::core::ffi::c_int
+    tracepositive = (trace.dx ^ trace.dy > 0 as i32) as i32
         as boolean;
     if tracepositive != 0 {
         x1 = (*thing).x - (*thing).radius;
@@ -1801,7 +1801,7 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
     dl.dx = x2 - x1;
     dl.dy = y2 - y1;
     frac = P_InterceptVector(&raw mut trace, &raw mut dl);
-    if frac < 0 as ::core::ffi::c_int {
+    if frac < 0 as i32 {
         return true_0 as boolean;
     }
     (*intercept_p).frac = frac;
@@ -1809,7 +1809,7 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
     (*intercept_p).d.thing = thing;
     InterceptsOverrun(
         intercept_p.offset_from(&raw mut intercepts as *mut intercept_t)
-            as ::core::ffi::c_long as ::core::ffi::c_int,
+            as ::core::ffi::c_long as i32,
         intercept_p,
     );
     intercept_p = intercept_p.offset(1);
@@ -1820,12 +1820,12 @@ pub unsafe extern "C" fn P_TraverseIntercepts(
     mut func: traverser_t,
     mut maxfrac: fixed_t,
 ) -> boolean {
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     let mut dist: fixed_t = 0;
     let mut scan: *mut intercept_t = ::core::ptr::null_mut::<intercept_t>();
     let mut in_0: *mut intercept_t = ::core::ptr::null_mut::<intercept_t>();
     count = intercept_p.offset_from(&raw mut intercepts as *mut intercept_t)
-        as ::core::ffi::c_long as ::core::ffi::c_int;
+        as ::core::ffi::c_long as i32;
     in_0 = ::core::ptr::null_mut::<intercept_t>();
     loop {
         let fresh0 = count;
@@ -1855,152 +1855,152 @@ pub unsafe extern "C" fn P_TraverseIntercepts(
 static mut intercepts_overrun: [intercepts_overrun_t; 23] = unsafe {
     [
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: &raw const lowfloor as *mut fixed_t as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: &raw const openbottom as *mut fixed_t as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: &raw const opentop as *mut fixed_t as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: &raw const openrange as *mut fixed_t as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 120 as ::core::ffi::c_int,
+            len: 120 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 8 as ::core::ffi::c_int,
+            len: 8 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: &raw const bulletslope as *mut fixed_t as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 40 as ::core::ffi::c_int,
+            len: 40 as i32,
             addr: &raw const playerstarts as *mut [mapthing_t; 4]
                 as *mut ::core::ffi::c_void,
             int16_array: true,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
-            addr: &raw const bmapwidth as *mut ::core::ffi::c_int
+            len: 4 as i32,
+            addr: &raw const bmapwidth as *mut i32
                 as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: &raw const bmaporgx as *mut fixed_t as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: &raw const bmaporgy as *mut fixed_t as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
+            len: 4 as i32,
             addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 4 as ::core::ffi::c_int,
-            addr: &raw const bmapheight as *mut ::core::ffi::c_int
+            len: 4 as i32,
+            addr: &raw const bmapheight as *mut i32
                 as *mut ::core::ffi::c_void,
             int16_array: false,
         },
         intercepts_overrun_t {
-            len: 0 as ::core::ffi::c_int,
+            len: 0 as i32,
             addr: NULL,
             int16_array: false,
         },
     ]
 };
 unsafe extern "C" fn InterceptsMemoryOverrun(
-    mut location: ::core::ffi::c_int,
-    mut value: ::core::ffi::c_int,
+    mut location: i32,
+    mut value: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut offset: ::core::ffi::c_int = 0;
-    let mut index: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut offset: i32 = 0;
+    let mut index: i32 = 0;
     let mut addr: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
         ::core::ffi::c_void,
     >();
-    i = 0 as ::core::ffi::c_int;
-    offset = 0 as ::core::ffi::c_int;
-    while intercepts_overrun[i as usize].len != 0 as ::core::ffi::c_int {
+    i = 0 as i32;
+    offset = 0 as i32;
+    while intercepts_overrun[i as usize].len != 0 as i32 {
         if offset + intercepts_overrun[i as usize].len > location {
             addr = intercepts_overrun[i as usize].addr;
             if !addr.is_null() {
                 if intercepts_overrun[i as usize].int16_array {
-                    index = (location - offset) / 2 as ::core::ffi::c_int;
-                    *(addr as *mut ::core::ffi::c_short).offset(index as isize) = (value
-                        & 0xffff as ::core::ffi::c_int) as ::core::ffi::c_short;
-                    *(addr as *mut ::core::ffi::c_short)
-                        .offset((index + 1 as ::core::ffi::c_int) as isize) = (value
-                        >> 16 as ::core::ffi::c_int & 0xffff as ::core::ffi::c_int)
-                        as ::core::ffi::c_short;
+                    index = (location - offset) / 2 as i32;
+                    *(addr as *mut i16).offset(index as isize) = (value
+                        & 0xffff as i32) as i16;
+                    *(addr as *mut i16)
+                        .offset((index + 1 as i32) as isize) = (value
+                        >> 16 as i32 & 0xffff as i32)
+                        as i16;
                 } else {
-                    index = (location - offset) / 4 as ::core::ffi::c_int;
-                    *(addr as *mut ::core::ffi::c_int).offset(index as isize) = value;
+                    index = (location - offset) / 4 as i32;
+                    *(addr as *mut i32).offset(index as isize) = value;
                 }
             }
             break;
@@ -2011,23 +2011,23 @@ unsafe extern "C" fn InterceptsMemoryOverrun(
     }
 }
 unsafe extern "C" fn InterceptsOverrun(
-    mut num_intercepts: ::core::ffi::c_int,
+    mut num_intercepts: i32,
     mut intercept: *mut intercept_t,
 ) {
-    let mut location: ::core::ffi::c_int = 0;
+    let mut location: i32 = 0;
     if num_intercepts <= MAXINTERCEPTS_ORIGINAL {
         return;
     }
-    location = (num_intercepts - MAXINTERCEPTS_ORIGINAL - 1 as ::core::ffi::c_int)
-        * 12 as ::core::ffi::c_int;
-    InterceptsMemoryOverrun(location, (*intercept).frac as ::core::ffi::c_int);
+    location = (num_intercepts - MAXINTERCEPTS_ORIGINAL - 1 as i32)
+        * 12 as i32;
+    InterceptsMemoryOverrun(location, (*intercept).frac as i32);
     InterceptsMemoryOverrun(
-        location + 4 as ::core::ffi::c_int,
-        (*intercept).isaline as ::core::ffi::c_int,
+        location + 4 as i32,
+        (*intercept).isaline as i32,
     );
     InterceptsMemoryOverrun(
-        location + 8 as ::core::ffi::c_int,
-        (*intercept).d.thing as ::core::ffi::c_int,
+        location + 8 as i32,
+        (*intercept).d.thing as i32,
     );
 }
 #[no_mangle]
@@ -2036,7 +2036,7 @@ pub unsafe extern "C" fn P_PathTraverse(
     mut y1: fixed_t,
     mut x2: fixed_t,
     mut y2: fixed_t,
-    mut flags: ::core::ffi::c_int,
+    mut flags: i32,
     mut trav: Option<unsafe extern "C" fn(*mut intercept_t) -> boolean>,
 ) -> boolean {
     let mut xt1: fixed_t = 0;
@@ -2048,21 +2048,21 @@ pub unsafe extern "C" fn P_PathTraverse(
     let mut partial: fixed_t = 0;
     let mut xintercept: fixed_t = 0;
     let mut yintercept: fixed_t = 0;
-    let mut mapx: ::core::ffi::c_int = 0;
-    let mut mapy: ::core::ffi::c_int = 0;
-    let mut mapxstep: ::core::ffi::c_int = 0;
-    let mut mapystep: ::core::ffi::c_int = 0;
-    let mut count: ::core::ffi::c_int = 0;
+    let mut mapx: i32 = 0;
+    let mut mapy: i32 = 0;
+    let mut mapxstep: i32 = 0;
+    let mut mapystep: i32 = 0;
+    let mut count: i32 = 0;
     earlyout = (flags & PT_EARLYOUT) != 0;
     validcount += 1;
     intercept_p = &raw mut intercepts as *mut intercept_t;
-    if x1 as ::core::ffi::c_int - bmaporgx as ::core::ffi::c_int
-        & MAPBLOCKSIZE - 1 as ::core::ffi::c_int == 0 as ::core::ffi::c_int
+    if x1 as i32 - bmaporgx as i32
+        & MAPBLOCKSIZE - 1 as i32 == 0 as i32
     {
         x1 += FRACUNIT;
     }
-    if y1 as ::core::ffi::c_int - bmaporgy as ::core::ffi::c_int
-        & MAPBLOCKSIZE - 1 as ::core::ffi::c_int == 0 as ::core::ffi::c_int
+    if y1 as i32 - bmaporgy as i32
+        & MAPBLOCKSIZE - 1 as i32 == 0 as i32
     {
         y1 += FRACUNIT;
     }
@@ -2079,55 +2079,55 @@ pub unsafe extern "C" fn P_PathTraverse(
     xt2 = x2 >> MAPBLOCKSHIFT;
     yt2 = y2 >> MAPBLOCKSHIFT;
     if xt2 > xt1 {
-        mapxstep = 1 as ::core::ffi::c_int;
+        mapxstep = 1 as i32;
         partial = (FRACUNIT
-            - (x1 as ::core::ffi::c_int >> MAPBTOFRAC
-                & FRACUNIT - 1 as ::core::ffi::c_int)) as fixed_t;
+            - (x1 as i32 >> MAPBTOFRAC
+                & FRACUNIT - 1 as i32)) as fixed_t;
         ystep = FixedDiv(
             y2 - y1,
-            abs(x2 as ::core::ffi::c_int - x1 as ::core::ffi::c_int) as fixed_t,
+            abs(x2 as i32 - x1 as i32) as fixed_t,
         );
     } else if xt2 < xt1 {
-        mapxstep = -(1 as ::core::ffi::c_int);
-        partial = (x1 as ::core::ffi::c_int >> MAPBTOFRAC
-            & FRACUNIT - 1 as ::core::ffi::c_int) as fixed_t;
+        mapxstep = -(1 as i32);
+        partial = (x1 as i32 >> MAPBTOFRAC
+            & FRACUNIT - 1 as i32) as fixed_t;
         ystep = FixedDiv(
             y2 - y1,
-            abs(x2 as ::core::ffi::c_int - x1 as ::core::ffi::c_int) as fixed_t,
+            abs(x2 as i32 - x1 as i32) as fixed_t,
         );
     } else {
-        mapxstep = 0 as ::core::ffi::c_int;
+        mapxstep = 0 as i32;
         partial = FRACUNIT as fixed_t;
-        ystep = (256 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+        ystep = (256 as i32 * FRACUNIT) as fixed_t;
     }
     yintercept = (y1 >> MAPBTOFRAC) + FixedMul(partial, ystep);
     if yt2 > yt1 {
-        mapystep = 1 as ::core::ffi::c_int;
+        mapystep = 1 as i32;
         partial = (FRACUNIT
-            - (y1 as ::core::ffi::c_int >> MAPBTOFRAC
-                & FRACUNIT - 1 as ::core::ffi::c_int)) as fixed_t;
+            - (y1 as i32 >> MAPBTOFRAC
+                & FRACUNIT - 1 as i32)) as fixed_t;
         xstep = FixedDiv(
             x2 - x1,
-            abs(y2 as ::core::ffi::c_int - y1 as ::core::ffi::c_int) as fixed_t,
+            abs(y2 as i32 - y1 as i32) as fixed_t,
         );
     } else if yt2 < yt1 {
-        mapystep = -(1 as ::core::ffi::c_int);
-        partial = (y1 as ::core::ffi::c_int >> MAPBTOFRAC
-            & FRACUNIT - 1 as ::core::ffi::c_int) as fixed_t;
+        mapystep = -(1 as i32);
+        partial = (y1 as i32 >> MAPBTOFRAC
+            & FRACUNIT - 1 as i32) as fixed_t;
         xstep = FixedDiv(
             x2 - x1,
-            abs(y2 as ::core::ffi::c_int - y1 as ::core::ffi::c_int) as fixed_t,
+            abs(y2 as i32 - y1 as i32) as fixed_t,
         );
     } else {
-        mapystep = 0 as ::core::ffi::c_int;
+        mapystep = 0 as i32;
         partial = FRACUNIT as fixed_t;
-        xstep = (256 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+        xstep = (256 as i32 * FRACUNIT) as fixed_t;
     }
     xintercept = (x1 >> MAPBTOFRAC) + FixedMul(partial, xstep);
-    mapx = xt1 as ::core::ffi::c_int;
-    mapy = yt1 as ::core::ffi::c_int;
-    count = 0 as ::core::ffi::c_int;
-    while count < 64 as ::core::ffi::c_int {
+    mapx = xt1 as i32;
+    mapy = yt1 as i32;
+    count = 0 as i32;
+    while count < 64 as i32 {
         if flags & PT_ADDLINES != 0 {
             if P_BlockLinesIterator(
                 mapx,
@@ -2167,4 +2167,4 @@ pub unsafe extern "C" fn P_PathTraverse(
     }
     return P_TraverseIntercepts(trav as traverser_t, FRACUNIT);
 }
-pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
+pub const __INT_MAX__: i32 = 2147483647 as i32;
