@@ -11,7 +11,7 @@ extern "C" {
     static mut viewwindowx: ::core::ffi::c_int;
     static mut viewwindowy: ::core::ffi::c_int;
     fn R_VideoErase(ofs: ::core::ffi::c_uint, count: ::core::ffi::c_int);
-    static mut automapactive: boolean;
+    static mut automapactive: bool;
 }
 pub type __int32_t = i32;
 pub type boolean = ::core::ffi::c_uint;
@@ -148,7 +148,7 @@ pub unsafe extern "C" fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
     let mut lh: ::core::ffi::c_int = 0;
     let mut y: ::core::ffi::c_int = 0;
     let mut yoffset: ::core::ffi::c_int = 0;
-    if automapactive == 0 && viewwindowx != 0 && (*l).needsupdate != 0 {
+    if !automapactive && viewwindowx != 0 && (*l).needsupdate != 0 {
         lh = (**(*l).f.offset(0 as ::core::ffi::c_int as isize)).height
             as ::core::ffi::c_int + 1 as ::core::ffi::c_int;
         y = (*l).y;

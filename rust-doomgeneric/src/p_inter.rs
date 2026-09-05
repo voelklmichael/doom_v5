@@ -13,7 +13,7 @@ extern "C" {
     static mut gameskill: skill_t;
     static mut netgame: boolean;
     static mut deathmatch: ::core::ffi::c_int;
-    static mut automapactive: boolean;
+    static mut automapactive: bool;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut players: [player_t; 4];
     fn P_Random() -> ::core::ffi::c_int;
@@ -2181,7 +2181,7 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
         P_DropWeapon((*target).player as *mut player_t);
         if (*target).player
             == (&raw mut players as *mut player_t).offset(consoleplayer as isize)
-                as *mut player_t && automapactive != 0
+                as *mut player_t && automapactive
         {
             AM_Stop();
         }

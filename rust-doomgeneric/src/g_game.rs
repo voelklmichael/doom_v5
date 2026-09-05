@@ -51,7 +51,7 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut automapactive: boolean;
+    static mut automapactive: bool;
     static mut leveltime: ::core::ffi::c_int;
     static mut deathmatchstarts: [mapthing_t; 10];
     static mut deathmatch_p: *mut mapthing_t;
@@ -3084,7 +3084,7 @@ pub unsafe extern "C" fn G_DoCompleted() {
         }
         i += 1;
     }
-    if automapactive != 0 {
+    if automapactive {
         AM_Stop();
     }
     if gamemode as ::core::ffi::c_uint
@@ -3211,7 +3211,7 @@ pub unsafe extern "C" fn G_DoCompleted() {
     }
     gamestate = GS_INTERMISSION;
     viewactive = false;
-    automapactive = false_0 as boolean;
+    automapactive = false;
     StatCopy(&raw mut wminfo);
     WI_Start(&raw mut wminfo);
 }
@@ -3506,7 +3506,7 @@ pub unsafe extern "C" fn G_InitNew(
     usergame = true;
     paused = false;
     demoplayback = false;
-    automapactive = false_0 as boolean;
+    automapactive = false;
     viewactive = true;
     gameepisode = episode;
     gamemap = map;

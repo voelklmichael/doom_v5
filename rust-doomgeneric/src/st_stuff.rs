@@ -102,7 +102,7 @@ extern "C" {
     static mut gameskill: skill_t;
     static mut netgame: boolean;
     static mut deathmatch: ::core::ffi::c_int;
-    static mut automapactive: boolean;
+    static mut automapactive: bool;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut players: [player_t; 4];
 }
@@ -2489,7 +2489,7 @@ pub unsafe extern "C" fn ST_diffDraw() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_Drawer(mut fullscreen: boolean, mut refresh: boolean) {
-    st_statusbaron = fullscreen == 0 || automapactive != 0;
+    st_statusbaron = fullscreen == 0 || automapactive;
     st_firsttime = st_firsttime || refresh != 0;
     ST_doPaletteStuff();
     if st_firsttime {
