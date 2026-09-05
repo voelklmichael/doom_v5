@@ -1359,7 +1359,7 @@ pub const VIEWHEIGHT: ::core::ffi::c_int = 41 as ::core::ffi::c_int * FRACUNIT;
 pub const INVERSECOLORMAP: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
 pub const MAXBOB: ::core::ffi::c_int = 0x100000 as ::core::ffi::c_int;
 #[no_mangle]
-pub static mut onground: boolean = 0;
+pub static mut onground: bool = false;
 #[no_mangle]
 pub unsafe extern "C" fn P_Thrust(
     mut player: *mut player_t,
@@ -1380,7 +1380,7 @@ pub unsafe extern "C" fn P_CalcHeight(mut player: *mut player_t) {
     if (*player).bob > MAXBOB {
         (*player).bob = MAXBOB as fixed_t;
     }
-    if (*player).cheats & CF_NOMOMENTUM as ::core::ffi::c_int != 0 || onground == 0 {
+    if (*player).cheats & CF_NOMOMENTUM as ::core::ffi::c_int != 0 || !onground {
         (*player).viewz = ((*(*player).mo).z as ::core::ffi::c_int + VIEWHEIGHT)
             as fixed_t;
         if (*player).viewz
@@ -1435,16 +1435,15 @@ pub unsafe extern "C" fn P_MovePlayer(mut player: *mut player_t) {
             (((*cmd).angleturn as ::core::ffi::c_int) << 16 as ::core::ffi::c_int)
                 as angle_t,
         );
-    onground = ((*(*player).mo).z <= (*(*player).mo).floorz) as ::core::ffi::c_int
-        as boolean;
-    if (*cmd).forwardmove as ::core::ffi::c_int != 0 && onground != 0 {
+    onground = (*(*player).mo).z <= (*(*player).mo).floorz;
+    if (*cmd).forwardmove as ::core::ffi::c_int != 0 && onground {
         P_Thrust(
             player,
             (*(*player).mo).angle,
             (*cmd).forwardmove as fixed_t * 2048 as fixed_t,
         );
     }
-    if (*cmd).sidemove as ::core::ffi::c_int != 0 && onground != 0 {
+    if (*cmd).sidemove as ::core::ffi::c_int != 0 && onground {
         P_Thrust(
             player,
             (*(*player).mo).angle.wrapping_sub(ANG90 as angle_t),
@@ -1473,8 +1472,7 @@ pub unsafe extern "C" fn P_DeathThink(mut player: *mut player_t) {
         (*player).viewheight = (6 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
     }
     (*player).deltaviewheight = 0 as ::core::ffi::c_int as fixed_t;
-    onground = ((*(*player).mo).z <= (*(*player).mo).floorz) as ::core::ffi::c_int
-        as boolean;
+    onground = (*(*player).mo).z <= (*(*player).mo).floorz;
     P_CalcHeight(player);
     if !(*player).attacker.is_null() && (*player).attacker != (*player).mo {
         angle = R_PointToAngle2(

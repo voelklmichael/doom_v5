@@ -1573,7 +1573,7 @@ pub static mut sfxVolume: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
 #[no_mangle]
 pub static mut musicVolume: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
 static mut snd_SfxVolume: ::core::ffi::c_int = 0;
-static mut mus_paused: boolean = 0;
+static mut mus_paused: bool = false;
 static mut mus_playing: *mut musicinfo_t = ::core::ptr::null::<musicinfo_t>()
     as *mut musicinfo_t;
 #[no_mangle]
@@ -1600,7 +1600,7 @@ pub unsafe extern "C" fn S_Init(
         *fresh0 = ::core::ptr::null_mut::<sfxinfo_t>();
         i += 1;
     }
-    mus_paused = 0 as boolean;
+    mus_paused = false;
     i = 1 as ::core::ffi::c_int;
     while i < NUMSFX as ::core::ffi::c_int {
         let ref mut fresh1 = (*(&raw mut S_sfx as *mut sfxinfo_t).offset(i as isize))
@@ -1646,7 +1646,7 @@ pub unsafe extern "C" fn S_Start() {
         }
         cnum += 1;
     }
-    mus_paused = 0 as boolean;
+    mus_paused = false;
     if gamemode as ::core::ffi::c_uint
         == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
     {
@@ -1835,16 +1835,16 @@ pub unsafe extern "C" fn S_StartSound(
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_PauseSound() {
-    if !mus_playing.is_null() && mus_paused == 0 {
+    if !mus_playing.is_null() && !mus_paused {
         I_PauseSong();
-        mus_paused = true_0 as boolean;
+        mus_paused = true;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_ResumeSound() {
-    if !mus_playing.is_null() && mus_paused != 0 {
+    if !mus_playing.is_null() && mus_paused {
         I_ResumeSong();
-        mus_paused = false_0 as boolean;
+        mus_paused = false;
     }
 }
 #[no_mangle]
@@ -1977,7 +1977,7 @@ pub unsafe extern "C" fn S_MusicPlaying() -> boolean {
 #[no_mangle]
 pub unsafe extern "C" fn S_StopMusic() {
     if !mus_playing.is_null() {
-        if mus_paused != 0 {
+        if mus_paused {
             I_ResumeSong();
         }
         I_StopSong();

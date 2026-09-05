@@ -1553,7 +1553,7 @@ pub unsafe extern "C" fn P_LoadVertexes(mut lump: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn GetSectorAtNullAddress() -> *mut sector_t {
-    static mut null_sector_is_initialized: boolean = false_0 as boolean;
+    static mut null_sector_is_initialized: bool = false;
     static mut null_sector: sector_t = sector_t {
         floorheight: 0,
         ceilingheight: 0,
@@ -1582,7 +1582,7 @@ pub unsafe extern "C" fn GetSectorAtNullAddress() -> *mut sector_t {
         linecount: 0,
         lines: ::core::ptr::null::<*mut line_s>() as *mut *mut line_s,
     };
-    if null_sector_is_initialized == 0 {
+    if !null_sector_is_initialized {
         memset(
             &raw mut null_sector as *mut ::core::ffi::c_void,
             0 as ::core::ffi::c_int,
@@ -1598,7 +1598,7 @@ pub unsafe extern "C" fn GetSectorAtNullAddress() -> *mut sector_t {
             &raw mut null_sector.ceilingheight as *mut ::core::ffi::c_void,
             4 as ::core::ffi::c_int,
         );
-        null_sector_is_initialized = true_0 as boolean;
+        null_sector_is_initialized = true;
     }
     return &raw mut null_sector;
 }
