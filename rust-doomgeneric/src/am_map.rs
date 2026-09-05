@@ -1823,7 +1823,7 @@ pub static mut cheat_amap: cheatseq_t = cheatseq_t {
     param_chars_read: 0,
     parameter_buf: [0; 5],
 };
-static mut stopped: boolean = true_0 as boolean;
+static mut stopped: bool = true;
 #[no_mangle]
 pub unsafe extern "C" fn AM_getIslope(mut ml: *mut mline_t, mut is: *mut islope_t) {
     let mut dx: ::core::ffi::c_int = 0;
@@ -2079,16 +2079,16 @@ pub unsafe extern "C" fn AM_Stop() {
     AM_unloadPics();
     automapactive = false_0 as boolean;
     ST_Responder(&raw mut st_notify);
-    stopped = true_0 as boolean;
+    stopped = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_Start() {
     static mut lastlevel: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
     static mut lastepisode: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
-    if stopped == 0 {
+    if !stopped {
         AM_Stop();
     }
-    stopped = false_0 as boolean;
+    stopped = false;
     if lastlevel != gamemap || lastepisode != gameepisode {
         AM_LevelInit();
         lastlevel = gamemap;

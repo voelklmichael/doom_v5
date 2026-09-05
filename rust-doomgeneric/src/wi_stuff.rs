@@ -2635,7 +2635,7 @@ pub unsafe extern "C" fn WI_updateNoState() {
         G_WorldDone();
     }
 }
-static mut snl_pointeron: boolean = false_0 as boolean;
+static mut snl_pointeron: bool = false;
 #[no_mangle]
 pub unsafe extern "C" fn WI_initShowNextLoc() {
     state = ShowNextLoc;
@@ -2650,8 +2650,7 @@ pub unsafe extern "C" fn WI_updateShowNextLoc() {
     if cnt == 0 || acceleratestage != 0 {
         WI_initNoState();
     } else {
-        snl_pointeron = ((cnt & 31 as ::core::ffi::c_int) < 20 as ::core::ffi::c_int)
-            as ::core::ffi::c_int as boolean;
+        snl_pointeron = (cnt & 31 as ::core::ffi::c_int) < 20 as ::core::ffi::c_int;
     };
 }
 #[no_mangle]
@@ -2680,7 +2679,7 @@ pub unsafe extern "C" fn WI_drawShowNextLoc() {
         if (*wbs).didsecret {
             WI_drawOnLnode(8 as ::core::ffi::c_int, &raw mut splat as *mut *mut patch_t);
         }
-        if snl_pointeron != 0 {
+        if snl_pointeron {
             WI_drawOnLnode((*wbs).next, &raw mut yah as *mut *mut patch_t);
         }
     }
@@ -2693,7 +2692,7 @@ pub unsafe extern "C" fn WI_drawShowNextLoc() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawNoState() {
-    snl_pointeron = true_0 as boolean;
+    snl_pointeron = true;
     WI_drawShowNextLoc();
 }
 #[no_mangle]

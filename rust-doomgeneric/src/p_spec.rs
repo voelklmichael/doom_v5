@@ -2586,7 +2586,7 @@ pub unsafe extern "C" fn P_PlayerInSpecialSector(mut player: *mut player_t) {
     };
 }
 #[no_mangle]
-pub static mut levelTimer: boolean = 0;
+pub static mut levelTimer: bool = false;
 #[no_mangle]
 pub static mut levelTimeCount: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -2595,7 +2595,7 @@ pub unsafe extern "C" fn P_UpdateSpecials() {
     let mut pic: ::core::ffi::c_int = 0;
     let mut i: ::core::ffi::c_int = 0;
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    if levelTimer == true_0 as boolean {
+    if levelTimer {
         levelTimeCount -= 1;
         if levelTimeCount == 0 {
             G_ExitLevel();
@@ -2836,10 +2836,10 @@ pub unsafe extern "C" fn P_SpawnSpecials() {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: ::core::ffi::c_int = 0;
     if timelimit > 0 as ::core::ffi::c_int && deathmatch != 0 {
-        levelTimer = true_0 as boolean;
+        levelTimer = true;
         levelTimeCount = timelimit * 60 as ::core::ffi::c_int * TICRATE;
     } else {
-        levelTimer = false_0 as boolean;
+        levelTimer = false;
     }
     sector = sectors;
     i = 0 as ::core::ffi::c_int;

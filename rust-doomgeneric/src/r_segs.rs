@@ -1358,13 +1358,13 @@ pub const LIGHTSEGSHIFT: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
 pub const MAXLIGHTSCALE: ::core::ffi::c_int = 48 as ::core::ffi::c_int;
 pub const LIGHTSCALESHIFT: ::core::ffi::c_int = 12 as ::core::ffi::c_int;
 #[no_mangle]
-pub static mut segtextured: boolean = 0;
+pub static mut segtextured: bool = false;
 #[no_mangle]
-pub static mut markfloor: boolean = 0;
+pub static mut markfloor: bool = false;
 #[no_mangle]
-pub static mut markceiling: boolean = 0;
+pub static mut markceiling: bool = false;
 #[no_mangle]
-pub static mut maskedtexture: boolean = 0;
+pub static mut maskedtexture: bool = false;
 #[no_mangle]
 pub static mut toptexture: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -1530,7 +1530,7 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
             yl = ceilingclip[rw_x as usize] as ::core::ffi::c_int
                 + 1 as ::core::ffi::c_int;
         }
-        if markceiling != 0 {
+        if markceiling {
             top = ceilingclip[rw_x as usize] as ::core::ffi::c_int
                 + 1 as ::core::ffi::c_int;
             bottom = yl - 1 as ::core::ffi::c_int;
@@ -1548,7 +1548,7 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
             yh = floorclip[rw_x as usize] as ::core::ffi::c_int
                 - 1 as ::core::ffi::c_int;
         }
-        if markfloor != 0 {
+        if markfloor {
             top = yh + 1 as ::core::ffi::c_int;
             bottom = floorclip[rw_x as usize] as ::core::ffi::c_int
                 - 1 as ::core::ffi::c_int;
@@ -1561,7 +1561,7 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
                 (*floorplane).bottom[rw_x as usize] = bottom as byte;
             }
         }
-        if segtextured != 0 {
+        if segtextured {
             angle = rw_centerangle.wrapping_add(xtoviewangle[rw_x as usize])
                 >> ANGLETOFINESHIFT;
             texturecolumn = rw_offset
@@ -1609,7 +1609,7 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
                     ceilingclip[rw_x as usize] = (yl - 1 as ::core::ffi::c_int)
                         as ::core::ffi::c_short;
                 }
-            } else if markceiling != 0 {
+            } else if markceiling {
                 ceilingclip[rw_x as usize] = (yl - 1 as ::core::ffi::c_int)
                     as ::core::ffi::c_short;
             }
@@ -1635,11 +1635,11 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
                     floorclip[rw_x as usize] = (yh + 1 as ::core::ffi::c_int)
                         as ::core::ffi::c_short;
                 }
-            } else if markfloor != 0 {
+            } else if markfloor {
                 floorclip[rw_x as usize] = (yh + 1 as ::core::ffi::c_int)
                     as ::core::ffi::c_short;
             }
-            if maskedtexture != 0 {
+            if maskedtexture {
                 *maskedtexturecol.offset(rw_x as isize) = texturecolumn
                     as ::core::ffi::c_short;
             }
@@ -1706,14 +1706,14 @@ pub unsafe extern "C" fn R_StoreWallRange(
     }
     worldtop = ((*frontsector).ceilingheight - viewz) as ::core::ffi::c_int;
     worldbottom = ((*frontsector).floorheight - viewz) as ::core::ffi::c_int;
-    maskedtexture = 0 as boolean;
+    maskedtexture = false;
     bottomtexture = maskedtexture as ::core::ffi::c_int;
     toptexture = bottomtexture;
     midtexture = toptexture;
     (*ds_p).maskedtexturecol = ::core::ptr::null_mut::<::core::ffi::c_short>();
     if backsector.is_null() {
         midtexture = *texturetranslation.offset((*sidedef).midtexture as isize);
-        markceiling = true_0 as boolean;
+        markceiling = true;
         markfloor = markceiling;
         if (*linedef).flags as ::core::ffi::c_int & ML_DONTPEGBOTTOM != 0 {
             vtop = (*frontsector).floorheight
@@ -1769,9 +1769,9 @@ pub unsafe extern "C" fn R_StoreWallRange(
             || (*backsector).lightlevel as ::core::ffi::c_int
                 != (*frontsector).lightlevel as ::core::ffi::c_int
         {
-            markfloor = true_0 as boolean;
+            markfloor = true;
         } else {
-            markfloor = false_0 as boolean;
+            markfloor = false;
         }
         if worldhigh != worldtop
             || (*backsector).ceilingpic as ::core::ffi::c_int
@@ -1779,14 +1779,14 @@ pub unsafe extern "C" fn R_StoreWallRange(
             || (*backsector).lightlevel as ::core::ffi::c_int
                 != (*frontsector).lightlevel as ::core::ffi::c_int
         {
-            markceiling = true_0 as boolean;
+            markceiling = true;
         } else {
-            markceiling = false_0 as boolean;
+            markceiling = false;
         }
         if (*backsector).ceilingheight <= (*frontsector).floorheight
             || (*backsector).floorheight >= (*frontsector).ceilingheight
         {
-            markfloor = true_0 as boolean;
+            markfloor = true;
             markceiling = markfloor;
         }
         if worldhigh < worldtop {
@@ -1811,14 +1811,14 @@ pub unsafe extern "C" fn R_StoreWallRange(
         rw_toptexturemid += (*sidedef).rowoffset;
         rw_bottomtexturemid += (*sidedef).rowoffset;
         if (*sidedef).midtexture != 0 {
-            maskedtexture = true_0 as boolean;
+            maskedtexture = true;
             maskedtexturecol = lastopening.offset(-(rw_x as isize));
             (*ds_p).maskedtexturecol = maskedtexturecol;
             lastopening = lastopening.offset((rw_stopx - rw_x) as isize);
         }
     }
-    segtextured = (midtexture | toptexture | bottomtexture) as boolean | maskedtexture;
-    if segtextured != 0 {
+    segtextured = (midtexture | toptexture | bottomtexture) != 0 || maskedtexture;
+    if segtextured {
         offsetangle = rw_normalangle.wrapping_sub(rw_angle1 as angle_t);
         if offsetangle > ANG180 {
             offsetangle = offsetangle.wrapping_neg();
@@ -1860,12 +1860,12 @@ pub unsafe extern "C" fn R_StoreWallRange(
         }
     }
     if (*frontsector).floorheight >= viewz {
-        markfloor = false_0 as boolean;
+        markfloor = false;
     }
     if (*frontsector).ceilingheight <= viewz
         && (*frontsector).ceilingpic as ::core::ffi::c_int != skyflatnum
     {
-        markceiling = false_0 as boolean;
+        markceiling = false;
     }
     worldtop >>= 4 as ::core::ffi::c_int;
     worldbottom >>= 4 as ::core::ffi::c_int;
@@ -1889,18 +1889,18 @@ pub unsafe extern "C" fn R_StoreWallRange(
             pixlowstep = -FixedMul(rw_scalestep, worldlow as fixed_t);
         }
     }
-    if markceiling != 0 {
+    if markceiling {
         ceilingplane = R_CheckPlane(
             ceilingplane,
             rw_x,
             rw_stopx - 1 as ::core::ffi::c_int,
         );
     }
-    if markfloor != 0 {
+    if markfloor {
         floorplane = R_CheckPlane(floorplane, rw_x, rw_stopx - 1 as ::core::ffi::c_int);
     }
     R_RenderSegLoop();
-    if ((*ds_p).silhouette & SIL_TOP != 0 || maskedtexture != 0)
+    if ((*ds_p).silhouette & SIL_TOP != 0 || maskedtexture)
         && (*ds_p).sprtopclip.is_null()
     {
         memcpy(
@@ -1912,7 +1912,7 @@ pub unsafe extern "C" fn R_StoreWallRange(
         (*ds_p).sprtopclip = lastopening.offset(-(start as isize));
         lastopening = lastopening.offset((rw_stopx - start) as isize);
     }
-    if ((*ds_p).silhouette & SIL_BOTTOM != 0 || maskedtexture != 0)
+    if ((*ds_p).silhouette & SIL_BOTTOM != 0 || maskedtexture)
         && (*ds_p).sprbottomclip.is_null()
     {
         memcpy(
@@ -1924,11 +1924,11 @@ pub unsafe extern "C" fn R_StoreWallRange(
         (*ds_p).sprbottomclip = lastopening.offset(-(start as isize));
         lastopening = lastopening.offset((rw_stopx - start) as isize);
     }
-    if maskedtexture != 0 && (*ds_p).silhouette & SIL_TOP == 0 {
+    if maskedtexture && (*ds_p).silhouette & SIL_TOP == 0 {
         (*ds_p).silhouette |= SIL_TOP;
         (*ds_p).tsilheight = INT_MIN as fixed_t;
     }
-    if maskedtexture != 0 && (*ds_p).silhouette & SIL_BOTTOM == 0 {
+    if maskedtexture && (*ds_p).silhouette & SIL_BOTTOM == 0 {
         (*ds_p).silhouette |= SIL_BOTTOM;
         (*ds_p).bsilheight = INT_MAX as fixed_t;
     }

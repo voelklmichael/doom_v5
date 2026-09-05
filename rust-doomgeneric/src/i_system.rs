@@ -262,20 +262,20 @@ unsafe extern "C" fn ZenityErrorBox(
     free(escaped_message as *mut ::core::ffi::c_void);
     return result;
 }
-static mut already_quitting: boolean = false_0 as boolean;
+static mut already_quitting: bool = false;
 pub unsafe fn I_Error(message: &str) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
         atexit_listentry_t,
     >();
     let mut exit_gui_popup: boolean = 0;
-    if already_quitting != 0 {
+    if already_quitting {
         fprintf(
             stderr,
             b"Warning: recursive call to I_Error detected.\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
     } else {
-        already_quitting = true_0 as boolean;
+        already_quitting = true;
     }
     let message_cstring = ::std::ffi::CString::new(message)
         .unwrap_or_else(|_| ::std::ffi::CString::new("(error message contains NUL)").unwrap());
@@ -346,12 +346,12 @@ pub unsafe extern "C" fn I_GetMemoryValue(
     mut value: *mut ::core::ffi::c_void,
     mut size: ::core::ffi::c_int,
 ) -> boolean {
-    static mut firsttime: boolean = true_0 as boolean;
-    if firsttime != 0 {
+    static mut firsttime: bool = true;
+    if firsttime {
         let mut p: ::core::ffi::c_int = 0;
         let mut i: ::core::ffi::c_int = 0;
         let mut val: ::core::ffi::c_int = 0;
-        firsttime = false_0 as boolean;
+        firsttime = false;
         i = 0 as ::core::ffi::c_int;
         p = M_CheckParmWithArgs("-setmem", 1 as ::core::ffi::c_int);
         if p > 0 as ::core::ffi::c_int {

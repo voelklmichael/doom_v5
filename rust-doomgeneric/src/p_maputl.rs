@@ -1715,7 +1715,7 @@ pub static mut trace: divline_t = divline_t {
     dy: 0,
 };
 #[no_mangle]
-pub static mut earlyout: boolean = 0;
+pub static mut earlyout: bool = false;
 #[no_mangle]
 pub static mut ptflags: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -1748,7 +1748,7 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
     if frac < 0 as ::core::ffi::c_int {
         return true_0 as boolean;
     }
-    if earlyout != 0 && frac < FRACUNIT && (*ld).backsector.is_null() {
+    if earlyout && frac < FRACUNIT && (*ld).backsector.is_null() {
         return false_0 as boolean;
     }
     (*intercept_p).frac = frac;
@@ -2053,7 +2053,7 @@ pub unsafe extern "C" fn P_PathTraverse(
     let mut mapxstep: ::core::ffi::c_int = 0;
     let mut mapystep: ::core::ffi::c_int = 0;
     let mut count: ::core::ffi::c_int = 0;
-    earlyout = (flags & PT_EARLYOUT) as boolean;
+    earlyout = (flags & PT_EARLYOUT) != 0;
     validcount += 1;
     intercept_p = &raw mut intercepts as *mut intercept_t;
     if x1 as ::core::ffi::c_int - bmaporgx as ::core::ffi::c_int

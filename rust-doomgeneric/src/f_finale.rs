@@ -2110,13 +2110,13 @@ pub static mut casttics: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut caststate: *mut state_t = ::core::ptr::null::<state_t>() as *mut state_t;
 #[no_mangle]
-pub static mut castdeath: boolean = 0;
+pub static mut castdeath: bool = false;
 #[no_mangle]
 pub static mut castframes: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut castonmelee: ::core::ffi::c_int = 0;
 #[no_mangle]
-pub static mut castattacking: boolean = 0;
+pub static mut castattacking: bool = false;
 #[no_mangle]
 pub unsafe extern "C" fn F_StartCast() {
     wipegamestate = 4294967295 as gamestate_t;
@@ -2131,11 +2131,11 @@ pub unsafe extern "C" fn F_StartCast() {
                 .seestate as isize,
         ) as *mut state_t;
     casttics = (*caststate).tics;
-    castdeath = false_0 as boolean;
+    castdeath = false;
     finalestage = F_STAGE_CAST;
     castframes = 0 as ::core::ffi::c_int;
     castonmelee = 0 as ::core::ffi::c_int;
-    castattacking = false_0 as boolean;
+    castattacking = false;
     S_ChangeMusic(mus_evil as ::core::ffi::c_int, true_0);
 }
 #[no_mangle]
@@ -2152,7 +2152,7 @@ pub unsafe extern "C" fn F_CastTicker() {
             == S_NULL as ::core::ffi::c_int as ::core::ffi::c_uint
     {
         castnum += 1;
-        castdeath = false_0 as boolean;
+        castdeath = false;
         if castorder[castnum as usize].name.is_none() {
             castnum = 0 as ::core::ffi::c_int;
         }
@@ -2248,7 +2248,7 @@ pub unsafe extern "C" fn F_CastTicker() {
     match current_block {
         1356832168064818221 => {
             if castframes == 12 as ::core::ffi::c_int {
-                castattacking = true_0 as boolean;
+                castattacking = true;
                 if castonmelee != 0 {
                     caststate = (&raw mut states as *mut state_t)
                         .offset(
@@ -2302,7 +2302,7 @@ pub unsafe extern "C" fn F_CastTicker() {
                     }
                 }
             }
-            if castattacking != 0 {
+            if castattacking {
                 if castframes == 24 as ::core::ffi::c_int
                     || caststate
                         == (&raw mut states as *mut state_t)
@@ -2328,7 +2328,7 @@ pub unsafe extern "C" fn F_CastTicker() {
     }
     match current_block {
         13354568087807251156 => {
-            castattacking = false_0 as boolean;
+            castattacking = false;
             castframes = 0 as ::core::ffi::c_int;
             caststate = (&raw mut states as *mut state_t)
                 .offset(
@@ -2355,10 +2355,10 @@ pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
     {
         return false_0 as boolean;
     }
-    if castdeath != 0 {
+    if castdeath {
         return true_0 as boolean;
     }
-    castdeath = true_0 as boolean;
+    castdeath = true;
     caststate = (&raw mut states as *mut state_t)
         .offset(
             (*(&raw mut mobjinfo as *mut mobjinfo_t)
@@ -2370,7 +2370,7 @@ pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
         ) as *mut state_t;
     casttics = (*caststate).tics;
     castframes = 0 as ::core::ffi::c_int;
-    castattacking = false_0 as boolean;
+    castattacking = false;
     if mobjinfo[castorder[castnum as usize].type_0 as usize].deathsound != 0 {
         S_StartSound(
             NULL,

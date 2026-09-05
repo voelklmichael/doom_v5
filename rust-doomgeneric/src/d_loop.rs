@@ -131,7 +131,7 @@ static mut skiptics: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 pub static mut ticdup: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut offsetms: fixed_t = 0;
-static mut new_sync: boolean = true_0 as boolean;
+static mut new_sync: bool = true;
 static mut loop_interface: *mut loop_interface_t = ::core::ptr::null::<
     loop_interface_t,
 >() as *mut loop_interface_t;
@@ -140,7 +140,7 @@ static mut player_class: ::core::ffi::c_int = 0;
 unsafe extern "C" fn GetAdjustedTime() -> ::core::ffi::c_int {
     let mut time_ms: ::core::ffi::c_int = 0;
     time_ms = I_GetTimeMS();
-    if new_sync != 0 {
+    if new_sync {
         time_ms += offsetms as ::core::ffi::c_int / FRACUNIT;
     }
     return time_ms * TICRATE / 1000 as ::core::ffi::c_int;
@@ -172,7 +172,7 @@ unsafe extern "C" fn BuildNewTic() -> boolean {
     if drone != 0 {
         return false_0 as boolean;
     }
-    if new_sync != 0 {
+    if new_sync {
         if net_client_connected == 0 && maketic - gameticdiv > 2 as ::core::ffi::c_int {
             return false_0 as boolean;
         }
@@ -268,7 +268,7 @@ pub unsafe extern "C" fn D_StartNetGame(
     (*settings).extratics = 1 as ::core::ffi::c_int;
     (*settings).ticdup = 1 as ::core::ffi::c_int;
     ticdup = (*settings).ticdup;
-    new_sync = (*settings).new_sync as boolean;
+    new_sync = (*settings).new_sync != 0;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_InitNetGame(
@@ -380,7 +380,7 @@ pub unsafe extern "C" fn TryRunTics() {
     }
     lowtic = GetLowTic();
     availabletics = lowtic - gametic / ticdup;
-    if new_sync != 0 {
+    if new_sync {
         counts = availabletics;
     } else {
         if realtics < availabletics - 1 as ::core::ffi::c_int {
