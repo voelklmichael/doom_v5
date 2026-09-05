@@ -1,3 +1,4 @@
+use crate::src::d_loop::{net_connect_data_t, net_gamesettings_t, loop_interface_t};
 use crate::src::p_mobj::{actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::d_ticcmd::{ticcmd_t};
@@ -102,54 +103,9 @@ pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type sha1_digest_t = [byte; 20];
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct net_connect_data_t {
-    pub gamemode: ::core::ffi::c_int,
-    pub gamemission: ::core::ffi::c_int,
-    pub lowres_turn: ::core::ffi::c_int,
-    pub drone: ::core::ffi::c_int,
-    pub max_players: ::core::ffi::c_int,
-    pub is_freedoom: ::core::ffi::c_int,
-    pub wad_sha1sum: sha1_digest_t,
-    pub deh_sha1sum: sha1_digest_t,
-    pub player_class: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct net_gamesettings_t {
-    pub ticdup: ::core::ffi::c_int,
-    pub extratics: ::core::ffi::c_int,
-    pub deathmatch: ::core::ffi::c_int,
-    pub episode: ::core::ffi::c_int,
-    pub nomonsters: ::core::ffi::c_int,
-    pub fast_monsters: ::core::ffi::c_int,
-    pub respawn_monsters: ::core::ffi::c_int,
-    pub map: ::core::ffi::c_int,
-    pub skill: ::core::ffi::c_int,
-    pub gameversion: ::core::ffi::c_int,
-    pub lowres_turn: ::core::ffi::c_int,
-    pub new_sync: ::core::ffi::c_int,
-    pub timelimit: ::core::ffi::c_int,
-    pub loadgame: ::core::ffi::c_int,
-    pub random: ::core::ffi::c_int,
-    pub num_players: ::core::ffi::c_int,
-    pub consoleplayer: ::core::ffi::c_int,
-    pub player_classes: [::core::ffi::c_int; 8],
-}
 pub type netgame_startup_callback_t = Option<
     unsafe extern "C" fn(::core::ffi::c_int, ::core::ffi::c_int) -> boolean,
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct loop_interface_t {
-    pub ProcessEvents: Option<unsafe extern "C" fn() -> ()>,
-    pub BuildTiccmd: Option<
-        unsafe extern "C" fn(*mut ticcmd_t, ::core::ffi::c_int) -> (),
-    >,
-    pub RunTic: Option<unsafe extern "C" fn(*mut ticcmd_t, *mut boolean) -> ()>,
-    pub RunMenu: Option<unsafe extern "C" fn() -> ()>,
-}
 pub type fixed_t = ::core::ffi::c_int;
 pub type angle_t = ::core::ffi::c_uint;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;

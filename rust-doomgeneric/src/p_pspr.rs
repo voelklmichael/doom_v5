@@ -1,3 +1,4 @@
+use crate::src::d_items::weaponinfo;
 use crate::src::p_mobj::{state_t, actionf_t};
 use crate::src::d_player::{player_t, PST_DEAD};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
@@ -7,7 +8,6 @@ extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut states: [state_t; 967];
-    static mut weaponinfo: [weaponinfo_t; 9];
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn P_SpawnMobj(
         x: fixed_t,
@@ -1371,16 +1371,6 @@ pub const MF_NOSECTOR: C2RustUnnamed_1 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_1 = 4;
 pub const MF_SOLID: C2RustUnnamed_1 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_1 = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct weaponinfo_t {
-    pub ammo: ammotype_t,
-    pub upstate: ::core::ffi::c_int,
-    pub downstate: ::core::ffi::c_int,
-    pub readystate: ::core::ffi::c_int,
-    pub atkstate: ::core::ffi::c_int,
-    pub flashstate: ::core::ffi::c_int,
-}
 pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
 pub const NUMPSPRITES: C2RustUnnamed_2 = 2;
 pub const ps_flash: C2RustUnnamed_2 = 1;
