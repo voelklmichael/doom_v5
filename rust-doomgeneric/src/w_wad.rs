@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn toupper(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
@@ -39,7 +40,6 @@ extern "C" {
         mission: GameMission_t,
         mode: GameMode_t,
     ) -> *mut ::core::ffi::c_char;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn I_BeginRead();
     fn I_EndRead();
     fn M_ExtractFileBase(path: *mut ::core::ffi::c_char, dest: *mut ::core::ffi::c_char);
@@ -209,10 +209,7 @@ unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: ::core::ffi::c_int) {
         ::core::mem::size_of::<lumpinfo_t>() as size_t,
     ) as *mut lumpinfo_t;
     if newlumpinfo.is_null() {
-        I_Error(
-            b"Couldn't realloc lumpinfo\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Couldn't realloc lumpinfo");
     }
     i = 0 as ::core::ffi::c_uint;
     while i < numlumps && i < newnumlumps as ::core::ffi::c_uint {
@@ -305,11 +302,10 @@ pub unsafe extern "C" fn W_AddFile(
                 4 as size_t,
             ) != 0
             {
-                I_Error(
-                    b"Wad file %s doesn't have IWAD or PWAD id\n\0" as *const u8
-                        as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                    filename,
-                );
+                I_Error(&format!(
+                    "Wad file {} doesn't have IWAD or PWAD id\n",
+                    ::std::ffi::CStr::from_ptr(filename).to_str().unwrap(),
+                ));
             }
         }
         header.numlumps = header.numlumps;
@@ -412,12 +408,7 @@ pub unsafe fn W_GetNumForName(name: &str) -> ::core::ffi::c_int {
     let mut i: ::core::ffi::c_int = 0;
     i = W_CheckNumForName(name);
     if i < 0 as ::core::ffi::c_int {
-        let name_cstring = ::std::ffi::CString::new(name).unwrap();
-        I_Error(
-            b"W_GetNumForName: %s not found!\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            name_cstring.as_ptr(),
-        );
+        I_Error(&format!("W_GetNumForName: {} not found!", name));
     }
     return i;
 }
@@ -426,11 +417,7 @@ pub unsafe extern "C" fn W_LumpLength(
     mut lump: ::core::ffi::c_uint,
 ) -> ::core::ffi::c_int {
     if lump >= numlumps {
-        I_Error(
-            b"W_LumpLength: %i >= numlumps\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            lump,
-        );
+        I_Error(&format!("W_LumpLength: {} >= numlumps", lump));
     }
     return (*lumpinfo.offset(lump as isize)).size;
 }
@@ -442,11 +429,7 @@ pub unsafe extern "C" fn W_ReadLump(
     let mut c: ::core::ffi::c_int = 0;
     let mut l: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     if lump >= numlumps {
-        I_Error(
-            b"W_ReadLump: %i >= numlumps\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            lump,
-        );
+        I_Error(&format!("W_ReadLump: {} >= numlumps", lump));
     }
     l = lumpinfo.offset(lump as isize);
     I_BeginRead();
@@ -457,13 +440,7 @@ pub unsafe extern "C" fn W_ReadLump(
         (*l).size as size_t,
     ) as ::core::ffi::c_int;
     if c < (*l).size {
-        I_Error(
-            b"W_ReadLump: only read %i of %i on lump %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            c,
-            (*l).size,
-            lump,
-        );
+        I_Error(&format!("W_ReadLump: only read {} of {} on lump {}", c, (*l).size, lump));
     }
     I_EndRead();
 }
@@ -475,11 +452,7 @@ pub unsafe extern "C" fn W_CacheLumpNum(
     let mut result: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut lump: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     if lumpnum as ::core::ffi::c_uint >= numlumps {
-        I_Error(
-            b"W_CacheLumpNum: %i >= numlumps\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            lumpnum,
-        );
+        I_Error(&format!("W_CacheLumpNum: {} >= numlumps", lumpnum));
     }
     lump = lumpinfo.offset(lumpnum as isize) as *mut lumpinfo_t;
     if !(*(*lump).wad_file).mapped.is_null() {
@@ -514,11 +487,7 @@ pub unsafe fn W_CacheLumpName(
 pub unsafe extern "C" fn W_ReleaseLumpNum(mut lumpnum: ::core::ffi::c_int) {
     let mut lump: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     if lumpnum as ::core::ffi::c_uint >= numlumps {
-        I_Error(
-            b"W_ReleaseLumpNum: %i >= numlumps\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            lumpnum,
-        );
+        I_Error(&format!("W_ReleaseLumpNum: {} >= numlumps", lumpnum));
     }
     lump = lumpinfo.offset(lumpnum as isize) as *mut lumpinfo_t;
     if (*(*lump).wad_file).mapped.is_null() {
@@ -589,16 +558,18 @@ pub unsafe extern "C" fn W_CheckCorrectIWAD(mut mission: GameMission_t) {
         {
             lumpnum = W_CheckNumForName(unique_lumps[i as usize].lumpname);
             if lumpnum >= 0 as ::core::ffi::c_int {
-                I_Error(
-                    b"\nYou are trying to use a %s IWAD file with the %s%s binary.\nThis isn't going to work.\nYou probably want to use the %s%s binary.\0"
-                        as *const u8 as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char,
-                    D_SuggestGameName(unique_lumps[i as usize].mission, indetermined),
-                    PROGRAM_PREFIX.as_ptr(),
-                    D_GameMissionString(mission),
-                    PROGRAM_PREFIX.as_ptr(),
-                    D_GameMissionString(unique_lumps[i as usize].mission),
-                );
+                I_Error(&format!(
+                    "\nYou are trying to use a {} IWAD file with the {}{} binary.\nThis isn't going to work.\nYou probably want to use the {}{} binary.",
+                    ::std::ffi::CStr::from_ptr(
+                        D_SuggestGameName(unique_lumps[i as usize].mission, indetermined),
+                    ).to_str().unwrap(),
+                    ::std::ffi::CStr::from_ptr(PROGRAM_PREFIX.as_ptr()).to_str().unwrap(),
+                    ::std::ffi::CStr::from_ptr(D_GameMissionString(mission)).to_str().unwrap(),
+                    ::std::ffi::CStr::from_ptr(PROGRAM_PREFIX.as_ptr()).to_str().unwrap(),
+                    ::std::ffi::CStr::from_ptr(
+                        D_GameMissionString(unique_lumps[i as usize].mission),
+                    ).to_str().unwrap(),
+                ));
             }
         }
         i += 1;

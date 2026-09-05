@@ -1,5 +1,5 @@
+use crate::src::i_system::I_Error;
 extern "C" {
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     static mut sides: *mut side_t;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn EV_DoDonut(line: *mut line_t) -> ::core::ffi::c_int;
@@ -2260,10 +2260,7 @@ pub unsafe extern "C" fn P_StartButton(
         }
         i += 1;
     }
-    I_Error(
-        b"P_StartButton: no button slots left!\0" as *const u8
-            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    );
+    I_Error("P_StartButton: no button slots left!");
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_ChangeSwitchTexture(

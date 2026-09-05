@@ -1,6 +1,6 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
@@ -1958,12 +1958,7 @@ pub unsafe extern "C" fn R_StoreWallRange(
         return;
     }
     if start >= viewwidth || start > stop {
-        I_Error(
-            b"Bad R_RenderWallRange: %i to %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            start,
-            stop,
-        );
+        I_Error(&format!("Bad R_RenderWallRange: {} to {}", start, stop));
     }
     sidedef = (*curline).sidedef;
     linedef = (*curline).linedef;

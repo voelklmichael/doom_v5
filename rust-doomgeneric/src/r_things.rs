@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
 extern "C" {
     fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
@@ -16,7 +17,6 @@ extern "C" {
         __c: ::core::ffi::c_int,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -1816,32 +1816,25 @@ pub unsafe extern "C" fn R_InstallSpriteLump(
 ) {
     let mut r: ::core::ffi::c_int = 0;
     if frame >= 29 as ::core::ffi::c_uint || rotation > 8 as ::core::ffi::c_uint {
-        I_Error(
-            b"R_InstallSpriteLump: Bad frame characters in lump %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            lump,
-        );
+        I_Error(&format!("R_InstallSpriteLump: Bad frame characters in lump {}", lump));
     }
     if frame as ::core::ffi::c_int > maxframe {
         maxframe = frame as ::core::ffi::c_int;
     }
     if rotation == 0 as ::core::ffi::c_uint {
         if sprtemp[frame as usize].rotate == false_0 as boolean {
-            I_Error(
-                b"R_InitSprites: Sprite %s frame %c has multip rot=0 lump\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                spritename,
-                ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame),
-            );
+            I_Error(&format!(
+                "R_InitSprites: Sprite {} frame {} has multip rot=0 lump",
+                ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+                ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame) as u8 as char,
+            ));
         }
         if sprtemp[frame as usize].rotate == true_0 as boolean {
-            I_Error(
-                b"R_InitSprites: Sprite %s frame %c has rotations and a rot=0 lump\0"
-                    as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                spritename,
-                ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame),
-            );
+            I_Error(&format!(
+                "R_InitSprites: Sprite {} frame {} has rotations and a rot=0 lump",
+                ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+                ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame) as u8 as char,
+            ));
         }
         sprtemp[frame as usize].rotate = false_0 as boolean;
         r = 0 as ::core::ffi::c_int;
@@ -1854,25 +1847,23 @@ pub unsafe extern "C" fn R_InstallSpriteLump(
         return;
     }
     if sprtemp[frame as usize].rotate == false_0 as boolean {
-        I_Error(
-            b"R_InitSprites: Sprite %s frame %c has rotations and a rot=0 lump\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            spritename,
-            ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame),
-        );
+        I_Error(&format!(
+            "R_InitSprites: Sprite {} frame {} has rotations and a rot=0 lump",
+            ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+            ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame) as u8 as char,
+        ));
     }
     sprtemp[frame as usize].rotate = true_0 as boolean;
     rotation = rotation.wrapping_sub(1);
     if sprtemp[frame as usize].lump[rotation as usize] as ::core::ffi::c_int
         != -(1 as ::core::ffi::c_int)
     {
-        I_Error(
-            b"R_InitSprites: Sprite %s : %c : %c has two lumps mapped to it\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            spritename,
-            ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame),
-            ('1' as i32 as ::core::ffi::c_uint).wrapping_add(rotation),
-        );
+        I_Error(&format!(
+            "R_InitSprites: Sprite {} : {} : {} has two lumps mapped to it",
+            ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+            ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame) as u8 as char,
+            ('1' as i32 as ::core::ffi::c_uint).wrapping_add(rotation) as u8 as char,
+        ));
     }
     sprtemp[frame as usize].lump[rotation as usize] = (lump - firstspritelump)
         as ::core::ffi::c_short;
@@ -1974,13 +1965,11 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
             while frame < maxframe {
                 match sprtemp[frame as usize].rotate as ::core::ffi::c_int {
                     -1 => {
-                        I_Error(
-                            b"R_InitSprites: No patches found for %s frame %c\0"
-                                as *const u8 as *const ::core::ffi::c_char
-                                as *mut ::core::ffi::c_char,
-                            spritename,
-                            frame + 'A' as i32,
-                        );
+                        I_Error(&format!(
+                            "R_InitSprites: No patches found for {} frame {}",
+                            ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+                            (frame + 'A' as i32) as u8 as char,
+                        ));
                     }
                     1 => {
                         rotation = 0 as ::core::ffi::c_int;
@@ -1988,13 +1977,11 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
                             if sprtemp[frame as usize].lump[rotation as usize]
                                 as ::core::ffi::c_int == -(1 as ::core::ffi::c_int)
                             {
-                                I_Error(
-                                    b"R_InitSprites: Sprite %s frame %c is missing rotations\0"
-                                        as *const u8 as *const ::core::ffi::c_char
-                                        as *mut ::core::ffi::c_char,
-                                    spritename,
-                                    frame + 'A' as i32,
-                                );
+                                I_Error(&format!(
+                                    "R_InitSprites: Sprite {} frame {} is missing rotations",
+                                    ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+                                    (frame + 'A' as i32) as u8 as char,
+                                ));
                             }
                             rotation += 1;
                         }
@@ -2171,10 +2158,7 @@ pub unsafe extern "C" fn R_DrawVisSprite(
         if texturecolumn < 0 as ::core::ffi::c_int
             || texturecolumn >= (*patch).width as ::core::ffi::c_int
         {
-            I_Error(
-                b"R_DrawSpriteRange: bad texturecolumn\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("R_DrawSpriteRange: bad texturecolumn");
         }
         column = (patch as *mut byte)
             .offset(
@@ -2223,20 +2207,18 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
         return;
     }
     if (*thing).sprite as ::core::ffi::c_uint >= numsprites as ::core::ffi::c_uint {
-        I_Error(
-            b"R_ProjectSprite: invalid sprite number %i \0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "R_ProjectSprite: invalid sprite number {} ",
             (*thing).sprite as ::core::ffi::c_uint,
-        );
+        ));
     }
     sprdef = sprites.offset((*thing).sprite as isize) as *mut spritedef_t;
     if (*thing).frame & FF_FRAMEMASK >= (*sprdef).numframes {
-        I_Error(
-            b"R_ProjectSprite: invalid sprite frame %i : %i \0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "R_ProjectSprite: invalid sprite frame {} : {} ",
             (*thing).sprite as ::core::ffi::c_uint,
             (*thing).frame,
-        );
+        ));
     }
     sprframe = (*sprdef).spriteframes.offset(((*thing).frame & FF_FRAMEMASK) as isize)
         as *mut spriteframe_t;
@@ -2357,20 +2339,18 @@ pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     };
     if (*(*psp).state).sprite as ::core::ffi::c_uint >= numsprites as ::core::ffi::c_uint
     {
-        I_Error(
-            b"R_ProjectSprite: invalid sprite number %i \0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "R_ProjectSprite: invalid sprite number {} ",
             (*(*psp).state).sprite as ::core::ffi::c_uint,
-        );
+        ));
     }
     sprdef = sprites.offset((*(*psp).state).sprite as isize) as *mut spritedef_t;
     if (*(*psp).state).frame & FF_FRAMEMASK >= (*sprdef).numframes {
-        I_Error(
-            b"R_ProjectSprite: invalid sprite frame %i : %i \0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "R_ProjectSprite: invalid sprite frame {} : {} ",
             (*(*psp).state).sprite as ::core::ffi::c_uint,
             (*(*psp).state).frame,
-        );
+        ));
     }
     sprframe = (*sprdef)
         .spriteframes

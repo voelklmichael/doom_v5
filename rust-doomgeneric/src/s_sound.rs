@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
 extern "C" {
     fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
@@ -31,7 +32,6 @@ extern "C" {
     fn I_StopSong();
     fn I_MusicIsPlaying() -> boolean;
     static mut snd_musicdevice: ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
@@ -2040,11 +2040,7 @@ pub unsafe extern "C" fn S_StartSound(
     origin = origin_p as *mut mobj_t;
     volume = snd_SfxVolume;
     if sfx_id < 1 as ::core::ffi::c_int || sfx_id > NUMSFX as ::core::ffi::c_int {
-        I_Error(
-            b"Bad sfx #: %d\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            sfx_id,
-        );
+        I_Error(&format!("Bad sfx #: {}", sfx_id));
     }
     sfx = (&raw mut S_sfx as *mut sfxinfo_t).offset(sfx_id as isize) as *mut sfxinfo_t;
     if !(*sfx).link.is_null() {
@@ -2163,22 +2159,14 @@ pub unsafe extern "C" fn S_UpdateSounds(mut listener: *mut mobj_t) {
 #[no_mangle]
 pub unsafe extern "C" fn S_SetMusicVolume(mut volume: ::core::ffi::c_int) {
     if volume < 0 as ::core::ffi::c_int || volume > 127 as ::core::ffi::c_int {
-        I_Error(
-            b"Attempt to set music volume at %d\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            volume,
-        );
+        I_Error(&format!("Attempt to set music volume at {}", volume));
     }
     I_SetMusicVolume(volume);
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_SetSfxVolume(mut volume: ::core::ffi::c_int) {
     if volume < 0 as ::core::ffi::c_int || volume > 127 as ::core::ffi::c_int {
-        I_Error(
-            b"Attempt to set sfx volume at %d\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            volume,
-        );
+        I_Error(&format!("Attempt to set sfx volume at {}", volume));
     }
     snd_SfxVolume = volume;
 }
@@ -2205,11 +2193,7 @@ pub unsafe extern "C" fn S_ChangeMusic(
     if musicnum <= mus_None as ::core::ffi::c_int
         || musicnum >= NUMMUSIC as ::core::ffi::c_int
     {
-        I_Error(
-            b"Bad music number %d\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            musicnum,
-        );
+        I_Error(&format!("Bad music number {}", musicnum));
     } else {
         music = (&raw mut S_music as *mut musicinfo_t).offset(musicnum as isize)
             as *mut musicinfo_t;

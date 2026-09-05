@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::w_wad::{wad_name8_to_string, W_CheckNumForName};
 extern "C" {
@@ -19,7 +20,6 @@ extern "C" {
     static mut deathmatch: ::core::ffi::c_int;
     static mut totalsecret: ::core::ffi::c_int;
     static mut leveltime: ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -2237,12 +2237,11 @@ pub unsafe extern "C" fn P_InitPicAnims() {
                 (*lastanim).numpics = (*lastanim).picnum - (*lastanim).basepic
                     + 1 as ::core::ffi::c_int;
                 if (*lastanim).numpics < 2 as ::core::ffi::c_int {
-                    I_Error(
-                        b"P_InitPicAnims: bad cycle from %s to %s\0" as *const u8
-                            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                        startname,
-                        endname,
-                    );
+                    I_Error(&format!(
+                        "P_InitPicAnims: bad cycle from {} to {}",
+                        wad_name8_to_string(startname),
+                        wad_name8_to_string(endname),
+                    ));
                 }
                 (*lastanim).speed = animdefs[i as usize].speed;
                 lastanim = lastanim.offset(1);
@@ -2366,11 +2365,7 @@ pub unsafe extern "C" fn P_FindNextHighestFloor(
                 if h == MAX_ADJOINING_SECTORS + 1 as ::core::ffi::c_int {
                     height = (*other).floorheight;
                 } else if h == MAX_ADJOINING_SECTORS + 2 as ::core::ffi::c_int {
-                    I_Error(
-                        b"Sector with more than 22 adjoining sectors. Vanilla will crash here\0"
-                            as *const u8 as *const ::core::ffi::c_char
-                            as *mut ::core::ffi::c_char,
-                    );
+                    I_Error("Sector with more than 22 adjoining sectors. Vanilla will crash here");
                 }
                 let fresh1 = h;
                 h = h + 1;
@@ -2861,11 +2856,10 @@ pub unsafe extern "C" fn P_PlayerInSpecialSector(mut player: *mut player_t) {
             }
         }
         _ => {
-            I_Error(
-                b"P_PlayerInSpecialSector: unknown special %i\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            I_Error(&format!(
+                "P_PlayerInSpecialSector: unknown special {}",
                 (*sector).special as ::core::ffi::c_int,
-            );
+            ));
         }
     };
 }
@@ -3176,11 +3170,7 @@ pub unsafe extern "C" fn P_SpawnSpecials() {
         match (*lines.offset(i as isize)).special as ::core::ffi::c_int {
             48 => {
                 if numlinespecials as ::core::ffi::c_int >= MAXLINEANIMS {
-                    I_Error(
-                        b"Too many scrolling wall linedefs! (Vanilla limit is 64)\0"
-                            as *const u8 as *const ::core::ffi::c_char
-                            as *mut ::core::ffi::c_char,
-                    );
+                    I_Error("Too many scrolling wall linedefs! (Vanilla limit is 64)");
                 }
                 linespeciallist[numlinespecials as usize] = lines.offset(i as isize)
                     as *mut line_t;

@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_GetNumForName,
     W_ReleaseLumpName,
@@ -10,7 +11,6 @@ extern "C" {
         __n: size_t,
     ) -> ::core::ffi::c_int;
     fn I_ConsoleStdout() -> boolean;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -1944,11 +1944,7 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: ::core::ffi::c_int) {
             if *texturecompositesize.offset(texnum as isize)
                 > 0x10000 as ::core::ffi::c_int - (*texture).height as ::core::ffi::c_int
             {
-                I_Error(
-                    b"R_GenerateLookup: texture %i is >64k\0" as *const u8
-                        as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                    texnum,
-                );
+                I_Error(&format!("R_GenerateLookup: texture {} is >64k", texnum));
             }
             *texturecompositesize.offset(texnum as isize)
                 += (*texture).height as ::core::ffi::c_int;
@@ -2184,10 +2180,7 @@ pub unsafe extern "C" fn R_InitTextures() {
         }
         offset = *directory;
         if offset > maxoff {
-            I_Error(
-                b"R_InitTextures: bad texture directory\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("R_InitTextures: bad texture directory");
         }
         mtexture = (maptex as *mut byte).offset(offset as isize) as *mut maptexture_t;
         let ref mut fresh0 = *textures.offset(i as isize);
@@ -2224,11 +2217,10 @@ pub unsafe extern "C" fn R_InitTextures() {
             (*patch).originy = (*mpatch).originy;
             (*patch).patch = *patchlookup.offset((*mpatch).patch as isize);
             if (*patch).patch == -(1 as ::core::ffi::c_int) {
-                I_Error(
-                    b"R_InitTextures: Missing patch in texture %s\0" as *const u8
-                        as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                    &raw mut (*texture).name as *mut ::core::ffi::c_char,
-                );
+                I_Error(&format!(
+                    "R_InitTextures: Missing patch in texture {}",
+                    wad_name8_to_string(&raw mut (*texture).name as *mut ::core::ffi::c_char),
+                ));
             }
             j += 1;
             mpatch = mpatch.offset(1);
@@ -2384,11 +2376,10 @@ pub unsafe extern "C" fn R_FlatNumForName(
             name as *const ::core::ffi::c_void,
             8 as size_t,
         );
-        I_Error(
-            b"R_FlatNumForName: %s not found\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            &raw mut namet as *mut ::core::ffi::c_char,
-        );
+        I_Error(&format!(
+            "R_FlatNumForName: {} not found",
+            wad_name8_to_string(&raw mut namet as *mut ::core::ffi::c_char),
+        ));
     }
     return i - firstflat;
 }
@@ -2425,11 +2416,7 @@ pub unsafe extern "C" fn R_TextureNumForName(
     let mut i: ::core::ffi::c_int = 0;
     i = R_CheckTextureNumForName(name);
     if i == -(1 as ::core::ffi::c_int) {
-        I_Error(
-            b"R_TextureNumForName: %s not found\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            name,
-        );
+        I_Error(&format!("R_TextureNumForName: {} not found", wad_name8_to_string(name)));
     }
     return i;
 }

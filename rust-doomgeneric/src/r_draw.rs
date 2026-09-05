@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 extern "C" {
     fn memcpy(
@@ -5,7 +6,6 @@ extern "C" {
         __src: *const ::core::ffi::c_void,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -114,13 +114,7 @@ pub unsafe extern "C" fn R_DrawColumn() {
     if dc_x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
         || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
     {
-        I_Error(
-            b"R_DrawColumn: %i to %i at %i\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            dc_yl,
-            dc_yh,
-            dc_x,
-        );
+        I_Error(&format!("R_DrawColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[dc_x as usize] as isize);
     fracstep = dc_iscale;
@@ -158,13 +152,7 @@ pub unsafe extern "C" fn R_DrawColumnLow() {
     if dc_x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
         || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
     {
-        I_Error(
-            b"R_DrawColumn: %i to %i at %i\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            dc_yl,
-            dc_yh,
-            dc_x,
-        );
+        I_Error(&format!("R_DrawColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
     x = dc_x << 1 as ::core::ffi::c_int;
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
@@ -268,13 +256,7 @@ pub unsafe extern "C" fn R_DrawFuzzColumn() {
     if dc_x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
         || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
     {
-        I_Error(
-            b"R_DrawFuzzColumn: %i to %i at %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            dc_yl,
-            dc_yh,
-            dc_x,
-        );
+        I_Error(&format!("R_DrawFuzzColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[dc_x as usize] as isize);
     fracstep = dc_iscale;
@@ -321,13 +303,7 @@ pub unsafe extern "C" fn R_DrawFuzzColumnLow() {
     if x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
         || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
     {
-        I_Error(
-            b"R_DrawFuzzColumn: %i to %i at %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            dc_yl,
-            dc_yh,
-            dc_x,
-        );
+        I_Error(&format!("R_DrawFuzzColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
     dest2 = ylookup[dc_yl as usize]
@@ -378,13 +354,7 @@ pub unsafe extern "C" fn R_DrawTranslatedColumn() {
     if dc_x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
         || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
     {
-        I_Error(
-            b"R_DrawColumn: %i to %i at %i\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            dc_yl,
-            dc_yh,
-            dc_x,
-        );
+        I_Error(&format!("R_DrawColumn: {} to {} at {}", dc_yl, dc_yh, dc_x));
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[dc_x as usize] as isize);
     fracstep = dc_iscale;
@@ -421,13 +391,7 @@ pub unsafe extern "C" fn R_DrawTranslatedColumnLow() {
     if x as ::core::ffi::c_uint >= SCREENWIDTH as ::core::ffi::c_uint
         || dc_yl < 0 as ::core::ffi::c_int || dc_yh >= SCREENHEIGHT
     {
-        I_Error(
-            b"R_DrawColumn: %i to %i at %i\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            dc_yl,
-            dc_yh,
-            x,
-        );
+        I_Error(&format!("R_DrawColumn: {} to {} at {}", dc_yl, dc_yh, x));
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
     dest2 = ylookup[dc_yl as usize]
@@ -519,13 +483,7 @@ pub unsafe extern "C" fn R_DrawSpan() {
     if ds_x2 < ds_x1 || ds_x1 < 0 as ::core::ffi::c_int || ds_x2 >= SCREENWIDTH
         || ds_y as ::core::ffi::c_uint > SCREENHEIGHT as ::core::ffi::c_uint
     {
-        I_Error(
-            b"R_DrawSpan: %i to %i at %i\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            ds_x1,
-            ds_x2,
-            ds_y,
-        );
+        I_Error(&format!("R_DrawSpan: {} to {} at {}", ds_x1, ds_x2, ds_y));
     }
     position = (ds_xfrac << 10 as ::core::ffi::c_int) as ::core::ffi::c_uint
         & 0xffff0000 as ::core::ffi::c_uint
@@ -564,13 +522,7 @@ pub unsafe extern "C" fn R_DrawSpanLow() {
     if ds_x2 < ds_x1 || ds_x1 < 0 as ::core::ffi::c_int || ds_x2 >= SCREENWIDTH
         || ds_y as ::core::ffi::c_uint > SCREENHEIGHT as ::core::ffi::c_uint
     {
-        I_Error(
-            b"R_DrawSpan: %i to %i at %i\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            ds_x1,
-            ds_x2,
-            ds_y,
-        );
+        I_Error(&format!("R_DrawSpan: {} to {} at {}", ds_x1, ds_x2, ds_y));
     }
     position = (ds_xfrac << 10 as ::core::ffi::c_int) as ::core::ffi::c_uint
         & 0xffff0000 as ::core::ffi::c_uint

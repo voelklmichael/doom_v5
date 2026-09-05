@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
 extern "C" {
     fn memcpy(
@@ -11,7 +12,6 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn fabs(__x: ::core::ffi::c_double) -> ::core::ffi::c_double;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn I_GetPaletteIndex(
         r: ::core::ffi::c_int,
         g: ::core::ffi::c_int,
@@ -139,10 +139,7 @@ pub unsafe extern "C" fn V_CopyRect(
         || destx < 0 as ::core::ffi::c_int || destx + width > SCREENWIDTH
         || desty < 0 as ::core::ffi::c_int || desty + height > SCREENHEIGHT
     {
-        I_Error(
-            b"Bad V_CopyRect\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Bad V_CopyRect");
     }
     V_MarkRect(destx, desty, width, height);
     src = source.offset((SCREENWIDTH * srcy) as isize).offset(srcx as isize);
@@ -187,16 +184,15 @@ pub unsafe extern "C" fn V_DrawPatch(
         || y < 0 as ::core::ffi::c_int
         || y + (*patch).height as ::core::ffi::c_int > SCREENHEIGHT
     {
-        I_Error(
-            b"Bad V_DrawPatch x=%i y=%i patch.width=%i patch.height=%i topoffset=%i leftoffset=%i\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "Bad V_DrawPatch x={} y={} patch.width={} patch.height={} topoffset={} leftoffset={}",
             x,
             y,
             (*patch).width as ::core::ffi::c_int,
             (*patch).height as ::core::ffi::c_int,
             (*patch).topoffset as ::core::ffi::c_int,
             (*patch).leftoffset as ::core::ffi::c_int,
-        );
+        ));
     }
     V_MarkRect(
         x,
@@ -265,10 +261,7 @@ pub unsafe extern "C" fn V_DrawPatchFlipped(
         || y < 0 as ::core::ffi::c_int
         || y + (*patch).height as ::core::ffi::c_int > SCREENHEIGHT
     {
-        I_Error(
-            b"Bad V_DrawPatchFlipped\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Bad V_DrawPatchFlipped");
     }
     V_MarkRect(
         x,
@@ -340,10 +333,7 @@ pub unsafe extern "C" fn V_DrawTLPatch(
         || y < 0 as ::core::ffi::c_int
         || y + (*patch).height as ::core::ffi::c_int > SCREENHEIGHT
     {
-        I_Error(
-            b"Bad V_DrawTLPatch\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Bad V_DrawTLPatch");
     }
     col = 0 as ::core::ffi::c_int;
     desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
@@ -465,10 +455,7 @@ pub unsafe extern "C" fn V_DrawAltTLPatch(
         || y < 0 as ::core::ffi::c_int
         || y + (*patch).height as ::core::ffi::c_int > SCREENHEIGHT
     {
-        I_Error(
-            b"Bad V_DrawAltTLPatch\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Bad V_DrawAltTLPatch");
     }
     col = 0 as ::core::ffi::c_int;
     desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
@@ -532,10 +519,7 @@ pub unsafe extern "C" fn V_DrawShadowedPatch(
         || y < 0 as ::core::ffi::c_int
         || y + (*patch).height as ::core::ffi::c_int > SCREENHEIGHT
     {
-        I_Error(
-            b"Bad V_DrawShadowedPatch\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Bad V_DrawShadowedPatch");
     }
     col = 0 as ::core::ffi::c_int;
     desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
@@ -612,10 +596,7 @@ pub unsafe extern "C" fn V_DrawBlock(
     if x < 0 as ::core::ffi::c_int || x + width > SCREENWIDTH
         || y < 0 as ::core::ffi::c_int || y + height > SCREENHEIGHT
     {
-        I_Error(
-            b"Bad V_DrawBlock\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Bad V_DrawBlock");
     }
     V_MarkRect(x, y, width, height);
     dest = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
@@ -837,10 +818,7 @@ pub unsafe extern "C" fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
         i += 1;
     }
     if i == 100 as ::core::ffi::c_int {
-        I_Error(
-            b"V_ScreenShot: Couldn't create a PCX\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("V_ScreenShot: Couldn't create a PCX");
     }
     WritePCXfile(
         &raw mut lbmname as *mut ::core::ffi::c_char,

@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -9,7 +10,6 @@ extern "C" {
     ) -> ::core::ffi::c_int;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn I_ZoneBase(size: *mut ::core::ffi::c_int) -> *mut byte;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -137,10 +137,7 @@ pub unsafe extern "C" fn Z_Free(mut ptr: *mut ::core::ffi::c_void) {
         .offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
         as *mut memblock_t;
     if (*block).id != ZONEID {
-        I_Error(
-            b"Z_Free: freed a pointer without ZONEID\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("Z_Free: freed a pointer without ZONEID");
     }
     if (*block).tag != PU_FREE as ::core::ffi::c_int && !(*block).user.is_null() {
         *(*block).user = ::core::ptr::null_mut::<::core::ffi::c_void>();
@@ -197,11 +194,7 @@ pub unsafe extern "C" fn Z_Malloc(
     start = (*base).prev as *mut memblock_t;
     loop {
         if rover == start {
-            I_Error(
-                b"Z_Malloc: failed on allocation of %i bytes\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                size,
-            );
+            I_Error(&format!("Z_Malloc: failed on allocation of {} bytes", size));
         }
         if (*rover).tag != PU_FREE as ::core::ffi::c_int {
             if (*rover).tag < PU_PURGELEVEL as ::core::ffi::c_int {
@@ -237,10 +230,7 @@ pub unsafe extern "C" fn Z_Malloc(
         (*base).size = size;
     }
     if user.is_null() && tag >= PU_PURGELEVEL as ::core::ffi::c_int {
-        I_Error(
-            b"Z_Malloc: an owner is required for purgable blocks\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("Z_Malloc: an owner is required for purgable blocks");
     }
     (*base).user = user as *mut *mut ::core::ffi::c_void;
     (*base).tag = tag;
@@ -391,24 +381,15 @@ pub unsafe extern "C" fn Z_CheckHeap() {
         if (block as *mut byte).offset((*block).size as isize)
             != (*block).next as *mut byte
         {
-            I_Error(
-                b"Z_CheckHeap: block size does not touch the next block\n\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("Z_CheckHeap: block size does not touch the next block\n");
         }
         if (*(*block).next).prev != block {
-            I_Error(
-                b"Z_CheckHeap: next block doesn't have proper back link\n\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("Z_CheckHeap: next block doesn't have proper back link\n");
         }
         if (*block).tag == PU_FREE as ::core::ffi::c_int
             && (*(*block).next).tag == PU_FREE as ::core::ffi::c_int
         {
-            I_Error(
-                b"Z_CheckHeap: two consecutive free blocks\n\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("Z_CheckHeap: two consecutive free blocks\n");
         }
         block = (*block).next as *mut memblock_t;
     }
@@ -425,20 +406,18 @@ pub unsafe extern "C" fn Z_ChangeTag2(
         .offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
         as *mut memblock_t;
     if (*block).id != ZONEID {
-        I_Error(
-            b"%s:%i: Z_ChangeTag: block without a ZONEID!\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            file,
+        I_Error(&format!(
+            "{}:{}: Z_ChangeTag: block without a ZONEID!",
+            ::std::ffi::CStr::from_ptr(file).to_str().unwrap(),
             line,
-        );
+        ));
     }
     if tag >= PU_PURGELEVEL as ::core::ffi::c_int && (*block).user.is_null() {
-        I_Error(
-            b"%s:%i: Z_ChangeTag: an owner is required for purgable blocks\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            file,
+        I_Error(&format!(
+            "{}:{}: Z_ChangeTag: an owner is required for purgable blocks",
+            ::std::ffi::CStr::from_ptr(file).to_str().unwrap(),
             line,
-        );
+        ));
     }
     (*block).tag = tag;
 }
@@ -452,10 +431,7 @@ pub unsafe extern "C" fn Z_ChangeUser(
         .offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
         as *mut memblock_t;
     if (*block).id != ZONEID {
-        I_Error(
-            b"Z_ChangeUser: Tried to change user for invalid block!\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("Z_ChangeUser: Tried to change user for invalid block!");
     }
     (*block).user = user;
     *user = ptr;

@@ -1,6 +1,6 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn W_CacheLumpNum(
         lump: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -1715,13 +1715,7 @@ pub unsafe extern "C" fn R_MapPlane(
     let mut length: fixed_t = 0;
     let mut index: ::core::ffi::c_uint = 0;
     if x2 < x1 || x1 < 0 as ::core::ffi::c_int || x2 >= viewwidth || y > viewheight {
-        I_Error(
-            b"R_MapPlane: %i, %i at %i\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            x1,
-            x2,
-            y,
-        );
+        I_Error(&format!("R_MapPlane: {}, {} at {}", x1, x2, y));
     }
     if planeheight != cachedheight[y as usize] {
         cachedheight[y as usize] = planeheight;
@@ -1801,10 +1795,7 @@ pub unsafe extern "C" fn R_FindPlane(
     if lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
         as ::core::ffi::c_long == MAXVISPLANES as ::core::ffi::c_long
     {
-        I_Error(
-            b"R_FindPlane: no more visplanes\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("R_FindPlane: no more visplanes");
     }
     lastvisplane = lastvisplane.offset(1);
     (*check).height = height;
@@ -1907,32 +1898,29 @@ pub unsafe extern "C" fn R_DrawPlanes() {
     if ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as ::core::ffi::c_long
         > MAXDRAWSEGS as ::core::ffi::c_long
     {
-        I_Error(
-            b"R_DrawPlanes: drawsegs overflow (%i)\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "R_DrawPlanes: drawsegs overflow ({})",
             ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as ::core::ffi::c_long,
-        );
+        ));
     }
     if lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
         as ::core::ffi::c_long > MAXVISPLANES as ::core::ffi::c_long
     {
-        I_Error(
-            b"R_DrawPlanes: visplane overflow (%i)\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "R_DrawPlanes: visplane overflow ({})",
             lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
                 as ::core::ffi::c_long,
-        );
+        ));
     }
     if lastopening.offset_from(&raw mut openings as *mut ::core::ffi::c_short)
         as ::core::ffi::c_long
         > (SCREENWIDTH * 64 as ::core::ffi::c_int) as ::core::ffi::c_long
     {
-        I_Error(
-            b"R_DrawPlanes: opening overflow (%i)\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "R_DrawPlanes: opening overflow ({})",
             lastopening.offset_from(&raw mut openings as *mut ::core::ffi::c_short)
                 as ::core::ffi::c_long,
-        );
+        ));
     }
     pl = &raw mut visplanes as *mut visplane_t;
     while pl < lastvisplane {

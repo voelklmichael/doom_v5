@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 extern "C" {
@@ -38,7 +39,6 @@ extern "C" {
     fn I_WaitVBL(count: ::core::ffi::c_int);
     fn D_StartTitle();
     fn I_Quit();
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn I_SetPalette(palette: *mut byte);
     static mut vanilla_keyboard_mapping: ::core::ffi::c_int;
     static mut usegamma: ::core::ffi::c_int;
@@ -2946,10 +2946,7 @@ pub unsafe extern "C" fn M_DrawReadThis1() {
                 as *mut ::core::ffi::c_char;
         }
         _ => {
-            I_Error(
-                b"Unhandled game version\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-            );
+            I_Error("Unhandled game version");
         }
     }
     lumpname = lumpname;

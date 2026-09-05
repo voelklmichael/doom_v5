@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
 use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
@@ -128,7 +129,6 @@ extern "C" {
     fn P_Random() -> ::core::ffi::c_int;
     fn M_ClearRandom();
     fn I_Quit();
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn P_SetupLevel(
         episode: ::core::ffi::c_int,
         map: ::core::ffi::c_int,
@@ -2963,12 +2963,11 @@ pub unsafe extern "C" fn G_Ticker() {
                     && consistancy[i as usize][buf as usize] as ::core::ffi::c_int
                         != (*cmd).consistancy as ::core::ffi::c_int
                 {
-                    I_Error(
-                        b"consistency failure (%i should be %i)\0" as *const u8
-                            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+                    I_Error(&format!(
+                        "consistency failure ({} should be {})",
                         (*cmd).consistancy as ::core::ffi::c_int,
                         consistancy[i as usize][buf as usize] as ::core::ffi::c_int,
-                    );
+                    ));
                 }
                 if !players[i as usize].mo.is_null() {
                     consistancy[i as usize][buf as usize] = (*players[i as usize].mo).x
@@ -3177,11 +3176,7 @@ pub unsafe extern "C" fn G_CheckSpot(
             ya = finesine[an as usize];
         }
         _ => {
-            I_Error(
-                b"G_CheckSpot: unexpected angle %d\n\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                an,
-            );
+            I_Error(&format!("G_CheckSpot: unexpected angle {}\n", an));
             ya = 0 as ::core::ffi::c_int as fixed_t;
             xa = ya;
         }
@@ -3205,11 +3200,7 @@ pub unsafe extern "C" fn G_DeathMatchSpawnPlayer(mut playernum: ::core::ffi::c_i
     selections = deathmatch_p.offset_from(&raw mut deathmatchstarts as *mut mapthing_t)
         as ::core::ffi::c_long as ::core::ffi::c_int;
     if selections < 4 as ::core::ffi::c_int {
-        I_Error(
-            b"Only %i deathmatch spots, 4 required\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            selections,
-        );
+        I_Error(&format!("Only {} deathmatch spots, 4 required", selections));
     }
     j = 0 as ::core::ffi::c_int;
     while j < 20 as ::core::ffi::c_int {
@@ -3601,10 +3592,7 @@ pub unsafe extern "C" fn G_DoLoadGame() {
     P_UnArchiveThinkers();
     P_UnArchiveSpecials();
     if P_ReadSaveGameEOF() == 0 {
-        I_Error(
-            b"Bad savegame\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Bad savegame");
     }
     fclose(save_stream);
     if setsizeneeded != 0 {
@@ -3653,12 +3641,11 @@ pub unsafe extern "C" fn G_DoSaveGame() {
             b"wb\0" as *const u8 as *const ::core::ffi::c_char,
         ) as *mut FILE;
         if save_stream.is_null() {
-            I_Error(
-                b"Failed to open either '%s' or '%s' to write savegame.\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                temp_savegame_file,
-                recovery_savegame_file,
-            );
+            I_Error(&format!(
+                "Failed to open either '{}' or '{}' to write savegame.",
+                ::std::ffi::CStr::from_ptr(temp_savegame_file).to_str().unwrap(),
+                ::std::ffi::CStr::from_ptr(recovery_savegame_file).to_str().unwrap(),
+            ));
         }
     }
     savegame_error = false_0 as boolean;
@@ -3671,19 +3658,15 @@ pub unsafe extern "C" fn G_DoSaveGame() {
     if vanilla_savegame_limit != 0
         && ftell(save_stream) > SAVEGAMESIZE as ::core::ffi::c_long
     {
-        I_Error(
-            b"Savegame buffer overrun\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Savegame buffer overrun");
     }
     fclose(save_stream);
     if !recovery_savegame_file.is_null() {
-        I_Error(
-            b"Failed to open savegame file '%s' for writing.\nBut your game has been saved to '%s' for recovery.\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            temp_savegame_file,
-            recovery_savegame_file,
-        );
+        I_Error(&format!(
+            "Failed to open savegame file '{}' for writing.\nBut your game has been saved to '{}' for recovery.",
+            ::std::ffi::CStr::from_ptr(temp_savegame_file).to_str().unwrap(),
+            ::std::ffi::CStr::from_ptr(recovery_savegame_file).to_str().unwrap(),
+        ));
     }
     remove(savegame_file);
     rename(temp_savegame_file, savegame_file);
@@ -4000,10 +3983,7 @@ pub unsafe extern "C" fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
 pub unsafe extern "C" fn G_VanillaVersionCode() -> ::core::ffi::c_int {
     match gameversion as ::core::ffi::c_uint {
         0 => {
-            I_Error(
-                b"Doom 1.2 does not have a version code!\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("Doom 1.2 does not have a version code!");
         }
         1 => {}
         2 => return 107 as ::core::ffi::c_int,
@@ -4209,13 +4189,12 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
             / realtics as ::core::ffi::c_float;
         timingdemo = false_0 as boolean;
         demoplayback = false_0 as boolean;
-        I_Error(
-            b"timed %i gametics in %i realtics (%f fps)\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "timed {} gametics in {} realtics ({:.6} fps)",
             gametic,
             realtics,
             fps as ::core::ffi::c_double,
-        );
+        ));
     }
     if demoplayback != 0 {
         W_ReleaseLumpName(&wad_name8_to_string(defdemoname));
@@ -4250,11 +4229,10 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         );
         Z_Free(demobuffer as *mut ::core::ffi::c_void);
         demorecording = false_0 as boolean;
-        I_Error(
-            b"Demo %s recorded\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            demoname,
-        );
+        I_Error(&format!(
+            "Demo {} recorded",
+            ::std::ffi::CStr::from_ptr(demoname).to_str().unwrap(),
+        ));
     }
     return false_0 as boolean;
 }

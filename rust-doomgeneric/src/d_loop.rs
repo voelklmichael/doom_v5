@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -10,7 +11,6 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn I_GetTime() -> ::core::ffi::c_int;
     fn I_GetTimeMS() -> ::core::ffi::c_int;
@@ -239,10 +239,7 @@ pub unsafe extern "C" fn NetUpdate() {
 }
 unsafe extern "C" fn D_Disconnected() {
     if drone != 0 {
-        I_Error(
-            b"Disconnected from server in drone mode.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("Disconnected from server in drone mode.");
     }
     printf(b"Disconnected from server.\n\0" as *const u8 as *const ::core::ffi::c_char);
 }
@@ -420,10 +417,7 @@ pub unsafe extern "C" fn TryRunTics() {
         NetUpdate();
         lowtic = GetLowTic();
         if lowtic < gametic / ticdup {
-            I_Error(
-                b"TryRunTics: lowtic < gametic\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("TryRunTics: lowtic < gametic");
         }
         if I_GetTime() / ticdup - entertic > 0 as ::core::ffi::c_int {
             return;
@@ -448,10 +442,7 @@ pub unsafe extern "C" fn TryRunTics() {
         i = 0 as ::core::ffi::c_int;
         while i < ticdup {
             if gametic / ticdup > lowtic {
-                I_Error(
-                    b"gametic>lowtic\0" as *const u8 as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char,
-                );
+                I_Error("gametic>lowtic");
             }
             memcpy(
                 &raw mut local_playeringame as *mut boolean as *mut ::core::ffi::c_void,

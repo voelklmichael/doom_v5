@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     static mut weaponinfo: [weaponinfo_t; 9];
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
@@ -13,7 +14,6 @@ extern "C" {
     static mut consoleplayer: ::core::ffi::c_int;
     static mut players: [player_t; 4];
     fn P_Random() -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn I_Tactile(
         on: ::core::ffi::c_int,
         off: ::core::ffi::c_int,
@@ -1799,11 +1799,7 @@ pub unsafe extern "C" fn P_GiveAmmo(
     }
     if ammo as ::core::ffi::c_uint > NUMAMMO as ::core::ffi::c_int as ::core::ffi::c_uint
     {
-        I_Error(
-            b"P_GiveAmmo: bad type %i\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            ammo as ::core::ffi::c_uint,
-        );
+        I_Error(&format!("P_GiveAmmo: bad type {}", ammo as ::core::ffi::c_uint));
     }
     if (*player).ammo[ammo as usize] == (*player).maxammo[ammo as usize] {
         return false_0 as boolean;
@@ -2371,10 +2367,7 @@ pub unsafe extern "C" fn P_TouchSpecialThing(
             sound = sfx_wpnup as ::core::ffi::c_int;
         }
         _ => {
-            I_Error(
-                b"P_SpecialThing: Unknown gettable thing\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("P_SpecialThing: Unknown gettable thing");
         }
     }
     if (*special).flags & MF_COUNTITEM as ::core::ffi::c_int != 0 {

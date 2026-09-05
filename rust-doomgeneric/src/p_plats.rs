@@ -1,5 +1,5 @@
+use crate::src::i_system::I_Error;
 extern "C" {
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -1980,10 +1980,7 @@ pub unsafe extern "C" fn P_AddActivePlat(mut plat: *mut plat_t) {
         }
         i += 1;
     }
-    I_Error(
-        b"P_AddActivePlat: no more plats!\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    );
+    I_Error("P_AddActivePlat: no more plats!");
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_RemoveActivePlat(mut plat: *mut plat_t) {
@@ -2002,8 +1999,5 @@ pub unsafe extern "C" fn P_RemoveActivePlat(mut plat: *mut plat_t) {
         }
         i += 1;
     }
-    I_Error(
-        b"P_RemoveActivePlat: can't find plat!\0" as *const u8
-            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    );
+    I_Error("P_RemoveActivePlat: can't find plat!");
 }

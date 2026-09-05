@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use ::c2rust_bitfields;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
@@ -16,7 +17,6 @@ extern "C" {
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
     ) -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -203,11 +203,7 @@ pub unsafe extern "C" fn cmap_to_fb(
                 k += 1;
             }
         } else {
-            I_Error(
-                b"No idea how to convert %d bpp pixels\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                s_Fb.bits_per_pixel,
-            );
+            I_Error(&format!("No idea how to convert {} bpp pixels", s_Fb.bits_per_pixel));
         }
         in_0 = in_0.offset(1);
         i += 1;
@@ -262,11 +258,10 @@ pub unsafe extern "C" fn I_InitGraphics() {
         s_Fb.red.offset = 0 as uint32_t;
         s_Fb.transp.offset = 16 as uint32_t;
     } else {
-        I_Error(
-            b"Unknown gfxmode value: %s\n\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            mode,
-        );
+        I_Error(&format!(
+            "Unknown gfxmode value: {}\n",
+            ::std::ffi::CStr::from_ptr(mode).to_str().unwrap(),
+        ));
     }
     printf(
         b"I_InitGraphics: framebuffer: x_res: %d, y_res: %d, x_virtual: %d, y_virtual: %d, bpp: %d\n\0"

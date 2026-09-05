@@ -1,7 +1,7 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
     fn P_Random() -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
@@ -2011,10 +2011,7 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
         return false_0 as boolean;
     }
     if (*actor).movedir as ::core::ffi::c_uint >= 8 as ::core::ffi::c_uint {
-        I_Error(
-            b"Weird actor->movedir!\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("Weird actor->movedir!");
     }
     tryx = (*actor).x
         + (*(*actor).info).speed as fixed_t * xspeed[(*actor).movedir as usize];
@@ -2073,10 +2070,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
     let mut olddir: dirtype_t = DI_EAST;
     let mut turnaround: dirtype_t = DI_EAST;
     if (*actor).target.is_null() {
-        I_Error(
-            b"P_NewChaseDir: called with no target\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("P_NewChaseDir: called with no target");
     }
     olddir = (*actor).movedir as dirtype_t;
     turnaround = opposite[olddir as usize];

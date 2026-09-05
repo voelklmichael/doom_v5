@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
@@ -13,7 +14,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
     ) -> ::core::ffi::c_int;
     fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn M_MakeDirectory(dir: *mut ::core::ffi::c_char);
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }
@@ -1965,12 +1965,7 @@ unsafe fn GetDefaultForName(name: &str) -> *mut default_t {
         result = SearchCollection(&raw mut extra_defaults, name);
     }
     if result.is_null() {
-        let name_cstring = ::std::ffi::CString::new(name).unwrap();
-        I_Error(
-            b"Unknown configuration variable: '%s'\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            name_cstring.as_ptr(),
-        );
+        I_Error(&format!("Unknown configuration variable: '{}'", name));
     }
     return result;
 }
