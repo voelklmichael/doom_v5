@@ -1,0 +1,22 @@
+[workspace]
+members = [
+]
+[package]
+name = "rust_doomgeneric"
+authors = ["C2Rust"]
+version = "0.0.0"
+publish = false
+edition = "2021"
+autobins = false
+
+[lib]
+name = "rust_doomgeneric"
+path = "lib.rs"
+crate-type = ["staticlib", "rlib"]
+[[bin]]
+path = "src/doomgeneric_xlib.rs"
+name = "doomgeneric_xlib"
+[dependencies]
+c2rust-bitfields = "0.22.1"
+libc = "0.2"
+

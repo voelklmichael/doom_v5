@@ -11,3 +11,4 @@ Release/
 Build/
 doomgeneric/doomgeneric
 doomgeneric/doomgeneric.map
+rust-doomgeneric/target/
