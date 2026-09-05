@@ -21,6 +21,8 @@ pub mod d_loop;
 pub mod d_main;
 pub mod d_mode;
 pub mod d_net;
+pub mod d_player;
+pub mod d_ticcmd;
 pub mod doomdef;
 pub mod doomgeneric;
 pub mod doomstat;
