@@ -1,10 +1,7 @@
 use crate::src::m_argv::M_CheckParm;
+use crate::src::m_config::M_BindVariable;
 extern "C" {
     static mut screensaver_mode: boolean;
-    fn M_BindVariable(
-        name: *mut ::core::ffi::c_char,
-        variable: *mut ::core::ffi::c_void,
-    );
 }
 pub type boolean = ::core::ffi::c_uint;
 #[derive(Copy, Clone)]
@@ -356,54 +353,34 @@ pub unsafe extern "C" fn I_BindSoundVariables() {
     extern "C" {
         static mut libsamplerate_scale: ::core::ffi::c_float;
     }
-    M_BindVariable(
-        b"snd_musicdevice\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_musicdevice",
         &raw mut snd_musicdevice as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_sfxdevice\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_sfxdevice",
         &raw mut snd_sfxdevice as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_sbport\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_sbport",
         &raw mut snd_sbport as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_sbirq\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_sbirq",
         &raw mut snd_sbirq as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_sbdma\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_sbdma",
         &raw mut snd_sbdma as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_mport\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_mport",
         &raw mut snd_mport as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_maxslicetime_ms\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_maxslicetime_ms",
         &raw mut snd_maxslicetime_ms as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_musiccmd\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_musiccmd",
         &raw mut snd_musiccmd as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_samplerate\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_samplerate",
         &raw mut snd_samplerate as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_cachesize\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_cachesize",
         &raw mut snd_cachesize as *mut ::core::ffi::c_void,
     );
 }

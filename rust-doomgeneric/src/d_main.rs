@@ -1,4 +1,5 @@
 use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
+use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_StringEndsWith;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_CheckNumForName};
 extern "C" {
@@ -122,10 +123,6 @@ extern "C" {
     fn M_LoadDefaults();
     fn M_SaveDefaults();
     fn M_SetConfigDir(dir: *mut ::core::ffi::c_char);
-    fn M_BindVariable(
-        name: *mut ::core::ffi::c_char,
-        variable: *mut ::core::ffi::c_void,
-    );
     fn M_SetConfigFilenames(
         main_config: *mut ::core::ffi::c_char,
         extra_config: *mut ::core::ffi::c_char,
@@ -2224,54 +2221,34 @@ pub unsafe extern "C" fn D_BindVariables() {
     key_multi_msgplayer[1 as ::core::ffi::c_int as usize] = HUSTR_KEYINDIGO;
     key_multi_msgplayer[2 as ::core::ffi::c_int as usize] = HUSTR_KEYBROWN;
     key_multi_msgplayer[3 as ::core::ffi::c_int as usize] = HUSTR_KEYRED;
-    M_BindVariable(
-        b"mouse_sensitivity\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("mouse_sensitivity",
         &raw mut mouseSensitivity as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"sfx_volume\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("sfx_volume",
         &raw mut sfxVolume as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"music_volume\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("music_volume",
         &raw mut musicVolume as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"show_messages\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("show_messages",
         &raw mut showMessages as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"screenblocks\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("screenblocks",
         &raw mut screenblocks as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"detaillevel\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("detaillevel",
         &raw mut detailLevel as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_channels\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_channels",
         &raw mut snd_channels as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"vanilla_savegame_limit\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("vanilla_savegame_limit",
         &raw mut vanilla_savegame_limit as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"vanilla_demo_limit\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("vanilla_demo_limit",
         &raw mut vanilla_demo_limit as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"show_endoom\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("show_endoom",
         &raw mut show_endoom as *mut ::core::ffi::c_void,
     );
     i = 0 as ::core::ffi::c_int;
@@ -2284,7 +2261,9 @@ pub unsafe extern "C" fn D_BindVariables() {
             i,
         );
         M_BindVariable(
-            &raw mut buf as *mut ::core::ffi::c_char,
+            ::std::ffi::CStr::from_ptr(&raw mut buf as *mut ::core::ffi::c_char)
+                .to_str()
+                .unwrap(),
             (&raw mut chat_macros as *mut *mut ::core::ffi::c_char).offset(i as isize)
                 as *mut *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
         );
