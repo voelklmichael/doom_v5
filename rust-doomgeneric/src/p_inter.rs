@@ -2165,7 +2165,7 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
         if !(*target).player.is_null() {
             (*(*source).player)
                 .frags[(*target).player.offset_from(&raw mut players as *mut player_t)
-                as ::core::ffi::c_long as usize] += 1;
+                as i64 as usize] += 1;
         }
     } else if !netgame && (*target).flags & MF_COUNTKILL as i32 != 0 {
         players[0 as i32 as usize].killcount += 1;
@@ -2174,7 +2174,7 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
         if source.is_null() {
             (*(*target).player)
                 .frags[(*target).player.offset_from(&raw mut players as *mut player_t)
-                as ::core::ffi::c_long as usize] += 1;
+                as i64 as usize] += 1;
         }
         (*target).flags &= !(MF_SOLID as i32);
         (*(*target).player).playerstate = PST_DEAD;

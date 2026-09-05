@@ -16,7 +16,7 @@ pub type size_t = usize;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _MEMFILE {
-    pub buf: *mut ::core::ffi::c_uchar,
+    pub buf: *mut u8,
     pub buflen: size_t,
     pub alloced: size_t,
     pub position: u32,
@@ -51,7 +51,7 @@ pub unsafe extern "C" fn mem_fopen_read(
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut MEMFILE;
-    (*file).buf = buf as *mut ::core::ffi::c_uchar;
+    (*file).buf = buf as *mut u8;
     (*file).buflen = buflen;
     (*file).position = 0 as u32;
     (*file).mode = MODE_READ;
@@ -103,7 +103,7 @@ pub unsafe extern "C" fn mem_fopen_write() -> *mut MEMFILE {
         (*file).alloced as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut ::core::ffi::c_uchar;
+    ) as *mut u8;
     (*file).buflen = 0 as size_t;
     (*file).position = 0 as u32;
     (*file).mode = MODE_WRITE;
@@ -124,14 +124,14 @@ pub unsafe extern "C" fn mem_fwrite(
     }
     bytes = size.wrapping_mul(nmemb);
     while bytes > (*stream).alloced.wrapping_sub((*stream).position as size_t) {
-        let mut newbuf: *mut ::core::ffi::c_uchar = ::core::ptr::null_mut::<
-            ::core::ffi::c_uchar,
+        let mut newbuf: *mut u8 = ::core::ptr::null_mut::<
+            u8,
         >();
         newbuf = Z_Malloc(
             (*stream).alloced.wrapping_mul(2 as size_t) as i32,
             PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
-        ) as *mut ::core::ffi::c_uchar;
+        ) as *mut u8;
         memcpy(
             newbuf as *mut ::core::ffi::c_void,
             (*stream).buf as *const ::core::ffi::c_void,
@@ -172,13 +172,13 @@ pub unsafe extern "C" fn mem_fclose(mut stream: *mut MEMFILE) {
     Z_Free(stream as *mut ::core::ffi::c_void);
 }
 #[no_mangle]
-pub unsafe extern "C" fn mem_ftell(mut stream: *mut MEMFILE) -> ::core::ffi::c_long {
-    return (*stream).position as ::core::ffi::c_long;
+pub unsafe extern "C" fn mem_ftell(mut stream: *mut MEMFILE) -> i64 {
+    return (*stream).position as i64;
 }
 #[no_mangle]
 pub unsafe extern "C" fn mem_fseek(
     mut stream: *mut MEMFILE,
-    mut position: ::core::ffi::c_long,
+    mut position: i64,
     mut whence: mem_rel_t,
 ) -> i32 {
     let mut newpos: u32 = 0;
@@ -187,7 +187,7 @@ pub unsafe extern "C" fn mem_fseek(
             newpos = position as i32 as u32;
         }
         1 => {
-            newpos = ((*stream).position as ::core::ffi::c_long + position)
+            newpos = ((*stream).position as i64 + position)
                 as i32 as u32;
         }
         2 => {

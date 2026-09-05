@@ -129,7 +129,7 @@ pub static mut screensaver_mode: bool = false;
 #[no_mangle]
 pub static mut screenvisible: bool = false;
 #[no_mangle]
-pub static mut mouse_acceleration: ::core::ffi::c_float = 2.0f32;
+pub static mut mouse_acceleration: f32 = 2.0f32;
 #[no_mangle]
 pub static mut mouse_threshold: i32 = 10 as i32;
 #[no_mangle]
@@ -345,11 +345,11 @@ pub unsafe extern "C" fn I_FinishUpdate() {
     let mut x_offset: i32 = 0;
     let mut y_offset: i32 = 0;
     let mut x_offset_end: i32 = 0;
-    let mut line_in: *mut ::core::ffi::c_uchar = ::core::ptr::null_mut::<
-        ::core::ffi::c_uchar,
+    let mut line_in: *mut u8 = ::core::ptr::null_mut::<
+        u8,
     >();
-    let mut line_out: *mut ::core::ffi::c_uchar = ::core::ptr::null_mut::<
-        ::core::ffi::c_uchar,
+    let mut line_out: *mut u8 = ::core::ptr::null_mut::<
+        u8,
     >();
     y_offset = s_Fb
         .yres
@@ -369,8 +369,8 @@ pub unsafe extern "C" fn I_FinishUpdate() {
         .wrapping_mul(s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
         .wrapping_sub(x_offset as uint32_t) as i32;
-    line_in = I_VideoBuffer as *mut ::core::ffi::c_uchar;
-    line_out = DG_ScreenBuffer as *mut ::core::ffi::c_uchar;
+    line_in = I_VideoBuffer as *mut u8;
+    line_out = DG_ScreenBuffer as *mut u8;
     y = SCREENHEIGHT;
     loop {
         let fresh3 = y;

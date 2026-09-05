@@ -1512,8 +1512,8 @@ pub unsafe extern "C" fn P_PlayerThink(mut player: *mut player_t) {
     if (*(*player).mo).flags & MF_JUSTATTACKED as i32 != 0 {
         (*cmd).angleturn = 0 as i16;
         (*cmd).forwardmove = (0xc800 as i32 / 512 as i32)
-            as ::core::ffi::c_schar;
-        (*cmd).sidemove = 0 as ::core::ffi::c_schar;
+            as i8;
+        (*cmd).sidemove = 0 as i8;
         (*(*player).mo).flags &= !(MF_JUSTATTACKED as i32);
     }
     if (*player).playerstate as u32

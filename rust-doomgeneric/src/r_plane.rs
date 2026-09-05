@@ -1509,7 +1509,7 @@ pub unsafe extern "C" fn R_FindPlane(
         return check;
     }
     if lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
-        as ::core::ffi::c_long == MAXVISPLANES as ::core::ffi::c_long
+        as i64 == MAXVISPLANES as i64
     {
         I_Error("R_FindPlane: no more visplanes");
     }
@@ -1611,31 +1611,31 @@ pub unsafe extern "C" fn R_DrawPlanes() {
     let mut stop: i32 = 0;
     let mut angle: i32 = 0;
     let mut lumpnum: i32 = 0;
-    if ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as ::core::ffi::c_long
-        > MAXDRAWSEGS as ::core::ffi::c_long
+    if ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as i64
+        > MAXDRAWSEGS as i64
     {
         I_Error(&format!(
             "R_DrawPlanes: drawsegs overflow ({})",
-            ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as ::core::ffi::c_long,
+            ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as i64,
         ));
     }
     if lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
-        as ::core::ffi::c_long > MAXVISPLANES as ::core::ffi::c_long
+        as i64 > MAXVISPLANES as i64
     {
         I_Error(&format!(
             "R_DrawPlanes: visplane overflow ({})",
             lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
-                as ::core::ffi::c_long,
+                as i64,
         ));
     }
     if lastopening.offset_from(&raw mut openings as *mut i16)
-        as ::core::ffi::c_long
-        > (SCREENWIDTH * 64 as i32) as ::core::ffi::c_long
+        as i64
+        > (SCREENWIDTH * 64 as i32) as i64
     {
         I_Error(&format!(
             "R_DrawPlanes: opening overflow ({})",
             lastopening.offset_from(&raw mut openings as *mut i16)
-                as ::core::ffi::c_long,
+                as i64,
         ));
     }
     pl = &raw mut visplanes as *mut visplane_t;

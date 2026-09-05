@@ -143,9 +143,9 @@ pub unsafe extern "C" fn Z_Malloc(
     >();
     size = ((size as usize).wrapping_add(MEM_ALIGN).wrapping_sub(1 as usize)
         & !MEM_ALIGN.wrapping_sub(1 as usize)) as i32;
-    size = (size as ::core::ffi::c_ulong)
+    size = (size as u64)
         .wrapping_add(
-            ::core::mem::size_of::<memblock_t>() as usize as ::core::ffi::c_ulong,
+            ::core::mem::size_of::<memblock_t>() as usize as u64,
         ) as i32 as i32;
     base = (*mainzone).rover;
     if (*(*base).prev).tag == PU_FREE as i32 {

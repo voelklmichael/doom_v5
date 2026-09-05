@@ -3,8 +3,8 @@ pub type byte = u8;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
+    pub forwardmove: i8,
+    pub sidemove: i8,
     pub angleturn: i16,
     pub chatchar: byte,
     pub buttons: byte,

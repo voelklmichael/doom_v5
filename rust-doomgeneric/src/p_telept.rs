@@ -1485,8 +1485,8 @@ pub unsafe extern "C" fn EV_Teleport(
                         != MT_TELEPORTMAN as i32 as u32)
                     {
                         sector = (*(*m).subsector).sector;
-                        if !(sector.offset_from(sectors) as ::core::ffi::c_long
-                            != i as ::core::ffi::c_long)
+                        if !(sector.offset_from(sectors) as i64
+                            != i as i64)
                         {
                             oldx = (*thing).x;
                             oldy = (*thing).y;

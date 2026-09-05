@@ -31,7 +31,7 @@ extern "C" {
         __size: size_t,
         __n: size_t,
         __stream: *mut FILE,
-    ) -> ::core::ffi::c_ulong;
+    ) -> u64;
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,

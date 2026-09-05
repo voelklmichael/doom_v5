@@ -198,7 +198,7 @@ pub struct mapnode_t {
     pub dx: i16,
     pub dy: i16,
     pub bbox: [[i16; 4]; 2],
-    pub children: [::core::ffi::c_ushort; 2],
+    pub children: [u16; 2],
 }
 pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
@@ -1773,7 +1773,7 @@ pub unsafe extern "C" fn P_LoadNodes(mut lump: i32) {
         j = 0 as i32;
         while j < 2 as i32 {
             (*no).children[j as usize] = (*mn).children[j as usize]
-                as i16 as ::core::ffi::c_ushort;
+                as i16 as u16;
             k = 0 as i32;
             while k < 4 as i32 {
                 (*no).bbox[j as usize][k as usize] = (((*mn).bbox[j as usize][k as usize]

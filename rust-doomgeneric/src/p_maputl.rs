@@ -1756,7 +1756,7 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
     (*intercept_p).d.line = ld;
     InterceptsOverrun(
         intercept_p.offset_from(&raw mut intercepts as *mut intercept_t)
-            as ::core::ffi::c_long as i32,
+            as i64 as i32,
         intercept_p,
     );
     intercept_p = intercept_p.offset(1);
@@ -1809,7 +1809,7 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
     (*intercept_p).d.thing = thing;
     InterceptsOverrun(
         intercept_p.offset_from(&raw mut intercepts as *mut intercept_t)
-            as ::core::ffi::c_long as i32,
+            as i64 as i32,
         intercept_p,
     );
     intercept_p = intercept_p.offset(1);
@@ -1825,7 +1825,7 @@ pub unsafe extern "C" fn P_TraverseIntercepts(
     let mut scan: *mut intercept_t = ::core::ptr::null_mut::<intercept_t>();
     let mut in_0: *mut intercept_t = ::core::ptr::null_mut::<intercept_t>();
     count = intercept_p.offset_from(&raw mut intercepts as *mut intercept_t)
-        as ::core::ffi::c_long as i32;
+        as i64 as i32;
     in_0 = ::core::ptr::null_mut::<intercept_t>();
     loop {
         let fresh0 = count;

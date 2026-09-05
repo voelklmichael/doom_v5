@@ -205,7 +205,7 @@ unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: i32) {
         if !(*lumpinfo.offset(i as isize)).next.is_null() {
             let mut nextlumpnum: i32 = (*lumpinfo.offset(i as isize))
                 .next
-                .offset_from(lumpinfo) as ::core::ffi::c_long as i32;
+                .offset_from(lumpinfo) as i64 as i32;
             let ref mut fresh0 = (*newlumpinfo.offset(i as isize)).next;
             *fresh0 = newlumpinfo.offset(nextlumpnum as isize) as *mut lumpinfo_t;
         }
@@ -360,7 +360,7 @@ pub unsafe fn W_CheckNumForName(name: &str) -> i32 {
                 8 as size_t,
             ) == 0
             {
-                return lump_p.offset_from(lumpinfo) as ::core::ffi::c_long
+                return lump_p.offset_from(lumpinfo) as i64
                     as i32;
             }
             lump_p = (*lump_p).next;

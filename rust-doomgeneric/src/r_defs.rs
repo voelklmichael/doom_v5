@@ -34,7 +34,7 @@ pub struct node_t {
     pub dx: fixed_t,
     pub dy: fixed_t,
     pub bbox: [[fixed_t; 4]; 2],
-    pub children: [::core::ffi::c_ushort; 2],
+    pub children: [u16; 2],
 }
 
 #[derive(Copy, Clone)]

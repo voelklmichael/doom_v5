@@ -1509,9 +1509,9 @@ pub unsafe extern "C" fn P_CheckSight(
     let mut pnum: i32 = 0;
     let mut bytenum: i32 = 0;
     let mut bitnum: i32 = 0;
-    s1 = (*(*t1).subsector).sector.offset_from(sectors) as ::core::ffi::c_long
+    s1 = (*(*t1).subsector).sector.offset_from(sectors) as i64
         as i32;
-    s2 = (*(*t2).subsector).sector.offset_from(sectors) as ::core::ffi::c_long
+    s2 = (*(*t2).subsector).sector.offset_from(sectors) as i64
         as i32;
     pnum = s1 * numsectors + s2;
     bytenum = pnum >> 3 as i32;

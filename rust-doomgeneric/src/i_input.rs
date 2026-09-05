@@ -3,7 +3,7 @@ extern "C" {
     fn D_PostEvent(ev: *mut event_t);
     fn DG_GetKey(
         pressed: *mut i32,
-        key: *mut ::core::ffi::c_uchar,
+        key: *mut u8,
     ) -> i32;
 }
 pub type evtype_t = u32;
@@ -146,13 +146,13 @@ static mut shiftxform: [::core::ffi::c_char; 128] = [
     127 as i32 as ::core::ffi::c_char,
 ];
 unsafe extern "C" fn TranslateKey(
-    mut key: ::core::ffi::c_uchar,
-) -> ::core::ffi::c_uchar {
+    mut key: u8,
+) -> u8 {
     return key;
 }
 unsafe extern "C" fn GetTypedChar(
-    mut key: ::core::ffi::c_uchar,
-) -> ::core::ffi::c_uchar {
+    mut key: u8,
+) -> u8 {
     key = TranslateKey(key);
     if shiftdown > 0 as i32 {
         if key as i32 >= 0 as i32
@@ -160,16 +160,16 @@ unsafe extern "C" fn GetTypedChar(
                 < (::core::mem::size_of::<[::core::ffi::c_char; 128]>() as usize)
                     .wrapping_div(::core::mem::size_of::<::core::ffi::c_char>() as usize)
         {
-            key = shiftxform[key as usize] as ::core::ffi::c_uchar;
+            key = shiftxform[key as usize] as u8;
         } else {
-            key = 0 as ::core::ffi::c_uchar;
+            key = 0 as u8;
         }
     }
     return key;
 }
 unsafe extern "C" fn UpdateShiftStatus(
     mut pressed: i32,
-    mut key: ::core::ffi::c_uchar,
+    mut key: u8,
 ) {
     let mut change: i32 = 0;
     if pressed != 0 {
@@ -191,7 +191,7 @@ pub unsafe extern "C" fn I_GetEvent() {
         data4: 0,
     };
     let mut pressed: i32 = 0;
-    let mut key: ::core::ffi::c_uchar = 0;
+    let mut key: u8 = 0;
     while DG_GetKey(&raw mut pressed, &raw mut key) != 0 {
         UpdateShiftStatus(pressed, key);
         if pressed != 0 {

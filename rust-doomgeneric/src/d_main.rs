@@ -10,7 +10,7 @@ use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_StringEndsWith;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_CheckNumForName};
 extern "C" {
-    fn __ctype_b_loc() -> *mut *const ::core::ffi::c_ushort;
+    fn __ctype_b_loc() -> *mut *const u16;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -2225,7 +2225,7 @@ unsafe extern "C" fn GetGameName(
                         *gamename.offset(0 as i32 as isize)
                             as i32 as isize,
                     ) as i32
-                    & _ISspace as i32 as ::core::ffi::c_ushort
+                    & _ISspace as i32 as u16
                         as i32 != 0
             {
                 memmove(
@@ -2243,7 +2243,7 @@ unsafe extern "C" fn GetGameName(
                             .offset(strlen(gamename).wrapping_sub(1 as size_t) as isize)
                             as i32 as isize,
                     ) as i32
-                    & _ISspace as i32 as ::core::ffi::c_ushort
+                    & _ISspace as i32 as u16
                         as i32 != 0
             {
                 *gamename.offset(strlen(gamename).wrapping_sub(1 as size_t) as isize) = '\0'

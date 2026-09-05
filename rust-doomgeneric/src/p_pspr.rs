@@ -2092,7 +2092,7 @@ pub unsafe extern "C" fn A_FireCGun(mut player: *mut player_t, mut psp: *mut psp
             .offset_from(
                 (&raw mut states as *mut state_t)
                     .offset(S_CHAIN1 as i32 as isize) as *mut state_t,
-            ) as ::core::ffi::c_long as statenum_t,
+            ) as i64 as statenum_t,
     );
     P_BulletSlope((*player).mo);
     P_GunShot((*player).mo, ((*player).refire == 0) as i32 as boolean);

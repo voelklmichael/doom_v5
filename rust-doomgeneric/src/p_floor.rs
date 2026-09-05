@@ -1787,8 +1787,8 @@ pub unsafe extern "C" fn EV_DoFloor(
                     if twoSided(secnum, i) != 0 {
                         if (*getSide(secnum, i, 0 as i32))
                             .sector
-                            .offset_from(sectors) as ::core::ffi::c_long
-                            == secnum as ::core::ffi::c_long
+                            .offset_from(sectors) as i64
+                            == secnum as i64
                         {
                             sec = getSector(secnum, i, 1 as i32);
                             if (*sec).floorheight == (*floor).floordestheight {
@@ -1898,11 +1898,11 @@ pub unsafe extern "C" fn EV_BuildStairs(
                     & ML_TWOSIDED == 0)
                 {
                     tsec = (**(*sec).lines.offset(i as isize)).frontsector;
-                    newsecnum = tsec.offset_from(sectors) as ::core::ffi::c_long
+                    newsecnum = tsec.offset_from(sectors) as i64
                         as i32;
                     if !(secnum != newsecnum) {
                         tsec = (**(*sec).lines.offset(i as isize)).backsector;
-                        newsecnum = tsec.offset_from(sectors) as ::core::ffi::c_long
+                        newsecnum = tsec.offset_from(sectors) as i64
                             as i32;
                         if !((*tsec).floorpic as i32 != texture) {
                             height += stairsize as i32;

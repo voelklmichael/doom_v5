@@ -11,13 +11,13 @@ extern "C" {
         __size: size_t,
         __n: size_t,
         __stream: *mut FILE,
-    ) -> ::core::ffi::c_ulong;
+    ) -> u64;
     fn fseek(
         __stream: *mut FILE,
-        __off: ::core::ffi::c_long,
+        __off: i64,
         __whence: i32,
     ) -> i32;
-    fn M_FileLength(handle: *mut FILE) -> ::core::ffi::c_long;
+    fn M_FileLength(handle: *mut FILE) -> i64;
     fn Z_Malloc(
         size: i32,
         tag: i32,
@@ -86,7 +86,7 @@ pub unsafe extern "C" fn W_StdC_Read(
     let mut stdc_wad: *mut stdc_wad_file_t = ::core::ptr::null_mut::<stdc_wad_file_t>();
     let mut result: size_t = 0;
     stdc_wad = wad as *mut stdc_wad_file_t;
-    fseek((*stdc_wad).fstream, offset as ::core::ffi::c_long, SEEK_SET);
+    fseek((*stdc_wad).fstream, offset as i64, SEEK_SET);
     result = fread(buffer, 1 as size_t, buffer_len, (*stdc_wad).fstream) as size_t;
     return result;
 }
