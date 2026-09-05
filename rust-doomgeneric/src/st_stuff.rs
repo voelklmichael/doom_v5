@@ -49,7 +49,7 @@ extern "C" {
         y: ::core::ffi::c_int,
         pl: *mut *mut patch_t,
         num: *mut ::core::ffi::c_int,
-        on: *mut boolean,
+        on: *mut bool,
         width: ::core::ffi::c_int,
     );
     fn STlib_updateNum(n: *mut st_number_t, refresh: boolean);
@@ -59,7 +59,7 @@ extern "C" {
         y: ::core::ffi::c_int,
         pl: *mut *mut patch_t,
         num: *mut ::core::ffi::c_int,
-        on: *mut boolean,
+        on: *mut bool,
         percent: *mut patch_t,
     );
     fn STlib_updatePercent(per: *mut st_percent_t, refresh: ::core::ffi::c_int);
@@ -69,7 +69,7 @@ extern "C" {
         y: ::core::ffi::c_int,
         il: *mut *mut patch_t,
         inum: *mut ::core::ffi::c_int,
-        on: *mut boolean,
+        on: *mut bool,
     );
     fn STlib_updateMultIcon(mi: *mut st_multicon_t, refresh: boolean);
     fn STlib_initBinIcon(
@@ -77,8 +77,8 @@ extern "C" {
         x: ::core::ffi::c_int,
         y: ::core::ffi::c_int,
         i: *mut patch_t,
-        val: *mut boolean,
-        on: *mut boolean,
+        val: *mut bool,
+        on: *mut bool,
     );
     fn STlib_updateBinIcon(bi: *mut st_binicon_t, refresh: boolean);
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
@@ -1646,19 +1646,19 @@ pub const ST_MAXAMMO3Y: ::core::ffi::c_int = 185 as ::core::ffi::c_int;
 #[no_mangle]
 pub static mut st_backing_screen: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut plyr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t;
-static mut st_firsttime: boolean = 0;
+static mut st_firsttime: bool = false;
 static mut lu_palette: ::core::ffi::c_int = 0;
 static mut st_clock: ::core::ffi::c_uint = 0;
 static mut st_msgcounter: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 static mut st_chatstate: st_chatstateenum_t = StartChatState;
 static mut st_gamestate: st_stateenum_t = AutomapState;
-static mut st_statusbaron: boolean = 0;
-static mut st_chat: boolean = 0;
-static mut st_oldchat: boolean = 0;
-static mut st_cursoron: boolean = 0;
-static mut st_notdeathmatch: boolean = 0;
-static mut st_armson: boolean = 0;
-static mut st_fragson: boolean = 0;
+static mut st_statusbaron: bool = false;
+static mut st_chat: bool = false;
+static mut st_oldchat: bool = false;
+static mut st_cursoron: bool = false;
+static mut st_notdeathmatch: bool = false;
+static mut st_armson: bool = false;
+static mut st_fragson: bool = false;
 static mut sbar: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 static mut tallnum: [*mut patch_t; 10] = [::core::ptr::null::<patch_t>()
     as *mut patch_t; 10];
@@ -1678,7 +1678,7 @@ static mut w_ready: st_number_t = st_number_t {
     width: 0,
     oldnum: 0,
     num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 };
@@ -1688,7 +1688,7 @@ static mut w_frags: st_number_t = st_number_t {
     width: 0,
     oldnum: 0,
     num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 };
@@ -1699,7 +1699,7 @@ static mut w_health: st_percent_t = st_percent_t {
         width: 0,
         oldnum: 0,
         num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-        on: ::core::ptr::null::<boolean>() as *mut boolean,
+        on: ::core::ptr::null::<bool>() as *mut bool,
         p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
         data: 0,
     },
@@ -1709,8 +1709,8 @@ static mut w_armsbg: st_binicon_t = st_binicon_t {
     x: 0,
     y: 0,
     oldval: false,
-    val: ::core::ptr::null::<boolean>() as *mut boolean,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    val: ::core::ptr::null::<bool>() as *mut bool,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<patch_t>() as *mut patch_t,
     data: 0,
 };
@@ -1720,7 +1720,7 @@ static mut w_arms: [st_multicon_t; 6] = [st_multicon_t {
     y: 0,
     oldinum: 0,
     inum: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 }; 6];
@@ -1729,7 +1729,7 @@ static mut w_faces: st_multicon_t = st_multicon_t {
     y: 0,
     oldinum: 0,
     inum: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 };
@@ -1738,7 +1738,7 @@ static mut w_keyboxes: [st_multicon_t; 3] = [st_multicon_t {
     y: 0,
     oldinum: 0,
     inum: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 }; 3];
@@ -1749,7 +1749,7 @@ static mut w_armor: st_percent_t = st_percent_t {
         width: 0,
         oldnum: 0,
         num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-        on: ::core::ptr::null::<boolean>() as *mut boolean,
+        on: ::core::ptr::null::<bool>() as *mut bool,
         p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
         data: 0,
     },
@@ -1761,7 +1761,7 @@ static mut w_ammo: [st_number_t; 4] = [st_number_t {
     width: 0,
     oldnum: 0,
     num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 }; 4];
@@ -1771,7 +1771,7 @@ static mut w_maxammo: [st_number_t; 4] = [st_number_t {
     width: 0,
     oldnum: 0,
     num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 }; 4];
@@ -1874,7 +1874,7 @@ pub static mut cheat_mypos: cheatseq_t = cheatseq_t {
 };
 #[no_mangle]
 pub unsafe extern "C" fn ST_refreshBackground() {
-    if st_statusbaron != 0 {
+    if st_statusbaron {
         V_UseBuffer(st_backing_screen);
         V_DrawPatch(ST_X, 0 as ::core::ffi::c_int, sbar);
         if netgame != 0 {
@@ -1903,7 +1903,7 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
         match (*ev).data1 {
             AM_MSGENTERED => {
                 st_gamestate = AutomapState;
-                st_firsttime = true_0 as boolean;
+                st_firsttime = true;
             }
             AM_MSGEXITED => {
                 st_gamestate = FirstPersonState;
@@ -2358,11 +2358,9 @@ pub unsafe extern "C" fn ST_updateWidgets() {
         i += 1;
     }
     ST_updateFaceWidget();
-    st_notdeathmatch = (deathmatch == 0) as ::core::ffi::c_int as boolean;
-    st_armson = (st_statusbaron != 0 && deathmatch == 0) as ::core::ffi::c_int
-        as boolean;
-    st_fragson = (deathmatch != 0 && st_statusbaron != 0) as ::core::ffi::c_int
-        as boolean;
+    st_notdeathmatch = deathmatch == 0;
+    st_armson = st_statusbaron && deathmatch == 0;
+    st_fragson = deathmatch != 0 && st_statusbaron;
     st_fragscount = 0 as ::core::ffi::c_int;
     i = 0 as ::core::ffi::c_int;
     while i < MAXPLAYERS {
@@ -2439,10 +2437,8 @@ pub unsafe extern "C" fn ST_doPaletteStuff() {
 #[no_mangle]
 pub unsafe extern "C" fn ST_drawWidgets(mut refresh: boolean) {
     let mut i: ::core::ffi::c_int = 0;
-    st_armson = (st_statusbaron != 0 && deathmatch == 0) as ::core::ffi::c_int
-        as boolean;
-    st_fragson = (deathmatch != 0 && st_statusbaron != 0) as ::core::ffi::c_int
-        as boolean;
+    st_armson = st_statusbaron && deathmatch == 0;
+    st_fragson = deathmatch != 0 && st_statusbaron;
     STlib_updateNum(&raw mut w_ready, refresh);
     i = 0 as ::core::ffi::c_int;
     while i < 4 as ::core::ffi::c_int {
@@ -2483,7 +2479,7 @@ pub unsafe extern "C" fn ST_drawWidgets(mut refresh: boolean) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_doRefresh() {
-    st_firsttime = false_0 as boolean;
+    st_firsttime = false;
     ST_refreshBackground();
     ST_drawWidgets(true_0 as boolean);
 }
@@ -2493,11 +2489,10 @@ pub unsafe extern "C" fn ST_diffDraw() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_Drawer(mut fullscreen: boolean, mut refresh: boolean) {
-    st_statusbaron = (fullscreen == 0 || automapactive != 0) as ::core::ffi::c_int
-        as boolean;
-    st_firsttime = (st_firsttime != 0 || refresh != 0) as ::core::ffi::c_int as boolean;
+    st_statusbaron = fullscreen == 0 || automapactive != 0;
+    st_firsttime = st_firsttime || refresh != 0;
     ST_doPaletteStuff();
-    if st_firsttime != 0 {
+    if st_firsttime {
         ST_doRefresh();
     } else {
         ST_diffDraw();
@@ -2786,16 +2781,16 @@ pub unsafe extern "C" fn ST_unloadData() {
 #[no_mangle]
 pub unsafe extern "C" fn ST_initData() {
     let mut i: ::core::ffi::c_int = 0;
-    st_firsttime = true_0 as boolean;
+    st_firsttime = true;
     plyr = (&raw mut players as *mut player_t).offset(consoleplayer as isize)
         as *mut player_t;
     st_clock = 0 as ::core::ffi::c_uint;
     st_chatstate = StartChatState;
     st_gamestate = FirstPersonState;
-    st_statusbaron = true_0 as boolean;
-    st_chat = false_0 as boolean;
+    st_statusbaron = true;
+    st_chat = false;
     st_oldchat = st_chat;
-    st_cursoron = false_0 as boolean;
+    st_cursoron = false;
     st_faceindex = 0 as ::core::ffi::c_int;
     st_palette = -(1 as ::core::ffi::c_int);
     st_oldhealth = -(1 as ::core::ffi::c_int);
@@ -3006,25 +3001,25 @@ pub unsafe extern "C" fn ST_createWidgets() {
         ST_MAXAMMO3WIDTH,
     );
 }
-static mut st_stopped: boolean = true_0 as boolean;
+static mut st_stopped: bool = true;
 #[no_mangle]
 pub unsafe extern "C" fn ST_Start() {
-    if st_stopped == 0 {
+    if !st_stopped {
         ST_Stop();
     }
     ST_initData();
     ST_createWidgets();
-    st_stopped = false_0 as boolean;
+    st_stopped = false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_Stop() {
-    if st_stopped != 0 {
+    if st_stopped {
         return;
     }
     I_SetPalette(
         W_CacheLumpNum(lu_palette, PU_CACHE as ::core::ffi::c_int) as *mut byte,
     );
-    st_stopped = true_0 as boolean;
+    st_stopped = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_Init() {

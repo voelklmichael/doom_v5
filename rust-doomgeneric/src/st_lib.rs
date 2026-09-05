@@ -36,7 +36,7 @@ pub struct st_number_t {
     pub width: ::core::ffi::c_int,
     pub oldnum: ::core::ffi::c_int,
     pub num: *mut ::core::ffi::c_int,
-    pub on: *mut boolean,
+    pub on: *mut bool,
     pub p: *mut *mut patch_t,
     pub data: ::core::ffi::c_int,
 }
@@ -53,7 +53,7 @@ pub struct st_multicon_t {
     pub y: ::core::ffi::c_int,
     pub oldinum: ::core::ffi::c_int,
     pub inum: *mut ::core::ffi::c_int,
-    pub on: *mut boolean,
+    pub on: *mut bool,
     pub p: *mut *mut patch_t,
     pub data: ::core::ffi::c_int,
 }
@@ -63,8 +63,8 @@ pub struct st_binicon_t {
     pub x: ::core::ffi::c_int,
     pub y: ::core::ffi::c_int,
     pub oldval: bool,
-    pub val: *mut boolean,
-    pub on: *mut boolean,
+    pub val: *mut bool,
+    pub on: *mut bool,
     pub p: *mut patch_t,
     pub data: ::core::ffi::c_int,
 }
@@ -87,7 +87,7 @@ pub unsafe extern "C" fn STlib_initNum(
     mut y: ::core::ffi::c_int,
     mut pl: *mut *mut patch_t,
     mut num: *mut ::core::ffi::c_int,
-    mut on: *mut boolean,
+    mut on: *mut bool,
     mut width: ::core::ffi::c_int,
 ) {
     (*n).x = x;
@@ -153,7 +153,7 @@ pub unsafe extern "C" fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: boo
 }
 #[no_mangle]
 pub unsafe extern "C" fn STlib_updateNum(mut n: *mut st_number_t, mut refresh: boolean) {
-    if *(*n).on != 0 {
+    if *(*n).on {
         STlib_drawNum(n, refresh);
     }
 }
@@ -164,7 +164,7 @@ pub unsafe extern "C" fn STlib_initPercent(
     mut y: ::core::ffi::c_int,
     mut pl: *mut *mut patch_t,
     mut num: *mut ::core::ffi::c_int,
-    mut on: *mut boolean,
+    mut on: *mut bool,
     mut percent: *mut patch_t,
 ) {
     STlib_initNum(&raw mut (*p).n, x, y, pl, num, on, 3 as ::core::ffi::c_int);
@@ -175,7 +175,7 @@ pub unsafe extern "C" fn STlib_updatePercent(
     mut per: *mut st_percent_t,
     mut refresh: ::core::ffi::c_int,
 ) {
-    if refresh != 0 && *(*per).n.on != 0 {
+    if refresh != 0 && *(*per).n.on {
         V_DrawPatch((*per).n.x, (*per).n.y, (*per).p);
     }
     STlib_updateNum(&raw mut (*per).n, refresh as boolean);
@@ -187,7 +187,7 @@ pub unsafe extern "C" fn STlib_initMultIcon(
     mut y: ::core::ffi::c_int,
     mut il: *mut *mut patch_t,
     mut inum: *mut ::core::ffi::c_int,
-    mut on: *mut boolean,
+    mut on: *mut bool,
 ) {
     (*i).x = x;
     (*i).y = y;
@@ -205,7 +205,7 @@ pub unsafe extern "C" fn STlib_updateMultIcon(
     let mut h: ::core::ffi::c_int = 0;
     let mut x: ::core::ffi::c_int = 0;
     let mut y: ::core::ffi::c_int = 0;
-    if *(*mi).on != 0 && ((*mi).oldinum != *(*mi).inum || refresh != 0)
+    if *(*mi).on && ((*mi).oldinum != *(*mi).inum || refresh != 0)
         && *(*mi).inum != -(1 as ::core::ffi::c_int)
     {
         if (*mi).oldinum != -(1 as ::core::ffi::c_int) {
@@ -232,8 +232,8 @@ pub unsafe extern "C" fn STlib_initBinIcon(
     mut x: ::core::ffi::c_int,
     mut y: ::core::ffi::c_int,
     mut i: *mut patch_t,
-    mut val: *mut boolean,
-    mut on: *mut boolean,
+    mut val: *mut bool,
+    mut on: *mut bool,
 ) {
     (*b).x = x;
     (*b).y = y;
@@ -251,7 +251,7 @@ pub unsafe extern "C" fn STlib_updateBinIcon(
     let mut y: ::core::ffi::c_int = 0;
     let mut w: ::core::ffi::c_int = 0;
     let mut h: ::core::ffi::c_int = 0;
-    if *(*bi).on != 0 && ((*bi).oldval != (*(*bi).val != 0) || refresh != 0) {
+    if *(*bi).on && ((*bi).oldval != *(*bi).val || refresh != 0) {
         x = (*bi).x - (*(*bi).p).leftoffset as ::core::ffi::c_int;
         y = (*bi).y - (*(*bi).p).topoffset as ::core::ffi::c_int;
         w = (*(*bi).p).width as ::core::ffi::c_int;
@@ -259,11 +259,11 @@ pub unsafe extern "C" fn STlib_updateBinIcon(
         if y - ST_Y < 0 as ::core::ffi::c_int {
             I_Error("updateBinIcon: y - ST_Y < 0");
         }
-        if *(*bi).val != 0 {
+        if *(*bi).val {
             V_DrawPatch((*bi).x, (*bi).y, (*bi).p);
         } else {
             V_CopyRect(x, y - ST_Y, st_backing_screen, w, h, x, y);
         }
-        (*bi).oldval = *(*bi).val != 0;
+        (*bi).oldval = *(*bi).val;
     }
 }
