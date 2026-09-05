@@ -59,7 +59,10 @@
       "Bash(git diff*)",
       "Bash(git status*)",
       "Bash(cd /home/michael/doom_v5 && git status --short)",
-      "Bash(cd /home/michael/doom_v5 *)"
+      "Bash(cd /home/michael/doom_v5 *)",
+      "Bash(cargo test*)",
+      "Bash(git worktree list*)",
+      "Bash(git merge-base*)"
     ]
   }
 }
