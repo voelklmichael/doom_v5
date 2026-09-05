@@ -37,7 +37,7 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
     fn ftell(__stream: *mut FILE) -> ::core::ffi::c_long;
     fn I_GetTime() -> ::core::ffi::c_int;
-    static mut singletics: boolean;
+    static mut singletics: bool;
     static mut gametic: ::core::ffi::c_int;
     static mut ticdup: ::core::ffi::c_int;
     static finesine: [fixed_t; 10240];
@@ -154,7 +154,7 @@ extern "C" {
     fn P_ArchiveSpecials();
     fn P_UnArchiveSpecials();
     static mut save_stream: *mut FILE;
-    static mut savegame_error: boolean;
+    static mut savegame_error: bool;
     fn P_Ticker();
     fn D_PageTicker();
     fn D_AdvanceDemo();
@@ -1731,7 +1731,7 @@ pub static mut gamestate: gamestate_t = GS_LEVEL;
 #[no_mangle]
 pub static mut gameskill: skill_t = sk_baby;
 #[no_mangle]
-pub static mut respawnmonsters: boolean = 0;
+pub static mut respawnmonsters: bool = false;
 #[no_mangle]
 pub static mut gameepisode: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -1741,15 +1741,15 @@ pub static mut timelimit: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut paused: boolean = 0;
 #[no_mangle]
-pub static mut sendpause: boolean = 0;
+pub static mut sendpause: bool = false;
 #[no_mangle]
-pub static mut sendsave: boolean = 0;
+pub static mut sendsave: bool = false;
 #[no_mangle]
 pub static mut usergame: boolean = 0;
 #[no_mangle]
-pub static mut timingdemo: boolean = 0;
+pub static mut timingdemo: bool = false;
 #[no_mangle]
-pub static mut nodrawers: boolean = 0;
+pub static mut nodrawers: bool = false;
 #[no_mangle]
 pub static mut starttime: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -1835,13 +1835,13 @@ pub static mut demoname: *mut ::core::ffi::c_char = ::core::ptr::null::<
 #[no_mangle]
 pub static mut demorecording: boolean = 0;
 #[no_mangle]
-pub static mut longtics: boolean = 0;
+pub static mut longtics: bool = false;
 #[no_mangle]
-pub static mut lowres_turn: boolean = 0;
+pub static mut lowres_turn: bool = false;
 #[no_mangle]
 pub static mut demoplayback: boolean = 0;
 #[no_mangle]
-pub static mut netdemo: boolean = 0;
+pub static mut netdemo: bool = false;
 #[no_mangle]
 pub static mut demobuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
@@ -1851,7 +1851,7 @@ pub static mut demoend: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut singledemo: boolean = 0;
 #[no_mangle]
-pub static mut precache: boolean = true_0 as boolean;
+pub static mut precache: bool = true;
 #[no_mangle]
 pub static mut testcontrols: boolean = false_0 as boolean;
 #[no_mangle]
@@ -2307,18 +2307,18 @@ pub unsafe extern "C" fn G_BuildTiccmd(
         as ::core::ffi::c_schar;
     (*cmd).sidemove = ((*cmd).sidemove as ::core::ffi::c_int + side)
         as ::core::ffi::c_schar;
-    if sendpause != 0 {
-        sendpause = false_0 as boolean;
+    if sendpause {
+        sendpause = false;
         (*cmd).buttons = (BT_SPECIAL as ::core::ffi::c_int
             | BTS_PAUSE as ::core::ffi::c_int) as byte;
     }
-    if sendsave != 0 {
-        sendsave = false_0 as boolean;
+    if sendsave {
+        sendsave = false;
         (*cmd).buttons = (BT_SPECIAL as ::core::ffi::c_int
             | BTS_SAVEGAME as ::core::ffi::c_int
             | savegameslot << BTS_SAVESHIFT as ::core::ffi::c_int) as byte;
     }
-    if lowres_turn != 0 {
+    if lowres_turn {
         static mut carry: ::core::ffi::c_short = 0 as ::core::ffi::c_short;
         let mut desired_angleturn: ::core::ffi::c_short = 0;
         desired_angleturn = ((*cmd).angleturn as ::core::ffi::c_int
@@ -2399,7 +2399,7 @@ pub unsafe extern "C" fn G_DoLoadLevel() {
     mousey = 0 as ::core::ffi::c_int;
     mousex = mousey;
     paused = false_0 as boolean;
-    sendsave = paused;
+    sendsave = paused != 0;
     sendpause = sendsave;
     memset(
         &raw mut mousearray as *mut boolean as *mut ::core::ffi::c_void,
@@ -2533,7 +2533,7 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
     match (*ev).type_0 as ::core::ffi::c_uint {
         0 => {
             if (*ev).data1 == key_pause {
-                sendpause = true_0 as boolean;
+                sendpause = true;
             } else if (*ev).data1 < NUMKEYS {
                 gamekeydown[(*ev).data1 as usize] = true_0 as boolean;
             }
@@ -2657,7 +2657,7 @@ pub unsafe extern "C" fn G_Ticker() {
                     as *mut ::core::ffi::c_char;
                 turbodetected[i as usize] = false_0 as boolean;
             }
-            if netgame != 0 && netdemo == 0 && gametic % ticdup == 0 {
+            if netgame != 0 && !netdemo && gametic % ticdup == 0 {
                 if gametic > BACKUPTICS
                     && consistancy[i as usize][buf as usize] as ::core::ffi::c_int
                         != (*cmd).consistancy as ::core::ffi::c_int
@@ -3054,10 +3054,10 @@ pub static mut cpars: [::core::ffi::c_int; 32] = [
     30 as ::core::ffi::c_int,
 ];
 #[no_mangle]
-pub static mut secretexit: boolean = 0;
+pub static mut secretexit: bool = false;
 #[no_mangle]
 pub unsafe extern "C" fn G_ExitLevel() {
-    secretexit = false_0 as boolean;
+    secretexit = false;
     gameaction = ga_completed;
 }
 #[no_mangle]
@@ -3067,9 +3067,9 @@ pub unsafe extern "C" fn G_SecretExitLevel() {
         && W_CheckNumForName("map31",
         ) < 0 as ::core::ffi::c_int
     {
-        secretexit = false_0 as boolean;
+        secretexit = false;
     } else {
-        secretexit = true_0 as boolean;
+        secretexit = true;
     }
     gameaction = ga_completed;
 }
@@ -3137,7 +3137,7 @@ pub unsafe extern "C" fn G_DoCompleted() {
     if gamemode as ::core::ffi::c_uint
         == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
     {
-        if secretexit != 0 {
+        if secretexit {
             match gamemap {
                 15 => {
                     wminfo.next = 30 as ::core::ffi::c_int;
@@ -3157,7 +3157,7 @@ pub unsafe extern "C" fn G_DoCompleted() {
                 }
             }
         }
-    } else if secretexit != 0 {
+    } else if secretexit {
         wminfo.next = 8 as ::core::ffi::c_int;
     } else if gamemap == 9 as ::core::ffi::c_int {
         match gameepisode {
@@ -3218,7 +3218,7 @@ pub unsafe extern "C" fn G_DoCompleted() {
 #[no_mangle]
 pub unsafe extern "C" fn G_WorldDone() {
     gameaction = ga_worlddone;
-    if secretexit != 0 {
+    if secretexit {
         players[consoleplayer as usize].didsecret = true;
     }
     if gamemode as ::core::ffi::c_uint
@@ -3227,7 +3227,7 @@ pub unsafe extern "C" fn G_WorldDone() {
         let mut current_block_3: u64;
         match gamemap {
             15 | 31 => {
-                if secretexit == 0 {
+                if !secretexit {
                     current_block_3 = 6937071982253665452;
                 } else {
                     current_block_3 = 9744923308842414524;
@@ -3278,7 +3278,7 @@ pub unsafe extern "C" fn G_DoLoadGame() {
     if save_stream.is_null() {
         return;
     }
-    savegame_error = false_0 as boolean;
+    savegame_error = false;
     if P_ReadSaveGameHeader() == 0 {
         fclose(save_stream);
         return;
@@ -3310,7 +3310,7 @@ pub unsafe extern "C" fn G_SaveGame(
         description,
         ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
     );
-    sendsave = true_0 as boolean;
+    sendsave = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_DoSaveGame() {
@@ -3347,7 +3347,7 @@ pub unsafe extern "C" fn G_DoSaveGame() {
             ));
         }
     }
-    savegame_error = false_0 as boolean;
+    savegame_error = false;
     P_WriteSaveGameHeader(&raw mut savedescription as *mut ::core::ffi::c_char);
     P_ArchivePlayers();
     P_ArchiveWorld();
@@ -3399,7 +3399,7 @@ pub unsafe extern "C" fn G_DeferedInitNew(
 #[no_mangle]
 pub unsafe extern "C" fn G_DoNewGame() {
     demoplayback = false_0 as boolean;
-    netdemo = false_0 as boolean;
+    netdemo = false;
     netgame = false_0 as boolean;
     deathmatch = false_0;
     playeringame[3 as ::core::ffi::c_int as usize] = 0 as boolean;
@@ -3464,9 +3464,9 @@ pub unsafe extern "C" fn G_InitNew(
     if skill as ::core::ffi::c_int == sk_nightmare as ::core::ffi::c_int
         || respawnparm != 0
     {
-        respawnmonsters = true_0 as boolean;
+        respawnmonsters = true;
     } else {
-        respawnmonsters = false_0 as boolean;
+        respawnmonsters = false;
     }
     if fastparm != 0
         || skill as ::core::ffi::c_int == sk_nightmare as ::core::ffi::c_int
@@ -3562,7 +3562,7 @@ pub unsafe extern "C" fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
     let fresh19 = demo_p;
     demo_p = demo_p.offset(1);
     (*cmd).sidemove = *fresh19 as ::core::ffi::c_schar;
-    if longtics != 0 {
+    if longtics {
         let fresh20 = demo_p;
         demo_p = demo_p.offset(1);
         (*cmd).angleturn = *fresh20 as ::core::ffi::c_short;
@@ -3619,7 +3619,7 @@ pub unsafe extern "C" fn G_WriteDemoTiccmd(mut cmd: *mut ticcmd_t) {
     let fresh13 = demo_p;
     demo_p = demo_p.offset(1);
     *fresh13 = (*cmd).sidemove as byte;
-    if longtics != 0 {
+    if longtics {
         let fresh14 = demo_p;
         demo_p = demo_p.offset(1);
         *fresh14 = ((*cmd).angleturn as ::core::ffi::c_int & 0xff as ::core::ffi::c_int)
@@ -3694,11 +3694,10 @@ pub unsafe extern "C" fn G_VanillaVersionCode() -> ::core::ffi::c_int {
 #[no_mangle]
 pub unsafe extern "C" fn G_BeginRecording() {
     let mut i: ::core::ffi::c_int = 0;
-    longtics = (M_CheckParm("-longtics") != 0 as ::core::ffi::c_int) as ::core::ffi::c_int
-        as boolean;
-    lowres_turn = (longtics == 0) as ::core::ffi::c_int as boolean;
+    longtics = M_CheckParm("-longtics") != 0 as ::core::ffi::c_int;
+    lowres_turn = !longtics;
     demo_p = demobuffer;
-    if longtics != 0 {
+    if longtics {
         let fresh0 = demo_p;
         demo_p = demo_p.offset(1);
         *fresh0 = DOOM_191_VERSION as byte;
@@ -3810,9 +3809,9 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     demo_p = demo_p.offset(1);
     demoversion = *fresh24 as ::core::ffi::c_int;
     if demoversion == G_VanillaVersionCode() {
-        longtics = false_0 as boolean;
+        longtics = false;
     } else if demoversion == DOOM_191_VERSION {
-        longtics = true_0 as boolean;
+        longtics = true;
     } else {
         let mut message: *mut ::core::ffi::c_char = b"Demo is from a different game version!\n(read %i, should be %i)\n\n*** You may need to upgrade your version of Doom to v1.9. ***\n    See: https://www.doomworld.com/classicdoom/info/patches.php\n    This appears to be %s.\0"
             as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -3859,34 +3858,34 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
         || M_CheckParm("-netdemo") > 0 as ::core::ffi::c_int
     {
         netgame = true_0 as boolean;
-        netdemo = true_0 as boolean;
+        netdemo = true;
     }
-    precache = false_0 as boolean;
+    precache = false;
     G_InitNew(skill, episode, map);
-    precache = true_0 as boolean;
+    precache = true;
     starttime = I_GetTime();
     usergame = false_0 as boolean;
     demoplayback = true_0 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
-    nodrawers = M_CheckParm("-nodraw") as boolean;
-    timingdemo = true_0 as boolean;
-    singletics = true_0 as boolean;
+    nodrawers = M_CheckParm("-nodraw") != 0;
+    timingdemo = true;
+    singletics = true;
     defdemoname = name;
     gameaction = ga_playdemo;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
     let mut endtime: ::core::ffi::c_int = 0;
-    if timingdemo != 0 {
+    if timingdemo {
         let mut fps: ::core::ffi::c_float = 0.;
         let mut realtics: ::core::ffi::c_int = 0;
         endtime = I_GetTime();
         realtics = endtime - starttime;
         fps = gametic as ::core::ffi::c_float * TICRATE as ::core::ffi::c_float
             / realtics as ::core::ffi::c_float;
-        timingdemo = false_0 as boolean;
+        timingdemo = false;
         demoplayback = false_0 as boolean;
         I_Error(&format!(
             "timed {} gametics in {} realtics ({:.6} fps)",
@@ -3898,7 +3897,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
     if demoplayback != 0 {
         W_ReleaseLumpName(&wad_name8_to_string(defdemoname));
         demoplayback = false_0 as boolean;
-        netdemo = false_0 as boolean;
+        netdemo = false;
         netgame = false_0 as boolean;
         deathmatch = false_0;
         playeringame[3 as ::core::ffi::c_int as usize] = 0 as boolean;

@@ -1477,7 +1477,7 @@ pub static mut save_stream: *mut FILE = ::core::ptr::null::<FILE>() as *mut FILE
 #[no_mangle]
 pub static mut savegamelength: ::core::ffi::c_int = 0;
 #[no_mangle]
-pub static mut savegame_error: boolean = 0;
+pub static mut savegame_error: bool = false;
 #[no_mangle]
 pub unsafe extern "C" fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char {
     static mut filename: *mut ::core::ffi::c_char = ::core::ptr::null::<
@@ -1529,13 +1529,13 @@ unsafe extern "C" fn saveg_read8() -> byte {
         save_stream,
     ) < 1 as ::core::ffi::c_ulong
     {
-        if savegame_error == 0 {
+        if !savegame_error {
             fprintf(
                 stderr,
                 b"saveg_read8: Unexpected end of file while reading save game\n\0"
                     as *const u8 as *const ::core::ffi::c_char,
             );
-            savegame_error = true_0 as boolean;
+            savegame_error = true;
         }
     }
     return result;
@@ -1548,13 +1548,13 @@ unsafe extern "C" fn saveg_write8(mut value: byte) {
         save_stream,
     ) < 1 as ::core::ffi::c_ulong
     {
-        if savegame_error == 0 {
+        if !savegame_error {
             fprintf(
                 stderr,
                 b"saveg_write8: Error while writing save game\n\0" as *const u8
                     as *const ::core::ffi::c_char,
             );
-            savegame_error = true_0 as boolean;
+            savegame_error = true;
         }
     }
 }

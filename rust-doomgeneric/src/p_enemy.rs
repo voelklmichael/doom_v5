@@ -40,7 +40,7 @@ extern "C" {
     ) -> boolean;
     fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
-    static mut floatok: boolean;
+    static mut floatok: bool;
     static mut tmfloorz: fixed_t;
     static mut spechit: [*mut line_t; 20];
     static mut numspechit: ::core::ffi::c_int;
@@ -1780,7 +1780,7 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
         + (*(*actor).info).speed as fixed_t * yspeed[(*actor).movedir as usize];
     try_ok = P_TryMove(actor, tryx, tryy);
     if try_ok == 0 {
-        if (*actor).flags & MF_FLOAT as ::core::ffi::c_int != 0 && floatok != 0 {
+        if (*actor).flags & MF_FLOAT as ::core::ffi::c_int != 0 && floatok {
             if (*actor).z < tmfloorz {
                 (*actor).z += FLOATSPEED;
             } else {

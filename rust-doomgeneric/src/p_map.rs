@@ -1547,7 +1547,7 @@ pub static mut tmx: fixed_t = 0;
 #[no_mangle]
 pub static mut tmy: fixed_t = 0;
 #[no_mangle]
-pub static mut floatok: boolean = 0;
+pub static mut floatok: bool = false;
 #[no_mangle]
 pub static mut tmfloorz: fixed_t = 0;
 #[no_mangle]
@@ -1865,7 +1865,7 @@ pub unsafe extern "C" fn P_TryMove(
     let mut side: ::core::ffi::c_int = 0;
     let mut oldside: ::core::ffi::c_int = 0;
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    floatok = false_0 as boolean;
+    floatok = false;
     if P_CheckPosition(thing, x, y) == 0 {
         return false_0 as boolean;
     }
@@ -1873,7 +1873,7 @@ pub unsafe extern "C" fn P_TryMove(
         if tmceilingz - tmfloorz < (*thing).height {
             return false_0 as boolean;
         }
-        floatok = true_0 as boolean;
+        floatok = true;
         if (*thing).flags & MF_TELEPORT as ::core::ffi::c_int == 0
             && tmceilingz - (*thing).z < (*thing).height
         {

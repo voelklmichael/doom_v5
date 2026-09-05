@@ -38,15 +38,15 @@ pub struct hu_stext_t {
     pub l: [hu_textline_t; 4],
     pub h: ::core::ffi::c_int,
     pub cl: ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub laston: boolean,
+    pub on: *mut bool,
+    pub laston: bool,
 }
 #[derive(Clone)]
 pub struct hu_itext_t {
     pub l: hu_textline_t,
     pub lm: ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub laston: boolean,
+    pub on: *mut bool,
+    pub laston: bool,
 }
 pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
 pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
@@ -179,12 +179,12 @@ pub unsafe extern "C" fn HUlib_initSText(
     mut h: ::core::ffi::c_int,
     mut font: *mut *mut patch_t,
     mut startchar: ::core::ffi::c_int,
-    mut on: *mut boolean,
+    mut on: *mut bool,
 ) {
     let mut i: ::core::ffi::c_int = 0;
     (*s).h = h;
     (*s).on = on;
-    (*s).laston = true_0 as boolean;
+    (*s).laston = true;
     (*s).cl = 0 as ::core::ffi::c_int;
     i = 0 as ::core::ffi::c_int;
     while i < h {
@@ -249,7 +249,7 @@ pub unsafe extern "C" fn HUlib_drawSText(mut s: *mut hu_stext_t) {
     let mut i: ::core::ffi::c_int = 0;
     let mut idx: ::core::ffi::c_int = 0;
     let mut l: *mut hu_textline_t = ::core::ptr::null_mut::<hu_textline_t>();
-    if *(*s).on == 0 {
+    if !*(*s).on {
         return;
     }
     i = 0 as ::core::ffi::c_int;
@@ -269,7 +269,7 @@ pub unsafe extern "C" fn HUlib_eraseSText(mut s: *mut hu_stext_t) {
     let mut i: ::core::ffi::c_int = 0;
     i = 0 as ::core::ffi::c_int;
     while i < (*s).h {
-        if (*s).laston != 0 && *(*s).on == 0 {
+        if (*s).laston && !*(*s).on {
             (*s).l[i as usize].needsupdate = 4 as ::core::ffi::c_int;
         }
         HUlib_eraseTextLine(
@@ -287,11 +287,11 @@ pub unsafe extern "C" fn HUlib_initIText(
     mut y: ::core::ffi::c_int,
     mut font: *mut *mut patch_t,
     mut startchar: ::core::ffi::c_int,
-    mut on: *mut boolean,
+    mut on: *mut bool,
 ) {
     (*it).lm = 0 as ::core::ffi::c_int;
     (*it).on = on;
-    (*it).laston = true_0 as boolean;
+    (*it).laston = true;
     HUlib_initTextLine(&raw mut (*it).l, x, y, font, startchar);
 }
 #[no_mangle]
@@ -355,14 +355,14 @@ pub unsafe extern "C" fn HUlib_keyInIText(
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_drawIText(mut it: *mut hu_itext_t) {
     let mut l: *mut hu_textline_t = &raw mut (*it).l;
-    if *(*it).on == 0 {
+    if !*(*it).on {
         return;
     }
     HUlib_drawTextLine(l, true_0 as boolean);
 }
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_eraseIText(mut it: *mut hu_itext_t) {
-    if (*it).laston != 0 && *(*it).on == 0 {
+    if (*it).laston && !*(*it).on {
         (*it).l.needsupdate = 4 as ::core::ffi::c_int;
     }
     HUlib_eraseTextLine(&raw mut (*it).l);

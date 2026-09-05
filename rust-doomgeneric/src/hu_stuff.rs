@@ -1699,7 +1699,7 @@ static mut w_title: hu_textline_t = hu_textline_t {
     needsupdate: 0,
 };
 #[no_mangle]
-pub static mut chat_on: boolean = 0;
+pub static mut chat_on: bool = false;
 static mut w_chat: hu_itext_t = hu_itext_t {
     l: hu_textline_t {
         x: 0,
@@ -1710,10 +1710,10 @@ static mut w_chat: hu_itext_t = hu_itext_t {
         needsupdate: 0,
     },
     lm: 0,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
-    laston: 0,
+    on: ::core::ptr::null::<bool>() as *mut bool,
+    laston: false,
 };
-static mut always_off: boolean = false_0 as boolean;
+static mut always_off: bool = false;
 static mut chat_dest: [::core::ffi::c_char; 4] = [0; 4];
 const fn new_hu_itext_t() -> hu_itext_t {
     hu_itext_t {
@@ -1726,8 +1726,8 @@ const fn new_hu_itext_t() -> hu_itext_t {
             needsupdate: 0,
         },
         lm: 0,
-        on: ::core::ptr::null::<boolean>() as *mut boolean,
-        laston: 0,
+        on: ::core::ptr::null::<bool>() as *mut bool,
+        laston: false,
     }
 }
 static mut w_inputbuffer: [hu_itext_t; 4] = [
@@ -1736,10 +1736,10 @@ static mut w_inputbuffer: [hu_itext_t; 4] = [
     new_hu_itext_t(),
     new_hu_itext_t(),
 ];
-static mut message_on: boolean = 0;
+static mut message_on: bool = false;
 #[no_mangle]
-pub static mut message_dontfuckwithme: boolean = 0;
-static mut message_nottobefuckedwith: boolean = 0;
+pub static mut message_dontfuckwithme: bool = false;
+static mut message_nottobefuckedwith: bool = false;
 const fn new_hu_textline_t() -> hu_textline_t {
     hu_textline_t {
         x: 0,
@@ -1759,11 +1759,11 @@ static mut w_message: hu_stext_t = hu_stext_t {
     ],
     h: 0,
     cl: 0,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
-    laston: 0,
+    on: ::core::ptr::null::<bool>() as *mut bool,
+    laston: false,
 };
 static mut message_counter: ::core::ffi::c_int = 0;
-static mut headsupactive: boolean = false_0 as boolean;
+static mut headsupactive: bool = false;
 pub static mapnames: [&str; 45] = [
     HUSTR_E1M1,
     HUSTR_E1M2,
@@ -1934,21 +1934,21 @@ pub unsafe extern "C" fn HU_Init() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn HU_Stop() {
-    headsupactive = false_0 as boolean;
+    headsupactive = false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn HU_Start() {
     let mut i: ::core::ffi::c_int = 0;
     let mut s: &str = "";
-    if headsupactive != 0 {
+    if headsupactive {
         HU_Stop();
     }
     plr = (&raw mut players as *mut player_t).offset(consoleplayer as isize)
         as *mut player_t;
-    message_on = false_0 as boolean;
-    message_dontfuckwithme = false_0 as boolean;
-    message_nottobefuckedwith = false_0 as boolean;
-    chat_on = false_0 as boolean;
+    message_on = false;
+    message_dontfuckwithme = false;
+    message_nottobefuckedwith = false;
+    chat_on = false;
     HUlib_initSText(
         &raw mut w_message,
         HU_MSGX,
@@ -2028,7 +2028,7 @@ pub unsafe extern "C" fn HU_Start() {
         );
         i += 1;
     }
-    headsupactive = true_0 as boolean;
+    headsupactive = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn HU_Drawer() {
@@ -2055,12 +2055,12 @@ pub unsafe extern "C" fn HU_Ticker() {
             message_counter == 0
         }
     {
-        message_on = false_0 as boolean;
-        message_nottobefuckedwith = false_0 as boolean;
+        message_on = false;
+        message_nottobefuckedwith = false;
     }
-    if showMessages != 0 || message_dontfuckwithme != 0 {
-        if !(*plr).message.is_null() && message_nottobefuckedwith == 0
-            || !(*plr).message.is_null() && message_dontfuckwithme != 0
+    if showMessages != 0 || message_dontfuckwithme {
+        if !(*plr).message.is_null() && !message_nottobefuckedwith
+            || !(*plr).message.is_null() && message_dontfuckwithme
         {
             HUlib_addMessageToSText(
                 &raw mut w_message,
@@ -2068,10 +2068,10 @@ pub unsafe extern "C" fn HU_Ticker() {
                 ::std::ffi::CStr::from_ptr((*plr).message).to_str().unwrap(),
             );
             (*plr).message = ::core::ptr::null_mut::<::core::ffi::c_char>();
-            message_on = true_0 as boolean;
+            message_on = true;
             message_counter = HU_MSGTIMEOUT;
             message_nottobefuckedwith = message_dontfuckwithme;
-            message_dontfuckwithme = 0 as boolean;
+            message_dontfuckwithme = false;
         }
     }
     if netgame != 0 {
@@ -2104,8 +2104,8 @@ pub unsafe extern "C" fn HU_Ticker() {
                                     player_names[i as usize],
                                     &w_inputbuffer[i as usize].l.l,
                                 );
-                                message_nottobefuckedwith = true_0 as boolean;
-                                message_on = true_0 as boolean;
+                                message_nottobefuckedwith = true;
+                                message_on = true;
                                 message_counter = HU_MSGTIMEOUT;
                                 if gamemode as ::core::ffi::c_uint
                                     == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
@@ -2166,7 +2166,7 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
         ::core::ffi::c_char,
     >();
     let mut eatkey: boolean = false_0 as boolean;
-    static mut altdown: boolean = false_0 as boolean;
+    static mut altdown: bool = false;
     let mut c: ::core::ffi::c_uchar = 0;
     let mut i: ::core::ffi::c_int = 0;
     let mut numplayers: ::core::ffi::c_int = 0;
@@ -2181,9 +2181,8 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
     if (*ev).data1 == KEY_RSHIFT {
         return false_0 as boolean
     } else if (*ev).data1 == KEY_RALT || (*ev).data1 == KEY_LALT {
-        altdown = ((*ev).type_0 as ::core::ffi::c_uint
-            == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint)
-            as ::core::ffi::c_int as boolean;
+        altdown = (*ev).type_0 as ::core::ffi::c_uint
+            == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint;
         return false_0 as boolean;
     }
     if (*ev).type_0 as ::core::ffi::c_uint
@@ -2191,14 +2190,14 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
     {
         return false_0 as boolean;
     }
-    if chat_on == 0 {
+    if !chat_on {
         if (*ev).data1 == key_message_refresh {
-            message_on = true_0 as boolean;
+            message_on = true;
             message_counter = HU_MSGTIMEOUT;
             eatkey = true_0 as boolean;
         } else if netgame != 0 && (*ev).data2 == key_multi_msg {
-            chat_on = true_0 as boolean;
-            eatkey = chat_on;
+            chat_on = true;
+            eatkey = chat_on as boolean;
             HUlib_resetIText(&raw mut w_chat);
             HU_queueChatChar(HU_BROADCAST as ::core::ffi::c_char);
         } else if netgame != 0 && numplayers > 2 as ::core::ffi::c_int {
@@ -2206,8 +2205,8 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
             while i < MAXPLAYERS {
                 if (*ev).data2 == key_multi_msgplayer[i as usize] {
                     if playeringame[i as usize] != 0 && i != consoleplayer {
-                        chat_on = true_0 as boolean;
-                        eatkey = chat_on;
+                        chat_on = true;
+                        eatkey = chat_on as boolean;
                         HUlib_resetIText(&raw mut w_chat);
                         HU_queueChatChar(
                             (i + 1 as ::core::ffi::c_int) as ::core::ffi::c_char,
@@ -2236,7 +2235,7 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
                 i += 1;
             }
         }
-    } else if altdown != 0 {
+    } else if altdown {
         c = ((*ev).data1 - '0' as i32) as ::core::ffi::c_uchar;
         if c as ::core::ffi::c_int > 9 as ::core::ffi::c_int {
             return false_0 as boolean;
@@ -2249,7 +2248,7 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
             HU_queueChatChar(*fresh2);
         }
         HU_queueChatChar(KEY_ENTER as ::core::ffi::c_char);
-        chat_on = false_0 as boolean;
+        chat_on = false;
         M_StringCopy(
             &raw mut lastmessage as *mut ::core::ffi::c_char,
             chat_macros[c as usize],
@@ -2264,7 +2263,7 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
             HU_queueChatChar(c as ::core::ffi::c_char);
         }
         if c as ::core::ffi::c_int == KEY_ENTER {
-            chat_on = false_0 as boolean;
+            chat_on = false;
             if !w_chat.l.l.is_empty() {
                 let w_chat_l_cstring = ::std::ffi::CString::new(w_chat.l.l.as_str()).unwrap();
                 M_StringCopy(
@@ -2275,7 +2274,7 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
                 (*plr).message = &raw mut lastmessage as *mut ::core::ffi::c_char;
             }
         } else if c as ::core::ffi::c_int == KEY_ESCAPE {
-            chat_on = false_0 as boolean;
+            chat_on = false;
         }
     }
     return eatkey;

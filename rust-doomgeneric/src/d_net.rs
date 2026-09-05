@@ -33,7 +33,7 @@ extern "C" {
     static mut startepisode: ::core::ffi::c_int;
     static mut startmap: ::core::ffi::c_int;
     static mut startloadgame: ::core::ffi::c_int;
-    static mut autostart: boolean;
+    static mut autostart: bool;
     static mut timelimit: ::core::ffi::c_int;
     static mut netgame: boolean;
     static mut deathmatch: ::core::ffi::c_int;
@@ -41,7 +41,7 @@ extern "C" {
     static mut consoleplayer: ::core::ffi::c_int;
     static mut demoplayback: boolean;
     static mut demorecording: boolean;
-    static mut lowres_turn: boolean;
+    static mut lowres_turn: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
     fn W_Checksum(digest: *mut byte);
@@ -1394,7 +1394,7 @@ unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
 }
 unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
     extern "C" {
-        static mut advancedemo: boolean;
+        static mut advancedemo: bool;
     }
     let mut i: ::core::ffi::c_uint = 0;
     i = 0 as ::core::ffi::c_uint;
@@ -1409,7 +1409,7 @@ unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
         i = i.wrapping_add(1);
     }
     netcmds = cmds;
-    if advancedemo != 0 {
+    if advancedemo {
         D_DoAdvanceDemo();
     }
     G_Ticker();
@@ -1432,13 +1432,13 @@ unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
     startmap = (*settings).map;
     startskill = (*settings).skill as skill_t;
     startloadgame = (*settings).loadgame;
-    lowres_turn = (*settings).lowres_turn as boolean;
+    lowres_turn = (*settings).lowres_turn != 0;
     nomonsters = (*settings).nomonsters as boolean;
     fastparm = (*settings).fast_monsters as boolean;
     respawnparm = (*settings).respawn_monsters as boolean;
     timelimit = (*settings).timelimit;
     consoleplayer = (*settings).consoleplayer;
-    if lowres_turn != 0 {
+    if lowres_turn {
         printf(
             b"NOTE: Turning resolution is reduced; this is probably because there is a client recording a Vanilla demo.\n\0"
                 as *const u8 as *const ::core::ffi::c_char,
@@ -1526,7 +1526,7 @@ pub unsafe extern "C" fn D_CheckNetGame() {
         player_classes: [0; 8],
     };
     if netgame != 0 {
-        autostart = true_0 as boolean;
+        autostart = true;
     }
     D_RegisterLoopCallbacks(&raw mut doom_loop_interface);
     SaveGameSettings(&raw mut settings);

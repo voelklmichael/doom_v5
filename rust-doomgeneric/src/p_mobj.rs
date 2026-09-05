@@ -43,7 +43,7 @@ extern "C" {
     static mut nomonsters: boolean;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
-    static mut respawnmonsters: boolean;
+    static mut respawnmonsters: bool;
     static mut netgame: boolean;
     static mut deathmatch: ::core::ffi::c_int;
     static mut consoleplayer: ::core::ffi::c_int;
@@ -2041,7 +2041,7 @@ pub unsafe extern "C" fn P_MobjThinker(mut mobj: *mut mobj_t) {
         if (*mobj).flags & MF_COUNTKILL as ::core::ffi::c_int == 0 {
             return;
         }
-        if respawnmonsters == 0 {
+        if !respawnmonsters {
             return;
         }
         (*mobj).movecount += 1;

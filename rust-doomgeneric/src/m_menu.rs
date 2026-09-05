@@ -92,7 +92,7 @@ extern "C" {
     fn S_SetMusicVolume(volume: ::core::ffi::c_int);
     fn S_SetSfxVolume(volume: ::core::ffi::c_int);
     static mut gametic: ::core::ffi::c_int;
-    static mut devparm: boolean;
+    static mut devparm: bool;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
@@ -107,8 +107,8 @@ extern "C" {
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     static mut hu_font: [*mut patch_t; 63];
-    static mut message_dontfuckwithme: boolean;
-    static mut chat_on: boolean;
+    static mut message_dontfuckwithme: bool;
+    static mut chat_on: bool;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1677,7 +1677,7 @@ pub static mut messy: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut messageLastMenuActive: ::core::ffi::c_int = 0;
 #[no_mangle]
-pub static mut messageNeedsInput: boolean = 0;
+pub static mut messageNeedsInput: bool = false;
 #[no_mangle]
 pub static mut messageRoutine: Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()> = None;
 pub static gammamsg: [&str; 5] = [GAMMALVL0, GAMMALVL1, GAMMALVL2, GAMMALVL3, GAMMALVL4];
@@ -1690,7 +1690,7 @@ pub static mut saveCharIndex: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut saveOldString: String = String::new();
 #[no_mangle]
-pub static mut inhelpscreens: boolean = 0;
+pub static mut inhelpscreens: bool = false;
 #[no_mangle]
 pub static mut menuactive: boolean = 0;
 pub const SKULLXOFF: ::core::ffi::c_int = -(32 as ::core::ffi::c_int);
@@ -2589,7 +2589,7 @@ pub unsafe extern "C" fn M_DrawReadThis1() {
         as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     let mut skullx: ::core::ffi::c_int = 330 as ::core::ffi::c_int;
     let mut skully: ::core::ffi::c_int = 175 as ::core::ffi::c_int;
-    inhelpscreens = true_0 as boolean;
+    inhelpscreens = true;
     match gameversion as ::core::ffi::c_uint {
         1 | 2 | 3 | 4 | 5 => {
             if gamemode as ::core::ffi::c_uint
@@ -2632,7 +2632,7 @@ pub unsafe extern "C" fn M_DrawReadThis1() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawReadThis2() {
-    inhelpscreens = true_0 as boolean;
+    inhelpscreens = true;
     V_DrawPatchDirect(
         0 as ::core::ffi::c_int,
         0 as ::core::ffi::c_int,
@@ -2876,7 +2876,7 @@ pub unsafe extern "C" fn M_ChangeMessages(mut choice: ::core::ffi::c_int) {
         players[consoleplayer as usize].message = b"Messages ON\0" as *const u8
             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
-    message_dontfuckwithme = true_0 as boolean;
+    message_dontfuckwithme = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_EndGameResponse(mut key: ::core::ffi::c_int) {
@@ -3153,7 +3153,7 @@ pub unsafe fn M_StartMessage(
         *mut ::core::ffi::c_void,
         Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
     >(routine);
-    messageNeedsInput = input;
+    messageNeedsInput = input != 0;
     menuactive = true_0 as boolean;
 }
 #[no_mangle]
@@ -3397,7 +3397,7 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
         return true_0 as boolean;
     }
     if messageToPrint != 0 {
-        if messageNeedsInput != 0 {
+        if messageNeedsInput {
             if key != ' ' as i32 && key != KEY_ESCAPE && key != key_menu_confirm
                 && key != key_menu_abort
             {
@@ -3413,7 +3413,7 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
         S_StartSound(NULL, sfx_swtchx as ::core::ffi::c_int);
         return true_0 as boolean;
     }
-    if devparm != 0 && key == key_menu_help
+    if devparm && key == key_menu_help
         || key != 0 as ::core::ffi::c_int && key == key_menu_screenshot
     {
         G_ScreenShot();
@@ -3421,14 +3421,14 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
     }
     if menuactive == 0 {
         if key == key_menu_decscreen {
-            if automapactive != 0 || chat_on != 0 {
+            if automapactive != 0 || chat_on {
                 return false_0 as boolean;
             }
             M_SizeDisplay(0 as ::core::ffi::c_int);
             S_StartSound(NULL, sfx_stnmov as ::core::ffi::c_int);
             return true_0 as boolean;
         } else if key == key_menu_incscreen {
-            if automapactive != 0 || chat_on != 0 {
+            if automapactive != 0 || chat_on {
                 return false_0 as boolean;
             }
             M_SizeDisplay(1 as ::core::ffi::c_int);
@@ -3642,7 +3642,7 @@ pub unsafe extern "C" fn M_Drawer() {
     let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    inhelpscreens = false_0 as boolean;
+    inhelpscreens = false;
     if messageToPrint != 0 {
         y = (SCREENHEIGHT / 2 as ::core::ffi::c_int
             - M_StringHeight(&messageString) / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
