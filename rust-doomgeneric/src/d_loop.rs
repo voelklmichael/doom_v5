@@ -16,7 +16,7 @@ extern "C" {
     fn I_GetTimeMS() -> ::core::ffi::c_int;
     fn I_Sleep(ms: ::core::ffi::c_int);
     fn I_StartTic();
-    static mut net_client_connected: boolean;
+    static mut net_client_connected: bool;
     static mut drone: boolean;
 }
 pub type size_t = usize;
@@ -124,7 +124,7 @@ static mut recvtic: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut gametic: ::core::ffi::c_int = 0;
 #[no_mangle]
-pub static mut singletics: boolean = false_0 as boolean;
+pub static mut singletics: bool = false;
 static mut localplayer: ::core::ffi::c_int = 0;
 static mut skiptics: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 #[no_mangle]
@@ -173,7 +173,7 @@ unsafe extern "C" fn BuildNewTic() -> boolean {
         return false_0 as boolean;
     }
     if new_sync {
-        if net_client_connected == 0 && maketic - gameticdiv > 2 as ::core::ffi::c_int {
+        if !net_client_connected && maketic - gameticdiv > 2 as ::core::ffi::c_int {
             return false_0 as boolean;
         }
         if maketic - gameticdiv > 8 as ::core::ffi::c_int {
@@ -203,7 +203,7 @@ pub unsafe extern "C" fn NetUpdate() {
     let mut nowtime: ::core::ffi::c_int = 0;
     let mut newtics: ::core::ffi::c_int = 0;
     let mut i: ::core::ffi::c_int = 0;
-    if singletics != 0 {
+    if singletics {
         return;
     }
     nowtime = GetAdjustedTime() / ticdup;
@@ -324,7 +324,7 @@ unsafe extern "C" fn OldNetSync() {
 unsafe extern "C" fn PlayersInGame() -> boolean {
     let mut result: boolean = false_0 as boolean;
     let mut i: ::core::ffi::c_uint = 0;
-    if net_client_connected != 0 {
+    if net_client_connected {
         i = 0 as ::core::ffi::c_uint;
         while i < NET_MAXPLAYERS as ::core::ffi::c_uint {
             result = (result != 0 || local_playeringame[i as usize] != 0)
@@ -373,7 +373,7 @@ pub unsafe extern "C" fn TryRunTics() {
     entertic = I_GetTime() / ticdup;
     realtics = entertic - oldentertics;
     oldentertics = entertic;
-    if singletics != 0 {
+    if singletics {
         BuildNewTic();
     } else {
         NetUpdate();
@@ -393,7 +393,7 @@ pub unsafe extern "C" fn TryRunTics() {
         if counts < 1 as ::core::ffi::c_int {
             counts = 1 as ::core::ffi::c_int;
         }
-        if net_client_connected != 0 {
+        if net_client_connected {
             OldNetSync();
         }
     }
@@ -423,7 +423,7 @@ pub unsafe extern "C" fn TryRunTics() {
         }
         set = (&raw mut ticdata as *mut ticcmd_set_t)
             .offset((gametic / ticdup % BACKUPTICS) as isize) as *mut ticcmd_set_t;
-        if net_client_connected == 0 {
+        if !net_client_connected {
             SinglePlayerClear(set);
         }
         i = 0 as ::core::ffi::c_int;

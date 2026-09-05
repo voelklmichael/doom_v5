@@ -127,7 +127,7 @@ pub static mut I_VideoBuffer: *mut byte = ::core::ptr::null::<byte>() as *mut by
 #[no_mangle]
 pub static mut screensaver_mode: boolean = false_0 as boolean;
 #[no_mangle]
-pub static mut screenvisible: boolean = 0;
+pub static mut screenvisible: bool = false;
 #[no_mangle]
 pub static mut mouse_acceleration: ::core::ffi::c_float = 2.0f32;
 #[no_mangle]
@@ -320,7 +320,7 @@ pub unsafe extern "C" fn I_InitGraphics() {
         PU_STATIC as ::core::ffi::c_int,
         NULL,
     ) as *mut byte;
-    screenvisible = true_0 as boolean;
+    screenvisible = true;
     extern "C" {
         #[link_name = "I_InitInput"]
         fn I_InitInput_0();
@@ -489,7 +489,7 @@ pub unsafe extern "C" fn I_EnableLoadingDisk() {}
 #[no_mangle]
 pub unsafe extern "C" fn I_BindVideoVariables() {}
 #[no_mangle]
-pub unsafe extern "C" fn I_DisplayFPSDots(mut dots_on: boolean) {}
+pub unsafe extern "C" fn I_DisplayFPSDots(mut dots_on: bool) {}
 #[no_mangle]
 pub unsafe extern "C" fn I_CheckIsScreensaver() {}
 pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;

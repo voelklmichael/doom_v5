@@ -69,7 +69,7 @@ extern "C" {
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
     static mut wminfo: wbstartstruct_t;
-    static mut precache: boolean;
+    static mut precache: bool;
     static mut bodyqueslot: ::core::ffi::c_int;
 }
 pub type __uint8_t = u8;
@@ -2362,7 +2362,7 @@ pub unsafe extern "C" fn P_SetupLevel(
     iquetail = 0 as ::core::ffi::c_int;
     iquehead = iquetail;
     P_SpawnSpecials();
-    if precache != 0 {
+    if precache {
         R_PrecacheLevel();
     }
 }
