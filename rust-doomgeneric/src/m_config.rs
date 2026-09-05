@@ -18,7 +18,6 @@ extern "C" {
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }
 pub type size_t = usize;
-pub type boolean = ::core::ffi::c_uint;
 pub type default_type_t = ::core::ffi::c_uint;
 pub const DEFAULT_KEY: default_type_t = 4;
 pub const DEFAULT_FLOAT: default_type_t = 3;
@@ -33,7 +32,7 @@ pub struct default_t {
     pub type_0: default_type_t,
     pub untranslated: ::core::ffi::c_int,
     pub original_translated: ::core::ffi::c_int,
-    pub bound: boolean,
+    pub bound: bool,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -45,8 +44,6 @@ pub struct default_collection_t {
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
 };
@@ -125,7 +122,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "sfx_volume",
@@ -133,7 +130,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "music_volume",
@@ -141,7 +138,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "show_talk",
@@ -149,7 +146,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "voice_volume",
@@ -157,7 +154,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "show_messages",
@@ -165,7 +162,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_right",
@@ -173,7 +170,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_left",
@@ -181,7 +178,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_up",
@@ -189,7 +186,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_down",
@@ -197,7 +194,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_strafeleft",
@@ -205,7 +202,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_straferight",
@@ -213,7 +210,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_useHealth",
@@ -221,7 +218,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_jump",
@@ -229,7 +226,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_flyup",
@@ -237,7 +234,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_flydown",
@@ -245,7 +242,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_flycenter",
@@ -253,7 +250,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_lookup",
@@ -261,7 +258,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_lookdown",
@@ -269,7 +266,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_lookcenter",
@@ -277,7 +274,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invquery",
@@ -285,7 +282,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_mission",
@@ -293,7 +290,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invPop",
@@ -301,7 +298,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invKey",
@@ -309,7 +306,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invHome",
@@ -317,7 +314,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invEnd",
@@ -325,7 +322,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invleft",
@@ -333,7 +330,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invright",
@@ -341,7 +338,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invLeft",
@@ -349,7 +346,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invRight",
@@ -357,7 +354,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_useartifact",
@@ -365,7 +362,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invUse",
@@ -373,7 +370,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_invDrop",
@@ -381,7 +378,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_lookUp",
@@ -389,7 +386,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_lookDown",
@@ -397,7 +394,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_fire",
@@ -405,7 +402,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_use",
@@ -413,7 +410,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_strafe",
@@ -421,7 +418,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_speed",
@@ -429,7 +426,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "use_mouse",
@@ -437,7 +434,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_fire",
@@ -445,7 +442,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_strafe",
@@ -453,7 +450,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_forward",
@@ -461,7 +458,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_jump",
@@ -469,7 +466,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "use_joystick",
@@ -477,7 +474,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_fire",
@@ -485,7 +482,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_strafe",
@@ -493,7 +490,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_use",
@@ -501,7 +498,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_speed",
@@ -509,7 +506,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_jump",
@@ -517,7 +514,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "screenblocks",
@@ -525,7 +522,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "screensize",
@@ -533,7 +530,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "detaillevel",
@@ -541,7 +538,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_channels",
@@ -549,7 +546,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_musicdevice",
@@ -557,7 +554,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_sfxdevice",
@@ -565,7 +562,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_sbport",
@@ -573,7 +570,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_sbirq",
@@ -581,7 +578,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_sbdma",
@@ -589,7 +586,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_mport",
@@ -597,7 +594,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "usegamma",
@@ -605,7 +602,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "savedir",
@@ -613,7 +610,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "messageson",
@@ -621,7 +618,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "back_flat",
@@ -629,7 +626,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "nickname",
@@ -637,7 +634,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro0",
@@ -645,7 +642,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro1",
@@ -653,7 +650,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro2",
@@ -661,7 +658,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro3",
@@ -669,7 +666,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro4",
@@ -677,7 +674,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro5",
@@ -685,7 +682,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro6",
@@ -693,7 +690,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro7",
@@ -701,7 +698,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro8",
@@ -709,7 +706,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "chatmacro9",
@@ -717,7 +714,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "comport",
@@ -725,7 +722,7 @@ static mut doom_defaults_list: [default_t; 76] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
 ];
 static mut doom_defaults: default_collection_t = default_collection_t {
@@ -740,7 +737,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "autoadjust_video_settings",
@@ -748,7 +745,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "fullscreen",
@@ -756,7 +753,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "aspect_ratio_correct",
@@ -764,7 +761,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "startup_delay",
@@ -772,7 +769,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "screen_width",
@@ -780,7 +777,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "screen_height",
@@ -788,7 +785,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "screen_bpp",
@@ -796,7 +793,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "grabmouse",
@@ -804,7 +801,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "novert",
@@ -812,7 +809,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouse_acceleration",
@@ -820,7 +817,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_FLOAT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouse_threshold",
@@ -828,7 +825,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_samplerate",
@@ -836,7 +833,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_cachesize",
@@ -844,7 +841,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_maxslicetime_ms",
@@ -852,7 +849,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "snd_musiccmd",
@@ -860,7 +857,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "opl_io_port",
@@ -868,7 +865,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT_HEX,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "show_endoom",
@@ -876,7 +873,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "png_screenshots",
@@ -884,7 +881,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "vanilla_savegame_limit",
@@ -892,7 +889,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "vanilla_demo_limit",
@@ -900,7 +897,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "vanilla_keyboard_mapping",
@@ -908,7 +905,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "video_driver",
@@ -916,7 +913,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "window_position",
@@ -924,7 +921,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_STRING,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_index",
@@ -932,7 +929,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_x_axis",
@@ -940,7 +937,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_x_invert",
@@ -948,7 +945,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_y_axis",
@@ -956,7 +953,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_y_invert",
@@ -964,7 +961,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_strafe_axis",
@@ -972,7 +969,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_strafe_invert",
@@ -980,7 +977,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button0",
@@ -988,7 +985,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button1",
@@ -996,7 +993,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button2",
@@ -1004,7 +1001,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button3",
@@ -1012,7 +1009,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button4",
@@ -1020,7 +1017,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button5",
@@ -1028,7 +1025,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button6",
@@ -1036,7 +1033,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button7",
@@ -1044,7 +1041,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button8",
@@ -1052,7 +1049,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joystick_physical_button9",
@@ -1060,7 +1057,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_strafeleft",
@@ -1068,7 +1065,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_straferight",
@@ -1076,7 +1073,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_menu_activate",
@@ -1084,7 +1081,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_prevweapon",
@@ -1092,7 +1089,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "joyb_nextweapon",
@@ -1100,7 +1097,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_strafeleft",
@@ -1108,7 +1105,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_straferight",
@@ -1116,7 +1113,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_use",
@@ -1124,7 +1121,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_backward",
@@ -1132,7 +1129,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_prevweapon",
@@ -1140,7 +1137,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "mouseb_nextweapon",
@@ -1148,7 +1145,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "dclick_use",
@@ -1156,7 +1153,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_INT,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_pause",
@@ -1164,7 +1161,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_activate",
@@ -1172,7 +1169,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_up",
@@ -1180,7 +1177,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_down",
@@ -1188,7 +1185,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_left",
@@ -1196,7 +1193,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_right",
@@ -1204,7 +1201,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_back",
@@ -1212,7 +1209,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_forward",
@@ -1220,7 +1217,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_confirm",
@@ -1228,7 +1225,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_abort",
@@ -1236,7 +1233,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_help",
@@ -1244,7 +1241,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_save",
@@ -1252,7 +1249,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_load",
@@ -1260,7 +1257,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_volume",
@@ -1268,7 +1265,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_detail",
@@ -1276,7 +1273,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_qsave",
@@ -1284,7 +1281,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_endgame",
@@ -1292,7 +1289,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_messages",
@@ -1300,7 +1297,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_qload",
@@ -1308,7 +1305,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_quit",
@@ -1316,7 +1313,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_gamma",
@@ -1324,7 +1321,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_spy",
@@ -1332,7 +1329,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_incscreen",
@@ -1340,7 +1337,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_decscreen",
@@ -1348,7 +1345,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_menu_screenshot",
@@ -1356,7 +1353,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_toggle",
@@ -1364,7 +1361,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_north",
@@ -1372,7 +1369,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_south",
@@ -1380,7 +1377,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_east",
@@ -1388,7 +1385,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_west",
@@ -1396,7 +1393,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_zoomin",
@@ -1404,7 +1401,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_zoomout",
@@ -1412,7 +1409,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_maxzoom",
@@ -1420,7 +1417,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_follow",
@@ -1428,7 +1425,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_grid",
@@ -1436,7 +1433,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_mark",
@@ -1444,7 +1441,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_map_clearmark",
@@ -1452,7 +1449,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_weapon1",
@@ -1460,7 +1457,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_weapon2",
@@ -1468,7 +1465,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_weapon3",
@@ -1476,7 +1473,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_weapon4",
@@ -1484,7 +1481,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_weapon5",
@@ -1492,7 +1489,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_weapon6",
@@ -1500,7 +1497,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_weapon7",
@@ -1508,7 +1505,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_weapon8",
@@ -1516,7 +1513,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_prevweapon",
@@ -1524,7 +1521,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_nextweapon",
@@ -1532,7 +1529,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_arti_all",
@@ -1540,7 +1537,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_arti_health",
@@ -1548,7 +1545,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_arti_poisonbag",
@@ -1556,7 +1553,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_arti_blastradius",
@@ -1564,7 +1561,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_arti_teleport",
@@ -1572,7 +1569,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_arti_teleportother",
@@ -1580,7 +1577,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_arti_egg",
@@ -1588,7 +1585,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_arti_invulnerability",
@@ -1596,7 +1593,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_message_refresh",
@@ -1604,7 +1601,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_demo_quit",
@@ -1612,7 +1609,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msg",
@@ -1620,7 +1617,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msgplayer1",
@@ -1628,7 +1625,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msgplayer2",
@@ -1636,7 +1633,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msgplayer3",
@@ -1644,7 +1641,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msgplayer4",
@@ -1652,7 +1649,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msgplayer5",
@@ -1660,7 +1657,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msgplayer6",
@@ -1668,7 +1665,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msgplayer7",
@@ -1676,7 +1673,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
     default_t {
         name: "key_multi_msgplayer8",
@@ -1684,7 +1681,7 @@ static mut extra_defaults_list: [default_t; 119] = [
         type_0: DEFAULT_KEY,
         untranslated: 0 as ::core::ffi::c_int,
         original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        bound: false,
     },
 ];
 static mut extra_defaults: default_collection_t = default_collection_t {
@@ -1973,21 +1970,21 @@ pub unsafe fn M_BindVariable(name: &str, mut location: *mut ::core::ffi::c_void)
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
     (*variable).location = location;
-    (*variable).bound = true_0 as boolean;
+    (*variable).bound = true;
 }
-pub unsafe fn M_SetVariable(name: &str, mut value: *mut ::core::ffi::c_char) -> boolean {
+pub unsafe fn M_SetVariable(name: &str, mut value: *mut ::core::ffi::c_char) -> bool {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || (*variable).bound == 0 {
-        return false_0 as boolean;
+    if variable.is_null() || !(*variable).bound {
+        return false;
     }
     SetVariable(variable, value);
-    return true_0 as boolean;
+    return true;
 }
 pub unsafe fn M_GetIntVariable(name: &str) -> ::core::ffi::c_int {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || (*variable).bound == 0
+    if variable.is_null() || !(*variable).bound
         || (*variable).type_0 as ::core::ffi::c_uint
             != DEFAULT_INT as ::core::ffi::c_int as ::core::ffi::c_uint
             && (*variable).type_0 as ::core::ffi::c_uint
@@ -2000,7 +1997,7 @@ pub unsafe fn M_GetIntVariable(name: &str) -> ::core::ffi::c_int {
 pub unsafe fn M_GetStrVariable(name: &str) -> *const ::core::ffi::c_char {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || (*variable).bound == 0
+    if variable.is_null() || !(*variable).bound
         || (*variable).type_0 as ::core::ffi::c_uint
             != DEFAULT_STRING as ::core::ffi::c_int as ::core::ffi::c_uint
     {
@@ -2011,7 +2008,7 @@ pub unsafe fn M_GetStrVariable(name: &str) -> *const ::core::ffi::c_char {
 pub unsafe fn M_GetFloatVariable(name: &str) -> ::core::ffi::c_float {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || (*variable).bound == 0
+    if variable.is_null() || !(*variable).bound
         || (*variable).type_0 as ::core::ffi::c_uint
             != DEFAULT_FLOAT as ::core::ffi::c_int as ::core::ffi::c_uint
     {
