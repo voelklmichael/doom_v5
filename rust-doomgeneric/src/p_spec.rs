@@ -1,3 +1,4 @@
+use crate::src::r_defs::{side_t};
 use crate::src::p_mobj::{thinker_t, sector_t, degenmobj_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
@@ -1420,16 +1421,6 @@ pub const PU_FREE: C2RustUnnamed_1 = 4;
 pub const PU_MUSIC: C2RustUnnamed_1 = 3;
 pub const PU_SOUND: C2RustUnnamed_1 = 2;
 pub const PU_STATIC: C2RustUnnamed_1 = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {

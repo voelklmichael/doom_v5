@@ -1,3 +1,4 @@
+use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{plat_t, ceiling_t, floormove_t};
 use crate::src::p_lights::{lightflash_t, strobe_t, glow_t};
 use crate::src::p_doors::{vldoor_t};
@@ -1442,16 +1443,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
 pub type C2RustUnnamed_3 = ::core::ffi::c_uint;
 pub const NUMPSPRITES: C2RustUnnamed_3 = 2;
 pub const ps_flash: C2RustUnnamed_3 = 1;
