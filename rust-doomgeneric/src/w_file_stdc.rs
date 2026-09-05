@@ -1,3 +1,4 @@
+use crate::src::w_file::{wad_file_class_t, wad_file_t};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -67,30 +68,6 @@ pub type _IO_lock_t = ();
 pub type FILE = _IO_FILE;
 pub type uint8_t = __uint8_t;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _wad_file_s {
-    pub file_class: *mut wad_file_class_t,
-    pub mapped: *mut byte,
-    pub length: ::core::ffi::c_uint,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct wad_file_class_t {
-    pub OpenFile: Option<
-        unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-    >,
-    pub CloseFile: Option<unsafe extern "C" fn(*mut wad_file_t) -> ()>,
-    pub Read: Option<
-        unsafe extern "C" fn(
-            *mut wad_file_t,
-            ::core::ffi::c_uint,
-            *mut ::core::ffi::c_void,
-            size_t,
-        ) -> size_t,
-    >,
-}
-pub type wad_file_t = _wad_file_s;
 pub type C2RustUnnamed = ::core::ffi::c_uint;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;

@@ -1,3 +1,4 @@
+use crate::src::r_data::column_t;
 use crate::src::r_defs::{drawseg_t, seg_t, side_t, visplane_t};
 use crate::src::p_mobj::{sector_t, line_t, actionf_t};
 use crate::src::i_system::I_Error;
@@ -1332,13 +1333,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct post_t {
-    pub topdelta: byte,
-    pub length: byte,
-}
-pub type column_t = post_t;
 pub type lighttable_t = byte;
 pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
 pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
