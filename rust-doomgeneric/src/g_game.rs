@@ -46,7 +46,7 @@ extern "C" {
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
     static mut nomonsters: boolean;
-    static mut respawnparm: boolean;
+    static mut respawnparm: bool;
     static mut fastparm: boolean;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
@@ -62,7 +62,7 @@ extern "C" {
     static mut rndindex: ::core::ffi::c_int;
     static mut netcmds: *mut ticcmd_t;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
-    static mut setsizeneeded: boolean;
+    static mut setsizeneeded: bool;
     fn R_ExecuteSetViewSize();
     fn Z_Malloc(
         size: ::core::ffi::c_int,
@@ -1739,13 +1739,13 @@ pub static mut gamemap: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut timelimit: ::core::ffi::c_int = 0;
 #[no_mangle]
-pub static mut paused: boolean = 0;
+pub static mut paused: bool = false;
 #[no_mangle]
 pub static mut sendpause: bool = false;
 #[no_mangle]
 pub static mut sendsave: bool = false;
 #[no_mangle]
-pub static mut usergame: boolean = 0;
+pub static mut usergame: bool = false;
 #[no_mangle]
 pub static mut timingdemo: bool = false;
 #[no_mangle]
@@ -1833,7 +1833,7 @@ pub static mut demoname: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
 #[no_mangle]
-pub static mut demorecording: boolean = 0;
+pub static mut demorecording: bool = false;
 #[no_mangle]
 pub static mut longtics: bool = false;
 #[no_mangle]
@@ -1849,11 +1849,11 @@ pub static mut demo_p: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut demoend: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
-pub static mut singledemo: boolean = 0;
+pub static mut singledemo: bool = false;
 #[no_mangle]
 pub static mut precache: bool = true;
 #[no_mangle]
-pub static mut testcontrols: boolean = false_0 as boolean;
+pub static mut testcontrols: bool = false;
 #[no_mangle]
 pub static mut testcontrols_mousespeed: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -2398,8 +2398,8 @@ pub unsafe extern "C" fn G_DoLoadLevel() {
     joyxmove = joyymove;
     mousey = 0 as ::core::ffi::c_int;
     mousex = mousey;
-    paused = false_0 as boolean;
-    sendsave = paused != 0;
+    paused = false;
+    sendsave = paused;
     sendpause = sendsave;
     memset(
         &raw mut mousearray as *mut boolean as *mut ::core::ffi::c_void,
@@ -2411,7 +2411,7 @@ pub unsafe extern "C" fn G_DoLoadLevel() {
         0 as ::core::ffi::c_int,
         ::core::mem::size_of::<[boolean; 21]>() as size_t,
     );
-    if testcontrols != 0 {
+    if testcontrols {
         players[consoleplayer as usize].message = b"Press escape to quit.\0" as *const u8
             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
@@ -2458,7 +2458,7 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
         == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
         && (*ev).type_0 as ::core::ffi::c_uint
             == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
-        && (*ev).data1 == key_spy && (singledemo != 0 || deathmatch == 0)
+        && (*ev).data1 == key_spy && (singledemo || deathmatch == 0)
     {
         loop {
             displayplayer += 1;
@@ -2474,7 +2474,7 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
         return true_0 as boolean;
     }
     if gameaction as ::core::ffi::c_uint
-        == ga_nothing as ::core::ffi::c_int as ::core::ffi::c_uint && singledemo == 0
+        == ga_nothing as ::core::ffi::c_int as ::core::ffi::c_uint && !singledemo
         && (demoplayback != 0
             || gamestate as ::core::ffi::c_uint
                 == GS_DEMOSCREEN as ::core::ffi::c_int as ::core::ffi::c_uint)
@@ -2513,7 +2513,7 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
             return true_0 as boolean;
         }
     }
-    if testcontrols != 0
+    if testcontrols
         && (*ev).type_0 as ::core::ffi::c_uint
             == ev_mouse as ::core::ffi::c_int as ::core::ffi::c_uint
     {
@@ -2633,7 +2633,7 @@ pub unsafe extern "C" fn G_Ticker() {
             if demoplayback != 0 {
                 G_ReadDemoTiccmd(cmd);
             }
-            if demorecording != 0 {
+            if demorecording {
                 G_WriteDemoTiccmd(cmd);
             }
             if (*cmd).forwardmove as ::core::ffi::c_int > TURBOTHRESHOLD {
@@ -2688,8 +2688,8 @@ pub unsafe extern "C" fn G_Ticker() {
                     & BT_SPECIALMASK as ::core::ffi::c_int
                 {
                     1 => {
-                        paused ^= 1 as boolean;
-                        if paused != 0 {
+                        paused = !paused;
+                        if paused {
                             S_PauseSound();
                         } else {
                             S_ResumeSound();
@@ -3294,7 +3294,7 @@ pub unsafe extern "C" fn G_DoLoadGame() {
         I_Error("Bad savegame");
     }
     fclose(save_stream);
-    if setsizeneeded != 0 {
+    if setsizeneeded {
         R_ExecuteSetViewSize();
     }
     R_FillBackScreen();
@@ -3407,7 +3407,7 @@ pub unsafe extern "C" fn G_DoNewGame() {
         as usize];
     playeringame[1 as ::core::ffi::c_int as usize] = playeringame[2 as ::core::ffi::c_int
         as usize];
-    respawnparm = false_0 as boolean;
+    respawnparm = false;
     fastparm = false_0 as boolean;
     nomonsters = false_0 as boolean;
     consoleplayer = 0 as ::core::ffi::c_int;
@@ -3424,8 +3424,8 @@ pub unsafe extern "C" fn G_InitNew(
         ::core::ffi::c_char,
     >();
     let mut i: ::core::ffi::c_int = 0;
-    if paused != 0 {
-        paused = false_0 as boolean;
+    if paused {
+        paused = false;
         S_ResumeSound();
     }
     if skill as ::core::ffi::c_int > sk_nightmare as ::core::ffi::c_int {
@@ -3462,7 +3462,7 @@ pub unsafe extern "C" fn G_InitNew(
     }
     M_ClearRandom();
     if skill as ::core::ffi::c_int == sk_nightmare as ::core::ffi::c_int
-        || respawnparm != 0
+        || respawnparm
     {
         respawnmonsters = true;
     } else {
@@ -3503,8 +3503,8 @@ pub unsafe extern "C" fn G_InitNew(
         players[i as usize].playerstate = PST_REBORN;
         i += 1;
     }
-    usergame = true_0 as boolean;
-    paused = false_0 as boolean;
+    usergame = true;
+    paused = false;
     demoplayback = false_0 as boolean;
     automapactive = false_0 as boolean;
     viewactive = true_0 as boolean;
@@ -3653,7 +3653,7 @@ pub unsafe extern "C" fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     let mut demoname_size: size_t = 0;
     let mut i: ::core::ffi::c_int = 0;
     let mut maxsize: ::core::ffi::c_int = 0;
-    usergame = false_0 as boolean;
+    usergame = false;
     demoname_size = strlen(name).wrapping_add(5 as size_t);
     demoname = Z_Malloc(
         demoname_size as ::core::ffi::c_int,
@@ -3676,7 +3676,7 @@ pub unsafe extern "C" fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     }
     demobuffer = Z_Malloc(maxsize, PU_STATIC as ::core::ffi::c_int, NULL) as *mut byte;
     demoend = demobuffer.offset(maxsize as isize);
-    demorecording = true_0 as boolean;
+    demorecording = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_VanillaVersionCode() -> ::core::ffi::c_int {
@@ -3836,7 +3836,7 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     deathmatch = *fresh28 as ::core::ffi::c_int;
     let fresh29 = demo_p;
     demo_p = demo_p.offset(1);
-    respawnparm = *fresh29 as boolean;
+    respawnparm = *fresh29 != 0;
     let fresh30 = demo_p;
     demo_p = demo_p.offset(1);
     fastparm = *fresh30 as boolean;
@@ -3864,7 +3864,7 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     G_InitNew(skill, episode, map);
     precache = true;
     starttime = I_GetTime();
-    usergame = false_0 as boolean;
+    usergame = false;
     demoplayback = true_0 as boolean;
 }
 #[no_mangle]
@@ -3905,18 +3905,18 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
             as ::core::ffi::c_int as usize];
         playeringame[1 as ::core::ffi::c_int as usize] = playeringame[2
             as ::core::ffi::c_int as usize];
-        respawnparm = false_0 as boolean;
+        respawnparm = false;
         fastparm = false_0 as boolean;
         nomonsters = false_0 as boolean;
         consoleplayer = 0 as ::core::ffi::c_int;
-        if singledemo != 0 {
+        if singledemo {
             I_Quit();
         } else {
             D_AdvanceDemo();
         }
         return true_0 as boolean;
     }
-    if demorecording != 0 {
+    if demorecording {
         let fresh11 = demo_p;
         demo_p = demo_p.offset(1);
         *fresh11 = DEMOMARKER as byte;
@@ -3926,7 +3926,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
             demo_p.offset_from(demobuffer) as ::core::ffi::c_long as ::core::ffi::c_int,
         );
         Z_Free(demobuffer as *mut ::core::ffi::c_void);
-        demorecording = false_0 as boolean;
+        demorecording = false;
         I_Error(&format!(
             "Demo {} recorded",
             ::std::ffi::CStr::from_ptr(demoname).to_str().unwrap(),

@@ -100,9 +100,9 @@ extern "C" {
     static mut sfxVolume: ::core::ffi::c_int;
     static mut musicVolume: ::core::ffi::c_int;
     static mut automapactive: boolean;
-    static mut testcontrols: boolean;
+    static mut testcontrols: bool;
     static mut consoleplayer: ::core::ffi::c_int;
-    static mut usergame: boolean;
+    static mut usergame: bool;
     static mut demoplayback: boolean;
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
@@ -1692,7 +1692,7 @@ pub static mut saveOldString: String = String::new();
 #[no_mangle]
 pub static mut inhelpscreens: bool = false;
 #[no_mangle]
-pub static mut menuactive: boolean = 0;
+pub static mut menuactive: bool = false;
 pub const SKULLXOFF: ::core::ffi::c_int = -(32 as ::core::ffi::c_int);
 pub const LINEHEIGHT: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
 pub static mut savegamestrings: [String; 10] = [
@@ -2471,7 +2471,7 @@ pub unsafe extern "C" fn M_SaveSelect(mut choice: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveGame(mut choice: ::core::ffi::c_int) {
-    if usergame == 0 {
+    if !usergame {
         M_StartMessage(
             "you can't save if you aren't playing!\n\npress a key.",
             NULL,
@@ -2498,7 +2498,7 @@ pub unsafe extern "C" fn M_QuickSaveResponse(mut key: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_QuickSave() {
-    if usergame == 0 {
+    if !usergame {
         S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
         return;
     }
@@ -2890,7 +2890,7 @@ pub unsafe extern "C" fn M_EndGameResponse(mut key: ::core::ffi::c_int) {
 #[no_mangle]
 pub unsafe extern "C" fn M_EndGame(mut choice: ::core::ffi::c_int) {
     choice = 0 as ::core::ffi::c_int;
-    if usergame == 0 {
+    if !usergame {
         S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
         return;
     }
@@ -3154,11 +3154,11 @@ pub unsafe fn M_StartMessage(
         Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
     >(routine);
     messageNeedsInput = input != 0;
-    menuactive = true_0 as boolean;
+    menuactive = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_StopMessage() {
-    menuactive = messageLastMenuActive as boolean;
+    menuactive = messageLastMenuActive != 0;
     messageToPrint = 0 as ::core::ffi::c_int;
 }
 pub unsafe fn M_StringWidth(string: &str) -> ::core::ffi::c_int {
@@ -3228,7 +3228,7 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
     static mut lasty: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
     static mut mousex: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
     static mut lastx: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    if testcontrols != 0 {
+    if testcontrols {
         if (*ev).type_0 as ::core::ffi::c_uint
             == ev_quit as ::core::ffi::c_int as ::core::ffi::c_uint
             || (*ev).type_0 as ::core::ffi::c_uint
@@ -3243,7 +3243,7 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
     if (*ev).type_0 as ::core::ffi::c_uint
         == ev_quit as ::core::ffi::c_int as ::core::ffi::c_uint
     {
-        if menuactive != 0 && messageToPrint != 0
+        if menuactive && messageToPrint != 0
             && messageRoutine
                 == Some(M_QuitResponse as unsafe extern "C" fn(::core::ffi::c_int) -> ())
         {
@@ -3404,12 +3404,12 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
                 return false_0 as boolean;
             }
         }
-        menuactive = messageLastMenuActive as boolean;
+        menuactive = messageLastMenuActive != 0;
         messageToPrint = 0 as ::core::ffi::c_int;
         if messageRoutine.is_some() {
             messageRoutine.expect("non-null function pointer")(key);
         }
-        menuactive = false_0 as boolean;
+        menuactive = false;
         S_StartSound(NULL, sfx_swtchx as ::core::ffi::c_int);
         return true_0 as boolean;
     }
@@ -3419,7 +3419,7 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
         G_ScreenShot();
         return true_0 as boolean;
     }
-    if menuactive == 0 {
+    if !menuactive {
         if key == key_menu_decscreen {
             if automapactive != 0 || chat_on {
                 return false_0 as boolean;
@@ -3501,7 +3501,7 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
             return true_0 as boolean;
         }
     }
-    if menuactive == 0 {
+    if !menuactive {
         if key == key_menu_activate {
             M_StartControlPanel();
             S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
@@ -3626,10 +3626,10 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_StartControlPanel() {
-    if menuactive != 0 {
+    if menuactive {
         return;
     }
-    menuactive = 1 as boolean;
+    menuactive = true;
     currentMenu = &raw mut MainDef;
     itemOn = (*currentMenu).lastOn;
 }
@@ -3657,7 +3657,7 @@ pub unsafe extern "C" fn M_Drawer() {
         }
         return;
     }
-    if menuactive == 0 {
+    if !menuactive {
         return;
     }
     if (*currentMenu).routine.is_some() {
@@ -3696,7 +3696,7 @@ pub unsafe extern "C" fn M_Drawer() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ClearMenus() {
-    menuactive = 0 as boolean;
+    menuactive = false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SetupNextMenu(mut menudef: *mut menu_t) {
@@ -3715,7 +3715,7 @@ pub unsafe extern "C" fn M_Ticker() {
 #[no_mangle]
 pub unsafe extern "C" fn M_Init() {
     currentMenu = &raw mut MainDef;
-    menuactive = 0 as boolean;
+    menuactive = false;
     itemOn = (*currentMenu).lastOn;
     whichSkull = 0 as ::core::ffi::c_short;
     skullAnimCounter = 10 as ::core::ffi::c_short;

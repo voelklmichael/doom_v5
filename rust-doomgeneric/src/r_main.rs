@@ -1761,7 +1761,7 @@ pub unsafe extern "C" fn R_InitLightTables() {
     }
 }
 #[no_mangle]
-pub static mut setsizeneeded: boolean = 0;
+pub static mut setsizeneeded: bool = false;
 #[no_mangle]
 pub static mut setblocks: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -1771,7 +1771,7 @@ pub unsafe extern "C" fn R_SetViewSize(
     mut blocks: ::core::ffi::c_int,
     mut detail: ::core::ffi::c_int,
 ) {
-    setsizeneeded = true_0 as boolean;
+    setsizeneeded = true;
     setblocks = blocks;
     setdetail = detail;
 }
@@ -1783,7 +1783,7 @@ pub unsafe extern "C" fn R_ExecuteSetViewSize() {
     let mut j: ::core::ffi::c_int = 0;
     let mut level: ::core::ffi::c_int = 0;
     let mut startmap: ::core::ffi::c_int = 0;
-    setsizeneeded = false_0 as boolean;
+    setsizeneeded = false;
     if setblocks == 11 as ::core::ffi::c_int {
         scaledviewwidth = SCREENWIDTH;
         viewheight = SCREENHEIGHT;

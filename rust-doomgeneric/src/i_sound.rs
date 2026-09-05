@@ -1,7 +1,7 @@
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_config::M_BindVariable;
 extern "C" {
-    static mut screensaver_mode: boolean;
+    static mut screensaver_mode: bool;
 }
 pub type boolean = ::core::ffi::c_uint;
 use crate::src::sounds::sfxinfo_t;
@@ -152,7 +152,7 @@ pub unsafe extern "C" fn I_InitSound(mut use_sfx_prefix: boolean) {
         as boolean;
     nomusic = (M_CheckParm("-nomusic") > 0 as ::core::ffi::c_int) as ::core::ffi::c_int
         as boolean;
-    if nosound == 0 && screensaver_mode == 0 {
+    if nosound == 0 && !screensaver_mode {
         nomusic == 0
             && (snd_musicdevice == SNDDEVICE_GENMIDI as ::core::ffi::c_int
                 || snd_musicdevice == SNDDEVICE_GUS as ::core::ffi::c_int);

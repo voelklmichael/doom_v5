@@ -80,7 +80,7 @@ extern "C" {
     static mut dc_source: *mut byte;
     static mut translationtables: *mut byte;
     static mut dc_translation: *mut byte;
-    static mut modifiedgame: boolean;
+    static mut modifiedgame: bool;
     static mut viewangleoffset: ::core::ffi::c_int;
 }
 pub type size_t = usize;
@@ -1593,7 +1593,7 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
                 rotation = (*lumpinfo.offset(l as isize))
                     .name[5 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
                     - '0' as i32;
-                if modifiedgame != 0 {
+                if modifiedgame {
                     patched = W_GetNumForName(
                         &wad_name8_to_string(
                             &raw const (*lumpinfo.offset(l as isize)).name

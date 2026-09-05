@@ -24,7 +24,7 @@ extern "C" {
         callback: netgame_startup_callback_t,
     );
     static mut nomonsters: boolean;
-    static mut respawnparm: boolean;
+    static mut respawnparm: bool;
     static mut fastparm: boolean;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
@@ -40,7 +40,7 @@ extern "C" {
     static mut viewangleoffset: ::core::ffi::c_int;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut demoplayback: boolean;
-    static mut demorecording: boolean;
+    static mut demorecording: bool;
     static mut lowres_turn: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
@@ -1388,7 +1388,7 @@ unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
     playeringame[player_num as usize] = false_0 as boolean;
     players[consoleplayer as usize].message = &raw mut exitmsg
         as *mut ::core::ffi::c_char;
-    if demorecording != 0 {
+    if demorecording {
         G_CheckDemoStatus();
     }
 }
@@ -1435,7 +1435,7 @@ unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
     lowres_turn = (*settings).lowres_turn != 0;
     nomonsters = (*settings).nomonsters as boolean;
     fastparm = (*settings).fast_monsters as boolean;
-    respawnparm = (*settings).respawn_monsters as boolean;
+    respawnparm = (*settings).respawn_monsters != 0;
     timelimit = (*settings).timelimit;
     consoleplayer = (*settings).consoleplayer;
     if lowres_turn {
