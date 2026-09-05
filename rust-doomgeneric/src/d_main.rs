@@ -59,7 +59,7 @@ extern "C" {
     static mut automapactive: boolean;
     static mut menuactive: bool;
     static mut paused: bool;
-    static mut viewactive: boolean;
+    static mut viewactive: bool;
     static mut nodrawers: bool;
     static mut testcontrols: bool;
     static mut testcontrols_mousespeed: ::core::ffi::c_int;
@@ -1697,11 +1697,11 @@ pub static mut iwadfile: *mut ::core::ffi::c_char = ::core::ptr::null::<
 #[no_mangle]
 pub static mut devparm: bool = false;
 #[no_mangle]
-pub static mut nomonsters: boolean = 0;
+pub static mut nomonsters: bool = false;
 #[no_mangle]
 pub static mut respawnparm: bool = false;
 #[no_mangle]
-pub static mut fastparm: boolean = 0;
+pub static mut fastparm: bool = false;
 #[no_mangle]
 pub static mut startskill: skill_t = sk_baby;
 #[no_mangle]
@@ -1867,7 +1867,7 @@ pub unsafe extern "C" fn D_Display() {
         V_DrawMouseSpeedBox(testcontrols_mousespeed);
     }
     menuactivestate = menuactive;
-    viewactivestate = viewactive != 0;
+    viewactivestate = viewactive;
     inhelpscreensstate = inhelpscreens;
     wipegamestate = gamestate;
     oldgamestate = wipegamestate;
@@ -2723,9 +2723,9 @@ pub unsafe extern "C" fn D_DoomMain() {
             as *const ::core::ffi::c_char,
     );
     Z_Init();
-    nomonsters = M_CheckParm("-nomonsters") as boolean;
+    nomonsters = M_CheckParm("-nomonsters") != 0;
     respawnparm = M_CheckParm("-respawn") != 0;
-    fastparm = M_CheckParm("-fast") as boolean;
+    fastparm = M_CheckParm("-fast") != 0;
     devparm = M_CheckParm("-devparm") != 0;
     I_DisplayFPSDots(devparm);
     if M_CheckParm("-deathmatch") != 0 {

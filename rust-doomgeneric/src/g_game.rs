@@ -45,9 +45,9 @@ extern "C" {
     static finetangent: [fixed_t; 4096];
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
-    static mut nomonsters: boolean;
+    static mut nomonsters: bool;
     static mut respawnparm: bool;
-    static mut fastparm: boolean;
+    static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
@@ -1753,7 +1753,7 @@ pub static mut nodrawers: bool = false;
 #[no_mangle]
 pub static mut starttime: ::core::ffi::c_int = 0;
 #[no_mangle]
-pub static mut viewactive: boolean = 0;
+pub static mut viewactive: bool = false;
 #[no_mangle]
 pub static mut deathmatch: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -3210,7 +3210,7 @@ pub unsafe extern "C" fn G_DoCompleted() {
         i += 1;
     }
     gamestate = GS_INTERMISSION;
-    viewactive = false_0 as boolean;
+    viewactive = false;
     automapactive = false_0 as boolean;
     StatCopy(&raw mut wminfo);
     WI_Start(&raw mut wminfo);
@@ -3254,7 +3254,7 @@ pub unsafe extern "C" fn G_DoWorldDone() {
     gamemap = wminfo.next + 1 as ::core::ffi::c_int;
     G_DoLoadLevel();
     gameaction = ga_nothing;
-    viewactive = true_0 as boolean;
+    viewactive = true;
 }
 #[no_mangle]
 pub static mut savename: [::core::ffi::c_char; 256] = [0; 256];
@@ -3408,8 +3408,8 @@ pub unsafe extern "C" fn G_DoNewGame() {
     playeringame[1 as ::core::ffi::c_int as usize] = playeringame[2 as ::core::ffi::c_int
         as usize];
     respawnparm = false;
-    fastparm = false_0 as boolean;
-    nomonsters = false_0 as boolean;
+    fastparm = false;
+    nomonsters = false;
     consoleplayer = 0 as ::core::ffi::c_int;
     G_InitNew(d_skill, d_episode, d_map);
     gameaction = ga_nothing;
@@ -3468,7 +3468,7 @@ pub unsafe extern "C" fn G_InitNew(
     } else {
         respawnmonsters = false;
     }
-    if fastparm != 0
+    if fastparm
         || skill as ::core::ffi::c_int == sk_nightmare as ::core::ffi::c_int
             && gameskill as ::core::ffi::c_int != sk_nightmare as ::core::ffi::c_int
     {
@@ -3507,11 +3507,11 @@ pub unsafe extern "C" fn G_InitNew(
     paused = false;
     demoplayback = false_0 as boolean;
     automapactive = false_0 as boolean;
-    viewactive = true_0 as boolean;
+    viewactive = true;
     gameepisode = episode;
     gamemap = map;
     gameskill = skill;
-    viewactive = true_0 as boolean;
+    viewactive = true;
     if gamemode as ::core::ffi::c_uint
         == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
     {
@@ -3839,10 +3839,10 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     respawnparm = *fresh29 != 0;
     let fresh30 = demo_p;
     demo_p = demo_p.offset(1);
-    fastparm = *fresh30 as boolean;
+    fastparm = *fresh30 != 0;
     let fresh31 = demo_p;
     demo_p = demo_p.offset(1);
-    nomonsters = *fresh31 as boolean;
+    nomonsters = *fresh31 != 0;
     let fresh32 = demo_p;
     demo_p = demo_p.offset(1);
     consoleplayer = *fresh32 as ::core::ffi::c_int;
@@ -3906,8 +3906,8 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         playeringame[1 as ::core::ffi::c_int as usize] = playeringame[2
             as ::core::ffi::c_int as usize];
         respawnparm = false;
-        fastparm = false_0 as boolean;
-        nomonsters = false_0 as boolean;
+        fastparm = false;
+        nomonsters = false;
         consoleplayer = 0 as ::core::ffi::c_int;
         if singledemo {
             I_Quit();

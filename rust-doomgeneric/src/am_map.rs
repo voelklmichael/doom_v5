@@ -71,7 +71,7 @@ extern "C" {
     static mut gamemap: ::core::ffi::c_int;
     static mut netgame: boolean;
     static mut deathmatch: ::core::ffi::c_int;
-    static mut viewactive: boolean;
+    static mut viewactive: bool;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut singledemo: bool;
     static mut players: [player_t; 4];
@@ -2122,7 +2122,7 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
             && (*ev).data1 == key_map_toggle
         {
             AM_Start();
-            viewactive = false_0 as boolean;
+            viewactive = false;
             rc = true_0;
         }
     } else if (*ev).type_0 as ::core::ffi::c_uint
@@ -2174,7 +2174,7 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
             ftom_zoommul = M_ZOOMOUT as fixed_t;
         } else if key == key_map_toggle {
             bigstate = 0 as ::core::ffi::c_int;
-            viewactive = true_0 as boolean;
+            viewactive = true;
             AM_Stop();
         } else if key == key_map_maxzoom {
             bigstate = (bigstate == 0) as ::core::ffi::c_int;

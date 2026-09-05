@@ -40,7 +40,7 @@ extern "C" {
     fn HU_Start();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
     fn S_StopSound(origin: *mut mobj_t);
-    static mut nomonsters: boolean;
+    static mut nomonsters: bool;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
     static mut respawnmonsters: bool;
@@ -2327,7 +2327,7 @@ pub unsafe extern "C" fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     {
         return;
     }
-    if nomonsters != 0
+    if nomonsters
         && (i == MT_SKULL as ::core::ffi::c_int
             || mobjinfo[i as usize].flags & MF_COUNTKILL as ::core::ffi::c_int != 0)
     {
