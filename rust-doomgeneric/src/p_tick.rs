@@ -10,7 +10,7 @@ extern "C" {
     static mut menuactive: bool;
     static mut paused: bool;
     static mut consoleplayer: ::core::ffi::c_int;
-    static mut demoplayback: boolean;
+    static mut demoplayback: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
 }
@@ -1347,7 +1347,7 @@ pub unsafe extern "C" fn P_Ticker() {
     if paused {
         return;
     }
-    if netgame == 0 && menuactive && demoplayback == 0
+    if netgame == 0 && menuactive && !demoplayback
         && players[consoleplayer as usize].viewz != 1 as ::core::ffi::c_int
     {
         return;

@@ -39,7 +39,7 @@ extern "C" {
     static mut deathmatch: ::core::ffi::c_int;
     static mut viewangleoffset: ::core::ffi::c_int;
     static mut consoleplayer: ::core::ffi::c_int;
-    static mut demoplayback: boolean;
+    static mut demoplayback: bool;
     static mut demorecording: bool;
     static mut lowres_turn: bool;
     static mut players: [player_t; 4];
@@ -1399,7 +1399,7 @@ unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
     let mut i: ::core::ffi::c_uint = 0;
     i = 0 as ::core::ffi::c_uint;
     while i < MAXPLAYERS as ::core::ffi::c_uint {
-        if demoplayback == 0 && playeringame[i as usize] != 0
+        if !demoplayback && playeringame[i as usize] != 0
             && *ingame.offset(i as isize) == 0
         {
             PlayerQuitGame(

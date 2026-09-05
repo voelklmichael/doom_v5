@@ -66,7 +66,7 @@ extern "C" {
     static mut consoleplayer: ::core::ffi::c_int;
     static mut displayplayer: ::core::ffi::c_int;
     static mut usergame: bool;
-    static mut demoplayback: boolean;
+    static mut demoplayback: bool;
     static mut demorecording: bool;
     static mut singledemo: bool;
     static mut gamestate: gamestate_t;
@@ -1999,7 +1999,7 @@ pub unsafe extern "C" fn D_GrabMouseCallback() -> boolean {
         return false_0 as boolean;
     }
     return (gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && demoplayback == 0
+        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && !demoplayback
         && !advancedemo) as ::core::ffi::c_int as boolean;
 }
 #[no_mangle]

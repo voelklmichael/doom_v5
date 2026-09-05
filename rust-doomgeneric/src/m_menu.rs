@@ -103,7 +103,7 @@ extern "C" {
     static mut testcontrols: bool;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut usergame: bool;
-    static mut demoplayback: boolean;
+    static mut demoplayback: bool;
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     static mut hu_font: [*mut patch_t; 63];
@@ -2732,7 +2732,7 @@ pub unsafe extern "C" fn M_DrawNewGame() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_NewGame(mut choice: ::core::ffi::c_int) {
-    if netgame != 0 && demoplayback == 0 {
+    if netgame != 0 && !demoplayback {
         M_StartMessage(
             "you can't start a new game\nwhile in a network game.\n\npress a key.",
             NULL,

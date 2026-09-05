@@ -1839,7 +1839,7 @@ pub static mut longtics: bool = false;
 #[no_mangle]
 pub static mut lowres_turn: bool = false;
 #[no_mangle]
-pub static mut demoplayback: boolean = 0;
+pub static mut demoplayback: bool = false;
 #[no_mangle]
 pub static mut netdemo: bool = false;
 #[no_mangle]
@@ -2475,7 +2475,7 @@ pub unsafe extern "C" fn G_Responder(mut ev: *mut event_t) -> boolean {
     }
     if gameaction as ::core::ffi::c_uint
         == ga_nothing as ::core::ffi::c_int as ::core::ffi::c_uint && !singledemo
-        && (demoplayback != 0
+        && (demoplayback
             || gamestate as ::core::ffi::c_uint
                 == GS_DEMOSCREEN as ::core::ffi::c_int as ::core::ffi::c_uint)
     {
@@ -2630,7 +2630,7 @@ pub unsafe extern "C" fn G_Ticker() {
                     as *const ::core::ffi::c_void,
                 ::core::mem::size_of::<ticcmd_t>() as size_t,
             );
-            if demoplayback != 0 {
+            if demoplayback {
                 G_ReadDemoTiccmd(cmd);
             }
             if demorecording {
@@ -3398,7 +3398,7 @@ pub unsafe extern "C" fn G_DeferedInitNew(
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_DoNewGame() {
-    demoplayback = false_0 as boolean;
+    demoplayback = false;
     netdemo = false;
     netgame = false_0 as boolean;
     deathmatch = false_0;
@@ -3505,7 +3505,7 @@ pub unsafe extern "C" fn G_InitNew(
     }
     usergame = true;
     paused = false;
-    demoplayback = false_0 as boolean;
+    demoplayback = false;
     automapactive = false_0 as boolean;
     viewactive = true;
     gameepisode = episode;
@@ -3865,7 +3865,7 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
     precache = true;
     starttime = I_GetTime();
     usergame = false;
-    demoplayback = true_0 as boolean;
+    demoplayback = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
@@ -3886,7 +3886,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         fps = gametic as ::core::ffi::c_float * TICRATE as ::core::ffi::c_float
             / realtics as ::core::ffi::c_float;
         timingdemo = false;
-        demoplayback = false_0 as boolean;
+        demoplayback = false;
         I_Error(&format!(
             "timed {} gametics in {} realtics ({:.6} fps)",
             gametic,
@@ -3894,9 +3894,9 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
             fps as ::core::ffi::c_double,
         ));
     }
-    if demoplayback != 0 {
+    if demoplayback {
         W_ReleaseLumpName(&wad_name8_to_string(defdemoname));
-        demoplayback = false_0 as boolean;
+        demoplayback = false;
         netdemo = false;
         netgame = false_0 as boolean;
         deathmatch = false_0;
