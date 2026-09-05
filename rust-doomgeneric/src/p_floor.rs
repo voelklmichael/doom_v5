@@ -1,3 +1,4 @@
+use crate::src::p_spec::{floormove_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 extern "C" {
     fn Z_Malloc(
@@ -1347,19 +1348,6 @@ pub const lowerFloor: floor_e = 0;
 pub type stair_e = ::core::ffi::c_uint;
 pub const turbo16: stair_e = 1;
 pub const build8: stair_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct floormove_t {
-    pub thinker: thinker_t,
-    pub type_0: floor_e,
-    pub crush: boolean,
-    pub sector: *mut sector_t,
-    pub direction: ::core::ffi::c_int,
-    pub newspecial: ::core::ffi::c_int,
-    pub texture: ::core::ffi::c_short,
-    pub floordestheight: fixed_t,
-    pub speed: fixed_t,
-}
 pub type result_e = ::core::ffi::c_uint;
 pub const pastdest: result_e = 2;
 pub const crushed: result_e = 1;

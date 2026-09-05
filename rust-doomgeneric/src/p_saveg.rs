@@ -1,3 +1,6 @@
+use crate::src::p_spec::{plat_t, ceiling_t, floormove_t};
+use crate::src::p_lights::{lightflash_t, strobe_t, glow_t};
+use crate::src::p_doors::{vldoor_t};
 use crate::src::p_mobj::{thinker_s, thinker_t, mapthing_t, state_t, mobjinfo_t, subsector_s, sector_t, line_t, actionf_t};
 use crate::src::d_player::{player_s, player_t, playerstate_t};
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
@@ -1453,37 +1456,6 @@ pub type C2RustUnnamed_3 = ::core::ffi::c_uint;
 pub const NUMPSPRITES: C2RustUnnamed_3 = 2;
 pub const ps_flash: C2RustUnnamed_3 = 1;
 pub const ps_weapon: C2RustUnnamed_3 = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lightflash_t {
-    pub thinker: thinker_t,
-    pub sector: *mut sector_t,
-    pub count: ::core::ffi::c_int,
-    pub maxlight: ::core::ffi::c_int,
-    pub minlight: ::core::ffi::c_int,
-    pub maxtime: ::core::ffi::c_int,
-    pub mintime: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct strobe_t {
-    pub thinker: thinker_t,
-    pub sector: *mut sector_t,
-    pub count: ::core::ffi::c_int,
-    pub minlight: ::core::ffi::c_int,
-    pub maxlight: ::core::ffi::c_int,
-    pub darktime: ::core::ffi::c_int,
-    pub brighttime: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct glow_t {
-    pub thinker: thinker_t,
-    pub sector: *mut sector_t,
-    pub minlight: ::core::ffi::c_int,
-    pub maxlight: ::core::ffi::c_int,
-    pub direction: ::core::ffi::c_int,
-}
 pub type plat_e = ::core::ffi::c_uint;
 pub const in_stasis: plat_e = 3;
 pub const waiting: plat_e = 2;
@@ -1495,22 +1467,6 @@ pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct plat_t {
-    pub thinker: thinker_t,
-    pub sector: *mut sector_t,
-    pub speed: fixed_t,
-    pub low: fixed_t,
-    pub high: fixed_t,
-    pub wait: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
-    pub status: plat_e,
-    pub oldstatus: plat_e,
-    pub crush: boolean,
-    pub tag: ::core::ffi::c_int,
-    pub type_0: plattype_e,
-}
 pub type vldoor_e = ::core::ffi::c_uint;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
@@ -1520,18 +1476,6 @@ pub const vld_open: vldoor_e = 3;
 pub const vld_close: vldoor_e = 2;
 pub const vld_close30ThenOpen: vldoor_e = 1;
 pub const vld_normal: vldoor_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vldoor_t {
-    pub thinker: thinker_t,
-    pub type_0: vldoor_e,
-    pub sector: *mut sector_t,
-    pub topheight: fixed_t,
-    pub speed: fixed_t,
-    pub direction: ::core::ffi::c_int,
-    pub topwait: ::core::ffi::c_int,
-    pub topcountdown: ::core::ffi::c_int,
-}
 pub type ceiling_e = ::core::ffi::c_uint;
 pub const silentCrushAndRaise: ceiling_e = 5;
 pub const fastCrushAndRaise: ceiling_e = 4;
@@ -1539,20 +1483,6 @@ pub const crushAndRaise: ceiling_e = 3;
 pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ceiling_t {
-    pub thinker: thinker_t,
-    pub type_0: ceiling_e,
-    pub sector: *mut sector_t,
-    pub bottomheight: fixed_t,
-    pub topheight: fixed_t,
-    pub speed: fixed_t,
-    pub crush: boolean,
-    pub direction: ::core::ffi::c_int,
-    pub tag: ::core::ffi::c_int,
-    pub olddirection: ::core::ffi::c_int,
-}
 pub type floor_e = ::core::ffi::c_uint;
 pub const raiseFloor512: floor_e = 12;
 pub const donutRaise: floor_e = 11;
@@ -1567,19 +1497,6 @@ pub const raiseFloor: floor_e = 3;
 pub const turboLower: floor_e = 2;
 pub const lowerFloorToLowest: floor_e = 1;
 pub const lowerFloor: floor_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct floormove_t {
-    pub thinker: thinker_t,
-    pub type_0: floor_e,
-    pub crush: boolean,
-    pub sector: *mut sector_t,
-    pub direction: ::core::ffi::c_int,
-    pub newspecial: ::core::ffi::c_int,
-    pub texture: ::core::ffi::c_short,
-    pub floordestheight: fixed_t,
-    pub speed: fixed_t,
-}
 pub const tc_end: C2RustUnnamed_4 = 0;
 pub const tc_mobj: C2RustUnnamed_4 = 1;
 pub const tc_endspecials: C2RustUnnamed_5 = 7;
