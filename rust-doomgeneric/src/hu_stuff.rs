@@ -1,4 +1,10 @@
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::hu_lib::{
+    hu_itext_t, hu_stext_t, hu_textline_t, patch_t, HUlib_addCharToTextLine,
+    HUlib_addMessageToSText, HUlib_drawIText, HUlib_drawSText, HUlib_drawTextLine,
+    HUlib_eraseIText, HUlib_eraseSText, HUlib_eraseTextLine, HUlib_initIText, HUlib_initSText,
+    HUlib_initTextLine, HUlib_keyInIText, HUlib_resetIText,
+};
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -6,47 +12,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> ::core::ffi::c_int;
-    fn HUlib_initTextLine(
-        t: *mut hu_textline_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        f: *mut *mut patch_t,
-        sc: ::core::ffi::c_int,
-    );
-    fn HUlib_addCharToTextLine(
-        t: *mut hu_textline_t,
-        ch: ::core::ffi::c_char,
-    ) -> boolean;
-    fn HUlib_drawTextLine(l: *mut hu_textline_t, drawcursor: boolean);
-    fn HUlib_eraseTextLine(l: *mut hu_textline_t);
-    fn HUlib_initSText(
-        s: *mut hu_stext_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        h: ::core::ffi::c_int,
-        font: *mut *mut patch_t,
-        startchar: ::core::ffi::c_int,
-        on: *mut boolean,
-    );
-    fn HUlib_addMessageToSText(
-        s: *mut hu_stext_t,
-        prefix: *mut ::core::ffi::c_char,
-        msg: *mut ::core::ffi::c_char,
-    );
-    fn HUlib_drawSText(s: *mut hu_stext_t);
-    fn HUlib_eraseSText(s: *mut hu_stext_t);
-    fn HUlib_initIText(
-        it: *mut hu_itext_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        font: *mut *mut patch_t,
-        startchar: ::core::ffi::c_int,
-        on: *mut boolean,
-    );
-    fn HUlib_resetIText(it: *mut hu_itext_t);
-    fn HUlib_keyInIText(it: *mut hu_itext_t, ch: ::core::ffi::c_uchar) -> boolean;
-    fn HUlib_drawIText(it: *mut hu_itext_t);
-    fn HUlib_eraseIText(it: *mut hu_itext_t);
     static mut key_message_refresh: ::core::ffi::c_int;
     static mut key_multi_msg: ::core::ffi::c_int;
     static mut key_multi_msgplayer: [::core::ffi::c_int; 8];
@@ -141,43 +106,6 @@ pub struct event_t {
     pub data2: ::core::ffi::c_int,
     pub data3: ::core::ffi::c_int,
     pub data4: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct hu_itext_t {
-    pub l: hu_textline_t,
-    pub lm: ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub laston: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct hu_textline_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub f: *mut *mut patch_t,
-    pub sc: ::core::ffi::c_int,
-    pub l: [::core::ffi::c_char; 81],
-    pub len: ::core::ffi::c_int,
-    pub needsupdate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct hu_stext_t {
-    pub l: [hu_textline_t; 4],
-    pub h: ::core::ffi::c_int,
-    pub cl: ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub laston: boolean,
 }
 pub type player_t = player_s;
 #[derive(Copy, Clone)]
@@ -2593,8 +2521,7 @@ static mut w_title: hu_textline_t = hu_textline_t {
     y: 0,
     f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     sc: 0,
-    l: [0; 81],
-    len: 0,
+    l: String::new(),
     needsupdate: 0,
 };
 #[no_mangle]
@@ -2605,8 +2532,7 @@ static mut w_chat: hu_itext_t = hu_itext_t {
         y: 0,
         f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
         sc: 0,
-        l: [0; 81],
-        len: 0,
+        l: String::new(),
         needsupdate: 0,
     },
     lm: 0,
@@ -2615,34 +2541,48 @@ static mut w_chat: hu_itext_t = hu_itext_t {
 };
 static mut always_off: boolean = false_0 as boolean;
 static mut chat_dest: [::core::ffi::c_char; 4] = [0; 4];
-static mut w_inputbuffer: [hu_itext_t; 4] = [hu_itext_t {
-    l: hu_textline_t {
-        x: 0,
-        y: 0,
-        f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
-        sc: 0,
-        l: [0; 81],
-        len: 0,
-        needsupdate: 0,
-    },
-    lm: 0,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
-    laston: 0,
-}; 4];
+const fn new_hu_itext_t() -> hu_itext_t {
+    hu_itext_t {
+        l: hu_textline_t {
+            x: 0,
+            y: 0,
+            f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
+            sc: 0,
+            l: String::new(),
+            needsupdate: 0,
+        },
+        lm: 0,
+        on: ::core::ptr::null::<boolean>() as *mut boolean,
+        laston: 0,
+    }
+}
+static mut w_inputbuffer: [hu_itext_t; 4] = [
+    new_hu_itext_t(),
+    new_hu_itext_t(),
+    new_hu_itext_t(),
+    new_hu_itext_t(),
+];
 static mut message_on: boolean = 0;
 #[no_mangle]
 pub static mut message_dontfuckwithme: boolean = 0;
 static mut message_nottobefuckedwith: boolean = 0;
-static mut w_message: hu_stext_t = hu_stext_t {
-    l: [hu_textline_t {
+const fn new_hu_textline_t() -> hu_textline_t {
+    hu_textline_t {
         x: 0,
         y: 0,
         f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
         sc: 0,
-        l: [0; 81],
-        len: 0,
+        l: String::new(),
         needsupdate: 0,
-    }; 4],
+    }
+}
+static mut w_message: hu_stext_t = hu_stext_t {
+    l: [
+        new_hu_textline_t(),
+        new_hu_textline_t(),
+        new_hu_textline_t(),
+        new_hu_textline_t(),
+    ],
     h: 0,
     cl: 0,
     on: ::core::ptr::null::<boolean>() as *mut boolean,
@@ -2957,7 +2897,7 @@ pub unsafe extern "C" fn HU_Ticker() {
             HUlib_addMessageToSText(
                 &raw mut w_message,
                 ::core::ptr::null_mut::<::core::ffi::c_char>(),
-                (*plr).message,
+                ::std::ffi::CStr::from_ptr((*plr).message).to_str().unwrap(),
             );
             (*plr).message = ::core::ptr::null_mut::<::core::ffi::c_char>();
             message_on = true_0 as boolean;
@@ -2985,7 +2925,7 @@ pub unsafe extern "C" fn HU_Ticker() {
                             c as ::core::ffi::c_uchar,
                         ) as ::core::ffi::c_int;
                         if rc != 0 && c as ::core::ffi::c_int == KEY_ENTER {
-                            if w_inputbuffer[i as usize].l.len != 0
+                            if !w_inputbuffer[i as usize].l.l.is_empty()
                                 && (chat_dest[i as usize] as ::core::ffi::c_int
                                     == consoleplayer + 1 as ::core::ffi::c_int
                                     || chat_dest[i as usize] as ::core::ffi::c_int
@@ -2994,10 +2934,7 @@ pub unsafe extern "C" fn HU_Ticker() {
                                 HUlib_addMessageToSText(
                                     &raw mut w_message,
                                     player_names[i as usize],
-                                    &raw mut (*(&raw mut w_inputbuffer as *mut hu_itext_t)
-                                        .offset(i as isize))
-                                        .l
-                                        .l as *mut ::core::ffi::c_char,
+                                    &w_inputbuffer[i as usize].l.l,
                                 );
                                 message_nottobefuckedwith = true_0 as boolean;
                                 message_on = true_0 as boolean;
@@ -3160,10 +3097,11 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
         }
         if c as ::core::ffi::c_int == KEY_ENTER {
             chat_on = false_0 as boolean;
-            if w_chat.l.len != 0 {
+            if !w_chat.l.l.is_empty() {
+                let w_chat_l_cstring = ::std::ffi::CString::new(w_chat.l.l.as_str()).unwrap();
                 M_StringCopy(
                     &raw mut lastmessage as *mut ::core::ffi::c_char,
-                    &raw mut w_chat.l.l as *mut ::core::ffi::c_char,
+                    w_chat_l_cstring.as_ptr(),
                     ::core::mem::size_of::<[::core::ffi::c_char; 81]>() as size_t,
                 );
                 (*plr).message = &raw mut lastmessage as *mut ::core::ffi::c_char;
