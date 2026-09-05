@@ -100,7 +100,7 @@ extern "C" {
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut deathmatch: ::core::ffi::c_int;
     static mut automapactive: bool;
     static mut consoleplayer: ::core::ffi::c_int;
@@ -1877,7 +1877,7 @@ pub unsafe extern "C" fn ST_refreshBackground() {
     if st_statusbaron {
         V_UseBuffer(st_backing_screen);
         V_DrawPatch(ST_X, 0 as ::core::ffi::c_int, sbar);
-        if netgame != 0 {
+        if netgame {
             V_DrawPatch(ST_FX, 0 as ::core::ffi::c_int, faceback);
         }
         V_RestoreBuffer();
@@ -1913,7 +1913,7 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
     } else if (*ev).type_0 as ::core::ffi::c_uint
         == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
     {
-        if netgame == 0
+        if !netgame
             && gameskill as ::core::ffi::c_int != sk_nightmare as ::core::ffi::c_int
         {
             if cht_CheckCheat(&raw mut cheat_god, (*ev).data2 as ::core::ffi::c_char)
@@ -2124,7 +2124,7 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 (*plyr).message = &raw mut buf_0 as *mut ::core::ffi::c_char;
             }
         }
-        if netgame == 0
+        if !netgame
             && cht_CheckCheat(&raw mut cheat_clev, (*ev).data2 as ::core::ffi::c_char)
                 != 0
         {

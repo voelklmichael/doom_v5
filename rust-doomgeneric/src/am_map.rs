@@ -69,7 +69,7 @@ extern "C" {
     );
     static mut gameepisode: ::core::ffi::c_int;
     static mut gamemap: ::core::ffi::c_int;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut deathmatch: ::core::ffi::c_int;
     static mut viewactive: bool;
     static mut consoleplayer: ::core::ffi::c_int;
@@ -2732,7 +2732,7 @@ pub unsafe extern "C" fn AM_drawPlayers() {
     static mut their_colors: [::core::ffi::c_int; 4] = [GREENS, GRAYS, BROWNS, REDS];
     let mut their_color: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
     let mut color: ::core::ffi::c_int = 0;
-    if netgame == 0 {
+    if !netgame {
         if cheating != 0 {
             AM_drawLineCharacter(
                 &raw mut cheat_player_arrow as *mut mline_t,

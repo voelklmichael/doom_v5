@@ -44,7 +44,7 @@ extern "C" {
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
     static mut respawnmonsters: bool;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut deathmatch: ::core::ffi::c_int;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut totalkills: ::core::ffi::c_int;
@@ -2291,7 +2291,7 @@ pub unsafe extern "C" fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
         }
         return;
     }
-    if netgame == 0
+    if !netgame
         && (*mthing).options as ::core::ffi::c_int & 16 as ::core::ffi::c_int != 0
     {
         return;

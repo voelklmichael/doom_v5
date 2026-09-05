@@ -1757,7 +1757,7 @@ pub static mut viewactive: bool = false;
 #[no_mangle]
 pub static mut deathmatch: ::core::ffi::c_int = 0;
 #[no_mangle]
-pub static mut netgame: boolean = 0;
+pub static mut netgame: bool = false;
 #[no_mangle]
 pub static mut playeringame: [boolean; 4] = [0; 4];
 #[no_mangle]
@@ -2657,7 +2657,7 @@ pub unsafe extern "C" fn G_Ticker() {
                     as *mut ::core::ffi::c_char;
                 turbodetected[i as usize] = false_0 as boolean;
             }
-            if netgame != 0 && !netdemo && gametic % ticdup == 0 {
+            if netgame && !netdemo && gametic % ticdup == 0 {
                 if gametic > BACKUPTICS
                     && consistancy[i as usize][buf as usize] as ::core::ffi::c_int
                         != (*cmd).consistancy as ::core::ffi::c_int
@@ -2928,7 +2928,7 @@ pub unsafe extern "C" fn G_DeathMatchSpawnPlayer(mut playernum: ::core::ffi::c_i
 #[no_mangle]
 pub unsafe extern "C" fn G_DoReborn(mut playernum: ::core::ffi::c_int) {
     let mut i: ::core::ffi::c_int = 0;
-    if netgame == 0 {
+    if !netgame {
         gameaction = ga_loadlevel;
     } else {
         (*players[playernum as usize].mo).player = ::core::ptr::null_mut::<player_s>();
@@ -3400,7 +3400,7 @@ pub unsafe extern "C" fn G_DeferedInitNew(
 pub unsafe extern "C" fn G_DoNewGame() {
     demoplayback = false;
     netdemo = false;
-    netgame = false_0 as boolean;
+    netgame = false;
     deathmatch = false_0;
     playeringame[3 as ::core::ffi::c_int as usize] = 0 as boolean;
     playeringame[2 as ::core::ffi::c_int as usize] = playeringame[3 as ::core::ffi::c_int
@@ -3857,7 +3857,7 @@ pub unsafe extern "C" fn G_DoPlayDemo() {
         || M_CheckParm("-solo-net") > 0 as ::core::ffi::c_int
         || M_CheckParm("-netdemo") > 0 as ::core::ffi::c_int
     {
-        netgame = true_0 as boolean;
+        netgame = true;
         netdemo = true;
     }
     precache = false;
@@ -3898,7 +3898,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         W_ReleaseLumpName(&wad_name8_to_string(defdemoname));
         demoplayback = false;
         netdemo = false;
-        netgame = false_0 as boolean;
+        netgame = false;
         deathmatch = false_0;
         playeringame[3 as ::core::ffi::c_int as usize] = 0 as boolean;
         playeringame[2 as ::core::ffi::c_int as usize] = playeringame[3

@@ -28,7 +28,7 @@ extern "C" {
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
     fn S_ChangeMusic(music_id: ::core::ffi::c_int, looping: ::core::ffi::c_int);
     static mut gamemode: GameMode_t;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut deathmatch: ::core::ffi::c_int;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
@@ -3443,7 +3443,7 @@ pub unsafe extern "C" fn WI_Ticker() {
         0 => {
             if deathmatch != 0 {
                 WI_updateDeathmatchStats();
-            } else if netgame != 0 {
+            } else if netgame {
                 WI_updateNetgameStats();
             } else {
                 WI_updateStats();
@@ -3642,7 +3642,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
     if W_CheckNumForName("WIOBJ",
     ) >= 0 as ::core::ffi::c_int
     {
-        if netgame != 0 && deathmatch == 0 {
+        if netgame && deathmatch == 0 {
             callback
                 .expect(
                     "non-null function pointer",
@@ -3853,7 +3853,7 @@ pub unsafe extern "C" fn WI_Drawer() {
         0 => {
             if deathmatch != 0 {
                 WI_drawDeathmatchStats();
-            } else if netgame != 0 {
+            } else if netgame {
                 WI_drawNetgameStats();
             } else {
                 WI_drawStats();
@@ -3900,7 +3900,7 @@ pub unsafe extern "C" fn WI_Start(mut wbstartstruct: *mut wbstartstruct_t) {
     WI_loadData();
     if deathmatch != 0 {
         WI_initDeathmatchStats();
-    } else if netgame != 0 {
+    } else if netgame {
         WI_initNetgameStats();
     } else {
         WI_initStats();

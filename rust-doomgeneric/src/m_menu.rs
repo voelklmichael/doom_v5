@@ -96,7 +96,7 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut sfxVolume: ::core::ffi::c_int;
     static mut musicVolume: ::core::ffi::c_int;
     static mut automapactive: bool;
@@ -2406,7 +2406,7 @@ pub unsafe extern "C" fn M_LoadSelect(mut choice: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_LoadGame(mut choice: ::core::ffi::c_int) {
-    if netgame != 0 {
+    if netgame {
         M_StartMessage(
             "you can't do load while in a net game!\n\npress a key.",
             NULL,
@@ -2545,7 +2545,7 @@ pub unsafe extern "C" fn M_QuickLoadResponse(mut key: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_QuickLoad() {
-    if netgame != 0 {
+    if netgame {
         M_StartMessage(
             "you can't quickload during a netgame!\n\npress a key.",
             NULL,
@@ -2732,7 +2732,7 @@ pub unsafe extern "C" fn M_DrawNewGame() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_NewGame(mut choice: ::core::ffi::c_int) {
-    if netgame != 0 && !demoplayback {
+    if netgame && !demoplayback {
         M_StartMessage(
             "you can't start a new game\nwhile in a network game.\n\npress a key.",
             NULL,
@@ -2894,7 +2894,7 @@ pub unsafe extern "C" fn M_EndGame(mut choice: ::core::ffi::c_int) {
         S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
         return;
     }
-    if netgame != 0 {
+    if netgame {
         M_StartMessage(
             "you can't end a netgame!\n\npress a key.",
             NULL,
@@ -2961,7 +2961,7 @@ pub unsafe extern "C" fn M_QuitResponse(mut key: ::core::ffi::c_int) {
     if key != key_menu_confirm {
         return;
     }
-    if netgame == 0 {
+    if !netgame {
         if gamemode as ::core::ffi::c_uint
             == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
         {

@@ -85,7 +85,7 @@ extern "C" {
     static mut gameskill: skill_t;
     static mut gameepisode: ::core::ffi::c_int;
     static mut gamemap: ::core::ffi::c_int;
-    static mut netgame: boolean;
+    static mut netgame: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
     fn A_ReFire(player: *mut player_t, psp: *mut pspdef_t);
@@ -2170,7 +2170,7 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
             }
         }
     }
-    if netgame != 0 && (*actor).threshold == 0
+    if netgame && (*actor).threshold == 0
         && P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0
     {
         if P_LookForPlayers(actor, true_0 as boolean) != 0 {
