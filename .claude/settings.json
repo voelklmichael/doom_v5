@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cargo build*)",
+      "Bash(cargo run*)",
+      "Bash(cargo check*)",
+      "Bash(cargo clippy*)",
+      "Bash(Xvfb *)",
+      "Bash(xdotool *)",
+      "Bash(xwd *)",
+      "Bash(convert *)",
+      "Bash(xwininfo*)",
+      "Bash(xdpyinfo*)",
+      "Bash(pkill Xvfb)",
+      "Bash(pkill -f doomgeneric_xlib*)",
+      "Bash(gh pr create*)",
+      "Bash(gh pr view*)",
+      "Bash(gh pr list*)"
+    ]
+  }
+}
