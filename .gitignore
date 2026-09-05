@@ -9,4 +9,5 @@
 Debug/
 Release/
 Build/
-doomgeneric.map
+doomgeneric/doomgeneric
+doomgeneric/doomgeneric.map
