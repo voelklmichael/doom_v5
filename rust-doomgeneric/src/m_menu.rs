@@ -1,3 +1,4 @@
+use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -34,8 +35,6 @@ extern "C" {
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn I_GetTime() -> ::core::ffi::c_int;
     fn I_WaitVBL(count: ::core::ffi::c_int);
-    static mut doom1_endmsg: [*mut ::core::ffi::c_char; 0];
-    static mut doom2_endmsg: [*mut ::core::ffi::c_char; 0];
     fn D_StartTitle();
     fn I_Quit();
     fn I_Error(error: *mut ::core::ffi::c_char, ...);
@@ -3354,11 +3353,8 @@ pub unsafe extern "C" fn M_QuitResponse(mut key: ::core::ffi::c_int) {
     }
     I_Quit();
 }
-unsafe extern "C" fn M_SelectEndMessage() -> *mut ::core::ffi::c_char {
-    let mut endmsg: *mut *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        *mut ::core::ffi::c_char,
-    >();
-    if (if gamemission as ::core::ffi::c_uint
+unsafe fn M_SelectEndMessage() -> &'static str {
+    let endmsg: &'static [&'static str; 8] = if (if gamemission as ::core::ffi::c_uint
         == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
     {
         doom as ::core::ffi::c_int as ::core::ffi::c_uint
@@ -3372,19 +3368,20 @@ unsafe extern "C" fn M_SelectEndMessage() -> *mut ::core::ffi::c_char {
         })
     }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
     {
-        endmsg = &raw mut doom1_endmsg as *mut *mut ::core::ffi::c_char;
+        &doom1_endmsg
     } else {
-        endmsg = &raw mut doom2_endmsg as *mut *mut ::core::ffi::c_char;
-    }
-    return *endmsg.offset((gametic % NUM_QUITMESSAGES) as isize);
+        &doom2_endmsg
+    };
+    endmsg[(gametic % NUM_QUITMESSAGES) as usize]
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_QuitDOOM(mut choice: ::core::ffi::c_int) {
+    let endmsg_cstring = ::std::ffi::CString::new(M_SelectEndMessage()).unwrap();
     snprintf(
         &raw mut endstring as *mut ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 160]>() as size_t,
         b"%s\n\n(press y to quit to dos.)\0" as *const u8 as *const ::core::ffi::c_char,
-        M_SelectEndMessage(),
+        endmsg_cstring.as_ptr(),
     );
     M_StartMessage(
         &raw mut endstring as *mut ::core::ffi::c_char,

@@ -2499,36 +2499,26 @@ pub unsafe extern "C" fn D_StartTitle() {
     demosequence = -(1 as ::core::ffi::c_int);
     D_AdvanceDemo();
 }
-static mut banners: [*mut ::core::ffi::c_char; 7] = [
-    b"                         DOOM 2: Hell on Earth v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                            DOOM Shareware Startup v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                            DOOM Registered Startup v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                          DOOM System Startup v%i.%i                          \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                         The Ultimate DOOM Startup v%i.%i                        \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                     DOOM 2: TNT - Evilution v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                   DOOM 2: Plutonia Experiment v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+static banners: [&str; 7] = [
+    "                         DOOM 2: Hell on Earth v%i.%i                           ",
+    "                            DOOM Shareware Startup v%i.%i                           ",
+    "                            DOOM Registered Startup v%i.%i                           ",
+    "                          DOOM System Startup v%i.%i                          ",
+    "                         The Ultimate DOOM Startup v%i.%i                        ",
+    "                     DOOM 2: TNT - Evilution v%i.%i                           ",
+    "                   DOOM 2: Plutonia Experiment v%i.%i                           ",
 ];
 unsafe extern "C" fn GetGameName(
     mut gamename: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut i: size_t = 0;
-    let mut deh_sub: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
     i = 0 as size_t;
-    while i
-        < (::core::mem::size_of::<[*mut ::core::ffi::c_char; 7]>() as usize)
-            .wrapping_div(::core::mem::size_of::<*mut ::core::ffi::c_char>() as usize)
-    {
-        deh_sub = banners[i as usize];
-        if deh_sub != banners[i as usize] {
+    while i < banners.len() as size_t {
+        let deh_sub_str: &str = banners[i as usize];
+        if deh_sub_str != banners[i as usize] {
+            let deh_sub_cstring = ::std::ffi::CString::new(deh_sub_str).unwrap();
+            let deh_sub: *mut ::core::ffi::c_char = deh_sub_cstring.as_ptr()
+                as *mut ::core::ffi::c_char;
             let mut gamename_size: size_t = 0;
             let mut version: ::core::ffi::c_int = 0;
             gamename_size = strlen(deh_sub).wrapping_add(10 as size_t);
@@ -2840,27 +2830,21 @@ unsafe extern "C" fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> boolea
     handle = W_AddFile(filename);
     return (handle != NULL as *mut wad_file_t) as ::core::ffi::c_int as boolean;
 }
-static mut copyright_banners: [*mut ::core::ffi::c_char; 3] = [
-    b"===========================================================================\nATTENTION:  This version of DOOM has been modified.  If you would like to\nget a copy of the original game, call 1-800-IDGAMES or see the readme file.\n        You will not receive technical support for modified games.\n                      press enter to continue\n===========================================================================\n\0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"===========================================================================\n                 Commercial product - do not distribute!\n         Please report software piracy to the SPA: 1-800-388-PIR8\n===========================================================================\n\0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"===========================================================================\n                                Shareware!\n===========================================================================\n\0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+static copyright_banners: [&str; 3] = [
+    "===========================================================================\nATTENTION:  This version of DOOM has been modified.  If you would like to\nget a copy of the original game, call 1-800-IDGAMES or see the readme file.\n        You will not receive technical support for modified games.\n                      press enter to continue\n===========================================================================\n",
+    "===========================================================================\n                 Commercial product - do not distribute!\n         Please report software piracy to the SPA: 1-800-388-PIR8\n===========================================================================\n",
+    "===========================================================================\n                                Shareware!\n===========================================================================\n",
 ];
 #[no_mangle]
 pub unsafe extern "C" fn PrintDehackedBanners() {
     let mut i: size_t = 0;
     i = 0 as size_t;
-    while i
-        < (::core::mem::size_of::<[*mut ::core::ffi::c_char; 3]>() as usize)
-            .wrapping_div(::core::mem::size_of::<*mut ::core::ffi::c_char>() as usize)
-    {
-        let mut deh_s: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-            ::core::ffi::c_char,
-        >();
-        deh_s = copyright_banners[i as usize];
-        if deh_s != copyright_banners[i as usize] {
+    while i < copyright_banners.len() as size_t {
+        let deh_s_str: &str = copyright_banners[i as usize];
+        if deh_s_str != copyright_banners[i as usize] {
+            let deh_s_cstring = ::std::ffi::CString::new(deh_s_str).unwrap();
+            let deh_s: *mut ::core::ffi::c_char = deh_s_cstring.as_ptr()
+                as *mut ::core::ffi::c_char;
             printf(b"%s\0" as *const u8 as *const ::core::ffi::c_char, deh_s);
             if *deh_s.offset(strlen(deh_s).wrapping_sub(1 as size_t) as isize)
                 as ::core::ffi::c_int != '\n' as i32
