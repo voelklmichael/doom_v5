@@ -1,3 +1,4 @@
+use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 extern "C" {
@@ -47,15 +48,6 @@ pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
 pub type fixed_t = ::core::ffi::c_int;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
 pub type lighttable_t = byte;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,

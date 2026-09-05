@@ -1,3 +1,5 @@
+use crate::src::hu_lib::patch_t;
+use crate::src::st_lib::{st_number_t, st_percent_t, st_multicon_t, st_binicon_t};
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::d_items::{weaponinfo_t, weaponinfo};
 use crate::src::d_event::event_t;
@@ -1462,55 +1464,6 @@ pub const CF_GODMODE: C2RustUnnamed_2 = 2;
 pub type st_stateenum_t = ::core::ffi::c_uint;
 pub const FirstPersonState: st_stateenum_t = 1;
 pub const AutomapState: st_stateenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct st_number_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub width: ::core::ffi::c_int,
-    pub oldnum: ::core::ffi::c_int,
-    pub num: *mut ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub p: *mut *mut patch_t,
-    pub data: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct st_multicon_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub oldinum: ::core::ffi::c_int,
-    pub inum: *mut ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub p: *mut *mut patch_t,
-    pub data: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct st_binicon_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub oldval: boolean,
-    pub val: *mut boolean,
-    pub on: *mut boolean,
-    pub p: *mut patch_t,
-    pub data: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct st_percent_t {
-    pub n: st_number_t,
-    pub p: *mut patch_t,
-}
 pub type st_chatstateenum_t = ::core::ffi::c_uint;
 pub const GetChatState: st_chatstateenum_t = 2;
 pub const WaitDestState: st_chatstateenum_t = 1;
@@ -1755,7 +1708,7 @@ static mut w_health: st_percent_t = st_percent_t {
 static mut w_armsbg: st_binicon_t = st_binicon_t {
     x: 0,
     y: 0,
-    oldval: 0,
+    oldval: false,
     val: ::core::ptr::null::<boolean>() as *mut boolean,
     on: ::core::ptr::null::<boolean>() as *mut boolean,
     p: ::core::ptr::null::<patch_t>() as *mut patch_t,

@@ -1335,7 +1335,7 @@ pub struct divline_t {
 #[repr(C)]
 pub struct intercept_t {
     pub frac: fixed_t,
-    pub isaline: boolean,
+    pub isaline: bool,
     pub d: C2RustUnnamed_1,
 }
 #[derive(Copy, Clone)]
@@ -1350,7 +1350,7 @@ pub type traverser_t = Option<unsafe extern "C" fn(*mut intercept_t) -> boolean>
 pub struct intercepts_overrun_t {
     pub len: ::core::ffi::c_int,
     pub addr: *mut ::core::ffi::c_void,
-    pub int16_array: boolean,
+    pub int16_array: bool,
 }
 pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
@@ -1699,7 +1699,7 @@ pub unsafe extern "C" fn P_BlockThingsIterator(
 #[no_mangle]
 pub static mut intercepts: [intercept_t; 189] = [intercept_t {
     frac: 0,
-    isaline: 0,
+    isaline: false,
     d: C2RustUnnamed_1 {
         thing: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
     },
@@ -1752,7 +1752,7 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
         return false_0 as boolean;
     }
     (*intercept_p).frac = frac;
-    (*intercept_p).isaline = true_0 as boolean;
+    (*intercept_p).isaline = true;
     (*intercept_p).d.line = ld;
     InterceptsOverrun(
         intercept_p.offset_from(&raw mut intercepts as *mut intercept_t)
@@ -1805,7 +1805,7 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
         return true_0 as boolean;
     }
     (*intercept_p).frac = frac;
-    (*intercept_p).isaline = false_0 as boolean;
+    (*intercept_p).isaline = false;
     (*intercept_p).d.thing = thing;
     InterceptsOverrun(
         intercept_p.offset_from(&raw mut intercepts as *mut intercept_t)
@@ -1857,120 +1857,120 @@ static mut intercepts_overrun: [intercepts_overrun_t; 23] = unsafe {
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const lowfloor as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const openbottom as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const opentop as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const openrange as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 120 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 8 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const bulletslope as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 40 as ::core::ffi::c_int,
             addr: &raw const playerstarts as *mut [mapthing_t; 4]
                 as *mut ::core::ffi::c_void,
-            int16_array: true_0 as boolean,
+            int16_array: true,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const bmapwidth as *mut ::core::ffi::c_int
                 as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const bmaporgx as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const bmaporgy as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 4 as ::core::ffi::c_int,
             addr: &raw const bmapheight as *mut ::core::ffi::c_int
                 as *mut ::core::ffi::c_void,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
         intercepts_overrun_t {
             len: 0 as ::core::ffi::c_int,
             addr: NULL,
-            int16_array: false_0 as boolean,
+            int16_array: false,
         },
     ]
 };
@@ -1990,7 +1990,7 @@ unsafe extern "C" fn InterceptsMemoryOverrun(
         if offset + intercepts_overrun[i as usize].len > location {
             addr = intercepts_overrun[i as usize].addr;
             if !addr.is_null() {
-                if intercepts_overrun[i as usize].int16_array != 0 {
+                if intercepts_overrun[i as usize].int16_array {
                     index = (location - offset) / 2 as ::core::ffi::c_int;
                     *(addr as *mut ::core::ffi::c_short).offset(index as isize) = (value
                         & 0xffff as ::core::ffi::c_int) as ::core::ffi::c_short;

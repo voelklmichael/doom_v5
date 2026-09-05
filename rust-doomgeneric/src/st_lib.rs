@@ -1,3 +1,4 @@
+use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
 extern "C" {
@@ -27,15 +28,6 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct st_number_t {
@@ -70,7 +62,7 @@ pub struct st_multicon_t {
 pub struct st_binicon_t {
     pub x: ::core::ffi::c_int,
     pub y: ::core::ffi::c_int,
-    pub oldval: boolean,
+    pub oldval: bool,
     pub val: *mut boolean,
     pub on: *mut boolean,
     pub p: *mut patch_t,
@@ -245,7 +237,7 @@ pub unsafe extern "C" fn STlib_initBinIcon(
 ) {
     (*b).x = x;
     (*b).y = y;
-    (*b).oldval = false_0 as boolean;
+    (*b).oldval = false;
     (*b).val = val;
     (*b).on = on;
     (*b).p = i;
@@ -259,7 +251,7 @@ pub unsafe extern "C" fn STlib_updateBinIcon(
     let mut y: ::core::ffi::c_int = 0;
     let mut w: ::core::ffi::c_int = 0;
     let mut h: ::core::ffi::c_int = 0;
-    if *(*bi).on != 0 && ((*bi).oldval != *(*bi).val || refresh != 0) {
+    if *(*bi).on != 0 && ((*bi).oldval != (*(*bi).val != 0) || refresh != 0) {
         x = (*bi).x - (*(*bi).p).leftoffset as ::core::ffi::c_int;
         y = (*bi).y - (*(*bi).p).topoffset as ::core::ffi::c_int;
         w = (*(*bi).p).width as ::core::ffi::c_int;
@@ -272,6 +264,6 @@ pub unsafe extern "C" fn STlib_updateBinIcon(
         } else {
             V_CopyRect(x, y - ST_Y, st_backing_screen, w, h, x, y);
         }
-        (*bi).oldval = *(*bi).val;
+        (*bi).oldval = *(*bi).val != 0;
     }
 }

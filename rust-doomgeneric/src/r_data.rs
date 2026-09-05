@@ -1,3 +1,4 @@
+use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{thinker_t, sector_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
@@ -1376,15 +1377,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct post_t {
