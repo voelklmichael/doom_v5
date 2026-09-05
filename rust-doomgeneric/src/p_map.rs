@@ -1914,7 +1914,7 @@ pub unsafe extern "C" fn P_TryMove(
             if side != oldside {
                 if (*ld).special != 0 {
                     P_CrossSpecialLine(
-                        ld.offset_from(lines) as ::core::ffi::c_long
+                        ld.offset_from(lines) as i64
                             as i32,
                         oldside,
                         thing,
@@ -2579,8 +2579,8 @@ unsafe extern "C" fn SpechitOverrun(mut ld: *mut line_t) {
             baseaddr = DEFAULT_SPECHIT_MAGIC as u32;
         }
     }
-    addr = (baseaddr as ::core::ffi::c_long
-        + ld.offset_from(lines) as ::core::ffi::c_long * 0x3e as ::core::ffi::c_long)
+    addr = (baseaddr as i64
+        + ld.offset_from(lines) as i64 * 0x3e as i64)
         as u32;
     match numspechit {
         9 | 10 | 11 | 12 => {

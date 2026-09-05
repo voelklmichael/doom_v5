@@ -35,7 +35,7 @@ extern "C" {
         __modes: *const ::core::ffi::c_char,
     ) -> *mut FILE;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn ftell(__stream: *mut FILE) -> ::core::ffi::c_long;
+    fn ftell(__stream: *mut FILE) -> i64;
     fn I_GetTime() -> i32;
     static mut singletics: bool;
     static mut gametic: i32;
@@ -2304,9 +2304,9 @@ pub unsafe extern "C" fn G_BuildTiccmd(
         side = -forwardmove[1 as i32 as usize] as i32;
     }
     (*cmd).forwardmove = ((*cmd).forwardmove as i32 + forward)
-        as ::core::ffi::c_schar;
+        as i8;
     (*cmd).sidemove = ((*cmd).sidemove as i32 + side)
-        as ::core::ffi::c_schar;
+        as i8;
     if sendpause {
         sendpause = false;
         (*cmd).buttons = (BT_SPECIAL as i32
@@ -2897,7 +2897,7 @@ pub unsafe extern "C" fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
     let mut j: i32 = 0;
     let mut selections: i32 = 0;
     selections = deathmatch_p.offset_from(&raw mut deathmatchstarts as *mut mapthing_t)
-        as ::core::ffi::c_long as i32;
+        as i64 as i32;
     if selections < 4 as i32 {
         I_Error(&format!("Only {} deathmatch spots, 4 required", selections));
     }
@@ -3355,7 +3355,7 @@ pub unsafe extern "C" fn G_DoSaveGame() {
     P_ArchiveSpecials();
     P_WriteSaveGameEOF();
     if vanilla_savegame_limit != 0
-        && ftell(save_stream) > SAVEGAMESIZE as ::core::ffi::c_long
+        && ftell(save_stream) > SAVEGAMESIZE as i64
     {
         I_Error("Savegame buffer overrun");
     }
@@ -3558,10 +3558,10 @@ pub unsafe extern "C" fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
     }
     let fresh18 = demo_p;
     demo_p = demo_p.offset(1);
-    (*cmd).forwardmove = *fresh18 as ::core::ffi::c_schar;
+    (*cmd).forwardmove = *fresh18 as i8;
     let fresh19 = demo_p;
     demo_p = demo_p.offset(1);
-    (*cmd).sidemove = *fresh19 as ::core::ffi::c_schar;
+    (*cmd).sidemove = *fresh19 as i8;
     if longtics {
         let fresh20 = demo_p;
         demo_p = demo_p.offset(1);
@@ -3574,19 +3574,19 @@ pub unsafe extern "C" fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
     } else {
         let fresh22 = demo_p;
         demo_p = demo_p.offset(1);
-        (*cmd).angleturn = ((*fresh22 as ::core::ffi::c_uchar as i32)
+        (*cmd).angleturn = ((*fresh22 as u8 as i32)
             << 8 as i32) as i16;
     }
     let fresh23 = demo_p;
     demo_p = demo_p.offset(1);
-    (*cmd).buttons = *fresh23 as ::core::ffi::c_uchar as byte;
+    (*cmd).buttons = *fresh23 as u8 as byte;
 }
 unsafe extern "C" fn IncreaseDemoBuffer() {
     let mut current_length: i32 = 0;
     let mut new_demobuffer: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut new_demop: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut new_length: i32 = 0;
-    current_length = demoend.offset_from(demobuffer) as ::core::ffi::c_long
+    current_length = demoend.offset_from(demobuffer) as i64
         as i32;
     new_length = current_length * 2 as i32;
     new_demobuffer = Z_Malloc(
@@ -3595,7 +3595,7 @@ unsafe extern "C" fn IncreaseDemoBuffer() {
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut byte;
     new_demop = new_demobuffer
-        .offset(demo_p.offset_from(demobuffer) as ::core::ffi::c_long as isize);
+        .offset(demo_p.offset_from(demobuffer) as i64 as isize);
     memcpy(
         new_demobuffer as *mut ::core::ffi::c_void,
         demobuffer as *const ::core::ffi::c_void,
@@ -3879,19 +3879,19 @@ pub unsafe extern "C" fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
 pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
     let mut endtime: i32 = 0;
     if timingdemo {
-        let mut fps: ::core::ffi::c_float = 0.;
+        let mut fps: f32 = 0.;
         let mut realtics: i32 = 0;
         endtime = I_GetTime();
         realtics = endtime - starttime;
-        fps = gametic as ::core::ffi::c_float * TICRATE as ::core::ffi::c_float
-            / realtics as ::core::ffi::c_float;
+        fps = gametic as f32 * TICRATE as f32
+            / realtics as f32;
         timingdemo = false;
         demoplayback = false;
         I_Error(&format!(
             "timed {} gametics in {} realtics ({:.6} fps)",
             gametic,
             realtics,
-            fps as ::core::ffi::c_double,
+            fps as f64,
         ));
     }
     if demoplayback {
@@ -3923,7 +3923,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         M_WriteFile(
             demoname,
             demobuffer as *mut ::core::ffi::c_void,
-            demo_p.offset_from(demobuffer) as ::core::ffi::c_long as i32,
+            demo_p.offset_from(demobuffer) as i64 as i32,
         );
         Z_Free(demobuffer as *mut ::core::ffi::c_void);
         demorecording = false;

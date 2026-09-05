@@ -7,7 +7,7 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn atof(__nptr: *const ::core::ffi::c_char) -> ::core::ffi::c_double;
+    fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
@@ -1883,8 +1883,8 @@ unsafe extern "C" fn SetVariable(
             *((*def).location as *mut i32) = intparm;
         }
         3 => {
-            *((*def).location as *mut ::core::ffi::c_float) = atof(value)
-                as ::core::ffi::c_float;
+            *((*def).location as *mut f32) = atof(value)
+                as f32;
         }
         _ => {}
     };
@@ -2005,16 +2005,16 @@ pub unsafe fn M_GetStrVariable(name: &str) -> *const ::core::ffi::c_char {
     }
     return *((*variable).location as *mut *const ::core::ffi::c_char);
 }
-pub unsafe fn M_GetFloatVariable(name: &str) -> ::core::ffi::c_float {
+pub unsafe fn M_GetFloatVariable(name: &str) -> f32 {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
     if variable.is_null() || !(*variable).bound
         || (*variable).type_0 as u32
             != DEFAULT_FLOAT as i32 as u32
     {
-        return 0 as i32 as ::core::ffi::c_float;
+        return 0 as i32 as f32;
     }
-    return *((*variable).location as *mut ::core::ffi::c_float);
+    return *((*variable).location as *mut f32);
 }
 unsafe extern "C" fn GetDefaultConfigDir() -> *mut ::core::ffi::c_char {
     let mut result: *mut ::core::ffi::c_char = malloc(2 as size_t)

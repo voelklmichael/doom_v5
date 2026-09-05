@@ -1438,9 +1438,9 @@ pub static mut texturecolumnlump: *mut *mut i16 = ::core::ptr::null::<
     *mut i16,
 >() as *mut *mut i16;
 #[no_mangle]
-pub static mut texturecolumnofs: *mut *mut ::core::ffi::c_ushort = ::core::ptr::null::<
-    *mut ::core::ffi::c_ushort,
->() as *mut *mut ::core::ffi::c_ushort;
+pub static mut texturecolumnofs: *mut *mut u16 = ::core::ptr::null::<
+    *mut u16,
+>() as *mut *mut u16;
 #[no_mangle]
 pub static mut texturecomposite: *mut *mut byte = ::core::ptr::null::<*mut byte>()
     as *mut *mut byte;
@@ -1511,8 +1511,8 @@ pub unsafe extern "C" fn R_GenerateComposite(mut texnum: i32) {
     let mut collump: *mut i16 = ::core::ptr::null_mut::<
         i16,
     >();
-    let mut colofs: *mut ::core::ffi::c_ushort = ::core::ptr::null_mut::<
-        ::core::ffi::c_ushort,
+    let mut colofs: *mut u16 = ::core::ptr::null_mut::<
+        u16,
     >();
     texture = *textures.offset(texnum as isize);
     block = Z_Malloc(
@@ -1584,8 +1584,8 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: i32) {
     let mut collump: *mut i16 = ::core::ptr::null_mut::<
         i16,
     >();
-    let mut colofs: *mut ::core::ffi::c_ushort = ::core::ptr::null_mut::<
-        ::core::ffi::c_ushort,
+    let mut colofs: *mut u16 = ::core::ptr::null_mut::<
+        u16,
     >();
     texture = *textures.offset(texnum as isize);
     let ref mut fresh4 = *texturecomposite.offset(texnum as isize);
@@ -1626,7 +1626,7 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: i32) {
             *colofs.offset(x as isize) = (*(&raw const (*realpatch).columnofs
                 as *const i32)
                 .offset((x - x1) as isize)
-                + 3 as i32) as ::core::ffi::c_ushort;
+                + 3 as i32) as u16;
             x += 1;
         }
         i += 1;
@@ -1647,7 +1647,7 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: i32) {
             *collump.offset(x as isize) = -(1 as i32)
                 as i16;
             *colofs.offset(x as isize) = *texturecompositesize.offset(texnum as isize)
-                as ::core::ffi::c_ushort;
+                as u16;
             if *texturecompositesize.offset(texnum as isize)
                 > 0x10000 as i32 - (*texture).height as i32
             {
@@ -1823,11 +1823,11 @@ pub unsafe extern "C" fn R_InitTextures() {
     ) as *mut *mut i16;
     texturecolumnofs = Z_Malloc(
         (numtextures as usize)
-            .wrapping_mul(::core::mem::size_of::<*mut ::core::ffi::c_ushort>() as usize)
+            .wrapping_mul(::core::mem::size_of::<*mut u16>() as usize)
             as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut *mut ::core::ffi::c_ushort;
+    ) as *mut *mut u16;
     texturecomposite = Z_Malloc(
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<*mut byte>() as usize)
             as i32,
@@ -1944,11 +1944,11 @@ pub unsafe extern "C" fn R_InitTextures() {
         let ref mut fresh2 = *texturecolumnofs.offset(i as isize);
         *fresh2 = Z_Malloc(
             ((*texture).width as usize)
-                .wrapping_mul(::core::mem::size_of::<::core::ffi::c_ushort>() as usize)
+                .wrapping_mul(::core::mem::size_of::<u16>() as usize)
                 as i32,
             PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
-        ) as *mut ::core::ffi::c_ushort;
+        ) as *mut u16;
         j = 1 as i32;
         while j * 2 as i32 <= (*texture).width as i32 {
             j <<= 1 as i32;

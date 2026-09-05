@@ -1865,8 +1865,8 @@ pub unsafe extern "C" fn P_XYMovement(mut mo: *mut mobj_t) {
     {
         if !player.is_null()
             && (((*(*player).mo).state.offset_from(&raw mut states as *mut state_t)
-                as ::core::ffi::c_long
-                - S_PLAY_RUN1 as i32 as ::core::ffi::c_long)
+                as i64
+                - S_PLAY_RUN1 as i32 as i64)
                 as u32) < 4 as u32
         {
             P_SetMobjState((*player).mo, S_PLAY);

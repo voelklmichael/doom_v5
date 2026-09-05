@@ -1453,11 +1453,11 @@ pub const SECRETWALLCOLORS: i32 = WALLCOLORS;
 pub const GRIDCOLORS: i32 = GRAYS + GRAYSRANGE / 2 as i32;
 pub const XHAIRCOLORS: i32 = GRAYS;
 pub const AM_NUMMARKPOINTS: i32 = 10 as i32;
-pub const INITSCALEMTOF: ::core::ffi::c_double = 0.2f64
-    * FRACUNIT as ::core::ffi::c_double;
-pub const M_ZOOMIN: i32 = (1.02f64 * FRACUNIT as ::core::ffi::c_double)
+pub const INITSCALEMTOF: f64 = 0.2f64
+    * FRACUNIT as f64;
+pub const M_ZOOMIN: i32 = (1.02f64 * FRACUNIT as f64)
     as i32;
-pub const M_ZOOMOUT: i32 = (FRACUNIT as ::core::ffi::c_double / 1.02f64)
+pub const M_ZOOMOUT: i32 = (FRACUNIT as f64 / 1.02f64)
     as i32;
 pub const LINE_NEVERSEE: i32 = ML_DONTDRAW;
 pub const R_0: i32 = 8 as i32 * 16 as i32
@@ -1705,18 +1705,18 @@ pub const R_2: i32 = (1 as i32) << FRACBITS;
 pub static mut triangle_guy: [mline_t; 3] = [
     mline_t {
         a: mpoint_t {
-            x: (-0.867f64 * R_2 as ::core::ffi::c_double) as fixed_t,
-            y: (-0.5f64 * R_2 as ::core::ffi::c_double) as fixed_t,
+            x: (-0.867f64 * R_2 as f64) as fixed_t,
+            y: (-0.5f64 * R_2 as f64) as fixed_t,
         },
         b: mpoint_t {
-            x: (0.867f64 * R_2 as ::core::ffi::c_double) as fixed_t,
-            y: (-0.5f64 * R_2 as ::core::ffi::c_double) as fixed_t,
+            x: (0.867f64 * R_2 as f64) as fixed_t,
+            y: (-0.5f64 * R_2 as f64) as fixed_t,
         },
     },
     mline_t {
         a: mpoint_t {
-            x: (0.867f64 * R_2 as ::core::ffi::c_double) as fixed_t,
-            y: (-0.5f64 * R_2 as ::core::ffi::c_double) as fixed_t,
+            x: (0.867f64 * R_2 as f64) as fixed_t,
+            y: (-0.5f64 * R_2 as f64) as fixed_t,
         },
         b: mpoint_t {
             x: 0 as i32,
@@ -1729,8 +1729,8 @@ pub static mut triangle_guy: [mline_t; 3] = [
             y: (1 as i32) << FRACBITS,
         },
         b: mpoint_t {
-            x: (-0.867f64 * R_2 as ::core::ffi::c_double) as fixed_t,
-            y: (-0.5f64 * R_2 as ::core::ffi::c_double) as fixed_t,
+            x: (-0.867f64 * R_2 as f64) as fixed_t,
+            y: (-0.5f64 * R_2 as f64) as fixed_t,
         },
     },
 ];
@@ -1739,8 +1739,8 @@ pub const R: i32 = (1 as i32) << FRACBITS;
 pub static mut thintriangle_guy: [mline_t; 3] = [
     mline_t {
         a: mpoint_t {
-            x: (-0.5f64 * R as ::core::ffi::c_double) as fixed_t,
-            y: (-0.7f64 * R as ::core::ffi::c_double) as fixed_t,
+            x: (-0.5f64 * R as f64) as fixed_t,
+            y: (-0.7f64 * R as f64) as fixed_t,
         },
         b: mpoint_t {
             x: (1 as i32) << FRACBITS,
@@ -1753,18 +1753,18 @@ pub static mut thintriangle_guy: [mline_t; 3] = [
             y: 0 as i32,
         },
         b: mpoint_t {
-            x: (-0.5f64 * R as ::core::ffi::c_double) as fixed_t,
-            y: (0.7f64 * R as ::core::ffi::c_double) as fixed_t,
+            x: (-0.5f64 * R as f64) as fixed_t,
+            y: (0.7f64 * R as f64) as fixed_t,
         },
     },
     mline_t {
         a: mpoint_t {
-            x: (-0.5f64 * R as ::core::ffi::c_double) as fixed_t,
-            y: (0.7f64 * R as ::core::ffi::c_double) as fixed_t,
+            x: (-0.5f64 * R as f64) as fixed_t,
+            y: (0.7f64 * R as f64) as fixed_t,
         },
         b: mpoint_t {
-            x: (-0.5f64 * R as ::core::ffi::c_double) as fixed_t,
-            y: (-0.7f64 * R as ::core::ffi::c_double) as fixed_t,
+            x: (-0.5f64 * R as f64) as fixed_t,
+            y: (-0.7f64 * R as f64) as fixed_t,
         },
     },
 ];
@@ -2060,7 +2060,7 @@ pub unsafe extern "C" fn AM_LevelInit() {
     AM_findMinMaxBoundaries();
     scale_mtof = FixedDiv(
         min_scale_mtof,
-        (0.7f64 * FRACUNIT as ::core::ffi::c_double) as fixed_t,
+        (0.7f64 * FRACUNIT as f64) as fixed_t,
     );
     if scale_mtof > max_scale_mtof {
         scale_mtof = min_scale_mtof;

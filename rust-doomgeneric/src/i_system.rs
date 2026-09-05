@@ -300,45 +300,45 @@ pub unsafe fn I_Error(message: &str) {
     exit(-(1 as i32));
 }
 pub const DOS_MEM_DUMP_SIZE: i32 = 10 as i32;
-static mut mem_dump_dos622: [::core::ffi::c_uchar; 10] = [
-    0x57 as i32 as ::core::ffi::c_uchar,
-    0x92 as i32 as ::core::ffi::c_uchar,
-    0x19 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0xf4 as i32 as ::core::ffi::c_uchar,
-    0x6 as i32 as ::core::ffi::c_uchar,
-    0x70 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0x16 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
+static mut mem_dump_dos622: [u8; 10] = [
+    0x57 as i32 as u8,
+    0x92 as i32 as u8,
+    0x19 as i32 as u8,
+    0 as i32 as u8,
+    0xf4 as i32 as u8,
+    0x6 as i32 as u8,
+    0x70 as i32 as u8,
+    0 as i32 as u8,
+    0x16 as i32 as u8,
+    0 as i32 as u8,
 ];
-static mut mem_dump_win98: [::core::ffi::c_uchar; 10] = [
-    0x9e as i32 as ::core::ffi::c_uchar,
-    0xf as i32 as ::core::ffi::c_uchar,
-    0xc9 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0x65 as i32 as ::core::ffi::c_uchar,
-    0x4 as i32 as ::core::ffi::c_uchar,
-    0x70 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0x16 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
+static mut mem_dump_win98: [u8; 10] = [
+    0x9e as i32 as u8,
+    0xf as i32 as u8,
+    0xc9 as i32 as u8,
+    0 as i32 as u8,
+    0x65 as i32 as u8,
+    0x4 as i32 as u8,
+    0x70 as i32 as u8,
+    0 as i32 as u8,
+    0x16 as i32 as u8,
+    0 as i32 as u8,
 ];
-static mut mem_dump_dosbox: [::core::ffi::c_uchar; 10] = [
-    0 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0xf1 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
-    0x7 as i32 as ::core::ffi::c_uchar,
-    0 as i32 as ::core::ffi::c_uchar,
+static mut mem_dump_dosbox: [u8; 10] = [
+    0 as i32 as u8,
+    0 as i32 as u8,
+    0 as i32 as u8,
+    0xf1 as i32 as u8,
+    0 as i32 as u8,
+    0 as i32 as u8,
+    0 as i32 as u8,
+    0 as i32 as u8,
+    0x7 as i32 as u8,
+    0 as i32 as u8,
 ];
-static mut mem_dump_custom: [::core::ffi::c_uchar; 10] = [0; 10];
-static mut dos_mem_dump: *const ::core::ffi::c_uchar = unsafe {
-    &raw const mem_dump_dos622 as *const ::core::ffi::c_uchar
+static mut mem_dump_custom: [u8; 10] = [0; 10];
+static mut dos_mem_dump: *const u8 = unsafe {
+    &raw const mem_dump_dos622 as *const u8
 };
 #[no_mangle]
 pub unsafe extern "C" fn I_GetMemoryValue(
@@ -360,20 +360,20 @@ pub unsafe extern "C" fn I_GetMemoryValue(
                 b"dos622\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                dos_mem_dump = &raw const mem_dump_dos622 as *const ::core::ffi::c_uchar;
+                dos_mem_dump = &raw const mem_dump_dos622 as *const u8;
             }
             if strcasecmp(
                 myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos71\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                dos_mem_dump = &raw const mem_dump_win98 as *const ::core::ffi::c_uchar;
+                dos_mem_dump = &raw const mem_dump_win98 as *const u8;
             } else if strcasecmp(
                 myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dosbox\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                dos_mem_dump = &raw const mem_dump_dosbox as *const ::core::ffi::c_uchar;
+                dos_mem_dump = &raw const mem_dump_dosbox as *const u8;
             } else {
                 i = 0 as i32;
                 while i < DOS_MEM_DUMP_SIZE {
@@ -389,26 +389,26 @@ pub unsafe extern "C" fn I_GetMemoryValue(
                     );
                     let fresh0 = i;
                     i = i + 1;
-                    mem_dump_custom[fresh0 as usize] = val as ::core::ffi::c_uchar;
+                    mem_dump_custom[fresh0 as usize] = val as u8;
                     i += 1;
                 }
-                dos_mem_dump = &raw mut mem_dump_custom as *mut ::core::ffi::c_uchar;
+                dos_mem_dump = &raw mut mem_dump_custom as *mut u8;
             }
         }
     }
     match size {
         1 => {
-            *(value as *mut ::core::ffi::c_uchar) = *dos_mem_dump
+            *(value as *mut u8) = *dos_mem_dump
                 .offset(offset as isize);
             return true_0 as boolean;
         }
         2 => {
-            *(value as *mut ::core::ffi::c_ushort) = (*dos_mem_dump
+            *(value as *mut u16) = (*dos_mem_dump
                 .offset(offset as isize) as i32
                 | (*dos_mem_dump
                     .offset(offset.wrapping_add(1 as u32) as isize)
                     as i32) << 8 as i32)
-                as ::core::ffi::c_ushort;
+                as u16;
             return true_0 as boolean;
         }
         4 => {

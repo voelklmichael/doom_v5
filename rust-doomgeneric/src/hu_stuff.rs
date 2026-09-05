@@ -2090,7 +2090,7 @@ pub unsafe extern "C" fn HU_Ticker() {
                         rc = HUlib_keyInIText(
                             (&raw mut w_inputbuffer as *mut hu_itext_t)
                                 .offset(i as isize) as *mut hu_itext_t,
-                            c as ::core::ffi::c_uchar,
+                            c as u8,
                         ) as i32;
                         if rc != 0 && c as i32 == KEY_ENTER {
                             if !w_inputbuffer[i as usize].l.l.is_empty()
@@ -2167,7 +2167,7 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
     >();
     let mut eatkey: boolean = false_0 as boolean;
     static mut altdown: bool = false;
-    let mut c: ::core::ffi::c_uchar = 0;
+    let mut c: u8 = 0;
     let mut i: i32 = 0;
     let mut numplayers: i32 = 0;
     static mut num_nobrainers: i32 = 0 as i32;
@@ -2236,7 +2236,7 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
             }
         }
     } else if altdown {
-        c = ((*ev).data1 - '0' as i32) as ::core::ffi::c_uchar;
+        c = ((*ev).data1 - '0' as i32) as u8;
         if c as i32 > 9 as i32 {
             return false_0 as boolean;
         }
@@ -2257,7 +2257,7 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
         (*plr).message = &raw mut lastmessage as *mut ::core::ffi::c_char;
         eatkey = true_0 as boolean;
     } else {
-        c = (*ev).data2 as ::core::ffi::c_uchar;
+        c = (*ev).data2 as u8;
         eatkey = HUlib_keyInIText(&raw mut w_chat, c);
         if eatkey != 0 {
             HU_queueChatChar(c as ::core::ffi::c_char);

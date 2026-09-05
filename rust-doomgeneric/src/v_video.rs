@@ -13,13 +13,13 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn fabs(__x: ::core::ffi::c_double) -> ::core::ffi::c_double;
+    fn fabs(__x: f64) -> f64;
     fn I_GetPaletteIndex(
         r: i32,
         g: i32,
         b: i32,
     ) -> i32;
-    static mut mouse_acceleration: ::core::ffi::c_float;
+    static mut mouse_acceleration: f32;
     static mut mouse_threshold: i32;
     static mut I_VideoBuffer: *mut byte;
     fn M_AddToBox(box_0: *mut fixed_t, x: fixed_t, y: fixed_t);
@@ -59,19 +59,19 @@ pub struct pcx_t {
     pub version: ::core::ffi::c_char,
     pub encoding: ::core::ffi::c_char,
     pub bits_per_pixel: ::core::ffi::c_char,
-    pub xmin: ::core::ffi::c_ushort,
-    pub ymin: ::core::ffi::c_ushort,
-    pub xmax: ::core::ffi::c_ushort,
-    pub ymax: ::core::ffi::c_ushort,
-    pub hres: ::core::ffi::c_ushort,
-    pub vres: ::core::ffi::c_ushort,
-    pub palette: [::core::ffi::c_uchar; 48],
+    pub xmin: u16,
+    pub ymin: u16,
+    pub xmax: u16,
+    pub ymax: u16,
+    pub hres: u16,
+    pub vres: u16,
+    pub palette: [u8; 48],
     pub reserved: ::core::ffi::c_char,
     pub color_planes: ::core::ffi::c_char,
-    pub bytes_per_line: ::core::ffi::c_ushort,
-    pub palette_type: ::core::ffi::c_ushort,
+    pub bytes_per_line: u16,
+    pub palette_type: u16,
     pub filler: [::core::ffi::c_char; 58],
-    pub data: ::core::ffi::c_uchar,
+    pub data: u8,
 }
 pub const PU_STATIC: C2RustUnnamed = 1;
 pub type C2RustUnnamed = u32;
@@ -718,23 +718,23 @@ pub unsafe extern "C" fn WritePCXfile(
     (*pcx).version = 5 as ::core::ffi::c_char;
     (*pcx).encoding = 1 as ::core::ffi::c_char;
     (*pcx).bits_per_pixel = 8 as ::core::ffi::c_char;
-    (*pcx).xmin = 0 as ::core::ffi::c_ushort;
-    (*pcx).ymin = 0 as ::core::ffi::c_ushort;
+    (*pcx).xmin = 0 as u16;
+    (*pcx).ymin = 0 as u16;
     (*pcx).xmax = (width - 1 as i32) as i16
-        as ::core::ffi::c_ushort;
+        as u16;
     (*pcx).ymax = (height - 1 as i32) as i16
-        as ::core::ffi::c_ushort;
-    (*pcx).hres = width as i16 as ::core::ffi::c_ushort;
-    (*pcx).vres = height as i16 as ::core::ffi::c_ushort;
+        as u16;
+    (*pcx).hres = width as i16 as u16;
+    (*pcx).vres = height as i16 as u16;
     memset(
-        &raw mut (*pcx).palette as *mut ::core::ffi::c_uchar as *mut ::core::ffi::c_void,
+        &raw mut (*pcx).palette as *mut u8 as *mut ::core::ffi::c_void,
         0 as i32,
-        ::core::mem::size_of::<[::core::ffi::c_uchar; 48]>() as size_t,
+        ::core::mem::size_of::<[u8; 48]>() as size_t,
     );
     (*pcx).color_planes = 1 as ::core::ffi::c_char;
-    (*pcx).bytes_per_line = width as i16 as ::core::ffi::c_ushort;
+    (*pcx).bytes_per_line = width as i16 as u16;
     (*pcx).palette_type = 2 as i32 as i16
-        as ::core::ffi::c_ushort;
+        as u16;
     memset(
         &raw mut (*pcx).filler as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
         0 as i32,
@@ -775,7 +775,7 @@ pub unsafe extern "C" fn WritePCXfile(
         *fresh21 = *fresh20;
         i += 1;
     }
-    length = pack.offset_from(pcx as *mut byte) as ::core::ffi::c_long
+    length = pack.offset_from(pcx as *mut byte) as i64
         as i32;
     M_WriteFile(filename, pcx as *mut ::core::ffi::c_void, length);
     Z_Free(pcx as *mut ::core::ffi::c_void);
@@ -866,8 +866,8 @@ pub unsafe extern "C" fn V_DrawMouseSpeedBox(mut speed: i32) {
     );
     if usemouse == 0
         || fabs(
-            (mouse_acceleration - 1 as i32 as ::core::ffi::c_float)
-                as ::core::ffi::c_double,
+            (mouse_acceleration - 1 as i32 as f32)
+                as f64,
         ) < 0.01f64
     {
         return;
@@ -887,7 +887,7 @@ pub unsafe extern "C" fn V_DrawMouseSpeedBox(mut speed: i32) {
         original_speed = speed;
     } else {
         original_speed = speed - mouse_threshold;
-        original_speed = (original_speed as ::core::ffi::c_float / mouse_acceleration)
+        original_speed = (original_speed as f32 / mouse_acceleration)
             as i32;
         original_speed += mouse_threshold;
     }

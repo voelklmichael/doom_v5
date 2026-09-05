@@ -108,11 +108,11 @@ pub unsafe extern "C" fn HUlib_drawTextLine(
     let mut i: i32 = 0;
     let mut w: i32 = 0;
     let mut x: i32 = 0;
-    let mut c: ::core::ffi::c_uchar = 0;
+    let mut c: u8 = 0;
     x = (*l).x;
     i = 0 as i32;
     while i < (*l).l.len() as i32 {
-        c = toupper((*l).l.as_bytes()[i as usize] as i32) as ::core::ffi::c_uchar;
+        c = toupper((*l).l.as_bytes()[i as usize] as i32) as u8;
         if c as i32 != ' ' as i32 && c as i32 >= (*l).sc
             && c as i32 <= '_' as i32
         {
@@ -320,11 +320,11 @@ pub unsafe fn HUlib_addPrefixToIText(it: *mut hu_itext_t, s: &str) {
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_keyInIText(
     mut it: *mut hu_itext_t,
-    mut ch: ::core::ffi::c_uchar,
+    mut ch: u8,
 ) -> boolean {
     ch = ({
         let mut __res: i32 = 0;
-        if ::core::mem::size_of::<::core::ffi::c_uchar>() as usize > 1 as usize {
+        if ::core::mem::size_of::<u8>() as usize > 1 as usize {
             if 0 != 0 {
                 let mut __c: i32 = ch as i32;
                 __res = (if __c < -(128 as i32)
@@ -342,7 +342,7 @@ pub unsafe extern "C" fn HUlib_keyInIText(
                 as i32;
         }
         __res
-    }) as ::core::ffi::c_uchar;
+    }) as u8;
     if ch as i32 >= ' ' as i32 && ch as i32 <= '_' as i32 {
         HUlib_addCharToTextLine(&raw mut (*it).l, ch as ::core::ffi::c_char);
     } else if ch as i32 == KEY_BACKSPACE {

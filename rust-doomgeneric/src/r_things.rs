@@ -1556,7 +1556,7 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
     while !(*check).is_null() {
         check = check.offset(1);
     }
-    numsprites = check.offset_from(namelist) as ::core::ffi::c_long
+    numsprites = check.offset_from(namelist) as i64
         as i32;
     if numsprites == 0 {
         return;
@@ -2150,7 +2150,7 @@ pub unsafe extern "C" fn R_SortVisSprites() {
     };
     let mut bestscale: fixed_t = 0;
     count = vissprite_p.offset_from(&raw mut vissprites as *mut vissprite_t)
-        as ::core::ffi::c_long as i32;
+        as i64 as i32;
     unsorted.prev = &raw mut unsorted as *mut vissprite_s;
     unsorted.next = unsorted.prev;
     if count == 0 {

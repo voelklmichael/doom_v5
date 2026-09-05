@@ -23,19 +23,19 @@ extern "C" {
         __size: size_t,
         __n: size_t,
         __stream: *mut FILE,
-    ) -> ::core::ffi::c_ulong;
+    ) -> u64;
     fn fwrite(
         __ptr: *const ::core::ffi::c_void,
         __size: size_t,
         __n: size_t,
         __s: *mut FILE,
-    ) -> ::core::ffi::c_ulong;
+    ) -> u64;
     fn fseek(
         __stream: *mut FILE,
-        __off: ::core::ffi::c_long,
+        __off: i64,
         __whence: i32,
     ) -> i32;
-    fn ftell(__stream: *mut FILE) -> ::core::ffi::c_long;
+    fn ftell(__stream: *mut FILE) -> i64;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
@@ -125,11 +125,11 @@ pub unsafe extern "C" fn M_FileExists(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_FileLength(mut handle: *mut FILE) -> ::core::ffi::c_long {
-    let mut savedpos: ::core::ffi::c_long = 0;
-    let mut length: ::core::ffi::c_long = 0;
+pub unsafe extern "C" fn M_FileLength(mut handle: *mut FILE) -> i64 {
+    let mut savedpos: i64 = 0;
+    let mut length: i64 = 0;
     savedpos = ftell(handle);
-    fseek(handle, 0 as ::core::ffi::c_long, SEEK_END);
+    fseek(handle, 0 as i64, SEEK_END);
     length = ftell(handle);
     fseek(handle, savedpos, SEEK_SET);
     return length;

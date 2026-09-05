@@ -77,132 +77,132 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
         i += 1;
         p2 = p2.offset(4 as i32 as isize);
     }
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ b & (c ^ d)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[0 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(d ^ b & (c ^ d)) as i64
+            + 0x5a827999 as i64
+            + x[0 as i32 as usize] as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ a & (b ^ c)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[1 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(c ^ a & (b ^ c)) as i64
+            + 0x5a827999 as i64
+            + x[1 as i32 as usize] as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ e & (a ^ b)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[2 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(b ^ e & (a ^ b)) as i64
+            + 0x5a827999 as i64
+            + x[2 as i32 as usize] as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ d & (e ^ a)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[3 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(a ^ d & (e ^ a)) as i64
+            + 0x5a827999 as i64
+            + x[3 as i32 as usize] as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ c & (d ^ e)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[4 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(e ^ c & (d ^ e)) as i64
+            + 0x5a827999 as i64
+            + x[4 as i32 as usize] as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ b & (c ^ d)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[5 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(d ^ b & (c ^ d)) as i64
+            + 0x5a827999 as i64
+            + x[5 as i32 as usize] as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ a & (b ^ c)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[6 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(c ^ a & (b ^ c)) as i64
+            + 0x5a827999 as i64
+            + x[6 as i32 as usize] as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ e & (a ^ b)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[7 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(b ^ e & (a ^ b)) as i64
+            + 0x5a827999 as i64
+            + x[7 as i32 as usize] as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ d & (e ^ a)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[8 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(a ^ d & (e ^ a)) as i64
+            + 0x5a827999 as i64
+            + x[8 as i32 as usize] as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ c & (d ^ e)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[9 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(e ^ c & (d ^ e)) as i64
+            + 0x5a827999 as i64
+            + x[9 as i32 as usize] as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ b & (c ^ d)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[10 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(d ^ b & (c ^ d)) as i64
+            + 0x5a827999 as i64
+            + x[10 as i32 as usize] as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ a & (b ^ c)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[11 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(c ^ a & (b ^ c)) as i64
+            + 0x5a827999 as i64
+            + x[11 as i32 as usize] as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ e & (a ^ b)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[12 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(b ^ e & (a ^ b)) as i64
+            + 0x5a827999 as i64
+            + x[12 as i32 as usize] as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ d & (e ^ a)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[13 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(a ^ d & (e ^ a)) as i64
+            + 0x5a827999 as i64
+            + x[13 as i32 as usize] as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ c & (d ^ e)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[14 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(e ^ c & (d ^ e)) as i64
+            + 0x5a827999 as i64
+            + x[14 as i32 as usize] as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ b & (c ^ d)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
-            + x[15 as i32 as usize] as ::core::ffi::c_long)) as uint32_t;
+            .wrapping_add(d ^ b & (c ^ d)) as i64
+            + 0x5a827999 as i64
+            + x[15 as i32 as usize] as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(16 as i32 & 0xf as i32) as usize]
@@ -215,13 +215,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(16 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ a & (b ^ c)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
+            .wrapping_add(c ^ a & (b ^ c)) as i64
+            + 0x5a827999 as i64
             + x[(16 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(17 as i32 & 0xf as i32) as usize]
@@ -234,13 +234,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(17 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ e & (a ^ b)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
+            .wrapping_add(b ^ e & (a ^ b)) as i64
+            + 0x5a827999 as i64
             + x[(17 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(18 as i32 & 0xf as i32) as usize]
@@ -253,13 +253,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(18 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ d & (e ^ a)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
+            .wrapping_add(a ^ d & (e ^ a)) as i64
+            + 0x5a827999 as i64
             + x[(18 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(19 as i32 & 0xf as i32) as usize]
@@ -272,13 +272,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(19 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ c & (d ^ e)) as ::core::ffi::c_long
-            + 0x5a827999 as ::core::ffi::c_long
+            .wrapping_add(e ^ c & (d ^ e)) as i64
+            + 0x5a827999 as i64
             + x[(19 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(20 as i32 & 0xf as i32) as usize]
@@ -291,13 +291,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(20 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ c ^ d) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(b ^ c ^ d) as i64
+            + 0x6ed9eba1 as i64
             + x[(20 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(21 as i32 & 0xf as i32) as usize]
@@ -310,13 +310,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(21 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ b ^ c) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(a ^ b ^ c) as i64
+            + 0x6ed9eba1 as i64
             + x[(21 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(22 as i32 & 0xf as i32) as usize]
@@ -329,13 +329,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(22 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ a ^ b) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(e ^ a ^ b) as i64
+            + 0x6ed9eba1 as i64
             + x[(22 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(23 as i32 & 0xf as i32) as usize]
@@ -348,13 +348,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(23 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ e ^ a) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(d ^ e ^ a) as i64
+            + 0x6ed9eba1 as i64
             + x[(23 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(24 as i32 & 0xf as i32) as usize]
@@ -367,13 +367,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(24 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ d ^ e) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(c ^ d ^ e) as i64
+            + 0x6ed9eba1 as i64
             + x[(24 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(25 as i32 & 0xf as i32) as usize]
@@ -386,13 +386,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(25 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ c ^ d) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(b ^ c ^ d) as i64
+            + 0x6ed9eba1 as i64
             + x[(25 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(26 as i32 & 0xf as i32) as usize]
@@ -405,13 +405,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(26 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ b ^ c) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(a ^ b ^ c) as i64
+            + 0x6ed9eba1 as i64
             + x[(26 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(27 as i32 & 0xf as i32) as usize]
@@ -424,13 +424,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(27 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ a ^ b) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(e ^ a ^ b) as i64
+            + 0x6ed9eba1 as i64
             + x[(27 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(28 as i32 & 0xf as i32) as usize]
@@ -443,13 +443,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(28 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ e ^ a) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(d ^ e ^ a) as i64
+            + 0x6ed9eba1 as i64
             + x[(28 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(29 as i32 & 0xf as i32) as usize]
@@ -462,13 +462,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(29 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ d ^ e) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(c ^ d ^ e) as i64
+            + 0x6ed9eba1 as i64
             + x[(29 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(30 as i32 & 0xf as i32) as usize]
@@ -481,13 +481,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(30 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ c ^ d) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(b ^ c ^ d) as i64
+            + 0x6ed9eba1 as i64
             + x[(30 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(31 as i32 & 0xf as i32) as usize]
@@ -500,13 +500,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(31 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ b ^ c) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(a ^ b ^ c) as i64
+            + 0x6ed9eba1 as i64
             + x[(31 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(32 as i32 & 0xf as i32) as usize]
@@ -519,13 +519,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(32 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ a ^ b) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(e ^ a ^ b) as i64
+            + 0x6ed9eba1 as i64
             + x[(32 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(33 as i32 & 0xf as i32) as usize]
@@ -538,13 +538,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(33 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ e ^ a) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(d ^ e ^ a) as i64
+            + 0x6ed9eba1 as i64
             + x[(33 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(34 as i32 & 0xf as i32) as usize]
@@ -557,13 +557,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(34 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ d ^ e) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(c ^ d ^ e) as i64
+            + 0x6ed9eba1 as i64
             + x[(34 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(35 as i32 & 0xf as i32) as usize]
@@ -576,13 +576,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(35 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ c ^ d) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(b ^ c ^ d) as i64
+            + 0x6ed9eba1 as i64
             + x[(35 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(36 as i32 & 0xf as i32) as usize]
@@ -595,13 +595,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(36 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ b ^ c) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(a ^ b ^ c) as i64
+            + 0x6ed9eba1 as i64
             + x[(36 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(37 as i32 & 0xf as i32) as usize]
@@ -614,13 +614,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(37 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ a ^ b) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(e ^ a ^ b) as i64
+            + 0x6ed9eba1 as i64
             + x[(37 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(38 as i32 & 0xf as i32) as usize]
@@ -633,13 +633,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(38 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ e ^ a) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(d ^ e ^ a) as i64
+            + 0x6ed9eba1 as i64
             + x[(38 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(39 as i32 & 0xf as i32) as usize]
@@ -652,13 +652,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(39 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ d ^ e) as ::core::ffi::c_long
-            + 0x6ed9eba1 as ::core::ffi::c_long
+            .wrapping_add(c ^ d ^ e) as i64
+            + 0x6ed9eba1 as i64
             + x[(39 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(40 as i32 & 0xf as i32) as usize]
@@ -671,13 +671,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(40 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b & c | d & (b | c)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(b & c | d & (b | c)) as i64
+            + 0x8f1bbcdc as i64
             + x[(40 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(41 as i32 & 0xf as i32) as usize]
@@ -690,13 +690,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(41 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a & b | c & (a | b)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(a & b | c & (a | b)) as i64
+            + 0x8f1bbcdc as i64
             + x[(41 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(42 as i32 & 0xf as i32) as usize]
@@ -709,13 +709,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(42 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e & a | b & (e | a)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(e & a | b & (e | a)) as i64
+            + 0x8f1bbcdc as i64
             + x[(42 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(43 as i32 & 0xf as i32) as usize]
@@ -728,13 +728,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(43 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d & e | a & (d | e)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(d & e | a & (d | e)) as i64
+            + 0x8f1bbcdc as i64
             + x[(43 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(44 as i32 & 0xf as i32) as usize]
@@ -747,13 +747,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(44 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c & d | e & (c | d)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(c & d | e & (c | d)) as i64
+            + 0x8f1bbcdc as i64
             + x[(44 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(45 as i32 & 0xf as i32) as usize]
@@ -766,13 +766,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(45 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b & c | d & (b | c)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(b & c | d & (b | c)) as i64
+            + 0x8f1bbcdc as i64
             + x[(45 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(46 as i32 & 0xf as i32) as usize]
@@ -785,13 +785,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(46 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a & b | c & (a | b)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(a & b | c & (a | b)) as i64
+            + 0x8f1bbcdc as i64
             + x[(46 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(47 as i32 & 0xf as i32) as usize]
@@ -804,13 +804,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(47 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e & a | b & (e | a)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(e & a | b & (e | a)) as i64
+            + 0x8f1bbcdc as i64
             + x[(47 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(48 as i32 & 0xf as i32) as usize]
@@ -823,13 +823,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(48 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d & e | a & (d | e)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(d & e | a & (d | e)) as i64
+            + 0x8f1bbcdc as i64
             + x[(48 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(49 as i32 & 0xf as i32) as usize]
@@ -842,13 +842,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(49 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c & d | e & (c | d)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(c & d | e & (c | d)) as i64
+            + 0x8f1bbcdc as i64
             + x[(49 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(50 as i32 & 0xf as i32) as usize]
@@ -861,13 +861,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(50 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b & c | d & (b | c)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(b & c | d & (b | c)) as i64
+            + 0x8f1bbcdc as i64
             + x[(50 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(51 as i32 & 0xf as i32) as usize]
@@ -880,13 +880,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(51 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a & b | c & (a | b)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(a & b | c & (a | b)) as i64
+            + 0x8f1bbcdc as i64
             + x[(51 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(52 as i32 & 0xf as i32) as usize]
@@ -899,13 +899,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(52 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e & a | b & (e | a)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(e & a | b & (e | a)) as i64
+            + 0x8f1bbcdc as i64
             + x[(52 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(53 as i32 & 0xf as i32) as usize]
@@ -918,13 +918,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(53 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d & e | a & (d | e)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(d & e | a & (d | e)) as i64
+            + 0x8f1bbcdc as i64
             + x[(53 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(54 as i32 & 0xf as i32) as usize]
@@ -937,13 +937,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(54 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c & d | e & (c | d)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(c & d | e & (c | d)) as i64
+            + 0x8f1bbcdc as i64
             + x[(54 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(55 as i32 & 0xf as i32) as usize]
@@ -956,13 +956,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(55 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b & c | d & (b | c)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(b & c | d & (b | c)) as i64
+            + 0x8f1bbcdc as i64
             + x[(55 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(56 as i32 & 0xf as i32) as usize]
@@ -975,13 +975,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(56 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a & b | c & (a | b)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(a & b | c & (a | b)) as i64
+            + 0x8f1bbcdc as i64
             + x[(56 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(57 as i32 & 0xf as i32) as usize]
@@ -994,13 +994,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(57 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e & a | b & (e | a)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(e & a | b & (e | a)) as i64
+            + 0x8f1bbcdc as i64
             + x[(57 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(58 as i32 & 0xf as i32) as usize]
@@ -1013,13 +1013,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(58 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d & e | a & (d | e)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(d & e | a & (d | e)) as i64
+            + 0x8f1bbcdc as i64
             + x[(58 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(59 as i32 & 0xf as i32) as usize]
@@ -1032,13 +1032,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(59 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c & d | e & (c | d)) as ::core::ffi::c_long
-            + 0x8f1bbcdc as ::core::ffi::c_long
+            .wrapping_add(c & d | e & (c | d)) as i64
+            + 0x8f1bbcdc as i64
             + x[(59 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(60 as i32 & 0xf as i32) as usize]
@@ -1051,13 +1051,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(60 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ c ^ d) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(b ^ c ^ d) as i64
+            + 0xca62c1d6 as i64
             + x[(60 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(61 as i32 & 0xf as i32) as usize]
@@ -1070,13 +1070,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(61 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ b ^ c) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(a ^ b ^ c) as i64
+            + 0xca62c1d6 as i64
             + x[(61 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(62 as i32 & 0xf as i32) as usize]
@@ -1089,13 +1089,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(62 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ a ^ b) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(e ^ a ^ b) as i64
+            + 0xca62c1d6 as i64
             + x[(62 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(63 as i32 & 0xf as i32) as usize]
@@ -1108,13 +1108,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(63 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ e ^ a) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(d ^ e ^ a) as i64
+            + 0xca62c1d6 as i64
             + x[(63 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(64 as i32 & 0xf as i32) as usize]
@@ -1127,13 +1127,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(64 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ d ^ e) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(c ^ d ^ e) as i64
+            + 0xca62c1d6 as i64
             + x[(64 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(65 as i32 & 0xf as i32) as usize]
@@ -1146,13 +1146,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(65 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ c ^ d) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(b ^ c ^ d) as i64
+            + 0xca62c1d6 as i64
             + x[(65 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(66 as i32 & 0xf as i32) as usize]
@@ -1165,13 +1165,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(66 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ b ^ c) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(a ^ b ^ c) as i64
+            + 0xca62c1d6 as i64
             + x[(66 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(67 as i32 & 0xf as i32) as usize]
@@ -1184,13 +1184,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(67 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ a ^ b) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(e ^ a ^ b) as i64
+            + 0xca62c1d6 as i64
             + x[(67 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(68 as i32 & 0xf as i32) as usize]
@@ -1203,13 +1203,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(68 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ e ^ a) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(d ^ e ^ a) as i64
+            + 0xca62c1d6 as i64
             + x[(68 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(69 as i32 & 0xf as i32) as usize]
@@ -1222,13 +1222,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(69 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ d ^ e) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(c ^ d ^ e) as i64
+            + 0xca62c1d6 as i64
             + x[(69 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(70 as i32 & 0xf as i32) as usize]
@@ -1241,13 +1241,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(70 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ c ^ d) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(b ^ c ^ d) as i64
+            + 0xca62c1d6 as i64
             + x[(70 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(71 as i32 & 0xf as i32) as usize]
@@ -1260,13 +1260,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(71 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ b ^ c) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(a ^ b ^ c) as i64
+            + 0xca62c1d6 as i64
             + x[(71 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(72 as i32 & 0xf as i32) as usize]
@@ -1279,13 +1279,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(72 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ a ^ b) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(e ^ a ^ b) as i64
+            + 0xca62c1d6 as i64
             + x[(72 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(73 as i32 & 0xf as i32) as usize]
@@ -1298,13 +1298,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(73 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ e ^ a) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(d ^ e ^ a) as i64
+            + 0xca62c1d6 as i64
             + x[(73 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(74 as i32 & 0xf as i32) as usize]
@@ -1317,13 +1317,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(74 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ d ^ e) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(c ^ d ^ e) as i64
+            + 0xca62c1d6 as i64
             + x[(74 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     tm = x[(75 as i32 & 0xf as i32) as usize]
@@ -1336,13 +1336,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(75 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    e = (e as ::core::ffi::c_long
+    e = (e as i64
         + ((a << 5 as i32
             | a >> 32 as i32 - 5 as i32)
-            .wrapping_add(b ^ c ^ d) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(b ^ c ^ d) as i64
+            + 0xca62c1d6 as i64
             + x[(75 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     b = b << 30 as i32
         | b >> 32 as i32 - 30 as i32;
     tm = x[(76 as i32 & 0xf as i32) as usize]
@@ -1355,13 +1355,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(76 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    d = (d as ::core::ffi::c_long
+    d = (d as i64
         + ((e << 5 as i32
             | e >> 32 as i32 - 5 as i32)
-            .wrapping_add(a ^ b ^ c) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(a ^ b ^ c) as i64
+            + 0xca62c1d6 as i64
             + x[(76 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     a = a << 30 as i32
         | a >> 32 as i32 - 30 as i32;
     tm = x[(77 as i32 & 0xf as i32) as usize]
@@ -1374,13 +1374,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(77 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    c = (c as ::core::ffi::c_long
+    c = (c as i64
         + ((d << 5 as i32
             | d >> 32 as i32 - 5 as i32)
-            .wrapping_add(e ^ a ^ b) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(e ^ a ^ b) as i64
+            + 0xca62c1d6 as i64
             + x[(77 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     e = e << 30 as i32
         | e >> 32 as i32 - 30 as i32;
     tm = x[(78 as i32 & 0xf as i32) as usize]
@@ -1393,13 +1393,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(78 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    b = (b as ::core::ffi::c_long
+    b = (b as i64
         + ((c << 5 as i32
             | c >> 32 as i32 - 5 as i32)
-            .wrapping_add(d ^ e ^ a) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(d ^ e ^ a) as i64
+            + 0xca62c1d6 as i64
             + x[(78 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     d = d << 30 as i32
         | d >> 32 as i32 - 30 as i32;
     tm = x[(79 as i32 & 0xf as i32) as usize]
@@ -1412,13 +1412,13 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     x[(79 as i32 & 0xf as i32) as usize] = tm
         << 1 as i32
         | tm >> 32 as i32 - 1 as i32;
-    a = (a as ::core::ffi::c_long
+    a = (a as i64
         + ((b << 5 as i32
             | b >> 32 as i32 - 5 as i32)
-            .wrapping_add(c ^ d ^ e) as ::core::ffi::c_long
-            + 0xca62c1d6 as ::core::ffi::c_long
+            .wrapping_add(c ^ d ^ e) as i64
+            + 0xca62c1d6 as i64
             + x[(79 as i32 & 0xf as i32) as usize]
-                as ::core::ffi::c_long)) as uint32_t;
+                as i64)) as uint32_t;
     c = c << 30 as i32
         | c >> 32 as i32 - 30 as i32;
     (*hd).h0 = (*hd).h0.wrapping_add(a);

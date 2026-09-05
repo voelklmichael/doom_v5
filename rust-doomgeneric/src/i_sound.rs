@@ -337,7 +337,7 @@ pub unsafe extern "C" fn I_BindSoundVariables() {
         static mut use_libsamplerate: i32;
     }
     extern "C" {
-        static mut libsamplerate_scale: ::core::ffi::c_float;
+        static mut libsamplerate_scale: f32;
     }
     M_BindVariable("snd_musicdevice",
         &raw mut snd_musicdevice as *mut ::core::ffi::c_void,

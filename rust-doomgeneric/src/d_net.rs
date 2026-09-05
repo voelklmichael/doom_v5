@@ -1376,7 +1376,7 @@ unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
     let mut player_num: u32 = 0;
     player_num = player.offset_from(&raw mut players as *mut player_t)
-        as ::core::ffi::c_long as u32;
+        as i64 as u32;
     M_StringCopy(
         &raw mut exitmsg as *mut ::core::ffi::c_char,
         b"Player 1 left the game\0" as *const u8 as *const ::core::ffi::c_char,
