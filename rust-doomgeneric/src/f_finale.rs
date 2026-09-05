@@ -11,24 +11,24 @@ extern "C" {
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
+    fn toupper(__c: i32) -> i32;
+    fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     fn V_DrawPatchFlipped(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
+        x: i32,
+        y: i32,
         patch: *mut patch_t,
     );
     fn V_MarkRect(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
     );
     fn W_CacheLumpNum(
-        lump: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        lump: i32,
+        tag: i32,
     ) -> *mut ::core::ffi::c_void;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -38,22 +38,22 @@ extern "C" {
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    fn S_StartMusic(music_id: ::core::ffi::c_int);
-    fn S_ChangeMusic(music_id: ::core::ffi::c_int, looping: ::core::ffi::c_int);
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
+    fn S_StartMusic(music_id: i32);
+    fn S_ChangeMusic(music_id: i32, looping: i32);
     static mut gameaction: gameaction_t;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut gameepisode: ::core::ffi::c_int;
-    static mut gamemap: ::core::ffi::c_int;
+    static mut gameepisode: i32;
+    static mut gamemap: i32;
     static mut automapactive: bool;
     static mut viewactive: bool;
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     static mut wipegamestate: gamestate_t;
     static mut I_VideoBuffer: *mut byte;
-    static mut firstspritelump: ::core::ffi::c_int;
+    static mut firstspritelump: i32;
     static mut sprites: *mut spritedef_t;
     static mut hu_font: [*mut patch_t; 63];
 }
@@ -61,15 +61,15 @@ pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type __int32_t = i32;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -79,7 +79,7 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -90,13 +90,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -111,20 +111,20 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type gamestate_t = ::core::ffi::c_uint;
+pub type gamestate_t = u32;
 pub const GS_DEMOSCREEN: gamestate_t = 3;
 pub const GS_FINALE: gamestate_t = 2;
 pub const GS_INTERMISSION: gamestate_t = 1;
 pub const GS_LEVEL: gamestate_t = 0;
-pub type gameaction_t = ::core::ffi::c_uint;
+pub type gameaction_t = u32;
 pub const ga_screenshot: gameaction_t = 9;
 pub const ga_worlddone: gameaction_t = 8;
 pub const ga_victory: gameaction_t = 7;
@@ -135,7 +135,7 @@ pub const ga_loadgame: gameaction_t = 3;
 pub const ga_newgame: gameaction_t = 2;
 pub const ga_loadlevel: gameaction_t = 1;
 pub const ga_nothing: gameaction_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -147,7 +147,7 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -287,7 +287,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1256,7 +1256,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1395,7 +1395,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMMUSIC: C2RustUnnamed_0 = 68;
 pub const mus_dm2int: C2RustUnnamed_0 = 67;
 pub const mus_dm2ttl: C2RustUnnamed_0 = 66;
@@ -1465,7 +1465,7 @@ pub const mus_e1m3: C2RustUnnamed_0 = 3;
 pub const mus_e1m2: C2RustUnnamed_0 = 2;
 pub const mus_e1m1: C2RustUnnamed_0 = 1;
 pub const mus_None: C2RustUnnamed_0 = 0;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const NUMSFX: C2RustUnnamed_1 = 109;
 pub const sfx_radio: C2RustUnnamed_1 = 108;
 pub const sfx_skeatk: C2RustUnnamed_1 = 107;
@@ -1576,7 +1576,7 @@ pub const sfx_sgcock: C2RustUnnamed_1 = 3;
 pub const sfx_shotgn: C2RustUnnamed_1 = 2;
 pub const sfx_pistol: C2RustUnnamed_1 = 1;
 pub const sfx_None: C2RustUnnamed_1 = 0;
-pub type finalestage_t = ::core::ffi::c_uint;
+pub type finalestage_t = u32;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;
 pub const F_STAGE_TEXT: finalestage_t = 0;
@@ -1584,8 +1584,8 @@ pub const F_STAGE_TEXT: finalestage_t = 0;
 #[repr(C)]
 pub struct textscreen_t {
     pub mission: GameMission_t,
-    pub episode: ::core::ffi::c_int,
-    pub level: ::core::ffi::c_int,
+    pub episode: i32,
+    pub level: i32,
     pub background: &'static str,
     pub text: &'static str,
 }
@@ -1595,12 +1595,12 @@ pub struct castinfo_t {
     pub name: Option<&'static str>,
     pub type_0: mobjtype_t,
 }
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
+pub const MAXPLAYERS: i32 = 4 as i32;
 pub const E1TEXT: &str = "Once you beat the big badasses and\nclean out the moon base you're supposed\nto win, aren't you? Aren't you? Where's\nyour fat reward and ticket home? What\nthe hell is this? It's not supposed to\nend this way!\n\nIt stinks like rotten meat, but looks\nlike the lost Deimos base.  Looks like\nyou're stuck on The Shores of Hell.\nThe only way out is through.\n\nTo continue the DOOM experience, play\nThe Shores of Hell and its amazing\nsequel, Inferno!\n";
 pub const E2TEXT: &str = "You've done it! The hideous cyber-\ndemon lord that ruled the lost Deimos\nmoon base has been slain and you\nare triumphant! But ... where are\nyou? You clamber to the edge of the\nmoon and look down to see the awful\ntruth.\n\nDeimos floats above Hell itself!\nYou've never heard of anyone escaping\nfrom Hell, but you'll make the bastards\nsorry they ever heard of you! Quickly,\nyou rappel down to  the surface of\nHell.\n\nNow, it's on to the final chapter of\nDOOM! -- Inferno.";
 pub const E3TEXT: &str = "The loathsome spiderdemon that\nmasterminded the invasion of the moon\nbases and caused so much death has had\nits ass kicked for all time.\n\nA hidden doorway opens and you enter.\nYou've proven too tough for Hell to\ncontain, and now Hell at last plays\nfair -- for you emerge from the door\nto see the green fields of Earth!\nHome at last.\n\nYou wonder what's been happening on\nEarth while you were battling evil\nunleashed. It's good that no Hell-\nspawn could have come through that\ndoor with you ...";
@@ -1640,167 +1640,167 @@ pub const CC_ARCH: &str = "ARCH-VILE";
 pub const CC_SPIDER: &str = "THE SPIDER MASTERMIND";
 pub const CC_CYBER: &str = "THE CYBERDEMON";
 pub const CC_HERO: &str = "OUR HERO";
-pub const FF_FRAMEMASK: ::core::ffi::c_int = 0x7fff as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
+pub const FF_FRAMEMASK: i32 = 0x7fff as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
 #[no_mangle]
 pub static mut finalestage: finalestage_t = F_STAGE_TEXT;
 #[no_mangle]
-pub static mut finalecount: ::core::ffi::c_uint = 0;
-pub const TEXTSPEED: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const TEXTWAIT: ::core::ffi::c_int = 250 as ::core::ffi::c_int;
+pub static mut finalecount: u32 = 0;
+pub const TEXTSPEED: i32 = 3 as i32;
+pub const TEXTWAIT: i32 = 250 as i32;
 static mut textscreens: [textscreen_t; 22] = [
     textscreen_t {
         mission: doom,
-        episode: 1 as ::core::ffi::c_int,
-        level: 8 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 8 as i32,
         background: "FLOOR4_8",
         text: E1TEXT,
     },
     textscreen_t {
         mission: doom,
-        episode: 2 as ::core::ffi::c_int,
-        level: 8 as ::core::ffi::c_int,
+        episode: 2 as i32,
+        level: 8 as i32,
         background: "SFLR6_1",
         text: E2TEXT,
     },
     textscreen_t {
         mission: doom,
-        episode: 3 as ::core::ffi::c_int,
-        level: 8 as ::core::ffi::c_int,
+        episode: 3 as i32,
+        level: 8 as i32,
         background: "MFLR8_4",
         text: E3TEXT,
     },
     textscreen_t {
         mission: doom,
-        episode: 4 as ::core::ffi::c_int,
-        level: 8 as ::core::ffi::c_int,
+        episode: 4 as i32,
+        level: 8 as i32,
         background: "MFLR8_3",
         text: E4TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 6 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 6 as i32,
         background: "SLIME16",
         text: C1TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 11 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 11 as i32,
         background: "RROCK14",
         text: C2TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 20 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 20 as i32,
         background: "RROCK07",
         text: C3TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 30 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 30 as i32,
         background: "RROCK17",
         text: C4TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 15 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 15 as i32,
         background: "RROCK13",
         text: C5TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 31 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 31 as i32,
         background: "RROCK19",
         text: C6TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 6 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 6 as i32,
         background: "SLIME16",
         text: T1TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 11 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 11 as i32,
         background: "RROCK14",
         text: T2TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 20 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 20 as i32,
         background: "RROCK07",
         text: T3TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 30 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 30 as i32,
         background: "RROCK17",
         text: T4TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 15 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 15 as i32,
         background: "RROCK13",
         text: T5TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 31 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 31 as i32,
         background: "RROCK19",
         text: T6TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 6 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 6 as i32,
         background: "SLIME16",
         text: P1TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 11 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 11 as i32,
         background: "RROCK14",
         text: P2TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 20 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 20 as i32,
         background: "RROCK07",
         text: P3TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 30 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 30 as i32,
         background: "RROCK17",
         text: P4TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 15 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 15 as i32,
         background: "RROCK13",
         text: P5TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 31 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        level: 31 as i32,
         background: "RROCK19",
         text: P6TEXT,
     },
@@ -1816,23 +1816,23 @@ pub unsafe extern "C" fn F_StartFinale() {
     gamestate = GS_FINALE;
     viewactive = false;
     automapactive = false;
-    if (if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
     } else {
-        (if gamemission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        (if gamemission as u32
+            == pack_hacx as i32 as u32
         {
-            doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom2 as i32 as u32
         } else {
-            gamemission as ::core::ffi::c_uint
+            gamemission as u32
         })
-    }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+    }) == doom as i32 as u32
     {
-        S_ChangeMusic(mus_victor as ::core::ffi::c_int, true_0);
+        S_ChangeMusic(mus_victor as i32, true_0);
     } else {
-        S_ChangeMusic(mus_read_m as ::core::ffi::c_int, true_0);
+        S_ChangeMusic(mus_read_m as i32, true_0);
     }
     i = 0 as size_t;
     while i
@@ -1841,39 +1841,39 @@ pub unsafe extern "C" fn F_StartFinale() {
     {
         let mut screen: *mut textscreen_t = (&raw mut textscreens as *mut textscreen_t)
             .offset(i as isize) as *mut textscreen_t;
-        if gameversion as ::core::ffi::c_uint
-            == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint
-            && (*screen).mission as ::core::ffi::c_uint
-                == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gameversion as u32
+            == exe_chex as i32 as u32
+            && (*screen).mission as u32
+                == doom as i32 as u32
         {
-            (*screen).level = 5 as ::core::ffi::c_int;
+            (*screen).level = 5 as i32;
         }
-        if (if gamemission as ::core::ffi::c_uint
-            == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+        if (if gamemission as u32
+            == pack_chex as i32 as u32
         {
-            doom as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom as i32 as u32
         } else {
-            (if gamemission as ::core::ffi::c_uint
-                == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+            (if gamemission as u32
+                == pack_hacx as i32 as u32
             {
-                doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+                doom2 as i32 as u32
             } else {
-                gamemission as ::core::ffi::c_uint
+                gamemission as u32
             })
-        }) == (*screen).mission as ::core::ffi::c_uint
-            && ((if gamemission as ::core::ffi::c_uint
-                == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+        }) == (*screen).mission as u32
+            && ((if gamemission as u32
+                == pack_chex as i32 as u32
             {
-                doom as ::core::ffi::c_int as ::core::ffi::c_uint
+                doom as i32 as u32
             } else {
-                (if gamemission as ::core::ffi::c_uint
-                    == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+                (if gamemission as u32
+                    == pack_hacx as i32 as u32
                 {
-                    doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+                    doom2 as i32 as u32
                 } else {
-                    gamemission as ::core::ffi::c_uint
+                    gamemission as u32
                 })
-            }) != doom as ::core::ffi::c_int as ::core::ffi::c_uint
+            }) != doom as i32 as u32
                 || gameepisode == (*screen).episode) && gamemap == (*screen).level
         {
             finaletext = (*screen).text;
@@ -1884,12 +1884,12 @@ pub unsafe extern "C" fn F_StartFinale() {
     finaletext = finaletext;
     finaleflat = finaleflat;
     finalestage = F_STAGE_TEXT;
-    finalecount = 0 as ::core::ffi::c_uint;
+    finalecount = 0 as u32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_Responder(mut event: *mut event_t) -> boolean {
-    if finalestage as ::core::ffi::c_uint
-        == F_STAGE_CAST as ::core::ffi::c_int as ::core::ffi::c_uint
+    if finalestage as u32
+        == F_STAGE_CAST as i32 as u32
     {
         return F_CastResponder(event);
     }
@@ -1898,9 +1898,9 @@ pub unsafe extern "C" fn F_Responder(mut event: *mut event_t) -> boolean {
 #[no_mangle]
 pub unsafe extern "C" fn F_Ticker() {
     let mut i: size_t = 0;
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        && finalecount > 50 as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
+        && finalecount > 50 as u32
     {
         i = 0 as size_t;
         while i < MAXPLAYERS as size_t {
@@ -1910,7 +1910,7 @@ pub unsafe extern "C" fn F_Ticker() {
             i = i.wrapping_add(1);
         }
         if i < MAXPLAYERS as size_t {
-            if gamemap == 30 as ::core::ffi::c_int {
+            if gamemap == 30 as i32 {
                 F_StartCast();
             } else {
                 gameaction = ga_worlddone;
@@ -1918,106 +1918,106 @@ pub unsafe extern "C" fn F_Ticker() {
         }
     }
     finalecount = finalecount.wrapping_add(1);
-    if finalestage as ::core::ffi::c_uint
-        == F_STAGE_CAST as ::core::ffi::c_int as ::core::ffi::c_uint
+    if finalestage as u32
+        == F_STAGE_CAST as i32 as u32
     {
         F_CastTicker();
         return;
     }
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         return;
     }
-    if finalestage as ::core::ffi::c_uint
-        == F_STAGE_TEXT as ::core::ffi::c_int as ::core::ffi::c_uint
+    if finalestage as u32
+        == F_STAGE_TEXT as i32 as u32
         && finalecount as size_t
             > (finaletext.len() as size_t)
                 .wrapping_mul(TEXTSPEED as size_t)
                 .wrapping_add(TEXTWAIT as size_t)
     {
-        finalecount = 0 as ::core::ffi::c_uint;
+        finalecount = 0 as u32;
         finalestage = F_STAGE_ARTSCREEN;
         wipegamestate = 4294967295 as gamestate_t;
-        if gameepisode == 3 as ::core::ffi::c_int {
-            S_StartMusic(mus_bunny as ::core::ffi::c_int);
+        if gameepisode == 3 as i32 {
+            S_StartMusic(mus_bunny as i32);
         }
     }
 }
-pub const HU_FONTSTART: ::core::ffi::c_int = '!' as i32;
-pub const HU_FONTEND: ::core::ffi::c_int = '_' as i32;
-pub const HU_FONTSIZE: ::core::ffi::c_int = HU_FONTEND - HU_FONTSTART
-    + 1 as ::core::ffi::c_int;
+pub const HU_FONTSTART: i32 = '!' as i32;
+pub const HU_FONTEND: i32 = '_' as i32;
+pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART
+    + 1 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn F_TextWrite() {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
-    let mut w: ::core::ffi::c_int = 0;
-    let mut count: ::core::ffi::c_int = 0;
-    let mut c: ::core::ffi::c_int = 0;
-    let mut cx: ::core::ffi::c_int = 0;
-    let mut cy: ::core::ffi::c_int = 0;
-    src = W_CacheLumpName(finaleflat, PU_CACHE as ::core::ffi::c_int) as *mut byte;
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
+    let mut w: i32 = 0;
+    let mut count: i32 = 0;
+    let mut c: i32 = 0;
+    let mut cx: i32 = 0;
+    let mut cy: i32 = 0;
+    src = W_CacheLumpName(finaleflat, PU_CACHE as i32) as *mut byte;
     dest = I_VideoBuffer;
-    y = 0 as ::core::ffi::c_int;
+    y = 0 as i32;
     while y < SCREENHEIGHT {
-        x = 0 as ::core::ffi::c_int;
-        while x < SCREENWIDTH / 64 as ::core::ffi::c_int {
+        x = 0 as i32;
+        while x < SCREENWIDTH / 64 as i32 {
             memcpy(
                 dest as *mut ::core::ffi::c_void,
                 src
                     .offset(
-                        ((y & 63 as ::core::ffi::c_int) << 6 as ::core::ffi::c_int)
+                        ((y & 63 as i32) << 6 as i32)
                             as isize,
                     ) as *const ::core::ffi::c_void,
                 64 as size_t,
             );
-            dest = dest.offset(64 as ::core::ffi::c_int as isize);
+            dest = dest.offset(64 as i32 as isize);
             x += 1;
         }
-        if SCREENWIDTH & 63 as ::core::ffi::c_int != 0 {
+        if SCREENWIDTH & 63 as i32 != 0 {
             memcpy(
                 dest as *mut ::core::ffi::c_void,
                 src
                     .offset(
-                        ((y & 63 as ::core::ffi::c_int) << 6 as ::core::ffi::c_int)
+                        ((y & 63 as i32) << 6 as i32)
                             as isize,
                     ) as *const ::core::ffi::c_void,
-                (SCREENWIDTH & 63 as ::core::ffi::c_int) as size_t,
+                (SCREENWIDTH & 63 as i32) as size_t,
             );
-            dest = dest.offset((SCREENWIDTH & 63 as ::core::ffi::c_int) as isize);
+            dest = dest.offset((SCREENWIDTH & 63 as i32) as isize);
         }
         y += 1;
     }
     V_MarkRect(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    cx = 10 as ::core::ffi::c_int;
-    cy = 10 as ::core::ffi::c_int;
+    cx = 10 as i32;
+    cy = 10 as i32;
     let mut chars = finaletext.bytes();
-    count = (finalecount as ::core::ffi::c_int - 10 as ::core::ffi::c_int) / TEXTSPEED;
-    if count < 0 as ::core::ffi::c_int {
-        count = 0 as ::core::ffi::c_int;
+    count = (finalecount as i32 - 10 as i32) / TEXTSPEED;
+    if count < 0 as i32 {
+        count = 0 as i32;
     }
     while count != 0 {
         c = match chars.next() {
-            Some(b) => b as ::core::ffi::c_int,
+            Some(b) => b as i32,
             None => break,
         };
         if c == '\n' as i32 {
-            cx = 10 as ::core::ffi::c_int;
-            cy += 11 as ::core::ffi::c_int;
+            cx = 10 as i32;
+            cy += 11 as i32;
         } else {
             c = toupper(c) - HU_FONTSTART;
-            if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
-                cx += 4 as ::core::ffi::c_int;
+            if c < 0 as i32 || c > HU_FONTSIZE {
+                cx += 4 as i32;
             } else {
-                w = (*hu_font[c as usize]).width as ::core::ffi::c_int;
+                w = (*hu_font[c as usize]).width as i32;
                 if cx + w > SCREENWIDTH {
                     break;
                 }
@@ -2104,23 +2104,23 @@ pub static mut castorder: [castinfo_t; 18] = [
     },
 ];
 #[no_mangle]
-pub static mut castnum: ::core::ffi::c_int = 0;
+pub static mut castnum: i32 = 0;
 #[no_mangle]
-pub static mut casttics: ::core::ffi::c_int = 0;
+pub static mut casttics: i32 = 0;
 #[no_mangle]
 pub static mut caststate: *mut state_t = ::core::ptr::null::<state_t>() as *mut state_t;
 #[no_mangle]
 pub static mut castdeath: bool = false;
 #[no_mangle]
-pub static mut castframes: ::core::ffi::c_int = 0;
+pub static mut castframes: i32 = 0;
 #[no_mangle]
-pub static mut castonmelee: ::core::ffi::c_int = 0;
+pub static mut castonmelee: i32 = 0;
 #[no_mangle]
 pub static mut castattacking: bool = false;
 #[no_mangle]
 pub unsafe extern "C" fn F_StartCast() {
     wipegamestate = 4294967295 as gamestate_t;
-    castnum = 0 as ::core::ffi::c_int;
+    castnum = 0 as i32;
     caststate = (&raw mut states as *mut state_t)
         .offset(
             (*(&raw mut mobjinfo as *mut mobjinfo_t)
@@ -2133,28 +2133,28 @@ pub unsafe extern "C" fn F_StartCast() {
     casttics = (*caststate).tics;
     castdeath = false;
     finalestage = F_STAGE_CAST;
-    castframes = 0 as ::core::ffi::c_int;
-    castonmelee = 0 as ::core::ffi::c_int;
+    castframes = 0 as i32;
+    castonmelee = 0 as i32;
     castattacking = false;
-    S_ChangeMusic(mus_evil as ::core::ffi::c_int, true_0);
+    S_ChangeMusic(mus_evil as i32, true_0);
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_CastTicker() {
     let mut current_block: u64;
-    let mut st: ::core::ffi::c_int = 0;
-    let mut sfx: ::core::ffi::c_int = 0;
+    let mut st: i32 = 0;
+    let mut sfx: i32 = 0;
     casttics -= 1;
-    if casttics > 0 as ::core::ffi::c_int {
+    if casttics > 0 as i32 {
         return;
     }
-    if (*caststate).tics == -(1 as ::core::ffi::c_int)
-        || (*caststate).nextstate as ::core::ffi::c_uint
-            == S_NULL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*caststate).tics == -(1 as i32)
+        || (*caststate).nextstate as u32
+            == S_NULL as i32 as u32
     {
         castnum += 1;
         castdeath = false;
         if castorder[castnum as usize].name.is_none() {
-            castnum = 0 as ::core::ffi::c_int;
+            castnum = 0 as i32;
         }
         if mobjinfo[castorder[castnum as usize].type_0 as usize].seesound != 0 {
             S_StartSound(
@@ -2172,72 +2172,72 @@ pub unsafe extern "C" fn F_CastTicker() {
                     ))
                     .seestate as isize,
             ) as *mut state_t;
-        castframes = 0 as ::core::ffi::c_int;
+        castframes = 0 as i32;
         current_block = 1356832168064818221;
     } else if caststate
         == (&raw mut states as *mut state_t)
-            .offset(S_PLAY_ATK1 as ::core::ffi::c_int as isize) as *mut state_t
+            .offset(S_PLAY_ATK1 as i32 as isize) as *mut state_t
     {
         current_block = 13354568087807251156;
     } else {
-        st = (*caststate).nextstate as ::core::ffi::c_int;
+        st = (*caststate).nextstate as i32;
         caststate = (&raw mut states as *mut state_t).offset(st as isize)
             as *mut state_t;
         castframes += 1;
         match st {
             154 => {
-                sfx = sfx_dshtgn as ::core::ffi::c_int;
+                sfx = sfx_dshtgn as i32;
             }
             185 => {
-                sfx = sfx_pistol as ::core::ffi::c_int;
+                sfx = sfx_pistol as i32;
             }
             218 => {
-                sfx = sfx_shotgn as ::core::ffi::c_int;
+                sfx = sfx_shotgn as i32;
             }
             256 => {
-                sfx = sfx_vilatk as ::core::ffi::c_int;
+                sfx = sfx_vilatk as i32;
             }
             336 => {
-                sfx = sfx_skeswg as ::core::ffi::c_int;
+                sfx = sfx_skeswg as i32;
             }
             338 => {
-                sfx = sfx_skepch as ::core::ffi::c_int;
+                sfx = sfx_skepch as i32;
             }
             340 => {
-                sfx = sfx_skeatk as ::core::ffi::c_int;
+                sfx = sfx_skeatk as i32;
             }
             383 | 380 | 377 => {
-                sfx = sfx_firsht as ::core::ffi::c_int;
+                sfx = sfx_firsht as i32;
             }
             417 | 418 | 419 => {
-                sfx = sfx_shotgn as ::core::ffi::c_int;
+                sfx = sfx_shotgn as i32;
             }
             454 => {
-                sfx = sfx_claw as ::core::ffi::c_int;
+                sfx = sfx_claw as i32;
             }
             486 => {
-                sfx = sfx_sgtatk as ::core::ffi::c_int;
+                sfx = sfx_sgtatk as i32;
             }
             538 | 567 | 505 => {
-                sfx = sfx_firsht as ::core::ffi::c_int;
+                sfx = sfx_firsht as i32;
             }
             590 => {
-                sfx = sfx_sklatk as ::core::ffi::c_int;
+                sfx = sfx_sklatk as i32;
             }
             616 | 617 => {
-                sfx = sfx_shotgn as ::core::ffi::c_int;
+                sfx = sfx_shotgn as i32;
             }
             648 => {
-                sfx = sfx_plasma as ::core::ffi::c_int;
+                sfx = sfx_plasma as i32;
             }
             685 | 687 | 689 => {
-                sfx = sfx_rlaunc as ::core::ffi::c_int;
+                sfx = sfx_rlaunc as i32;
             }
             710 => {
-                sfx = sfx_sklatk as ::core::ffi::c_int;
+                sfx = sfx_sklatk as i32;
             }
             _ => {
-                sfx = 0 as ::core::ffi::c_int;
+                sfx = 0 as i32;
             }
         }
         if sfx != 0 {
@@ -2247,7 +2247,7 @@ pub unsafe extern "C" fn F_CastTicker() {
     }
     match current_block {
         1356832168064818221 => {
-            if castframes == 12 as ::core::ffi::c_int {
+            if castframes == 12 as i32 {
                 castattacking = true;
                 if castonmelee != 0 {
                     caststate = (&raw mut states as *mut state_t)
@@ -2272,10 +2272,10 @@ pub unsafe extern "C" fn F_CastTicker() {
                                 .missilestate as isize,
                         ) as *mut state_t;
                 }
-                castonmelee ^= 1 as ::core::ffi::c_int;
+                castonmelee ^= 1 as i32;
                 if caststate
                     == (&raw mut states as *mut state_t)
-                        .offset(S_NULL as ::core::ffi::c_int as isize) as *mut state_t
+                        .offset(S_NULL as i32 as isize) as *mut state_t
                 {
                     if castonmelee != 0 {
                         caststate = (&raw mut states as *mut state_t)
@@ -2303,7 +2303,7 @@ pub unsafe extern "C" fn F_CastTicker() {
                 }
             }
             if castattacking {
-                if castframes == 24 as ::core::ffi::c_int
+                if castframes == 24 as i32
                     || caststate
                         == (&raw mut states as *mut state_t)
                             .offset(
@@ -2329,7 +2329,7 @@ pub unsafe extern "C" fn F_CastTicker() {
     match current_block {
         13354568087807251156 => {
             castattacking = false;
-            castframes = 0 as ::core::ffi::c_int;
+            castframes = 0 as i32;
             caststate = (&raw mut states as *mut state_t)
                 .offset(
                     (*(&raw mut mobjinfo as *mut mobjinfo_t)
@@ -2344,14 +2344,14 @@ pub unsafe extern "C" fn F_CastTicker() {
         _ => {}
     }
     casttics = (*caststate).tics;
-    if casttics == -(1 as ::core::ffi::c_int) {
-        casttics = 15 as ::core::ffi::c_int;
+    if casttics == -(1 as i32) {
+        casttics = 15 as i32;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
-    if (*ev).type_0 as ::core::ffi::c_uint
-        != ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*ev).type_0 as u32
+        != ev_keydown as i32 as u32
     {
         return false_0 as boolean;
     }
@@ -2369,7 +2369,7 @@ pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
                 .deathstate as isize,
         ) as *mut state_t;
     casttics = (*caststate).tics;
-    castframes = 0 as ::core::ffi::c_int;
+    castframes = 0 as i32;
     castattacking = false;
     if mobjinfo[castorder[castnum as usize].type_0 as usize].deathsound != 0 {
         S_StartSound(
@@ -2380,27 +2380,27 @@ pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
     return true_0 as boolean;
 }
 pub unsafe fn F_CastPrint(text: &str) {
-    let mut c: ::core::ffi::c_int = 0;
-    let mut cx: ::core::ffi::c_int = 0;
-    let mut w: ::core::ffi::c_int = 0;
-    let mut width: ::core::ffi::c_int = 0;
+    let mut c: i32 = 0;
+    let mut cx: i32 = 0;
+    let mut w: i32 = 0;
+    let mut width: i32 = 0;
     for b in text.bytes() {
-        c = toupper(b as ::core::ffi::c_int) - HU_FONTSTART;
-        if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
-            width += 4 as ::core::ffi::c_int;
+        c = toupper(b as i32) - HU_FONTSTART;
+        if c < 0 as i32 || c > HU_FONTSIZE {
+            width += 4 as i32;
         } else {
-            w = (*hu_font[c as usize]).width as ::core::ffi::c_int;
+            w = (*hu_font[c as usize]).width as i32;
             width += w;
         }
     }
-    cx = 160 as ::core::ffi::c_int - width / 2 as ::core::ffi::c_int;
+    cx = 160 as i32 - width / 2 as i32;
     for b in text.bytes() {
-        c = toupper(b as ::core::ffi::c_int) - HU_FONTSTART;
-        if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
-            cx += 4 as ::core::ffi::c_int;
+        c = toupper(b as i32) - HU_FONTSTART;
+        if c < 0 as i32 || c > HU_FONTSIZE {
+            cx += 4 as i32;
         } else {
-            w = (*hu_font[c as usize]).width as ::core::ffi::c_int;
-            V_DrawPatch(cx, 180 as ::core::ffi::c_int, hu_font[c as usize]);
+            w = (*hu_font[c as usize]).width as i32;
+            V_DrawPatch(cx, 180 as i32, hu_font[c as usize]);
             cx += w;
         }
     }
@@ -2409,14 +2409,14 @@ pub unsafe fn F_CastPrint(text: &str) {
 pub unsafe extern "C" fn F_CastDrawer() {
     let mut sprdef: *mut spritedef_t = ::core::ptr::null_mut::<spritedef_t>();
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
-    let mut lump: ::core::ffi::c_int = 0;
+    let mut lump: i32 = 0;
     let mut flip: boolean = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     V_DrawPatch(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
         W_CacheLumpName("BOSSBACK",
-            PU_CACHE as ::core::ffi::c_int,
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     F_CastPrint(castorder[castnum as usize].name.unwrap());
@@ -2424,38 +2424,38 @@ pub unsafe extern "C" fn F_CastDrawer() {
     sprframe = (*sprdef)
         .spriteframes
         .offset(((*caststate).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
-    lump = (*sprframe).lump[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
-    flip = (*sprframe).flip[0 as ::core::ffi::c_int as usize] as boolean;
-    patch = W_CacheLumpNum(lump + firstspritelump, PU_CACHE as ::core::ffi::c_int)
+    lump = (*sprframe).lump[0 as i32 as usize] as i32;
+    flip = (*sprframe).flip[0 as i32 as usize] as boolean;
+    patch = W_CacheLumpNum(lump + firstspritelump, PU_CACHE as i32)
         as *mut patch_t;
     if flip != 0 {
-        V_DrawPatchFlipped(160 as ::core::ffi::c_int, 170 as ::core::ffi::c_int, patch);
+        V_DrawPatchFlipped(160 as i32, 170 as i32, patch);
     } else {
-        V_DrawPatch(160 as ::core::ffi::c_int, 170 as ::core::ffi::c_int, patch);
+        V_DrawPatch(160 as i32, 170 as i32, patch);
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_DrawPatchCol(
-    mut x: ::core::ffi::c_int,
+    mut x: i32,
     mut patch: *mut patch_t,
-    mut col: ::core::ffi::c_int,
+    mut col: i32,
 ) {
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
     let mut source: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut desttop: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     column = (patch as *mut byte)
         .offset(
-            *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+            *(&raw const (*patch).columnofs as *const i32)
                 .offset(col as isize) as isize,
         ) as *mut column_t;
     desttop = I_VideoBuffer.offset(x as isize);
-    while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
-        source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
+    while (*column).topdelta as i32 != 0xff as i32 {
+        source = (column as *mut byte).offset(3 as i32 as isize);
         dest = desttop
-            .offset(((*column).topdelta as ::core::ffi::c_int * SCREENWIDTH) as isize);
-        count = (*column).length as ::core::ffi::c_int;
+            .offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
+        count = (*column).length as i32;
         loop {
             let fresh3 = count;
             count = count - 1;
@@ -2468,73 +2468,73 @@ pub unsafe extern "C" fn F_DrawPatchCol(
             dest = dest.offset(SCREENWIDTH as isize);
         }
         column = (column as *mut byte)
-            .offset((*column).length as ::core::ffi::c_int as isize)
-            .offset(4 as ::core::ffi::c_int as isize) as *mut column_t;
+            .offset((*column).length as i32 as isize)
+            .offset(4 as i32 as isize) as *mut column_t;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_BunnyScroll() {
-    let mut scrolled: ::core::ffi::c_int = 0;
-    let mut x: ::core::ffi::c_int = 0;
+    let mut scrolled: i32 = 0;
+    let mut x: i32 = 0;
     let mut p1: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     let mut p2: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     let mut name: [::core::ffi::c_char; 10] = [0; 10];
-    let mut stage: ::core::ffi::c_int = 0;
-    static mut laststage: ::core::ffi::c_int = 0;
+    let mut stage: i32 = 0;
+    static mut laststage: i32 = 0;
     p1 = W_CacheLumpName("PFUB2",
-        PU_LEVEL as ::core::ffi::c_int,
+        PU_LEVEL as i32,
     ) as *mut patch_t;
     p2 = W_CacheLumpName("PFUB1",
-        PU_LEVEL as ::core::ffi::c_int,
+        PU_LEVEL as i32,
     ) as *mut patch_t;
     V_MarkRect(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    scrolled = 320 as ::core::ffi::c_int
-        - (finalecount as ::core::ffi::c_int - 230 as ::core::ffi::c_int)
-            / 2 as ::core::ffi::c_int;
-    if scrolled > 320 as ::core::ffi::c_int {
-        scrolled = 320 as ::core::ffi::c_int;
+    scrolled = 320 as i32
+        - (finalecount as i32 - 230 as i32)
+            / 2 as i32;
+    if scrolled > 320 as i32 {
+        scrolled = 320 as i32;
     }
-    if scrolled < 0 as ::core::ffi::c_int {
-        scrolled = 0 as ::core::ffi::c_int;
+    if scrolled < 0 as i32 {
+        scrolled = 0 as i32;
     }
-    x = 0 as ::core::ffi::c_int;
+    x = 0 as i32;
     while x < SCREENWIDTH {
-        if x + scrolled < 320 as ::core::ffi::c_int {
+        if x + scrolled < 320 as i32 {
             F_DrawPatchCol(x, p1, x + scrolled);
         } else {
-            F_DrawPatchCol(x, p2, x + scrolled - 320 as ::core::ffi::c_int);
+            F_DrawPatchCol(x, p2, x + scrolled - 320 as i32);
         }
         x += 1;
     }
-    if finalecount < 1130 as ::core::ffi::c_uint {
+    if finalecount < 1130 as u32 {
         return;
     }
-    if finalecount < 1180 as ::core::ffi::c_uint {
+    if finalecount < 1180 as u32 {
         V_DrawPatch(
-            (SCREENWIDTH - 13 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
-                / 2 as ::core::ffi::c_int,
-            (SCREENHEIGHT - 8 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
-                / 2 as ::core::ffi::c_int,
+            (SCREENWIDTH - 13 as i32 * 8 as i32)
+                / 2 as i32,
+            (SCREENHEIGHT - 8 as i32 * 8 as i32)
+                / 2 as i32,
             W_CacheLumpName("END0",
-                PU_CACHE as ::core::ffi::c_int,
+                PU_CACHE as i32,
             ) as *mut patch_t,
         );
-        laststage = 0 as ::core::ffi::c_int;
+        laststage = 0 as i32;
         return;
     }
     stage = finalecount
-        .wrapping_sub(1180 as ::core::ffi::c_uint)
-        .wrapping_div(5 as ::core::ffi::c_uint) as ::core::ffi::c_int;
-    if stage > 6 as ::core::ffi::c_int {
-        stage = 6 as ::core::ffi::c_int;
+        .wrapping_sub(1180 as u32)
+        .wrapping_div(5 as u32) as i32;
+    if stage > 6 as i32 {
+        stage = 6 as i32;
     }
     if stage > laststage {
-        S_StartSound(NULL, sfx_pistol as ::core::ffi::c_int);
+        S_StartSound(NULL, sfx_pistol as i32);
         laststage = stage;
     }
     snprintf(
@@ -2544,13 +2544,13 @@ pub unsafe extern "C" fn F_BunnyScroll() {
         stage,
     );
     V_DrawPatch(
-        (SCREENWIDTH - 13 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
-            / 2 as ::core::ffi::c_int,
-        (SCREENHEIGHT - 8 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
-            / 2 as ::core::ffi::c_int,
+        (SCREENWIDTH - 13 as i32 * 8 as i32)
+            / 2 as i32,
+        (SCREENHEIGHT - 8 as i32 * 8 as i32)
+            / 2 as i32,
         W_CacheLumpName(
             &wad_name8_to_string(&raw mut name as *mut ::core::ffi::c_char),
-            PU_CACHE as ::core::ffi::c_int,
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
@@ -2558,13 +2558,13 @@ unsafe extern "C" fn F_ArtScreenDrawer() {
     let mut lumpname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    if gameepisode == 3 as ::core::ffi::c_int {
+    if gameepisode == 3 as i32 {
         F_BunnyScroll();
     } else {
         match gameepisode {
             1 => {
-                if gamemode as ::core::ffi::c_uint
-                    == retail as ::core::ffi::c_int as ::core::ffi::c_uint
+                if gamemode as u32
+                    == retail as i32 as u32
                 {
                     lumpname = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
@@ -2585,18 +2585,18 @@ unsafe extern "C" fn F_ArtScreenDrawer() {
         }
         lumpname = lumpname;
         V_DrawPatch(
-            0 as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
+            0 as i32,
+            0 as i32,
             W_CacheLumpName(
                 &wad_name8_to_string(lumpname),
-                PU_CACHE as ::core::ffi::c_int,
+                PU_CACHE as i32,
             ) as *mut patch_t,
         );
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_Drawer() {
-    match finalestage as ::core::ffi::c_uint {
+    match finalestage as u32 {
         2 => {
             F_CastDrawer();
         }

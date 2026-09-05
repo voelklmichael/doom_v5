@@ -3,8 +3,8 @@ use crate::src::p_spec::{floormove_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 extern "C" {
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     static mut textureheight: *mut fixed_t;
@@ -13,35 +13,35 @@ extern "C" {
     fn P_RemoveThinker(thinker: *mut thinker_t);
     fn P_ChangeSector(sector: *mut sector_t, crunch: boolean) -> boolean;
     fn twoSided(
-        sector: ::core::ffi::c_int,
-        line: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        sector: i32,
+        line: i32,
+    ) -> i32;
     fn getSector(
-        currentSector: ::core::ffi::c_int,
-        line: ::core::ffi::c_int,
-        side: ::core::ffi::c_int,
+        currentSector: i32,
+        line: i32,
+        side: i32,
     ) -> *mut sector_t;
     fn getSide(
-        currentSector: ::core::ffi::c_int,
-        line: ::core::ffi::c_int,
-        side: ::core::ffi::c_int,
+        currentSector: i32,
+        line: i32,
+        side: i32,
     ) -> *mut side_t;
     fn P_FindLowestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindHighestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindNextHighestFloor(
         sec: *mut sector_t,
-        currentheight: ::core::ffi::c_int,
+        currentheight: i32,
     ) -> fixed_t;
     fn P_FindLowestCeilingSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindSectorFromLineTag(
         line: *mut line_t,
-        start: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    static mut leveltime: ::core::ffi::c_int;
+        start: i32,
+    ) -> i32;
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
+    static mut leveltime: i32;
 }
 pub type __uint8_t = u8;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -52,9 +52,9 @@ pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -66,15 +66,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -214,7 +214,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1183,7 +1183,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1322,7 +1322,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type floor_e = ::core::ffi::c_uint;
+pub type floor_e = u32;
 pub const raiseFloor512: floor_e = 12;
 pub const donutRaise: floor_e = 11;
 pub const raiseFloorTurbo: floor_e = 10;
@@ -1336,16 +1336,16 @@ pub const raiseFloor: floor_e = 3;
 pub const turboLower: floor_e = 2;
 pub const lowerFloorToLowest: floor_e = 1;
 pub const lowerFloor: floor_e = 0;
-pub type stair_e = ::core::ffi::c_uint;
+pub type stair_e = u32;
 pub const turbo16: stair_e = 1;
 pub const build8: stair_e = 0;
-pub type result_e = ::core::ffi::c_uint;
+pub type result_e = u32;
 pub const pastdest: result_e = 2;
 pub const crushed: result_e = 1;
 pub const ok: result_e = 0;
 pub const sfx_pstop: C2RustUnnamed_0 = 19;
 pub const sfx_stnmov: C2RustUnnamed_0 = 22;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMSFX: C2RustUnnamed_0 = 109;
 pub const sfx_radio: C2RustUnnamed_0 = 108;
 pub const sfx_skeatk: C2RustUnnamed_0 = 107;
@@ -1454,21 +1454,21 @@ pub const sfx_sgcock: C2RustUnnamed_0 = 3;
 pub const sfx_shotgn: C2RustUnnamed_0 = 2;
 pub const sfx_pistol: C2RustUnnamed_0 = 1;
 pub const sfx_None: C2RustUnnamed_0 = 0;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const ML_TWOSIDED: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const FLOORSPEED: ::core::ffi::c_int = FRACUNIT;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const INT_MAX: i32 = __INT_MAX__;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const ML_TWOSIDED: i32 = 4 as i32;
+pub const FLOORSPEED: i32 = FRACUNIT;
 #[no_mangle]
 pub unsafe extern "C" fn T_MovePlane(
     mut sector: *mut sector_t,
     mut speed: fixed_t,
     mut dest: fixed_t,
     mut crush: boolean,
-    mut floorOrCeiling: ::core::ffi::c_int,
-    mut direction: ::core::ffi::c_int,
+    mut floorOrCeiling: i32,
+    mut direction: i32,
 ) -> result_e {
     let mut flag: boolean = 0;
     let mut lastpos: fixed_t = 0;
@@ -1580,33 +1580,33 @@ pub unsafe extern "C" fn T_MoveFloor(mut floor: *mut floormove_t) {
         (*floor).speed,
         (*floor).floordestheight,
         (*floor).crush,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         (*floor).direction,
     );
-    if leveltime & 7 as ::core::ffi::c_int == 0 {
+    if leveltime & 7 as i32 == 0 {
         S_StartSound(
             &raw mut (*(*floor).sector).soundorg as *mut ::core::ffi::c_void,
-            sfx_stnmov as ::core::ffi::c_int,
+            sfx_stnmov as i32,
         );
     }
-    if res as ::core::ffi::c_uint
-        == pastdest as ::core::ffi::c_int as ::core::ffi::c_uint
+    if res as u32
+        == pastdest as i32 as u32
     {
         (*(*floor).sector).specialdata = NULL;
-        if (*floor).direction == 1 as ::core::ffi::c_int {
-            match (*floor).type_0 as ::core::ffi::c_uint {
+        if (*floor).direction == 1 as i32 {
+            match (*floor).type_0 as u32 {
                 11 => {
                     (*(*floor).sector).special = (*floor).newspecial
-                        as ::core::ffi::c_short;
+                        as i16;
                     (*(*floor).sector).floorpic = (*floor).texture;
                 }
                 _ => {}
             }
-        } else if (*floor).direction == -(1 as ::core::ffi::c_int) {
-            match (*floor).type_0 as ::core::ffi::c_uint {
+        } else if (*floor).direction == -(1 as i32) {
+            match (*floor).type_0 as u32 {
                 6 => {
                     (*(*floor).sector).special = (*floor).newspecial
-                        as ::core::ffi::c_short;
+                        as i16;
                     (*(*floor).sector).floorpic = (*floor).texture;
                 }
                 _ => {}
@@ -1615,7 +1615,7 @@ pub unsafe extern "C" fn T_MoveFloor(mut floor: *mut floormove_t) {
         P_RemoveThinker(&raw mut (*floor).thinker);
         S_StartSound(
             &raw mut (*(*floor).sector).soundorg as *mut ::core::ffi::c_void,
-            sfx_pstop as ::core::ffi::c_int,
+            sfx_pstop as i32,
         );
     }
 }
@@ -1623,27 +1623,27 @@ pub unsafe extern "C" fn T_MoveFloor(mut floor: *mut floormove_t) {
 pub unsafe extern "C" fn EV_DoFloor(
     mut line: *mut line_t,
     mut floortype: floor_e,
-) -> ::core::ffi::c_int {
-    let mut secnum: ::core::ffi::c_int = 0;
-    let mut rtn: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut secnum: i32 = 0;
+    let mut rtn: i32 = 0;
+    let mut i: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut floor: *mut floormove_t = ::core::ptr::null_mut::<floormove_t>();
-    secnum = -(1 as ::core::ffi::c_int);
-    rtn = 0 as ::core::ffi::c_int;
+    secnum = -(1 as i32);
+    rtn = 0 as i32;
     loop {
         secnum = P_FindSectorFromLineTag(line, secnum);
-        if !(secnum >= 0 as ::core::ffi::c_int) {
+        if !(secnum >= 0 as i32) {
             break;
         }
         sec = sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
-        rtn = 1 as ::core::ffi::c_int;
+        rtn = 1 as i32;
         floor = Z_Malloc(
-            ::core::mem::size_of::<floormove_t>() as ::core::ffi::c_int,
-            PU_LEVSPEC as ::core::ffi::c_int,
+            ::core::mem::size_of::<floormove_t>() as i32,
+            PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut floormove_t;
         P_AddThinker(&raw mut (*floor).thinker);
@@ -1655,28 +1655,28 @@ pub unsafe extern "C" fn EV_DoFloor(
         (*floor).type_0 = floortype;
         (*floor).crush = false_0 as boolean;
         let mut current_block_84: u64;
-        match floortype as ::core::ffi::c_uint {
+        match floortype as u32 {
             0 => {
-                (*floor).direction = -(1 as ::core::ffi::c_int);
+                (*floor).direction = -(1 as i32);
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindHighestFloorSurrounding(sec);
                 current_block_84 = 15514718523126015390;
             }
             1 => {
-                (*floor).direction = -(1 as ::core::ffi::c_int);
+                (*floor).direction = -(1 as i32);
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindLowestFloorSurrounding(sec);
                 current_block_84 = 15514718523126015390;
             }
             2 => {
-                (*floor).direction = -(1 as ::core::ffi::c_int);
+                (*floor).direction = -(1 as i32);
                 (*floor).sector = sec;
-                (*floor).speed = (FLOORSPEED * 4 as ::core::ffi::c_int) as fixed_t;
+                (*floor).speed = (FLOORSPEED * 4 as i32) as fixed_t;
                 (*floor).floordestheight = P_FindHighestFloorSurrounding(sec);
                 if (*floor).floordestheight != (*sec).floorheight {
-                    (*floor).floordestheight += 8 as ::core::ffi::c_int * FRACUNIT;
+                    (*floor).floordestheight += 8 as i32 * FRACUNIT;
                 }
                 current_block_84 = 15514718523126015390;
             }
@@ -1688,119 +1688,119 @@ pub unsafe extern "C" fn EV_DoFloor(
                 current_block_84 = 7690836263840410806;
             }
             10 => {
-                (*floor).direction = 1 as ::core::ffi::c_int;
+                (*floor).direction = 1 as i32;
                 (*floor).sector = sec;
-                (*floor).speed = (FLOORSPEED * 4 as ::core::ffi::c_int) as fixed_t;
+                (*floor).speed = (FLOORSPEED * 4 as i32) as fixed_t;
                 (*floor).floordestheight = P_FindNextHighestFloor(
                     sec,
-                    (*sec).floorheight as ::core::ffi::c_int,
+                    (*sec).floorheight as i32,
                 );
                 current_block_84 = 15514718523126015390;
             }
             4 => {
-                (*floor).direction = 1 as ::core::ffi::c_int;
+                (*floor).direction = 1 as i32;
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindNextHighestFloor(
                     sec,
-                    (*sec).floorheight as ::core::ffi::c_int,
+                    (*sec).floorheight as i32,
                 );
                 current_block_84 = 15514718523126015390;
             }
             7 => {
-                (*floor).direction = 1 as ::core::ffi::c_int;
+                (*floor).direction = 1 as i32;
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = ((*(*floor).sector).floorheight
-                    as ::core::ffi::c_int + 24 as ::core::ffi::c_int * FRACUNIT)
+                    as i32 + 24 as i32 * FRACUNIT)
                     as fixed_t;
                 current_block_84 = 15514718523126015390;
             }
             12 => {
-                (*floor).direction = 1 as ::core::ffi::c_int;
+                (*floor).direction = 1 as i32;
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = ((*(*floor).sector).floorheight
-                    as ::core::ffi::c_int + 512 as ::core::ffi::c_int * FRACUNIT)
+                    as i32 + 512 as i32 * FRACUNIT)
                     as fixed_t;
                 current_block_84 = 15514718523126015390;
             }
             8 => {
-                (*floor).direction = 1 as ::core::ffi::c_int;
+                (*floor).direction = 1 as i32;
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = ((*(*floor).sector).floorheight
-                    as ::core::ffi::c_int + 24 as ::core::ffi::c_int * FRACUNIT)
+                    as i32 + 24 as i32 * FRACUNIT)
                     as fixed_t;
                 (*sec).floorpic = (*(*line).frontsector).floorpic;
                 (*sec).special = (*(*line).frontsector).special;
                 current_block_84 = 15514718523126015390;
             }
             5 => {
-                let mut minsize: ::core::ffi::c_int = INT_MAX;
+                let mut minsize: i32 = INT_MAX;
                 let mut side: *mut side_t = ::core::ptr::null_mut::<side_t>();
-                (*floor).direction = 1 as ::core::ffi::c_int;
+                (*floor).direction = 1 as i32;
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
-                i = 0 as ::core::ffi::c_int;
+                i = 0 as i32;
                 while i < (*sec).linecount {
                     if twoSided(secnum, i) != 0 {
-                        side = getSide(secnum, i, 0 as ::core::ffi::c_int);
-                        if (*side).bottomtexture as ::core::ffi::c_int
-                            >= 0 as ::core::ffi::c_int
+                        side = getSide(secnum, i, 0 as i32);
+                        if (*side).bottomtexture as i32
+                            >= 0 as i32
                         {
                             if *textureheight.offset((*side).bottomtexture as isize)
                                 < minsize
                             {
                                 minsize = *textureheight
                                     .offset((*side).bottomtexture as isize)
-                                    as ::core::ffi::c_int;
+                                    as i32;
                             }
                         }
-                        side = getSide(secnum, i, 1 as ::core::ffi::c_int);
-                        if (*side).bottomtexture as ::core::ffi::c_int
-                            >= 0 as ::core::ffi::c_int
+                        side = getSide(secnum, i, 1 as i32);
+                        if (*side).bottomtexture as i32
+                            >= 0 as i32
                         {
                             if *textureheight.offset((*side).bottomtexture as isize)
                                 < minsize
                             {
                                 minsize = *textureheight
                                     .offset((*side).bottomtexture as isize)
-                                    as ::core::ffi::c_int;
+                                    as i32;
                             }
                         }
                     }
                     i += 1;
                 }
                 (*floor).floordestheight = ((*(*floor).sector).floorheight
-                    as ::core::ffi::c_int + minsize) as fixed_t;
+                    as i32 + minsize) as fixed_t;
                 current_block_84 = 15514718523126015390;
             }
             6 => {
-                (*floor).direction = -(1 as ::core::ffi::c_int);
+                (*floor).direction = -(1 as i32);
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindLowestFloorSurrounding(sec);
                 (*floor).texture = (*sec).floorpic;
-                i = 0 as ::core::ffi::c_int;
+                i = 0 as i32;
                 while i < (*sec).linecount {
                     if twoSided(secnum, i) != 0 {
-                        if (*getSide(secnum, i, 0 as ::core::ffi::c_int))
+                        if (*getSide(secnum, i, 0 as i32))
                             .sector
                             .offset_from(sectors) as ::core::ffi::c_long
                             == secnum as ::core::ffi::c_long
                         {
-                            sec = getSector(secnum, i, 1 as ::core::ffi::c_int);
+                            sec = getSector(secnum, i, 1 as i32);
                             if (*sec).floorheight == (*floor).floordestheight {
                                 (*floor).texture = (*sec).floorpic;
-                                (*floor).newspecial = (*sec).special as ::core::ffi::c_int;
+                                (*floor).newspecial = (*sec).special as i32;
                                 break;
                             }
                         } else {
-                            sec = getSector(secnum, i, 0 as ::core::ffi::c_int);
+                            sec = getSector(secnum, i, 0 as i32);
                             if (*sec).floorheight == (*floor).floordestheight {
                                 (*floor).texture = (*sec).floorpic;
-                                (*floor).newspecial = (*sec).special as ::core::ffi::c_int;
+                                (*floor).newspecial = (*sec).special as i32;
                                 break;
                             }
                         }
@@ -1815,7 +1815,7 @@ pub unsafe extern "C" fn EV_DoFloor(
         }
         match current_block_84 {
             7690836263840410806 => {
-                (*floor).direction = 1 as ::core::ffi::c_int;
+                (*floor).direction = 1 as i32;
                 (*floor).sector = sec;
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindLowestCeilingSurrounding(sec);
@@ -1823,10 +1823,10 @@ pub unsafe extern "C" fn EV_DoFloor(
                     (*floor).floordestheight = (*sec).ceilingheight;
                 }
                 (*floor).floordestheight
-                    -= 8 as ::core::ffi::c_int * FRACUNIT
-                        * (floortype as ::core::ffi::c_uint
-                            == raiseFloorCrush as ::core::ffi::c_int
-                                as ::core::ffi::c_uint) as ::core::ffi::c_int;
+                    -= 8 as i32 * FRACUNIT
+                        * (floortype as u32
+                            == raiseFloorCrush as i32
+                                as u32) as i32;
             }
             _ => {}
         }
@@ -1837,34 +1837,34 @@ pub unsafe extern "C" fn EV_DoFloor(
 pub unsafe extern "C" fn EV_BuildStairs(
     mut line: *mut line_t,
     mut type_0: stair_e,
-) -> ::core::ffi::c_int {
-    let mut secnum: ::core::ffi::c_int = 0;
-    let mut height: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    let mut newsecnum: ::core::ffi::c_int = 0;
-    let mut texture: ::core::ffi::c_int = 0;
-    let mut ok_0: ::core::ffi::c_int = 0;
-    let mut rtn: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut secnum: i32 = 0;
+    let mut height: i32 = 0;
+    let mut i: i32 = 0;
+    let mut newsecnum: i32 = 0;
+    let mut texture: i32 = 0;
+    let mut ok_0: i32 = 0;
+    let mut rtn: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut tsec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut floor: *mut floormove_t = ::core::ptr::null_mut::<floormove_t>();
     let mut stairsize: fixed_t = 0 as fixed_t;
     let mut speed: fixed_t = 0 as fixed_t;
-    secnum = -(1 as ::core::ffi::c_int);
-    rtn = 0 as ::core::ffi::c_int;
+    secnum = -(1 as i32);
+    rtn = 0 as i32;
     loop {
         secnum = P_FindSectorFromLineTag(line, secnum);
-        if !(secnum >= 0 as ::core::ffi::c_int) {
+        if !(secnum >= 0 as i32) {
             break;
         }
         sec = sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
-        rtn = 1 as ::core::ffi::c_int;
+        rtn = 1 as i32;
         floor = Z_Malloc(
-            ::core::mem::size_of::<floormove_t>() as ::core::ffi::c_int,
-            PU_LEVSPEC as ::core::ffi::c_int,
+            ::core::mem::size_of::<floormove_t>() as i32,
+            PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut floormove_t;
         P_AddThinker(&raw mut (*floor).thinker);
@@ -1873,45 +1873,45 @@ pub unsafe extern "C" fn EV_BuildStairs(
             Option<unsafe extern "C" fn(*mut floormove_t) -> ()>,
             actionf_p1,
         >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
-        (*floor).direction = 1 as ::core::ffi::c_int;
+        (*floor).direction = 1 as i32;
         (*floor).sector = sec;
-        match type_0 as ::core::ffi::c_uint {
+        match type_0 as u32 {
             0 => {
-                speed = (FLOORSPEED / 4 as ::core::ffi::c_int) as fixed_t;
-                stairsize = (8 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+                speed = (FLOORSPEED / 4 as i32) as fixed_t;
+                stairsize = (8 as i32 * FRACUNIT) as fixed_t;
             }
             1 => {
-                speed = (FLOORSPEED * 4 as ::core::ffi::c_int) as fixed_t;
-                stairsize = (16 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+                speed = (FLOORSPEED * 4 as i32) as fixed_t;
+                stairsize = (16 as i32 * FRACUNIT) as fixed_t;
             }
             _ => {}
         }
         (*floor).speed = speed;
-        height = ((*sec).floorheight + stairsize) as ::core::ffi::c_int;
+        height = ((*sec).floorheight + stairsize) as i32;
         (*floor).floordestheight = height as fixed_t;
-        texture = (*sec).floorpic as ::core::ffi::c_int;
+        texture = (*sec).floorpic as i32;
         loop {
-            ok_0 = 0 as ::core::ffi::c_int;
-            i = 0 as ::core::ffi::c_int;
+            ok_0 = 0 as i32;
+            i = 0 as i32;
             while i < (*sec).linecount {
-                if !((**(*sec).lines.offset(i as isize)).flags as ::core::ffi::c_int
+                if !((**(*sec).lines.offset(i as isize)).flags as i32
                     & ML_TWOSIDED == 0)
                 {
                     tsec = (**(*sec).lines.offset(i as isize)).frontsector;
                     newsecnum = tsec.offset_from(sectors) as ::core::ffi::c_long
-                        as ::core::ffi::c_int;
+                        as i32;
                     if !(secnum != newsecnum) {
                         tsec = (**(*sec).lines.offset(i as isize)).backsector;
                         newsecnum = tsec.offset_from(sectors) as ::core::ffi::c_long
-                            as ::core::ffi::c_int;
-                        if !((*tsec).floorpic as ::core::ffi::c_int != texture) {
-                            height += stairsize as ::core::ffi::c_int;
+                            as i32;
+                        if !((*tsec).floorpic as i32 != texture) {
+                            height += stairsize as i32;
                             if (*tsec).specialdata.is_null() {
                                 sec = tsec;
                                 secnum = newsecnum;
                                 floor = Z_Malloc(
-                                    ::core::mem::size_of::<floormove_t>() as ::core::ffi::c_int,
-                                    PU_LEVSPEC as ::core::ffi::c_int,
+                                    ::core::mem::size_of::<floormove_t>() as i32,
+                                    PU_LEVSPEC as i32,
                                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                 ) as *mut floormove_t;
                                 P_AddThinker(&raw mut (*floor).thinker);
@@ -1924,11 +1924,11 @@ pub unsafe extern "C" fn EV_BuildStairs(
                                         T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> (),
                                     ),
                                 );
-                                (*floor).direction = 1 as ::core::ffi::c_int;
+                                (*floor).direction = 1 as i32;
                                 (*floor).sector = sec;
                                 (*floor).speed = speed;
                                 (*floor).floordestheight = height as fixed_t;
-                                ok_0 = 1 as ::core::ffi::c_int;
+                                ok_0 = 1 as i32;
                                 break;
                             }
                         }
@@ -1943,7 +1943,7 @@ pub unsafe extern "C" fn EV_BuildStairs(
     }
     return rtn;
 }
-pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
+pub const __INT_MAX__: i32 = 2147483647 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

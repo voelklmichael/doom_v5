@@ -1,4 +1,4 @@
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const NUMSTATES: C2RustUnnamed = 967;
 pub const S_TECH2LAMP4: C2RustUnnamed = 966;
 pub const S_TECH2LAMP3: C2RustUnnamed = 965;
@@ -967,7 +967,7 @@ pub const S_PUNCHDOWN: C2RustUnnamed = 3;
 pub const S_PUNCH: C2RustUnnamed = 2;
 pub const S_LIGHTDONE: C2RustUnnamed = 1;
 pub const S_NULL: C2RustUnnamed = 0;
-pub type ammotype_t = ::core::ffi::c_uint;
+pub type ammotype_t = u32;
 pub const am_noammo: ammotype_t = 5;
 pub const NUMAMMO: ammotype_t = 4;
 pub const am_misl: ammotype_t = 3;
@@ -978,84 +978,84 @@ pub const am_clip: ammotype_t = 0;
 #[repr(C)]
 pub struct weaponinfo_t {
     pub ammo: ammotype_t,
-    pub upstate: ::core::ffi::c_int,
-    pub downstate: ::core::ffi::c_int,
-    pub readystate: ::core::ffi::c_int,
-    pub atkstate: ::core::ffi::c_int,
-    pub flashstate: ::core::ffi::c_int,
+    pub upstate: i32,
+    pub downstate: i32,
+    pub readystate: i32,
+    pub atkstate: i32,
+    pub flashstate: i32,
 }
 #[no_mangle]
 pub static mut weaponinfo: [weaponinfo_t; 9] = [
     weaponinfo_t {
         ammo: am_noammo,
-        upstate: S_PUNCHUP as ::core::ffi::c_int,
-        downstate: S_PUNCHDOWN as ::core::ffi::c_int,
-        readystate: S_PUNCH as ::core::ffi::c_int,
-        atkstate: S_PUNCH1 as ::core::ffi::c_int,
-        flashstate: S_NULL as ::core::ffi::c_int,
+        upstate: S_PUNCHUP as i32,
+        downstate: S_PUNCHDOWN as i32,
+        readystate: S_PUNCH as i32,
+        atkstate: S_PUNCH1 as i32,
+        flashstate: S_NULL as i32,
     },
     weaponinfo_t {
         ammo: am_clip,
-        upstate: S_PISTOLUP as ::core::ffi::c_int,
-        downstate: S_PISTOLDOWN as ::core::ffi::c_int,
-        readystate: S_PISTOL as ::core::ffi::c_int,
-        atkstate: S_PISTOL1 as ::core::ffi::c_int,
-        flashstate: S_PISTOLFLASH as ::core::ffi::c_int,
+        upstate: S_PISTOLUP as i32,
+        downstate: S_PISTOLDOWN as i32,
+        readystate: S_PISTOL as i32,
+        atkstate: S_PISTOL1 as i32,
+        flashstate: S_PISTOLFLASH as i32,
     },
     weaponinfo_t {
         ammo: am_shell,
-        upstate: S_SGUNUP as ::core::ffi::c_int,
-        downstate: S_SGUNDOWN as ::core::ffi::c_int,
-        readystate: S_SGUN as ::core::ffi::c_int,
-        atkstate: S_SGUN1 as ::core::ffi::c_int,
-        flashstate: S_SGUNFLASH1 as ::core::ffi::c_int,
+        upstate: S_SGUNUP as i32,
+        downstate: S_SGUNDOWN as i32,
+        readystate: S_SGUN as i32,
+        atkstate: S_SGUN1 as i32,
+        flashstate: S_SGUNFLASH1 as i32,
     },
     weaponinfo_t {
         ammo: am_clip,
-        upstate: S_CHAINUP as ::core::ffi::c_int,
-        downstate: S_CHAINDOWN as ::core::ffi::c_int,
-        readystate: S_CHAIN as ::core::ffi::c_int,
-        atkstate: S_CHAIN1 as ::core::ffi::c_int,
-        flashstate: S_CHAINFLASH1 as ::core::ffi::c_int,
+        upstate: S_CHAINUP as i32,
+        downstate: S_CHAINDOWN as i32,
+        readystate: S_CHAIN as i32,
+        atkstate: S_CHAIN1 as i32,
+        flashstate: S_CHAINFLASH1 as i32,
     },
     weaponinfo_t {
         ammo: am_misl,
-        upstate: S_MISSILEUP as ::core::ffi::c_int,
-        downstate: S_MISSILEDOWN as ::core::ffi::c_int,
-        readystate: S_MISSILE as ::core::ffi::c_int,
-        atkstate: S_MISSILE1 as ::core::ffi::c_int,
-        flashstate: S_MISSILEFLASH1 as ::core::ffi::c_int,
+        upstate: S_MISSILEUP as i32,
+        downstate: S_MISSILEDOWN as i32,
+        readystate: S_MISSILE as i32,
+        atkstate: S_MISSILE1 as i32,
+        flashstate: S_MISSILEFLASH1 as i32,
     },
     weaponinfo_t {
         ammo: am_cell,
-        upstate: S_PLASMAUP as ::core::ffi::c_int,
-        downstate: S_PLASMADOWN as ::core::ffi::c_int,
-        readystate: S_PLASMA as ::core::ffi::c_int,
-        atkstate: S_PLASMA1 as ::core::ffi::c_int,
-        flashstate: S_PLASMAFLASH1 as ::core::ffi::c_int,
+        upstate: S_PLASMAUP as i32,
+        downstate: S_PLASMADOWN as i32,
+        readystate: S_PLASMA as i32,
+        atkstate: S_PLASMA1 as i32,
+        flashstate: S_PLASMAFLASH1 as i32,
     },
     weaponinfo_t {
         ammo: am_cell,
-        upstate: S_BFGUP as ::core::ffi::c_int,
-        downstate: S_BFGDOWN as ::core::ffi::c_int,
-        readystate: S_BFG as ::core::ffi::c_int,
-        atkstate: S_BFG1 as ::core::ffi::c_int,
-        flashstate: S_BFGFLASH1 as ::core::ffi::c_int,
+        upstate: S_BFGUP as i32,
+        downstate: S_BFGDOWN as i32,
+        readystate: S_BFG as i32,
+        atkstate: S_BFG1 as i32,
+        flashstate: S_BFGFLASH1 as i32,
     },
     weaponinfo_t {
         ammo: am_noammo,
-        upstate: S_SAWUP as ::core::ffi::c_int,
-        downstate: S_SAWDOWN as ::core::ffi::c_int,
-        readystate: S_SAW as ::core::ffi::c_int,
-        atkstate: S_SAW1 as ::core::ffi::c_int,
-        flashstate: S_NULL as ::core::ffi::c_int,
+        upstate: S_SAWUP as i32,
+        downstate: S_SAWDOWN as i32,
+        readystate: S_SAW as i32,
+        atkstate: S_SAW1 as i32,
+        flashstate: S_NULL as i32,
     },
     weaponinfo_t {
         ammo: am_shell,
-        upstate: S_DSGUNUP as ::core::ffi::c_int,
-        downstate: S_DSGUNDOWN as ::core::ffi::c_int,
-        readystate: S_DSGUN as ::core::ffi::c_int,
-        atkstate: S_DSGUN1 as ::core::ffi::c_int,
-        flashstate: S_DSGUNFLASH1 as ::core::ffi::c_int,
+        upstate: S_DSGUNUP as i32,
+        downstate: S_DSGUNDOWN as i32,
+        readystate: S_DSGUN as i32,
+        atkstate: S_DSGUN1 as i32,
+        flashstate: S_DSGUNFLASH1 as i32,
     },
 ];

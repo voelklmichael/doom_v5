@@ -4,8 +4,8 @@ extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut gameversion: GameVersion_t;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    static mut numsectors: ::core::ffi::c_int;
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
+    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     static mut thinkercap: thinker_t;
     fn P_SpawnMobj(
@@ -19,9 +19,9 @@ extern "C" {
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -36,7 +36,7 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -48,15 +48,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -196,7 +196,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1165,7 +1165,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1304,7 +1304,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const MF_TRANSSHIFT: C2RustUnnamed = 26;
 pub const MF_TRANSLATION: C2RustUnnamed = 201326592;
 pub const MF_NOTDMATCH: C2RustUnnamed = 33554432;
@@ -1333,7 +1333,7 @@ pub const MF_NOSECTOR: C2RustUnnamed = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed = 4;
 pub const MF_SOLID: C2RustUnnamed = 2;
 pub const MF_SPECIAL: C2RustUnnamed = 1;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMSFX: C2RustUnnamed_0 = 109;
 pub const sfx_radio: C2RustUnnamed_0 = 108;
 pub const sfx_skeatk: C2RustUnnamed_0 = 107;
@@ -1444,33 +1444,33 @@ pub const sfx_sgcock: C2RustUnnamed_0 = 3;
 pub const sfx_shotgn: C2RustUnnamed_0 = 2;
 pub const sfx_pistol: C2RustUnnamed_0 = 1;
 pub const sfx_None: C2RustUnnamed_0 = 0;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn EV_Teleport(
     mut line: *mut line_t,
-    mut side: ::core::ffi::c_int,
+    mut side: i32,
     mut thing: *mut mobj_t,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut tag: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut i: i32 = 0;
+    let mut tag: i32 = 0;
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut fog: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut an: ::core::ffi::c_uint = 0;
+    let mut an: u32 = 0;
     let mut thinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut oldx: fixed_t = 0;
     let mut oldy: fixed_t = 0;
     let mut oldz: fixed_t = 0;
-    if (*thing).flags & MF_MISSILE as ::core::ffi::c_int != 0 {
-        return 0 as ::core::ffi::c_int;
+    if (*thing).flags & MF_MISSILE as i32 != 0 {
+        return 0 as i32;
     }
-    if side == 1 as ::core::ffi::c_int {
-        return 0 as ::core::ffi::c_int;
+    if side == 1 as i32 {
+        return 0 as i32;
     }
-    tag = (*line).tag as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    tag = (*line).tag as i32;
+    i = 0 as i32;
     while i < numsectors {
-        if (*sectors.offset(i as isize)).tag as ::core::ffi::c_int == tag {
+        if (*sectors.offset(i as isize)).tag as i32 == tag {
             thinker = thinkercap.next as *mut thinker_t;
             thinker = thinkercap.next as *mut thinker_t;
             while thinker != &raw mut thinkercap {
@@ -1481,8 +1481,8 @@ pub unsafe extern "C" fn EV_Teleport(
                     >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ())))
                 {
                     m = thinker as *mut mobj_t;
-                    if !((*m).type_0 as ::core::ffi::c_uint
-                        != MT_TELEPORTMAN as ::core::ffi::c_int as ::core::ffi::c_uint)
+                    if !((*m).type_0 as u32
+                        != MT_TELEPORTMAN as i32 as u32)
                     {
                         sector = (*(*m).subsector).sector;
                         if !(sector.offset_from(sectors) as ::core::ffi::c_long
@@ -1492,10 +1492,10 @@ pub unsafe extern "C" fn EV_Teleport(
                             oldy = (*thing).y;
                             oldz = (*thing).z;
                             if P_TeleportMove(thing, (*m).x, (*m).y) == 0 {
-                                return 0 as ::core::ffi::c_int;
+                                return 0 as i32;
                             }
-                            if gameversion as ::core::ffi::c_uint
-                                != exe_final as ::core::ffi::c_int as ::core::ffi::c_uint
+                            if gameversion as u32
+                                != exe_final as i32 as u32
                             {
                                 (*thing).z = (*thing).floorz;
                             }
@@ -1506,9 +1506,9 @@ pub unsafe extern "C" fn EV_Teleport(
                             fog = P_SpawnMobj(oldx, oldy, oldz, MT_TFOG);
                             S_StartSound(
                                 fog as *mut ::core::ffi::c_void,
-                                sfx_telept as ::core::ffi::c_int,
+                                sfx_telept as i32,
                             );
-                            an = ((*m).angle >> ANGLETOFINESHIFT) as ::core::ffi::c_uint;
+                            an = ((*m).angle >> ANGLETOFINESHIFT) as u32;
                             fog = P_SpawnMobj(
                                 (*m).x + 20 as fixed_t * *finecosine.offset(an as isize),
                                 (*m).y + 20 as fixed_t * finesine[an as usize],
@@ -1517,16 +1517,16 @@ pub unsafe extern "C" fn EV_Teleport(
                             );
                             S_StartSound(
                                 fog as *mut ::core::ffi::c_void,
-                                sfx_telept as ::core::ffi::c_int,
+                                sfx_telept as i32,
                             );
                             if !(*thing).player.is_null() {
-                                (*thing).reactiontime = 18 as ::core::ffi::c_int;
+                                (*thing).reactiontime = 18 as i32;
                             }
                             (*thing).angle = (*m).angle;
-                            (*thing).momz = 0 as ::core::ffi::c_int as fixed_t;
+                            (*thing).momz = 0 as i32 as fixed_t;
                             (*thing).momy = (*thing).momz;
                             (*thing).momx = (*thing).momy;
-                            return 1 as ::core::ffi::c_int;
+                            return 1 as i32;
                         }
                     }
                 }
@@ -1535,5 +1535,5 @@ pub unsafe extern "C" fn EV_Teleport(
         }
         i += 1;
     }
-    return 0 as ::core::ffi::c_int;
+    return 0 as i32;
 }

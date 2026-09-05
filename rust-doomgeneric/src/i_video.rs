@@ -2,7 +2,7 @@ use crate::src::i_system::I_Error;
 use ::c2rust_bitfields;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
@@ -10,21 +10,21 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     static gammatable: [[byte; 256]; 5];
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
+    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn DG_DrawFrame();
     fn DG_SetWindowTitle(title: *const ::core::ffi::c_char);
@@ -37,7 +37,7 @@ pub type __uint32_t = u32;
 pub type uint8_t = __uint8_t;
 pub type uint16_t = __uint16_t;
 pub type uint32_t = __uint32_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
 pub type grabmouse_callback_t = Option<unsafe extern "C" fn() -> boolean>;
 pub const PU_STATIC: C2RustUnnamed = 1;
@@ -77,7 +77,7 @@ pub struct col_t {
     pub b: byte,
 }
 pub type pixel_t = uint32_t;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -86,14 +86,14 @@ pub const PU_LEVEL: C2RustUnnamed = 5;
 pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
-pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
+pub const INT_MAX: i32 = __INT_MAX__;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const DOOMGENERIC_RESX: ::core::ffi::c_int = 640 as ::core::ffi::c_int;
-pub const DOOMGENERIC_RESY: ::core::ffi::c_int = 400 as ::core::ffi::c_int;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
+pub const DOOMGENERIC_RESX: i32 = 640 as i32;
+pub const DOOMGENERIC_RESY: i32 = 400 as i32;
 static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
     xres: 0,
     yres: 0,
@@ -118,9 +118,9 @@ static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
     },
 };
 #[no_mangle]
-pub static mut fb_scaling: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
+pub static mut fb_scaling: i32 = 1 as i32;
 #[no_mangle]
-pub static mut usemouse: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub static mut usemouse: i32 = 0 as i32;
 static mut colors: [color; 256] = [color { b_g_r_a: [0; 4] }; 256];
 #[no_mangle]
 pub static mut I_VideoBuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
@@ -131,35 +131,35 @@ pub static mut screenvisible: bool = false;
 #[no_mangle]
 pub static mut mouse_acceleration: ::core::ffi::c_float = 2.0f32;
 #[no_mangle]
-pub static mut mouse_threshold: ::core::ffi::c_int = 10 as ::core::ffi::c_int;
+pub static mut mouse_threshold: i32 = 10 as i32;
 #[no_mangle]
-pub static mut usegamma: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub static mut usegamma: i32 = 0 as i32;
 static mut rgb565_palette: [uint16_t; 256] = [0; 256];
 #[no_mangle]
 pub unsafe extern "C" fn cmap_to_rgb565(
     mut out: *mut uint16_t,
     mut in_0: *mut uint8_t,
-    mut in_pixels: ::core::ffi::c_int,
+    mut in_pixels: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
     let mut c: color = color { b_g_r_a: [0; 4] };
     let mut r: uint16_t = 0;
     let mut g: uint16_t = 0;
     let mut b: uint16_t = 0;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < in_pixels {
         c = colors[*in_0 as usize];
-        r = (((c.r() as ::core::ffi::c_int >> 3 as ::core::ffi::c_int) as uint16_t
-            as ::core::ffi::c_int) << 11 as ::core::ffi::c_int) as uint16_t;
-        g = (((c.g() as ::core::ffi::c_int >> 2 as ::core::ffi::c_int) as uint16_t
-            as ::core::ffi::c_int) << 5 as ::core::ffi::c_int) as uint16_t;
-        b = (((c.b() as ::core::ffi::c_int >> 3 as ::core::ffi::c_int) as uint16_t
-            as ::core::ffi::c_int) << 0 as ::core::ffi::c_int) as uint16_t;
-        *out = (r as ::core::ffi::c_int | g as ::core::ffi::c_int
-            | b as ::core::ffi::c_int) as uint16_t;
+        r = (((c.r() as i32 >> 3 as i32) as uint16_t
+            as i32) << 11 as i32) as uint16_t;
+        g = (((c.g() as i32 >> 2 as i32) as uint16_t
+            as i32) << 5 as i32) as uint16_t;
+        b = (((c.b() as i32 >> 3 as i32) as uint16_t
+            as i32) << 0 as i32) as uint16_t;
+        *out = (r as i32 | g as i32
+            | b as i32) as uint16_t;
         in_0 = in_0.offset(1);
-        j = 0 as ::core::ffi::c_int;
+        j = 0 as i32;
         while j < fb_scaling {
             out = out.offset(1);
             j += 1;
@@ -171,35 +171,35 @@ pub unsafe extern "C" fn cmap_to_rgb565(
 pub unsafe extern "C" fn cmap_to_fb(
     mut out: *mut uint8_t,
     mut in_0: *mut uint8_t,
-    mut in_pixels: ::core::ffi::c_int,
+    mut in_pixels: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut k: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut k: i32 = 0;
     let mut c: color = color { b_g_r_a: [0; 4] };
     let mut pix: uint32_t = 0;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < in_pixels {
         c = colors[*in_0 as usize];
         if s_Fb.bits_per_pixel == 16 as uint32_t {
-            let mut p: uint16_t = ((c.r() as ::core::ffi::c_int
-                & 0xf8 as ::core::ffi::c_int) << 8 as ::core::ffi::c_int
-                | (c.g() as ::core::ffi::c_int & 0xfc as ::core::ffi::c_int)
-                    << 3 as ::core::ffi::c_int
-                | c.b() as ::core::ffi::c_int >> 3 as ::core::ffi::c_int) as uint16_t;
-            k = 0 as ::core::ffi::c_int;
+            let mut p: uint16_t = ((c.r() as i32
+                & 0xf8 as i32) << 8 as i32
+                | (c.g() as i32 & 0xfc as i32)
+                    << 3 as i32
+                | c.b() as i32 >> 3 as i32) as uint16_t;
+            k = 0 as i32;
             while k < fb_scaling {
                 *(out as *mut uint16_t) = p;
-                out = out.offset(2 as ::core::ffi::c_int as isize);
+                out = out.offset(2 as i32 as isize);
                 k += 1;
             }
         } else if s_Fb.bits_per_pixel == 32 as uint32_t {
-            pix = ((c.r() as ::core::ffi::c_int) << s_Fb.red.offset
-                | (c.g() as ::core::ffi::c_int) << s_Fb.green.offset
-                | (c.b() as ::core::ffi::c_int) << s_Fb.blue.offset) as uint32_t;
-            k = 0 as ::core::ffi::c_int;
+            pix = ((c.r() as i32) << s_Fb.red.offset
+                | (c.g() as i32) << s_Fb.green.offset
+                | (c.b() as i32) << s_Fb.blue.offset) as uint32_t;
+            k = 0 as i32;
             while k < fb_scaling {
                 *(out as *mut uint32_t) = pix;
-                out = out.offset(4 as ::core::ffi::c_int as isize);
+                out = out.offset(4 as i32 as isize);
                 k += 1;
             }
         } else {
@@ -211,30 +211,30 @@ pub unsafe extern "C" fn cmap_to_fb(
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_InitGraphics() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut gfxmodeparm: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut gfxmodeparm: i32 = 0;
     let mut mode: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
     memset(
         &raw mut s_Fb as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<FB_ScreenInfo>() as size_t,
     );
     s_Fb.xres = DOOMGENERIC_RESX as uint32_t;
     s_Fb.yres = DOOMGENERIC_RESY as uint32_t;
     s_Fb.xres_virtual = s_Fb.xres;
     s_Fb.yres_virtual = s_Fb.yres;
-    gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1 as ::core::ffi::c_int);
+    gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1 as i32);
     if gfxmodeparm != 0 {
-        mode = myargv[(gfxmodeparm + 1 as ::core::ffi::c_int) as usize].as_ptr()
+        mode = myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr()
             as *mut ::core::ffi::c_char;
     } else {
         mode = b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char;
     }
     if strcmp(mode, b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char)
-        == 0 as ::core::ffi::c_int
+        == 0 as i32
     {
         s_Fb.bits_per_pixel = 32 as uint32_t;
         s_Fb.blue.length = 8 as uint32_t;
@@ -246,7 +246,7 @@ pub unsafe extern "C" fn I_InitGraphics() {
         s_Fb.red.offset = 16 as uint32_t;
         s_Fb.transp.offset = 24 as uint32_t;
     } else if strcmp(mode, b"rgb565\0" as *const u8 as *const ::core::ffi::c_char)
-        == 0 as ::core::ffi::c_int
+        == 0 as i32
     {
         s_Fb.bits_per_pixel = 16 as uint32_t;
         s_Fb.blue.length = 5 as uint32_t;
@@ -290,10 +290,10 @@ pub unsafe extern "C" fn I_InitGraphics() {
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    i = M_CheckParmWithArgs("-scaling", 1 as ::core::ffi::c_int);
-    if i > 0 as ::core::ffi::c_int {
+    i = M_CheckParmWithArgs("-scaling", 1 as i32);
+    if i > 0 as i32 {
         i = atoi(
-            myargv[(i + 1 as ::core::ffi::c_int) as usize].as_ptr()
+            myargv[(i + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
         fb_scaling = i;
@@ -304,10 +304,10 @@ pub unsafe extern "C" fn I_InitGraphics() {
         );
     } else {
         fb_scaling = s_Fb.xres.wrapping_div(SCREENWIDTH as uint32_t)
-            as ::core::ffi::c_int;
+            as i32;
         if s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) < fb_scaling as uint32_t {
             fb_scaling = s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t)
-                as ::core::ffi::c_int;
+                as i32;
         }
         printf(
             b"I_InitGraphics: Auto-scaling factor: %d\n\0" as *const u8
@@ -317,7 +317,7 @@ pub unsafe extern "C" fn I_InitGraphics() {
     }
     I_VideoBuffer = Z_Malloc(
         SCREENWIDTH * SCREENHEIGHT,
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
         NULL,
     ) as *mut byte;
     screenvisible = true;
@@ -341,10 +341,10 @@ pub unsafe extern "C" fn I_StartTic() {
 pub unsafe extern "C" fn I_UpdateNoBlit() {}
 #[no_mangle]
 pub unsafe extern "C" fn I_FinishUpdate() {
-    let mut y: ::core::ffi::c_int = 0;
-    let mut x_offset: ::core::ffi::c_int = 0;
-    let mut y_offset: ::core::ffi::c_int = 0;
-    let mut x_offset_end: ::core::ffi::c_int = 0;
+    let mut y: i32 = 0;
+    let mut x_offset: i32 = 0;
+    let mut y_offset: i32 = 0;
+    let mut x_offset_end: i32 = 0;
     let mut line_in: *mut ::core::ffi::c_uchar = ::core::ptr::null_mut::<
         ::core::ffi::c_uchar,
     >();
@@ -356,19 +356,19 @@ pub unsafe extern "C" fn I_FinishUpdate() {
         .wrapping_sub((SCREENHEIGHT * fb_scaling) as uint32_t)
         .wrapping_mul(s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
-        .wrapping_div(2 as uint32_t) as ::core::ffi::c_int;
+        .wrapping_div(2 as uint32_t) as i32;
     x_offset = s_Fb
         .xres
         .wrapping_sub((SCREENWIDTH * fb_scaling) as uint32_t)
         .wrapping_mul(s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
-        .wrapping_div(2 as uint32_t) as ::core::ffi::c_int;
+        .wrapping_div(2 as uint32_t) as i32;
     x_offset_end = s_Fb
         .xres
         .wrapping_sub((SCREENWIDTH * fb_scaling) as uint32_t)
         .wrapping_mul(s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
-        .wrapping_sub(x_offset as uint32_t) as ::core::ffi::c_int;
+        .wrapping_sub(x_offset as uint32_t) as i32;
     line_in = I_VideoBuffer as *mut ::core::ffi::c_uchar;
     line_out = DG_ScreenBuffer as *mut ::core::ffi::c_uchar;
     y = SCREENHEIGHT;
@@ -378,8 +378,8 @@ pub unsafe extern "C" fn I_FinishUpdate() {
         if !(fresh3 != 0) {
             break;
         }
-        let mut i: ::core::ffi::c_int = 0;
-        i = 0 as ::core::ffi::c_int;
+        let mut i: i32 = 0;
+        i = 0 as i32;
         while i < fb_scaling {
             line_out = line_out.offset(x_offset as isize);
             cmap_to_fb(
@@ -409,9 +409,9 @@ pub unsafe extern "C" fn I_ReadScreen(mut scr: *mut byte) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_SetPalette(mut palette: *mut byte) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
-    while i < 256 as ::core::ffi::c_int {
+    let mut i: i32 = 0;
+    i = 0 as i32;
+    while i < 256 as i32 {
         colors[i as usize].set_a(0 as uint32_t as uint32_t);
         let mut rhs = {
             let fresh0 = palette;
@@ -436,36 +436,36 @@ pub unsafe extern "C" fn I_SetPalette(mut palette: *mut byte) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_GetPaletteIndex(
-    mut r: ::core::ffi::c_int,
-    mut g: ::core::ffi::c_int,
-    mut b: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut best: ::core::ffi::c_int = 0;
-    let mut best_diff: ::core::ffi::c_int = 0;
-    let mut diff: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+    mut r: i32,
+    mut g: i32,
+    mut b: i32,
+) -> i32 {
+    let mut best: i32 = 0;
+    let mut best_diff: i32 = 0;
+    let mut diff: i32 = 0;
+    let mut i: i32 = 0;
     let mut color: col_t = col_t { r: 0, g: 0, b: 0 };
     printf(b"I_GetPaletteIndex\n\0" as *const u8 as *const ::core::ffi::c_char);
-    best = 0 as ::core::ffi::c_int;
+    best = 0 as i32;
     best_diff = INT_MAX;
-    i = 0 as ::core::ffi::c_int;
-    while i < 256 as ::core::ffi::c_int {
-        color.r = ((0xf800 as ::core::ffi::c_int
-            & rgb565_palette[i as usize] as ::core::ffi::c_int)
-            >> 11 as ::core::ffi::c_int) as byte;
-        color.g = ((0x7e0 as ::core::ffi::c_int
-            & rgb565_palette[i as usize] as ::core::ffi::c_int)
-            >> 5 as ::core::ffi::c_int) as byte;
-        color.b = (0x1f as ::core::ffi::c_int
-            & rgb565_palette[i as usize] as ::core::ffi::c_int) as byte;
-        diff = (r - color.r as ::core::ffi::c_int) * (r - color.r as ::core::ffi::c_int)
-            + (g - color.g as ::core::ffi::c_int) * (g - color.g as ::core::ffi::c_int)
-            + (b - color.b as ::core::ffi::c_int) * (b - color.b as ::core::ffi::c_int);
+    i = 0 as i32;
+    while i < 256 as i32 {
+        color.r = ((0xf800 as i32
+            & rgb565_palette[i as usize] as i32)
+            >> 11 as i32) as byte;
+        color.g = ((0x7e0 as i32
+            & rgb565_palette[i as usize] as i32)
+            >> 5 as i32) as byte;
+        color.b = (0x1f as i32
+            & rgb565_palette[i as usize] as i32) as byte;
+        diff = (r - color.r as i32) * (r - color.r as i32)
+            + (g - color.g as i32) * (g - color.g as i32)
+            + (b - color.b as i32) * (b - color.b as i32);
         if diff < best_diff {
             best = i;
             best_diff = diff;
         }
-        if diff == 0 as ::core::ffi::c_int {
+        if diff == 0 as i32 {
             break;
         }
         i += 1;
@@ -492,6 +492,6 @@ pub unsafe extern "C" fn I_BindVideoVariables() {}
 pub unsafe extern "C" fn I_DisplayFPSDots(mut dots_on: bool) {}
 #[no_mangle]
 pub unsafe extern "C" fn I_CheckIsScreensaver() {}
-pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const __INT_MAX__: i32 = 2147483647 as i32;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;

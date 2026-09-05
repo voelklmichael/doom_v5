@@ -4,14 +4,14 @@ use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::i_system::I_Error;
 extern "C" {
-    fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn P_Random() -> ::core::ffi::c_int;
+    fn abs(__x: i32) -> i32;
+    fn P_Random() -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut mobjinfo: [mobjinfo_t; 137];
     static mut sides: *mut side_t;
-    static mut validcount: ::core::ffi::c_int;
+    static mut validcount: i32;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     static mut thinkercap: thinker_t;
     fn P_SpawnMobj(
@@ -34,8 +34,8 @@ extern "C" {
     static mut openrange: fixed_t;
     fn P_LineOpening(linedef: *mut line_t);
     fn P_BlockThingsIterator(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
+        x: i32,
+        y: i32,
         func: Option<unsafe extern "C" fn(*mut mobj_t) -> boolean>,
     ) -> boolean;
     fn P_UnsetThingPosition(thing: *mut mobj_t);
@@ -43,7 +43,7 @@ extern "C" {
     static mut floatok: bool;
     static mut tmfloorz: fixed_t;
     static mut spechit: [*mut line_t; 20];
-    static mut numspechit: ::core::ffi::c_int;
+    static mut numspechit: i32;
     fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
     fn P_TryMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
     fn P_TeleportMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
@@ -54,12 +54,12 @@ extern "C" {
         angle: angle_t,
         distance: fixed_t,
         slope: fixed_t,
-        damage: ::core::ffi::c_int,
+        damage: i32,
     );
     fn P_RadiusAttack(
         spot: *mut mobj_t,
         source: *mut mobj_t,
-        damage: ::core::ffi::c_int,
+        damage: i32,
     );
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
@@ -67,24 +67,24 @@ extern "C" {
         target: *mut mobj_t,
         inflictor: *mut mobj_t,
         source: *mut mobj_t,
-        damage: ::core::ffi::c_int,
+        damage: i32,
     );
     fn P_UseSpecialLine(
         thing: *mut mobj_t,
         line: *mut line_t,
-        side: ::core::ffi::c_int,
+        side: i32,
     ) -> boolean;
-    fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> ::core::ffi::c_int;
-    fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> ::core::ffi::c_int;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
+    fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
+    fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     fn G_ExitLevel();
-    static mut gametic: ::core::ffi::c_int;
+    static mut gametic: i32;
     static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
-    static mut gameepisode: ::core::ffi::c_int;
-    static mut gamemap: ::core::ffi::c_int;
+    static mut gameepisode: i32;
+    static mut gamemap: i32;
     static mut netgame: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
@@ -92,15 +92,15 @@ extern "C" {
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -115,14 +115,14 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type skill_t = ::core::ffi::c_int;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -134,15 +134,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -282,7 +282,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1251,7 +1251,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1390,7 +1390,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const MF_TRANSSHIFT: C2RustUnnamed = 26;
 pub const MF_TRANSLATION: C2RustUnnamed = 201326592;
 pub const MF_NOTDMATCH: C2RustUnnamed = 33554432;
@@ -1419,7 +1419,7 @@ pub const MF_NOSECTOR: C2RustUnnamed = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed = 4;
 pub const MF_SOLID: C2RustUnnamed = 2;
 pub const MF_SPECIAL: C2RustUnnamed = 1;
-pub type vldoor_e = ::core::ffi::c_uint;
+pub type vldoor_e = u32;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
 pub const vld_blazeRaise: vldoor_e = 5;
@@ -1428,7 +1428,7 @@ pub const vld_open: vldoor_e = 3;
 pub const vld_close: vldoor_e = 2;
 pub const vld_close30ThenOpen: vldoor_e = 1;
 pub const vld_normal: vldoor_e = 0;
-pub type floor_e = ::core::ffi::c_uint;
+pub type floor_e = u32;
 pub const raiseFloor512: floor_e = 12;
 pub const donutRaise: floor_e = 11;
 pub const raiseFloorTurbo: floor_e = 10;
@@ -1442,7 +1442,7 @@ pub const raiseFloor: floor_e = 3;
 pub const turboLower: floor_e = 2;
 pub const lowerFloorToLowest: floor_e = 1;
 pub const lowerFloor: floor_e = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMSFX: C2RustUnnamed_0 = 109;
 pub const sfx_radio: C2RustUnnamed_0 = 108;
 pub const sfx_skeatk: C2RustUnnamed_0 = 107;
@@ -1553,7 +1553,7 @@ pub const sfx_sgcock: C2RustUnnamed_0 = 3;
 pub const sfx_shotgn: C2RustUnnamed_0 = 2;
 pub const sfx_pistol: C2RustUnnamed_0 = 1;
 pub const sfx_None: C2RustUnnamed_0 = 0;
-pub type dirtype_t = ::core::ffi::c_uint;
+pub type dirtype_t = u32;
 pub const NUMDIRS: dirtype_t = 9;
 pub const DI_NODIR: dirtype_t = 8;
 pub const DI_SOUTHEAST: dirtype_t = 7;
@@ -1564,25 +1564,25 @@ pub const DI_NORTHWEST: dirtype_t = 3;
 pub const DI_NORTH: dirtype_t = 2;
 pub const DI_NORTHEAST: dirtype_t = 1;
 pub const DI_EAST: dirtype_t = 0;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const ANG180: ::core::ffi::c_uint = 0x80000000 as ::core::ffi::c_uint;
-pub const ANG270: ::core::ffi::c_uint = 0xc0000000 as ::core::ffi::c_uint;
-pub const ML_TWOSIDED: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const ML_SOUNDBLOCK: ::core::ffi::c_int = 64 as ::core::ffi::c_int;
-pub const FLOATSPEED: ::core::ffi::c_int = FRACUNIT * 4 as ::core::ffi::c_int;
-pub const MAPBLOCKSHIFT: ::core::ffi::c_int = FRACBITS + 7 as ::core::ffi::c_int;
-pub const MELEERANGE: ::core::ffi::c_int = 64 as ::core::ffi::c_int * FRACUNIT;
-pub const MISSILERANGE: ::core::ffi::c_int = 32 as ::core::ffi::c_int
-    * 64 as ::core::ffi::c_int * FRACUNIT;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const ANG180: u32 = 0x80000000 as u32;
+pub const ANG270: u32 = 0xc0000000 as u32;
+pub const ML_TWOSIDED: i32 = 4 as i32;
+pub const ML_SOUNDBLOCK: i32 = 64 as i32;
+pub const FLOATSPEED: i32 = FRACUNIT * 4 as i32;
+pub const MAPBLOCKSHIFT: i32 = FRACBITS + 7 as i32;
+pub const MELEERANGE: i32 = 64 as i32 * FRACUNIT;
+pub const MISSILERANGE: i32 = 32 as i32
+    * 64 as i32 * FRACUNIT;
 #[no_mangle]
 pub static mut opposite: [dirtype_t; 9] = [
     DI_WEST,
@@ -1607,44 +1607,44 @@ pub static mut soundtarget: *mut mobj_t = ::core::ptr::null::<mobj_t>() as *mut 
 #[no_mangle]
 pub unsafe extern "C" fn P_RecursiveSound(
     mut sec: *mut sector_t,
-    mut soundblocks: ::core::ffi::c_int,
+    mut soundblocks: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     if (*sec).validcount == validcount
-        && (*sec).soundtraversed <= soundblocks + 1 as ::core::ffi::c_int
+        && (*sec).soundtraversed <= soundblocks + 1 as i32
     {
         return;
     }
     (*sec).validcount = validcount;
-    (*sec).soundtraversed = soundblocks + 1 as ::core::ffi::c_int;
+    (*sec).soundtraversed = soundblocks + 1 as i32;
     (*sec).soundtarget = soundtarget;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
-        if !((*check).flags as ::core::ffi::c_int & ML_TWOSIDED == 0) {
+        if !((*check).flags as i32 & ML_TWOSIDED == 0) {
             P_LineOpening(check);
-            if !(openrange <= 0 as ::core::ffi::c_int) {
+            if !(openrange <= 0 as i32) {
                 if (*sides
-                    .offset((*check).sidenum[0 as ::core::ffi::c_int as usize] as isize))
+                    .offset((*check).sidenum[0 as i32 as usize] as isize))
                     .sector == sec
                 {
                     other = (*sides
                         .offset(
-                            (*check).sidenum[1 as ::core::ffi::c_int as usize] as isize,
+                            (*check).sidenum[1 as i32 as usize] as isize,
                         ))
                         .sector;
                 } else {
                     other = (*sides
                         .offset(
-                            (*check).sidenum[0 as ::core::ffi::c_int as usize] as isize,
+                            (*check).sidenum[0 as i32 as usize] as isize,
                         ))
                         .sector;
                 }
-                if (*check).flags as ::core::ffi::c_int & ML_SOUNDBLOCK != 0 {
+                if (*check).flags as i32 & ML_SOUNDBLOCK != 0 {
                     if soundblocks == 0 {
-                        P_RecursiveSound(other, 1 as ::core::ffi::c_int);
+                        P_RecursiveSound(other, 1 as i32);
                     }
                 } else {
                     P_RecursiveSound(other, soundblocks);
@@ -1661,7 +1661,7 @@ pub unsafe extern "C" fn P_NoiseAlert(
 ) {
     soundtarget = target;
     validcount += 1;
-    P_RecursiveSound((*(*emmiter).subsector).sector, 0 as ::core::ffi::c_int);
+    P_RecursiveSound((*(*emmiter).subsector).sector, 0 as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> boolean {
@@ -1672,7 +1672,7 @@ pub unsafe extern "C" fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> boolean {
     }
     pl = (*actor).target as *mut mobj_t;
     dist = P_AproxDistance((*pl).x - (*actor).x, (*pl).y - (*actor).y);
-    if dist >= MELEERANGE - 20 as ::core::ffi::c_int * FRACUNIT + (*(*pl).info).radius {
+    if dist >= MELEERANGE - 20 as i32 * FRACUNIT + (*(*pl).info).radius {
         return false_0 as boolean;
     }
     if P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0 {
@@ -1686,8 +1686,8 @@ pub unsafe extern "C" fn P_CheckMissileRange(mut actor: *mut mobj_t) -> boolean 
     if P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0 {
         return false_0 as boolean;
     }
-    if (*actor).flags & MF_JUSTHIT as ::core::ffi::c_int != 0 {
-        (*actor).flags &= !(MF_JUSTHIT as ::core::ffi::c_int);
+    if (*actor).flags & MF_JUSTHIT as i32 != 0 {
+        (*actor).flags &= !(MF_JUSTHIT as i32);
         return true_0 as boolean;
     }
     if (*actor).reactiontime != 0 {
@@ -1696,43 +1696,43 @@ pub unsafe extern "C" fn P_CheckMissileRange(mut actor: *mut mobj_t) -> boolean 
     dist = (P_AproxDistance(
         (*actor).x - (*(*actor).target).x,
         (*actor).y - (*(*actor).target).y,
-    ) as ::core::ffi::c_int - 64 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+    ) as i32 - 64 as i32 * FRACUNIT) as fixed_t;
     if (*(*actor).info).meleestate == 0 {
-        dist -= 128 as ::core::ffi::c_int * FRACUNIT;
+        dist -= 128 as i32 * FRACUNIT;
     }
-    dist >>= 16 as ::core::ffi::c_int;
-    if (*actor).type_0 as ::core::ffi::c_uint
-        == MT_VILE as ::core::ffi::c_int as ::core::ffi::c_uint
+    dist >>= 16 as i32;
+    if (*actor).type_0 as u32
+        == MT_VILE as i32 as u32
     {
-        if dist > 14 as ::core::ffi::c_int * 64 as ::core::ffi::c_int {
+        if dist > 14 as i32 * 64 as i32 {
             return false_0 as boolean;
         }
     }
-    if (*actor).type_0 as ::core::ffi::c_uint
-        == MT_UNDEAD as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*actor).type_0 as u32
+        == MT_UNDEAD as i32 as u32
     {
-        if dist < 196 as ::core::ffi::c_int {
+        if dist < 196 as i32 {
             return false_0 as boolean;
         }
-        dist >>= 1 as ::core::ffi::c_int;
+        dist >>= 1 as i32;
     }
-    if (*actor).type_0 as ::core::ffi::c_uint
-        == MT_CYBORG as ::core::ffi::c_int as ::core::ffi::c_uint
-        || (*actor).type_0 as ::core::ffi::c_uint
-            == MT_SPIDER as ::core::ffi::c_int as ::core::ffi::c_uint
-        || (*actor).type_0 as ::core::ffi::c_uint
-            == MT_SKULL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*actor).type_0 as u32
+        == MT_CYBORG as i32 as u32
+        || (*actor).type_0 as u32
+            == MT_SPIDER as i32 as u32
+        || (*actor).type_0 as u32
+            == MT_SKULL as i32 as u32
     {
-        dist >>= 1 as ::core::ffi::c_int;
+        dist >>= 1 as i32;
     }
-    if dist > 200 as ::core::ffi::c_int {
-        dist = 200 as ::core::ffi::c_int as fixed_t;
+    if dist > 200 as i32 {
+        dist = 200 as i32 as fixed_t;
     }
-    if (*actor).type_0 as ::core::ffi::c_uint
-        == MT_CYBORG as ::core::ffi::c_int as ::core::ffi::c_uint
-        && dist > 160 as ::core::ffi::c_int
+    if (*actor).type_0 as u32
+        == MT_CYBORG as i32 as u32
+        && dist > 160 as i32
     {
-        dist = 160 as ::core::ffi::c_int as fixed_t;
+        dist = 160 as i32 as fixed_t;
     }
     if P_Random() < dist {
         return false_0 as boolean;
@@ -1742,24 +1742,24 @@ pub unsafe extern "C" fn P_CheckMissileRange(mut actor: *mut mobj_t) -> boolean 
 #[no_mangle]
 pub static mut xspeed: [fixed_t; 8] = [
     FRACUNIT,
-    47000 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    -(47000 as ::core::ffi::c_int),
+    47000 as i32,
+    0 as i32,
+    -(47000 as i32),
     -FRACUNIT,
-    -(47000 as ::core::ffi::c_int),
-    0 as ::core::ffi::c_int,
-    47000 as ::core::ffi::c_int,
+    -(47000 as i32),
+    0 as i32,
+    47000 as i32,
 ];
 #[no_mangle]
 pub static mut yspeed: [fixed_t; 8] = [
-    0 as ::core::ffi::c_int,
-    47000 as ::core::ffi::c_int,
+    0 as i32,
+    47000 as i32,
     FRACUNIT,
-    47000 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    -(47000 as ::core::ffi::c_int),
+    47000 as i32,
+    0 as i32,
+    -(47000 as i32),
     -FRACUNIT,
-    -(47000 as ::core::ffi::c_int),
+    -(47000 as i32),
 ];
 #[no_mangle]
 pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
@@ -1768,10 +1768,10 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut try_ok: boolean = 0;
     let mut good: boolean = 0;
-    if (*actor).movedir == DI_NODIR as ::core::ffi::c_int {
+    if (*actor).movedir == DI_NODIR as i32 {
         return false_0 as boolean;
     }
-    if (*actor).movedir as ::core::ffi::c_uint >= 8 as ::core::ffi::c_uint {
+    if (*actor).movedir as u32 >= 8 as u32 {
         I_Error("Weird actor->movedir!");
     }
     tryx = (*actor).x
@@ -1780,19 +1780,19 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
         + (*(*actor).info).speed as fixed_t * yspeed[(*actor).movedir as usize];
     try_ok = P_TryMove(actor, tryx, tryy);
     if try_ok == 0 {
-        if (*actor).flags & MF_FLOAT as ::core::ffi::c_int != 0 && floatok {
+        if (*actor).flags & MF_FLOAT as i32 != 0 && floatok {
             if (*actor).z < tmfloorz {
                 (*actor).z += FLOATSPEED;
             } else {
                 (*actor).z -= FLOATSPEED;
             }
-            (*actor).flags |= MF_INFLOAT as ::core::ffi::c_int;
+            (*actor).flags |= MF_INFLOAT as i32;
             return true_0 as boolean;
         }
         if numspechit == 0 {
             return false_0 as boolean;
         }
-        (*actor).movedir = DI_NODIR as ::core::ffi::c_int;
+        (*actor).movedir = DI_NODIR as i32;
         good = false_0 as boolean;
         loop {
             let fresh0 = numspechit;
@@ -1801,15 +1801,15 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
                 break;
             }
             ld = spechit[numspechit as usize];
-            if P_UseSpecialLine(actor, ld, 0 as ::core::ffi::c_int) != 0 {
+            if P_UseSpecialLine(actor, ld, 0 as i32) != 0 {
                 good = true_0 as boolean;
             }
         }
         return good;
     } else {
-        (*actor).flags &= !(MF_INFLOAT as ::core::ffi::c_int);
+        (*actor).flags &= !(MF_INFLOAT as i32);
     }
-    if (*actor).flags & MF_FLOAT as ::core::ffi::c_int == 0 {
+    if (*actor).flags & MF_FLOAT as i32 == 0 {
         (*actor).z = (*actor).floorz;
     }
     return true_0 as boolean;
@@ -1819,7 +1819,7 @@ pub unsafe extern "C" fn P_TryWalk(mut actor: *mut mobj_t) -> boolean {
     if P_Move(actor) == 0 {
         return false_0 as boolean;
     }
-    (*actor).movecount = P_Random() & 15 as ::core::ffi::c_int;
+    (*actor).movecount = P_Random() & 15 as i32;
     return true_0 as boolean;
 }
 #[no_mangle]
@@ -1827,7 +1827,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
     let mut deltax: fixed_t = 0;
     let mut deltay: fixed_t = 0;
     let mut d: [dirtype_t; 3] = [DI_EAST; 3];
-    let mut tdir: ::core::ffi::c_int = 0;
+    let mut tdir: i32 = 0;
     let mut olddir: dirtype_t = DI_EAST;
     let mut turnaround: dirtype_t = DI_EAST;
     if (*actor).target.is_null() {
@@ -1837,79 +1837,79 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
     turnaround = opposite[olddir as usize];
     deltax = (*(*actor).target).x - (*actor).x;
     deltay = (*(*actor).target).y - (*actor).y;
-    if deltax > 10 as ::core::ffi::c_int * FRACUNIT {
-        d[1 as ::core::ffi::c_int as usize] = DI_EAST;
-    } else if deltax < -(10 as ::core::ffi::c_int) * FRACUNIT {
-        d[1 as ::core::ffi::c_int as usize] = DI_WEST;
+    if deltax > 10 as i32 * FRACUNIT {
+        d[1 as i32 as usize] = DI_EAST;
+    } else if deltax < -(10 as i32) * FRACUNIT {
+        d[1 as i32 as usize] = DI_WEST;
     } else {
-        d[1 as ::core::ffi::c_int as usize] = DI_NODIR;
+        d[1 as i32 as usize] = DI_NODIR;
     }
-    if deltay < -(10 as ::core::ffi::c_int) * FRACUNIT {
-        d[2 as ::core::ffi::c_int as usize] = DI_SOUTH;
-    } else if deltay > 10 as ::core::ffi::c_int * FRACUNIT {
-        d[2 as ::core::ffi::c_int as usize] = DI_NORTH;
+    if deltay < -(10 as i32) * FRACUNIT {
+        d[2 as i32 as usize] = DI_SOUTH;
+    } else if deltay > 10 as i32 * FRACUNIT {
+        d[2 as i32 as usize] = DI_NORTH;
     } else {
-        d[2 as ::core::ffi::c_int as usize] = DI_NODIR;
+        d[2 as i32 as usize] = DI_NODIR;
     }
-    if d[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_uint
-        != DI_NODIR as ::core::ffi::c_int as ::core::ffi::c_uint
-        && d[2 as ::core::ffi::c_int as usize] as ::core::ffi::c_uint
-            != DI_NODIR as ::core::ffi::c_int as ::core::ffi::c_uint
+    if d[1 as i32 as usize] as u32
+        != DI_NODIR as i32 as u32
+        && d[2 as i32 as usize] as u32
+            != DI_NODIR as i32 as u32
     {
-        (*actor).movedir = diags[((((deltay < 0 as ::core::ffi::c_int)
-            as ::core::ffi::c_int) << 1 as ::core::ffi::c_int)
-            + (deltax > 0 as ::core::ffi::c_int) as ::core::ffi::c_int) as usize]
-            as ::core::ffi::c_int;
-        if (*actor).movedir != turnaround as ::core::ffi::c_int && P_TryWalk(actor) != 0
+        (*actor).movedir = diags[((((deltay < 0 as i32)
+            as i32) << 1 as i32)
+            + (deltax > 0 as i32) as i32) as usize]
+            as i32;
+        if (*actor).movedir != turnaround as i32 && P_TryWalk(actor) != 0
         {
             return;
         }
     }
-    if P_Random() > 200 as ::core::ffi::c_int
-        || abs(deltay as ::core::ffi::c_int) > abs(deltax as ::core::ffi::c_int)
+    if P_Random() > 200 as i32
+        || abs(deltay as i32) > abs(deltax as i32)
     {
-        tdir = d[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
-        d[1 as ::core::ffi::c_int as usize] = d[2 as ::core::ffi::c_int as usize];
-        d[2 as ::core::ffi::c_int as usize] = tdir as dirtype_t;
+        tdir = d[1 as i32 as usize] as i32;
+        d[1 as i32 as usize] = d[2 as i32 as usize];
+        d[2 as i32 as usize] = tdir as dirtype_t;
     }
-    if d[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_uint
-        == turnaround as ::core::ffi::c_uint
+    if d[1 as i32 as usize] as u32
+        == turnaround as u32
     {
-        d[1 as ::core::ffi::c_int as usize] = DI_NODIR;
+        d[1 as i32 as usize] = DI_NODIR;
     }
-    if d[2 as ::core::ffi::c_int as usize] as ::core::ffi::c_uint
-        == turnaround as ::core::ffi::c_uint
+    if d[2 as i32 as usize] as u32
+        == turnaround as u32
     {
-        d[2 as ::core::ffi::c_int as usize] = DI_NODIR;
+        d[2 as i32 as usize] = DI_NODIR;
     }
-    if d[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_uint
-        != DI_NODIR as ::core::ffi::c_int as ::core::ffi::c_uint
+    if d[1 as i32 as usize] as u32
+        != DI_NODIR as i32 as u32
     {
-        (*actor).movedir = d[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
+        (*actor).movedir = d[1 as i32 as usize] as i32;
         if P_TryWalk(actor) != 0 {
             return;
         }
     }
-    if d[2 as ::core::ffi::c_int as usize] as ::core::ffi::c_uint
-        != DI_NODIR as ::core::ffi::c_int as ::core::ffi::c_uint
+    if d[2 as i32 as usize] as u32
+        != DI_NODIR as i32 as u32
     {
-        (*actor).movedir = d[2 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
+        (*actor).movedir = d[2 as i32 as usize] as i32;
         if P_TryWalk(actor) != 0 {
             return;
         }
     }
-    if olddir as ::core::ffi::c_uint
-        != DI_NODIR as ::core::ffi::c_int as ::core::ffi::c_uint
+    if olddir as u32
+        != DI_NODIR as i32 as u32
     {
-        (*actor).movedir = olddir as ::core::ffi::c_int;
+        (*actor).movedir = olddir as i32;
         if P_TryWalk(actor) != 0 {
             return;
         }
     }
-    if P_Random() & 1 as ::core::ffi::c_int != 0 {
-        tdir = DI_EAST as ::core::ffi::c_int;
-        while tdir <= DI_SOUTHEAST as ::core::ffi::c_int {
-            if tdir != turnaround as ::core::ffi::c_int {
+    if P_Random() & 1 as i32 != 0 {
+        tdir = DI_EAST as i32;
+        while tdir <= DI_SOUTHEAST as i32 {
+            if tdir != turnaround as i32 {
                 (*actor).movedir = tdir;
                 if P_TryWalk(actor) != 0 {
                     return;
@@ -1918,9 +1918,9 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
             tdir += 1;
         }
     } else {
-        tdir = DI_SOUTHEAST as ::core::ffi::c_int;
-        while tdir != DI_EAST as ::core::ffi::c_int - 1 as ::core::ffi::c_int {
-            if tdir != turnaround as ::core::ffi::c_int {
+        tdir = DI_SOUTHEAST as i32;
+        while tdir != DI_EAST as i32 - 1 as i32 {
+            if tdir != turnaround as i32 {
                 (*actor).movedir = tdir;
                 if P_TryWalk(actor) != 0 {
                     return;
@@ -1929,39 +1929,39 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
             tdir -= 1;
         }
     }
-    if turnaround as ::core::ffi::c_uint
-        != DI_NODIR as ::core::ffi::c_int as ::core::ffi::c_uint
+    if turnaround as u32
+        != DI_NODIR as i32 as u32
     {
-        (*actor).movedir = turnaround as ::core::ffi::c_int;
+        (*actor).movedir = turnaround as i32;
         if P_TryWalk(actor) != 0 {
             return;
         }
     }
-    (*actor).movedir = DI_NODIR as ::core::ffi::c_int;
+    (*actor).movedir = DI_NODIR as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_LookForPlayers(
     mut actor: *mut mobj_t,
     mut allaround: boolean,
 ) -> boolean {
-    let mut c: ::core::ffi::c_int = 0;
-    let mut stop: ::core::ffi::c_int = 0;
+    let mut c: i32 = 0;
+    let mut stop: i32 = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut an: angle_t = 0;
     let mut dist: fixed_t = 0;
-    c = 0 as ::core::ffi::c_int;
-    stop = (*actor).lastlook - 1 as ::core::ffi::c_int & 3 as ::core::ffi::c_int;
+    c = 0 as i32;
+    stop = (*actor).lastlook - 1 as i32 & 3 as i32;
     let mut current_block_9: u64;
     loop {
         if !(playeringame[(*actor).lastlook as usize] == 0) {
             let fresh1 = c;
             c = c + 1;
-            if fresh1 == 2 as ::core::ffi::c_int || (*actor).lastlook == stop {
+            if fresh1 == 2 as i32 || (*actor).lastlook == stop {
                 return false_0 as boolean;
             }
             player = (&raw mut players as *mut player_t)
                 .offset((*actor).lastlook as isize) as *mut player_t;
-            if !((*player).health <= 0 as ::core::ffi::c_int) {
+            if !((*player).health <= 0 as i32) {
                 if !(P_CheckSight(actor, (*player).mo) == 0) {
                     if allaround == 0 {
                         an = R_PointToAngle2(
@@ -1997,8 +1997,8 @@ pub unsafe extern "C" fn P_LookForPlayers(
                 }
             }
         }
-        (*actor).lastlook = (*actor).lastlook + 1 as ::core::ffi::c_int
-            & 3 as ::core::ffi::c_int;
+        (*actor).lastlook = (*actor).lastlook + 1 as i32
+            & 3 as i32;
     };
 }
 #[no_mangle]
@@ -2032,27 +2032,27 @@ pub unsafe extern "C" fn A_KeenDie(mut mo: *mut mobj_t) {
         {
             mo2 = th as *mut mobj_t;
             if mo2 != mo
-                && (*mo2).type_0 as ::core::ffi::c_uint
-                    == (*mo).type_0 as ::core::ffi::c_uint
-                && (*mo2).health > 0 as ::core::ffi::c_int
+                && (*mo2).type_0 as u32
+                    == (*mo).type_0 as u32
+                && (*mo2).health > 0 as i32
             {
                 return;
             }
         }
         th = (*th).next as *mut thinker_t;
     }
-    junk.tag = 666 as ::core::ffi::c_short;
+    junk.tag = 666 as i16;
     EV_DoDoor(&raw mut junk, vld_open);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Look(mut actor: *mut mobj_t) {
     let mut current_block: u64;
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    (*actor).threshold = 0 as ::core::ffi::c_int;
+    (*actor).threshold = 0 as i32;
     targ = (*(*(*actor).subsector).sector).soundtarget;
-    if !targ.is_null() && (*targ).flags & MF_SHOOTABLE as ::core::ffi::c_int != 0 {
+    if !targ.is_null() && (*targ).flags & MF_SHOOTABLE as i32 != 0 {
         (*actor).target = targ as *mut mobj_s;
-        if (*actor).flags & MF_AMBUSH as ::core::ffi::c_int != 0 {
+        if (*actor).flags & MF_AMBUSH as i32 != 0 {
             if P_CheckSight(actor, (*actor).target as *mut mobj_t) != 0 {
                 current_block = 10571674169298881693;
             } else {
@@ -2073,24 +2073,24 @@ pub unsafe extern "C" fn A_Look(mut actor: *mut mobj_t) {
         _ => {}
     }
     if (*(*actor).info).seesound != 0 {
-        let mut sound: ::core::ffi::c_int = 0;
+        let mut sound: i32 = 0;
         match (*(*actor).info).seesound {
             36 | 37 | 38 => {
-                sound = sfx_posit1 as ::core::ffi::c_int
-                    + P_Random() % 3 as ::core::ffi::c_int;
+                sound = sfx_posit1 as i32
+                    + P_Random() % 3 as i32;
             }
             39 | 40 => {
-                sound = sfx_bgsit1 as ::core::ffi::c_int
-                    + P_Random() % 2 as ::core::ffi::c_int;
+                sound = sfx_bgsit1 as i32
+                    + P_Random() % 2 as i32;
             }
             _ => {
                 sound = (*(*actor).info).seesound;
             }
         }
-        if (*actor).type_0 as ::core::ffi::c_uint
-            == MT_SPIDER as ::core::ffi::c_int as ::core::ffi::c_uint
-            || (*actor).type_0 as ::core::ffi::c_uint
-                == MT_CYBORG as ::core::ffi::c_int as ::core::ffi::c_uint
+        if (*actor).type_0 as u32
+            == MT_SPIDER as i32 as u32
+            || (*actor).type_0 as u32
+                == MT_CYBORG as i32 as u32
         {
             S_StartSound(NULL, sound);
         } else {
@@ -2101,38 +2101,38 @@ pub unsafe extern "C" fn A_Look(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
-    let mut delta: ::core::ffi::c_int = 0;
+    let mut delta: i32 = 0;
     if (*actor).reactiontime != 0 {
         (*actor).reactiontime -= 1;
     }
     if (*actor).threshold != 0 {
         if (*actor).target.is_null()
-            || (*(*actor).target).health <= 0 as ::core::ffi::c_int
+            || (*(*actor).target).health <= 0 as i32
         {
-            (*actor).threshold = 0 as ::core::ffi::c_int;
+            (*actor).threshold = 0 as i32;
         } else {
             (*actor).threshold -= 1;
         }
     }
-    if (*actor).movedir < 8 as ::core::ffi::c_int {
+    if (*actor).movedir < 8 as i32 {
         (*actor).angle
-            &= ((7 as ::core::ffi::c_int) << 29 as ::core::ffi::c_int) as angle_t;
+            &= ((7 as i32) << 29 as i32) as angle_t;
         delta = (*actor)
             .angle
-            .wrapping_sub(((*actor).movedir << 29 as ::core::ffi::c_int) as angle_t)
-            as ::core::ffi::c_int;
-        if delta > 0 as ::core::ffi::c_int {
+            .wrapping_sub(((*actor).movedir << 29 as i32) as angle_t)
+            as i32;
+        if delta > 0 as i32 {
             (*actor).angle = (*actor)
                 .angle
-                .wrapping_sub((ANG90 / 2 as ::core::ffi::c_int) as angle_t);
-        } else if delta < 0 as ::core::ffi::c_int {
+                .wrapping_sub((ANG90 / 2 as i32) as angle_t);
+        } else if delta < 0 as i32 {
             (*actor).angle = (*actor)
                 .angle
-                .wrapping_add((ANG90 / 2 as ::core::ffi::c_int) as angle_t);
+                .wrapping_add((ANG90 / 2 as i32) as angle_t);
         }
     }
     if (*actor).target.is_null()
-        || (*(*actor).target).flags & MF_SHOOTABLE as ::core::ffi::c_int == 0
+        || (*(*actor).target).flags & MF_SHOOTABLE as i32 == 0
     {
         if P_LookForPlayers(actor, true_0 as boolean) != 0 {
             return;
@@ -2140,9 +2140,9 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
         P_SetMobjState(actor, (*(*actor).info).spawnstate as statenum_t);
         return;
     }
-    if (*actor).flags & MF_JUSTATTACKED as ::core::ffi::c_int != 0 {
-        (*actor).flags &= !(MF_JUSTATTACKED as ::core::ffi::c_int);
-        if gameskill as ::core::ffi::c_int != sk_nightmare as ::core::ffi::c_int
+    if (*actor).flags & MF_JUSTATTACKED as i32 != 0 {
+        (*actor).flags &= !(MF_JUSTATTACKED as i32);
+        if gameskill as i32 != sk_nightmare as i32
             && !fastparm
         {
             P_NewChaseDir(actor);
@@ -2160,12 +2160,12 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
         return;
     }
     if (*(*actor).info).missilestate != 0 {
-        if !((gameskill as ::core::ffi::c_int) < sk_nightmare as ::core::ffi::c_int
+        if !((gameskill as i32) < sk_nightmare as i32
             && !fastparm && (*actor).movecount != 0)
         {
             if !(P_CheckMissileRange(actor) == 0) {
                 P_SetMobjState(actor, (*(*actor).info).missilestate as statenum_t);
-                (*actor).flags |= MF_JUSTATTACKED as ::core::ffi::c_int;
+                (*actor).flags |= MF_JUSTATTACKED as i32;
                 return;
             }
         }
@@ -2178,10 +2178,10 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
         }
     }
     (*actor).movecount -= 1;
-    if (*actor).movecount < 0 as ::core::ffi::c_int || P_Move(actor) == 0 {
+    if (*actor).movecount < 0 as i32 || P_Move(actor) == 0 {
         P_NewChaseDir(actor);
     }
-    if (*(*actor).info).activesound != 0 && P_Random() < 3 as ::core::ffi::c_int {
+    if (*(*actor).info).activesound != 0 && P_Random() < 3 as i32 {
         S_StartSound(actor as *mut ::core::ffi::c_void, (*(*actor).info).activesound);
     }
 }
@@ -2190,88 +2190,88 @@ pub unsafe extern "C" fn A_FaceTarget(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
-    (*actor).flags &= !(MF_AMBUSH as ::core::ffi::c_int);
+    (*actor).flags &= !(MF_AMBUSH as i32);
     (*actor).angle = R_PointToAngle2(
         (*actor).x,
         (*actor).y,
         (*(*actor).target).x,
         (*(*actor).target).y,
     );
-    if (*(*actor).target).flags & MF_SHADOW as ::core::ffi::c_int != 0 {
+    if (*(*actor).target).flags & MF_SHADOW as i32 != 0 {
         (*actor).angle = (*actor)
             .angle
             .wrapping_add(
-                (P_Random() - P_Random() << 21 as ::core::ffi::c_int) as angle_t,
+                (P_Random() - P_Random() << 21 as i32) as angle_t,
             );
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_PosAttack(mut actor: *mut mobj_t) {
-    let mut angle: ::core::ffi::c_int = 0;
-    let mut damage: ::core::ffi::c_int = 0;
-    let mut slope: ::core::ffi::c_int = 0;
+    let mut angle: i32 = 0;
+    let mut damage: i32 = 0;
+    let mut slope: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
-    angle = (*actor).angle as ::core::ffi::c_int;
-    slope = P_AimLineAttack(actor, angle as angle_t, MISSILERANGE) as ::core::ffi::c_int;
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_pistol as ::core::ffi::c_int);
-    angle += P_Random() - P_Random() << 20 as ::core::ffi::c_int;
-    damage = (P_Random() % 5 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-        * 3 as ::core::ffi::c_int;
+    angle = (*actor).angle as i32;
+    slope = P_AimLineAttack(actor, angle as angle_t, MISSILERANGE) as i32;
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_pistol as i32);
+    angle += P_Random() - P_Random() << 20 as i32;
+    damage = (P_Random() % 5 as i32 + 1 as i32)
+        * 3 as i32;
     P_LineAttack(actor, angle as angle_t, MISSILERANGE, slope as fixed_t, damage);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_SPosAttack(mut actor: *mut mobj_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut angle: ::core::ffi::c_int = 0;
-    let mut bangle: ::core::ffi::c_int = 0;
-    let mut damage: ::core::ffi::c_int = 0;
-    let mut slope: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut angle: i32 = 0;
+    let mut bangle: i32 = 0;
+    let mut damage: i32 = 0;
+    let mut slope: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_shotgn as ::core::ffi::c_int);
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_shotgn as i32);
     A_FaceTarget(actor);
-    bangle = (*actor).angle as ::core::ffi::c_int;
+    bangle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE)
-        as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
-    while i < 3 as ::core::ffi::c_int {
-        angle = bangle + (P_Random() - P_Random() << 20 as ::core::ffi::c_int);
-        damage = (P_Random() % 5 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-            * 3 as ::core::ffi::c_int;
+        as i32;
+    i = 0 as i32;
+    while i < 3 as i32 {
+        angle = bangle + (P_Random() - P_Random() << 20 as i32);
+        damage = (P_Random() % 5 as i32 + 1 as i32)
+            * 3 as i32;
         P_LineAttack(actor, angle as angle_t, MISSILERANGE, slope as fixed_t, damage);
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_CPosAttack(mut actor: *mut mobj_t) {
-    let mut angle: ::core::ffi::c_int = 0;
-    let mut bangle: ::core::ffi::c_int = 0;
-    let mut damage: ::core::ffi::c_int = 0;
-    let mut slope: ::core::ffi::c_int = 0;
+    let mut angle: i32 = 0;
+    let mut bangle: i32 = 0;
+    let mut damage: i32 = 0;
+    let mut slope: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_shotgn as ::core::ffi::c_int);
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_shotgn as i32);
     A_FaceTarget(actor);
-    bangle = (*actor).angle as ::core::ffi::c_int;
+    bangle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE)
-        as ::core::ffi::c_int;
-    angle = bangle + (P_Random() - P_Random() << 20 as ::core::ffi::c_int);
-    damage = (P_Random() % 5 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-        * 3 as ::core::ffi::c_int;
+        as i32;
+    angle = bangle + (P_Random() - P_Random() << 20 as i32);
+    damage = (P_Random() % 5 as i32 + 1 as i32)
+        * 3 as i32;
     P_LineAttack(actor, angle as angle_t, MISSILERANGE, slope as fixed_t, damage);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_CPosRefire(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
-    if P_Random() < 40 as ::core::ffi::c_int {
+    if P_Random() < 40 as i32 {
         return;
     }
-    if (*actor).target.is_null() || (*(*actor).target).health <= 0 as ::core::ffi::c_int
+    if (*actor).target.is_null() || (*(*actor).target).health <= 0 as i32
         || P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0
     {
         P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
@@ -2280,10 +2280,10 @@ pub unsafe extern "C" fn A_CPosRefire(mut actor: *mut mobj_t) {
 #[no_mangle]
 pub unsafe extern "C" fn A_SpidRefire(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
-    if P_Random() < 10 as ::core::ffi::c_int {
+    if P_Random() < 10 as i32 {
         return;
     }
-    if (*actor).target.is_null() || (*(*actor).target).health <= 0 as ::core::ffi::c_int
+    if (*actor).target.is_null() || (*(*actor).target).health <= 0 as i32
         || P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0
     {
         P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
@@ -2299,15 +2299,15 @@ pub unsafe extern "C" fn A_BspiAttack(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_TroopAttack(mut actor: *mut mobj_t) {
-    let mut damage: ::core::ffi::c_int = 0;
+    let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) != 0 {
-        S_StartSound(actor as *mut ::core::ffi::c_void, sfx_claw as ::core::ffi::c_int);
-        damage = (P_Random() % 8 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-            * 3 as ::core::ffi::c_int;
+        S_StartSound(actor as *mut ::core::ffi::c_void, sfx_claw as i32);
+        damage = (P_Random() % 8 as i32 + 1 as i32)
+            * 3 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
         return;
     }
@@ -2315,27 +2315,27 @@ pub unsafe extern "C" fn A_TroopAttack(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_SargAttack(mut actor: *mut mobj_t) {
-    let mut damage: ::core::ffi::c_int = 0;
+    let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) != 0 {
-        damage = (P_Random() % 10 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-            * 4 as ::core::ffi::c_int;
+        damage = (P_Random() % 10 as i32 + 1 as i32)
+            * 4 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_HeadAttack(mut actor: *mut mobj_t) {
-    let mut damage: ::core::ffi::c_int = 0;
+    let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) != 0 {
-        damage = (P_Random() % 6 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-            * 10 as ::core::ffi::c_int;
+        damage = (P_Random() % 6 as i32 + 1 as i32)
+            * 10 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
         return;
     }
@@ -2351,14 +2351,14 @@ pub unsafe extern "C" fn A_CyberAttack(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_BruisAttack(mut actor: *mut mobj_t) {
-    let mut damage: ::core::ffi::c_int = 0;
+    let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
     if P_CheckMeleeRange(actor) != 0 {
-        S_StartSound(actor as *mut ::core::ffi::c_void, sfx_claw as ::core::ffi::c_int);
-        damage = (P_Random() % 8 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-            * 10 as ::core::ffi::c_int;
+        S_StartSound(actor as *mut ::core::ffi::c_void, sfx_claw as i32);
+        damage = (P_Random() % 8 as i32 + 1 as i32)
+            * 10 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
         return;
     }
@@ -2371,15 +2371,15 @@ pub unsafe extern "C" fn A_SkelMissile(mut actor: *mut mobj_t) {
         return;
     }
     A_FaceTarget(actor);
-    (*actor).z += 16 as ::core::ffi::c_int * FRACUNIT;
+    (*actor).z += 16 as i32 * FRACUNIT;
     mo = P_SpawnMissile(actor, (*actor).target as *mut mobj_t, MT_TRACER);
-    (*actor).z -= 16 as ::core::ffi::c_int * FRACUNIT;
+    (*actor).z -= 16 as i32 * FRACUNIT;
     (*mo).x += (*mo).momx;
     (*mo).y += (*mo).momy;
     (*mo).tracer = (*actor).target;
 }
 #[no_mangle]
-pub static mut TRACEANGLE: ::core::ffi::c_int = 0xc000000 as ::core::ffi::c_int;
+pub static mut TRACEANGLE: i32 = 0xc000000 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn A_Tracer(mut actor: *mut mobj_t) {
     let mut exact: angle_t = 0;
@@ -2387,7 +2387,7 @@ pub unsafe extern "C" fn A_Tracer(mut actor: *mut mobj_t) {
     let mut slope: fixed_t = 0;
     let mut dest: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    if gametic & 3 as ::core::ffi::c_int != 0 {
+    if gametic & 3 as i32 != 0 {
         return;
     }
     P_SpawnPuff((*actor).x, (*actor).y, (*actor).z);
@@ -2398,24 +2398,24 @@ pub unsafe extern "C" fn A_Tracer(mut actor: *mut mobj_t) {
         MT_SMOKE,
     );
     (*th).momz = FRACUNIT as fixed_t;
-    (*th).tics -= P_Random() & 3 as ::core::ffi::c_int;
-    if (*th).tics < 1 as ::core::ffi::c_int {
-        (*th).tics = 1 as ::core::ffi::c_int;
+    (*th).tics -= P_Random() & 3 as i32;
+    if (*th).tics < 1 as i32 {
+        (*th).tics = 1 as i32;
     }
     dest = (*actor).tracer as *mut mobj_t;
-    if dest.is_null() || (*dest).health <= 0 as ::core::ffi::c_int {
+    if dest.is_null() || (*dest).health <= 0 as i32 {
         return;
     }
     exact = R_PointToAngle2((*actor).x, (*actor).y, (*dest).x, (*dest).y);
     if exact != (*actor).angle {
-        if exact.wrapping_sub((*actor).angle) > 0x80000000 as ::core::ffi::c_uint {
+        if exact.wrapping_sub((*actor).angle) > 0x80000000 as u32 {
             (*actor).angle = (*actor).angle.wrapping_sub(TRACEANGLE as angle_t);
-            if exact.wrapping_sub((*actor).angle) < 0x80000000 as ::core::ffi::c_uint {
+            if exact.wrapping_sub((*actor).angle) < 0x80000000 as u32 {
                 (*actor).angle = exact;
             }
         } else {
             (*actor).angle = (*actor).angle.wrapping_add(TRACEANGLE as angle_t);
-            if exact.wrapping_sub((*actor).angle) > 0x80000000 as ::core::ffi::c_uint {
+            if exact.wrapping_sub((*actor).angle) > 0x80000000 as u32 {
                 (*actor).angle = exact;
             }
         }
@@ -2430,15 +2430,15 @@ pub unsafe extern "C" fn A_Tracer(mut actor: *mut mobj_t) {
         finesine[exact as usize],
     );
     dist = P_AproxDistance((*dest).x - (*actor).x, (*dest).y - (*actor).y);
-    dist = (dist as ::core::ffi::c_int / (*(*actor).info).speed) as fixed_t;
-    if dist < 1 as ::core::ffi::c_int {
-        dist = 1 as ::core::ffi::c_int as fixed_t;
+    dist = (dist as i32 / (*(*actor).info).speed) as fixed_t;
+    if dist < 1 as i32 {
+        dist = 1 as i32 as fixed_t;
     }
     slope = ((*dest).z + 40 as fixed_t * FRACUNIT - (*actor).z) / dist;
     if slope < (*actor).momz {
-        (*actor).momz -= FRACUNIT / 8 as ::core::ffi::c_int;
+        (*actor).momz -= FRACUNIT / 8 as i32;
     } else {
-        (*actor).momz += FRACUNIT / 8 as ::core::ffi::c_int;
+        (*actor).momz += FRACUNIT / 8 as i32;
     };
 }
 #[no_mangle]
@@ -2447,21 +2447,21 @@ pub unsafe extern "C" fn A_SkelWhoosh(mut actor: *mut mobj_t) {
         return;
     }
     A_FaceTarget(actor);
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_skeswg as ::core::ffi::c_int);
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_skeswg as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_SkelFist(mut actor: *mut mobj_t) {
-    let mut damage: ::core::ffi::c_int = 0;
+    let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) != 0 {
-        damage = (P_Random() % 10 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-            * 6 as ::core::ffi::c_int;
+        damage = (P_Random() % 10 as i32 + 1 as i32)
+            * 6 as i32;
         S_StartSound(
             actor as *mut ::core::ffi::c_void,
-            sfx_skepch as ::core::ffi::c_int,
+            sfx_skepch as i32,
         );
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
     }
@@ -2476,31 +2476,31 @@ pub static mut viletryx: fixed_t = 0;
 pub static mut viletryy: fixed_t = 0;
 #[no_mangle]
 pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
-    let mut maxdist: ::core::ffi::c_int = 0;
+    let mut maxdist: i32 = 0;
     let mut check: boolean = 0;
-    if (*thing).flags & MF_CORPSE as ::core::ffi::c_int == 0 {
+    if (*thing).flags & MF_CORPSE as i32 == 0 {
         return true_0 as boolean;
     }
-    if (*thing).tics != -(1 as ::core::ffi::c_int) {
+    if (*thing).tics != -(1 as i32) {
         return true_0 as boolean;
     }
-    if (*(*thing).info).raisestate == S_NULL as ::core::ffi::c_int {
+    if (*(*thing).info).raisestate == S_NULL as i32 {
         return true_0 as boolean;
     }
     maxdist = (*(*thing).info).radius
-        + mobjinfo[MT_VILE as ::core::ffi::c_int as usize].radius;
-    if abs((*thing).x as ::core::ffi::c_int - viletryx as ::core::ffi::c_int) > maxdist
-        || abs((*thing).y as ::core::ffi::c_int - viletryy as ::core::ffi::c_int)
+        + mobjinfo[MT_VILE as i32 as usize].radius;
+    if abs((*thing).x as i32 - viletryx as i32) > maxdist
+        || abs((*thing).y as i32 - viletryy as i32)
             > maxdist
     {
         return true_0 as boolean;
     }
     corpsehit = thing;
-    (*corpsehit).momy = 0 as ::core::ffi::c_int as fixed_t;
+    (*corpsehit).momy = 0 as i32 as fixed_t;
     (*corpsehit).momx = (*corpsehit).momy;
-    (*corpsehit).height <<= 2 as ::core::ffi::c_int;
+    (*corpsehit).height <<= 2 as i32;
     check = P_CheckPosition(corpsehit, (*corpsehit).x, (*corpsehit).y);
-    (*corpsehit).height >>= 2 as ::core::ffi::c_int;
+    (*corpsehit).height >>= 2 as i32;
     if check == 0 {
         return true_0 as boolean;
     }
@@ -2508,30 +2508,30 @@ pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_VileChase(mut actor: *mut mobj_t) {
-    let mut xl: ::core::ffi::c_int = 0;
-    let mut xh: ::core::ffi::c_int = 0;
-    let mut yl: ::core::ffi::c_int = 0;
-    let mut yh: ::core::ffi::c_int = 0;
-    let mut bx: ::core::ffi::c_int = 0;
-    let mut by: ::core::ffi::c_int = 0;
+    let mut xl: i32 = 0;
+    let mut xh: i32 = 0;
+    let mut yl: i32 = 0;
+    let mut yh: i32 = 0;
+    let mut bx: i32 = 0;
+    let mut by: i32 = 0;
     let mut info: *mut mobjinfo_t = ::core::ptr::null_mut::<mobjinfo_t>();
     let mut temp: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    if (*actor).movedir != DI_NODIR as ::core::ffi::c_int {
+    if (*actor).movedir != DI_NODIR as i32 {
         viletryx = (*actor).x
             + (*(*actor).info).speed as fixed_t * xspeed[(*actor).movedir as usize];
         viletryy = (*actor).y
             + (*(*actor).info).speed as fixed_t * yspeed[(*actor).movedir as usize];
-        xl = viletryx as ::core::ffi::c_int - bmaporgx as ::core::ffi::c_int
-            - 32 as ::core::ffi::c_int * FRACUNIT * 2 as ::core::ffi::c_int
+        xl = viletryx as i32 - bmaporgx as i32
+            - 32 as i32 * FRACUNIT * 2 as i32
             >> MAPBLOCKSHIFT;
-        xh = viletryx as ::core::ffi::c_int - bmaporgx as ::core::ffi::c_int
-            + 32 as ::core::ffi::c_int * FRACUNIT * 2 as ::core::ffi::c_int
+        xh = viletryx as i32 - bmaporgx as i32
+            + 32 as i32 * FRACUNIT * 2 as i32
             >> MAPBLOCKSHIFT;
-        yl = viletryy as ::core::ffi::c_int - bmaporgy as ::core::ffi::c_int
-            - 32 as ::core::ffi::c_int * FRACUNIT * 2 as ::core::ffi::c_int
+        yl = viletryy as i32 - bmaporgy as i32
+            - 32 as i32 * FRACUNIT * 2 as i32
             >> MAPBLOCKSHIFT;
-        yh = viletryy as ::core::ffi::c_int - bmaporgy as ::core::ffi::c_int
-            + 32 as ::core::ffi::c_int * FRACUNIT * 2 as ::core::ffi::c_int
+        yh = viletryy as i32 - bmaporgy as i32
+            + 32 as i32 * FRACUNIT * 2 as i32
             >> MAPBLOCKSHIFT;
         vileobj = actor;
         bx = xl;
@@ -2551,11 +2551,11 @@ pub unsafe extern "C" fn A_VileChase(mut actor: *mut mobj_t) {
                     P_SetMobjState(actor, S_VILE_HEAL1);
                     S_StartSound(
                         corpsehit as *mut ::core::ffi::c_void,
-                        sfx_slop as ::core::ffi::c_int,
+                        sfx_slop as i32,
                     );
                     info = (*corpsehit).info;
                     P_SetMobjState(corpsehit, (*info).raisestate as statenum_t);
-                    (*corpsehit).height <<= 2 as ::core::ffi::c_int;
+                    (*corpsehit).height <<= 2 as i32;
                     (*corpsehit).flags = (*info).flags;
                     (*corpsehit).health = (*info).spawnhealth;
                     (*corpsehit).target = ::core::ptr::null_mut::<mobj_s>();
@@ -2570,23 +2570,23 @@ pub unsafe extern "C" fn A_VileChase(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_VileStart(mut actor: *mut mobj_t) {
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_vilatk as ::core::ffi::c_int);
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_vilatk as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_StartFire(mut actor: *mut mobj_t) {
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_flamst as ::core::ffi::c_int);
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_flamst as i32);
     A_Fire(actor);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_FireCrackle(mut actor: *mut mobj_t) {
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_flame as ::core::ffi::c_int);
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_flame as i32);
     A_Fire(actor);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Fire(mut actor: *mut mobj_t) {
     let mut dest: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut an: ::core::ffi::c_uint = 0;
+    let mut an: u32 = 0;
     dest = (*actor).tracer as *mut mobj_t;
     if dest.is_null() {
         return;
@@ -2595,7 +2595,7 @@ pub unsafe extern "C" fn A_Fire(mut actor: *mut mobj_t) {
     if P_CheckSight(target, dest) == 0 {
         return;
     }
-    an = ((*dest).angle >> ANGLETOFINESHIFT) as ::core::ffi::c_uint;
+    an = ((*dest).angle >> ANGLETOFINESHIFT) as u32;
     P_UnsetThingPosition(actor);
     (*actor).x = (*dest).x
         + FixedMul(24 as fixed_t * FRACUNIT, *finecosine.offset(an as isize));
@@ -2624,7 +2624,7 @@ pub unsafe extern "C" fn A_VileTarget(mut actor: *mut mobj_t) {
 #[no_mangle]
 pub unsafe extern "C" fn A_VileAttack(mut actor: *mut mobj_t) {
     let mut fire: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut an: ::core::ffi::c_int = 0;
+    let mut an: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
@@ -2632,11 +2632,11 @@ pub unsafe extern "C" fn A_VileAttack(mut actor: *mut mobj_t) {
     if P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0 {
         return;
     }
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_barexp as ::core::ffi::c_int);
-    P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, 20 as ::core::ffi::c_int);
-    (*(*actor).target).momz = (1000 as ::core::ffi::c_int * FRACUNIT
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_barexp as i32);
+    P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, 20 as i32);
+    (*(*actor).target).momz = (1000 as i32 * FRACUNIT
         / (*(*(*actor).target).info).mass) as fixed_t;
-    an = ((*actor).angle >> ANGLETOFINESHIFT) as ::core::ffi::c_int;
+    an = ((*actor).angle >> ANGLETOFINESHIFT) as i32;
     fire = (*actor).tracer as *mut mobj_t;
     if fire.is_null() {
         return;
@@ -2645,26 +2645,26 @@ pub unsafe extern "C" fn A_VileAttack(mut actor: *mut mobj_t) {
         - FixedMul(24 as fixed_t * FRACUNIT, *finecosine.offset(an as isize));
     (*fire).y = (*(*actor).target).y
         - FixedMul(24 as fixed_t * FRACUNIT, finesine[an as usize]);
-    P_RadiusAttack(fire, actor, 70 as ::core::ffi::c_int);
+    P_RadiusAttack(fire, actor, 70 as i32);
 }
-pub const FATSPREAD: ::core::ffi::c_int = ANG90 / 8 as ::core::ffi::c_int;
+pub const FATSPREAD: i32 = ANG90 / 8 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn A_FatRaise(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_manatk as ::core::ffi::c_int);
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_manatk as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_FatAttack1(mut actor: *mut mobj_t) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut an: ::core::ffi::c_int = 0;
+    let mut an: i32 = 0;
     A_FaceTarget(actor);
     (*actor).angle = (*actor).angle.wrapping_add(FATSPREAD as angle_t);
     target = P_SubstNullMobj((*actor).target as *mut mobj_t);
     P_SpawnMissile(actor, target, MT_FATSHOT);
     mo = P_SpawnMissile(actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_add(FATSPREAD as angle_t);
-    an = ((*mo).angle >> ANGLETOFINESHIFT) as ::core::ffi::c_int;
+    an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul(
         (*(*mo).info).speed as fixed_t,
         *finecosine.offset(an as isize),
@@ -2675,7 +2675,7 @@ pub unsafe extern "C" fn A_FatAttack1(mut actor: *mut mobj_t) {
 pub unsafe extern "C" fn A_FatAttack2(mut actor: *mut mobj_t) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut an: ::core::ffi::c_int = 0;
+    let mut an: i32 = 0;
     A_FaceTarget(actor);
     (*actor).angle = (*actor).angle.wrapping_sub(FATSPREAD as angle_t);
     target = P_SubstNullMobj((*actor).target as *mut mobj_t);
@@ -2683,8 +2683,8 @@ pub unsafe extern "C" fn A_FatAttack2(mut actor: *mut mobj_t) {
     mo = P_SpawnMissile(actor, target, MT_FATSHOT);
     (*mo).angle = (*mo)
         .angle
-        .wrapping_sub((FATSPREAD * 2 as ::core::ffi::c_int) as angle_t);
-    an = ((*mo).angle >> ANGLETOFINESHIFT) as ::core::ffi::c_int;
+        .wrapping_sub((FATSPREAD * 2 as i32) as angle_t);
+    an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul(
         (*(*mo).info).speed as fixed_t,
         *finecosine.offset(an as isize),
@@ -2695,14 +2695,14 @@ pub unsafe extern "C" fn A_FatAttack2(mut actor: *mut mobj_t) {
 pub unsafe extern "C" fn A_FatAttack3(mut actor: *mut mobj_t) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut an: ::core::ffi::c_int = 0;
+    let mut an: i32 = 0;
     A_FaceTarget(actor);
     target = P_SubstNullMobj((*actor).target as *mut mobj_t);
     mo = P_SpawnMissile(actor, target, MT_FATSHOT);
     (*mo).angle = (*mo)
         .angle
-        .wrapping_sub((FATSPREAD / 2 as ::core::ffi::c_int) as angle_t);
-    an = ((*mo).angle >> ANGLETOFINESHIFT) as ::core::ffi::c_int;
+        .wrapping_sub((FATSPREAD / 2 as i32) as angle_t);
+    an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul(
         (*(*mo).info).speed as fixed_t,
         *finecosine.offset(an as isize),
@@ -2711,39 +2711,39 @@ pub unsafe extern "C" fn A_FatAttack3(mut actor: *mut mobj_t) {
     mo = P_SpawnMissile(actor, target, MT_FATSHOT);
     (*mo).angle = (*mo)
         .angle
-        .wrapping_add((FATSPREAD / 2 as ::core::ffi::c_int) as angle_t);
-    an = ((*mo).angle >> ANGLETOFINESHIFT) as ::core::ffi::c_int;
+        .wrapping_add((FATSPREAD / 2 as i32) as angle_t);
+    an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul(
         (*(*mo).info).speed as fixed_t,
         *finecosine.offset(an as isize),
     );
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
-pub const SKULLSPEED: ::core::ffi::c_int = 20 as ::core::ffi::c_int * FRACUNIT;
+pub const SKULLSPEED: i32 = 20 as i32 * FRACUNIT;
 #[no_mangle]
 pub unsafe extern "C" fn A_SkullAttack(mut actor: *mut mobj_t) {
     let mut dest: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: angle_t = 0;
-    let mut dist: ::core::ffi::c_int = 0;
+    let mut dist: i32 = 0;
     if (*actor).target.is_null() {
         return;
     }
     dest = (*actor).target as *mut mobj_t;
-    (*actor).flags |= MF_SKULLFLY as ::core::ffi::c_int;
+    (*actor).flags |= MF_SKULLFLY as i32;
     S_StartSound(actor as *mut ::core::ffi::c_void, (*(*actor).info).attacksound);
     A_FaceTarget(actor);
     an = (*actor).angle >> ANGLETOFINESHIFT;
     (*actor).momx = FixedMul(SKULLSPEED, *finecosine.offset(an as isize));
     (*actor).momy = FixedMul(SKULLSPEED, finesine[an as usize]);
     dist = P_AproxDistance((*dest).x - (*actor).x, (*dest).y - (*actor).y)
-        as ::core::ffi::c_int;
+        as i32;
     dist = dist / SKULLSPEED;
-    if dist < 1 as ::core::ffi::c_int {
-        dist = 1 as ::core::ffi::c_int;
+    if dist < 1 as i32 {
+        dist = 1 as i32;
     }
-    (*actor).momz = (((*dest).z as ::core::ffi::c_int
-        + ((*dest).height as ::core::ffi::c_int >> 1 as ::core::ffi::c_int)
-        - (*actor).z as ::core::ffi::c_int) / dist) as fixed_t;
+    (*actor).momz = (((*dest).z as i32
+        + ((*dest).height as i32 >> 1 as i32)
+        - (*actor).z as i32) / dist) as fixed_t;
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
@@ -2752,10 +2752,10 @@ pub unsafe extern "C" fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: ang
     let mut z: fixed_t = 0;
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: angle_t = 0;
-    let mut prestep: ::core::ffi::c_int = 0;
-    let mut count: ::core::ffi::c_int = 0;
+    let mut prestep: i32 = 0;
+    let mut count: i32 = 0;
     let mut currentthinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
-    count = 0 as ::core::ffi::c_int;
+    count = 0 as i32;
     currentthinker = thinkercap.next as *mut thinker_t;
     while currentthinker != &raw mut thinkercap {
         if (*currentthinker).function.acp1
@@ -2763,29 +2763,29 @@ pub unsafe extern "C" fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: ang
                 Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
                 actionf_p1,
             >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ()))
-            && (*(currentthinker as *mut mobj_t)).type_0 as ::core::ffi::c_uint
-                == MT_SKULL as ::core::ffi::c_int as ::core::ffi::c_uint
+            && (*(currentthinker as *mut mobj_t)).type_0 as u32
+                == MT_SKULL as i32 as u32
         {
             count += 1;
         }
         currentthinker = (*currentthinker).next as *mut thinker_t;
     }
-    if count > 20 as ::core::ffi::c_int {
+    if count > 20 as i32 {
         return;
     }
     an = angle >> ANGLETOFINESHIFT;
-    prestep = 4 as ::core::ffi::c_int * FRACUNIT
-        + 3 as ::core::ffi::c_int
+    prestep = 4 as i32 * FRACUNIT
+        + 3 as i32
             * ((*(*actor).info).radius
-                + mobjinfo[MT_SKULL as ::core::ffi::c_int as usize].radius)
-            / 2 as ::core::ffi::c_int;
+                + mobjinfo[MT_SKULL as i32 as usize].radius)
+            / 2 as i32;
     x = (*actor).x + FixedMul(prestep as fixed_t, *finecosine.offset(an as isize));
     y = (*actor).y + FixedMul(prestep as fixed_t, finesine[an as usize]);
-    z = ((*actor).z as ::core::ffi::c_int + 8 as ::core::ffi::c_int * FRACUNIT)
+    z = ((*actor).z as i32 + 8 as i32 * FRACUNIT)
         as fixed_t;
     newmobj = P_SpawnMobj(x, y, z, MT_SKULL);
     if P_TryMove(newmobj, (*newmobj).x, (*newmobj).y) == 0 {
-        P_DamageMobj(newmobj, actor, actor, 10000 as ::core::ffi::c_int);
+        P_DamageMobj(newmobj, actor, actor, 10000 as i32);
         return;
     }
     (*newmobj).target = (*actor).target;
@@ -2808,25 +2808,25 @@ pub unsafe extern "C" fn A_PainDie(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Scream(mut actor: *mut mobj_t) {
-    let mut sound: ::core::ffi::c_int = 0;
+    let mut sound: i32 = 0;
     match (*(*actor).info).deathsound {
         0 => return,
         59 | 60 | 61 => {
-            sound = sfx_podth1 as ::core::ffi::c_int
-                + P_Random() % 3 as ::core::ffi::c_int;
+            sound = sfx_podth1 as i32
+                + P_Random() % 3 as i32;
         }
         62 | 63 => {
-            sound = sfx_bgdth1 as ::core::ffi::c_int
-                + P_Random() % 2 as ::core::ffi::c_int;
+            sound = sfx_bgdth1 as i32
+                + P_Random() % 2 as i32;
         }
         _ => {
             sound = (*(*actor).info).deathsound;
         }
     }
-    if (*actor).type_0 as ::core::ffi::c_uint
-        == MT_SPIDER as ::core::ffi::c_int as ::core::ffi::c_uint
-        || (*actor).type_0 as ::core::ffi::c_uint
-            == MT_CYBORG as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*actor).type_0 as u32
+        == MT_SPIDER as i32 as u32
+        || (*actor).type_0 as u32
+            == MT_CYBORG as i32 as u32
     {
         S_StartSound(NULL, sound);
     } else {
@@ -2835,7 +2835,7 @@ pub unsafe extern "C" fn A_Scream(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_XScream(mut actor: *mut mobj_t) {
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_slop as ::core::ffi::c_int);
+    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_slop as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Pain(mut actor: *mut mobj_t) {
@@ -2845,22 +2845,22 @@ pub unsafe extern "C" fn A_Pain(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Fall(mut actor: *mut mobj_t) {
-    (*actor).flags &= !(MF_SOLID as ::core::ffi::c_int);
+    (*actor).flags &= !(MF_SOLID as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Explode(mut thingy: *mut mobj_t) {
-    P_RadiusAttack(thingy, (*thingy).target as *mut mobj_t, 128 as ::core::ffi::c_int);
+    P_RadiusAttack(thingy, (*thingy).target as *mut mobj_t, 128 as i32);
 }
 unsafe extern "C" fn CheckBossEnd(mut motype: mobjtype_t) -> boolean {
-    if (gameversion as ::core::ffi::c_uint)
-        < exe_ultimate as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (gameversion as u32)
+        < exe_ultimate as i32 as u32
     {
-        if gamemap != 8 as ::core::ffi::c_int {
+        if gamemap != 8 as i32 {
             return false_0 as boolean;
         }
-        if motype as ::core::ffi::c_uint
-            == MT_BRUISER as ::core::ffi::c_int as ::core::ffi::c_uint
-            && gameepisode != 1 as ::core::ffi::c_int
+        if motype as u32
+            == MT_BRUISER as i32 as u32
+            && gameepisode != 1 as i32
         {
             return false_0 as boolean;
         }
@@ -2868,34 +2868,34 @@ unsafe extern "C" fn CheckBossEnd(mut motype: mobjtype_t) -> boolean {
     } else {
         match gameepisode {
             1 => {
-                return (gamemap == 8 as ::core::ffi::c_int
-                    && motype as ::core::ffi::c_uint
-                        == MT_BRUISER as ::core::ffi::c_int as ::core::ffi::c_uint)
-                    as ::core::ffi::c_int as boolean;
+                return (gamemap == 8 as i32
+                    && motype as u32
+                        == MT_BRUISER as i32 as u32)
+                    as i32 as boolean;
             }
             2 => {
-                return (gamemap == 8 as ::core::ffi::c_int
-                    && motype as ::core::ffi::c_uint
-                        == MT_CYBORG as ::core::ffi::c_int as ::core::ffi::c_uint)
-                    as ::core::ffi::c_int as boolean;
+                return (gamemap == 8 as i32
+                    && motype as u32
+                        == MT_CYBORG as i32 as u32)
+                    as i32 as boolean;
             }
             3 => {
-                return (gamemap == 8 as ::core::ffi::c_int
-                    && motype as ::core::ffi::c_uint
-                        == MT_SPIDER as ::core::ffi::c_int as ::core::ffi::c_uint)
-                    as ::core::ffi::c_int as boolean;
+                return (gamemap == 8 as i32
+                    && motype as u32
+                        == MT_SPIDER as i32 as u32)
+                    as i32 as boolean;
             }
             4 => {
-                return (gamemap == 6 as ::core::ffi::c_int
-                    && motype as ::core::ffi::c_uint
-                        == MT_CYBORG as ::core::ffi::c_int as ::core::ffi::c_uint
-                    || gamemap == 8 as ::core::ffi::c_int
-                        && motype as ::core::ffi::c_uint
-                            == MT_SPIDER as ::core::ffi::c_int as ::core::ffi::c_uint)
-                    as ::core::ffi::c_int as boolean;
+                return (gamemap == 6 as i32
+                    && motype as u32
+                        == MT_CYBORG as i32 as u32
+                    || gamemap == 8 as i32
+                        && motype as u32
+                            == MT_SPIDER as i32 as u32)
+                    as i32 as boolean;
             }
             _ => {
-                return (gamemap == 8 as ::core::ffi::c_int) as ::core::ffi::c_int
+                return (gamemap == 8 as i32) as i32
                     as boolean;
             }
         }
@@ -2921,27 +2921,27 @@ pub unsafe extern "C" fn A_BossDeath(mut mo: *mut mobj_t) {
         validcount: 0,
         specialdata: ::core::ptr::null_mut::<::core::ffi::c_void>(),
     };
-    let mut i: ::core::ffi::c_int = 0;
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    let mut i: i32 = 0;
+    if gamemode as u32
+        == commercial as i32 as u32
     {
-        if gamemap != 7 as ::core::ffi::c_int {
+        if gamemap != 7 as i32 {
             return;
         }
-        if (*mo).type_0 as ::core::ffi::c_uint
-            != MT_FATSO as ::core::ffi::c_int as ::core::ffi::c_uint
-            && (*mo).type_0 as ::core::ffi::c_uint
-                != MT_BABY as ::core::ffi::c_int as ::core::ffi::c_uint
+        if (*mo).type_0 as u32
+            != MT_FATSO as i32 as u32
+            && (*mo).type_0 as u32
+                != MT_BABY as i32 as u32
         {
             return;
         }
     } else if CheckBossEnd((*mo).type_0) == 0 {
         return
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0
-            && players[i as usize].health > 0 as ::core::ffi::c_int
+            && players[i as usize].health > 0 as i32
         {
             break;
         }
@@ -2960,30 +2960,30 @@ pub unsafe extern "C" fn A_BossDeath(mut mo: *mut mobj_t) {
         {
             mo2 = th as *mut mobj_t;
             if mo2 != mo
-                && (*mo2).type_0 as ::core::ffi::c_uint
-                    == (*mo).type_0 as ::core::ffi::c_uint
-                && (*mo2).health > 0 as ::core::ffi::c_int
+                && (*mo2).type_0 as u32
+                    == (*mo).type_0 as u32
+                && (*mo2).health > 0 as i32
             {
                 return;
             }
         }
         th = (*th).next as *mut thinker_t;
     }
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
-        if gamemap == 7 as ::core::ffi::c_int {
-            if (*mo).type_0 as ::core::ffi::c_uint
-                == MT_FATSO as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gamemap == 7 as i32 {
+            if (*mo).type_0 as u32
+                == MT_FATSO as i32 as u32
             {
-                junk.tag = 666 as ::core::ffi::c_short;
+                junk.tag = 666 as i16;
                 EV_DoFloor(&raw mut junk, lowerFloorToLowest);
                 return;
             }
-            if (*mo).type_0 as ::core::ffi::c_uint
-                == MT_BABY as ::core::ffi::c_int as ::core::ffi::c_uint
+            if (*mo).type_0 as u32
+                == MT_BABY as i32 as u32
             {
-                junk.tag = 667 as ::core::ffi::c_short;
+                junk.tag = 667 as i16;
                 EV_DoFloor(&raw mut junk, raiseToTexture);
                 return;
             }
@@ -2991,19 +2991,19 @@ pub unsafe extern "C" fn A_BossDeath(mut mo: *mut mobj_t) {
     } else {
         match gameepisode {
             1 => {
-                junk.tag = 666 as ::core::ffi::c_short;
+                junk.tag = 666 as i16;
                 EV_DoFloor(&raw mut junk, lowerFloorToLowest);
                 return;
             }
             4 => {
                 match gamemap {
                     6 => {
-                        junk.tag = 666 as ::core::ffi::c_short;
+                        junk.tag = 666 as i16;
                         EV_DoDoor(&raw mut junk, vld_blazeOpen);
                         return;
                     }
                     8 => {
-                        junk.tag = 666 as ::core::ffi::c_short;
+                        junk.tag = 666 as i16;
                         EV_DoFloor(&raw mut junk, lowerFloorToLowest);
                         return;
                     }
@@ -3017,17 +3017,17 @@ pub unsafe extern "C" fn A_BossDeath(mut mo: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Hoof(mut mo: *mut mobj_t) {
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_hoof as ::core::ffi::c_int);
+    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_hoof as i32);
     A_Chase(mo);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Metal(mut mo: *mut mobj_t) {
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_metal as ::core::ffi::c_int);
+    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_metal as i32);
     A_Chase(mo);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_BabyMetal(mut mo: *mut mobj_t) {
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_bspwlk as ::core::ffi::c_int);
+    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_bspwlk as i32);
     A_Chase(mo);
 }
 #[no_mangle]
@@ -3037,7 +3037,7 @@ pub unsafe extern "C" fn A_OpenShotgun2(
 ) {
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_dbopn as ::core::ffi::c_int,
+        sfx_dbopn as i32,
     );
 }
 #[no_mangle]
@@ -3047,7 +3047,7 @@ pub unsafe extern "C" fn A_LoadShotgun2(
 ) {
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_dbload as ::core::ffi::c_int,
+        sfx_dbload as i32,
     );
 }
 #[no_mangle]
@@ -3057,7 +3057,7 @@ pub unsafe extern "C" fn A_CloseShotgun2(
 ) {
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_dbcls as ::core::ffi::c_int,
+        sfx_dbcls as i32,
     );
     A_ReFire(player, psp);
 }
@@ -3065,15 +3065,15 @@ pub unsafe extern "C" fn A_CloseShotgun2(
 pub static mut braintargets: [*mut mobj_t; 32] = [::core::ptr::null::<mobj_t>()
     as *mut mobj_t; 32];
 #[no_mangle]
-pub static mut numbraintargets: ::core::ffi::c_int = 0;
+pub static mut numbraintargets: i32 = 0;
 #[no_mangle]
-pub static mut braintargeton: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub static mut braintargeton: i32 = 0 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn A_BrainAwake(mut mo: *mut mobj_t) {
     let mut thinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    numbraintargets = 0 as ::core::ffi::c_int;
-    braintargeton = 0 as ::core::ffi::c_int;
+    numbraintargets = 0 as i32;
+    braintargeton = 0 as i32;
     thinker = thinkercap.next as *mut thinker_t;
     thinker = thinkercap.next as *mut thinker_t;
     while thinker != &raw mut thinkercap {
@@ -3084,8 +3084,8 @@ pub unsafe extern "C" fn A_BrainAwake(mut mo: *mut mobj_t) {
             >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ())))
         {
             m = thinker as *mut mobj_t;
-            if (*m).type_0 as ::core::ffi::c_uint
-                == MT_BOSSTARGET as ::core::ffi::c_int as ::core::ffi::c_uint
+            if (*m).type_0 as u32
+                == MT_BOSSTARGET as i32 as u32
             {
                 braintargets[numbraintargets as usize] = m;
                 numbraintargets += 1;
@@ -3093,49 +3093,49 @@ pub unsafe extern "C" fn A_BrainAwake(mut mo: *mut mobj_t) {
         }
         thinker = (*thinker).next as *mut thinker_t;
     }
-    S_StartSound(NULL, sfx_bossit as ::core::ffi::c_int);
+    S_StartSound(NULL, sfx_bossit as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_BrainPain(mut mo: *mut mobj_t) {
-    S_StartSound(NULL, sfx_bospn as ::core::ffi::c_int);
+    S_StartSound(NULL, sfx_bospn as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_BrainScream(mut mo: *mut mobj_t) {
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
-    let mut z: ::core::ffi::c_int = 0;
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
+    let mut z: i32 = 0;
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    x = (*mo).x as ::core::ffi::c_int - 196 as ::core::ffi::c_int * FRACUNIT;
-    while x < (*mo).x as ::core::ffi::c_int + 320 as ::core::ffi::c_int * FRACUNIT {
-        y = (*mo).y as ::core::ffi::c_int - 320 as ::core::ffi::c_int * FRACUNIT;
-        z = 128 as ::core::ffi::c_int + P_Random() * 2 as ::core::ffi::c_int * FRACUNIT;
+    x = (*mo).x as i32 - 196 as i32 * FRACUNIT;
+    while x < (*mo).x as i32 + 320 as i32 * FRACUNIT {
+        y = (*mo).y as i32 - 320 as i32 * FRACUNIT;
+        z = 128 as i32 + P_Random() * 2 as i32 * FRACUNIT;
         th = P_SpawnMobj(x as fixed_t, y as fixed_t, z as fixed_t, MT_ROCKET);
-        (*th).momz = (P_Random() * 512 as ::core::ffi::c_int) as fixed_t;
+        (*th).momz = (P_Random() * 512 as i32) as fixed_t;
         P_SetMobjState(th, S_BRAINEXPLODE1);
-        (*th).tics -= P_Random() & 7 as ::core::ffi::c_int;
-        if (*th).tics < 1 as ::core::ffi::c_int {
-            (*th).tics = 1 as ::core::ffi::c_int;
+        (*th).tics -= P_Random() & 7 as i32;
+        if (*th).tics < 1 as i32 {
+            (*th).tics = 1 as i32;
         }
-        x += FRACUNIT * 8 as ::core::ffi::c_int;
+        x += FRACUNIT * 8 as i32;
     }
-    S_StartSound(NULL, sfx_bosdth as ::core::ffi::c_int);
+    S_StartSound(NULL, sfx_bosdth as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_BrainExplode(mut mo: *mut mobj_t) {
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
-    let mut z: ::core::ffi::c_int = 0;
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
+    let mut z: i32 = 0;
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    x = (*mo).x as ::core::ffi::c_int
-        + (P_Random() - P_Random()) * 2048 as ::core::ffi::c_int;
-    y = (*mo).y as ::core::ffi::c_int;
-    z = 128 as ::core::ffi::c_int + P_Random() * 2 as ::core::ffi::c_int * FRACUNIT;
+    x = (*mo).x as i32
+        + (P_Random() - P_Random()) * 2048 as i32;
+    y = (*mo).y as i32;
+    z = 128 as i32 + P_Random() * 2 as i32 * FRACUNIT;
     th = P_SpawnMobj(x as fixed_t, y as fixed_t, z as fixed_t, MT_ROCKET);
-    (*th).momz = (P_Random() * 512 as ::core::ffi::c_int) as fixed_t;
+    (*th).momz = (P_Random() * 512 as i32) as fixed_t;
     P_SetMobjState(th, S_BRAINEXPLODE1);
-    (*th).tics -= P_Random() & 7 as ::core::ffi::c_int;
-    if (*th).tics < 1 as ::core::ffi::c_int {
-        (*th).tics = 1 as ::core::ffi::c_int;
+    (*th).tics -= P_Random() & 7 as i32;
+    if (*th).tics < 1 as i32 {
+        (*th).tics = 1 as i32;
     }
 }
 #[no_mangle]
@@ -3146,23 +3146,23 @@ pub unsafe extern "C" fn A_BrainDie(mut mo: *mut mobj_t) {
 pub unsafe extern "C" fn A_BrainSpit(mut mo: *mut mobj_t) {
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    static mut easy: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    easy ^= 1 as ::core::ffi::c_int;
-    if gameskill as ::core::ffi::c_int <= sk_easy as ::core::ffi::c_int && easy == 0 {
+    static mut easy: i32 = 0 as i32;
+    easy ^= 1 as i32;
+    if gameskill as i32 <= sk_easy as i32 && easy == 0 {
         return;
     }
     targ = braintargets[braintargeton as usize];
-    braintargeton = (braintargeton + 1 as ::core::ffi::c_int) % numbraintargets;
+    braintargeton = (braintargeton + 1 as i32) % numbraintargets;
     newmobj = P_SpawnMissile(mo, targ, MT_SPAWNSHOT);
     (*newmobj).target = targ as *mut mobj_s;
-    (*newmobj).reactiontime = ((*targ).y as ::core::ffi::c_int
-        - (*mo).y as ::core::ffi::c_int) / (*newmobj).momy as ::core::ffi::c_int
+    (*newmobj).reactiontime = ((*targ).y as i32
+        - (*mo).y as i32) / (*newmobj).momy as i32
         / (*(*newmobj).state).tics;
-    S_StartSound(NULL, sfx_bospit as ::core::ffi::c_int);
+    S_StartSound(NULL, sfx_bospit as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_SpawnSound(mut mo: *mut mobj_t) {
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_boscub as ::core::ffi::c_int);
+    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_boscub as i32);
     A_SpawnFly(mo);
 }
 #[no_mangle]
@@ -3170,7 +3170,7 @@ pub unsafe extern "C" fn A_SpawnFly(mut mo: *mut mobj_t) {
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut fog: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut r: ::core::ffi::c_int = 0;
+    let mut r: i32 = 0;
     let mut type_0: mobjtype_t = MT_PLAYER;
     (*mo).reactiontime -= 1;
     if (*mo).reactiontime != 0 {
@@ -3178,27 +3178,27 @@ pub unsafe extern "C" fn A_SpawnFly(mut mo: *mut mobj_t) {
     }
     targ = P_SubstNullMobj((*mo).target as *mut mobj_t);
     fog = P_SpawnMobj((*targ).x, (*targ).y, (*targ).z, MT_SPAWNFIRE);
-    S_StartSound(fog as *mut ::core::ffi::c_void, sfx_telept as ::core::ffi::c_int);
+    S_StartSound(fog as *mut ::core::ffi::c_void, sfx_telept as i32);
     r = P_Random();
-    if r < 50 as ::core::ffi::c_int {
+    if r < 50 as i32 {
         type_0 = MT_TROOP;
-    } else if r < 90 as ::core::ffi::c_int {
+    } else if r < 90 as i32 {
         type_0 = MT_SERGEANT;
-    } else if r < 120 as ::core::ffi::c_int {
+    } else if r < 120 as i32 {
         type_0 = MT_SHADOWS;
-    } else if r < 130 as ::core::ffi::c_int {
+    } else if r < 130 as i32 {
         type_0 = MT_PAIN;
-    } else if r < 160 as ::core::ffi::c_int {
+    } else if r < 160 as i32 {
         type_0 = MT_HEAD;
-    } else if r < 162 as ::core::ffi::c_int {
+    } else if r < 162 as i32 {
         type_0 = MT_VILE;
-    } else if r < 172 as ::core::ffi::c_int {
+    } else if r < 172 as i32 {
         type_0 = MT_UNDEAD;
-    } else if r < 192 as ::core::ffi::c_int {
+    } else if r < 192 as i32 {
         type_0 = MT_BABY;
-    } else if r < 222 as ::core::ffi::c_int {
+    } else if r < 222 as i32 {
         type_0 = MT_FATSO;
-    } else if r < 246 as ::core::ffi::c_int {
+    } else if r < 246 as i32 {
         type_0 = MT_KNIGHT;
     } else {
         type_0 = MT_BRUISER;
@@ -3212,12 +3212,12 @@ pub unsafe extern "C" fn A_SpawnFly(mut mo: *mut mobj_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_PlayerScream(mut mo: *mut mobj_t) {
-    let mut sound: ::core::ffi::c_int = sfx_pldeth as ::core::ffi::c_int;
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        && (*mo).health < -(50 as ::core::ffi::c_int)
+    let mut sound: i32 = sfx_pldeth as i32;
+    if gamemode as u32
+        == commercial as i32 as u32
+        && (*mo).health < -(50 as i32)
     {
-        sound = sfx_pdiehi as ::core::ffi::c_int;
+        sound = sfx_pdiehi as i32;
     }
     S_StartSound(mo as *mut ::core::ffi::c_void, sound);
 }

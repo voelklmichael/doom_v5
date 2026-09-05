@@ -2,8 +2,8 @@ use crate::src::p_spec::{ceiling_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 extern "C" {
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     static mut sectors: *mut sector_t;
@@ -12,21 +12,21 @@ extern "C" {
     fn P_FindHighestCeilingSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindSectorFromLineTag(
         line: *mut line_t,
-        start: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        start: i32,
+    ) -> i32;
     fn T_MovePlane(
         sector: *mut sector_t,
         speed: fixed_t,
         dest: fixed_t,
         crush: boolean,
-        floorOrCeiling: ::core::ffi::c_int,
-        direction: ::core::ffi::c_int,
+        floorOrCeiling: i32,
+        direction: i32,
     ) -> result_e;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    static mut leveltime: ::core::ffi::c_int;
+    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
+    static mut leveltime: i32;
 }
 pub type __uint8_t = u8;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -37,9 +37,9 @@ pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -51,15 +51,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -199,7 +199,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1168,7 +1168,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1307,7 +1307,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type ceiling_e = ::core::ffi::c_uint;
+pub type ceiling_e = u32;
 pub const silentCrushAndRaise: ceiling_e = 5;
 pub const fastCrushAndRaise: ceiling_e = 4;
 pub const crushAndRaise: ceiling_e = 3;
@@ -1315,12 +1315,12 @@ pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
 pub const crushed: result_e = 1;
-pub type result_e = ::core::ffi::c_uint;
+pub type result_e = u32;
 pub const pastdest: result_e = 2;
 pub const ok: result_e = 0;
 pub const sfx_pstop: C2RustUnnamed_0 = 19;
 pub const sfx_stnmov: C2RustUnnamed_0 = 22;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMSFX: C2RustUnnamed_0 = 109;
 pub const sfx_radio: C2RustUnnamed_0 = 108;
 pub const sfx_skeatk: C2RustUnnamed_0 = 107;
@@ -1432,12 +1432,12 @@ pub const sfx_None: C2RustUnnamed_0 = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const CEILSPEED: ::core::ffi::c_int = FRACUNIT;
-pub const MAXCEILINGS: ::core::ffi::c_int = 30 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const CEILSPEED: i32 = FRACUNIT;
+pub const MAXCEILINGS: i32 = 30 as i32;
 #[no_mangle]
 pub static mut activeceilings: [*mut ceiling_t; 30] = [::core::ptr::null::<ceiling_t>()
     as *mut ceiling_t; 30];
@@ -1451,26 +1451,26 @@ pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 (*ceiling).speed,
                 (*ceiling).topheight,
                 false_0 as boolean,
-                1 as ::core::ffi::c_int,
+                1 as i32,
                 (*ceiling).direction,
             );
-            if leveltime & 7 as ::core::ffi::c_int == 0 {
-                match (*ceiling).type_0 as ::core::ffi::c_uint {
+            if leveltime & 7 as i32 == 0 {
+                match (*ceiling).type_0 as u32 {
                     5 => {}
                     _ => {
                         S_StartSound(
                             &raw mut (*(*ceiling).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_stnmov as ::core::ffi::c_int,
+                            sfx_stnmov as i32,
                         );
                     }
                 }
             }
-            if res as ::core::ffi::c_uint
-                == pastdest as ::core::ffi::c_int as ::core::ffi::c_uint
+            if res as u32
+                == pastdest as i32 as u32
             {
                 let mut current_block_7: u64;
-                match (*ceiling).type_0 as ::core::ffi::c_uint {
+                match (*ceiling).type_0 as u32 {
                     1 => {
                         P_RemoveActiveCeiling(ceiling);
                         current_block_7 = 10599921512955367680;
@@ -1479,7 +1479,7 @@ pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                         S_StartSound(
                             &raw mut (*(*ceiling).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_pstop as ::core::ffi::c_int,
+                            sfx_pstop as i32,
                         );
                         current_block_7 = 16040908003852494439;
                     }
@@ -1492,7 +1492,7 @@ pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 }
                 match current_block_7 {
                     16040908003852494439 => {
-                        (*ceiling).direction = -(1 as ::core::ffi::c_int);
+                        (*ceiling).direction = -(1 as i32);
                     }
                     _ => {}
                 }
@@ -1504,31 +1504,31 @@ pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 (*ceiling).speed,
                 (*ceiling).bottomheight,
                 (*ceiling).crush,
-                1 as ::core::ffi::c_int,
+                1 as i32,
                 (*ceiling).direction,
             );
-            if leveltime & 7 as ::core::ffi::c_int == 0 {
-                match (*ceiling).type_0 as ::core::ffi::c_uint {
+            if leveltime & 7 as i32 == 0 {
+                match (*ceiling).type_0 as u32 {
                     5 => {}
                     _ => {
                         S_StartSound(
                             &raw mut (*(*ceiling).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_stnmov as ::core::ffi::c_int,
+                            sfx_stnmov as i32,
                         );
                     }
                 }
             }
-            if res as ::core::ffi::c_uint
-                == pastdest as ::core::ffi::c_int as ::core::ffi::c_uint
+            if res as u32
+                == pastdest as i32 as u32
             {
                 let mut current_block_19: u64;
-                match (*ceiling).type_0 as ::core::ffi::c_uint {
+                match (*ceiling).type_0 as u32 {
                     5 => {
                         S_StartSound(
                             &raw mut (*(*ceiling).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_pstop as ::core::ffi::c_int,
+                            sfx_pstop as i32,
                         );
                         current_block_19 = 3850642056257311267;
                     }
@@ -1555,16 +1555,16 @@ pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 }
                 match current_block_19 {
                     14600216857840559743 => {
-                        (*ceiling).direction = 1 as ::core::ffi::c_int;
+                        (*ceiling).direction = 1 as i32;
                     }
                     _ => {}
                 }
-            } else if res as ::core::ffi::c_uint
-                == crushed as ::core::ffi::c_int as ::core::ffi::c_uint
+            } else if res as u32
+                == crushed as i32 as u32
             {
-                match (*ceiling).type_0 as ::core::ffi::c_uint {
+                match (*ceiling).type_0 as u32 {
                     5 | 3 | 2 => {
-                        (*ceiling).speed = (CEILSPEED / 8 as ::core::ffi::c_int)
+                        (*ceiling).speed = (CEILSPEED / 8 as i32)
                             as fixed_t;
                     }
                     _ => {}
@@ -1578,14 +1578,14 @@ pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
 pub unsafe extern "C" fn EV_DoCeiling(
     mut line: *mut line_t,
     mut type_0: ceiling_e,
-) -> ::core::ffi::c_int {
-    let mut secnum: ::core::ffi::c_int = 0;
-    let mut rtn: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut secnum: i32 = 0;
+    let mut rtn: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut ceiling: *mut ceiling_t = ::core::ptr::null_mut::<ceiling_t>();
-    secnum = -(1 as ::core::ffi::c_int);
-    rtn = 0 as ::core::ffi::c_int;
-    match type_0 as ::core::ffi::c_uint {
+    secnum = -(1 as i32);
+    rtn = 0 as i32;
+    match type_0 as u32 {
         4 | 5 | 3 => {
             P_ActivateInStasisCeiling(line);
         }
@@ -1593,17 +1593,17 @@ pub unsafe extern "C" fn EV_DoCeiling(
     }
     loop {
         secnum = P_FindSectorFromLineTag(line, secnum);
-        if !(secnum >= 0 as ::core::ffi::c_int) {
+        if !(secnum >= 0 as i32) {
             break;
         }
         sec = sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
-        rtn = 1 as ::core::ffi::c_int;
+        rtn = 1 as i32;
         ceiling = Z_Malloc(
-            ::core::mem::size_of::<ceiling_t>() as ::core::ffi::c_int,
-            PU_LEVSPEC as ::core::ffi::c_int,
+            ::core::mem::size_of::<ceiling_t>() as i32,
+            PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut ceiling_t;
         P_AddThinker(&raw mut (*ceiling).thinker);
@@ -1615,14 +1615,14 @@ pub unsafe extern "C" fn EV_DoCeiling(
         (*ceiling).sector = sec;
         (*ceiling).crush = false_0 as boolean;
         let mut current_block_26: u64;
-        match type_0 as ::core::ffi::c_uint {
+        match type_0 as u32 {
             4 => {
                 (*ceiling).crush = true_0 as boolean;
                 (*ceiling).topheight = (*sec).ceilingheight;
-                (*ceiling).bottomheight = ((*sec).floorheight as ::core::ffi::c_int
-                    + 8 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
-                (*ceiling).direction = -(1 as ::core::ffi::c_int);
-                (*ceiling).speed = (CEILSPEED * 2 as ::core::ffi::c_int) as fixed_t;
+                (*ceiling).bottomheight = ((*sec).floorheight as i32
+                    + 8 as i32 * FRACUNIT) as fixed_t;
+                (*ceiling).direction = -(1 as i32);
+                (*ceiling).speed = (CEILSPEED * 2 as i32) as fixed_t;
                 current_block_26 = 7056779235015430508;
             }
             5 | 3 => {
@@ -1635,7 +1635,7 @@ pub unsafe extern "C" fn EV_DoCeiling(
             }
             1 => {
                 (*ceiling).topheight = P_FindHighestCeilingSurrounding(sec);
-                (*ceiling).direction = 1 as ::core::ffi::c_int;
+                (*ceiling).direction = 1 as i32;
                 (*ceiling).speed = CEILSPEED as fixed_t;
                 current_block_26 = 7056779235015430508;
             }
@@ -1646,17 +1646,17 @@ pub unsafe extern "C" fn EV_DoCeiling(
         match current_block_26 {
             6994972524166957283 => {
                 (*ceiling).bottomheight = (*sec).floorheight;
-                if type_0 as ::core::ffi::c_uint
-                    != lowerToFloor as ::core::ffi::c_int as ::core::ffi::c_uint
+                if type_0 as u32
+                    != lowerToFloor as i32 as u32
                 {
-                    (*ceiling).bottomheight += 8 as ::core::ffi::c_int * FRACUNIT;
+                    (*ceiling).bottomheight += 8 as i32 * FRACUNIT;
                 }
-                (*ceiling).direction = -(1 as ::core::ffi::c_int);
+                (*ceiling).direction = -(1 as i32);
                 (*ceiling).speed = CEILSPEED as fixed_t;
             }
             _ => {}
         }
-        (*ceiling).tag = (*sec).tag as ::core::ffi::c_int;
+        (*ceiling).tag = (*sec).tag as i32;
         (*ceiling).type_0 = type_0;
         P_AddActiveCeiling(ceiling);
     }
@@ -1664,8 +1664,8 @@ pub unsafe extern "C" fn EV_DoCeiling(
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_AddActiveCeiling(mut c: *mut ceiling_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXCEILINGS {
         if activeceilings[i as usize].is_null() {
             activeceilings[i as usize] = c;
@@ -1676,8 +1676,8 @@ pub unsafe extern "C" fn P_AddActiveCeiling(mut c: *mut ceiling_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_RemoveActiveCeiling(mut c: *mut ceiling_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXCEILINGS {
         if activeceilings[i as usize] == c {
             (*(*activeceilings[i as usize]).sector).specialdata = NULL;
@@ -1695,12 +1695,12 @@ pub unsafe extern "C" fn P_RemoveActiveCeiling(mut c: *mut ceiling_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_ActivateInStasisCeiling(mut line: *mut line_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXCEILINGS {
         if !activeceilings[i as usize].is_null()
-            && (*activeceilings[i as usize]).tag == (*line).tag as ::core::ffi::c_int
-            && (*activeceilings[i as usize]).direction == 0 as ::core::ffi::c_int
+            && (*activeceilings[i as usize]).tag == (*line).tag as i32
+            && (*activeceilings[i as usize]).direction == 0 as i32
         {
             (*activeceilings[i as usize]).direction = (*activeceilings[i as usize])
                 .olddirection;
@@ -1715,15 +1715,15 @@ pub unsafe extern "C" fn P_ActivateInStasisCeiling(mut line: *mut line_t) {
 #[no_mangle]
 pub unsafe extern "C" fn EV_CeilingCrushStop(
     mut line: *mut line_t,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut rtn: ::core::ffi::c_int = 0;
-    rtn = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+) -> i32 {
+    let mut i: i32 = 0;
+    let mut rtn: i32 = 0;
+    rtn = 0 as i32;
+    i = 0 as i32;
     while i < MAXCEILINGS {
         if !activeceilings[i as usize].is_null()
-            && (*activeceilings[i as usize]).tag == (*line).tag as ::core::ffi::c_int
-            && (*activeceilings[i as usize]).direction != 0 as ::core::ffi::c_int
+            && (*activeceilings[i as usize]).tag == (*line).tag as i32
+            && (*activeceilings[i as usize]).direction != 0 as i32
         {
             (*activeceilings[i as usize]).olddirection = (*activeceilings[i as usize])
                 .direction;
@@ -1731,8 +1731,8 @@ pub unsafe extern "C" fn EV_CeilingCrushStop(
                 *mut ::core::ffi::c_void,
                 actionf_v,
             >(NULL);
-            (*activeceilings[i as usize]).direction = 0 as ::core::ffi::c_int;
-            rtn = 1 as ::core::ffi::c_int;
+            (*activeceilings[i as usize]).direction = 0 as i32;
+            rtn = 1 as i32;
         }
         i += 1;
     }

@@ -2,8 +2,8 @@ use crate::src::w_file::wad_file_t;
 use crate::src::i_system::I_Error;
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn toupper(__c: i32) -> i32;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
     fn free(__ptr: *mut ::core::ffi::c_void);
     fn memcpy(
@@ -13,7 +13,7 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strncpy(
@@ -25,17 +25,17 @@ extern "C" {
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn strcasecmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strncasecmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn D_GameMissionString(mission: GameMission_t) -> *mut ::core::ffi::c_char;
     fn D_SuggestGameName(
         mission: GameMission_t,
@@ -45,22 +45,22 @@ extern "C" {
     fn I_EndRead();
     fn M_ExtractFileBase(path: *mut ::core::ffi::c_char, dest: *mut ::core::ffi::c_char);
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn Z_ChangeTag2(
         ptr: *mut ::core::ffi::c_void,
-        tag: ::core::ffi::c_int,
+        tag: i32,
         file: *mut ::core::ffi::c_char,
-        line: ::core::ffi::c_int,
+        line: i32,
     );
     fn Z_ChangeUser(ptr: *mut ::core::ffi::c_void, user: *mut *mut ::core::ffi::c_void);
     fn W_OpenFile(path: *mut ::core::ffi::c_char) -> *mut wad_file_t;
     fn W_Read(
         wad: *mut wad_file_t,
-        offset: ::core::ffi::c_uint,
+        offset: u32,
         buffer: *mut ::core::ffi::c_void,
         buffer_len: size_t,
     ) -> size_t;
@@ -70,7 +70,7 @@ pub type __int32_t = i32;
 pub type size_t = usize;
 pub type uint8_t = __uint8_t;
 pub type byte = uint8_t;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -81,13 +81,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -102,8 +102,8 @@ pub const PU_STATIC: C2RustUnnamed = 1;
 pub struct lumpinfo_s {
     pub name: [::core::ffi::c_char; 8],
     pub wad_file: *mut wad_file_t,
-    pub position: ::core::ffi::c_int,
-    pub size: ::core::ffi::c_int,
+    pub position: i32,
+    pub size: i32,
     pub cache: *mut ::core::ffi::c_void,
     pub next: *mut lumpinfo_t,
 }
@@ -111,16 +111,16 @@ pub type lumpinfo_t = lumpinfo_s;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct filelump_t {
-    pub filepos: ::core::ffi::c_int,
-    pub size: ::core::ffi::c_int,
+    pub filepos: i32,
+    pub size: i32,
     pub name: [::core::ffi::c_char; 8],
 }
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct wadinfo_t {
     pub identification: [::core::ffi::c_char; 4],
-    pub numlumps: ::core::ffi::c_int,
-    pub infotableofs: ::core::ffi::c_int,
+    pub numlumps: i32,
+    pub infotableofs: i32,
 }
 #[derive(Copy, Clone)]
 pub struct C2RustUnnamed_0 {
@@ -137,50 +137,50 @@ pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] = unsafe {
 pub static mut lumpinfo: *mut lumpinfo_t = ::core::ptr::null::<lumpinfo_t>()
     as *mut lumpinfo_t;
 #[no_mangle]
-pub static mut numlumps: ::core::ffi::c_uint = 0 as ::core::ffi::c_uint;
+pub static mut numlumps: u32 = 0 as u32;
 static mut lumphash: *mut *mut lumpinfo_t = ::core::ptr::null::<*mut lumpinfo_t>()
     as *mut *mut lumpinfo_t;
 #[no_mangle]
 pub unsafe extern "C" fn W_LumpNameHash(
     mut s: *const ::core::ffi::c_char,
-) -> ::core::ffi::c_uint {
-    let mut result: ::core::ffi::c_uint = 5381 as ::core::ffi::c_uint;
-    let mut i: ::core::ffi::c_uint = 0;
-    i = 0 as ::core::ffi::c_uint;
-    while i < 8 as ::core::ffi::c_uint
-        && *s.offset(i as isize) as ::core::ffi::c_int != '\0' as i32
+) -> u32 {
+    let mut result: u32 = 5381 as u32;
+    let mut i: u32 = 0;
+    i = 0 as u32;
+    while i < 8 as u32
+        && *s.offset(i as isize) as i32 != '\0' as i32
     {
-        result = result << 5 as ::core::ffi::c_int ^ result
+        result = result << 5 as i32 ^ result
             ^ ({
-                let mut __res: ::core::ffi::c_int = 0;
-                if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
+                let mut __res: i32 = 0;
+                if ::core::mem::size_of::<i32>() as usize > 1 as usize {
                     if 0 != 0 {
-                        let mut __c: ::core::ffi::c_int = *s.offset(i as isize)
-                            as ::core::ffi::c_int;
-                        __res = (if __c < -(128 as ::core::ffi::c_int)
-                            || __c > 255 as ::core::ffi::c_int
+                        let mut __c: i32 = *s.offset(i as isize)
+                            as i32;
+                        __res = (if __c < -(128 as i32)
+                            || __c > 255 as i32
                         {
                             __c as __int32_t
                         } else {
                             *(*__ctype_toupper_loc()).offset(__c as isize)
-                        }) as ::core::ffi::c_int;
+                        }) as i32;
                     } else {
-                        __res = toupper(*s.offset(i as isize) as ::core::ffi::c_int);
+                        __res = toupper(*s.offset(i as isize) as i32);
                     }
                 } else {
                     __res = *(*__ctype_toupper_loc())
-                        .offset(*s.offset(i as isize) as ::core::ffi::c_int as isize)
-                        as ::core::ffi::c_int;
+                        .offset(*s.offset(i as isize) as i32 as isize)
+                        as i32;
                 }
                 __res
-            }) as ::core::ffi::c_uint;
+            }) as u32;
         i = i.wrapping_add(1);
     }
     return result;
 }
-unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: ::core::ffi::c_int) {
+unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: i32) {
     let mut newlumpinfo: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
-    let mut i: ::core::ffi::c_uint = 0;
+    let mut i: u32 = 0;
     newlumpinfo = calloc(
         newnumlumps as size_t,
         ::core::mem::size_of::<lumpinfo_t>() as size_t,
@@ -188,8 +188,8 @@ unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: ::core::ffi::c_int) {
     if newlumpinfo.is_null() {
         I_Error("Couldn't realloc lumpinfo");
     }
-    i = 0 as ::core::ffi::c_uint;
-    while i < numlumps && i < newnumlumps as ::core::ffi::c_uint {
+    i = 0 as u32;
+    while i < numlumps && i < newnumlumps as u32 {
         memcpy(
             newlumpinfo.offset(i as isize) as *mut lumpinfo_t
                 as *mut ::core::ffi::c_void,
@@ -203,9 +203,9 @@ unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: ::core::ffi::c_int) {
             );
         }
         if !(*lumpinfo.offset(i as isize)).next.is_null() {
-            let mut nextlumpnum: ::core::ffi::c_int = (*lumpinfo.offset(i as isize))
+            let mut nextlumpnum: i32 = (*lumpinfo.offset(i as isize))
                 .next
-                .offset_from(lumpinfo) as ::core::ffi::c_long as ::core::ffi::c_int;
+                .offset_from(lumpinfo) as ::core::ffi::c_long as i32;
             let ref mut fresh0 = (*newlumpinfo.offset(i as isize)).next;
             *fresh0 = newlumpinfo.offset(nextlumpnum as isize) as *mut lumpinfo_t;
         }
@@ -213,7 +213,7 @@ unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: ::core::ffi::c_int) {
     }
     free(lumpinfo as *mut ::core::ffi::c_void);
     lumpinfo = newlumpinfo;
-    numlumps = newnumlumps as ::core::ffi::c_uint;
+    numlumps = newnumlumps as u32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn W_AddFile(
@@ -225,13 +225,13 @@ pub unsafe extern "C" fn W_AddFile(
         infotableofs: 0,
     };
     let mut lump_p: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
-    let mut i: ::core::ffi::c_uint = 0;
+    let mut i: u32 = 0;
     let mut wad_file: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
-    let mut length: ::core::ffi::c_int = 0;
-    let mut startlump: ::core::ffi::c_int = 0;
+    let mut length: i32 = 0;
+    let mut startlump: i32 = 0;
     let mut fileinfo: *mut filelump_t = ::core::ptr::null_mut::<filelump_t>();
     let mut filerover: *mut filelump_t = ::core::ptr::null_mut::<filelump_t>();
-    let mut newnumlumps: ::core::ffi::c_int = 0;
+    let mut newnumlumps: i32 = 0;
     wad_file = W_OpenFile(filename);
     if wad_file.is_null() {
         printf(
@@ -240,21 +240,21 @@ pub unsafe extern "C" fn W_AddFile(
         );
         return ::core::ptr::null_mut::<wad_file_t>();
     }
-    newnumlumps = numlumps as ::core::ffi::c_int;
+    newnumlumps = numlumps as i32;
     if strcasecmp(
         filename
             .offset(strlen(filename) as isize)
-            .offset(-(3 as ::core::ffi::c_int as isize)),
+            .offset(-(3 as i32 as isize)),
         b"wad\0" as *const u8 as *const ::core::ffi::c_char,
     ) != 0
     {
         fileinfo = Z_Malloc(
-            ::core::mem::size_of::<filelump_t>() as ::core::ffi::c_int,
-            PU_STATIC as ::core::ffi::c_int,
+            ::core::mem::size_of::<filelump_t>() as i32,
+            PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut filelump_t;
-        (*fileinfo).filepos = 0 as ::core::ffi::c_int;
-        (*fileinfo).size = (*wad_file).length as ::core::ffi::c_int;
+        (*fileinfo).filepos = 0 as i32;
+        (*fileinfo).size = (*wad_file).length as i32;
         M_ExtractFileBase(
             filename,
             &raw mut (*fileinfo).name as *mut ::core::ffi::c_char,
@@ -263,7 +263,7 @@ pub unsafe extern "C" fn W_AddFile(
     } else {
         W_Read(
             wad_file,
-            0 as ::core::ffi::c_uint,
+            0 as u32,
             &raw mut header as *mut ::core::ffi::c_void,
             ::core::mem::size_of::<wadinfo_t>() as size_t,
         );
@@ -289,25 +289,25 @@ pub unsafe extern "C" fn W_AddFile(
         header.infotableofs = header.infotableofs;
         length = (header.numlumps as usize)
             .wrapping_mul(::core::mem::size_of::<filelump_t>() as usize)
-            as ::core::ffi::c_int;
+            as i32;
         fileinfo = Z_Malloc(
             length,
-            PU_STATIC as ::core::ffi::c_int,
+            PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut filelump_t;
         W_Read(
             wad_file,
-            header.infotableofs as ::core::ffi::c_uint,
+            header.infotableofs as u32,
             fileinfo as *mut ::core::ffi::c_void,
             length as size_t,
         );
         newnumlumps += header.numlumps;
     }
-    startlump = numlumps as ::core::ffi::c_int;
+    startlump = numlumps as i32;
     ExtendLumpInfo(newnumlumps);
     lump_p = lumpinfo.offset(startlump as isize) as *mut lumpinfo_t;
     filerover = fileinfo;
-    i = startlump as ::core::ffi::c_uint;
+    i = startlump as u32;
     while i < numlumps {
         (*lump_p).wad_file = wad_file;
         (*lump_p).position = (*filerover).filepos;
@@ -330,8 +330,8 @@ pub unsafe extern "C" fn W_AddFile(
     return wad_file;
 }
 #[no_mangle]
-pub unsafe extern "C" fn W_NumLumps() -> ::core::ffi::c_int {
-    return numlumps as ::core::ffi::c_int;
+pub unsafe extern "C" fn W_NumLumps() -> i32 {
+    return numlumps as i32;
 }
 /// Reads up to 8 bytes at `ptr` as a WAD lump name and converts it to an
 /// owned `String`, stopping at the first nul (if any). WAD lump names are a
@@ -344,14 +344,14 @@ pub unsafe fn wad_name8_to_string(ptr: *const ::core::ffi::c_char) -> String {
     let len = bytes.iter().position(|&b| b == 0).unwrap_or(8);
     String::from_utf8_lossy(&bytes[..len]).into_owned()
 }
-pub unsafe fn W_CheckNumForName(name: &str) -> ::core::ffi::c_int {
+pub unsafe fn W_CheckNumForName(name: &str) -> i32 {
     let name_cstring = ::std::ffi::CString::new(name).unwrap();
     let name = name_cstring.as_ptr() as *mut ::core::ffi::c_char;
     let mut lump_p: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     if !lumphash.is_null() {
-        let mut hash: ::core::ffi::c_int = 0;
-        hash = W_LumpNameHash(name).wrapping_rem(numlumps) as ::core::ffi::c_int;
+        let mut hash: i32 = 0;
+        hash = W_LumpNameHash(name).wrapping_rem(numlumps) as i32;
         lump_p = *lumphash.offset(hash as isize);
         while !lump_p.is_null() {
             if strncasecmp(
@@ -361,13 +361,13 @@ pub unsafe fn W_CheckNumForName(name: &str) -> ::core::ffi::c_int {
             ) == 0
             {
                 return lump_p.offset_from(lumpinfo) as ::core::ffi::c_long
-                    as ::core::ffi::c_int;
+                    as i32;
             }
             lump_p = (*lump_p).next;
         }
     } else {
-        i = numlumps.wrapping_sub(1 as ::core::ffi::c_uint) as ::core::ffi::c_int;
-        while i >= 0 as ::core::ffi::c_int {
+        i = numlumps.wrapping_sub(1 as u32) as i32;
+        while i >= 0 as i32 {
             if strncasecmp(
                 &raw mut (*lumpinfo.offset(i as isize)).name as *mut ::core::ffi::c_char,
                 name,
@@ -379,20 +379,20 @@ pub unsafe fn W_CheckNumForName(name: &str) -> ::core::ffi::c_int {
             i -= 1;
         }
     }
-    return -(1 as ::core::ffi::c_int);
+    return -(1 as i32);
 }
-pub unsafe fn W_GetNumForName(name: &str) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
+pub unsafe fn W_GetNumForName(name: &str) -> i32 {
+    let mut i: i32 = 0;
     i = W_CheckNumForName(name);
-    if i < 0 as ::core::ffi::c_int {
+    if i < 0 as i32 {
         I_Error(&format!("W_GetNumForName: {} not found!", name));
     }
     return i;
 }
 #[no_mangle]
 pub unsafe extern "C" fn W_LumpLength(
-    mut lump: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    mut lump: u32,
+) -> i32 {
     if lump >= numlumps {
         I_Error(&format!("W_LumpLength: {} >= numlumps", lump));
     }
@@ -400,10 +400,10 @@ pub unsafe extern "C" fn W_LumpLength(
 }
 #[no_mangle]
 pub unsafe extern "C" fn W_ReadLump(
-    mut lump: ::core::ffi::c_uint,
+    mut lump: u32,
     mut dest: *mut ::core::ffi::c_void,
 ) {
-    let mut c: ::core::ffi::c_int = 0;
+    let mut c: i32 = 0;
     let mut l: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     if lump >= numlumps {
         I_Error(&format!("W_ReadLump: {} >= numlumps", lump));
@@ -412,10 +412,10 @@ pub unsafe extern "C" fn W_ReadLump(
     I_BeginRead();
     c = W_Read(
         (*l).wad_file,
-        (*l).position as ::core::ffi::c_uint,
+        (*l).position as u32,
         dest,
         (*l).size as size_t,
-    ) as ::core::ffi::c_int;
+    ) as i32;
     if c < (*l).size {
         I_Error(&format!("W_ReadLump: only read {} of {} on lump {}", c, (*l).size, lump));
     }
@@ -423,12 +423,12 @@ pub unsafe extern "C" fn W_ReadLump(
 }
 #[no_mangle]
 pub unsafe extern "C" fn W_CacheLumpNum(
-    mut lumpnum: ::core::ffi::c_int,
-    mut tag: ::core::ffi::c_int,
+    mut lumpnum: i32,
+    mut tag: i32,
 ) -> *mut ::core::ffi::c_void {
     let mut result: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut lump: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
-    if lumpnum as ::core::ffi::c_uint >= numlumps {
+    if lumpnum as u32 >= numlumps {
         I_Error(&format!("W_CacheLumpNum: {} >= numlumps", lumpnum));
     }
     lump = lumpinfo.offset(lumpnum as isize) as *mut lumpinfo_t;
@@ -441,39 +441,39 @@ pub unsafe extern "C" fn W_CacheLumpNum(
             tag,
             b"w_wad.c\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
-            410 as ::core::ffi::c_int,
+            410 as i32,
         );
     } else {
         (*lump).cache = Z_Malloc(
-            W_LumpLength(lumpnum as ::core::ffi::c_uint),
+            W_LumpLength(lumpnum as u32),
             tag,
             &raw mut (*lump).cache as *mut ::core::ffi::c_void,
         );
-        W_ReadLump(lumpnum as ::core::ffi::c_uint, (*lump).cache);
+        W_ReadLump(lumpnum as u32, (*lump).cache);
         result = (*lump).cache as *mut byte;
     }
     return result as *mut ::core::ffi::c_void;
 }
 pub unsafe fn W_CacheLumpName(
     name: &str,
-    mut tag: ::core::ffi::c_int,
+    mut tag: i32,
 ) -> *mut ::core::ffi::c_void {
     return W_CacheLumpNum(W_GetNumForName(name), tag);
 }
 #[no_mangle]
-pub unsafe extern "C" fn W_ReleaseLumpNum(mut lumpnum: ::core::ffi::c_int) {
+pub unsafe extern "C" fn W_ReleaseLumpNum(mut lumpnum: i32) {
     let mut lump: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
-    if lumpnum as ::core::ffi::c_uint >= numlumps {
+    if lumpnum as u32 >= numlumps {
         I_Error(&format!("W_ReleaseLumpNum: {} >= numlumps", lumpnum));
     }
     lump = lumpinfo.offset(lumpnum as isize) as *mut lumpinfo_t;
     if (*(*lump).wad_file).mapped.is_null() {
         Z_ChangeTag2(
             (*lump).cache,
-            PU_CACHE as ::core::ffi::c_int,
+            PU_CACHE as i32,
             b"w_wad.c\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
-            461 as ::core::ffi::c_int,
+            461 as i32,
         );
     }
 }
@@ -482,26 +482,26 @@ pub unsafe fn W_ReleaseLumpName(name: &str) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn W_GenerateHashTable() {
-    let mut i: ::core::ffi::c_uint = 0;
+    let mut i: u32 = 0;
     if !lumphash.is_null() {
         Z_Free(lumphash as *mut ::core::ffi::c_void);
     }
-    if numlumps > 0 as ::core::ffi::c_uint {
+    if numlumps > 0 as u32 {
         lumphash = Z_Malloc(
             (::core::mem::size_of::<*mut lumpinfo_t>() as usize)
-                .wrapping_mul(numlumps as usize) as ::core::ffi::c_int,
-            PU_STATIC as ::core::ffi::c_int,
+                .wrapping_mul(numlumps as usize) as i32,
+            PU_STATIC as i32,
             NULL,
         ) as *mut *mut lumpinfo_t;
         memset(
             lumphash as *mut ::core::ffi::c_void,
-            0 as ::core::ffi::c_int,
+            0 as i32,
             (::core::mem::size_of::<*mut lumpinfo_t>() as size_t)
                 .wrapping_mul(numlumps as size_t),
         );
-        i = 0 as ::core::ffi::c_uint;
+        i = 0 as u32;
         while i < numlumps {
-            let mut hash: ::core::ffi::c_uint = 0;
+            let mut hash: u32 = 0;
             hash = W_LumpNameHash(
                     &raw mut (*lumpinfo.offset(i as isize)).name
                         as *mut ::core::ffi::c_char,
@@ -523,18 +523,18 @@ static unique_lumps: [C2RustUnnamed_0; 4] = [
 ];
 #[no_mangle]
 pub unsafe extern "C" fn W_CheckCorrectIWAD(mut mission: GameMission_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut lumpnum: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    let mut lumpnum: i32 = 0;
+    i = 0 as i32;
     while (i as usize)
         < (::core::mem::size_of::<[C2RustUnnamed_0; 4]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_0>() as usize)
     {
-        if mission as ::core::ffi::c_uint
-            != unique_lumps[i as usize].mission as ::core::ffi::c_uint
+        if mission as u32
+            != unique_lumps[i as usize].mission as u32
         {
             lumpnum = W_CheckNumForName(unique_lumps[i as usize].lumpname);
-            if lumpnum >= 0 as ::core::ffi::c_int {
+            if lumpnum >= 0 as i32 {
                 I_Error(&format!(
                     "\nYou are trying to use a {} IWAD file with the {}{} binary.\nThis isn't going to work.\nYou probably want to use the {}{} binary.",
                     ::std::ffi::CStr::from_ptr(

@@ -4,26 +4,26 @@ extern "C" {
     fn D_TryFindWADByName(
         filename: *mut ::core::ffi::c_char,
     ) -> *mut ::core::ffi::c_char;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn W_AddFile(filename: *mut ::core::ffi::c_char) -> *mut wad_file_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn W_ParseCommandLine() -> boolean {
     let mut modifiedgame: boolean = false_0 as boolean;
-    let mut p: ::core::ffi::c_int = 0;
-    p = M_CheckParmWithArgs("-file", 1 as ::core::ffi::c_int);
+    let mut p: i32 = 0;
+    p = M_CheckParmWithArgs("-file", 1 as i32);
     if p != 0 {
         modifiedgame = true_0 as boolean;
         loop {
             p += 1;
-            if !(p != myargv.len() as ::core::ffi::c_int
+            if !(p != myargv.len() as i32
                 && myargv[p as usize].as_bytes().first() != Some(&b'-'))
             {
                 break;

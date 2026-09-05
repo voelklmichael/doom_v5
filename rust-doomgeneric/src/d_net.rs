@@ -5,7 +5,7 @@ use crate::src::d_ticcmd::{ticcmd_t};
 use crate::src::m_argv::M_CheckParm;
 use crate::src::w_wad::W_CheckNumForName;
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn D_ProcessEvents();
     fn D_DoAdvanceDemo();
     fn M_Ticker();
@@ -15,7 +15,7 @@ extern "C" {
         dest_size: size_t,
     ) -> boolean;
     fn G_CheckDemoStatus() -> boolean;
-    fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: ::core::ffi::c_int);
+    fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
     fn G_Ticker();
     fn D_RegisterLoopCallbacks(i: *mut loop_interface_t);
     fn D_InitNetGame(connect_data: *mut net_connect_data_t) -> boolean;
@@ -30,15 +30,15 @@ extern "C" {
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut startskill: skill_t;
-    static mut startepisode: ::core::ffi::c_int;
-    static mut startmap: ::core::ffi::c_int;
-    static mut startloadgame: ::core::ffi::c_int;
+    static mut startepisode: i32;
+    static mut startmap: i32;
+    static mut startloadgame: i32;
     static mut autostart: bool;
-    static mut timelimit: ::core::ffi::c_int;
+    static mut timelimit: i32;
     static mut netgame: bool;
-    static mut deathmatch: ::core::ffi::c_int;
-    static mut viewangleoffset: ::core::ffi::c_int;
-    static mut consoleplayer: ::core::ffi::c_int;
+    static mut deathmatch: i32;
+    static mut viewangleoffset: i32;
+    static mut consoleplayer: i32;
     static mut demoplayback: bool;
     static mut demorecording: bool;
     static mut lowres_turn: bool;
@@ -49,9 +49,9 @@ extern "C" {
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -62,13 +62,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -83,14 +83,14 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type skill_t = ::core::ffi::c_int;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -104,17 +104,17 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type sha1_digest_t = [byte; 20];
 pub type netgame_startup_callback_t = Option<
-    unsafe extern "C" fn(::core::ffi::c_int, ::core::ffi::c_int) -> boolean,
+    unsafe extern "C" fn(i32, i32) -> boolean,
 >;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -254,7 +254,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1223,7 +1223,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1365,25 +1365,25 @@ pub const MT_PLAYER: mobjtype_t = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const ANG270: ::core::ffi::c_uint = 0xc0000000 as ::core::ffi::c_uint;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const ANG270: u32 = 0xc0000000 as u32;
 #[no_mangle]
 pub static mut netcmds: *mut ticcmd_t = ::core::ptr::null::<ticcmd_t>() as *mut ticcmd_t;
 unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
-    let mut player_num: ::core::ffi::c_uint = 0;
+    let mut player_num: u32 = 0;
     player_num = player.offset_from(&raw mut players as *mut player_t)
-        as ::core::ffi::c_long as ::core::ffi::c_uint;
+        as ::core::ffi::c_long as u32;
     M_StringCopy(
         &raw mut exitmsg as *mut ::core::ffi::c_char,
         b"Player 1 left the game\0" as *const u8 as *const ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
     );
-    exitmsg[7 as ::core::ffi::c_int as usize] = (exitmsg[7 as ::core::ffi::c_int
-        as usize] as ::core::ffi::c_uint)
+    exitmsg[7 as i32 as usize] = (exitmsg[7 as i32
+        as usize] as u32)
         .wrapping_add(player_num) as ::core::ffi::c_char as ::core::ffi::c_char;
     playeringame[player_num as usize] = false_0 as boolean;
     players[consoleplayer as usize].message = &raw mut exitmsg
@@ -1396,9 +1396,9 @@ unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
     extern "C" {
         static mut advancedemo: bool;
     }
-    let mut i: ::core::ffi::c_uint = 0;
-    i = 0 as ::core::ffi::c_uint;
-    while i < MAXPLAYERS as ::core::ffi::c_uint {
+    let mut i: u32 = 0;
+    i = 0 as u32;
+    while i < MAXPLAYERS as u32 {
         if !demoplayback && playeringame[i as usize] != 0
             && *ingame.offset(i as isize) == 0
         {
@@ -1419,14 +1419,14 @@ static mut doom_loop_interface: loop_interface_t = unsafe {
         ProcessEvents: Some(D_ProcessEvents as unsafe extern "C" fn() -> ()),
         BuildTiccmd: Some(
             G_BuildTiccmd
-                as unsafe extern "C" fn(*mut ticcmd_t, ::core::ffi::c_int) -> (),
+                as unsafe extern "C" fn(*mut ticcmd_t, i32) -> (),
         ),
         RunTic: Some(RunTic as unsafe extern "C" fn(*mut ticcmd_t, *mut boolean) -> ()),
         RunMenu: Some(M_Ticker as unsafe extern "C" fn() -> ()),
     }
 };
 unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
-    let mut i: ::core::ffi::c_uint = 0;
+    let mut i: u32 = 0;
     deathmatch = (*settings).deathmatch;
     startepisode = (*settings).episode;
     startmap = (*settings).map;
@@ -1444,10 +1444,10 @@ unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
                 as *const u8 as *const ::core::ffi::c_char,
         );
     }
-    i = 0 as ::core::ffi::c_uint;
-    while i < MAXPLAYERS as ::core::ffi::c_uint {
-        playeringame[i as usize] = (i < (*settings).num_players as ::core::ffi::c_uint)
-            as ::core::ffi::c_int as boolean;
+    i = 0 as u32;
+    while i < MAXPLAYERS as u32 {
+        playeringame[i as usize] = (i < (*settings).num_players as u32)
+            as i32 as boolean;
         i = i.wrapping_add(1);
     }
 }
@@ -1455,34 +1455,34 @@ unsafe extern "C" fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
     (*settings).deathmatch = deathmatch;
     (*settings).episode = startepisode;
     (*settings).map = startmap;
-    (*settings).skill = startskill as ::core::ffi::c_int;
+    (*settings).skill = startskill as i32;
     (*settings).loadgame = startloadgame;
-    (*settings).gameversion = gameversion as ::core::ffi::c_int;
-    (*settings).nomonsters = nomonsters as ::core::ffi::c_int;
-    (*settings).fast_monsters = fastparm as ::core::ffi::c_int;
-    (*settings).respawn_monsters = respawnparm as ::core::ffi::c_int;
+    (*settings).gameversion = gameversion as i32;
+    (*settings).nomonsters = nomonsters as i32;
+    (*settings).fast_monsters = fastparm as i32;
+    (*settings).respawn_monsters = respawnparm as i32;
     (*settings).timelimit = timelimit;
-    (*settings).lowres_turn = (M_CheckParm("-record") > 0 as ::core::ffi::c_int
-        && M_CheckParm("-longtics") == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    (*settings).lowres_turn = (M_CheckParm("-record") > 0 as i32
+        && M_CheckParm("-longtics") == 0 as i32) as i32;
 }
 unsafe extern "C" fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
     (*connect_data).max_players = MAXPLAYERS;
     (*connect_data).drone = false_0;
-    if M_CheckParm("-left") > 0 as ::core::ffi::c_int {
+    if M_CheckParm("-left") > 0 as i32 {
         viewangleoffset = ANG90;
         (*connect_data).drone = true_0;
     }
-    if M_CheckParm("-right") > 0 as ::core::ffi::c_int {
-        viewangleoffset = ANG270 as ::core::ffi::c_int;
+    if M_CheckParm("-right") > 0 as i32 {
+        viewangleoffset = ANG270 as i32;
         (*connect_data).drone = true_0;
     }
-    (*connect_data).gamemode = gamemode as ::core::ffi::c_int;
-    (*connect_data).gamemission = gamemission as ::core::ffi::c_int;
-    (*connect_data).lowres_turn = (M_CheckParm("-record") > 0 as ::core::ffi::c_int
-        && M_CheckParm("-longtics") == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    (*connect_data).gamemode = gamemode as i32;
+    (*connect_data).gamemission = gamemission as i32;
+    (*connect_data).lowres_turn = (M_CheckParm("-record") > 0 as i32
+        && M_CheckParm("-longtics") == 0 as i32) as i32;
     W_Checksum(&raw mut (*connect_data).wad_sha1sum as *mut byte);
     (*connect_data).is_freedoom = (W_CheckNumForName("FREEDOOM")
-        >= 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        >= 0 as i32) as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_ConnectNetGame() {
@@ -1499,7 +1499,7 @@ pub unsafe extern "C" fn D_ConnectNetGame() {
     };
     InitConnectData(&raw mut connect_data);
     netgame = D_InitNetGame(&raw mut connect_data) != 0;
-    if M_CheckParm("-solo-net") > 0 as ::core::ffi::c_int {
+    if M_CheckParm("-solo-net") > 0 as i32 {
         netgame = true;
     }
 }
@@ -1535,19 +1535,19 @@ pub unsafe extern "C" fn D_CheckNetGame() {
     printf(
         b"startskill %i  deathmatch: %i  startmap: %i  startepisode: %i\n\0" as *const u8
             as *const ::core::ffi::c_char,
-        startskill as ::core::ffi::c_int,
+        startskill as i32,
         deathmatch,
         startmap,
         startepisode,
     );
     printf(
         b"player %i of %i (%i nodes)\n\0" as *const u8 as *const ::core::ffi::c_char,
-        consoleplayer + 1 as ::core::ffi::c_int,
+        consoleplayer + 1 as i32,
         settings.num_players,
         settings.num_players,
     );
-    if timelimit > 0 as ::core::ffi::c_int && deathmatch != 0 {
-        if timelimit == 20 as ::core::ffi::c_int
+    if timelimit > 0 as i32 && deathmatch != 0 {
+        if timelimit == 20 as i32
             && M_CheckParm("-avg") != 0
         {
             printf(
@@ -1560,7 +1560,7 @@ pub unsafe extern "C" fn D_CheckNetGame() {
                     as *const ::core::ffi::c_char,
                 timelimit,
             );
-            if timelimit > 1 as ::core::ffi::c_int {
+            if timelimit > 1 as i32 {
                 printf(b"s\0" as *const u8 as *const ::core::ffi::c_char);
             }
             printf(b".\n\0" as *const u8 as *const ::core::ffi::c_char);

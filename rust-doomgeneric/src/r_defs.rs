@@ -1,15 +1,15 @@
 use crate::src::p_mobj::{fixed_t, angle_t, vertex_t, sector_t, line_t, byte};
 
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct side_t {
     pub textureoffset: fixed_t,
     pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
+    pub toptexture: i16,
+    pub bottomtexture: i16,
+    pub midtexture: i16,
     pub sector: *mut sector_t,
 }
 
@@ -41,17 +41,17 @@ pub struct node_t {
 #[repr(C)]
 pub struct drawseg_s {
     pub curline: *mut seg_t,
-    pub x1: ::core::ffi::c_int,
-    pub x2: ::core::ffi::c_int,
+    pub x1: i32,
+    pub x2: i32,
     pub scale1: fixed_t,
     pub scale2: fixed_t,
     pub scalestep: fixed_t,
-    pub silhouette: ::core::ffi::c_int,
+    pub silhouette: i32,
     pub bsilheight: fixed_t,
     pub tsilheight: fixed_t,
-    pub sprtopclip: *mut ::core::ffi::c_short,
-    pub sprbottomclip: *mut ::core::ffi::c_short,
-    pub maskedtexturecol: *mut ::core::ffi::c_short,
+    pub sprtopclip: *mut i16,
+    pub sprbottomclip: *mut i16,
+    pub maskedtexturecol: *mut i16,
 }
 pub type drawseg_t = drawseg_s;
 
@@ -59,10 +59,10 @@ pub type drawseg_t = drawseg_s;
 #[repr(C)]
 pub struct visplane_t {
     pub height: fixed_t,
-    pub picnum: ::core::ffi::c_int,
-    pub lightlevel: ::core::ffi::c_int,
-    pub minx: ::core::ffi::c_int,
-    pub maxx: ::core::ffi::c_int,
+    pub picnum: i32,
+    pub lightlevel: i32,
+    pub minx: i32,
+    pub maxx: i32,
     pub pad1: byte,
     pub top: [byte; 320],
     pub pad2: byte,
@@ -75,13 +75,13 @@ pub struct visplane_t {
 #[repr(C)]
 pub struct spriteframe_t {
     pub rotate: boolean,
-    pub lump: [::core::ffi::c_short; 8],
+    pub lump: [i16; 8],
     pub flip: [byte; 8],
 }
 
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct spritedef_t {
-    pub numframes: ::core::ffi::c_int,
+    pub numframes: i32,
     pub spriteframes: *mut spriteframe_t,
 }

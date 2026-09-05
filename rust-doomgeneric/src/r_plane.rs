@@ -2,68 +2,68 @@ use crate::src::r_defs::{drawseg_t, visplane_t};
 use crate::src::p_mobj::{actionf_t};
 use crate::src::i_system::I_Error;
 extern "C" {
-    fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    fn abs(__x: i32) -> i32;
     fn W_CacheLumpNum(
-        lump: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        lump: i32,
+        tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpNum(lump: ::core::ffi::c_int);
+    fn W_ReleaseLumpNum(lump: i32);
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut skyflatnum: ::core::ffi::c_int;
+    static mut skyflatnum: i32;
     static mut colormaps: *mut lighttable_t;
-    static mut viewwidth: ::core::ffi::c_int;
-    static mut viewheight: ::core::ffi::c_int;
-    static mut firstflat: ::core::ffi::c_int;
-    static mut flattranslation: *mut ::core::ffi::c_int;
+    static mut viewwidth: i32;
+    static mut viewheight: i32;
+    static mut firstflat: i32;
+    static mut flattranslation: *mut i32;
     static mut viewx: fixed_t;
     static mut viewy: fixed_t;
     static mut viewz: fixed_t;
     static mut viewangle: angle_t;
     static mut xtoviewangle: [angle_t; 321];
-    fn R_GetColumn(tex: ::core::ffi::c_int, col: ::core::ffi::c_int) -> *mut byte;
+    fn R_GetColumn(tex: i32, col: i32) -> *mut byte;
     static mut centerxfrac: fixed_t;
     static mut zlight: [[*mut lighttable_t; 128]; 16];
-    static mut extralight: ::core::ffi::c_int;
+    static mut extralight: i32;
     static mut fixedcolormap: *mut lighttable_t;
-    static mut detailshift: ::core::ffi::c_int;
+    static mut detailshift: i32;
     static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
     static mut spanfunc: Option<unsafe extern "C" fn() -> ()>;
     static mut drawsegs: [drawseg_t; 256];
     static mut ds_p: *mut drawseg_t;
     static mut pspriteiscale: fixed_t;
     static mut dc_colormap: *mut lighttable_t;
-    static mut dc_x: ::core::ffi::c_int;
-    static mut dc_yl: ::core::ffi::c_int;
-    static mut dc_yh: ::core::ffi::c_int;
+    static mut dc_x: i32;
+    static mut dc_yl: i32;
+    static mut dc_yh: i32;
     static mut dc_iscale: fixed_t;
     static mut dc_texturemid: fixed_t;
     static mut dc_source: *mut byte;
-    static mut ds_y: ::core::ffi::c_int;
-    static mut ds_x1: ::core::ffi::c_int;
-    static mut ds_x2: ::core::ffi::c_int;
+    static mut ds_y: i32;
+    static mut ds_x1: i32;
+    static mut ds_x2: i32;
     static mut ds_colormap: *mut lighttable_t;
     static mut ds_xfrac: fixed_t;
     static mut ds_yfrac: fixed_t;
     static mut ds_xstep: fixed_t;
     static mut ds_ystep: fixed_t;
     static mut ds_source: *mut byte;
-    static mut skytexture: ::core::ffi::c_int;
-    static mut skytexturemid: ::core::ffi::c_int;
+    static mut skytexture: i32;
+    static mut skytexturemid: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -73,7 +73,7 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -85,15 +85,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -233,7 +233,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1202,7 +1202,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1343,22 +1343,22 @@ pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
 pub type lighttable_t = byte;
 pub type planefunction_t = Option<
-    unsafe extern "C" fn(::core::ffi::c_int, ::core::ffi::c_int) -> (),
+    unsafe extern "C" fn(i32, i32) -> (),
 >;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const MAXDRAWSEGS: ::core::ffi::c_int = 256 as ::core::ffi::c_int;
-pub const LIGHTLEVELS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const LIGHTSEGSHIFT: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const MAXLIGHTZ: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-pub const LIGHTZSHIFT: ::core::ffi::c_int = 20 as ::core::ffi::c_int;
-pub const ANGLETOSKYSHIFT: ::core::ffi::c_int = 22 as ::core::ffi::c_int;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const MAXDRAWSEGS: i32 = 256 as i32;
+pub const LIGHTLEVELS: i32 = 16 as i32;
+pub const LIGHTSEGSHIFT: i32 = 4 as i32;
+pub const MAXLIGHTZ: i32 = 128 as i32;
+pub const LIGHTZSHIFT: i32 = 20 as i32;
+pub const ANGLETOSKYSHIFT: i32 = 22 as i32;
 #[no_mangle]
 pub static mut floorfunc: planefunction_t = None;
 #[no_mangle]
 pub static mut ceilingfunc: planefunction_t = None;
-pub const MAXVISPLANES: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
+pub const MAXVISPLANES: i32 = 128 as i32;
 #[no_mangle]
 pub static mut visplanes: [visplane_t; 128] = [visplane_t {
     height: 0,
@@ -1383,19 +1383,19 @@ pub static mut floorplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
 pub static mut ceilingplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
     as *mut visplane_t;
 #[no_mangle]
-pub static mut openings: [::core::ffi::c_short; 20480] = [0; 20480];
+pub static mut openings: [i16; 20480] = [0; 20480];
 #[no_mangle]
-pub static mut lastopening: *mut ::core::ffi::c_short = ::core::ptr::null::<
-    ::core::ffi::c_short,
->() as *mut ::core::ffi::c_short;
+pub static mut lastopening: *mut i16 = ::core::ptr::null::<
+    i16,
+>() as *mut i16;
 #[no_mangle]
-pub static mut floorclip: [::core::ffi::c_short; 320] = [0; 320];
+pub static mut floorclip: [i16; 320] = [0; 320];
 #[no_mangle]
-pub static mut ceilingclip: [::core::ffi::c_short; 320] = [0; 320];
+pub static mut ceilingclip: [i16; 320] = [0; 320];
 #[no_mangle]
-pub static mut spanstart: [::core::ffi::c_int; 200] = [0; 200];
+pub static mut spanstart: [i32; 200] = [0; 200];
 #[no_mangle]
-pub static mut spanstop: [::core::ffi::c_int; 200] = [0; 200];
+pub static mut spanstop: [i32; 200] = [0; 200];
 #[no_mangle]
 pub static mut planezlight: *mut *mut lighttable_t = ::core::ptr::null::<
     *mut lighttable_t,
@@ -1422,15 +1422,15 @@ pub static mut cachedystep: [fixed_t; 200] = [0; 200];
 pub unsafe extern "C" fn R_InitPlanes() {}
 #[no_mangle]
 pub unsafe extern "C" fn R_MapPlane(
-    mut y: ::core::ffi::c_int,
-    mut x1: ::core::ffi::c_int,
-    mut x2: ::core::ffi::c_int,
+    mut y: i32,
+    mut x1: i32,
+    mut x2: i32,
 ) {
     let mut angle: angle_t = 0;
     let mut distance: fixed_t = 0;
     let mut length: fixed_t = 0;
-    let mut index: ::core::ffi::c_uint = 0;
-    if x2 < x1 || x1 < 0 as ::core::ffi::c_int || x2 >= viewwidth || y > viewheight {
+    let mut index: u32 = 0;
+    if x2 < x1 || x1 < 0 as i32 || x2 >= viewwidth || y > viewheight {
         I_Error(&format!("R_MapPlane: {}, {} at {}", x1, x2, y));
     }
     if planeheight != cachedheight[y as usize] {
@@ -1453,9 +1453,9 @@ pub unsafe extern "C" fn R_MapPlane(
     if !fixedcolormap.is_null() {
         ds_colormap = fixedcolormap;
     } else {
-        index = (distance >> LIGHTZSHIFT) as ::core::ffi::c_uint;
-        if index >= MAXLIGHTZ as ::core::ffi::c_uint {
-            index = (MAXLIGHTZ - 1 as ::core::ffi::c_int) as ::core::ffi::c_uint;
+        index = (distance >> LIGHTZSHIFT) as u32;
+        if index >= MAXLIGHTZ as u32 {
+            index = (MAXLIGHTZ - 1 as i32) as u32;
         }
         ds_colormap = *planezlight.offset(index as isize);
     }
@@ -1466,19 +1466,19 @@ pub unsafe extern "C" fn R_MapPlane(
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_ClearPlanes() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut angle: angle_t = 0;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < viewwidth {
-        floorclip[i as usize] = viewheight as ::core::ffi::c_short;
-        ceilingclip[i as usize] = -(1 as ::core::ffi::c_int) as ::core::ffi::c_short;
+        floorclip[i as usize] = viewheight as i16;
+        ceilingclip[i as usize] = -(1 as i32) as i16;
         i += 1;
     }
     lastvisplane = &raw mut visplanes as *mut visplane_t;
-    lastopening = &raw mut openings as *mut ::core::ffi::c_short;
+    lastopening = &raw mut openings as *mut i16;
     memset(
         &raw mut cachedheight as *mut fixed_t as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<[fixed_t; 200]>() as size_t,
     );
     angle = viewangle.wrapping_sub(ANG90 as angle_t) >> ANGLETOFINESHIFT;
@@ -1488,13 +1488,13 @@ pub unsafe extern "C" fn R_ClearPlanes() {
 #[no_mangle]
 pub unsafe extern "C" fn R_FindPlane(
     mut height: fixed_t,
-    mut picnum: ::core::ffi::c_int,
-    mut lightlevel: ::core::ffi::c_int,
+    mut picnum: i32,
+    mut lightlevel: i32,
 ) -> *mut visplane_t {
     let mut check: *mut visplane_t = ::core::ptr::null_mut::<visplane_t>();
     if picnum == skyflatnum {
-        height = 0 as ::core::ffi::c_int as fixed_t;
-        lightlevel = 0 as ::core::ffi::c_int;
+        height = 0 as i32 as fixed_t;
+        lightlevel = 0 as i32;
     }
     check = &raw mut visplanes as *mut visplane_t;
     while check < lastvisplane {
@@ -1518,10 +1518,10 @@ pub unsafe extern "C" fn R_FindPlane(
     (*check).picnum = picnum;
     (*check).lightlevel = lightlevel;
     (*check).minx = SCREENWIDTH;
-    (*check).maxx = -(1 as ::core::ffi::c_int);
+    (*check).maxx = -(1 as i32);
     memset(
         &raw mut (*check).top as *mut byte as *mut ::core::ffi::c_void,
-        0xff as ::core::ffi::c_int,
+        0xff as i32,
         ::core::mem::size_of::<[byte; 320]>() as size_t,
     );
     return check;
@@ -1529,14 +1529,14 @@ pub unsafe extern "C" fn R_FindPlane(
 #[no_mangle]
 pub unsafe extern "C" fn R_CheckPlane(
     mut pl: *mut visplane_t,
-    mut start: ::core::ffi::c_int,
-    mut stop: ::core::ffi::c_int,
+    mut start: i32,
+    mut stop: i32,
 ) -> *mut visplane_t {
-    let mut intrl: ::core::ffi::c_int = 0;
-    let mut intrh: ::core::ffi::c_int = 0;
-    let mut unionl: ::core::ffi::c_int = 0;
-    let mut unionh: ::core::ffi::c_int = 0;
-    let mut x: ::core::ffi::c_int = 0;
+    let mut intrl: i32 = 0;
+    let mut intrh: i32 = 0;
+    let mut unionl: i32 = 0;
+    let mut unionh: i32 = 0;
+    let mut x: i32 = 0;
     if start < (*pl).minx {
         intrl = (*pl).minx;
         unionl = start;
@@ -1553,7 +1553,7 @@ pub unsafe extern "C" fn R_CheckPlane(
     }
     x = intrl;
     while x <= intrh {
-        if (*pl).top[x as usize] as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
+        if (*pl).top[x as usize] as i32 != 0xff as i32 {
             break;
         }
         x += 1;
@@ -1573,25 +1573,25 @@ pub unsafe extern "C" fn R_CheckPlane(
     (*pl).maxx = stop;
     memset(
         &raw mut (*pl).top as *mut byte as *mut ::core::ffi::c_void,
-        0xff as ::core::ffi::c_int,
+        0xff as i32,
         ::core::mem::size_of::<[byte; 320]>() as size_t,
     );
     return pl;
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_MakeSpans(
-    mut x: ::core::ffi::c_int,
-    mut t1: ::core::ffi::c_int,
-    mut b1: ::core::ffi::c_int,
-    mut t2: ::core::ffi::c_int,
-    mut b2: ::core::ffi::c_int,
+    mut x: i32,
+    mut t1: i32,
+    mut b1: i32,
+    mut t2: i32,
+    mut b2: i32,
 ) {
     while t1 < t2 && t1 <= b1 {
-        R_MapPlane(t1, spanstart[t1 as usize], x - 1 as ::core::ffi::c_int);
+        R_MapPlane(t1, spanstart[t1 as usize], x - 1 as i32);
         t1 += 1;
     }
     while b1 > b2 && b1 >= t1 {
-        R_MapPlane(b1, spanstart[b1 as usize], x - 1 as ::core::ffi::c_int);
+        R_MapPlane(b1, spanstart[b1 as usize], x - 1 as i32);
         b1 -= 1;
     }
     while t2 < t1 && t2 <= b2 {
@@ -1606,11 +1606,11 @@ pub unsafe extern "C" fn R_MakeSpans(
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawPlanes() {
     let mut pl: *mut visplane_t = ::core::ptr::null_mut::<visplane_t>();
-    let mut light: ::core::ffi::c_int = 0;
-    let mut x: ::core::ffi::c_int = 0;
-    let mut stop: ::core::ffi::c_int = 0;
-    let mut angle: ::core::ffi::c_int = 0;
-    let mut lumpnum: ::core::ffi::c_int = 0;
+    let mut light: i32 = 0;
+    let mut x: i32 = 0;
+    let mut stop: i32 = 0;
+    let mut angle: i32 = 0;
+    let mut lumpnum: i32 = 0;
     if ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as ::core::ffi::c_long
         > MAXDRAWSEGS as ::core::ffi::c_long
     {
@@ -1628,13 +1628,13 @@ pub unsafe extern "C" fn R_DrawPlanes() {
                 as ::core::ffi::c_long,
         ));
     }
-    if lastopening.offset_from(&raw mut openings as *mut ::core::ffi::c_short)
+    if lastopening.offset_from(&raw mut openings as *mut i16)
         as ::core::ffi::c_long
-        > (SCREENWIDTH * 64 as ::core::ffi::c_int) as ::core::ffi::c_long
+        > (SCREENWIDTH * 64 as i32) as ::core::ffi::c_long
     {
         I_Error(&format!(
             "R_DrawPlanes: opening overflow ({})",
-            lastopening.offset_from(&raw mut openings as *mut ::core::ffi::c_short)
+            lastopening.offset_from(&raw mut openings as *mut i16)
                 as ::core::ffi::c_long,
         ));
     }
@@ -1647,11 +1647,11 @@ pub unsafe extern "C" fn R_DrawPlanes() {
                 dc_texturemid = skytexturemid as fixed_t;
                 x = (*pl).minx;
                 while x <= (*pl).maxx {
-                    dc_yl = (*pl).top[x as usize] as ::core::ffi::c_int;
-                    dc_yh = (*pl).bottom[x as usize] as ::core::ffi::c_int;
+                    dc_yl = (*pl).top[x as usize] as i32;
+                    dc_yh = (*pl).bottom[x as usize] as i32;
                     if dc_yl <= dc_yh {
                         angle = (viewangle.wrapping_add(xtoviewangle[x as usize])
-                            >> ANGLETOSKYSHIFT) as ::core::ffi::c_int;
+                            >> ANGLETOSKYSHIFT) as i32;
                         dc_x = x;
                         dc_source = R_GetColumn(skytexture, angle);
                         colfunc.expect("non-null function pointer")();
@@ -1660,42 +1660,42 @@ pub unsafe extern "C" fn R_DrawPlanes() {
                 }
             } else {
                 lumpnum = firstflat + *flattranslation.offset((*pl).picnum as isize);
-                ds_source = W_CacheLumpNum(lumpnum, PU_STATIC as ::core::ffi::c_int)
+                ds_source = W_CacheLumpNum(lumpnum, PU_STATIC as i32)
                     as *mut byte;
                 planeheight = abs(
-                    (*pl).height as ::core::ffi::c_int - viewz as ::core::ffi::c_int,
+                    (*pl).height as i32 - viewz as i32,
                 ) as fixed_t;
                 light = ((*pl).lightlevel >> LIGHTSEGSHIFT) + extralight;
                 if light >= LIGHTLEVELS {
-                    light = LIGHTLEVELS - 1 as ::core::ffi::c_int;
+                    light = LIGHTLEVELS - 1 as i32;
                 }
-                if light < 0 as ::core::ffi::c_int {
-                    light = 0 as ::core::ffi::c_int;
+                if light < 0 as i32 {
+                    light = 0 as i32;
                 }
                 planezlight = &raw mut *(&raw mut zlight
                     as *mut [*mut lighttable_t; 128])
                     .offset(light as isize) as *mut *mut lighttable_t;
                 *(&raw mut (*pl).top as *mut byte)
-                    .offset(((*pl).maxx + 1 as ::core::ffi::c_int) as isize) = 0xff
+                    .offset(((*pl).maxx + 1 as i32) as isize) = 0xff
                     as byte;
                 *(&raw mut (*pl).top as *mut byte)
-                    .offset(((*pl).minx - 1 as ::core::ffi::c_int) as isize) = 0xff
+                    .offset(((*pl).minx - 1 as i32) as isize) = 0xff
                     as byte;
-                stop = (*pl).maxx + 1 as ::core::ffi::c_int;
+                stop = (*pl).maxx + 1 as i32;
                 x = (*pl).minx;
                 while x <= stop {
                     R_MakeSpans(
                         x,
                         *(&raw const (*pl).top as *const byte)
-                            .offset((x - 1 as ::core::ffi::c_int) as isize)
-                            as ::core::ffi::c_int,
+                            .offset((x - 1 as i32) as isize)
+                            as i32,
                         *(&raw const (*pl).bottom as *const byte)
-                            .offset((x - 1 as ::core::ffi::c_int) as isize)
-                            as ::core::ffi::c_int,
+                            .offset((x - 1 as i32) as isize)
+                            as i32,
                         *(&raw const (*pl).top as *const byte).offset(x as isize)
-                            as ::core::ffi::c_int,
+                            as i32,
                         *(&raw const (*pl).bottom as *const byte).offset(x as isize)
-                            as ::core::ffi::c_int,
+                            as i32,
                     );
                     x += 1;
                 }

@@ -2,9 +2,9 @@ use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, side_t, visplane_t
 use crate::src::p_mobj::{sector_t, line_t, subsector_t, actionf_t};
 use crate::src::i_system::I_Error;
 extern "C" {
-    static mut viewwidth: ::core::ffi::c_int;
+    static mut viewwidth: i32;
     static mut segs: *mut seg_t;
-    static mut numsubsectors: ::core::ffi::c_int;
+    static mut numsubsectors: i32;
     static mut subsectors: *mut subsector_t;
     static mut nodes: *mut node_t;
     static mut viewx: fixed_t;
@@ -12,27 +12,27 @@ extern "C" {
     static mut viewz: fixed_t;
     static mut viewangle: angle_t;
     static mut clipangle: angle_t;
-    static mut viewangletox: [::core::ffi::c_int; 4096];
-    static mut rw_angle1: ::core::ffi::c_int;
-    static mut sscount: ::core::ffi::c_int;
+    static mut viewangletox: [i32; 4096];
+    static mut rw_angle1: i32;
+    static mut sscount: i32;
     static mut floorplane: *mut visplane_t;
     static mut ceilingplane: *mut visplane_t;
-    fn R_PointOnSide(x: fixed_t, y: fixed_t, node: *mut node_t) -> ::core::ffi::c_int;
+    fn R_PointOnSide(x: fixed_t, y: fixed_t, node: *mut node_t) -> i32;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
     fn R_FindPlane(
         height: fixed_t,
-        picnum: ::core::ffi::c_int,
-        lightlevel: ::core::ffi::c_int,
+        picnum: i32,
+        lightlevel: i32,
     ) -> *mut visplane_t;
     fn R_AddSprites(sec: *mut sector_t);
-    static mut skyflatnum: ::core::ffi::c_int;
-    fn R_StoreWallRange(start: ::core::ffi::c_int, stop: ::core::ffi::c_int);
+    static mut skyflatnum: i32;
+    fn R_StoreWallRange(start: i32, stop: i32);
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -44,20 +44,20 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type C2RustUnnamed = u32;
 pub const BOXRIGHT: C2RustUnnamed = 3;
 pub const BOXLEFT: C2RustUnnamed = 2;
 pub const BOXBOTTOM: C2RustUnnamed = 1;
 pub const BOXTOP: C2RustUnnamed = 0;
-pub type angle_t = ::core::ffi::c_uint;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -197,7 +197,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1166,7 +1166,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1308,18 +1308,18 @@ pub const MT_PLAYER: mobjtype_t = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cliprange_t {
-    pub first: ::core::ffi::c_int,
-    pub last: ::core::ffi::c_int,
+    pub first: i32,
+    pub last: i32,
 }
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const ANG180: ::core::ffi::c_uint = 0x80000000 as ::core::ffi::c_uint;
-pub const NF_SUBSECTOR: ::core::ffi::c_int = 0x8000 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const ANG180: u32 = 0x80000000 as u32;
+pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
 #[no_mangle]
 pub static mut curline: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
 #[no_mangle]
@@ -1343,11 +1343,11 @@ pub static mut drawsegs: [drawseg_t; 256] = [drawseg_s {
     silhouette: 0,
     bsilheight: 0,
     tsilheight: 0,
-    sprtopclip: ::core::ptr::null::<::core::ffi::c_short>() as *mut ::core::ffi::c_short,
-    sprbottomclip: ::core::ptr::null::<::core::ffi::c_short>()
-        as *mut ::core::ffi::c_short,
-    maskedtexturecol: ::core::ptr::null::<::core::ffi::c_short>()
-        as *mut ::core::ffi::c_short,
+    sprtopclip: ::core::ptr::null::<i16>() as *mut i16,
+    sprbottomclip: ::core::ptr::null::<i16>()
+        as *mut i16,
+    maskedtexturecol: ::core::ptr::null::<i16>()
+        as *mut i16,
 }; 256];
 #[no_mangle]
 pub static mut ds_p: *mut drawseg_t = ::core::ptr::null::<drawseg_t>() as *mut drawseg_t;
@@ -1362,30 +1362,30 @@ pub static mut newend: *mut cliprange_t = ::core::ptr::null::<cliprange_t>()
 pub static mut solidsegs: [cliprange_t; 32] = [cliprange_t { first: 0, last: 0 }; 32];
 #[no_mangle]
 pub unsafe extern "C" fn R_ClipSolidWallSegment(
-    mut first: ::core::ffi::c_int,
-    mut last: ::core::ffi::c_int,
+    mut first: i32,
+    mut last: i32,
 ) {
     let mut current_block: u64;
     let mut next: *mut cliprange_t = ::core::ptr::null_mut::<cliprange_t>();
     let mut start: *mut cliprange_t = ::core::ptr::null_mut::<cliprange_t>();
     start = &raw mut solidsegs as *mut cliprange_t;
-    while (*start).last < first - 1 as ::core::ffi::c_int {
+    while (*start).last < first - 1 as i32 {
         start = start.offset(1);
     }
     if first < (*start).first {
-        if last < (*start).first - 1 as ::core::ffi::c_int {
+        if last < (*start).first - 1 as i32 {
             R_StoreWallRange(first, last);
             next = newend;
             newend = newend.offset(1);
             while next != start {
-                *next = *next.offset(-(1 as ::core::ffi::c_int as isize));
+                *next = *next.offset(-(1 as i32 as isize));
                 next = next.offset(-1);
             }
             (*next).first = first;
             (*next).last = last;
             return;
         }
-        R_StoreWallRange(first, (*start).first - 1 as ::core::ffi::c_int);
+        R_StoreWallRange(first, (*start).first - 1 as i32);
         (*start).first = first;
     }
     if last <= (*start).last {
@@ -1394,16 +1394,16 @@ pub unsafe extern "C" fn R_ClipSolidWallSegment(
     next = start;
     loop {
         if !(last
-            >= (*next.offset(1 as ::core::ffi::c_int as isize)).first
-                - 1 as ::core::ffi::c_int)
+            >= (*next.offset(1 as i32 as isize)).first
+                - 1 as i32)
         {
             current_block = 224731115979188411;
             break;
         }
         R_StoreWallRange(
-            (*next).last + 1 as ::core::ffi::c_int,
-            (*next.offset(1 as ::core::ffi::c_int as isize)).first
-                - 1 as ::core::ffi::c_int,
+            (*next).last + 1 as i32,
+            (*next.offset(1 as i32 as isize)).first
+                - 1 as i32,
         );
         next = next.offset(1);
         if !(last <= (*next).last) {
@@ -1415,7 +1415,7 @@ pub unsafe extern "C" fn R_ClipSolidWallSegment(
     }
     match current_block {
         224731115979188411 => {
-            R_StoreWallRange((*next).last + 1 as ::core::ffi::c_int, last);
+            R_StoreWallRange((*next).last + 1 as i32, last);
             (*start).last = last;
         }
         _ => {}
@@ -1432,58 +1432,58 @@ pub unsafe extern "C" fn R_ClipSolidWallSegment(
         start = start.offset(1);
         *start = *next;
     }
-    newend = start.offset(1 as ::core::ffi::c_int as isize);
+    newend = start.offset(1 as i32 as isize);
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_ClipPassWallSegment(
-    mut first: ::core::ffi::c_int,
-    mut last: ::core::ffi::c_int,
+    mut first: i32,
+    mut last: i32,
 ) {
     let mut start: *mut cliprange_t = ::core::ptr::null_mut::<cliprange_t>();
     start = &raw mut solidsegs as *mut cliprange_t;
-    while (*start).last < first - 1 as ::core::ffi::c_int {
+    while (*start).last < first - 1 as i32 {
         start = start.offset(1);
     }
     if first < (*start).first {
-        if last < (*start).first - 1 as ::core::ffi::c_int {
+        if last < (*start).first - 1 as i32 {
             R_StoreWallRange(first, last);
             return;
         }
-        R_StoreWallRange(first, (*start).first - 1 as ::core::ffi::c_int);
+        R_StoreWallRange(first, (*start).first - 1 as i32);
     }
     if last <= (*start).last {
         return;
     }
     while last
-        >= (*start.offset(1 as ::core::ffi::c_int as isize)).first
-            - 1 as ::core::ffi::c_int
+        >= (*start.offset(1 as i32 as isize)).first
+            - 1 as i32
     {
         R_StoreWallRange(
-            (*start).last + 1 as ::core::ffi::c_int,
-            (*start.offset(1 as ::core::ffi::c_int as isize)).first
-                - 1 as ::core::ffi::c_int,
+            (*start).last + 1 as i32,
+            (*start.offset(1 as i32 as isize)).first
+                - 1 as i32,
         );
         start = start.offset(1);
         if last <= (*start).last {
             return;
         }
     }
-    R_StoreWallRange((*start).last + 1 as ::core::ffi::c_int, last);
+    R_StoreWallRange((*start).last + 1 as i32, last);
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_ClearClipSegs() {
-    solidsegs[0 as ::core::ffi::c_int as usize].first = -(0x7fffffff
-        as ::core::ffi::c_int);
-    solidsegs[0 as ::core::ffi::c_int as usize].last = -(1 as ::core::ffi::c_int);
-    solidsegs[1 as ::core::ffi::c_int as usize].first = viewwidth;
-    solidsegs[1 as ::core::ffi::c_int as usize].last = 0x7fffffff as ::core::ffi::c_int;
+    solidsegs[0 as i32 as usize].first = -(0x7fffffff
+        as i32);
+    solidsegs[0 as i32 as usize].last = -(1 as i32);
+    solidsegs[1 as i32 as usize].first = viewwidth;
+    solidsegs[1 as i32 as usize].last = 0x7fffffff as i32;
     newend = (&raw mut solidsegs as *mut cliprange_t)
-        .offset(2 as ::core::ffi::c_int as isize);
+        .offset(2 as i32 as isize);
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_AddLine(mut line: *mut seg_t) {
-    let mut x1: ::core::ffi::c_int = 0;
-    let mut x2: ::core::ffi::c_int = 0;
+    let mut x1: i32 = 0;
+    let mut x2: i32 = 0;
     let mut angle1: angle_t = 0;
     let mut angle2: angle_t = 0;
     let mut span: angle_t = 0;
@@ -1495,7 +1495,7 @@ pub unsafe extern "C" fn R_AddLine(mut line: *mut seg_t) {
     if span >= ANG180 {
         return;
     }
-    rw_angle1 = angle1 as ::core::ffi::c_int;
+    rw_angle1 = angle1 as i32;
     angle1 = angle1.wrapping_sub(viewangle);
     angle2 = angle2.wrapping_sub(viewangle);
     tspan = angle1.wrapping_add(clipangle);
@@ -1529,89 +1529,89 @@ pub unsafe extern "C" fn R_AddLine(mut line: *mut seg_t) {
             if !((*backsector).ceilingheight != (*frontsector).ceilingheight
                 || (*backsector).floorheight != (*frontsector).floorheight)
             {
-                if (*backsector).ceilingpic as ::core::ffi::c_int
-                    == (*frontsector).ceilingpic as ::core::ffi::c_int
-                    && (*backsector).floorpic as ::core::ffi::c_int
-                        == (*frontsector).floorpic as ::core::ffi::c_int
-                    && (*backsector).lightlevel as ::core::ffi::c_int
-                        == (*frontsector).lightlevel as ::core::ffi::c_int
-                    && (*(*curline).sidedef).midtexture as ::core::ffi::c_int
-                        == 0 as ::core::ffi::c_int
+                if (*backsector).ceilingpic as i32
+                    == (*frontsector).ceilingpic as i32
+                    && (*backsector).floorpic as i32
+                        == (*frontsector).floorpic as i32
+                    && (*backsector).lightlevel as i32
+                        == (*frontsector).lightlevel as i32
+                    && (*(*curline).sidedef).midtexture as i32
+                        == 0 as i32
                 {
                     return;
                 }
             }
-            R_ClipPassWallSegment(x1, x2 - 1 as ::core::ffi::c_int);
+            R_ClipPassWallSegment(x1, x2 - 1 as i32);
             return;
         }
     }
-    R_ClipSolidWallSegment(x1, x2 - 1 as ::core::ffi::c_int);
+    R_ClipSolidWallSegment(x1, x2 - 1 as i32);
 }
 #[no_mangle]
-pub static mut checkcoord: [[::core::ffi::c_int; 4]; 12] = [
+pub static mut checkcoord: [[i32; 4]; 12] = [
     [
-        3 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        2 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        3 as i32,
+        0 as i32,
+        2 as i32,
+        1 as i32,
     ],
     [
-        3 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        2 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        3 as i32,
+        0 as i32,
+        2 as i32,
+        0 as i32,
     ],
     [
-        3 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
-        2 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        3 as i32,
+        1 as i32,
+        2 as i32,
+        0 as i32,
     ],
-    [0 as ::core::ffi::c_int; 4],
+    [0 as i32; 4],
     [
-        2 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        2 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
-    ],
-    [
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        2 as i32,
+        0 as i32,
+        2 as i32,
+        1 as i32,
     ],
     [
-        3 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
-        3 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-    ],
-    [0 as ::core::ffi::c_int; 4],
-    [
-        2 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        3 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
+        0 as i32,
+        0 as i32,
     ],
     [
-        2 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
-        3 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        3 as i32,
+        1 as i32,
+        3 as i32,
+        0 as i32,
+    ],
+    [0 as i32; 4],
+    [
+        2 as i32,
+        0 as i32,
+        3 as i32,
+        1 as i32,
     ],
     [
-        2 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
-        3 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        2 as i32,
+        1 as i32,
+        3 as i32,
+        1 as i32,
+    ],
+    [
+        2 as i32,
+        1 as i32,
+        3 as i32,
+        0 as i32,
     ],
     [0; 4],
 ];
 #[no_mangle]
 pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
-    let mut boxx: ::core::ffi::c_int = 0;
-    let mut boxy: ::core::ffi::c_int = 0;
-    let mut boxpos: ::core::ffi::c_int = 0;
+    let mut boxx: i32 = 0;
+    let mut boxy: i32 = 0;
+    let mut boxpos: i32 = 0;
     let mut x1: fixed_t = 0;
     let mut y1: fixed_t = 0;
     let mut x2: fixed_t = 0;
@@ -1621,34 +1621,34 @@ pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
     let mut span: angle_t = 0;
     let mut tspan: angle_t = 0;
     let mut start: *mut cliprange_t = ::core::ptr::null_mut::<cliprange_t>();
-    let mut sx1: ::core::ffi::c_int = 0;
-    let mut sx2: ::core::ffi::c_int = 0;
-    if viewx <= *bspcoord.offset(BOXLEFT as ::core::ffi::c_int as isize) {
-        boxx = 0 as ::core::ffi::c_int;
-    } else if viewx < *bspcoord.offset(BOXRIGHT as ::core::ffi::c_int as isize) {
-        boxx = 1 as ::core::ffi::c_int;
+    let mut sx1: i32 = 0;
+    let mut sx2: i32 = 0;
+    if viewx <= *bspcoord.offset(BOXLEFT as i32 as isize) {
+        boxx = 0 as i32;
+    } else if viewx < *bspcoord.offset(BOXRIGHT as i32 as isize) {
+        boxx = 1 as i32;
     } else {
-        boxx = 2 as ::core::ffi::c_int;
+        boxx = 2 as i32;
     }
-    if viewy >= *bspcoord.offset(BOXTOP as ::core::ffi::c_int as isize) {
-        boxy = 0 as ::core::ffi::c_int;
-    } else if viewy > *bspcoord.offset(BOXBOTTOM as ::core::ffi::c_int as isize) {
-        boxy = 1 as ::core::ffi::c_int;
+    if viewy >= *bspcoord.offset(BOXTOP as i32 as isize) {
+        boxy = 0 as i32;
+    } else if viewy > *bspcoord.offset(BOXBOTTOM as i32 as isize) {
+        boxy = 1 as i32;
     } else {
-        boxy = 2 as ::core::ffi::c_int;
+        boxy = 2 as i32;
     }
-    boxpos = (boxy << 2 as ::core::ffi::c_int) + boxx;
-    if boxpos == 5 as ::core::ffi::c_int {
+    boxpos = (boxy << 2 as i32) + boxx;
+    if boxpos == 5 as i32 {
         return true_0 as boolean;
     }
     x1 = *bspcoord
-        .offset(checkcoord[boxpos as usize][0 as ::core::ffi::c_int as usize] as isize);
+        .offset(checkcoord[boxpos as usize][0 as i32 as usize] as isize);
     y1 = *bspcoord
-        .offset(checkcoord[boxpos as usize][1 as ::core::ffi::c_int as usize] as isize);
+        .offset(checkcoord[boxpos as usize][1 as i32 as usize] as isize);
     x2 = *bspcoord
-        .offset(checkcoord[boxpos as usize][2 as ::core::ffi::c_int as usize] as isize);
+        .offset(checkcoord[boxpos as usize][2 as i32 as usize] as isize);
     y2 = *bspcoord
-        .offset(checkcoord[boxpos as usize][3 as ::core::ffi::c_int as usize] as isize);
+        .offset(checkcoord[boxpos as usize][3 as i32 as usize] as isize);
     angle1 = R_PointToAngle(x1, y1).wrapping_sub(viewangle);
     angle2 = R_PointToAngle(x2, y2).wrapping_sub(viewangle);
     span = angle1.wrapping_sub(angle2);
@@ -1689,8 +1689,8 @@ pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
     return true_0 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn R_Subsector(mut num: ::core::ffi::c_int) {
-    let mut count: ::core::ffi::c_int = 0;
+pub unsafe extern "C" fn R_Subsector(mut num: i32) {
+    let mut count: i32 = 0;
     let mut line: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut sub: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
     if num >= numsubsectors {
@@ -1699,24 +1699,24 @@ pub unsafe extern "C" fn R_Subsector(mut num: ::core::ffi::c_int) {
     sscount += 1;
     sub = subsectors.offset(num as isize) as *mut subsector_t;
     frontsector = (*sub).sector;
-    count = (*sub).numlines as ::core::ffi::c_int;
+    count = (*sub).numlines as i32;
     line = segs.offset((*sub).firstline as isize) as *mut seg_t;
     if (*frontsector).floorheight < viewz {
         floorplane = R_FindPlane(
             (*frontsector).floorheight,
-            (*frontsector).floorpic as ::core::ffi::c_int,
-            (*frontsector).lightlevel as ::core::ffi::c_int,
+            (*frontsector).floorpic as i32,
+            (*frontsector).lightlevel as i32,
         );
     } else {
         floorplane = ::core::ptr::null_mut::<visplane_t>();
     }
     if (*frontsector).ceilingheight > viewz
-        || (*frontsector).ceilingpic as ::core::ffi::c_int == skyflatnum
+        || (*frontsector).ceilingpic as i32 == skyflatnum
     {
         ceilingplane = R_FindPlane(
             (*frontsector).ceilingheight,
-            (*frontsector).ceilingpic as ::core::ffi::c_int,
-            (*frontsector).lightlevel as ::core::ffi::c_int,
+            (*frontsector).ceilingpic as i32,
+            (*frontsector).lightlevel as i32,
         );
     } else {
         ceilingplane = ::core::ptr::null_mut::<visplane_t>();
@@ -1733,12 +1733,12 @@ pub unsafe extern "C" fn R_Subsector(mut num: ::core::ffi::c_int) {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn R_RenderBSPNode(mut bspnum: ::core::ffi::c_int) {
+pub unsafe extern "C" fn R_RenderBSPNode(mut bspnum: i32) {
     let mut bsp: *mut node_t = ::core::ptr::null_mut::<node_t>();
-    let mut side: ::core::ffi::c_int = 0;
+    let mut side: i32 = 0;
     if bspnum & NF_SUBSECTOR != 0 {
-        if bspnum == -(1 as ::core::ffi::c_int) {
-            R_Subsector(0 as ::core::ffi::c_int);
+        if bspnum == -(1 as i32) {
+            R_Subsector(0 as i32);
         } else {
             R_Subsector(bspnum & !NF_SUBSECTOR);
         }
@@ -1746,15 +1746,15 @@ pub unsafe extern "C" fn R_RenderBSPNode(mut bspnum: ::core::ffi::c_int) {
     }
     bsp = nodes.offset(bspnum as isize) as *mut node_t;
     side = R_PointOnSide(viewx, viewy, bsp);
-    R_RenderBSPNode((*bsp).children[side as usize] as ::core::ffi::c_int);
+    R_RenderBSPNode((*bsp).children[side as usize] as i32);
     if R_CheckBBox(
         &raw mut *(&raw mut (*bsp).bbox as *mut [fixed_t; 4])
-            .offset((side ^ 1 as ::core::ffi::c_int) as isize) as *mut fixed_t,
+            .offset((side ^ 1 as i32) as isize) as *mut fixed_t,
     ) != 0
     {
         R_RenderBSPNode(
-            (*bsp).children[(side ^ 1 as ::core::ffi::c_int) as usize]
-                as ::core::ffi::c_int,
+            (*bsp).children[(side ^ 1 as i32) as usize]
+                as i32,
         );
     }
 }

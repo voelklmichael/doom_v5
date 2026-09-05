@@ -5,12 +5,12 @@ pub type byte = u8;
 pub struct ticcmd_t {
     pub forwardmove: ::core::ffi::c_schar,
     pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
+    pub angleturn: i16,
     pub chatchar: byte,
     pub buttons: byte,
     pub consistancy: byte,
     pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
+    pub inventory: i32,
     pub lookfly: byte,
     pub arti: byte,
 }

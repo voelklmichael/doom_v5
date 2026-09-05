@@ -1,26 +1,26 @@
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 extern "C" {
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn P_Random() -> ::core::ffi::c_int;
-    static mut numsectors: ::core::ffi::c_int;
+    fn P_Random() -> i32;
+    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_FindSectorFromLineTag(
         line: *mut line_t,
-        start: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        start: i32,
+    ) -> i32;
     fn P_FindMinSurroundingLight(
         sector: *mut sector_t,
-        max: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        max: i32,
+    ) -> i32;
     fn getNextSector(line: *mut line_t, sec: *mut sector_t) -> *mut sector_t;
 }
 pub type __uint8_t = u8;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -31,9 +31,9 @@ pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -45,15 +45,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -193,7 +193,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1162,7 +1162,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1306,67 +1306,67 @@ pub const MT_PLAYER: mobjtype_t = 0;
 pub struct fireflicker_t {
     pub thinker: thinker_t,
     pub sector: *mut sector_t,
-    pub count: ::core::ffi::c_int,
-    pub maxlight: ::core::ffi::c_int,
-    pub minlight: ::core::ffi::c_int,
+    pub count: i32,
+    pub maxlight: i32,
+    pub minlight: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lightflash_t {
     pub thinker: thinker_t,
     pub sector: *mut sector_t,
-    pub count: ::core::ffi::c_int,
-    pub maxlight: ::core::ffi::c_int,
-    pub minlight: ::core::ffi::c_int,
-    pub maxtime: ::core::ffi::c_int,
-    pub mintime: ::core::ffi::c_int,
+    pub count: i32,
+    pub maxlight: i32,
+    pub minlight: i32,
+    pub maxtime: i32,
+    pub mintime: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct strobe_t {
     pub thinker: thinker_t,
     pub sector: *mut sector_t,
-    pub count: ::core::ffi::c_int,
-    pub minlight: ::core::ffi::c_int,
-    pub maxlight: ::core::ffi::c_int,
-    pub darktime: ::core::ffi::c_int,
-    pub brighttime: ::core::ffi::c_int,
+    pub count: i32,
+    pub minlight: i32,
+    pub maxlight: i32,
+    pub darktime: i32,
+    pub brighttime: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct glow_t {
     pub thinker: thinker_t,
     pub sector: *mut sector_t,
-    pub minlight: ::core::ffi::c_int,
-    pub maxlight: ::core::ffi::c_int,
-    pub direction: ::core::ffi::c_int,
+    pub minlight: i32,
+    pub maxlight: i32,
+    pub direction: i32,
 }
-pub const GLOWSPEED: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
-pub const STROBEBRIGHT: ::core::ffi::c_int = 5 as ::core::ffi::c_int;
-pub const SLOWDARK: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
+pub const GLOWSPEED: i32 = 8 as i32;
+pub const STROBEBRIGHT: i32 = 5 as i32;
+pub const SLOWDARK: i32 = 35 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn T_FireFlicker(mut flick: *mut fireflicker_t) {
-    let mut amount: ::core::ffi::c_int = 0;
+    let mut amount: i32 = 0;
     (*flick).count -= 1;
     if (*flick).count != 0 {
         return;
     }
-    amount = (P_Random() & 3 as ::core::ffi::c_int) * 16 as ::core::ffi::c_int;
-    if (*(*flick).sector).lightlevel as ::core::ffi::c_int - amount < (*flick).minlight {
-        (*(*flick).sector).lightlevel = (*flick).minlight as ::core::ffi::c_short;
+    amount = (P_Random() & 3 as i32) * 16 as i32;
+    if (*(*flick).sector).lightlevel as i32 - amount < (*flick).minlight {
+        (*(*flick).sector).lightlevel = (*flick).minlight as i16;
     } else {
         (*(*flick).sector).lightlevel = ((*flick).maxlight - amount)
-            as ::core::ffi::c_short;
+            as i16;
     }
-    (*flick).count = 4 as ::core::ffi::c_int;
+    (*flick).count = 4 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
     let mut flick: *mut fireflicker_t = ::core::ptr::null_mut::<fireflicker_t>();
-    (*sector).special = 0 as ::core::ffi::c_short;
+    (*sector).special = 0 as i16;
     flick = Z_Malloc(
-        ::core::mem::size_of::<fireflicker_t>() as ::core::ffi::c_int,
-        PU_LEVSPEC as ::core::ffi::c_int,
+        ::core::mem::size_of::<fireflicker_t>() as i32,
+        PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fireflicker_t;
     P_AddThinker(&raw mut (*flick).thinker);
@@ -1375,12 +1375,12 @@ pub unsafe extern "C" fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
         actionf_p1,
     >(Some(T_FireFlicker as unsafe extern "C" fn(*mut fireflicker_t) -> ()));
     (*flick).sector = sector;
-    (*flick).maxlight = (*sector).lightlevel as ::core::ffi::c_int;
+    (*flick).maxlight = (*sector).lightlevel as i32;
     (*flick).minlight = P_FindMinSurroundingLight(
         sector,
-        (*sector).lightlevel as ::core::ffi::c_int,
-    ) + 16 as ::core::ffi::c_int;
-    (*flick).count = 4 as ::core::ffi::c_int;
+        (*sector).lightlevel as i32,
+    ) + 16 as i32;
+    (*flick).count = 4 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn T_LightFlash(mut flash: *mut lightflash_t) {
@@ -1388,21 +1388,21 @@ pub unsafe extern "C" fn T_LightFlash(mut flash: *mut lightflash_t) {
     if (*flash).count != 0 {
         return;
     }
-    if (*(*flash).sector).lightlevel as ::core::ffi::c_int == (*flash).maxlight {
-        (*(*flash).sector).lightlevel = (*flash).minlight as ::core::ffi::c_short;
-        (*flash).count = (P_Random() & (*flash).mintime) + 1 as ::core::ffi::c_int;
+    if (*(*flash).sector).lightlevel as i32 == (*flash).maxlight {
+        (*(*flash).sector).lightlevel = (*flash).minlight as i16;
+        (*flash).count = (P_Random() & (*flash).mintime) + 1 as i32;
     } else {
-        (*(*flash).sector).lightlevel = (*flash).maxlight as ::core::ffi::c_short;
-        (*flash).count = (P_Random() & (*flash).maxtime) + 1 as ::core::ffi::c_int;
+        (*(*flash).sector).lightlevel = (*flash).maxlight as i16;
+        (*flash).count = (P_Random() & (*flash).maxtime) + 1 as i32;
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_SpawnLightFlash(mut sector: *mut sector_t) {
     let mut flash: *mut lightflash_t = ::core::ptr::null_mut::<lightflash_t>();
-    (*sector).special = 0 as ::core::ffi::c_short;
+    (*sector).special = 0 as i16;
     flash = Z_Malloc(
-        ::core::mem::size_of::<lightflash_t>() as ::core::ffi::c_int,
-        PU_LEVSPEC as ::core::ffi::c_int,
+        ::core::mem::size_of::<lightflash_t>() as i32,
+        PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut lightflash_t;
     P_AddThinker(&raw mut (*flash).thinker);
@@ -1411,14 +1411,14 @@ pub unsafe extern "C" fn P_SpawnLightFlash(mut sector: *mut sector_t) {
         actionf_p1,
     >(Some(T_LightFlash as unsafe extern "C" fn(*mut lightflash_t) -> ()));
     (*flash).sector = sector;
-    (*flash).maxlight = (*sector).lightlevel as ::core::ffi::c_int;
+    (*flash).maxlight = (*sector).lightlevel as i32;
     (*flash).minlight = P_FindMinSurroundingLight(
         sector,
-        (*sector).lightlevel as ::core::ffi::c_int,
+        (*sector).lightlevel as i32,
     );
-    (*flash).maxtime = 64 as ::core::ffi::c_int;
-    (*flash).mintime = 7 as ::core::ffi::c_int;
-    (*flash).count = (P_Random() & (*flash).maxtime) + 1 as ::core::ffi::c_int;
+    (*flash).maxtime = 64 as i32;
+    (*flash).mintime = 7 as i32;
+    (*flash).count = (P_Random() & (*flash).maxtime) + 1 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn T_StrobeFlash(mut flash: *mut strobe_t) {
@@ -1426,24 +1426,24 @@ pub unsafe extern "C" fn T_StrobeFlash(mut flash: *mut strobe_t) {
     if (*flash).count != 0 {
         return;
     }
-    if (*(*flash).sector).lightlevel as ::core::ffi::c_int == (*flash).minlight {
-        (*(*flash).sector).lightlevel = (*flash).maxlight as ::core::ffi::c_short;
+    if (*(*flash).sector).lightlevel as i32 == (*flash).minlight {
+        (*(*flash).sector).lightlevel = (*flash).maxlight as i16;
         (*flash).count = (*flash).brighttime;
     } else {
-        (*(*flash).sector).lightlevel = (*flash).minlight as ::core::ffi::c_short;
+        (*(*flash).sector).lightlevel = (*flash).minlight as i16;
         (*flash).count = (*flash).darktime;
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_SpawnStrobeFlash(
     mut sector: *mut sector_t,
-    mut fastOrSlow: ::core::ffi::c_int,
-    mut inSync: ::core::ffi::c_int,
+    mut fastOrSlow: i32,
+    mut inSync: i32,
 ) {
     let mut flash: *mut strobe_t = ::core::ptr::null_mut::<strobe_t>();
     flash = Z_Malloc(
-        ::core::mem::size_of::<strobe_t>() as ::core::ffi::c_int,
-        PU_LEVSPEC as ::core::ffi::c_int,
+        ::core::mem::size_of::<strobe_t>() as i32,
+        PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut strobe_t;
     P_AddThinker(&raw mut (*flash).thinker);
@@ -1454,64 +1454,64 @@ pub unsafe extern "C" fn P_SpawnStrobeFlash(
         Option<unsafe extern "C" fn(*mut strobe_t) -> ()>,
         actionf_p1,
     >(Some(T_StrobeFlash as unsafe extern "C" fn(*mut strobe_t) -> ()));
-    (*flash).maxlight = (*sector).lightlevel as ::core::ffi::c_int;
+    (*flash).maxlight = (*sector).lightlevel as i32;
     (*flash).minlight = P_FindMinSurroundingLight(
         sector,
-        (*sector).lightlevel as ::core::ffi::c_int,
+        (*sector).lightlevel as i32,
     );
     if (*flash).minlight == (*flash).maxlight {
-        (*flash).minlight = 0 as ::core::ffi::c_int;
+        (*flash).minlight = 0 as i32;
     }
-    (*sector).special = 0 as ::core::ffi::c_short;
+    (*sector).special = 0 as i16;
     if inSync == 0 {
-        (*flash).count = (P_Random() & 7 as ::core::ffi::c_int)
-            + 1 as ::core::ffi::c_int;
+        (*flash).count = (P_Random() & 7 as i32)
+            + 1 as i32;
     } else {
-        (*flash).count = 1 as ::core::ffi::c_int;
+        (*flash).count = 1 as i32;
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn EV_StartLightStrobing(mut line: *mut line_t) {
-    let mut secnum: ::core::ffi::c_int = 0;
+    let mut secnum: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    secnum = -(1 as ::core::ffi::c_int);
+    secnum = -(1 as i32);
     loop {
         secnum = P_FindSectorFromLineTag(line, secnum);
-        if !(secnum >= 0 as ::core::ffi::c_int) {
+        if !(secnum >= 0 as i32) {
             break;
         }
         sec = sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
-        P_SpawnStrobeFlash(sec, SLOWDARK, 0 as ::core::ffi::c_int);
+        P_SpawnStrobeFlash(sec, SLOWDARK, 0 as i32);
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn EV_TurnTagLightsOff(mut line: *mut line_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut min: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut min: i32 = 0;
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut tsec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut templine: *mut line_t = ::core::ptr::null_mut::<line_t>();
     sector = sectors;
-    j = 0 as ::core::ffi::c_int;
+    j = 0 as i32;
     while j < numsectors {
-        if (*sector).tag as ::core::ffi::c_int == (*line).tag as ::core::ffi::c_int {
-            min = (*sector).lightlevel as ::core::ffi::c_int;
-            i = 0 as ::core::ffi::c_int;
+        if (*sector).tag as i32 == (*line).tag as i32 {
+            min = (*sector).lightlevel as i32;
+            i = 0 as i32;
             while i < (*sector).linecount {
                 templine = *(*sector).lines.offset(i as isize) as *mut line_t;
                 tsec = getNextSector(templine, sector);
                 if !tsec.is_null() {
-                    if ((*tsec).lightlevel as ::core::ffi::c_int) < min {
-                        min = (*tsec).lightlevel as ::core::ffi::c_int;
+                    if ((*tsec).lightlevel as i32) < min {
+                        min = (*tsec).lightlevel as i32;
                     }
                 }
                 i += 1;
             }
-            (*sector).lightlevel = min as ::core::ffi::c_short;
+            (*sector).lightlevel = min as i16;
         }
         j += 1;
         sector = sector.offset(1);
@@ -1520,31 +1520,31 @@ pub unsafe extern "C" fn EV_TurnTagLightsOff(mut line: *mut line_t) {
 #[no_mangle]
 pub unsafe extern "C" fn EV_LightTurnOn(
     mut line: *mut line_t,
-    mut bright: ::core::ffi::c_int,
+    mut bright: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut temp: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut templine: *mut line_t = ::core::ptr::null_mut::<line_t>();
     sector = sectors;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numsectors {
-        if (*sector).tag as ::core::ffi::c_int == (*line).tag as ::core::ffi::c_int {
+        if (*sector).tag as i32 == (*line).tag as i32 {
             if bright == 0 {
-                j = 0 as ::core::ffi::c_int;
+                j = 0 as i32;
                 while j < (*sector).linecount {
                     templine = *(*sector).lines.offset(j as isize) as *mut line_t;
                     temp = getNextSector(templine, sector);
                     if !temp.is_null() {
-                        if (*temp).lightlevel as ::core::ffi::c_int > bright {
-                            bright = (*temp).lightlevel as ::core::ffi::c_int;
+                        if (*temp).lightlevel as i32 > bright {
+                            bright = (*temp).lightlevel as i32;
                         }
                     }
                     j += 1;
                 }
             }
-            (*sector).lightlevel = bright as ::core::ffi::c_short;
+            (*sector).lightlevel = bright as i16;
         }
         i += 1;
         sector = sector.offset(1);
@@ -1554,21 +1554,21 @@ pub unsafe extern "C" fn EV_LightTurnOn(
 pub unsafe extern "C" fn T_Glow(mut g: *mut glow_t) {
     match (*g).direction {
         -1 => {
-            (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as ::core::ffi::c_int
-                - GLOWSPEED) as ::core::ffi::c_short;
-            if (*(*g).sector).lightlevel as ::core::ffi::c_int <= (*g).minlight {
+            (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as i32
+                - GLOWSPEED) as i16;
+            if (*(*g).sector).lightlevel as i32 <= (*g).minlight {
                 (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel
-                    as ::core::ffi::c_int + GLOWSPEED) as ::core::ffi::c_short;
-                (*g).direction = 1 as ::core::ffi::c_int;
+                    as i32 + GLOWSPEED) as i16;
+                (*g).direction = 1 as i32;
             }
         }
         1 => {
-            (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as ::core::ffi::c_int
-                + GLOWSPEED) as ::core::ffi::c_short;
-            if (*(*g).sector).lightlevel as ::core::ffi::c_int >= (*g).maxlight {
+            (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as i32
+                + GLOWSPEED) as i16;
+            if (*(*g).sector).lightlevel as i32 >= (*g).maxlight {
                 (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel
-                    as ::core::ffi::c_int - GLOWSPEED) as ::core::ffi::c_short;
-                (*g).direction = -(1 as ::core::ffi::c_int);
+                    as i32 - GLOWSPEED) as i16;
+                (*g).direction = -(1 as i32);
             }
         }
         _ => {}
@@ -1578,21 +1578,21 @@ pub unsafe extern "C" fn T_Glow(mut g: *mut glow_t) {
 pub unsafe extern "C" fn P_SpawnGlowingLight(mut sector: *mut sector_t) {
     let mut g: *mut glow_t = ::core::ptr::null_mut::<glow_t>();
     g = Z_Malloc(
-        ::core::mem::size_of::<glow_t>() as ::core::ffi::c_int,
-        PU_LEVSPEC as ::core::ffi::c_int,
+        ::core::mem::size_of::<glow_t>() as i32,
+        PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut glow_t;
     P_AddThinker(&raw mut (*g).thinker);
     (*g).sector = sector;
     (*g).minlight = P_FindMinSurroundingLight(
         sector,
-        (*sector).lightlevel as ::core::ffi::c_int,
+        (*sector).lightlevel as i32,
     );
-    (*g).maxlight = (*sector).lightlevel as ::core::ffi::c_int;
+    (*g).maxlight = (*sector).lightlevel as i32;
     (*g).thinker.function.acp1 = ::core::mem::transmute::<
         Option<unsafe extern "C" fn(*mut glow_t) -> ()>,
         actionf_p1,
     >(Some(T_Glow as unsafe extern "C" fn(*mut glow_t) -> ()));
-    (*g).direction = -(1 as ::core::ffi::c_int);
-    (*sector).special = 0 as ::core::ffi::c_short;
+    (*g).direction = -(1 as i32);
+    (*sector).special = 0 as i16;
 }

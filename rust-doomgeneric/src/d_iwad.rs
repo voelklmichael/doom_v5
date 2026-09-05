@@ -2,10 +2,10 @@ use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_misc::M_FileExists;
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
 }
 pub type size_t = usize;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -16,7 +16,7 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
@@ -118,7 +118,7 @@ static iwads: [iwad_t; 14] = [
         description: "Strife",
     },
 ];
-pub const MAX_IWAD_DIRS: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
+pub const MAX_IWAD_DIRS: i32 = 128 as i32;
 static mut iwad_dirs_built: bool = false;
 static mut iwad_dirs: Vec<String> = Vec::new();
 
@@ -152,11 +152,11 @@ unsafe fn check_directory_has_iwad(dir: &str, iwadname: &str) -> Option<String> 
 }
 unsafe fn search_directory_for_iwad(
     dir: &str,
-    mask: ::core::ffi::c_int,
+    mask: i32,
     mission: *mut GameMission_t,
 ) -> Option<String> {
     for iwad in iwads.iter() {
-        if (1 as ::core::ffi::c_int) << iwad.mission & mask == 0 as ::core::ffi::c_int {
+        if (1 as i32) << iwad.mission & mask == 0 as i32 {
             continue;
         }
         if let Some(filename) = check_directory_has_iwad(dir, iwad.name) {
@@ -166,13 +166,13 @@ unsafe fn search_directory_for_iwad(
     }
     None
 }
-fn identify_iwad_by_name(name: &str, mask: ::core::ffi::c_int) -> GameMission_t {
+fn identify_iwad_by_name(name: &str, mask: i32) -> GameMission_t {
     let name = match name.rfind(DIR_SEPARATOR) {
         Some(pos) => &name[pos + 1..],
         None => name,
     };
     for iwad in iwads.iter() {
-        if (1 as ::core::ffi::c_int) << iwad.mission & mask == 0 as ::core::ffi::c_int {
+        if (1 as i32) << iwad.mission & mask == 0 as i32 {
             continue;
         }
         if name.eq_ignore_ascii_case(iwad.name) {
@@ -214,18 +214,18 @@ pub unsafe extern "C" fn D_TryFindWADByName(
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_FindIWAD(
-    mut mask: ::core::ffi::c_int,
+    mut mask: i32,
     mut mission: *mut GameMission_t,
 ) -> *mut ::core::ffi::c_char {
-    let iwadparm = M_CheckParmWithArgs("-iwad", 1 as ::core::ffi::c_int);
+    let iwadparm = M_CheckParmWithArgs("-iwad", 1 as i32);
     if iwadparm != 0 {
-        let iwadfile = myargv[(iwadparm + 1 as ::core::ffi::c_int) as usize].as_ptr()
+        let iwadfile = myargv[(iwadparm + 1 as i32) as usize].as_ptr()
             as *mut ::core::ffi::c_char;
         let result = D_FindWADByName(iwadfile);
         if result.is_null() {
             I_Error(&format!(
                 "IWAD file '{}' not found!",
-                myargv[(iwadparm + 1 as ::core::ffi::c_int) as usize].to_str().unwrap(),
+                myargv[(iwadparm + 1 as i32) as usize].to_str().unwrap(),
             ));
         }
         *mission = identify_iwad_by_name(
@@ -249,11 +249,11 @@ pub unsafe extern "C" fn D_FindIWAD(
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_FindAllIWADs(
-    mut mask: ::core::ffi::c_int,
+    mut mask: i32,
 ) -> *mut *const iwad_t {
     let mut result: Vec<*const iwad_t> = Vec::new();
     for iwad in iwads.iter() {
-        if (1 as ::core::ffi::c_int) << iwad.mission & mask == 0 as ::core::ffi::c_int {
+        if (1 as i32) << iwad.mission & mask == 0 as i32 {
             continue;
         }
         let name = ::std::ffi::CString::new(iwad.name).unwrap();

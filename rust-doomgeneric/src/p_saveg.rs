@@ -14,13 +14,13 @@ extern "C" {
         __stream: *mut FILE,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn fread(
         __ptr: *mut ::core::ffi::c_void,
         __size: size_t,
@@ -36,26 +36,26 @@ extern "C" {
     fn ftell(__stream: *mut FILE) -> ::core::ffi::c_long;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
-    static mut numsectors: ::core::ffi::c_int;
+    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut numlines: ::core::ffi::c_int;
+    static mut numlines: i32;
     static mut lines: *mut line_t;
     static mut sides: *mut side_t;
     static mut thinkercap: thinker_t;
@@ -75,28 +75,28 @@ extern "C" {
     fn P_AddActiveCeiling(c: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
     static mut gameskill: skill_t;
-    static mut gameepisode: ::core::ffi::c_int;
-    static mut gamemap: ::core::ffi::c_int;
-    static mut leveltime: ::core::ffi::c_int;
+    static mut gameepisode: i32;
+    static mut gamemap: i32;
+    static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
     static mut savegamedir: *mut ::core::ffi::c_char;
-    fn G_VanillaVersionCode() -> ::core::ffi::c_int;
+    fn G_VanillaVersionCode() -> i32;
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
         s: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type intptr_t = isize;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -106,16 +106,16 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
-pub type skill_t = ::core::ffi::c_int;
+pub type fixed_t = i32;
+pub type angle_t = u32;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;
 pub const it_yellowskull: C2RustUnnamed_0 = 4;
@@ -123,7 +123,7 @@ pub const it_blueskull: C2RustUnnamed_0 = 3;
 pub const it_redcard: C2RustUnnamed_0 = 2;
 pub const it_yellowcard: C2RustUnnamed_0 = 1;
 pub const it_bluecard: C2RustUnnamed_0 = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -135,14 +135,14 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const am_noammo: C2RustUnnamed_1 = 5;
 pub const NUMAMMO: C2RustUnnamed_1 = 4;
 pub const am_misl: C2RustUnnamed_1 = 3;
 pub const am_cell: C2RustUnnamed_1 = 2;
 pub const am_shell: C2RustUnnamed_1 = 1;
 pub const am_clip: C2RustUnnamed_1 = 0;
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const NUMPOWERS: C2RustUnnamed_2 = 6;
 pub const pw_infrared: C2RustUnnamed_2 = 5;
 pub const pw_allmap: C2RustUnnamed_2 = 4;
@@ -156,7 +156,7 @@ pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type think_t = actionf_t;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -296,7 +296,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1265,7 +1265,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1404,22 +1404,22 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_3 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_3 = u32;
 pub const NUMPSPRITES: C2RustUnnamed_3 = 2;
 pub const ps_flash: C2RustUnnamed_3 = 1;
 pub const ps_weapon: C2RustUnnamed_3 = 0;
-pub type plat_e = ::core::ffi::c_uint;
+pub type plat_e = u32;
 pub const in_stasis: plat_e = 3;
 pub const waiting: plat_e = 2;
 pub const down: plat_e = 1;
 pub const up: plat_e = 0;
-pub type plattype_e = ::core::ffi::c_uint;
+pub type plattype_e = u32;
 pub const blazeDWUS: plattype_e = 4;
 pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-pub type vldoor_e = ::core::ffi::c_uint;
+pub type vldoor_e = u32;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
 pub const vld_blazeRaise: vldoor_e = 5;
@@ -1428,14 +1428,14 @@ pub const vld_open: vldoor_e = 3;
 pub const vld_close: vldoor_e = 2;
 pub const vld_close30ThenOpen: vldoor_e = 1;
 pub const vld_normal: vldoor_e = 0;
-pub type ceiling_e = ::core::ffi::c_uint;
+pub type ceiling_e = u32;
 pub const silentCrushAndRaise: ceiling_e = 5;
 pub const fastCrushAndRaise: ceiling_e = 4;
 pub const crushAndRaise: ceiling_e = 3;
 pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
-pub type floor_e = ::core::ffi::c_uint;
+pub type floor_e = u32;
 pub const raiseFloor512: floor_e = 12;
 pub const donutRaise: floor_e = 11;
 pub const raiseFloorTurbo: floor_e = 10;
@@ -1459,23 +1459,23 @@ pub const tc_plat: C2RustUnnamed_5 = 3;
 pub const tc_floor: C2RustUnnamed_5 = 2;
 pub const tc_door: C2RustUnnamed_5 = 1;
 pub const tc_ceiling: C2RustUnnamed_5 = 0;
-pub type C2RustUnnamed_4 = ::core::ffi::c_uint;
-pub type C2RustUnnamed_5 = ::core::ffi::c_uint;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
+pub type C2RustUnnamed_4 = u32;
+pub type C2RustUnnamed_5 = u32;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const FRACBITS: i32 = 16 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const MAXCEILINGS: ::core::ffi::c_int = 30 as ::core::ffi::c_int;
-pub const SAVESTRINGSIZE: ::core::ffi::c_int = 24 as ::core::ffi::c_int;
-pub const SAVEGAME_EOF: ::core::ffi::c_int = 0x1d as ::core::ffi::c_int;
-pub const VERSIONSIZE: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const MAXCEILINGS: i32 = 30 as i32;
+pub const SAVESTRINGSIZE: i32 = 24 as i32;
+pub const SAVEGAME_EOF: i32 = 0x1d as i32;
+pub const VERSIONSIZE: i32 = 16 as i32;
 #[no_mangle]
 pub static mut save_stream: *mut FILE = ::core::ptr::null::<FILE>() as *mut FILE;
 #[no_mangle]
-pub static mut savegamelength: ::core::ffi::c_int = 0;
+pub static mut savegamelength: i32 = 0;
 #[no_mangle]
 pub static mut savegame_error: bool = false;
 #[no_mangle]
@@ -1494,7 +1494,7 @@ pub unsafe extern "C" fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_SaveGameFile(
-    mut slot: ::core::ffi::c_int,
+    mut slot: i32,
 ) -> *mut ::core::ffi::c_char {
     static mut filename: *mut ::core::ffi::c_char = ::core::ptr::null::<
         ::core::ffi::c_char,
@@ -1558,47 +1558,47 @@ unsafe extern "C" fn saveg_write8(mut value: byte) {
         }
     }
 }
-unsafe extern "C" fn saveg_read16() -> ::core::ffi::c_short {
-    let mut result: ::core::ffi::c_int = 0;
-    result = saveg_read8() as ::core::ffi::c_int;
-    result |= (saveg_read8() as ::core::ffi::c_int) << 8 as ::core::ffi::c_int;
-    return result as ::core::ffi::c_short;
+unsafe extern "C" fn saveg_read16() -> i16 {
+    let mut result: i32 = 0;
+    result = saveg_read8() as i32;
+    result |= (saveg_read8() as i32) << 8 as i32;
+    return result as i16;
 }
-unsafe extern "C" fn saveg_write16(mut value: ::core::ffi::c_short) {
-    saveg_write8((value as ::core::ffi::c_int & 0xff as ::core::ffi::c_int) as byte);
+unsafe extern "C" fn saveg_write16(mut value: i16) {
+    saveg_write8((value as i32 & 0xff as i32) as byte);
     saveg_write8(
-        (value as ::core::ffi::c_int >> 8 as ::core::ffi::c_int
-            & 0xff as ::core::ffi::c_int) as byte,
+        (value as i32 >> 8 as i32
+            & 0xff as i32) as byte,
     );
 }
-unsafe extern "C" fn saveg_read32() -> ::core::ffi::c_int {
-    let mut result: ::core::ffi::c_int = 0;
-    result = saveg_read8() as ::core::ffi::c_int;
-    result |= (saveg_read8() as ::core::ffi::c_int) << 8 as ::core::ffi::c_int;
-    result |= (saveg_read8() as ::core::ffi::c_int) << 16 as ::core::ffi::c_int;
-    result |= (saveg_read8() as ::core::ffi::c_int) << 24 as ::core::ffi::c_int;
+unsafe extern "C" fn saveg_read32() -> i32 {
+    let mut result: i32 = 0;
+    result = saveg_read8() as i32;
+    result |= (saveg_read8() as i32) << 8 as i32;
+    result |= (saveg_read8() as i32) << 16 as i32;
+    result |= (saveg_read8() as i32) << 24 as i32;
     return result;
 }
-unsafe extern "C" fn saveg_write32(mut value: ::core::ffi::c_int) {
-    saveg_write8((value & 0xff as ::core::ffi::c_int) as byte);
+unsafe extern "C" fn saveg_write32(mut value: i32) {
+    saveg_write8((value & 0xff as i32) as byte);
     saveg_write8(
-        (value >> 8 as ::core::ffi::c_int & 0xff as ::core::ffi::c_int) as byte,
+        (value >> 8 as i32 & 0xff as i32) as byte,
     );
     saveg_write8(
-        (value >> 16 as ::core::ffi::c_int & 0xff as ::core::ffi::c_int) as byte,
+        (value >> 16 as i32 & 0xff as i32) as byte,
     );
     saveg_write8(
-        (value >> 24 as ::core::ffi::c_int & 0xff as ::core::ffi::c_int) as byte,
+        (value >> 24 as i32 & 0xff as i32) as byte,
     );
 }
 unsafe extern "C" fn saveg_read_pad() {
     let mut pos: ::core::ffi::c_ulong = 0;
-    let mut padding: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+    let mut padding: i32 = 0;
+    let mut i: i32 = 0;
     pos = ftell(save_stream) as ::core::ffi::c_ulong;
     padding = ((4 as ::core::ffi::c_ulong).wrapping_sub(pos & 3 as ::core::ffi::c_ulong)
-        & 3 as ::core::ffi::c_ulong) as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+        & 3 as ::core::ffi::c_ulong) as i32;
+    i = 0 as i32;
     while i < padding {
         saveg_read8();
         i += 1;
@@ -1606,12 +1606,12 @@ unsafe extern "C" fn saveg_read_pad() {
 }
 unsafe extern "C" fn saveg_write_pad() {
     let mut pos: ::core::ffi::c_ulong = 0;
-    let mut padding: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+    let mut padding: i32 = 0;
+    let mut i: i32 = 0;
     pos = ftell(save_stream) as ::core::ffi::c_ulong;
     padding = ((4 as ::core::ffi::c_ulong).wrapping_sub(pos & 3 as ::core::ffi::c_ulong)
-        & 3 as ::core::ffi::c_ulong) as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+        & 3 as ::core::ffi::c_ulong) as i32;
+    i = 0 as i32;
     while i < padding {
         saveg_write8(0 as byte);
         i += 1;
@@ -1621,7 +1621,7 @@ unsafe extern "C" fn saveg_readp() -> *mut ::core::ffi::c_void {
     return saveg_read32() as intptr_t as *mut ::core::ffi::c_void;
 }
 unsafe extern "C" fn saveg_writep(mut p: *mut ::core::ffi::c_void) {
-    saveg_write32(p as intptr_t as ::core::ffi::c_int);
+    saveg_write32(p as intptr_t as i32);
 }
 unsafe extern "C" fn saveg_read_mapthing_t(mut str: *mut mapthing_t) {
     (*str).x = saveg_read16();
@@ -1659,7 +1659,7 @@ unsafe extern "C" fn saveg_write_thinker_t(mut str: *mut thinker_t) {
     saveg_write_actionf_t(&raw mut (*str).function);
 }
 unsafe extern "C" fn saveg_read_mobj_t(mut str: *mut mobj_t) {
-    let mut pl: ::core::ffi::c_int = 0;
+    let mut pl: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).x = saveg_read32() as fixed_t;
     (*str).y = saveg_read32() as fixed_t;
@@ -1685,7 +1685,7 @@ unsafe extern "C" fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     (*str).tics = saveg_read32();
     (*str).state = (&raw mut states as *mut state_t)
         .offset(
-            (saveg_read32 as unsafe extern "C" fn() -> ::core::ffi::c_int)() as isize,
+            (saveg_read32 as unsafe extern "C" fn() -> i32)() as isize,
         ) as *mut state_t;
     (*str).flags = saveg_read32();
     (*str).health = saveg_read32();
@@ -1695,9 +1695,9 @@ unsafe extern "C" fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     (*str).reactiontime = saveg_read32();
     (*str).threshold = saveg_read32();
     pl = saveg_read32();
-    if pl > 0 as ::core::ffi::c_int {
+    if pl > 0 as i32 {
         (*str).player = (&raw mut players as *mut player_t)
-            .offset((pl - 1 as ::core::ffi::c_int) as isize) as *mut player_t
+            .offset((pl - 1 as i32) as isize) as *mut player_t
             as *mut player_s;
         (*(*str).player).mo = str;
     } else {
@@ -1709,31 +1709,31 @@ unsafe extern "C" fn saveg_read_mobj_t(mut str: *mut mobj_t) {
 }
 unsafe extern "C" fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
-    saveg_write32((*str).x as ::core::ffi::c_int);
-    saveg_write32((*str).y as ::core::ffi::c_int);
-    saveg_write32((*str).z as ::core::ffi::c_int);
+    saveg_write32((*str).x as i32);
+    saveg_write32((*str).y as i32);
+    saveg_write32((*str).z as i32);
     saveg_writep((*str).snext as *mut ::core::ffi::c_void);
     saveg_writep((*str).sprev as *mut ::core::ffi::c_void);
-    saveg_write32((*str).angle as ::core::ffi::c_int);
-    saveg_write32((*str).sprite as ::core::ffi::c_int);
+    saveg_write32((*str).angle as i32);
+    saveg_write32((*str).sprite as i32);
     saveg_write32((*str).frame);
     saveg_writep((*str).bnext as *mut ::core::ffi::c_void);
     saveg_writep((*str).bprev as *mut ::core::ffi::c_void);
     saveg_writep((*str).subsector as *mut ::core::ffi::c_void);
-    saveg_write32((*str).floorz as ::core::ffi::c_int);
-    saveg_write32((*str).ceilingz as ::core::ffi::c_int);
-    saveg_write32((*str).radius as ::core::ffi::c_int);
-    saveg_write32((*str).height as ::core::ffi::c_int);
-    saveg_write32((*str).momx as ::core::ffi::c_int);
-    saveg_write32((*str).momy as ::core::ffi::c_int);
-    saveg_write32((*str).momz as ::core::ffi::c_int);
+    saveg_write32((*str).floorz as i32);
+    saveg_write32((*str).ceilingz as i32);
+    saveg_write32((*str).radius as i32);
+    saveg_write32((*str).height as i32);
+    saveg_write32((*str).momx as i32);
+    saveg_write32((*str).momy as i32);
+    saveg_write32((*str).momz as i32);
     saveg_write32((*str).validcount);
-    saveg_write32((*str).type_0 as ::core::ffi::c_int);
+    saveg_write32((*str).type_0 as i32);
     saveg_writep((*str).info as *mut ::core::ffi::c_void);
     saveg_write32((*str).tics);
     saveg_write32(
         (*str).state.offset_from(&raw mut states as *mut state_t) as ::core::ffi::c_long
-            as ::core::ffi::c_int,
+            as i32,
     );
     saveg_write32((*str).flags);
     saveg_write32((*str).health);
@@ -1745,10 +1745,10 @@ unsafe extern "C" fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     if !(*str).player.is_null() {
         saveg_write32(
             ((*str).player.offset_from(&raw mut players as *mut player_t)
-                as ::core::ffi::c_long + 1 as ::core::ffi::c_long) as ::core::ffi::c_int,
+                as ::core::ffi::c_long + 1 as ::core::ffi::c_long) as i32,
         );
     } else {
-        saveg_write32(0 as ::core::ffi::c_int);
+        saveg_write32(0 as i32);
     }
     saveg_write32((*str).lastlook);
     saveg_write_mapthing_t(&raw mut (*str).spawnpoint);
@@ -1766,14 +1766,14 @@ unsafe extern "C" fn saveg_write_ticcmd_t(mut str: *mut ticcmd_t) {
     saveg_write8((*str).forwardmove as byte);
     saveg_write8((*str).sidemove as byte);
     saveg_write16((*str).angleturn);
-    saveg_write16((*str).consistancy as ::core::ffi::c_short);
+    saveg_write16((*str).consistancy as i16);
     saveg_write8((*str).chatchar);
     saveg_write8((*str).buttons);
 }
 unsafe extern "C" fn saveg_read_pspdef_t(mut str: *mut pspdef_t) {
-    let mut state: ::core::ffi::c_int = 0;
+    let mut state: i32 = 0;
     state = saveg_read32();
-    if state > 0 as ::core::ffi::c_int {
+    if state > 0 as i32 {
         (*str).state = (&raw mut states as *mut state_t).offset(state as isize)
             as *mut state_t;
     } else {
@@ -1787,17 +1787,17 @@ unsafe extern "C" fn saveg_write_pspdef_t(mut str: *mut pspdef_t) {
     if !(*str).state.is_null() {
         saveg_write32(
             (*str).state.offset_from(&raw mut states as *mut state_t)
-                as ::core::ffi::c_long as ::core::ffi::c_int,
+                as ::core::ffi::c_long as i32,
         );
     } else {
-        saveg_write32(0 as ::core::ffi::c_int);
+        saveg_write32(0 as i32);
     }
     saveg_write32((*str).tics);
-    saveg_write32((*str).sx as ::core::ffi::c_int);
-    saveg_write32((*str).sy as ::core::ffi::c_int);
+    saveg_write32((*str).sx as i32);
+    saveg_write32((*str).sy as i32);
 }
 unsafe extern "C" fn saveg_read_player_t(mut str: *mut player_t) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     (*str).mo = saveg_readp() as *mut mobj_t;
     (*str).playerstate = saveg_read32() as playerstate_t;
     saveg_read_ticcmd_t(&raw mut (*str).cmd);
@@ -1808,36 +1808,36 @@ unsafe extern "C" fn saveg_read_player_t(mut str: *mut player_t) {
     (*str).health = saveg_read32();
     (*str).armorpoints = saveg_read32();
     (*str).armortype = saveg_read32();
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMPOWERS as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMPOWERS as i32 {
         (*str).powers[i as usize] = saveg_read32();
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMCARDS as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMCARDS as i32 {
         (*str).cards[i as usize] = saveg_read32() != 0;
         i += 1;
     }
     (*str).backpack = saveg_read32() != 0;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         (*str).frags[i as usize] = saveg_read32();
         i += 1;
     }
     (*str).readyweapon = saveg_read32() as weapontype_t;
     (*str).pendingweapon = saveg_read32() as weapontype_t;
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMWEAPONS as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMWEAPONS as i32 {
         (*str).weaponowned[i as usize] = saveg_read32() != 0;
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMAMMO as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMAMMO as i32 {
         (*str).ammo[i as usize] = saveg_read32();
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMAMMO as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMAMMO as i32 {
         (*str).maxammo[i as usize] = saveg_read32();
         i += 1;
     }
@@ -1855,8 +1855,8 @@ unsafe extern "C" fn saveg_read_player_t(mut str: *mut player_t) {
     (*str).extralight = saveg_read32();
     (*str).fixedcolormap = saveg_read32();
     (*str).colormap = saveg_read32();
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMPSPRITES as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMPSPRITES as i32 {
         saveg_read_pspdef_t(
             (&raw mut (*str).psprites as *mut pspdef_t).offset(i as isize)
                 as *mut pspdef_t,
@@ -1866,47 +1866,47 @@ unsafe extern "C" fn saveg_read_player_t(mut str: *mut player_t) {
     (*str).didsecret = saveg_read32() != 0;
 }
 unsafe extern "C" fn saveg_write_player_t(mut str: *mut player_t) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     saveg_writep((*str).mo as *mut ::core::ffi::c_void);
-    saveg_write32((*str).playerstate as ::core::ffi::c_int);
+    saveg_write32((*str).playerstate as i32);
     saveg_write_ticcmd_t(&raw mut (*str).cmd);
-    saveg_write32((*str).viewz as ::core::ffi::c_int);
-    saveg_write32((*str).viewheight as ::core::ffi::c_int);
-    saveg_write32((*str).deltaviewheight as ::core::ffi::c_int);
-    saveg_write32((*str).bob as ::core::ffi::c_int);
+    saveg_write32((*str).viewz as i32);
+    saveg_write32((*str).viewheight as i32);
+    saveg_write32((*str).deltaviewheight as i32);
+    saveg_write32((*str).bob as i32);
     saveg_write32((*str).health);
     saveg_write32((*str).armorpoints);
     saveg_write32((*str).armortype);
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMPOWERS as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMPOWERS as i32 {
         saveg_write32((*str).powers[i as usize]);
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMCARDS as ::core::ffi::c_int {
-        saveg_write32((*str).cards[i as usize] as ::core::ffi::c_int);
+    i = 0 as i32;
+    while i < NUMCARDS as i32 {
+        saveg_write32((*str).cards[i as usize] as i32);
         i += 1;
     }
-    saveg_write32((*str).backpack as ::core::ffi::c_int);
-    i = 0 as ::core::ffi::c_int;
+    saveg_write32((*str).backpack as i32);
+    i = 0 as i32;
     while i < MAXPLAYERS {
         saveg_write32((*str).frags[i as usize]);
         i += 1;
     }
-    saveg_write32((*str).readyweapon as ::core::ffi::c_int);
-    saveg_write32((*str).pendingweapon as ::core::ffi::c_int);
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMWEAPONS as ::core::ffi::c_int {
-        saveg_write32((*str).weaponowned[i as usize] as ::core::ffi::c_int);
+    saveg_write32((*str).readyweapon as i32);
+    saveg_write32((*str).pendingweapon as i32);
+    i = 0 as i32;
+    while i < NUMWEAPONS as i32 {
+        saveg_write32((*str).weaponowned[i as usize] as i32);
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMAMMO as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMAMMO as i32 {
         saveg_write32((*str).ammo[i as usize]);
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMAMMO as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMAMMO as i32 {
         saveg_write32((*str).maxammo[i as usize]);
         i += 1;
     }
@@ -1924,18 +1924,18 @@ unsafe extern "C" fn saveg_write_player_t(mut str: *mut player_t) {
     saveg_write32((*str).extralight);
     saveg_write32((*str).fixedcolormap);
     saveg_write32((*str).colormap);
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMPSPRITES as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMPSPRITES as i32 {
         saveg_write_pspdef_t(
             (&raw mut (*str).psprites as *mut pspdef_t).offset(i as isize)
                 as *mut pspdef_t,
         );
         i += 1;
     }
-    saveg_write32((*str).didsecret as ::core::ffi::c_int);
+    saveg_write32((*str).didsecret as i32);
 }
 unsafe extern "C" fn saveg_read_ceiling_t(mut str: *mut ceiling_t) {
-    let mut sector: ::core::ffi::c_int = 0;
+    let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as ceiling_e;
     sector = saveg_read32();
@@ -1950,20 +1950,20 @@ unsafe extern "C" fn saveg_read_ceiling_t(mut str: *mut ceiling_t) {
 }
 unsafe extern "C" fn saveg_write_ceiling_t(mut str: *mut ceiling_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
-    saveg_write32((*str).type_0 as ::core::ffi::c_int);
+    saveg_write32((*str).type_0 as i32);
     saveg_write32(
-        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as ::core::ffi::c_int,
+        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as i32,
     );
-    saveg_write32((*str).bottomheight as ::core::ffi::c_int);
-    saveg_write32((*str).topheight as ::core::ffi::c_int);
-    saveg_write32((*str).speed as ::core::ffi::c_int);
-    saveg_write32((*str).crush as ::core::ffi::c_int);
+    saveg_write32((*str).bottomheight as i32);
+    saveg_write32((*str).topheight as i32);
+    saveg_write32((*str).speed as i32);
+    saveg_write32((*str).crush as i32);
     saveg_write32((*str).direction);
     saveg_write32((*str).tag);
     saveg_write32((*str).olddirection);
 }
 unsafe extern "C" fn saveg_read_vldoor_t(mut str: *mut vldoor_t) {
-    let mut sector: ::core::ffi::c_int = 0;
+    let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as vldoor_e;
     sector = saveg_read32();
@@ -1976,18 +1976,18 @@ unsafe extern "C" fn saveg_read_vldoor_t(mut str: *mut vldoor_t) {
 }
 unsafe extern "C" fn saveg_write_vldoor_t(mut str: *mut vldoor_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
-    saveg_write32((*str).type_0 as ::core::ffi::c_int);
+    saveg_write32((*str).type_0 as i32);
     saveg_write32(
-        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as ::core::ffi::c_int,
+        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as i32,
     );
-    saveg_write32((*str).topheight as ::core::ffi::c_int);
-    saveg_write32((*str).speed as ::core::ffi::c_int);
+    saveg_write32((*str).topheight as i32);
+    saveg_write32((*str).speed as i32);
     saveg_write32((*str).direction);
     saveg_write32((*str).topwait);
     saveg_write32((*str).topcountdown);
 }
 unsafe extern "C" fn saveg_read_floormove_t(mut str: *mut floormove_t) {
-    let mut sector: ::core::ffi::c_int = 0;
+    let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as floor_e;
     (*str).crush = saveg_read32() as boolean;
@@ -2001,19 +2001,19 @@ unsafe extern "C" fn saveg_read_floormove_t(mut str: *mut floormove_t) {
 }
 unsafe extern "C" fn saveg_write_floormove_t(mut str: *mut floormove_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
-    saveg_write32((*str).type_0 as ::core::ffi::c_int);
-    saveg_write32((*str).crush as ::core::ffi::c_int);
+    saveg_write32((*str).type_0 as i32);
+    saveg_write32((*str).crush as i32);
     saveg_write32(
-        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as ::core::ffi::c_int,
+        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as i32,
     );
     saveg_write32((*str).direction);
     saveg_write32((*str).newspecial);
     saveg_write16((*str).texture);
-    saveg_write32((*str).floordestheight as ::core::ffi::c_int);
-    saveg_write32((*str).speed as ::core::ffi::c_int);
+    saveg_write32((*str).floordestheight as i32);
+    saveg_write32((*str).speed as i32);
 }
 unsafe extern "C" fn saveg_read_plat_t(mut str: *mut plat_t) {
-    let mut sector: ::core::ffi::c_int = 0;
+    let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
     (*str).sector = sectors.offset(sector as isize) as *mut sector_t;
@@ -2031,21 +2031,21 @@ unsafe extern "C" fn saveg_read_plat_t(mut str: *mut plat_t) {
 unsafe extern "C" fn saveg_write_plat_t(mut str: *mut plat_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32(
-        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as ::core::ffi::c_int,
+        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as i32,
     );
-    saveg_write32((*str).speed as ::core::ffi::c_int);
-    saveg_write32((*str).low as ::core::ffi::c_int);
-    saveg_write32((*str).high as ::core::ffi::c_int);
+    saveg_write32((*str).speed as i32);
+    saveg_write32((*str).low as i32);
+    saveg_write32((*str).high as i32);
     saveg_write32((*str).wait);
     saveg_write32((*str).count);
-    saveg_write32((*str).status as ::core::ffi::c_int);
-    saveg_write32((*str).oldstatus as ::core::ffi::c_int);
-    saveg_write32((*str).crush as ::core::ffi::c_int);
+    saveg_write32((*str).status as i32);
+    saveg_write32((*str).oldstatus as i32);
+    saveg_write32((*str).crush as i32);
     saveg_write32((*str).tag);
-    saveg_write32((*str).type_0 as ::core::ffi::c_int);
+    saveg_write32((*str).type_0 as i32);
 }
 unsafe extern "C" fn saveg_read_lightflash_t(mut str: *mut lightflash_t) {
-    let mut sector: ::core::ffi::c_int = 0;
+    let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
     (*str).sector = sectors.offset(sector as isize) as *mut sector_t;
@@ -2058,7 +2058,7 @@ unsafe extern "C" fn saveg_read_lightflash_t(mut str: *mut lightflash_t) {
 unsafe extern "C" fn saveg_write_lightflash_t(mut str: *mut lightflash_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32(
-        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as ::core::ffi::c_int,
+        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as i32,
     );
     saveg_write32((*str).count);
     saveg_write32((*str).maxlight);
@@ -2067,7 +2067,7 @@ unsafe extern "C" fn saveg_write_lightflash_t(mut str: *mut lightflash_t) {
     saveg_write32((*str).mintime);
 }
 unsafe extern "C" fn saveg_read_strobe_t(mut str: *mut strobe_t) {
-    let mut sector: ::core::ffi::c_int = 0;
+    let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
     (*str).sector = sectors.offset(sector as isize) as *mut sector_t;
@@ -2080,7 +2080,7 @@ unsafe extern "C" fn saveg_read_strobe_t(mut str: *mut strobe_t) {
 unsafe extern "C" fn saveg_write_strobe_t(mut str: *mut strobe_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32(
-        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as ::core::ffi::c_int,
+        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as i32,
     );
     saveg_write32((*str).count);
     saveg_write32((*str).minlight);
@@ -2089,7 +2089,7 @@ unsafe extern "C" fn saveg_write_strobe_t(mut str: *mut strobe_t) {
     saveg_write32((*str).brighttime);
 }
 unsafe extern "C" fn saveg_read_glow_t(mut str: *mut glow_t) {
-    let mut sector: ::core::ffi::c_int = 0;
+    let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
     (*str).sector = sectors.offset(sector as isize) as *mut sector_t;
@@ -2100,7 +2100,7 @@ unsafe extern "C" fn saveg_read_glow_t(mut str: *mut glow_t) {
 unsafe extern "C" fn saveg_write_glow_t(mut str: *mut glow_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32(
-        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as ::core::ffi::c_int,
+        (*str).sector.offset_from(sectors) as ::core::ffi::c_long as i32,
     );
     saveg_write32((*str).minlight);
     saveg_write32((*str).maxlight);
@@ -2111,9 +2111,9 @@ pub unsafe extern "C" fn P_WriteSaveGameHeader(
     mut description: *mut ::core::ffi::c_char,
 ) {
     let mut name: [::core::ffi::c_char; 16] = [0; 16];
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
-    while *description.offset(i as isize) as ::core::ffi::c_int != '\0' as i32 {
+    let mut i: i32 = 0;
+    i = 0 as i32;
+    while *description.offset(i as isize) as i32 != '\0' as i32 {
         saveg_write8(*description.offset(i as isize) as byte);
         i += 1;
     }
@@ -2123,7 +2123,7 @@ pub unsafe extern "C" fn P_WriteSaveGameHeader(
     }
     memset(
         &raw mut name as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
     );
     M_snprintf(
@@ -2132,7 +2132,7 @@ pub unsafe extern "C" fn P_WriteSaveGameHeader(
         b"version %i\0" as *const u8 as *const ::core::ffi::c_char,
         G_VanillaVersionCode(),
     );
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < VERSIONSIZE {
         saveg_write8(name[i as usize] as byte);
         i += 1;
@@ -2140,40 +2140,40 @@ pub unsafe extern "C" fn P_WriteSaveGameHeader(
     saveg_write8(gameskill as byte);
     saveg_write8(gameepisode as byte);
     saveg_write8(gamemap as byte);
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         saveg_write8(playeringame[i as usize] as byte);
         i += 1;
     }
     saveg_write8(
-        (leveltime >> 16 as ::core::ffi::c_int & 0xff as ::core::ffi::c_int) as byte,
+        (leveltime >> 16 as i32 & 0xff as i32) as byte,
     );
     saveg_write8(
-        (leveltime >> 8 as ::core::ffi::c_int & 0xff as ::core::ffi::c_int) as byte,
+        (leveltime >> 8 as i32 & 0xff as i32) as byte,
     );
-    saveg_write8((leveltime & 0xff as ::core::ffi::c_int) as byte);
+    saveg_write8((leveltime & 0xff as i32) as byte);
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_ReadSaveGameHeader() -> boolean {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut a: byte = 0;
     let mut b: byte = 0;
     let mut c: byte = 0;
     let mut vcheck: [::core::ffi::c_char; 16] = [0; 16];
     let mut read_vcheck: [::core::ffi::c_char; 16] = [0; 16];
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < SAVESTRINGSIZE {
         saveg_read8();
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < VERSIONSIZE {
         read_vcheck[i as usize] = saveg_read8() as ::core::ffi::c_char;
         i += 1;
     }
     memset(
         &raw mut vcheck as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
     );
     M_snprintf(
@@ -2185,14 +2185,14 @@ pub unsafe extern "C" fn P_ReadSaveGameHeader() -> boolean {
     if strcmp(
         &raw mut read_vcheck as *mut ::core::ffi::c_char,
         &raw mut vcheck as *mut ::core::ffi::c_char,
-    ) != 0 as ::core::ffi::c_int
+    ) != 0 as i32
     {
         return false_0 as boolean;
     }
     gameskill = saveg_read8() as skill_t;
-    gameepisode = saveg_read8() as ::core::ffi::c_int;
-    gamemap = saveg_read8() as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    gameepisode = saveg_read8() as i32;
+    gamemap = saveg_read8() as i32;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         playeringame[i as usize] = saveg_read8() as boolean;
         i += 1;
@@ -2200,16 +2200,16 @@ pub unsafe extern "C" fn P_ReadSaveGameHeader() -> boolean {
     a = saveg_read8();
     b = saveg_read8();
     c = saveg_read8();
-    leveltime = ((a as ::core::ffi::c_int) << 16 as ::core::ffi::c_int)
-        + ((b as ::core::ffi::c_int) << 8 as ::core::ffi::c_int)
-        + c as ::core::ffi::c_int;
+    leveltime = ((a as i32) << 16 as i32)
+        + ((b as i32) << 8 as i32)
+        + c as i32;
     return true_0 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_ReadSaveGameEOF() -> boolean {
-    let mut value: ::core::ffi::c_int = 0;
-    value = saveg_read8() as ::core::ffi::c_int;
-    return (value == SAVEGAME_EOF) as ::core::ffi::c_int as boolean;
+    let mut value: i32 = 0;
+    value = saveg_read8() as i32;
+    return (value == SAVEGAME_EOF) as i32 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_WriteSaveGameEOF() {
@@ -2217,8 +2217,8 @@ pub unsafe extern "C" fn P_WriteSaveGameEOF() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_ArchivePlayers() {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if !(playeringame[i as usize] == 0) {
             saveg_write_pad();
@@ -2231,8 +2231,8 @@ pub unsafe extern "C" fn P_ArchivePlayers() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_UnArchivePlayers() {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if !(playeringame[i as usize] == 0) {
             saveg_read_pad();
@@ -2248,16 +2248,16 @@ pub unsafe extern "C" fn P_UnArchivePlayers() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_ArchiveWorld() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut li: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut si: *mut side_t = ::core::ptr::null_mut::<side_t>();
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     sec = sectors;
     while i < numsectors {
-        saveg_write16(((*sec).floorheight >> FRACBITS) as ::core::ffi::c_short);
-        saveg_write16(((*sec).ceilingheight >> FRACBITS) as ::core::ffi::c_short);
+        saveg_write16(((*sec).floorheight >> FRACBITS) as i16);
+        saveg_write16(((*sec).ceilingheight >> FRACBITS) as i16);
         saveg_write16((*sec).floorpic);
         saveg_write16((*sec).ceilingpic);
         saveg_write16((*sec).lightlevel);
@@ -2266,24 +2266,24 @@ pub unsafe extern "C" fn P_ArchiveWorld() {
         i += 1;
         sec = sec.offset(1);
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     li = lines;
     while i < numlines {
         saveg_write16((*li).flags);
         saveg_write16((*li).special);
         saveg_write16((*li).tag);
-        j = 0 as ::core::ffi::c_int;
-        while j < 2 as ::core::ffi::c_int {
-            if !((*li).sidenum[j as usize] as ::core::ffi::c_int
-                == -(1 as ::core::ffi::c_int))
+        j = 0 as i32;
+        while j < 2 as i32 {
+            if !((*li).sidenum[j as usize] as i32
+                == -(1 as i32))
             {
                 si = sides
                     .offset(
-                        *(&raw mut (*li).sidenum as *mut ::core::ffi::c_short)
+                        *(&raw mut (*li).sidenum as *mut i16)
                             .offset(j as isize) as isize,
                     ) as *mut side_t;
-                saveg_write16(((*si).textureoffset >> FRACBITS) as ::core::ffi::c_short);
-                saveg_write16(((*si).rowoffset >> FRACBITS) as ::core::ffi::c_short);
+                saveg_write16(((*si).textureoffset >> FRACBITS) as i16);
+                saveg_write16(((*si).rowoffset >> FRACBITS) as i16);
                 saveg_write16((*si).toptexture);
                 saveg_write16((*si).bottomtexture);
                 saveg_write16((*si).midtexture);
@@ -2296,17 +2296,17 @@ pub unsafe extern "C" fn P_ArchiveWorld() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_UnArchiveWorld() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut li: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut si: *mut side_t = ::core::ptr::null_mut::<side_t>();
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     sec = sectors;
     while i < numsectors {
-        (*sec).floorheight = ((saveg_read16() as ::core::ffi::c_int) << FRACBITS)
+        (*sec).floorheight = ((saveg_read16() as i32) << FRACBITS)
             as fixed_t;
-        (*sec).ceilingheight = ((saveg_read16() as ::core::ffi::c_int) << FRACBITS)
+        (*sec).ceilingheight = ((saveg_read16() as i32) << FRACBITS)
             as fixed_t;
         (*sec).floorpic = saveg_read16();
         (*sec).ceilingpic = saveg_read16();
@@ -2318,25 +2318,25 @@ pub unsafe extern "C" fn P_UnArchiveWorld() {
         i += 1;
         sec = sec.offset(1);
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     li = lines;
     while i < numlines {
         (*li).flags = saveg_read16();
         (*li).special = saveg_read16();
         (*li).tag = saveg_read16();
-        j = 0 as ::core::ffi::c_int;
-        while j < 2 as ::core::ffi::c_int {
-            if !((*li).sidenum[j as usize] as ::core::ffi::c_int
-                == -(1 as ::core::ffi::c_int))
+        j = 0 as i32;
+        while j < 2 as i32 {
+            if !((*li).sidenum[j as usize] as i32
+                == -(1 as i32))
             {
                 si = sides
                     .offset(
-                        *(&raw mut (*li).sidenum as *mut ::core::ffi::c_short)
+                        *(&raw mut (*li).sidenum as *mut i16)
                             .offset(j as isize) as isize,
                     ) as *mut side_t;
-                (*si).textureoffset = ((saveg_read16() as ::core::ffi::c_int)
+                (*si).textureoffset = ((saveg_read16() as i32)
                     << FRACBITS) as fixed_t;
-                (*si).rowoffset = ((saveg_read16() as ::core::ffi::c_int) << FRACBITS)
+                (*si).rowoffset = ((saveg_read16() as i32) << FRACBITS)
                     as fixed_t;
                 (*si).toptexture = saveg_read16();
                 (*si).bottomtexture = saveg_read16();
@@ -2359,13 +2359,13 @@ pub unsafe extern "C" fn P_ArchiveThinkers() {
                 actionf_p1,
             >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ()))
         {
-            saveg_write8(tc_mobj as ::core::ffi::c_int as byte);
+            saveg_write8(tc_mobj as i32 as byte);
             saveg_write_pad();
             saveg_write_mobj_t(th as *mut mobj_t);
         }
         th = (*th).next as *mut thinker_t;
     }
-    saveg_write8(tc_end as ::core::ffi::c_int as byte);
+    saveg_write8(tc_end as i32 as byte);
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_UnArchiveThinkers() {
@@ -2391,13 +2391,13 @@ pub unsafe extern "C" fn P_UnArchiveThinkers() {
     P_InitThinkers();
     loop {
         tclass = saveg_read8();
-        match tclass as ::core::ffi::c_int {
+        match tclass as i32 {
             0 => return,
             1 => {
                 saveg_read_pad();
                 mobj = Z_Malloc(
-                    ::core::mem::size_of::<mobj_t>() as ::core::ffi::c_int,
-                    PU_LEVEL as ::core::ffi::c_int,
+                    ::core::mem::size_of::<mobj_t>() as i32,
+                    PU_LEVEL as i32,
                     NULL,
                 ) as *mut mobj_t;
                 saveg_read_mobj_t(mobj);
@@ -2417,7 +2417,7 @@ pub unsafe extern "C" fn P_UnArchiveThinkers() {
             _ => {
                 I_Error(&format!(
                     "Unknown tclass {} in savegame",
-                    tclass as ::core::ffi::c_int,
+                    tclass as i32,
                 ));
             }
         }
@@ -2428,11 +2428,11 @@ pub static mut specials_e: C2RustUnnamed_5 = tc_ceiling;
 #[no_mangle]
 pub unsafe extern "C" fn P_ArchiveSpecials() {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     th = thinkercap.next as *mut thinker_t;
     while th != &raw mut thinkercap {
         if (*th).function.acv.is_none() {
-            i = 0 as ::core::ffi::c_int;
+            i = 0 as i32;
             while i < MAXCEILINGS {
                 if activeceilings[i as usize] == th as *mut ceiling_t {
                     break;
@@ -2440,7 +2440,7 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
                 i += 1;
             }
             if i < MAXCEILINGS {
-                saveg_write8(tc_ceiling as ::core::ffi::c_int as byte);
+                saveg_write8(tc_ceiling as i32 as byte);
                 saveg_write_pad();
                 saveg_write_ceiling_t(th as *mut ceiling_t);
             }
@@ -2450,7 +2450,7 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
                 actionf_p1,
             >(Some(T_MoveCeiling as unsafe extern "C" fn(*mut ceiling_t) -> ()))
         {
-            saveg_write8(tc_ceiling as ::core::ffi::c_int as byte);
+            saveg_write8(tc_ceiling as i32 as byte);
             saveg_write_pad();
             saveg_write_ceiling_t(th as *mut ceiling_t);
         } else if (*th).function.acp1
@@ -2459,7 +2459,7 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
                 actionf_p1,
             >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()))
         {
-            saveg_write8(tc_door as ::core::ffi::c_int as byte);
+            saveg_write8(tc_door as i32 as byte);
             saveg_write_pad();
             saveg_write_vldoor_t(th as *mut vldoor_t);
         } else if (*th).function.acp1
@@ -2468,7 +2468,7 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
                 actionf_p1,
             >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()))
         {
-            saveg_write8(tc_floor as ::core::ffi::c_int as byte);
+            saveg_write8(tc_floor as i32 as byte);
             saveg_write_pad();
             saveg_write_floormove_t(th as *mut floormove_t);
         } else if (*th).function.acp1
@@ -2477,7 +2477,7 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
                 actionf_p1,
             >(Some(T_PlatRaise as unsafe extern "C" fn(*mut plat_t) -> ()))
         {
-            saveg_write8(tc_plat as ::core::ffi::c_int as byte);
+            saveg_write8(tc_plat as i32 as byte);
             saveg_write_pad();
             saveg_write_plat_t(th as *mut plat_t);
         } else if (*th).function.acp1
@@ -2486,7 +2486,7 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
                 actionf_p1,
             >(Some(T_LightFlash as unsafe extern "C" fn(*mut lightflash_t) -> ()))
         {
-            saveg_write8(tc_flash as ::core::ffi::c_int as byte);
+            saveg_write8(tc_flash as i32 as byte);
             saveg_write_pad();
             saveg_write_lightflash_t(th as *mut lightflash_t);
         } else if (*th).function.acp1
@@ -2495,7 +2495,7 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
                 actionf_p1,
             >(Some(T_StrobeFlash as unsafe extern "C" fn(*mut strobe_t) -> ()))
         {
-            saveg_write8(tc_strobe as ::core::ffi::c_int as byte);
+            saveg_write8(tc_strobe as i32 as byte);
             saveg_write_pad();
             saveg_write_strobe_t(th as *mut strobe_t);
         } else if (*th).function.acp1
@@ -2504,13 +2504,13 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
                 actionf_p1,
             >(Some(T_Glow as unsafe extern "C" fn(*mut glow_t) -> ()))
         {
-            saveg_write8(tc_glow as ::core::ffi::c_int as byte);
+            saveg_write8(tc_glow as i32 as byte);
             saveg_write_pad();
             saveg_write_glow_t(th as *mut glow_t);
         }
         th = (*th).next as *mut thinker_t;
     }
-    saveg_write8(tc_endspecials as ::core::ffi::c_int as byte);
+    saveg_write8(tc_endspecials as i32 as byte);
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_UnArchiveSpecials() {
@@ -2524,13 +2524,13 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
     let mut glow: *mut glow_t = ::core::ptr::null_mut::<glow_t>();
     loop {
         tclass = saveg_read8();
-        match tclass as ::core::ffi::c_int {
+        match tclass as i32 {
             7 => return,
             0 => {
                 saveg_read_pad();
                 ceiling = Z_Malloc(
-                    ::core::mem::size_of::<ceiling_t>() as ::core::ffi::c_int,
-                    PU_LEVEL as ::core::ffi::c_int,
+                    ::core::mem::size_of::<ceiling_t>() as i32,
+                    PU_LEVEL as i32,
                     NULL,
                 ) as *mut ceiling_t;
                 saveg_read_ceiling_t(ceiling);
@@ -2547,8 +2547,8 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
             1 => {
                 saveg_read_pad();
                 door = Z_Malloc(
-                    ::core::mem::size_of::<vldoor_t>() as ::core::ffi::c_int,
-                    PU_LEVEL as ::core::ffi::c_int,
+                    ::core::mem::size_of::<vldoor_t>() as i32,
+                    PU_LEVEL as i32,
                     NULL,
                 ) as *mut vldoor_t;
                 saveg_read_vldoor_t(door);
@@ -2562,8 +2562,8 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
             2 => {
                 saveg_read_pad();
                 floor = Z_Malloc(
-                    ::core::mem::size_of::<floormove_t>() as ::core::ffi::c_int,
-                    PU_LEVEL as ::core::ffi::c_int,
+                    ::core::mem::size_of::<floormove_t>() as i32,
+                    PU_LEVEL as i32,
                     NULL,
                 ) as *mut floormove_t;
                 saveg_read_floormove_t(floor);
@@ -2577,8 +2577,8 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
             3 => {
                 saveg_read_pad();
                 plat = Z_Malloc(
-                    ::core::mem::size_of::<plat_t>() as ::core::ffi::c_int,
-                    PU_LEVEL as ::core::ffi::c_int,
+                    ::core::mem::size_of::<plat_t>() as i32,
+                    PU_LEVEL as i32,
                     NULL,
                 ) as *mut plat_t;
                 saveg_read_plat_t(plat);
@@ -2595,8 +2595,8 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
             4 => {
                 saveg_read_pad();
                 flash = Z_Malloc(
-                    ::core::mem::size_of::<lightflash_t>() as ::core::ffi::c_int,
-                    PU_LEVEL as ::core::ffi::c_int,
+                    ::core::mem::size_of::<lightflash_t>() as i32,
+                    PU_LEVEL as i32,
                     NULL,
                 ) as *mut lightflash_t;
                 saveg_read_lightflash_t(flash);
@@ -2609,8 +2609,8 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
             5 => {
                 saveg_read_pad();
                 strobe = Z_Malloc(
-                    ::core::mem::size_of::<strobe_t>() as ::core::ffi::c_int,
-                    PU_LEVEL as ::core::ffi::c_int,
+                    ::core::mem::size_of::<strobe_t>() as i32,
+                    PU_LEVEL as i32,
                     NULL,
                 ) as *mut strobe_t;
                 saveg_read_strobe_t(strobe);
@@ -2623,8 +2623,8 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
             6 => {
                 saveg_read_pad();
                 glow = Z_Malloc(
-                    ::core::mem::size_of::<glow_t>() as ::core::ffi::c_int,
-                    PU_LEVEL as ::core::ffi::c_int,
+                    ::core::mem::size_of::<glow_t>() as i32,
+                    PU_LEVEL as i32,
                     NULL,
                 ) as *mut glow_t;
                 saveg_read_glow_t(glow);
@@ -2637,7 +2637,7 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
             _ => {
                 I_Error(&format!(
                     "P_UnarchiveSpecials:Unknown tclass {} in savegame",
-                    tclass as ::core::ffi::c_int,
+                    tclass as i32,
                 ));
             }
         }

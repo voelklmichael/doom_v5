@@ -5,31 +5,31 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
+        size: i32,
+        tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn I_ReadScreen(scr: *mut byte);
     static mut I_VideoBuffer: *mut byte;
     fn V_DrawBlock(
-        x: ::core::ffi::c_int,
-        y_0: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
+        x: i32,
+        y_0: i32,
+        width: i32,
+        height: i32,
         src: *mut byte,
     );
     fn V_MarkRect(
-        x: ::core::ffi::c_int,
-        y_0: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
+        x: i32,
+        y_0: i32,
+        width: i32,
+        height: i32,
     );
-    fn M_Random() -> ::core::ffi::c_int;
+    fn M_Random() -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -44,31 +44,31 @@ pub type byte = uint8_t;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
 static mut go: bool = false;
 static mut wipe_scr_start: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr_end: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub unsafe extern "C" fn wipe_shittyColMajorXform(
-    mut array: *mut ::core::ffi::c_short,
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
+    mut array: *mut i16,
+    mut width: i32,
+    mut height: i32,
 ) {
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y_0: ::core::ffi::c_int = 0;
-    let mut dest: *mut ::core::ffi::c_short = ::core::ptr::null_mut::<
-        ::core::ffi::c_short,
+    let mut x: i32 = 0;
+    let mut y_0: i32 = 0;
+    let mut dest: *mut i16 = ::core::ptr::null_mut::<
+        i16,
     >();
     dest = Z_Malloc(
-        width * height * 2 as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+        width * height * 2 as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut ::core::ffi::c_short;
-    y_0 = 0 as ::core::ffi::c_int;
+    ) as *mut i16;
+    y_0 = 0 as i32;
     while y_0 < height {
-        x = 0 as ::core::ffi::c_int;
+        x = 0 as i32;
         while x < width {
             *dest.offset((x * height + y_0) as isize) = *array
                 .offset((y_0 * width + x) as isize);
@@ -79,49 +79,49 @@ pub unsafe extern "C" fn wipe_shittyColMajorXform(
     memcpy(
         array as *mut ::core::ffi::c_void,
         dest as *const ::core::ffi::c_void,
-        (width * height * 2 as ::core::ffi::c_int) as size_t,
+        (width * height * 2 as i32) as size_t,
     );
     Z_Free(dest as *mut ::core::ffi::c_void);
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_initColorXForm(
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-    mut ticks: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut width: i32,
+    mut height: i32,
+    mut ticks: i32,
+) -> i32 {
     memcpy(
         wipe_scr as *mut ::core::ffi::c_void,
         wipe_scr_start as *const ::core::ffi::c_void,
         (width * height) as size_t,
     );
-    return 0 as ::core::ffi::c_int;
+    return 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_doColorXForm(
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-    mut ticks: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut width: i32,
+    mut height: i32,
+    mut ticks: i32,
+) -> i32 {
     let mut changed: bool;
     let mut w: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut e: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut newval: ::core::ffi::c_int = 0;
+    let mut newval: i32 = 0;
     changed = false;
     w = wipe_scr;
     e = wipe_scr_end;
     while w != wipe_scr.offset((width * height) as isize) {
-        if *w as ::core::ffi::c_int != *e as ::core::ffi::c_int {
-            if *w as ::core::ffi::c_int > *e as ::core::ffi::c_int {
-                newval = *w as ::core::ffi::c_int - ticks;
-                if newval < *e as ::core::ffi::c_int {
+        if *w as i32 != *e as i32 {
+            if *w as i32 > *e as i32 {
+                newval = *w as i32 - ticks;
+                if newval < *e as i32 {
                     *w = *e;
                 } else {
                     *w = newval as byte;
                 }
                 changed = true;
-            } else if (*w as ::core::ffi::c_int) < *e as ::core::ffi::c_int {
-                newval = *w as ::core::ffi::c_int + ticks;
-                if newval > *e as ::core::ffi::c_int {
+            } else if (*w as i32) < *e as i32 {
+                newval = *w as i32 + ticks;
+                if newval > *e as i32 {
                     *w = *e;
                 } else {
                     *w = newval as byte;
@@ -132,109 +132,109 @@ pub unsafe extern "C" fn wipe_doColorXForm(
         w = w.offset(1);
         e = e.offset(1);
     }
-    return (!changed) as ::core::ffi::c_int;
+    return (!changed) as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_exitColorXForm(
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-    mut ticks: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    return 0 as ::core::ffi::c_int;
+    mut width: i32,
+    mut height: i32,
+    mut ticks: i32,
+) -> i32 {
+    return 0 as i32;
 }
-static mut y: *mut ::core::ffi::c_int = ::core::ptr::null::<::core::ffi::c_int>()
-    as *mut ::core::ffi::c_int;
+static mut y: *mut i32 = ::core::ptr::null::<i32>()
+    as *mut i32;
 #[no_mangle]
 pub unsafe extern "C" fn wipe_initMelt(
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-    mut ticks: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut r: ::core::ffi::c_int = 0;
+    mut width: i32,
+    mut height: i32,
+    mut ticks: i32,
+) -> i32 {
+    let mut i: i32 = 0;
+    let mut r: i32 = 0;
     memcpy(
         wipe_scr as *mut ::core::ffi::c_void,
         wipe_scr_start as *const ::core::ffi::c_void,
         (width * height) as size_t,
     );
     wipe_shittyColMajorXform(
-        wipe_scr_start as *mut ::core::ffi::c_short,
-        width / 2 as ::core::ffi::c_int,
+        wipe_scr_start as *mut i16,
+        width / 2 as i32,
         height,
     );
     wipe_shittyColMajorXform(
-        wipe_scr_end as *mut ::core::ffi::c_short,
-        width / 2 as ::core::ffi::c_int,
+        wipe_scr_end as *mut i16,
+        width / 2 as i32,
         height,
     );
     y = Z_Malloc(
         (width as usize)
-            .wrapping_mul(::core::mem::size_of::<::core::ffi::c_int>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            .wrapping_mul(::core::mem::size_of::<i32>() as usize)
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut ::core::ffi::c_int;
-    *y.offset(0 as ::core::ffi::c_int as isize) = -(M_Random()
-        % 16 as ::core::ffi::c_int);
-    i = 1 as ::core::ffi::c_int;
+    ) as *mut i32;
+    *y.offset(0 as i32 as isize) = -(M_Random()
+        % 16 as i32);
+    i = 1 as i32;
     while i < width {
-        r = M_Random() % 3 as ::core::ffi::c_int - 1 as ::core::ffi::c_int;
-        *y.offset(i as isize) = *y.offset((i - 1 as ::core::ffi::c_int) as isize) + r;
-        if *y.offset(i as isize) > 0 as ::core::ffi::c_int {
-            *y.offset(i as isize) = 0 as ::core::ffi::c_int;
-        } else if *y.offset(i as isize) == -(16 as ::core::ffi::c_int) {
-            *y.offset(i as isize) = -(15 as ::core::ffi::c_int);
+        r = M_Random() % 3 as i32 - 1 as i32;
+        *y.offset(i as isize) = *y.offset((i - 1 as i32) as isize) + r;
+        if *y.offset(i as isize) > 0 as i32 {
+            *y.offset(i as isize) = 0 as i32;
+        } else if *y.offset(i as isize) == -(16 as i32) {
+            *y.offset(i as isize) = -(15 as i32);
         }
         i += 1;
     }
-    return 0 as ::core::ffi::c_int;
+    return 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_doMelt(
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-    mut ticks: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut dy: ::core::ffi::c_int = 0;
-    let mut idx: ::core::ffi::c_int = 0;
-    let mut s: *mut ::core::ffi::c_short = ::core::ptr::null_mut::<
-        ::core::ffi::c_short,
+    mut width: i32,
+    mut height: i32,
+    mut ticks: i32,
+) -> i32 {
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut dy: i32 = 0;
+    let mut idx: i32 = 0;
+    let mut s: *mut i16 = ::core::ptr::null_mut::<
+        i16,
     >();
-    let mut d: *mut ::core::ffi::c_short = ::core::ptr::null_mut::<
-        ::core::ffi::c_short,
+    let mut d: *mut i16 = ::core::ptr::null_mut::<
+        i16,
     >();
     let mut done: bool = true;
-    width /= 2 as ::core::ffi::c_int;
+    width /= 2 as i32;
     loop {
         let fresh0 = ticks;
         ticks = ticks - 1;
         if !(fresh0 != 0) {
             break;
         }
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < width {
-            if *y.offset(i as isize) < 0 as ::core::ffi::c_int {
+            if *y.offset(i as isize) < 0 as i32 {
                 let ref mut fresh1 = *y.offset(i as isize);
                 *fresh1 += 1;
                 done = false;
             } else if *y.offset(i as isize) < height {
-                dy = if *y.offset(i as isize) < 16 as ::core::ffi::c_int {
-                    *y.offset(i as isize) + 1 as ::core::ffi::c_int
+                dy = if *y.offset(i as isize) < 16 as i32 {
+                    *y.offset(i as isize) + 1 as i32
                 } else {
-                    8 as ::core::ffi::c_int
+                    8 as i32
                 };
                 if *y.offset(i as isize) + dy >= height {
                     dy = height - *y.offset(i as isize);
                 }
-                s = (wipe_scr_end as *mut ::core::ffi::c_short)
+                s = (wipe_scr_end as *mut i16)
                     .offset((i * height + *y.offset(i as isize)) as isize)
-                    as *mut ::core::ffi::c_short;
-                d = (wipe_scr as *mut ::core::ffi::c_short)
+                    as *mut i16;
+                d = (wipe_scr as *mut i16)
                     .offset((*y.offset(i as isize) * width + i) as isize)
-                    as *mut ::core::ffi::c_short;
-                idx = 0 as ::core::ffi::c_int;
+                    as *mut i16;
+                idx = 0 as i32;
                 j = dy;
                 while j != 0 {
                     let fresh2 = s;
@@ -244,12 +244,12 @@ pub unsafe extern "C" fn wipe_doMelt(
                     j -= 1;
                 }
                 *y.offset(i as isize) += dy;
-                s = (wipe_scr_start as *mut ::core::ffi::c_short)
-                    .offset((i * height) as isize) as *mut ::core::ffi::c_short;
-                d = (wipe_scr as *mut ::core::ffi::c_short)
+                s = (wipe_scr_start as *mut i16)
+                    .offset((i * height) as isize) as *mut i16;
+                d = (wipe_scr as *mut i16)
                     .offset((*y.offset(i as isize) * width + i) as isize)
-                    as *mut ::core::ffi::c_short;
-                idx = 0 as ::core::ffi::c_int;
+                    as *mut i16;
+                idx = 0 as i32;
                 j = height - *y.offset(i as isize);
                 while j != 0 {
                     let fresh3 = s;
@@ -263,115 +263,115 @@ pub unsafe extern "C" fn wipe_doMelt(
             i += 1;
         }
     }
-    return done as ::core::ffi::c_int;
+    return done as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_exitMelt(
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-    mut ticks: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut width: i32,
+    mut height: i32,
+    mut ticks: i32,
+) -> i32 {
     Z_Free(y as *mut ::core::ffi::c_void);
     Z_Free(wipe_scr_start as *mut ::core::ffi::c_void);
     Z_Free(wipe_scr_end as *mut ::core::ffi::c_void);
-    return 0 as ::core::ffi::c_int;
+    return 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_StartScreen(
-    mut x: ::core::ffi::c_int,
-    mut y_0: ::core::ffi::c_int,
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut x: i32,
+    mut y_0: i32,
+    mut width: i32,
+    mut height: i32,
+) -> i32 {
     wipe_scr_start = Z_Malloc(
         SCREENWIDTH * SCREENHEIGHT,
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
         NULL,
     ) as *mut byte;
     I_ReadScreen(wipe_scr_start);
-    return 0 as ::core::ffi::c_int;
+    return 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_EndScreen(
-    mut x: ::core::ffi::c_int,
-    mut y_0: ::core::ffi::c_int,
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut x: i32,
+    mut y_0: i32,
+    mut width: i32,
+    mut height: i32,
+) -> i32 {
     wipe_scr_end = Z_Malloc(
         SCREENWIDTH * SCREENHEIGHT,
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
         NULL,
     ) as *mut byte;
     I_ReadScreen(wipe_scr_end);
     V_DrawBlock(x, y_0, width, height, wipe_scr_start);
-    return 0 as ::core::ffi::c_int;
+    return 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn wipe_ScreenWipe(
-    mut wipeno: ::core::ffi::c_int,
-    mut x: ::core::ffi::c_int,
-    mut y_0: ::core::ffi::c_int,
-    mut width: ::core::ffi::c_int,
-    mut height: ::core::ffi::c_int,
-    mut ticks: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut rc: ::core::ffi::c_int = 0;
+    mut wipeno: i32,
+    mut x: i32,
+    mut y_0: i32,
+    mut width: i32,
+    mut height: i32,
+    mut ticks: i32,
+) -> i32 {
+    let mut rc: i32 = 0;
     static mut wipes: [Option<
         unsafe extern "C" fn(
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
-        ) -> ::core::ffi::c_int,
+            i32,
+            i32,
+            i32,
+        ) -> i32,
     >; 6] = unsafe {
         [
             Some(
                 wipe_initColorXForm
                     as unsafe extern "C" fn(
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                    ) -> ::core::ffi::c_int,
+                        i32,
+                        i32,
+                        i32,
+                    ) -> i32,
             ),
             Some(
                 wipe_doColorXForm
                     as unsafe extern "C" fn(
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                    ) -> ::core::ffi::c_int,
+                        i32,
+                        i32,
+                        i32,
+                    ) -> i32,
             ),
             Some(
                 wipe_exitColorXForm
                     as unsafe extern "C" fn(
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                    ) -> ::core::ffi::c_int,
+                        i32,
+                        i32,
+                        i32,
+                    ) -> i32,
             ),
             Some(
                 wipe_initMelt
                     as unsafe extern "C" fn(
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                    ) -> ::core::ffi::c_int,
+                        i32,
+                        i32,
+                        i32,
+                    ) -> i32,
             ),
             Some(
                 wipe_doMelt
                     as unsafe extern "C" fn(
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                    ) -> ::core::ffi::c_int,
+                        i32,
+                        i32,
+                        i32,
+                    ) -> i32,
             ),
             Some(
                 wipe_exitMelt
                     as unsafe extern "C" fn(
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                    ) -> ::core::ffi::c_int,
+                        i32,
+                        i32,
+                        i32,
+                    ) -> i32,
             ),
         ]
     };
@@ -382,28 +382,28 @@ pub unsafe extern "C" fn wipe_ScreenWipe(
                 (*(&raw mut wipes
                     as *mut Option<
                         unsafe extern "C" fn(
-                            ::core::ffi::c_int,
-                            ::core::ffi::c_int,
-                            ::core::ffi::c_int,
-                        ) -> ::core::ffi::c_int,
+                            i32,
+                            i32,
+                            i32,
+                        ) -> i32,
                     >)
-                    .offset((wipeno * 3 as ::core::ffi::c_int) as isize))
+                    .offset((wipeno * 3 as i32) as isize))
                     .expect("non-null function pointer"),
             )
             .expect("non-null function pointer")(width, height, ticks);
     }
-    V_MarkRect(0 as ::core::ffi::c_int, 0 as ::core::ffi::c_int, width, height);
+    V_MarkRect(0 as i32, 0 as i32, width, height);
     rc = Some(
             (*(&raw mut wipes
                 as *mut Option<
                     unsafe extern "C" fn(
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                        ::core::ffi::c_int,
-                    ) -> ::core::ffi::c_int,
+                        i32,
+                        i32,
+                        i32,
+                    ) -> i32,
                 >)
                 .offset(
-                    (wipeno * 3 as ::core::ffi::c_int + 1 as ::core::ffi::c_int) as isize,
+                    (wipeno * 3 as i32 + 1 as i32) as isize,
                 ))
                 .expect("non-null function pointer"),
         )
@@ -414,18 +414,18 @@ pub unsafe extern "C" fn wipe_ScreenWipe(
                 (*(&raw mut wipes
                     as *mut Option<
                         unsafe extern "C" fn(
-                            ::core::ffi::c_int,
-                            ::core::ffi::c_int,
-                            ::core::ffi::c_int,
-                        ) -> ::core::ffi::c_int,
+                            i32,
+                            i32,
+                            i32,
+                        ) -> i32,
                     >)
                     .offset(
-                        (wipeno * 3 as ::core::ffi::c_int + 2 as ::core::ffi::c_int)
+                        (wipeno * 3 as i32 + 2 as i32)
                             as isize,
                     ))
                     .expect("non-null function pointer"),
             )
             .expect("non-null function pointer")(width, height, ticks);
     }
-    return (!go) as ::core::ffi::c_int;
+    return (!go) as i32;
 }

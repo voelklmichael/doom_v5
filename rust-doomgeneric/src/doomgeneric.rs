@@ -12,8 +12,8 @@ pub type pixel_t = uint32_t;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const DOOMGENERIC_RESX: ::core::ffi::c_int = 640 as ::core::ffi::c_int;
-pub const DOOMGENERIC_RESY: ::core::ffi::c_int = 400 as ::core::ffi::c_int;
+pub const DOOMGENERIC_RESX: i32 = 640 as i32;
+pub const DOOMGENERIC_RESY: i32 = 400 as i32;
 #[no_mangle]
 pub static mut DG_ScreenBuffer: *mut pixel_t = ::core::ptr::null::<pixel_t>()
     as *mut pixel_t;
@@ -24,7 +24,7 @@ pub unsafe fn doomgeneric_Create(args: Vec<String>) {
         .collect();
     M_FindResponseFile();
     DG_ScreenBuffer = malloc(
-        (DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4 as ::core::ffi::c_int) as size_t,
+        (DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4 as i32) as size_t,
     ) as *mut pixel_t;
     DG_Init();
     D_DoomMain();
