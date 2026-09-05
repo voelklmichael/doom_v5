@@ -58,7 +58,7 @@ extern "C" {
     static mut sides: *mut side_t;
     static mut thinkercap: thinker_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
-    static mut demoplayback: boolean;
+    static mut demoplayback: bool;
     static mut skytexture: ::core::ffi::c_int;
 }
 pub type size_t = usize;
@@ -2151,7 +2151,7 @@ pub unsafe extern "C" fn R_PrecacheLevel() {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut sf: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
-    if demoplayback != 0 {
+    if demoplayback {
         return;
     }
     flatpresent = Z_Malloc(numflats, PU_STATIC as ::core::ffi::c_int, NULL)
