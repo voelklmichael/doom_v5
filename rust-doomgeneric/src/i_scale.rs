@@ -64,7 +64,6 @@ pub struct _IO_FILE {
 pub type _IO_lock_t = ();
 pub type FILE = _IO_FILE;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -78,9 +77,9 @@ pub struct screen_mode_t {
             ::core::ffi::c_int,
             ::core::ffi::c_int,
             ::core::ffi::c_int,
-        ) -> boolean,
+        ) -> bool,
     >,
-    pub poor_quality: boolean,
+    pub poor_quality: bool,
 }
 pub type C2RustUnnamed = ::core::ffi::c_uint;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
@@ -95,8 +94,6 @@ pub const PU_STATIC: C2RustUnnamed = 1;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
 pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
 pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
@@ -125,7 +122,7 @@ unsafe extern "C" fn I_Scale1x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
@@ -143,7 +140,7 @@ unsafe extern "C" fn I_Scale1x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_scale_1x: screen_mode_t = unsafe {
@@ -158,9 +155,9 @@ pub static mut mode_scale_1x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 unsafe extern "C" fn I_Scale2x(
@@ -168,7 +165,7 @@ unsafe extern "C" fn I_Scale2x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -210,7 +207,7 @@ unsafe extern "C" fn I_Scale2x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_scale_2x: screen_mode_t = unsafe {
@@ -225,9 +222,9 @@ pub static mut mode_scale_2x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 unsafe extern "C" fn I_Scale3x(
@@ -235,7 +232,7 @@ unsafe extern "C" fn I_Scale3x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -297,7 +294,7 @@ unsafe extern "C" fn I_Scale3x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_scale_3x: screen_mode_t = unsafe {
@@ -312,9 +309,9 @@ pub static mut mode_scale_3x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 unsafe extern "C" fn I_Scale4x(
@@ -322,7 +319,7 @@ unsafe extern "C" fn I_Scale4x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -410,7 +407,7 @@ unsafe extern "C" fn I_Scale4x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_scale_4x: screen_mode_t = unsafe {
@@ -425,9 +422,9 @@ pub static mut mode_scale_4x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 unsafe extern "C" fn I_Scale5x(
@@ -435,7 +432,7 @@ unsafe extern "C" fn I_Scale5x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -555,7 +552,7 @@ unsafe extern "C" fn I_Scale5x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_scale_5x: screen_mode_t = unsafe {
@@ -570,9 +567,9 @@ pub static mut mode_scale_5x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 unsafe extern "C" fn FindNearestColor(
@@ -748,14 +745,14 @@ unsafe extern "C" fn I_Stretch1x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
     screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
@@ -808,7 +805,7 @@ unsafe extern "C" fn I_Stretch1x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 5 as ::core::ffi::c_int;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_stretch_1x: screen_mode_t = unsafe {
@@ -823,9 +820,9 @@ pub static mut mode_stretch_1x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: true_0 as boolean,
+        poor_quality: true,
     }
 };
 #[inline]
@@ -869,14 +866,14 @@ unsafe extern "C" fn I_Stretch2x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
     screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
@@ -933,7 +930,7 @@ unsafe extern "C" fn I_Stretch2x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 5 as ::core::ffi::c_int;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_stretch_2x: screen_mode_t = unsafe {
@@ -948,9 +945,9 @@ pub static mut mode_stretch_2x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 #[inline]
@@ -996,14 +993,14 @@ unsafe extern "C" fn I_Stretch3x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
     screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
@@ -1072,7 +1069,7 @@ unsafe extern "C" fn I_Stretch3x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 5 as ::core::ffi::c_int;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_stretch_3x: screen_mode_t = unsafe {
@@ -1087,9 +1084,9 @@ pub static mut mode_stretch_3x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 #[inline]
@@ -1137,14 +1134,14 @@ unsafe extern "C" fn I_Stretch4x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
     screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
@@ -1225,7 +1222,7 @@ unsafe extern "C" fn I_Stretch4x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 5 as ::core::ffi::c_int;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_stretch_4x: screen_mode_t = unsafe {
@@ -1240,9 +1237,9 @@ pub static mut mode_stretch_4x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 #[inline]
@@ -1265,14 +1262,14 @@ unsafe extern "C" fn I_Stretch5x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
     screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
@@ -1306,7 +1303,7 @@ unsafe extern "C" fn I_Stretch5x(
             y += 3 as ::core::ffi::c_int;
         }
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_stretch_5x: screen_mode_t = unsafe {
@@ -1321,9 +1318,9 @@ pub static mut mode_stretch_5x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 #[inline]
@@ -1376,14 +1373,14 @@ unsafe extern "C" fn I_Squash1x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer;
     screenp = dest_buffer;
@@ -1394,7 +1391,7 @@ unsafe extern "C" fn I_Squash1x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_squash_1x: screen_mode_t = unsafe {
@@ -1409,9 +1406,9 @@ pub static mut mode_squash_1x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: true_0 as boolean,
+        poor_quality: true,
     }
 };
 #[inline]
@@ -1511,14 +1508,14 @@ unsafe extern "C" fn I_Squash2x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer;
     screenp = dest_buffer;
@@ -1529,7 +1526,7 @@ unsafe extern "C" fn I_Squash2x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_squash_2x: screen_mode_t = unsafe {
@@ -1544,9 +1541,9 @@ pub static mut mode_squash_2x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 #[inline]
@@ -1622,14 +1619,14 @@ unsafe extern "C" fn I_Squash3x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer;
     screenp = dest_buffer;
@@ -1640,7 +1637,7 @@ unsafe extern "C" fn I_Squash3x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_squash_3x: screen_mode_t = unsafe {
@@ -1655,9 +1652,9 @@ pub static mut mode_squash_3x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 #[inline]
@@ -1906,14 +1903,14 @@ unsafe extern "C" fn I_Squash4x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer;
     screenp = dest_buffer;
@@ -1924,7 +1921,7 @@ unsafe extern "C" fn I_Squash4x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_squash_4x: screen_mode_t = unsafe {
@@ -1939,9 +1936,9 @@ pub static mut mode_squash_4x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 #[inline]
@@ -2029,14 +2026,14 @@ unsafe extern "C" fn I_Squash5x(
     mut y1: ::core::ffi::c_int,
     mut x2: ::core::ffi::c_int,
     mut y2: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: ::core::ffi::c_int = 0;
     if x1 != 0 as ::core::ffi::c_int || y1 != 0 as ::core::ffi::c_int
         || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
     {
-        return false_0 as boolean;
+        return false;
     }
     bufp = src_buffer;
     screenp = dest_buffer;
@@ -2047,7 +2044,7 @@ unsafe extern "C" fn I_Squash5x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut mode_squash_5x: screen_mode_t = unsafe {
@@ -2062,9 +2059,9 @@ pub static mut mode_squash_5x: screen_mode_t = unsafe {
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
                     ::core::ffi::c_int,
-                ) -> boolean,
+                ) -> bool,
         ),
-        poor_quality: false_0 as boolean,
+        poor_quality: false,
     }
 };
 pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
