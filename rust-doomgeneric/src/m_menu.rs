@@ -1926,39 +1926,12 @@ pub const KEY_NUMLOCK: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
     + 0x45 as ::core::ffi::c_int;
 pub const KEY_SCRLCK: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
     + 0x46 as ::core::ffi::c_int;
-pub const GAMMALVL0: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction OFF\0\0\0\0\0\0")
-};
-pub const GAMMALVL1: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction level 1\0\0")
-};
-pub const GAMMALVL2: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction level 2\0\0")
-};
-pub const GAMMALVL3: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction level 3\0\0")
-};
-pub const GAMMALVL4: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction level 4\0\0")
-};
-pub const EMPTYSTRING: [::core::ffi::c_char; 11] = unsafe {
-    ::core::mem::transmute::<[u8; 11], [::core::ffi::c_char; 11]>(*b"empty slot\0")
-};
+pub const GAMMALVL0: &str = "Gamma correction OFF\0";
+pub const GAMMALVL1: &str = "Gamma correction level 1\0";
+pub const GAMMALVL2: &str = "Gamma correction level 2\0";
+pub const GAMMALVL3: &str = "Gamma correction level 3\0";
+pub const GAMMALVL4: &str = "Gamma correction level 4\0";
+pub const EMPTYSTRING: &str = "empty slot\0";
 pub const NUM_QUITMESSAGES: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
 pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
 pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
@@ -1995,14 +1968,7 @@ pub static mut messageLastMenuActive: ::core::ffi::c_int = 0;
 pub static mut messageNeedsInput: boolean = 0;
 #[no_mangle]
 pub static mut messageRoutine: Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()> = None;
-#[no_mangle]
-pub static mut gammamsg: [[::core::ffi::c_char; 26]; 5] = [
-    GAMMALVL0,
-    GAMMALVL1,
-    GAMMALVL2,
-    GAMMALVL3,
-    GAMMALVL4,
-];
+pub static gammamsg: [&str; 5] = [GAMMALVL0, GAMMALVL1, GAMMALVL2, GAMMALVL3, GAMMALVL4];
 #[no_mangle]
 pub static mut saveStringEnter: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -2633,7 +2599,7 @@ pub unsafe extern "C" fn M_ReadSaveStrings() {
             M_StringCopy(
                 &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
                     .offset(i as isize) as *mut ::core::ffi::c_char,
-                EMPTYSTRING.as_ptr(),
+                EMPTYSTRING.as_ptr() as *const ::core::ffi::c_char,
                 SAVESTRINGSIZE as size_t,
             );
             LoadMenu[i as usize].status = 0 as ::core::ffi::c_short;
@@ -2796,7 +2762,7 @@ pub unsafe extern "C" fn M_SaveSelect(mut choice: ::core::ffi::c_int) {
     if strcmp(
         &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
             .offset(choice as isize) as *mut ::core::ffi::c_char,
-        EMPTYSTRING.as_ptr(),
+        EMPTYSTRING.as_ptr() as *const ::core::ffi::c_char,
     ) == 0
     {
         savegamestrings[choice as usize][0 as ::core::ffi::c_int as usize] = 0
@@ -3911,9 +3877,8 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
             if usegamma > 4 as ::core::ffi::c_int {
                 usegamma = 0 as ::core::ffi::c_int;
             }
-            players[consoleplayer as usize].message = &raw mut *(&raw mut gammamsg
-                as *mut [::core::ffi::c_char; 26])
-                .offset(usegamma as isize) as *mut ::core::ffi::c_char;
+            players[consoleplayer as usize].message = gammamsg[usegamma as usize]
+                .as_ptr() as *mut ::core::ffi::c_char;
             I_SetPalette(
                 W_CacheLumpName("PLAYPAL",
                     PU_CACHE as ::core::ffi::c_int,
