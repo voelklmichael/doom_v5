@@ -1,3 +1,5 @@
+use crate::src::d_player::{player_t};
+use crate::src::p_mobj::{actionf_t};
 use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_GetNumForName, W_ReleaseLumpName,
 };
@@ -105,20 +107,6 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
 pub type evtype_t = ::core::ffi::c_uint;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
@@ -228,66 +216,7 @@ pub struct cheatseq_t {
     pub param_chars_read: ::core::ffi::c_int,
     pub parameter_buf: [::core::ffi::c_char; 5],
 }
-pub type player_t = player_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
 pub type fixed_t = ::core::ffi::c_int;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
 pub type statenum_t = ::core::ffi::c_uint;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
@@ -1257,13 +1186,6 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
@@ -1409,82 +1331,6 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type mobj_t = mobj_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
 pub type mobjtype_t = ::core::ffi::c_uint;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
@@ -1624,84 +1470,8 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
 pub type think_t = actionf_t;
 pub type angle_t = ::core::ffi::c_uint;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
 pub const CF_NOCLIP: C2RustUnnamed_2 = 1;
 pub const mus_e1m1: C2RustUnnamed_3 = 1;
 pub const mus_runnin: C2RustUnnamed_3 = 33;
@@ -2018,6 +1788,7 @@ static mut w_armsbg: st_binicon_t = st_binicon_t {
     p: ::core::ptr::null::<patch_t>() as *mut patch_t,
     data: 0,
 };
+static mut w_arms_owned: [::core::ffi::c_int; 6] = [0; 6];
 static mut w_arms: [st_multicon_t; 6] = [st_multicon_t {
     x: 0,
     y: 0,
@@ -2080,7 +1851,7 @@ static mut w_maxammo: [st_number_t; 4] = [st_number_t {
 }; 4];
 static mut st_fragscount: ::core::ffi::c_int = 0;
 static mut st_oldhealth: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
-static mut oldweaponsowned: [boolean; 9] = [0; 9];
+static mut oldweaponsowned: [bool; 9] = [false; 9];
 static mut st_facecount: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 static mut st_faceindex: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 static mut keyboxes: [::core::ffi::c_int; 3] = [0; 3];
@@ -2243,7 +2014,7 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 (*plyr).armortype = deh_idfa_armor_class;
                 i = 0 as ::core::ffi::c_int;
                 while i < NUMWEAPONS as ::core::ffi::c_int {
-                    (*plyr).weaponowned[i as usize] = true_0 as boolean;
+                    (*plyr).weaponowned[i as usize] = true;
                     i += 1;
                 }
                 i = 0 as ::core::ffi::c_int;
@@ -2262,7 +2033,7 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 (*plyr).armortype = deh_idkfa_armor_class;
                 i = 0 as ::core::ffi::c_int;
                 while i < NUMWEAPONS as ::core::ffi::c_int {
-                    (*plyr).weaponowned[i as usize] = true_0 as boolean;
+                    (*plyr).weaponowned[i as usize] = true;
                     i += 1;
                 }
                 i = 0 as ::core::ffi::c_int;
@@ -2272,7 +2043,7 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 }
                 i = 0 as ::core::ffi::c_int;
                 while i < NUMCARDS as ::core::ffi::c_int {
-                    (*plyr).cards[i as usize] = true_0 as boolean;
+                    (*plyr).cards[i as usize] = true;
                     i += 1;
                 }
                 (*plyr).message = b"Very Happy Ammo Added\0" as *const u8
@@ -2405,8 +2176,7 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 (*ev).data2 as ::core::ffi::c_char,
             ) != 0
             {
-                (*plyr).weaponowned[wp_chainsaw as ::core::ffi::c_int as usize] = true_0
-                    as boolean;
+                (*plyr).weaponowned[wp_chainsaw as ::core::ffi::c_int as usize] = true;
                 (*plyr).powers[pw_invulnerability as ::core::ffi::c_int as usize] = true_0;
                 (*plyr).message = b"... doesn't suck - GM\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -2644,13 +2414,19 @@ pub unsafe extern "C" fn ST_updateWidgets() {
     }
     w_ready.data = (*plyr).readyweapon as ::core::ffi::c_int;
     i = 0 as ::core::ffi::c_int;
+    while i < 6 as ::core::ffi::c_int {
+        w_arms_owned[i as usize] = (*plyr)
+            .weaponowned[(i + 1 as ::core::ffi::c_int) as usize] as ::core::ffi::c_int;
+        i += 1;
+    }
+    i = 0 as ::core::ffi::c_int;
     while i < 3 as ::core::ffi::c_int {
-        keyboxes[i as usize] = if (*plyr).cards[i as usize] != 0 {
+        keyboxes[i as usize] = if (*plyr).cards[i as usize] {
             i
         } else {
             -(1 as ::core::ffi::c_int)
         };
-        if (*plyr).cards[(i + 3 as ::core::ffi::c_int) as usize] != 0 {
+        if (*plyr).cards[(i + 3 as ::core::ffi::c_int) as usize] {
             keyboxes[i as usize] = i + 3 as ::core::ffi::c_int;
         }
         i += 1;
@@ -3153,9 +2929,8 @@ pub unsafe extern "C" fn ST_createWidgets() {
             ST_ARMSY + i / 3 as ::core::ffi::c_int * ST_ARMSYSPACE,
             &raw mut *(&raw mut arms as *mut [*mut patch_t; 2]).offset(i as isize)
                 as *mut *mut patch_t,
-            (&raw mut (*plyr).weaponowned as *mut boolean)
-                .offset((i + 1 as ::core::ffi::c_int) as isize) as *mut boolean
-                as *mut ::core::ffi::c_int,
+            (&raw mut w_arms_owned as *mut ::core::ffi::c_int)
+                .offset(i as isize),
             &raw mut st_armson,
         );
         i += 1;

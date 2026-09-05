@@ -64,20 +64,7 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
+pub use crate::src::d_ticcmd::ticcmd_t;
 pub type C2RustUnnamed = ::core::ffi::c_uint;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
@@ -1518,45 +1505,6 @@ pub struct mobj_s {
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
 pub struct pspdef_t {
     pub state: *mut state_t,
     pub tics: ::core::ffi::c_int,
@@ -1564,10 +1512,7 @@ pub struct pspdef_t {
     pub sy: fixed_t,
 }
 pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
+pub use crate::src::d_player::{player_s, player_t, playerstate_t, PST_DEAD, PST_LIVE, PST_REBORN};
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct subsector_s {
@@ -1638,7 +1583,6 @@ pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
 pub const CF_NOMOMENTUM: C2RustUnnamed_2 = 4;
 pub const CF_GODMODE: C2RustUnnamed_2 = 2;
 pub const CF_NOCLIP: C2RustUnnamed_2 = 1;
-pub type player_t = player_s;
 pub const sfx_telept: C2RustUnnamed_3 = 35;
 pub const sfx_oof: C2RustUnnamed_3 = 34;
 pub const sfx_itmbk: C2RustUnnamed_3 = 90;
@@ -2304,7 +2248,7 @@ pub unsafe extern "C" fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
     if deathmatch != 0 {
         i = 0 as ::core::ffi::c_int;
         while i < NUMCARDS as ::core::ffi::c_int {
-            (*p).cards[i as usize] = true_0 as boolean;
+            (*p).cards[i as usize] = true;
             i += 1;
         }
     }
