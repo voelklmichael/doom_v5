@@ -1,18 +1,30 @@
 use crate::src::i_system::FILE;
 use crate::src::r_defs::{node_t, seg_t, side_t};
-use crate::src::wi_stuff::{wbstartstruct_t};
 use crate::src::p_mobj::{thinker_s, mapthing_t, sector_t, line_s, ST_NEGATIVE, ST_POSITIVE, ST_VERTICAL, ST_HORIZONTAL, vertex_t, degenmobj_t, line_t, subsector_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::m_argv::M_CheckParm;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::z_zone::Z_FreeTags;
+use crate::src::m_bbox::M_ClearBox;
+use crate::src::g_game::G_DeathMatchSpawnPlayer;
+use crate::src::i_system::I_GetMemoryValue;
+use crate::src::info::sprnames;
+use crate::src::r_data::R_PrecacheLevel;
+use crate::src::p_mobj::iquehead;
+use crate::src::p_mobj::iquetail;
+use crate::src::p_spec::P_SpawnSpecials;
+use crate::src::p_switch::P_InitSwitchList;
+use crate::src::g_game::wminfo;
+use crate::src::g_game::precache;
+use crate::src::g_game::bodyqueslot;
+
 extern "C" {
     fn Z_Malloc(
         size: i32,
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_FreeTags(lowtag: i32, hightag: i32);
     static mut stderr: *mut FILE;
     fn fprintf(
         __stream: *mut FILE,
@@ -26,19 +38,12 @@ extern "C" {
         ...
     ) -> i32;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn M_ClearBox(box_0: *mut fixed_t);
     fn M_AddToBox(box_0: *mut fixed_t, x: fixed_t, y: fixed_t);
     fn memset(
         __s: *mut ::core::ffi::c_void,
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn G_DeathMatchSpawnPlayer(playernum: i32);
-    fn I_GetMemoryValue(
-        offset: u32,
-        value: *mut ::core::ffi::c_void,
-        size: i32,
-    ) -> boolean;
     fn W_LumpLength(lump: u32) -> i32;
     fn W_ReadLump(lump: u32, dest: *mut ::core::ffi::c_void);
     fn W_CacheLumpNum(
@@ -46,18 +51,12 @@ extern "C" {
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
     fn W_ReleaseLumpNum(lump: i32);
-    static mut sprnames: [*mut ::core::ffi::c_char; 0];
     fn P_SpawnMapThing(mthing: *mut mapthing_t);
-    fn R_PrecacheLevel();
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_InitSprites(namelist: *mut *mut ::core::ffi::c_char);
     fn P_InitThinkers();
-    static mut iquehead: i32;
-    static mut iquetail: i32;
     fn P_InitPicAnims();
-    fn P_SpawnSpecials();
-    fn P_InitSwitchList();
     fn S_Start();
     static mut gamemode: GameMode_t;
     static mut deathmatch: i32;
@@ -68,9 +67,6 @@ extern "C" {
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    static mut wminfo: wbstartstruct_t;
-    static mut precache: bool;
-    static mut bodyqueslot: i32;
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;
@@ -1452,9 +1448,7 @@ pub const FRACBITS: i32 = 16 as i32;
 pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const MAXPLAYERS: i32 = 4 as i32;
 pub const ML_TWOSIDED: i32 = 4 as i32;
-#[no_mangle]
 pub static mut numvertexes: i32 = 0;
-#[no_mangle]
 pub static mut vertexes: *mut vertex_t = ::core::ptr::null::<vertex_t>()
     as *mut vertex_t;
 #[no_mangle]
@@ -1478,20 +1472,15 @@ pub static mut nodes: *mut node_t = ::core::ptr::null::<node_t>() as *mut node_t
 pub static mut numlines: i32 = 0;
 #[no_mangle]
 pub static mut lines: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
-#[no_mangle]
 pub static mut numsides: i32 = 0;
 #[no_mangle]
 pub static mut sides: *mut side_t = ::core::ptr::null::<side_t>() as *mut side_t;
 static mut totallines: i32 = 0;
-#[no_mangle]
 pub static mut bmapwidth: i32 = 0;
-#[no_mangle]
 pub static mut bmapheight: i32 = 0;
-#[no_mangle]
 pub static mut blockmap: *mut i16 = ::core::ptr::null::<
     i16,
 >() as *mut i16;
-#[no_mangle]
 pub static mut blockmaplump: *mut i16 = ::core::ptr::null::<
     i16,
 >() as *mut i16;
@@ -1499,10 +1488,8 @@ pub static mut blockmaplump: *mut i16 = ::core::ptr::null::<
 pub static mut bmaporgx: fixed_t = 0;
 #[no_mangle]
 pub static mut bmaporgy: fixed_t = 0;
-#[no_mangle]
 pub static mut blocklinks: *mut *mut mobj_t = ::core::ptr::null::<*mut mobj_t>()
     as *mut *mut mobj_t;
-#[no_mangle]
 pub static mut rejectmatrix: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut deathmatchstarts: [mapthing_t; 10] = [mapthing_t {
@@ -2276,8 +2263,7 @@ unsafe extern "C" fn P_LoadReject(mut lumpnum: i32) {
         );
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SetupLevel(
+pub unsafe fn P_SetupLevel(
     mut episode: i32,
     mut map: i32,
     mut playermask: i32,

@@ -1,6 +1,11 @@
 use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{floormove_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
+use crate::src::p_map::P_ChangeSector;
+use crate::src::p_spec::twoSided;
+use crate::src::p_spec::getSector;
+use crate::src::p_spec::getSide;
+
 extern "C" {
     fn Z_Malloc(
         size: i32,
@@ -11,21 +16,6 @@ extern "C" {
     static mut sectors: *mut sector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_ChangeSector(sector: *mut sector_t, crunch: boolean) -> boolean;
-    fn twoSided(
-        sector: i32,
-        line: i32,
-    ) -> i32;
-    fn getSector(
-        currentSector: i32,
-        line: i32,
-        side: i32,
-    ) -> *mut sector_t;
-    fn getSide(
-        currentSector: i32,
-        line: i32,
-        side: i32,
-    ) -> *mut side_t;
     fn P_FindLowestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindHighestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindNextHighestFloor(

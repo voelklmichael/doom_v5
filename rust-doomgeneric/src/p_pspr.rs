@@ -2,6 +2,9 @@ use crate::src::d_items::weaponinfo;
 use crate::src::p_mobj::{state_t, actionf_t};
 use crate::src::d_player::{player_t, PST_DEAD};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
+use crate::src::p_mobj::P_SpawnPlayerMissile;
+use crate::src::p_enemy::P_NoiseAlert;
+
 extern "C" {
     fn P_Random() -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
@@ -16,8 +19,6 @@ extern "C" {
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    fn P_SpawnPlayerMissile(source: *mut mobj_t, type_0: mobjtype_t);
-    fn P_NoiseAlert(target: *mut mobj_t, emmiter: *mut mobj_t);
     static mut linetarget: *mut mobj_t;
     fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
     fn P_LineAttack(
@@ -1670,8 +1671,7 @@ pub unsafe extern "C" fn P_FireWeapon(mut player: *mut player_t) {
     P_SetPsprite(player, ps_weapon as i32, newstate);
     P_NoiseAlert((*player).mo, (*player).mo);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_DropWeapon(mut player: *mut player_t) {
+pub unsafe fn P_DropWeapon(mut player: *mut player_t) {
     P_SetPsprite(
         player,
         ps_weapon as i32,
@@ -1931,7 +1931,6 @@ pub unsafe extern "C" fn A_FirePlasma(
     );
     P_SpawnPlayerMissile((*player).mo, MT_PLASMA);
 }
-#[no_mangle]
 pub static mut bulletslope: fixed_t = 0;
 #[no_mangle]
 pub unsafe extern "C" fn P_BulletSlope(mut mo: *mut mobj_t) {
@@ -2157,8 +2156,7 @@ pub unsafe extern "C" fn A_BFGsound(mut player: *mut player_t, mut psp: *mut psp
         sfx_bfg as i32,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SetupPsprites(mut player: *mut player_t) {
+pub unsafe fn P_SetupPsprites(mut player: *mut player_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < NUMPSPRITES as i32 {
@@ -2168,8 +2166,7 @@ pub unsafe extern "C" fn P_SetupPsprites(mut player: *mut player_t) {
     (*player).pendingweapon = (*player).readyweapon;
     P_BringUpWeapon(player);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_MovePsprites(mut player: *mut player_t) {
+pub unsafe fn P_MovePsprites(mut player: *mut player_t) {
     let mut i: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
     let mut state: *mut state_t = ::core::ptr::null_mut::<state_t>();

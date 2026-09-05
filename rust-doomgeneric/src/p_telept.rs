@@ -1445,8 +1445,7 @@ pub const sfx_shotgn: C2RustUnnamed_0 = 2;
 pub const sfx_pistol: C2RustUnnamed_0 = 1;
 pub const sfx_None: C2RustUnnamed_0 = 0;
 pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn EV_Teleport(
+pub unsafe fn EV_Teleport(
     mut line: *mut line_t,
     mut side: i32,
     mut thing: *mut mobj_t,

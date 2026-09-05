@@ -1,6 +1,7 @@
 use crate::src::d_event::event_t;
+use crate::src::d_event::D_PostEvent;
+
 extern "C" {
-    fn D_PostEvent(ev: *mut event_t);
     fn DG_GetKey(
         pressed: *mut i32,
         key: *mut u8,
@@ -12,7 +13,6 @@ pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[no_mangle]
 pub static mut vanilla_keyboard_mapping: i32 = 1 as i32;
 static mut shiftdown: i32 = 0 as i32;
 static mut shiftxform: [::core::ffi::c_char; 128] = [
@@ -181,8 +181,7 @@ unsafe extern "C" fn UpdateShiftStatus(
         shiftdown += change;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_GetEvent() {
+pub unsafe fn I_GetEvent() {
     let mut event: event_t = event_t {
         type_0: ev_keydown,
         data1: 0,

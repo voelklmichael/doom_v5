@@ -8,6 +8,9 @@ use crate::src::d_player::{player_s, player_t, playerstate_t};
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::d_ticcmd::{ticcmd_t};
 use crate::src::i_system::I_Error;
+use crate::src::p_ceilng::P_AddActiveCeiling;
+use crate::src::d_main::savegamedir;
+
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -72,7 +75,6 @@ extern "C" {
     fn T_VerticalDoor(door: *mut vldoor_t);
     static mut activeceilings: [*mut ceiling_t; 30];
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
-    fn P_AddActiveCeiling(c: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
     static mut gameskill: skill_t;
     static mut gameepisode: i32;
@@ -80,7 +82,6 @@ extern "C" {
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    static mut savegamedir: *mut ::core::ffi::c_char;
     fn G_VanillaVersionCode() -> i32;
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
     fn M_snprintf(
@@ -1472,14 +1473,11 @@ pub const MAXCEILINGS: i32 = 30 as i32;
 pub const SAVESTRINGSIZE: i32 = 24 as i32;
 pub const SAVEGAME_EOF: i32 = 0x1d as i32;
 pub const VERSIONSIZE: i32 = 16 as i32;
-#[no_mangle]
 pub static mut save_stream: *mut FILE = ::core::ptr::null::<FILE>() as *mut FILE;
 #[no_mangle]
 pub static mut savegamelength: i32 = 0;
-#[no_mangle]
 pub static mut savegame_error: bool = false;
-#[no_mangle]
-pub unsafe extern "C" fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char {
+pub unsafe fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char {
     static mut filename: *mut ::core::ffi::c_char = ::core::ptr::null::<
         ::core::ffi::c_char,
     >() as *mut ::core::ffi::c_char;
@@ -2106,8 +2104,7 @@ unsafe extern "C" fn saveg_write_glow_t(mut str: *mut glow_t) {
     saveg_write32((*str).maxlight);
     saveg_write32((*str).direction);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_WriteSaveGameHeader(
+pub unsafe fn P_WriteSaveGameHeader(
     mut description: *mut ::core::ffi::c_char,
 ) {
     let mut name: [::core::ffi::c_char; 16] = [0; 16];
@@ -2153,8 +2150,7 @@ pub unsafe extern "C" fn P_WriteSaveGameHeader(
     );
     saveg_write8((leveltime & 0xff as i32) as byte);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ReadSaveGameHeader() -> boolean {
+pub unsafe fn P_ReadSaveGameHeader() -> boolean {
     let mut i: i32 = 0;
     let mut a: byte = 0;
     let mut b: byte = 0;
@@ -2205,18 +2201,15 @@ pub unsafe extern "C" fn P_ReadSaveGameHeader() -> boolean {
         + c as i32;
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ReadSaveGameEOF() -> boolean {
+pub unsafe fn P_ReadSaveGameEOF() -> boolean {
     let mut value: i32 = 0;
     value = saveg_read8() as i32;
     return (value == SAVEGAME_EOF) as i32 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_WriteSaveGameEOF() {
+pub unsafe fn P_WriteSaveGameEOF() {
     saveg_write8(SAVEGAME_EOF as byte);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ArchivePlayers() {
+pub unsafe fn P_ArchivePlayers() {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLAYERS {
@@ -2229,8 +2222,7 @@ pub unsafe extern "C" fn P_ArchivePlayers() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_UnArchivePlayers() {
+pub unsafe fn P_UnArchivePlayers() {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLAYERS {
@@ -2246,8 +2238,7 @@ pub unsafe extern "C" fn P_UnArchivePlayers() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ArchiveWorld() {
+pub unsafe fn P_ArchiveWorld() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -2294,8 +2285,7 @@ pub unsafe extern "C" fn P_ArchiveWorld() {
         li = li.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_UnArchiveWorld() {
+pub unsafe fn P_UnArchiveWorld() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -2348,8 +2338,7 @@ pub unsafe extern "C" fn P_UnArchiveWorld() {
         li = li.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ArchiveThinkers() {
+pub unsafe fn P_ArchiveThinkers() {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     th = thinkercap.next as *mut thinker_t;
     while th != &raw mut thinkercap {
@@ -2367,8 +2356,7 @@ pub unsafe extern "C" fn P_ArchiveThinkers() {
     }
     saveg_write8(tc_end as i32 as byte);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_UnArchiveThinkers() {
+pub unsafe fn P_UnArchiveThinkers() {
     let mut tclass: byte = 0;
     let mut currentthinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut next: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
@@ -2425,8 +2413,7 @@ pub unsafe extern "C" fn P_UnArchiveThinkers() {
 }
 #[no_mangle]
 pub static mut specials_e: C2RustUnnamed_5 = tc_ceiling;
-#[no_mangle]
-pub unsafe extern "C" fn P_ArchiveSpecials() {
+pub unsafe fn P_ArchiveSpecials() {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut i: i32 = 0;
     th = thinkercap.next as *mut thinker_t;
@@ -2512,8 +2499,7 @@ pub unsafe extern "C" fn P_ArchiveSpecials() {
     }
     saveg_write8(tc_endspecials as i32 as byte);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_UnArchiveSpecials() {
+pub unsafe fn P_UnArchiveSpecials() {
     let mut tclass: byte = 0;
     let mut ceiling: *mut ceiling_t = ::core::ptr::null_mut::<ceiling_t>();
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();

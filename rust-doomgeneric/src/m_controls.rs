@@ -63,25 +63,15 @@ pub const KEY_INS: i32 = 0x80 as i32
     + 0x52 as i32;
 pub const KEY_DEL: i32 = 0x80 as i32
     + 0x53 as i32;
-#[no_mangle]
 pub static mut key_right: i32 = KEY_RIGHTARROW;
-#[no_mangle]
 pub static mut key_left: i32 = KEY_LEFTARROW;
-#[no_mangle]
 pub static mut key_up: i32 = KEY_UPARROW;
-#[no_mangle]
 pub static mut key_down: i32 = KEY_DOWNARROW;
-#[no_mangle]
 pub static mut key_strafeleft: i32 = KEY_STRAFE_L;
-#[no_mangle]
 pub static mut key_straferight: i32 = KEY_STRAFE_R;
-#[no_mangle]
 pub static mut key_fire: i32 = KEY_FIRE;
-#[no_mangle]
 pub static mut key_use: i32 = KEY_USE;
-#[no_mangle]
 pub static mut key_strafe: i32 = KEY_RALT;
-#[no_mangle]
 pub static mut key_speed: i32 = KEY_RSHIFT;
 #[no_mangle]
 pub static mut key_flyup: i32 = KEY_PGUP;
@@ -137,152 +127,82 @@ pub static mut key_invend: i32 = KEY_END;
 pub static mut key_invuse: i32 = KEY_ENTER;
 #[no_mangle]
 pub static mut key_invdrop: i32 = KEY_BACKSPACE;
-#[no_mangle]
 pub static mut mousebfire: i32 = 0 as i32;
-#[no_mangle]
 pub static mut mousebstrafe: i32 = 1 as i32;
-#[no_mangle]
 pub static mut mousebforward: i32 = 2 as i32;
 #[no_mangle]
 pub static mut mousebjump: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut mousebstrafeleft: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut mousebstraferight: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut mousebbackward: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut mousebuse: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut mousebprevweapon: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut mousebnextweapon: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut key_message_refresh: i32 = KEY_ENTER;
-#[no_mangle]
 pub static mut key_pause: i32 = KEY_PAUSE;
-#[no_mangle]
 pub static mut key_demo_quit: i32 = 'q' as i32;
-#[no_mangle]
 pub static mut key_spy: i32 = KEY_F12;
-#[no_mangle]
 pub static mut key_multi_msg: i32 = 't' as i32;
 #[no_mangle]
 pub static mut key_multi_msgplayer: [i32; 8] = [0; 8];
-#[no_mangle]
 pub static mut key_weapon1: i32 = '1' as i32;
-#[no_mangle]
 pub static mut key_weapon2: i32 = '2' as i32;
-#[no_mangle]
 pub static mut key_weapon3: i32 = '3' as i32;
-#[no_mangle]
 pub static mut key_weapon4: i32 = '4' as i32;
-#[no_mangle]
 pub static mut key_weapon5: i32 = '5' as i32;
-#[no_mangle]
 pub static mut key_weapon6: i32 = '6' as i32;
-#[no_mangle]
 pub static mut key_weapon7: i32 = '7' as i32;
-#[no_mangle]
 pub static mut key_weapon8: i32 = '8' as i32;
-#[no_mangle]
 pub static mut key_prevweapon: i32 = 0 as i32;
-#[no_mangle]
 pub static mut key_nextweapon: i32 = 0 as i32;
-#[no_mangle]
 pub static mut key_map_north: i32 = KEY_UPARROW;
-#[no_mangle]
 pub static mut key_map_south: i32 = KEY_DOWNARROW;
-#[no_mangle]
 pub static mut key_map_east: i32 = KEY_RIGHTARROW;
-#[no_mangle]
 pub static mut key_map_west: i32 = KEY_LEFTARROW;
-#[no_mangle]
 pub static mut key_map_zoomin: i32 = '=' as i32;
-#[no_mangle]
 pub static mut key_map_zoomout: i32 = '-' as i32;
-#[no_mangle]
 pub static mut key_map_toggle: i32 = KEY_TAB;
-#[no_mangle]
 pub static mut key_map_maxzoom: i32 = '0' as i32;
-#[no_mangle]
 pub static mut key_map_follow: i32 = 'f' as i32;
-#[no_mangle]
 pub static mut key_map_grid: i32 = 'g' as i32;
-#[no_mangle]
 pub static mut key_map_mark: i32 = 'm' as i32;
-#[no_mangle]
 pub static mut key_map_clearmark: i32 = 'c' as i32;
-#[no_mangle]
 pub static mut key_menu_activate: i32 = KEY_ESCAPE;
-#[no_mangle]
 pub static mut key_menu_up: i32 = KEY_UPARROW;
-#[no_mangle]
 pub static mut key_menu_down: i32 = KEY_DOWNARROW;
-#[no_mangle]
 pub static mut key_menu_left: i32 = KEY_LEFTARROW;
-#[no_mangle]
 pub static mut key_menu_right: i32 = KEY_RIGHTARROW;
-#[no_mangle]
 pub static mut key_menu_back: i32 = KEY_BACKSPACE;
-#[no_mangle]
 pub static mut key_menu_forward: i32 = KEY_ENTER;
-#[no_mangle]
 pub static mut key_menu_confirm: i32 = 'y' as i32;
-#[no_mangle]
 pub static mut key_menu_abort: i32 = 'n' as i32;
-#[no_mangle]
 pub static mut key_menu_help: i32 = KEY_F1;
-#[no_mangle]
 pub static mut key_menu_save: i32 = KEY_F2;
-#[no_mangle]
 pub static mut key_menu_load: i32 = KEY_F3;
-#[no_mangle]
 pub static mut key_menu_volume: i32 = KEY_F4;
-#[no_mangle]
 pub static mut key_menu_detail: i32 = KEY_F5;
-#[no_mangle]
 pub static mut key_menu_qsave: i32 = KEY_F6;
-#[no_mangle]
 pub static mut key_menu_endgame: i32 = KEY_F7;
-#[no_mangle]
 pub static mut key_menu_messages: i32 = KEY_F8;
-#[no_mangle]
 pub static mut key_menu_qload: i32 = KEY_F9;
-#[no_mangle]
 pub static mut key_menu_quit: i32 = KEY_F10;
-#[no_mangle]
 pub static mut key_menu_gamma: i32 = KEY_F11;
-#[no_mangle]
 pub static mut key_menu_incscreen: i32 = KEY_EQUALS;
-#[no_mangle]
 pub static mut key_menu_decscreen: i32 = KEY_MINUS;
-#[no_mangle]
 pub static mut key_menu_screenshot: i32 = 0 as i32;
-#[no_mangle]
 pub static mut joybfire: i32 = 0 as i32;
-#[no_mangle]
 pub static mut joybstrafe: i32 = 1 as i32;
-#[no_mangle]
 pub static mut joybuse: i32 = 3 as i32;
-#[no_mangle]
 pub static mut joybspeed: i32 = 2 as i32;
-#[no_mangle]
 pub static mut joybstrafeleft: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut joybstraferight: i32 = -(1 as i32);
 #[no_mangle]
 pub static mut joybjump: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut joybprevweapon: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut joybnextweapon: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut joybmenu: i32 = -(1 as i32);
-#[no_mangle]
 pub static mut dclick_use: i32 = 1 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn M_BindBaseControls() {
+pub unsafe fn M_BindBaseControls() {
     M_BindVariable("key_right",
         &raw mut key_right as *mut ::core::ffi::c_void,
     );
@@ -488,8 +408,7 @@ pub unsafe extern "C" fn M_BindStrifeControls() {
         &raw mut joybjump as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindWeaponControls() {
+pub unsafe fn M_BindWeaponControls() {
     M_BindVariable("key_weapon1",
         &raw mut key_weapon1 as *mut ::core::ffi::c_void,
     );
@@ -533,8 +452,7 @@ pub unsafe extern "C" fn M_BindWeaponControls() {
         &raw mut mousebnextweapon as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindMapControls() {
+pub unsafe fn M_BindMapControls() {
     M_BindVariable("key_map_north",
         &raw mut key_map_north as *mut ::core::ffi::c_void,
     );
@@ -572,8 +490,7 @@ pub unsafe extern "C" fn M_BindMapControls() {
         &raw mut key_map_clearmark as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindMenuControls() {
+pub unsafe fn M_BindMenuControls() {
     M_BindVariable("key_menu_activate",
         &raw mut key_menu_activate as *mut ::core::ffi::c_void,
     );
@@ -650,8 +567,7 @@ pub unsafe extern "C" fn M_BindMenuControls() {
         &raw mut key_spy as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindChatControls(mut num_players: u32) {
+pub unsafe fn M_BindChatControls(mut num_players: u32) {
     let mut name: [::core::ffi::c_char; 32] = [0; 32];
     let mut i: u32 = 0;
     M_BindVariable("key_multi_msg",
@@ -675,5 +591,4 @@ pub unsafe extern "C" fn M_BindChatControls(mut num_players: u32) {
         i = i.wrapping_add(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_ApplyPlatformDefaults() {}
+pub unsafe fn M_ApplyPlatformDefaults() {}

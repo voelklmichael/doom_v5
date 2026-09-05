@@ -1334,7 +1334,6 @@ pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-#[no_mangle]
 pub static mut sprnames: [*mut ::core::ffi::c_char; 139] = [
     b"TROO\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     b"SHTG\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,

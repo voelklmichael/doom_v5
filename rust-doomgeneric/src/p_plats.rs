@@ -1452,7 +1452,6 @@ pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const PLATWAIT: i32 = 3 as i32;
 pub const PLATSPEED: i32 = FRACUNIT;
 pub const MAXPLATS: i32 = 30 as i32;
-#[no_mangle]
 pub static mut activeplats: [*mut plat_t; 30] = [::core::ptr::null::<plat_t>()
     as *mut plat_t; 30];
 #[no_mangle]
@@ -1694,8 +1693,7 @@ pub unsafe extern "C" fn P_ActivateInStasis(mut tag: i32) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_StopPlat(mut line: *mut line_t) {
+pub unsafe fn EV_StopPlat(mut line: *mut line_t) {
     let mut j: i32 = 0;
     j = 0 as i32;
     while j < MAXPLATS {

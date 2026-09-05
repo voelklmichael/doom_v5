@@ -32,8 +32,7 @@ static mut captured_stats: [wbstartstruct_t; 32] = [wbstartstruct_t {
     }; 4],
 }; 32];
 static mut num_captured_stats: i32 = 0 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn StatCopy(mut stats: *mut wbstartstruct_t) {
+pub unsafe fn StatCopy(mut stats: *mut wbstartstruct_t) {
     if M_ParmExists("-statdump") && num_captured_stats < MAX_CAPTURES {
         memcpy(
             (&raw mut captured_stats as *mut wbstartstruct_t)

@@ -3,6 +3,13 @@ use crate::src::p_mobj::{thinker_t, mobjinfo_t, sector_t, line_s, ST_HORIZONTAL,
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::i_system::I_Error;
+use crate::src::p_mobj::P_SpawnMissile;
+use crate::src::p_map::floatok;
+use crate::src::p_map::tmfloorz;
+use crate::src::p_map::spechit;
+use crate::src::p_map::numspechit;
+use crate::src::p_map::P_RadiusAttack;
+
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn P_Random() -> i32;
@@ -25,11 +32,6 @@ extern "C" {
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn P_SpawnPuff(x: fixed_t, y: fixed_t, z: fixed_t);
-    fn P_SpawnMissile(
-        source: *mut mobj_t,
-        dest: *mut mobj_t,
-        type_0: mobjtype_t,
-    ) -> *mut mobj_t;
     fn P_AproxDistance(dx: fixed_t, dy: fixed_t) -> fixed_t;
     static mut openrange: fixed_t;
     fn P_LineOpening(linedef: *mut line_t);
@@ -40,10 +42,6 @@ extern "C" {
     ) -> boolean;
     fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
-    static mut floatok: bool;
-    static mut tmfloorz: fixed_t;
-    static mut spechit: [*mut line_t; 20];
-    static mut numspechit: i32;
     fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
     fn P_TryMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
     fn P_TeleportMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
@@ -54,11 +52,6 @@ extern "C" {
         angle: angle_t,
         distance: fixed_t,
         slope: fixed_t,
-        damage: i32,
-    );
-    fn P_RadiusAttack(
-        spot: *mut mobj_t,
-        source: *mut mobj_t,
         damage: i32,
     );
     static mut bmaporgx: fixed_t;
@@ -1654,8 +1647,7 @@ pub unsafe extern "C" fn P_RecursiveSound(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_NoiseAlert(
+pub unsafe fn P_NoiseAlert(
     mut target: *mut mobj_t,
     mut emmiter: *mut mobj_t,
 ) {

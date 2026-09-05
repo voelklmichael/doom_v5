@@ -3,6 +3,8 @@ use crate::src::p_spec::{button_t};
 use crate::src::p_mobj::{degenmobj_t, line_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
+use crate::src::p_doors::EV_DoLockedDoor;
+
 extern "C" {
     static mut sides: *mut side_t;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
@@ -15,11 +17,6 @@ extern "C" {
     ) -> i32;
     fn EV_VerticalDoor(line: *mut line_t, thing: *mut mobj_t);
     fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
-    fn EV_DoLockedDoor(
-        line: *mut line_t,
-        type_0: vldoor_e,
-        thing: *mut mobj_t,
-    ) -> i32;
     fn EV_DoCeiling(line: *mut line_t, type_0: ceiling_e) -> i32;
     fn EV_BuildStairs(line: *mut line_t, type_0: stair_e) -> i32;
     fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
@@ -1933,7 +1930,6 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
 pub static mut switchlist: [i32; 100] = [0; 100];
 #[no_mangle]
 pub static mut numswitches: i32 = 0;
-#[no_mangle]
 pub static mut buttonlist: [button_t; 16] = [button_t {
     line: ::core::ptr::null::<line_t>() as *mut line_t,
     where_0: top,
@@ -1941,8 +1937,7 @@ pub static mut buttonlist: [button_t; 16] = [button_t {
     btimer: 0,
     soundorg: ::core::ptr::null::<degenmobj_t>() as *mut degenmobj_t,
 }; 16];
-#[no_mangle]
-pub unsafe extern "C" fn P_InitSwitchList() {
+pub unsafe fn P_InitSwitchList() {
     let mut i: i32 = 0;
     let mut index: i32 = 0;
     let mut episode: i32 = 0;
@@ -2015,8 +2010,7 @@ pub unsafe extern "C" fn P_StartButton(
     }
     I_Error("P_StartButton: no button slots left!");
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ChangeSwitchTexture(
+pub unsafe fn P_ChangeSwitchTexture(
     mut line: *mut line_t,
     mut useAgain: i32,
 ) {

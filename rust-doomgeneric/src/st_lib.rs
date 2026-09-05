@@ -1,6 +1,8 @@
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
+use crate::src::st_stuff::st_backing_screen;
+
 extern "C" {
     fn V_CopyRect(
         srcx: i32,
@@ -12,7 +14,6 @@ extern "C" {
         desty: i32,
     );
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    static mut st_backing_screen: *mut byte;
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -80,8 +81,7 @@ pub unsafe extern "C" fn STlib_init() {
         PU_STATIC as i32,
     ) as *mut patch_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_initNum(
+pub unsafe fn STlib_initNum(
     mut n: *mut st_number_t,
     mut x: i32,
     mut y: i32,
@@ -151,14 +151,12 @@ pub unsafe extern "C" fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: boo
         V_DrawPatch(x - 8 as i32, (*n).y, sttminus);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_updateNum(mut n: *mut st_number_t, mut refresh: boolean) {
+pub unsafe fn STlib_updateNum(mut n: *mut st_number_t, mut refresh: boolean) {
     if *(*n).on {
         STlib_drawNum(n, refresh);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_initPercent(
+pub unsafe fn STlib_initPercent(
     mut p: *mut st_percent_t,
     mut x: i32,
     mut y: i32,
@@ -170,8 +168,7 @@ pub unsafe extern "C" fn STlib_initPercent(
     STlib_initNum(&raw mut (*p).n, x, y, pl, num, on, 3 as i32);
     (*p).p = percent;
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_updatePercent(
+pub unsafe fn STlib_updatePercent(
     mut per: *mut st_percent_t,
     mut refresh: i32,
 ) {
@@ -180,8 +177,7 @@ pub unsafe extern "C" fn STlib_updatePercent(
     }
     STlib_updateNum(&raw mut (*per).n, refresh as boolean);
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_initMultIcon(
+pub unsafe fn STlib_initMultIcon(
     mut i: *mut st_multicon_t,
     mut x: i32,
     mut y: i32,
@@ -196,8 +192,7 @@ pub unsafe extern "C" fn STlib_initMultIcon(
     (*i).on = on;
     (*i).p = il;
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_updateMultIcon(
+pub unsafe fn STlib_updateMultIcon(
     mut mi: *mut st_multicon_t,
     mut refresh: boolean,
 ) {
@@ -226,8 +221,7 @@ pub unsafe extern "C" fn STlib_updateMultIcon(
         (*mi).oldinum = *(*mi).inum;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_initBinIcon(
+pub unsafe fn STlib_initBinIcon(
     mut b: *mut st_binicon_t,
     mut x: i32,
     mut y: i32,
@@ -242,8 +236,7 @@ pub unsafe extern "C" fn STlib_initBinIcon(
     (*b).on = on;
     (*b).p = i;
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_updateBinIcon(
+pub unsafe fn STlib_updateBinIcon(
     mut bi: *mut st_binicon_t,
     mut refresh: boolean,
 ) {

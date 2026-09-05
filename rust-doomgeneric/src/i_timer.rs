@@ -21,8 +21,7 @@ pub unsafe extern "C" fn I_GetTime() -> i32 {
     return ticks.wrapping_mul(TICRATE as uint32_t).wrapping_div(1000 as uint32_t)
         as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_GetTimeMS() -> i32 {
+pub unsafe fn I_GetTimeMS() -> i32 {
     let mut ticks: uint32_t = 0;
     ticks = I_GetTicks() as uint32_t;
     if basetime == 0 as uint32_t {
@@ -34,7 +33,5 @@ pub unsafe extern "C" fn I_GetTimeMS() -> i32 {
 pub unsafe extern "C" fn I_Sleep(mut ms: i32) {
     DG_SleepMs(ms as uint32_t);
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_WaitVBL(mut count: i32) {}
-#[no_mangle]
-pub unsafe extern "C" fn I_InitTimer() {}
+pub unsafe fn I_WaitVBL(mut count: i32) {}
+pub unsafe fn I_InitTimer() {}

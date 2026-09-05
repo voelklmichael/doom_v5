@@ -1,10 +1,25 @@
 use crate::src::i_system::FILE;
-use crate::src::p_maputl::{divline_t, intercept_t};
+use crate::src::p_maputl::{intercept_t};
 use crate::src::p_mobj::{sector_t, ST_VERTICAL, ST_HORIZONTAL, line_t, subsector_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::p_mobj::P_SpawnBlood;
+use crate::src::p_maputl::P_PointOnLineSide;
+use crate::src::p_maputl::P_BoxOnLineSide;
+use crate::src::p_maputl::opentop;
+use crate::src::p_maputl::openbottom;
+use crate::src::p_maputl::lowfloor;
+use crate::src::p_maputl::P_BlockLinesIterator;
+use crate::src::p_maputl::trace;
+use crate::src::p_maputl::P_PathTraverse;
+use crate::src::p_inter::P_TouchSpecialThing;
+use crate::src::p_spec::P_ShootSpecialLine;
+use crate::src::p_spec::P_CrossSpecialLine;
+use crate::src::p_sight::topslope;
+use crate::src::p_sight::bottomslope;
+
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -36,44 +51,19 @@ extern "C" {
     fn P_SubstNullMobj(th: *mut mobj_t) -> *mut mobj_t;
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn P_SpawnPuff(x: fixed_t, y: fixed_t, z: fixed_t);
-    fn P_SpawnBlood(x: fixed_t, y: fixed_t, z: fixed_t, damage: i32);
     fn P_AproxDistance(dx: fixed_t, dy: fixed_t) -> fixed_t;
-    fn P_PointOnLineSide(
-        x: fixed_t,
-        y: fixed_t,
-        line: *mut line_t,
-    ) -> i32;
-    fn P_BoxOnLineSide(tmbox: *mut fixed_t, ld: *mut line_t) -> i32;
-    static mut opentop: fixed_t;
-    static mut openbottom: fixed_t;
     static mut openrange: fixed_t;
-    static mut lowfloor: fixed_t;
     fn P_LineOpening(linedef: *mut line_t);
-    fn P_BlockLinesIterator(
-        x: i32,
-        y: i32,
-        func: Option<unsafe extern "C" fn(*mut line_t) -> boolean>,
-    ) -> boolean;
     fn P_BlockThingsIterator(
         x: i32,
         y: i32,
         func: Option<unsafe extern "C" fn(*mut mobj_t) -> boolean>,
-    ) -> boolean;
-    static mut trace: divline_t;
-    fn P_PathTraverse(
-        x1: fixed_t,
-        y1: fixed_t,
-        x2: fixed_t,
-        y2: fixed_t,
-        flags: i32,
-        trav: Option<unsafe extern "C" fn(*mut intercept_t) -> boolean>,
     ) -> boolean;
     fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
     fn P_CheckSight(t1: *mut mobj_t, t2: *mut mobj_t) -> boolean;
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
-    fn P_TouchSpecialThing(special: *mut mobj_t, toucher: *mut mobj_t);
     fn P_DamageMobj(
         target: *mut mobj_t,
         inflictor: *mut mobj_t,
@@ -85,18 +75,10 @@ extern "C" {
         line: *mut line_t,
         side: i32,
     ) -> boolean;
-    fn P_ShootSpecialLine(thing: *mut mobj_t, line: *mut line_t);
-    fn P_CrossSpecialLine(
-        linenum: i32,
-        side: i32,
-        thing: *mut mobj_t,
-    );
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemap: i32;
     static mut leveltime: i32;
     static mut skyflatnum: i32;
-    static mut topslope: fixed_t;
-    static mut bottomslope: fixed_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1546,20 +1528,15 @@ pub static mut tmflags: i32 = 0;
 pub static mut tmx: fixed_t = 0;
 #[no_mangle]
 pub static mut tmy: fixed_t = 0;
-#[no_mangle]
 pub static mut floatok: bool = false;
-#[no_mangle]
 pub static mut tmfloorz: fixed_t = 0;
 #[no_mangle]
 pub static mut tmceilingz: fixed_t = 0;
 #[no_mangle]
 pub static mut tmdropoffz: fixed_t = 0;
-#[no_mangle]
 pub static mut ceilingline: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
-#[no_mangle]
 pub static mut spechit: [*mut line_t; 20] = [::core::ptr::null::<line_t>()
     as *mut line_t; 20];
-#[no_mangle]
 pub static mut numspechit: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn PIT_StompThing(mut thing: *mut mobj_t) -> boolean {
@@ -2025,8 +2002,7 @@ pub unsafe extern "C" fn PTR_SlideTraverse(mut in_0: *mut intercept_t) -> boolea
     }
     return false_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SlideMove(mut mo: *mut mobj_t) {
+pub unsafe fn P_SlideMove(mut mo: *mut mobj_t) {
     let mut leadx: fixed_t = 0;
     let mut leady: fixed_t = 0;
     let mut trailx: fixed_t = 0;
@@ -2122,7 +2098,6 @@ pub static mut shootthing: *mut mobj_t = ::core::ptr::null::<mobj_t>() as *mut m
 pub static mut shootz: fixed_t = 0;
 #[no_mangle]
 pub static mut la_damage: i32 = 0;
-#[no_mangle]
 pub static mut attackrange: fixed_t = 0;
 #[no_mangle]
 pub static mut aimslope: fixed_t = 0;
@@ -2396,8 +2371,7 @@ pub unsafe extern "C" fn PTR_UseTraverse(mut in_0: *mut intercept_t) -> boolean 
     P_UseSpecialLine(usething, (*in_0).d.line, side);
     return false_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_UseLines(mut player: *mut player_t) {
+pub unsafe fn P_UseLines(mut player: *mut player_t) {
     let mut angle: i32 = 0;
     let mut x1: fixed_t = 0;
     let mut y1: fixed_t = 0;
@@ -2461,8 +2435,7 @@ pub unsafe extern "C" fn PIT_RadiusAttack(mut thing: *mut mobj_t) -> boolean {
     }
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_RadiusAttack(
+pub unsafe fn P_RadiusAttack(
     mut spot: *mut mobj_t,
     mut source: *mut mobj_t,
     mut damage: i32,
@@ -2539,8 +2512,7 @@ pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
     }
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ChangeSector(
+pub unsafe fn P_ChangeSector(
     mut sector: *mut sector_t,
     mut crunch: boolean,
 ) -> boolean {

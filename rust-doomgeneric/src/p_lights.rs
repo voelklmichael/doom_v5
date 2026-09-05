@@ -1,4 +1,7 @@
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
+use crate::src::p_spec::P_FindMinSurroundingLight;
+use crate::src::p_spec::getNextSector;
+
 extern "C" {
     fn Z_Malloc(
         size: i32,
@@ -13,11 +16,6 @@ extern "C" {
         line: *mut line_t,
         start: i32,
     ) -> i32;
-    fn P_FindMinSurroundingLight(
-        sector: *mut sector_t,
-        max: i32,
-    ) -> i32;
-    fn getNextSector(line: *mut line_t, sec: *mut sector_t) -> *mut sector_t;
 }
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;
@@ -1360,8 +1358,7 @@ pub unsafe extern "C" fn T_FireFlicker(mut flick: *mut fireflicker_t) {
     }
     (*flick).count = 4 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
+pub unsafe fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
     let mut flick: *mut fireflicker_t = ::core::ptr::null_mut::<fireflicker_t>();
     (*sector).special = 0 as i16;
     flick = Z_Malloc(
@@ -1396,8 +1393,7 @@ pub unsafe extern "C" fn T_LightFlash(mut flash: *mut lightflash_t) {
         (*flash).count = (P_Random() & (*flash).maxtime) + 1 as i32;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnLightFlash(mut sector: *mut sector_t) {
+pub unsafe fn P_SpawnLightFlash(mut sector: *mut sector_t) {
     let mut flash: *mut lightflash_t = ::core::ptr::null_mut::<lightflash_t>();
     (*sector).special = 0 as i16;
     flash = Z_Malloc(
@@ -1434,8 +1430,7 @@ pub unsafe extern "C" fn T_StrobeFlash(mut flash: *mut strobe_t) {
         (*flash).count = (*flash).darktime;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnStrobeFlash(
+pub unsafe fn P_SpawnStrobeFlash(
     mut sector: *mut sector_t,
     mut fastOrSlow: i32,
     mut inSync: i32,
@@ -1470,8 +1465,7 @@ pub unsafe extern "C" fn P_SpawnStrobeFlash(
         (*flash).count = 1 as i32;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_StartLightStrobing(mut line: *mut line_t) {
+pub unsafe fn EV_StartLightStrobing(mut line: *mut line_t) {
     let mut secnum: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     secnum = -(1 as i32);
@@ -1487,8 +1481,7 @@ pub unsafe extern "C" fn EV_StartLightStrobing(mut line: *mut line_t) {
         P_SpawnStrobeFlash(sec, SLOWDARK, 0 as i32);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_TurnTagLightsOff(mut line: *mut line_t) {
+pub unsafe fn EV_TurnTagLightsOff(mut line: *mut line_t) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut min: i32 = 0;
@@ -1574,8 +1567,7 @@ pub unsafe extern "C" fn T_Glow(mut g: *mut glow_t) {
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnGlowingLight(mut sector: *mut sector_t) {
+pub unsafe fn P_SpawnGlowingLight(mut sector: *mut sector_t) {
     let mut g: *mut glow_t = ::core::ptr::null_mut::<glow_t>();
     g = Z_Malloc(
         ::core::mem::size_of::<glow_t>() as i32,

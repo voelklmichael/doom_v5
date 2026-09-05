@@ -1,3 +1,5 @@
+
+use crate::src::i_video::I_ReadScreen;
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -10,7 +12,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn I_ReadScreen(scr: *mut byte);
     static mut I_VideoBuffer: *mut byte;
     fn V_DrawBlock(
         x: i32,
@@ -276,8 +277,7 @@ pub unsafe extern "C" fn wipe_exitMelt(
     Z_Free(wipe_scr_end as *mut ::core::ffi::c_void);
     return 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn wipe_StartScreen(
+pub unsafe fn wipe_StartScreen(
     mut x: i32,
     mut y_0: i32,
     mut width: i32,
@@ -291,8 +291,7 @@ pub unsafe extern "C" fn wipe_StartScreen(
     I_ReadScreen(wipe_scr_start);
     return 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn wipe_EndScreen(
+pub unsafe fn wipe_EndScreen(
     mut x: i32,
     mut y_0: i32,
     mut width: i32,
@@ -307,8 +306,7 @@ pub unsafe extern "C" fn wipe_EndScreen(
     V_DrawBlock(x, y_0, width, height, wipe_scr_start);
     return 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn wipe_ScreenWipe(
+pub unsafe fn wipe_ScreenWipe(
     mut wipeno: i32,
     mut x: i32,
     mut y_0: i32,

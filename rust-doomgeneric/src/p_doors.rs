@@ -1611,8 +1611,7 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoLockedDoor(
+pub unsafe fn EV_DoLockedDoor(
     mut line: *mut line_t,
     mut type_0: vldoor_e,
     mut thing: *mut mobj_t,
@@ -1922,8 +1921,7 @@ pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut 
     (*door).topheight = P_FindLowestCeilingSurrounding(sec);
     (*door).topheight -= 4 as i32 * FRACUNIT;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
+pub unsafe fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
     door = Z_Malloc(
         ::core::mem::size_of::<vldoor_t>() as i32,
@@ -1943,8 +1941,7 @@ pub unsafe extern "C" fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
     (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
     (*door).topcountdown = 30 as i32 * TICRATE;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnDoorRaiseIn5Mins(
+pub unsafe fn P_SpawnDoorRaiseIn5Mins(
     mut sec: *mut sector_t,
     mut secnum: i32,
 ) {

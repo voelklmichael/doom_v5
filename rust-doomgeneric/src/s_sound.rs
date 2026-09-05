@@ -2,38 +2,29 @@ use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t, actionf_t};
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::i_sound::I_ShutdownSound;
+use crate::src::i_sound::I_GetSfxLumpNum;
+use crate::src::i_sound::I_UpdateSoundParams;
+use crate::src::i_sound::I_StartSound;
+use crate::src::i_sound::I_StopSound;
+use crate::src::i_sound::I_SoundIsPlaying;
+use crate::src::i_sound::I_PrecacheSounds;
+use crate::src::i_sound::I_ShutdownMusic;
+use crate::src::i_sound::I_SetMusicVolume;
+use crate::src::i_sound::I_PauseSong;
+use crate::src::i_sound::I_ResumeSong;
+use crate::src::i_sound::I_RegisterSong;
+use crate::src::i_sound::I_UnRegisterSong;
+use crate::src::i_sound::I_PlaySong;
+use crate::src::i_sound::I_StopSong;
+use crate::src::i_sound::I_MusicIsPlaying;
+use crate::src::i_sound::snd_musicdevice;
+use crate::src::sounds::S_sfx;
+use crate::src::sounds::S_music;
+
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn I_ShutdownSound();
-    fn I_GetSfxLumpNum(sfxinfo: *mut sfxinfo_t) -> i32;
     fn I_UpdateSound();
-    fn I_UpdateSoundParams(
-        channel: i32,
-        vol: i32,
-        sep: i32,
-    );
-    fn I_StartSound(
-        sfxinfo: *mut sfxinfo_t,
-        channel: i32,
-        vol: i32,
-        sep: i32,
-    ) -> i32;
-    fn I_StopSound(channel: i32);
-    fn I_SoundIsPlaying(channel: i32) -> boolean;
-    fn I_PrecacheSounds(sounds: *mut sfxinfo_t, num_sounds: i32);
-    fn I_ShutdownMusic();
-    fn I_SetMusicVolume(volume: i32);
-    fn I_PauseSong();
-    fn I_ResumeSong();
-    fn I_RegisterSong(
-        data: *mut ::core::ffi::c_void,
-        len: i32,
-    ) -> *mut ::core::ffi::c_void;
-    fn I_UnRegisterSong(handle: *mut ::core::ffi::c_void);
-    fn I_PlaySong(handle: *mut ::core::ffi::c_void, looping: boolean);
-    fn I_StopSong();
-    fn I_MusicIsPlaying() -> boolean;
-    static mut snd_musicdevice: i32;
     fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
@@ -42,8 +33,6 @@ extern "C" {
     static mut gamemap: i32;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
-    static mut S_sfx: [sfxinfo_t; 0];
-    static mut S_music: [musicinfo_t; 0];
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
@@ -1576,7 +1565,6 @@ static mut snd_SfxVolume: i32 = 0;
 static mut mus_paused: bool = false;
 static mut mus_playing: *mut musicinfo_t = ::core::ptr::null::<musicinfo_t>()
     as *mut musicinfo_t;
-#[no_mangle]
 pub static mut snd_channels: i32 = 8 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn S_Init(
@@ -1673,8 +1661,7 @@ pub unsafe extern "C" fn S_Start() {
     }
     S_ChangeMusic(mnum, true_0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_StopSound(mut origin: *mut mobj_t) {
+pub unsafe fn S_StopSound(mut origin: *mut mobj_t) {
     let mut cnum: i32 = 0;
     cnum = 0 as i32;
     while cnum < snd_channels {
@@ -1833,22 +1820,19 @@ pub unsafe extern "C" fn S_StartSound(
     }
     (*channels.offset(cnum as isize)).handle = I_StartSound(sfx, cnum, volume, sep);
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_PauseSound() {
+pub unsafe fn S_PauseSound() {
     if !mus_playing.is_null() && !mus_paused {
         I_PauseSong();
         mus_paused = true;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_ResumeSound() {
+pub unsafe fn S_ResumeSound() {
     if !mus_playing.is_null() && mus_paused {
         I_ResumeSong();
         mus_paused = false;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_UpdateSounds(mut listener: *mut mobj_t) {
+pub unsafe fn S_UpdateSounds(mut listener: *mut mobj_t) {
     let mut audible: i32 = 0;
     let mut cnum: i32 = 0;
     let mut volume: i32 = 0;
@@ -1904,15 +1888,13 @@ pub unsafe extern "C" fn S_UpdateSounds(mut listener: *mut mobj_t) {
         cnum += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_SetMusicVolume(mut volume: i32) {
+pub unsafe fn S_SetMusicVolume(mut volume: i32) {
     if volume < 0 as i32 || volume > 127 as i32 {
         I_Error(&format!("Attempt to set music volume at {}", volume));
     }
     I_SetMusicVolume(volume);
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_SetSfxVolume(mut volume: i32) {
+pub unsafe fn S_SetSfxVolume(mut volume: i32) {
     if volume < 0 as i32 || volume > 127 as i32 {
         I_Error(&format!("Attempt to set sfx volume at {}", volume));
     }

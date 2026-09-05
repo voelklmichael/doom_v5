@@ -135,7 +135,6 @@ pub const sfx_None: C2RustUnnamed = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-#[no_mangle]
 pub static mut S_music: [musicinfo_t; 68] = [
     musicinfo_t {
         name: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
@@ -613,7 +612,6 @@ pub static mut S_music: [musicinfo_t; 68] = [
         handle: NULL,
     },
 ];
-#[no_mangle]
 pub static mut S_sfx: [sfxinfo_t; 109] = [sfxinfo_struct {
     tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
     name: [0; 9],

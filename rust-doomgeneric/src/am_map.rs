@@ -2,10 +2,25 @@ use crate::src::i_system::FILE;
 use crate::src::hu_lib::patch_t;
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::d_event::event_t;
-use crate::src::p_mobj::{sector_t, vertex_t, line_t, actionf_t};
+use crate::src::p_mobj::{sector_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_ReleaseLumpName};
+use crate::src::p_setup::numvertexes;
+use crate::src::p_setup::vertexes;
+use crate::src::m_controls::key_map_north;
+use crate::src::m_controls::key_map_south;
+use crate::src::m_controls::key_map_east;
+use crate::src::m_controls::key_map_west;
+use crate::src::m_controls::key_map_zoomin;
+use crate::src::m_controls::key_map_zoomout;
+use crate::src::m_controls::key_map_toggle;
+use crate::src::m_controls::key_map_maxzoom;
+use crate::src::m_controls::key_map_follow;
+use crate::src::m_controls::key_map_grid;
+use crate::src::m_controls::key_map_mark;
+use crate::src::m_controls::key_map_clearmark;
+
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -34,26 +49,12 @@ extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut I_VideoBuffer: *mut byte;
-    static mut numvertexes: i32;
-    static mut vertexes: *mut vertex_t;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     static mut numlines: i32;
     static mut lines: *mut line_t;
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
-    static mut key_map_north: i32;
-    static mut key_map_south: i32;
-    static mut key_map_east: i32;
-    static mut key_map_west: i32;
-    static mut key_map_zoomin: i32;
-    static mut key_map_zoomout: i32;
-    static mut key_map_toggle: i32;
-    static mut key_map_maxzoom: i32;
-    static mut key_map_follow: i32;
-    static mut key_map_grid: i32;
-    static mut key_map_mark: i32;
-    static mut key_map_clearmark: i32;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
@@ -2109,8 +2110,7 @@ pub unsafe extern "C" fn AM_maxOutWindowScale() {
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
     AM_activateNewScale();
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn AM_Responder(mut ev: *mut event_t) -> boolean {
     let mut rc: i32 = 0;
     static mut bigstate: i32 = 0 as i32;
     static mut buffer: [::core::ffi::c_char; 20] = [0; 20];
@@ -2315,8 +2315,7 @@ pub unsafe extern "C" fn AM_updateLightLev() {
         nexttic = amclock + 6 as i32 - amclock % 6 as i32;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Ticker() {
+pub unsafe fn AM_Ticker() {
     if !automapactive {
         return;
     }
@@ -2847,8 +2846,7 @@ pub unsafe extern "C" fn AM_drawCrosshair(mut color: i32) {
             (f_w * (f_h + 1 as i32) / 2 as i32) as isize,
         ) = color as byte;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Drawer() {
+pub unsafe fn AM_Drawer() {
     if !automapactive {
         return;
     }

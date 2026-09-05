@@ -283,8 +283,7 @@ pub unsafe extern "C" fn D_IsEpisodeMap(mut mission: GameMission_t) -> bool {
         9 | 7 | 1 | 5 | 2 | 3 | 8 | _ => return false,
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_GameMissionString(
+pub unsafe fn D_GameMissionString(
     mut mission: GameMission_t,
 ) -> *mut ::core::ffi::c_char {
     match mission as u32 {

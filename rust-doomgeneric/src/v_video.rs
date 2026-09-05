@@ -2,6 +2,11 @@ use crate::src::r_data::column_t;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
+use crate::src::i_video::mouse_acceleration;
+use crate::src::i_video::mouse_threshold;
+use crate::src::m_misc::M_FileExists;
+use crate::src::i_video::usemouse;
+
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -19,8 +24,6 @@ extern "C" {
         g: i32,
         b: i32,
     ) -> i32;
-    static mut mouse_acceleration: f32;
-    static mut mouse_threshold: i32;
     static mut I_VideoBuffer: *mut byte;
     fn M_AddToBox(box_0: *mut fixed_t, x: fixed_t, y: fixed_t);
     fn M_WriteFile(
@@ -28,7 +31,6 @@ extern "C" {
         source: *mut ::core::ffi::c_void,
         length: i32,
     ) -> boolean;
-    fn M_FileExists(file: *mut ::core::ffi::c_char) -> boolean;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
@@ -818,11 +820,7 @@ pub unsafe extern "C" fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
 }
 pub const MOUSE_SPEED_BOX_WIDTH: i32 = 120 as i32;
 pub const MOUSE_SPEED_BOX_HEIGHT: i32 = 9 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawMouseSpeedBox(mut speed: i32) {
-    extern "C" {
-        static mut usemouse: i32;
-    }
+pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
     let mut bgcolor: i32 = 0;
     let mut bordercolor: i32 = 0;
     let mut red: i32 = 0;

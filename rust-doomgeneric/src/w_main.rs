@@ -1,9 +1,8 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::w_file::wad_file_t;
+use crate::src::d_iwad::D_TryFindWADByName;
+
 extern "C" {
-    fn D_TryFindWADByName(
-        filename: *mut ::core::ffi::c_char,
-    ) -> *mut ::core::ffi::c_char;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn W_AddFile(filename: *mut ::core::ffi::c_char) -> *mut wad_file_t;
 }
@@ -14,8 +13,7 @@ pub type boolean = u32;
 pub type byte = uint8_t;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn W_ParseCommandLine() -> boolean {
+pub unsafe fn W_ParseCommandLine() -> boolean {
     let mut modifiedgame: boolean = false_0 as boolean;
     let mut p: i32 = 0;
     p = M_CheckParmWithArgs("-file", 1 as i32);

@@ -2,6 +2,8 @@ use crate::src::r_defs::{node_t, seg_t};
 use crate::src::p_mobj::{sector_t, vertex_t, line_t, subsector_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
+use crate::src::p_setup::rejectmatrix;
+
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
@@ -13,7 +15,6 @@ extern "C" {
     static mut numnodes: i32;
     static mut nodes: *mut node_t;
     static mut validcount: i32;
-    static mut rejectmatrix: *mut byte;
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -1305,9 +1306,7 @@ pub const ML_TWOSIDED: i32 = 4 as i32;
 pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
 #[no_mangle]
 pub static mut sightzstart: fixed_t = 0;
-#[no_mangle]
 pub static mut topslope: fixed_t = 0;
-#[no_mangle]
 pub static mut bottomslope: fixed_t = 0;
 #[no_mangle]
 pub static mut strace: divline_t = divline_t {

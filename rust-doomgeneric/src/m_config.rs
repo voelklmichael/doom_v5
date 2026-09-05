@@ -1,5 +1,7 @@
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_misc::M_MakeDirectory;
+
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn sscanf(
@@ -14,7 +16,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
     ) -> i32;
     fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
-    fn M_MakeDirectory(dir: *mut ::core::ffi::c_char);
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }
 pub type size_t = usize;
@@ -1890,8 +1891,7 @@ unsafe extern "C" fn SetVariable(
     };
 }
 unsafe extern "C" fn LoadDefaultCollection(mut collection: *mut default_collection_t) {}
-#[no_mangle]
-pub unsafe extern "C" fn M_SetConfigFilenames(
+pub unsafe fn M_SetConfigFilenames(
     mut main_config: *mut ::core::ffi::c_char,
     mut extra_config: *mut ::core::ffi::c_char,
 ) {
@@ -2024,8 +2024,7 @@ unsafe extern "C" fn GetDefaultConfigDir() -> *mut ::core::ffi::c_char {
         as ::core::ffi::c_char;
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_SetConfigDir(mut dir: *mut ::core::ffi::c_char) {
+pub unsafe fn M_SetConfigDir(mut dir: *mut ::core::ffi::c_char) {
     if !dir.is_null() {
         configdir = dir;
     } else {
@@ -2042,8 +2041,7 @@ pub unsafe extern "C" fn M_SetConfigDir(mut dir: *mut ::core::ffi::c_char) {
     }
     M_MakeDirectory(configdir);
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_GetSaveGameDir(
+pub unsafe fn M_GetSaveGameDir(
     mut iwadname: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<

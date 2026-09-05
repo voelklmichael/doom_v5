@@ -26,13 +26,11 @@ static mut events: [event_t; 64] = [event_t {
 }; 64];
 static mut eventhead: i32 = 0;
 static mut eventtail: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn D_PostEvent(mut ev: *mut event_t) {
+pub unsafe fn D_PostEvent(mut ev: *mut event_t) {
     events[eventhead as usize] = *ev;
     eventhead = (eventhead + 1 as i32) % MAXEVENTS;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_PopEvent() -> *mut event_t {
+pub unsafe fn D_PopEvent() -> *mut event_t {
     let mut result: *mut event_t = ::core::ptr::null_mut::<event_t>();
     if eventtail == eventhead {
         return ::core::ptr::null_mut::<event_t>();

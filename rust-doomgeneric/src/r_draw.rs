@@ -1,6 +1,8 @@
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::r_main::centery;
+
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -15,7 +17,6 @@ extern "C" {
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     static mut I_VideoBuffer: *mut byte;
     static mut colormaps: *mut lighttable_t;
-    static mut centery: i32;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     fn V_MarkRect(
         x: i32,
@@ -329,9 +330,7 @@ pub unsafe extern "C" fn R_DrawFuzzColumnLow() {
         }
     };
 }
-#[no_mangle]
 pub static mut dc_translation: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
 pub static mut translationtables: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawTranslatedColumn() {
@@ -413,8 +412,7 @@ pub unsafe extern "C" fn R_DrawTranslatedColumnLow() {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitTranslationTables() {
+pub unsafe fn R_InitTranslationTables() {
     let mut i: i32 = 0;
     translationtables = Z_Malloc(
         256 as i32 * 3 as i32,
@@ -442,24 +440,15 @@ pub unsafe extern "C" fn R_InitTranslationTables() {
         i += 1;
     }
 }
-#[no_mangle]
 pub static mut ds_y: i32 = 0;
-#[no_mangle]
 pub static mut ds_x1: i32 = 0;
-#[no_mangle]
 pub static mut ds_x2: i32 = 0;
-#[no_mangle]
 pub static mut ds_colormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
-#[no_mangle]
 pub static mut ds_xfrac: fixed_t = 0;
-#[no_mangle]
 pub static mut ds_yfrac: fixed_t = 0;
-#[no_mangle]
 pub static mut ds_xstep: fixed_t = 0;
-#[no_mangle]
 pub static mut ds_ystep: fixed_t = 0;
-#[no_mangle]
 pub static mut ds_source: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut dscount: i32 = 0;
@@ -546,8 +535,7 @@ pub unsafe extern "C" fn R_DrawSpanLow() {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitBuffer(
+pub unsafe fn R_InitBuffer(
     mut width: i32,
     mut height: i32,
 ) {
@@ -703,8 +691,7 @@ pub unsafe extern "C" fn R_FillBackScreen() {
     );
     V_RestoreBuffer();
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_VideoErase(
+pub unsafe fn R_VideoErase(
     mut ofs: u32,
     mut count: i32,
 ) {
@@ -716,8 +703,7 @@ pub unsafe extern "C" fn R_VideoErase(
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawViewBorder() {
+pub unsafe fn R_DrawViewBorder() {
     let mut top: i32 = 0;
     let mut side: i32 = 0;
     let mut ofs: i32 = 0;

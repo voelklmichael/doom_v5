@@ -1,7 +1,6 @@
 use crate::src::m_argv::M_CheckParm;
-extern "C" {
-    static mut stdc_wad_file: wad_file_class_t;
-}
+use crate::src::w_file_stdc::stdc_wad_file;
+
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -36,8 +35,7 @@ pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
 static mut wad_file_classes: [*mut wad_file_class_t; 1] = unsafe {
     [&raw const stdc_wad_file as *mut wad_file_class_t]
 };
-#[no_mangle]
-pub unsafe extern "C" fn W_OpenFile(
+pub unsafe fn W_OpenFile(
     mut path: *mut ::core::ffi::c_char,
 ) -> *mut wad_file_t {
     let mut result: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();

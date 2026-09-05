@@ -1,3 +1,5 @@
+
+use crate::src::r_draw::R_VideoErase;
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn toupper(__c: i32) -> i32;
@@ -10,7 +12,6 @@ extern "C" {
     static mut viewheight: i32;
     static mut viewwindowx: i32;
     static mut viewwindowy: i32;
-    fn R_VideoErase(ofs: u32, count: i32);
     static mut automapactive: bool;
 }
 pub type __int32_t = i32;

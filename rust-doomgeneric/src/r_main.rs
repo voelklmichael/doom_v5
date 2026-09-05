@@ -1,6 +1,24 @@
 use crate::src::r_defs::{node_t, seg_t};
 use crate::src::p_mobj::{subsector_t, actionf_t};
 use crate::src::d_player::{player_t};
+use crate::src::tables::SlopeDiv;
+use crate::src::r_segs::walllights;
+use crate::src::r_data::R_InitData;
+use crate::src::r_segs::rw_distance;
+use crate::src::r_segs::rw_normalangle;
+use crate::src::r_bsp::R_ClearClipSegs;
+use crate::src::r_bsp::R_ClearDrawSegs;
+use crate::src::r_bsp::R_RenderBSPNode;
+use crate::src::r_plane::yslope;
+use crate::src::r_plane::distscale;
+use crate::src::r_plane::R_InitPlanes;
+use crate::src::r_plane::R_ClearPlanes;
+use crate::src::r_things::pspritescale;
+use crate::src::r_things::R_ClearSprites;
+use crate::src::r_draw::R_InitBuffer;
+use crate::src::r_draw::R_InitTranslationTables;
+use crate::src::r_sky::R_InitSkyMap;
+
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -13,12 +31,6 @@ extern "C" {
     static mut finecosine: *const fixed_t;
     static finetangent: [fixed_t; 4096];
     static tantoangle: [angle_t; 2049];
-    fn SlopeDiv(
-        num: u32,
-        den: u32,
-    ) -> i32;
-    static mut walllights: *mut *mut lighttable_t;
-    fn R_InitData();
     static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut scaledviewwidth: i32;
@@ -26,20 +38,9 @@ extern "C" {
     static mut subsectors: *mut subsector_t;
     static mut numnodes: i32;
     static mut nodes: *mut node_t;
-    static mut rw_distance: fixed_t;
-    static mut rw_normalangle: angle_t;
-    fn R_ClearClipSegs();
-    fn R_ClearDrawSegs();
-    fn R_RenderBSPNode(bspnum: i32);
-    static mut yslope: [fixed_t; 200];
-    static mut distscale: [fixed_t; 320];
-    fn R_InitPlanes();
-    fn R_ClearPlanes();
     fn R_DrawPlanes();
     static mut screenheightarray: [i16; 320];
-    static mut pspritescale: fixed_t;
     static mut pspriteiscale: fixed_t;
-    fn R_ClearSprites();
     fn R_DrawMasked();
     fn R_DrawColumn();
     fn R_DrawColumnLow();
@@ -49,9 +50,6 @@ extern "C" {
     fn R_DrawTranslatedColumnLow();
     fn R_DrawSpan();
     fn R_DrawSpanLow();
-    fn R_InitBuffer(width: i32, height: i32);
-    fn R_InitTranslationTables();
-    fn R_InitSkyMap();
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -1353,17 +1351,14 @@ pub static mut fixedcolormap: *mut lighttable_t = ::core::ptr::null::<lighttable
     as *mut lighttable_t;
 #[no_mangle]
 pub static mut centerx: i32 = 0;
-#[no_mangle]
 pub static mut centery: i32 = 0;
 #[no_mangle]
 pub static mut centerxfrac: fixed_t = 0;
 #[no_mangle]
 pub static mut centeryfrac: fixed_t = 0;
-#[no_mangle]
 pub static mut projection: fixed_t = 0;
 #[no_mangle]
 pub static mut framecount: i32 = 0;
-#[no_mangle]
 pub static mut sscount: i32 = 0;
 #[no_mangle]
 pub static mut linecount: i32 = 0;
@@ -1377,18 +1372,13 @@ pub static mut viewy: fixed_t = 0;
 pub static mut viewz: fixed_t = 0;
 #[no_mangle]
 pub static mut viewangle: angle_t = 0;
-#[no_mangle]
 pub static mut viewcos: fixed_t = 0;
-#[no_mangle]
 pub static mut viewsin: fixed_t = 0;
-#[no_mangle]
 pub static mut viewplayer: *mut player_t = ::core::ptr::null::<player_t>()
     as *mut player_t;
 #[no_mangle]
 pub static mut detailshift: i32 = 0;
-#[no_mangle]
 pub static mut clipangle: angle_t = 0;
-#[no_mangle]
 pub static mut viewangletox: [i32; 4096] = [0; 4096];
 #[no_mangle]
 pub static mut xtoviewangle: [angle_t; 321] = [0; 321];
@@ -1400,7 +1390,6 @@ pub static mut scalelight: [[*mut lighttable_t; 48]; 16] = [[::core::ptr::null::
 pub static mut scalelightfixed: [*mut lighttable_t; 48] = [::core::ptr::null::<
     lighttable_t,
 >() as *mut lighttable_t; 48];
-#[no_mangle]
 pub static mut zlight: [[*mut lighttable_t; 128]; 16] = [[::core::ptr::null::<
     lighttable_t,
 >() as *mut lighttable_t; 128]; 16];
@@ -1408,13 +1397,9 @@ pub static mut zlight: [[*mut lighttable_t; 128]; 16] = [[::core::ptr::null::<
 pub static mut extralight: i32 = 0;
 #[no_mangle]
 pub static mut colfunc: Option<unsafe extern "C" fn() -> ()> = None;
-#[no_mangle]
 pub static mut basecolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-#[no_mangle]
 pub static mut fuzzcolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-#[no_mangle]
 pub static mut transcolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-#[no_mangle]
 pub static mut spanfunc: Option<unsafe extern "C" fn() -> ()> = None;
 #[no_mangle]
 pub unsafe extern "C" fn R_AddPointToBox(
@@ -1435,8 +1420,7 @@ pub unsafe extern "C" fn R_AddPointToBox(
         *box_0.offset(BOXTOP as i32 as isize) = y as fixed_t;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointOnSide(
+pub unsafe fn R_PointOnSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut node: *mut node_t,
@@ -1476,8 +1460,7 @@ pub unsafe extern "C" fn R_PointOnSide(
     }
     return 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointOnSegSide(
+pub unsafe fn R_PointOnSegSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut line: *mut seg_t,
@@ -1619,8 +1602,7 @@ pub unsafe extern "C" fn R_PointToAngle2(
     viewy = y1;
     return R_PointToAngle(x2, y2);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
+pub unsafe fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
     let mut angle: i32 = 0;
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
@@ -1646,8 +1628,7 @@ pub unsafe extern "C" fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_InitPointToAngle() {}
-#[no_mangle]
-pub unsafe extern "C" fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
+pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
     let mut scale: fixed_t = 0;
     let mut anglea: angle_t = 0;
     let mut angleb: angle_t = 0;
@@ -1766,8 +1747,7 @@ pub static mut setsizeneeded: bool = false;
 pub static mut setblocks: i32 = 0;
 #[no_mangle]
 pub static mut setdetail: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_SetViewSize(
+pub unsafe fn R_SetViewSize(
     mut blocks: i32,
     mut detail: i32,
 ) {
@@ -1937,8 +1917,7 @@ pub unsafe extern "C" fn R_SetupFrame(mut player: *mut player_t) {
     framecount += 1;
     validcount += 1;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_RenderPlayerView(mut player: *mut player_t) {
+pub unsafe fn R_RenderPlayerView(mut player: *mut player_t) {
     R_SetupFrame(player);
     R_ClearClipSegs();
     R_ClearDrawSegs();

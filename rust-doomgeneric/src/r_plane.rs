@@ -1,6 +1,20 @@
 use crate::src::r_defs::{drawseg_t, visplane_t};
 use crate::src::p_mobj::{actionf_t};
 use crate::src::i_system::I_Error;
+use crate::src::r_data::firstflat;
+use crate::src::r_main::zlight;
+use crate::src::r_main::spanfunc;
+use crate::src::r_draw::ds_y;
+use crate::src::r_draw::ds_x1;
+use crate::src::r_draw::ds_x2;
+use crate::src::r_draw::ds_colormap;
+use crate::src::r_draw::ds_xfrac;
+use crate::src::r_draw::ds_yfrac;
+use crate::src::r_draw::ds_xstep;
+use crate::src::r_draw::ds_ystep;
+use crate::src::r_draw::ds_source;
+use crate::src::r_sky::skytexturemid;
+
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn W_CacheLumpNum(
@@ -21,7 +35,6 @@ extern "C" {
     static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut firstflat: i32;
     static mut flattranslation: *mut i32;
     static mut viewx: fixed_t;
     static mut viewy: fixed_t;
@@ -30,12 +43,10 @@ extern "C" {
     static mut xtoviewangle: [angle_t; 321];
     fn R_GetColumn(tex: i32, col: i32) -> *mut byte;
     static mut centerxfrac: fixed_t;
-    static mut zlight: [[*mut lighttable_t; 128]; 16];
     static mut extralight: i32;
     static mut fixedcolormap: *mut lighttable_t;
     static mut detailshift: i32;
     static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
-    static mut spanfunc: Option<unsafe extern "C" fn() -> ()>;
     static mut drawsegs: [drawseg_t; 256];
     static mut ds_p: *mut drawseg_t;
     static mut pspriteiscale: fixed_t;
@@ -46,17 +57,7 @@ extern "C" {
     static mut dc_iscale: fixed_t;
     static mut dc_texturemid: fixed_t;
     static mut dc_source: *mut byte;
-    static mut ds_y: i32;
-    static mut ds_x1: i32;
-    static mut ds_x2: i32;
-    static mut ds_colormap: *mut lighttable_t;
-    static mut ds_xfrac: fixed_t;
-    static mut ds_yfrac: fixed_t;
-    static mut ds_xstep: fixed_t;
-    static mut ds_ystep: fixed_t;
-    static mut ds_source: *mut byte;
     static mut skytexture: i32;
-    static mut skytexturemid: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1384,13 +1385,10 @@ pub static mut ceilingplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
     as *mut visplane_t;
 #[no_mangle]
 pub static mut openings: [i16; 20480] = [0; 20480];
-#[no_mangle]
 pub static mut lastopening: *mut i16 = ::core::ptr::null::<
     i16,
 >() as *mut i16;
-#[no_mangle]
 pub static mut floorclip: [i16; 320] = [0; 320];
-#[no_mangle]
 pub static mut ceilingclip: [i16; 320] = [0; 320];
 #[no_mangle]
 pub static mut spanstart: [i32; 200] = [0; 200];
@@ -1402,9 +1400,7 @@ pub static mut planezlight: *mut *mut lighttable_t = ::core::ptr::null::<
 >() as *mut *mut lighttable_t;
 #[no_mangle]
 pub static mut planeheight: fixed_t = 0;
-#[no_mangle]
 pub static mut yslope: [fixed_t; 200] = [0; 200];
-#[no_mangle]
 pub static mut distscale: [fixed_t; 320] = [0; 320];
 #[no_mangle]
 pub static mut basexscale: fixed_t = 0;
@@ -1418,8 +1414,7 @@ pub static mut cacheddistance: [fixed_t; 200] = [0; 200];
 pub static mut cachedxstep: [fixed_t; 200] = [0; 200];
 #[no_mangle]
 pub static mut cachedystep: [fixed_t; 200] = [0; 200];
-#[no_mangle]
-pub unsafe extern "C" fn R_InitPlanes() {}
+pub unsafe fn R_InitPlanes() {}
 #[no_mangle]
 pub unsafe extern "C" fn R_MapPlane(
     mut y: i32,
@@ -1464,8 +1459,7 @@ pub unsafe extern "C" fn R_MapPlane(
     ds_x2 = x2;
     spanfunc.expect("non-null function pointer")();
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_ClearPlanes() {
+pub unsafe fn R_ClearPlanes() {
     let mut i: i32 = 0;
     let mut angle: angle_t = 0;
     i = 0 as i32;
@@ -1526,8 +1520,7 @@ pub unsafe extern "C" fn R_FindPlane(
     );
     return check;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_CheckPlane(
+pub unsafe fn R_CheckPlane(
     mut pl: *mut visplane_t,
     mut start: i32,
     mut stop: i32,

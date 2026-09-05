@@ -1,4 +1,5 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
+
 extern "C" {
     pub type FILE;
     fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
@@ -39,12 +40,6 @@ extern "C" {
         str: *const ::core::ffi::c_char,
         result: *mut i32,
     ) -> boolean;
-    fn M_vsnprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        args: ::core::ffi::VaList,
-    ) -> i32;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
@@ -88,8 +83,7 @@ pub unsafe extern "C" fn I_AtExit(mut func: atexit_func_t, mut run_on_error: boo
     (*entry).next = exit_funcs;
     exit_funcs = entry;
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_Tactile(
+pub unsafe fn I_Tactile(
     mut on: i32,
     mut off: i32,
     mut total: i32,
@@ -113,8 +107,7 @@ unsafe extern "C" fn AutoAllocMemory(
     }
     return zonemem;
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
+pub unsafe fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
     let mut zonemem: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut min_ram: i32 = 0;
     let mut default_ram: i32 = 0;
@@ -139,8 +132,7 @@ pub unsafe extern "C" fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
     );
     return zonemem;
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
+pub unsafe fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
     let mut spaces: i32 = (35 as size_t)
         .wrapping_sub(strlen(msg).wrapping_div(2 as size_t)) as i32;
@@ -151,8 +143,7 @@ pub unsafe extern "C" fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
     }
     puts(msg);
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_PrintDivider() {
+pub unsafe fn I_PrintDivider() {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < 75 as i32 {
@@ -161,8 +152,7 @@ pub unsafe extern "C" fn I_PrintDivider() {
     }
     putchar('\n' as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_PrintStartupBanner(
+pub unsafe fn I_PrintStartupBanner(
     mut gamedescription: *mut ::core::ffi::c_char,
 ) {
     I_PrintDivider();
@@ -174,8 +164,7 @@ pub unsafe extern "C" fn I_PrintStartupBanner(
     );
     I_PrintDivider();
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ConsoleStdout() -> boolean {
+pub unsafe fn I_ConsoleStdout() -> boolean {
     return 0 as boolean;
 }
 #[no_mangle]
@@ -340,8 +329,7 @@ static mut mem_dump_custom: [u8; 10] = [0; 10];
 static mut dos_mem_dump: *const u8 = unsafe {
     &raw const mem_dump_dos622 as *const u8
 };
-#[no_mangle]
-pub unsafe extern "C" fn I_GetMemoryValue(
+pub unsafe fn I_GetMemoryValue(
     mut offset: u32,
     mut value: *mut ::core::ffi::c_void,
     mut size: i32,

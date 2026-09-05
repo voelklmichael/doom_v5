@@ -1,5 +1,7 @@
 use crate::src::i_system::FILE;
 use crate::src::i_system::I_Error;
+use crate::src::i_system::I_ZoneBase;
+
 extern "C" {
     fn fprintf(
         __stream: *mut FILE,
@@ -7,7 +9,6 @@ extern "C" {
         ...
     ) -> i32;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn I_ZoneBase(size: *mut i32) -> *mut byte;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -205,8 +206,7 @@ pub unsafe extern "C" fn Z_Malloc(
     (*base).id = ZONEID;
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_FreeTags(
+pub unsafe fn Z_FreeTags(
     mut lowtag: i32,
     mut hightag: i32,
 ) {
