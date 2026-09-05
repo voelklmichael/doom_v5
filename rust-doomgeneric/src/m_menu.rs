@@ -1976,15 +1976,25 @@ pub static mut saveSlot: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut saveCharIndex: ::core::ffi::c_int = 0;
 #[no_mangle]
-pub static mut saveOldString: [::core::ffi::c_char; 24] = [0; 24];
+pub static mut saveOldString: String = String::new();
 #[no_mangle]
 pub static mut inhelpscreens: boolean = 0;
 #[no_mangle]
 pub static mut menuactive: boolean = 0;
 pub const SKULLXOFF: ::core::ffi::c_int = -(32 as ::core::ffi::c_int);
 pub const LINEHEIGHT: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-#[no_mangle]
-pub static mut savegamestrings: [[::core::ffi::c_char; 24]; 10] = [[0; 24]; 10];
+pub static mut savegamestrings: [String; 10] = [
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+];
 #[no_mangle]
 pub static mut endstring: [::core::ffi::c_char; 160] = [0; 160];
 #[no_mangle]
@@ -2596,22 +2606,18 @@ pub unsafe extern "C" fn M_ReadSaveStrings() {
             b"rb\0" as *const u8 as *const ::core::ffi::c_char,
         ) as *mut FILE;
         if handle.is_null() {
-            M_StringCopy(
-                &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                    .offset(i as isize) as *mut ::core::ffi::c_char,
-                EMPTYSTRING.as_ptr() as *const ::core::ffi::c_char,
-                SAVESTRINGSIZE as size_t,
-            );
+            savegamestrings[i as usize] = EMPTYSTRING.trim_end_matches('\0').to_string();
             LoadMenu[i as usize].status = 0 as ::core::ffi::c_short;
         } else {
+            let mut buf: [u8; 24] = [0; 24];
             fread(
-                (&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                    .offset(i as isize) as *mut [::core::ffi::c_char; 24]
-                    as *mut ::core::ffi::c_void,
+                buf.as_mut_ptr() as *mut ::core::ffi::c_void,
                 1 as size_t,
                 SAVESTRINGSIZE as size_t,
                 handle,
             );
+            let len = buf.iter().position(|&b| b == 0).unwrap_or(buf.len());
+            savegamestrings[i as usize] = String::from_utf8_lossy(&buf[..len]).into_owned();
             fclose(handle);
             LoadMenu[i as usize].status = 1 as ::core::ffi::c_short;
         }
@@ -2637,8 +2643,7 @@ pub unsafe extern "C" fn M_DrawLoad() {
         M_WriteText(
             LoadDef.x as ::core::ffi::c_int,
             LoadDef.y as ::core::ffi::c_int + LINEHEIGHT * i,
-            &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                .offset(i as isize) as *mut ::core::ffi::c_char,
+            &savegamestrings[i as usize],
         );
         i += 1;
     }
@@ -2720,30 +2725,24 @@ pub unsafe extern "C" fn M_DrawSave() {
         M_WriteText(
             LoadDef.x as ::core::ffi::c_int,
             LoadDef.y as ::core::ffi::c_int + LINEHEIGHT * i,
-            &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                .offset(i as isize) as *mut ::core::ffi::c_char,
+            &savegamestrings[i as usize],
         );
         i += 1;
     }
     if saveStringEnter != 0 {
-        i = M_StringWidth(
-            &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                .offset(saveSlot as isize) as *mut ::core::ffi::c_char,
-        );
+        i = M_StringWidth(&savegamestrings[saveSlot as usize]);
         M_WriteText(
             LoadDef.x as ::core::ffi::c_int + i,
             LoadDef.y as ::core::ffi::c_int + LINEHEIGHT * saveSlot,
-            b"_\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "_",
         );
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DoSave(mut slot: ::core::ffi::c_int) {
-    G_SaveGame(
-        slot,
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(slot as isize) as *mut ::core::ffi::c_char,
-    );
+    let name_cstring = ::std::ffi::CString::new(savegamestrings[slot as usize].as_str())
+        .unwrap();
+    G_SaveGame(slot, name_cstring.as_ptr() as *mut ::core::ffi::c_char);
     M_ClearMenus();
     if quickSaveSlot == -(2 as ::core::ffi::c_int) {
         quickSaveSlot = slot;
@@ -2753,25 +2752,11 @@ pub unsafe extern "C" fn M_DoSave(mut slot: ::core::ffi::c_int) {
 pub unsafe extern "C" fn M_SaveSelect(mut choice: ::core::ffi::c_int) {
     saveStringEnter = 1 as ::core::ffi::c_int;
     saveSlot = choice;
-    M_StringCopy(
-        &raw mut saveOldString as *mut ::core::ffi::c_char,
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(choice as isize) as *mut ::core::ffi::c_char,
-        SAVESTRINGSIZE as size_t,
-    );
-    if strcmp(
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(choice as isize) as *mut ::core::ffi::c_char,
-        EMPTYSTRING.as_ptr() as *const ::core::ffi::c_char,
-    ) == 0
-    {
-        savegamestrings[choice as usize][0 as ::core::ffi::c_int as usize] = 0
-            as ::core::ffi::c_char;
+    saveOldString = savegamestrings[choice as usize].clone();
+    if savegamestrings[choice as usize] == EMPTYSTRING.trim_end_matches('\0') {
+        savegamestrings[choice as usize].clear();
     }
-    saveCharIndex = strlen(
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(choice as isize) as *mut ::core::ffi::c_char,
-    ) as ::core::ffi::c_int;
+    saveCharIndex = savegamestrings[choice as usize].len() as ::core::ffi::c_int;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveGame(mut choice: ::core::ffi::c_int) {
@@ -2819,13 +2804,16 @@ pub unsafe extern "C" fn M_QuickSave() {
         quickSaveSlot = -(2 as ::core::ffi::c_int);
         return;
     }
+    let quicksave_name_cstring = ::std::ffi::CString::new(
+        savegamestrings[quickSaveSlot as usize].as_str(),
+    )
+        .unwrap();
     snprintf(
         &raw mut tempstring as *mut ::core::ffi::c_char,
         80 as size_t,
         b"quicksave over your game named\n\n'%s'?\n\npress y or n.\0" as *const u8
             as *const ::core::ffi::c_char,
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(quickSaveSlot as isize) as *mut ::core::ffi::c_char,
+        quicksave_name_cstring.as_ptr(),
     );
     M_StartMessage(
         &raw mut tempstring as *mut ::core::ffi::c_char,
@@ -2863,13 +2851,16 @@ pub unsafe extern "C" fn M_QuickLoad() {
         );
         return;
     }
+    let quickload_name_cstring = ::std::ffi::CString::new(
+        savegamestrings[quickSaveSlot as usize].as_str(),
+    )
+        .unwrap();
     snprintf(
         &raw mut tempstring as *mut ::core::ffi::c_char,
         80 as size_t,
         b"do you want to quickload the game named\n\n'%s'?\n\npress y or n.\0"
             as *const u8 as *const ::core::ffi::c_char,
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(quickSaveSlot as isize) as *mut ::core::ffi::c_char,
+        quickload_name_cstring.as_ptr(),
     );
     M_StartMessage(
         &raw mut tempstring as *mut ::core::ffi::c_char,
@@ -3462,119 +3453,51 @@ pub unsafe extern "C" fn M_StopMessage() {
     menuactive = messageLastMenuActive as boolean;
     messageToPrint = 0 as ::core::ffi::c_int;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringWidth(
-    mut string: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    let mut i: size_t = 0;
+pub unsafe fn M_StringWidth(string: &str) -> ::core::ffi::c_int {
     let mut w: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
     let mut c: ::core::ffi::c_int = 0;
-    i = 0 as size_t;
-    while i < strlen(string) {
-        c = ({
-            let mut __res: ::core::ffi::c_int = 0;
-            if ::core::mem::size_of::<::core::ffi::c_char>() as usize > 1 as usize {
-                if 0 != 0 {
-                    let mut __c: ::core::ffi::c_int = *string.offset(i as isize)
-                        as ::core::ffi::c_int;
-                    __res = (if __c < -(128 as ::core::ffi::c_int)
-                        || __c > 255 as ::core::ffi::c_int
-                    {
-                        __c as __int32_t
-                    } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
-                    }) as ::core::ffi::c_int;
-                } else {
-                    __res = toupper(*string.offset(i as isize) as ::core::ffi::c_int);
-                }
-            } else {
-                __res = *(*__ctype_toupper_loc())
-                    .offset(*string.offset(i as isize) as ::core::ffi::c_int as isize)
-                    as ::core::ffi::c_int;
-            }
-            __res
-        }) - HU_FONTSTART;
+    for b in string.bytes() {
+        c = toupper(b as ::core::ffi::c_int) - HU_FONTSTART;
         if c < 0 as ::core::ffi::c_int || c >= HU_FONTSIZE {
             w += 4 as ::core::ffi::c_int;
         } else {
             w += (*hu_font[c as usize]).width as ::core::ffi::c_int;
         }
-        i = i.wrapping_add(1);
     }
     return w;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringHeight(
-    mut string: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    let mut i: size_t = 0;
+pub unsafe fn M_StringHeight(string: &str) -> ::core::ffi::c_int {
     let mut h: ::core::ffi::c_int = 0;
-    let mut height: ::core::ffi::c_int = (*hu_font[0 as ::core::ffi::c_int as usize])
+    let height: ::core::ffi::c_int = (*hu_font[0 as ::core::ffi::c_int as usize])
         .height as ::core::ffi::c_int;
     h = height;
-    i = 0 as size_t;
-    while i < strlen(string) {
-        if *string.offset(i as isize) as ::core::ffi::c_int == '\n' as i32 {
+    for b in string.bytes() {
+        if b == b'\n' {
             h += height;
         }
-        i = i.wrapping_add(1);
     }
     return h;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_WriteText(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
-    mut string: *mut ::core::ffi::c_char,
-) {
+pub unsafe fn M_WriteText(x: ::core::ffi::c_int, y: ::core::ffi::c_int, string: &str) {
     let mut w: ::core::ffi::c_int = 0;
-    let mut ch: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
     let mut c: ::core::ffi::c_int = 0;
     let mut cx: ::core::ffi::c_int = 0;
     let mut cy: ::core::ffi::c_int = 0;
-    ch = string;
     cx = x;
     cy = y;
-    loop {
-        let fresh1 = ch;
-        ch = ch.offset(1);
-        c = *fresh1 as ::core::ffi::c_int;
-        if c == 0 {
-            break;
-        }
+    'outer: for b in string.bytes() {
+        c = b as ::core::ffi::c_int;
         if c == '\n' as i32 {
             cx = x;
             cy += 12 as ::core::ffi::c_int;
         } else {
-            c = ({
-                let mut __res: ::core::ffi::c_int = 0;
-                if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                    if 0 != 0 {
-                        let mut __c: ::core::ffi::c_int = c;
-                        __res = (if __c < -(128 as ::core::ffi::c_int)
-                            || __c > 255 as ::core::ffi::c_int
-                        {
-                            __c as __int32_t
-                        } else {
-                            *(*__ctype_toupper_loc()).offset(__c as isize)
-                        }) as ::core::ffi::c_int;
-                    } else {
-                        __res = toupper(c);
-                    }
-                } else {
-                    __res = *(*__ctype_toupper_loc()).offset(c as isize)
-                        as ::core::ffi::c_int;
-                }
-                __res
-            }) - HU_FONTSTART;
+            c = toupper(c) - HU_FONTSTART;
             if c < 0 as ::core::ffi::c_int || c >= HU_FONTSIZE {
                 cx += 4 as ::core::ffi::c_int;
             } else {
                 w = (*hu_font[c as usize]).width as ::core::ffi::c_int;
                 if cx + w > SCREENWIDTH {
-                    break;
+                    break 'outer;
                 }
                 V_DrawPatchDirect(cx, cy, hu_font[c as usize]);
                 cx += w;
@@ -3708,25 +3631,16 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
             KEY_BACKSPACE => {
                 if saveCharIndex > 0 as ::core::ffi::c_int {
                     saveCharIndex -= 1;
-                    savegamestrings[saveSlot as usize][saveCharIndex as usize] = 0
-                        as ::core::ffi::c_char;
+                    savegamestrings[saveSlot as usize].truncate(saveCharIndex as usize);
                 }
             }
             KEY_ESCAPE => {
                 saveStringEnter = 0 as ::core::ffi::c_int;
-                M_StringCopy(
-                    &raw mut *(&raw mut savegamestrings
-                        as *mut [::core::ffi::c_char; 24])
-                        .offset(saveSlot as isize) as *mut ::core::ffi::c_char,
-                    &raw mut saveOldString as *mut ::core::ffi::c_char,
-                    SAVESTRINGSIZE as size_t,
-                );
+                savegamestrings[saveSlot as usize] = saveOldString.clone();
             }
             KEY_ENTER => {
                 saveStringEnter = 0 as ::core::ffi::c_int;
-                if savegamestrings[saveSlot as usize][0 as ::core::ffi::c_int as usize]
-                    != 0
-                {
+                if !savegamestrings[saveSlot as usize].is_empty() {
                     M_DoSave(saveSlot);
                 }
             }
@@ -3762,20 +3676,12 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
                 {
                     if ch >= 32 as ::core::ffi::c_int && ch <= 127 as ::core::ffi::c_int
                         && saveCharIndex < SAVESTRINGSIZE - 1 as ::core::ffi::c_int
-                        && M_StringWidth(
-                            &raw mut *(&raw mut savegamestrings
-                                as *mut [::core::ffi::c_char; 24])
-                                .offset(saveSlot as isize) as *mut ::core::ffi::c_char,
-                        )
+                        && M_StringWidth(&savegamestrings[saveSlot as usize])
                             < (SAVESTRINGSIZE - 2 as ::core::ffi::c_int)
                                 * 8 as ::core::ffi::c_int
                     {
-                        let fresh0 = saveCharIndex;
-                        saveCharIndex = saveCharIndex + 1;
-                        savegamestrings[saveSlot as usize][fresh0 as usize] = ch
-                            as ::core::ffi::c_char;
-                        savegamestrings[saveSlot as usize][saveCharIndex as usize] = 0
-                            as ::core::ffi::c_char;
+                        saveCharIndex += 1;
+                        savegamestrings[saveSlot as usize].push(ch as u8 as char);
                     }
                 }
             }
@@ -4034,8 +3940,8 @@ pub unsafe extern "C" fn M_Drawer() {
     if messageToPrint != 0 {
         start = 0 as ::core::ffi::c_int;
         y = (SCREENHEIGHT / 2 as ::core::ffi::c_int
-            - M_StringHeight(messageString) / 2 as ::core::ffi::c_int)
-            as ::core::ffi::c_short;
+            - M_StringHeight(::std::ffi::CStr::from_ptr(messageString).to_str().unwrap())
+                / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
         while *messageString.offset(start as isize) as ::core::ffi::c_int != '\0' as i32
         {
             let mut foundnewline: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
@@ -4074,14 +3980,12 @@ pub unsafe extern "C" fn M_Drawer() {
                     .wrapping_add(strlen(&raw mut string as *mut ::core::ffi::c_char))
                     as ::core::ffi::c_int as ::core::ffi::c_int;
             }
+            let string_str = ::std::ffi::CStr::from_ptr(&raw mut string as *mut ::core::ffi::c_char)
+                .to_str()
+                .unwrap();
             x = (SCREENWIDTH / 2 as ::core::ffi::c_int
-                - M_StringWidth(&raw mut string as *mut ::core::ffi::c_char)
-                    / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
-            M_WriteText(
-                x as ::core::ffi::c_int,
-                y as ::core::ffi::c_int,
-                &raw mut string as *mut ::core::ffi::c_char,
-            );
+                - M_StringWidth(string_str) / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
+            M_WriteText(x as ::core::ffi::c_int, y as ::core::ffi::c_int, string_str);
             y = (y as ::core::ffi::c_int
                 + (*hu_font[0 as ::core::ffi::c_int as usize]).height
                     as ::core::ffi::c_int) as ::core::ffi::c_short;
