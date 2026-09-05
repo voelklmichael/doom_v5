@@ -1,3 +1,4 @@
+use crate::src::p_spec::{plat_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
@@ -1385,22 +1386,6 @@ pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct plat_t {
-    pub thinker: thinker_t,
-    pub sector: *mut sector_t,
-    pub speed: fixed_t,
-    pub low: fixed_t,
-    pub high: fixed_t,
-    pub wait: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
-    pub status: plat_e,
-    pub oldstatus: plat_e,
-    pub crush: boolean,
-    pub tag: ::core::ffi::c_int,
-    pub type_0: plattype_e,
-}
 pub type vldoor_e = ::core::ffi::c_uint;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;

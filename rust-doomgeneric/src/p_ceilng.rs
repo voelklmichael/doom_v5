@@ -1,3 +1,4 @@
+use crate::src::p_spec::{ceiling_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 extern "C" {
     fn Z_Malloc(
@@ -1313,20 +1314,6 @@ pub const crushAndRaise: ceiling_e = 3;
 pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ceiling_t {
-    pub thinker: thinker_t,
-    pub type_0: ceiling_e,
-    pub sector: *mut sector_t,
-    pub bottomheight: fixed_t,
-    pub topheight: fixed_t,
-    pub speed: fixed_t,
-    pub crush: boolean,
-    pub direction: ::core::ffi::c_int,
-    pub tag: ::core::ffi::c_int,
-    pub olddirection: ::core::ffi::c_int,
-}
 pub const crushed: result_e = 1;
 pub type result_e = ::core::ffi::c_uint;
 pub const pastdest: result_e = 2;

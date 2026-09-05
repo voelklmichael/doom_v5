@@ -1,3 +1,4 @@
+use crate::src::p_spec::{button_t};
 use crate::src::p_mobj::{sector_t, degenmobj_t, line_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
@@ -1318,15 +1319,6 @@ pub type bwhere_e = ::core::ffi::c_uint;
 pub const bottom: bwhere_e = 2;
 pub const middle: bwhere_e = 1;
 pub const top: bwhere_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct button_t {
-    pub line: *mut line_t,
-    pub where_0: bwhere_e,
-    pub btexture: ::core::ffi::c_int,
-    pub btimer: ::core::ffi::c_int,
-    pub soundorg: *mut degenmobj_t,
-}
 pub const sfx_swtchx: C2RustUnnamed = 24;
 pub const sfx_swtchn: C2RustUnnamed = 23;
 pub type vldoor_e = ::core::ffi::c_uint;

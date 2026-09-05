@@ -1,3 +1,4 @@
+use crate::src::p_spec::{plat_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::i_system::I_Error;
 extern "C" {
@@ -1335,22 +1336,6 @@ pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct plat_t {
-    pub thinker: thinker_t,
-    pub sector: *mut sector_t,
-    pub speed: fixed_t,
-    pub low: fixed_t,
-    pub high: fixed_t,
-    pub wait: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
-    pub status: plat_e,
-    pub oldstatus: plat_e,
-    pub crush: boolean,
-    pub tag: ::core::ffi::c_int,
-    pub type_0: plattype_e,
-}
 pub const sfx_pstart: C2RustUnnamed_0 = 18;
 pub const sfx_pstop: C2RustUnnamed_0 = 19;
 pub const pastdest: result_e = 2;
