@@ -1954,10 +1954,7 @@ pub static mut screenSize: ::core::ffi::c_int = 0;
 pub static mut quickSaveSlot: ::core::ffi::c_int = 0;
 #[no_mangle]
 pub static mut messageToPrint: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut messageString: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
+pub static mut messageString: String = String::new();
 #[no_mangle]
 pub static mut messx: ::core::ffi::c_int = 0;
 #[no_mangle]
@@ -2696,8 +2693,7 @@ pub unsafe extern "C" fn M_LoadSelect(mut choice: ::core::ffi::c_int) {
 pub unsafe extern "C" fn M_LoadGame(mut choice: ::core::ffi::c_int) {
     if netgame != 0 {
         M_StartMessage(
-            b"you can't do load while in a net game!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't do load while in a net game!\n\npress a key.",
             NULL,
             false_0 as boolean,
         );
@@ -2762,8 +2758,7 @@ pub unsafe extern "C" fn M_SaveSelect(mut choice: ::core::ffi::c_int) {
 pub unsafe extern "C" fn M_SaveGame(mut choice: ::core::ffi::c_int) {
     if usergame == 0 {
         M_StartMessage(
-            b"you can't save if you aren't playing!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't save if you aren't playing!\n\npress a key.",
             NULL,
             false_0 as boolean,
         );
@@ -2816,7 +2811,9 @@ pub unsafe extern "C" fn M_QuickSave() {
         quicksave_name_cstring.as_ptr(),
     );
     M_StartMessage(
-        &raw mut tempstring as *mut ::core::ffi::c_char,
+        ::std::ffi::CStr::from_ptr(&raw mut tempstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap(),
         ::core::mem::transmute::<
             Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
             *mut ::core::ffi::c_void,
@@ -2835,8 +2832,7 @@ pub unsafe extern "C" fn M_QuickLoadResponse(mut key: ::core::ffi::c_int) {
 pub unsafe extern "C" fn M_QuickLoad() {
     if netgame != 0 {
         M_StartMessage(
-            b"you can't quickload during a netgame!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't quickload during a netgame!\n\npress a key.",
             NULL,
             false_0 as boolean,
         );
@@ -2844,8 +2840,7 @@ pub unsafe extern "C" fn M_QuickLoad() {
     }
     if quickSaveSlot < 0 as ::core::ffi::c_int {
         M_StartMessage(
-            b"you haven't picked a quicksave slot yet!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you haven't picked a quicksave slot yet!\n\npress a key.",
             NULL,
             false_0 as boolean,
         );
@@ -2863,7 +2858,9 @@ pub unsafe extern "C" fn M_QuickLoad() {
         quickload_name_cstring.as_ptr(),
     );
     M_StartMessage(
-        &raw mut tempstring as *mut ::core::ffi::c_char,
+        ::std::ffi::CStr::from_ptr(&raw mut tempstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap(),
         ::core::mem::transmute::<
             Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
             *mut ::core::ffi::c_void,
@@ -3022,8 +3019,7 @@ pub unsafe extern "C" fn M_DrawNewGame() {
 pub unsafe extern "C" fn M_NewGame(mut choice: ::core::ffi::c_int) {
     if netgame != 0 && demoplayback == 0 {
         M_StartMessage(
-            b"you can't start a new game\nwhile in a network game.\n\npress a key.\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't start a new game\nwhile in a network game.\n\npress a key.",
             NULL,
             false_0 as boolean,
         );
@@ -3067,8 +3063,7 @@ pub unsafe extern "C" fn M_VerifyNightmare(mut key: ::core::ffi::c_int) {
 pub unsafe extern "C" fn M_ChooseSkill(mut choice: ::core::ffi::c_int) {
     if choice == nightmare as ::core::ffi::c_int {
         M_StartMessage(
-            b"are you sure? this skill level\nisn't even remotely fair.\n\npress y or n.\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "are you sure? this skill level\nisn't even remotely fair.\n\npress y or n.",
             ::core::mem::transmute::<
                 Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
                 *mut ::core::ffi::c_void,
@@ -3090,8 +3085,7 @@ pub unsafe extern "C" fn M_Episode(mut choice: ::core::ffi::c_int) {
         == shareware as ::core::ffi::c_int as ::core::ffi::c_uint && choice != 0
     {
         M_StartMessage(
-            b"this is the shareware version of doom.\n\nyou need to order the entire trilogy.\n\npress a key.\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "this is the shareware version of doom.\n\nyou need to order the entire trilogy.\n\npress a key.",
             NULL,
             false_0 as boolean,
         );
@@ -3187,16 +3181,14 @@ pub unsafe extern "C" fn M_EndGame(mut choice: ::core::ffi::c_int) {
     }
     if netgame != 0 {
         M_StartMessage(
-            b"you can't end a netgame!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't end a netgame!\n\npress a key.",
             NULL,
             false_0 as boolean,
         );
         return;
     }
     M_StartMessage(
-        b"are you sure you want to end the game?\n\npress y or n.\0" as *const u8
-            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "are you sure you want to end the game?\n\npress y or n.",
         ::core::mem::transmute::<
             Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
             *mut ::core::ffi::c_void,
@@ -3305,7 +3297,9 @@ pub unsafe extern "C" fn M_QuitDOOM(mut choice: ::core::ffi::c_int) {
         endmsg_cstring.as_ptr(),
     );
     M_StartMessage(
-        &raw mut endstring as *mut ::core::ffi::c_char,
+        ::std::ffi::CStr::from_ptr(&raw mut endstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap(),
         ::core::mem::transmute::<
             Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
             *mut ::core::ffi::c_void,
@@ -3432,15 +3426,14 @@ pub unsafe extern "C" fn M_DrawSelCell(
         ) as *mut patch_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StartMessage(
-    mut string: *mut ::core::ffi::c_char,
+pub unsafe fn M_StartMessage(
+    string: &str,
     mut routine: *mut ::core::ffi::c_void,
     mut input: boolean,
 ) {
     messageLastMenuActive = menuactive as ::core::ffi::c_int;
     messageToPrint = 1 as ::core::ffi::c_int;
-    messageString = string;
+    messageString = string.to_string();
     messageRoutine = ::core::mem::transmute::<
         *mut ::core::ffi::c_void,
         Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
@@ -3931,61 +3924,18 @@ pub unsafe extern "C" fn M_Drawer() {
     static mut y: ::core::ffi::c_short = 0;
     let mut i: ::core::ffi::c_uint = 0;
     let mut max: ::core::ffi::c_uint = 0;
-    let mut string: [::core::ffi::c_char; 80] = [0; 80];
     let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    let mut start: ::core::ffi::c_int = 0;
     inhelpscreens = false_0 as boolean;
     if messageToPrint != 0 {
-        start = 0 as ::core::ffi::c_int;
         y = (SCREENHEIGHT / 2 as ::core::ffi::c_int
-            - M_StringHeight(::std::ffi::CStr::from_ptr(messageString).to_str().unwrap())
-                / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
-        while *messageString.offset(start as isize) as ::core::ffi::c_int != '\0' as i32
-        {
-            let mut foundnewline: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-            i = 0 as ::core::ffi::c_uint;
-            while (i as size_t) < strlen(messageString.offset(start as isize)) {
-                if *messageString
-                    .offset((start as ::core::ffi::c_uint).wrapping_add(i) as isize)
-                    as ::core::ffi::c_int == '\n' as i32
-                {
-                    M_StringCopy(
-                        &raw mut string as *mut ::core::ffi::c_char,
-                        messageString.offset(start as isize),
-                        ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
-                    );
-                    if (i as usize)
-                        < ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as usize
-                    {
-                        string[i as usize] = '\0' as i32 as ::core::ffi::c_char;
-                    }
-                    foundnewline = 1 as ::core::ffi::c_int;
-                    start = (start as ::core::ffi::c_uint)
-                        .wrapping_add(i.wrapping_add(1 as ::core::ffi::c_uint))
-                        as ::core::ffi::c_int as ::core::ffi::c_int;
-                    break;
-                } else {
-                    i = i.wrapping_add(1);
-                }
-            }
-            if foundnewline == 0 {
-                M_StringCopy(
-                    &raw mut string as *mut ::core::ffi::c_char,
-                    messageString.offset(start as isize),
-                    ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
-                );
-                start = (start as size_t)
-                    .wrapping_add(strlen(&raw mut string as *mut ::core::ffi::c_char))
-                    as ::core::ffi::c_int as ::core::ffi::c_int;
-            }
-            let string_str = ::std::ffi::CStr::from_ptr(&raw mut string as *mut ::core::ffi::c_char)
-                .to_str()
-                .unwrap();
+            - M_StringHeight(&messageString) / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
+        for line in messageString.split('\n') {
+            let line = if line.len() > 79 { &line[..79] } else { line };
             x = (SCREENWIDTH / 2 as ::core::ffi::c_int
-                - M_StringWidth(string_str) / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
-            M_WriteText(x as ::core::ffi::c_int, y as ::core::ffi::c_int, string_str);
+                - M_StringWidth(line) / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
+            M_WriteText(x as ::core::ffi::c_int, y as ::core::ffi::c_int, line);
             y = (y as ::core::ffi::c_int
                 + (*hu_font[0 as ::core::ffi::c_int as usize]).height
                     as ::core::ffi::c_int) as ::core::ffi::c_short;
@@ -4056,7 +4006,7 @@ pub unsafe extern "C" fn M_Init() {
     skullAnimCounter = 10 as ::core::ffi::c_short;
     screenSize = screenblocks - 3 as ::core::ffi::c_int;
     messageToPrint = 0 as ::core::ffi::c_int;
-    messageString = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    messageString = String::new();
     messageLastMenuActive = menuactive as ::core::ffi::c_int;
     quickSaveSlot = -(1 as ::core::ffi::c_int);
     match gamemode as ::core::ffi::c_uint {
