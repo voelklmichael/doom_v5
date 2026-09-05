@@ -17,7 +17,7 @@ extern "C" {
     fn I_Sleep(ms: ::core::ffi::c_int);
     fn I_StartTic();
     static mut net_client_connected: bool;
-    static mut drone: boolean;
+    static mut drone: bool;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -169,7 +169,7 @@ unsafe extern "C" fn BuildNewTic() -> boolean {
         _,
         fn(),
     >((*loop_interface).RunMenu.expect("non-null function pointer"))();
-    if drone != 0 {
+    if drone {
         return false_0 as boolean;
     }
     if new_sync {
@@ -225,7 +225,7 @@ pub unsafe extern "C" fn NetUpdate() {
     }
 }
 unsafe extern "C" fn D_Disconnected() {
-    if drone != 0 {
+    if drone {
         I_Error("Disconnected from server in drone mode.");
     }
     printf(b"Disconnected from server.\n\0" as *const u8 as *const ::core::ffi::c_char);
@@ -242,7 +242,7 @@ pub unsafe extern "C" fn D_ReceiveTic(
     }
     i = 0 as ::core::ffi::c_int;
     while i < NET_MAXPLAYERS {
-        if !(drone == 0 && i == localplayer) {
+        if !(!drone && i == localplayer) {
             ticdata[(recvtic % BACKUPTICS) as usize].cmds[i as usize] = *ticcmds
                 .offset(i as isize);
             ticdata[(recvtic % BACKUPTICS) as usize].ingame[i as usize] = *players_mask
@@ -332,7 +332,7 @@ unsafe extern "C" fn PlayersInGame() -> boolean {
             i = i.wrapping_add(1);
         }
     }
-    if drone == 0 {
+    if !drone {
         result = true_0 as boolean;
     }
     return result;

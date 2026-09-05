@@ -73,7 +73,7 @@ extern "C" {
     static mut deathmatch: ::core::ffi::c_int;
     static mut viewactive: boolean;
     static mut consoleplayer: ::core::ffi::c_int;
-    static mut singledemo: boolean;
+    static mut singledemo: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
 }
@@ -2764,7 +2764,7 @@ pub unsafe extern "C" fn AM_drawPlayers() {
     while i < MAXPLAYERS {
         their_color += 1;
         p = (&raw mut players as *mut player_t).offset(i as isize) as *mut player_t;
-        if !(deathmatch != 0 && singledemo == 0 && p != plr) {
+        if !(deathmatch != 0 && !singledemo && p != plr) {
             if !(playeringame[i as usize] == 0) {
                 if (*p).powers[pw_invisibility as ::core::ffi::c_int as usize] != 0 {
                     color = 246 as ::core::ffi::c_int;

@@ -7,8 +7,8 @@ extern "C" {
     fn P_RespawnSpecials();
     fn P_UpdateSpecials();
     static mut netgame: boolean;
-    static mut menuactive: boolean;
-    static mut paused: boolean;
+    static mut menuactive: bool;
+    static mut paused: bool;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut demoplayback: boolean;
     static mut players: [player_t; 4];
@@ -1344,10 +1344,10 @@ pub unsafe extern "C" fn P_RunThinkers() {
 #[no_mangle]
 pub unsafe extern "C" fn P_Ticker() {
     let mut i: ::core::ffi::c_int = 0;
-    if paused != 0 {
+    if paused {
         return;
     }
-    if netgame == 0 && menuactive != 0 && demoplayback == 0
+    if netgame == 0 && menuactive && demoplayback == 0
         && players[consoleplayer as usize].viewz != 1 as ::core::ffi::c_int
     {
         return;

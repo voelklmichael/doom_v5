@@ -50,25 +50,25 @@ extern "C" {
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut gamedescription: *mut ::core::ffi::c_char;
-    static mut modifiedgame: boolean;
+    static mut modifiedgame: bool;
     static mut timelimit: ::core::ffi::c_int;
     static mut netgame: boolean;
     static mut deathmatch: ::core::ffi::c_int;
     static mut sfxVolume: ::core::ffi::c_int;
     static mut musicVolume: ::core::ffi::c_int;
     static mut automapactive: boolean;
-    static mut menuactive: boolean;
-    static mut paused: boolean;
+    static mut menuactive: bool;
+    static mut paused: bool;
     static mut viewactive: boolean;
     static mut nodrawers: bool;
-    static mut testcontrols: boolean;
+    static mut testcontrols: bool;
     static mut testcontrols_mousespeed: ::core::ffi::c_int;
     static mut consoleplayer: ::core::ffi::c_int;
     static mut displayplayer: ::core::ffi::c_int;
-    static mut usergame: boolean;
+    static mut usergame: bool;
     static mut demoplayback: boolean;
-    static mut demorecording: boolean;
-    static mut singledemo: boolean;
+    static mut demorecording: bool;
+    static mut singledemo: bool;
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     static mut mouseSensitivity: ::core::ffi::c_int;
@@ -179,7 +179,7 @@ extern "C" {
     fn I_StartFrame();
     fn I_EnableLoadingDisk();
     static mut screenvisible: bool;
-    static mut screensaver_mode: boolean;
+    static mut screensaver_mode: bool;
     fn G_InitNew(skill: skill_t, episode: ::core::ffi::c_int, map: ::core::ffi::c_int);
     fn G_DeferedPlayDemo(demo: *mut ::core::ffi::c_char);
     fn G_LoadGame(name: *mut ::core::ffi::c_char);
@@ -199,7 +199,7 @@ extern "C" {
     fn ST_Drawer(fullscreen: boolean, refresh: boolean);
     fn ST_Init();
     fn AM_Drawer();
-    static mut drone: boolean;
+    static mut drone: bool;
     fn P_Init();
     static mut scaledviewwidth: ::core::ffi::c_int;
     static mut viewheight: ::core::ffi::c_int;
@@ -214,7 +214,7 @@ extern "C" {
     static mut inhelpscreens: bool;
     fn D_ConnectNetGame();
     fn D_CheckNetGame();
-    static mut setsizeneeded: boolean;
+    static mut setsizeneeded: bool;
     static mut showMessages: ::core::ffi::c_int;
     fn R_ExecuteSetViewSize();
 }
@@ -1699,7 +1699,7 @@ pub static mut devparm: bool = false;
 #[no_mangle]
 pub static mut nomonsters: boolean = 0;
 #[no_mangle]
-pub static mut respawnparm: boolean = 0;
+pub static mut respawnparm: bool = false;
 #[no_mangle]
 pub static mut fastparm: boolean = 0;
 #[no_mangle]
@@ -1764,7 +1764,7 @@ pub unsafe extern "C" fn D_Display() {
         return;
     }
     redrawsbar = false_0 as boolean;
-    if setsizeneeded != 0 {
+    if setsizeneeded {
         R_ExecuteSetViewSize();
         oldgamestate = 4294967295 as gamestate_t;
         borderdrawcount = 3 as ::core::ffi::c_int;
@@ -1855,7 +1855,7 @@ pub unsafe extern "C" fn D_Display() {
         == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && automapactive == 0
         && scaledviewwidth != 320 as ::core::ffi::c_int
     {
-        if menuactive != 0 || menuactivestate || !viewactivestate {
+        if menuactive || menuactivestate || !viewactivestate {
             borderdrawcount = 3 as ::core::ffi::c_int;
         }
         if borderdrawcount != 0 {
@@ -1863,15 +1863,15 @@ pub unsafe extern "C" fn D_Display() {
             borderdrawcount -= 1;
         }
     }
-    if testcontrols != 0 {
+    if testcontrols {
         V_DrawMouseSpeedBox(testcontrols_mousespeed);
     }
-    menuactivestate = menuactive != 0;
+    menuactivestate = menuactive;
     viewactivestate = viewactive != 0;
     inhelpscreensstate = inhelpscreens;
     wipegamestate = gamestate;
     oldgamestate = wipegamestate;
-    if paused != 0 {
+    if paused {
         if automapactive != 0 {
             y = 4 as ::core::ffi::c_int;
         } else {
@@ -1992,10 +1992,10 @@ pub unsafe extern "C" fn D_BindVariables() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_GrabMouseCallback() -> boolean {
-    if drone != 0 {
+    if drone {
         return false_0 as boolean;
     }
-    if menuactive != 0 || paused != 0 {
+    if menuactive || paused {
         return false_0 as boolean;
     }
     return (gamestate as ::core::ffi::c_uint
@@ -2014,7 +2014,7 @@ pub unsafe extern "C" fn doomgeneric_Tick() {
 #[no_mangle]
 pub unsafe extern "C" fn D_DoomLoop() {
     if bfgedition
-        && (demorecording != 0
+        && (demorecording
             || gameaction as ::core::ffi::c_uint
                 == ga_playdemo as ::core::ffi::c_int as ::core::ffi::c_uint
             || netgame != 0)
@@ -2024,7 +2024,7 @@ pub unsafe extern "C" fn D_DoomLoop() {
                 as *const u8 as *const ::core::ffi::c_char,
         );
     }
-    if demorecording != 0 {
+    if demorecording {
         G_BeginRecording();
     }
     main_loop_started = true;
@@ -2039,7 +2039,7 @@ pub unsafe extern "C" fn D_DoomLoop() {
     V_RestoreBuffer();
     R_ExecuteSetViewSize();
     D_StartGameLoop();
-    if testcontrols != 0 {
+    if testcontrols {
         wipegamestate = gamestate;
     }
     doomgeneric_Tick();
@@ -2078,8 +2078,8 @@ pub unsafe extern "C" fn D_AdvanceDemo() {
 pub unsafe extern "C" fn D_DoAdvanceDemo() {
     players[consoleplayer as usize].playerstate = PST_LIVE;
     advancedemo = false;
-    usergame = false_0 as boolean;
-    paused = false_0 as boolean;
+    usergame = false;
+    paused = false;
     gameaction = ga_nothing;
     if gameversion as ::core::ffi::c_uint
         == exe_ultimate as ::core::ffi::c_int as ::core::ffi::c_uint
@@ -2700,7 +2700,7 @@ pub unsafe extern "C" fn PrintGameVersion() {
 }
 unsafe extern "C" fn D_Endoom() {
     let mut endoom: *mut byte = ::core::ptr::null_mut::<byte>();
-    if show_endoom == 0 || !main_loop_started || screensaver_mode != 0
+    if show_endoom == 0 || !main_loop_started || screensaver_mode
         || M_CheckParm("-testcontrols") > 0 as ::core::ffi::c_int
     {
         return;
@@ -2724,7 +2724,7 @@ pub unsafe extern "C" fn D_DoomMain() {
     );
     Z_Init();
     nomonsters = M_CheckParm("-nomonsters") as boolean;
-    respawnparm = M_CheckParm("-respawn") as boolean;
+    respawnparm = M_CheckParm("-respawn") != 0;
     fastparm = M_CheckParm("-fast") as boolean;
     devparm = M_CheckParm("-devparm") != 0;
     I_DisplayFPSDots(devparm);
@@ -2801,7 +2801,7 @@ pub unsafe extern "C" fn D_DoomMain() {
             "Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n",
         );
     }
-    modifiedgame = false_0 as boolean;
+    modifiedgame = false;
     printf(b"W_Init: Init WADfiles.\n\0" as *const u8 as *const ::core::ffi::c_char);
     D_AddFile(iwadfile);
     W_CheckCorrectIWAD(doom);
@@ -2816,7 +2816,7 @@ pub unsafe extern "C" fn D_DoomMain() {
         );
         bfgedition = true;
     }
-    modifiedgame = W_ParseCommandLine();
+    modifiedgame = W_ParseCommandLine() != 0;
     p = M_CheckParmWithArgs("-playdemo", 1 as ::core::ffi::c_int);
     if p == 0 {
         p = M_CheckParmWithArgs("-timedemo", 1 as ::core::ffi::c_int);
@@ -2873,7 +2873,7 @@ pub unsafe extern "C" fn D_DoomMain() {
     W_GenerateHashTable();
     D_SetGameDescription();
     savegamedir = M_GetSaveGameDir(D_SaveGameIWADName(gamemission));
-    if modifiedgame != 0 {
+    if modifiedgame {
         let mut name: [[::core::ffi::c_char; 8]; 23] = [
             ::core::mem::transmute::<
                 [u8; 8],
@@ -3066,7 +3066,7 @@ pub unsafe extern "C" fn D_DoomMain() {
         startepisode = 1 as ::core::ffi::c_int;
         startmap = 1 as ::core::ffi::c_int;
         autostart = true;
-        testcontrols = true_0 as boolean;
+        testcontrols = true;
     }
     p = M_CheckParmWithArgs("-loadgame", 1 as ::core::ffi::c_int);
     if p != 0 {
@@ -3130,7 +3130,7 @@ pub unsafe extern "C" fn D_DoomMain() {
     }
     p = M_CheckParmWithArgs("-playdemo", 1 as ::core::ffi::c_int);
     if p != 0 {
-        singledemo = true_0 as boolean;
+        singledemo = true;
         G_DeferedPlayDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop();
         return;

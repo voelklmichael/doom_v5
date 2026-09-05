@@ -42,4 +42,4 @@ pub static mut gamedescription: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
 #[no_mangle]
-pub static mut modifiedgame: boolean = 0;
+pub static mut modifiedgame: bool = false;

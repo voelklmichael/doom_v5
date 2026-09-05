@@ -125,7 +125,7 @@ static mut colors: [color; 256] = [color { b_g_r_a: [0; 4] }; 256];
 #[no_mangle]
 pub static mut I_VideoBuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
-pub static mut screensaver_mode: boolean = false_0 as boolean;
+pub static mut screensaver_mode: bool = false;
 #[no_mangle]
 pub static mut screenvisible: bool = false;
 #[no_mangle]
