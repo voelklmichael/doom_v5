@@ -59,7 +59,7 @@ static mut captured_stats: [wbstartstruct_t; 32] = [wbstartstruct_t {
 static mut num_captured_stats: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 #[no_mangle]
 pub unsafe extern "C" fn StatCopy(mut stats: *mut wbstartstruct_t) {
-    if M_ParmExists("-statdump") != 0 && num_captured_stats < MAX_CAPTURES {
+    if M_ParmExists("-statdump") && num_captured_stats < MAX_CAPTURES {
         memcpy(
             (&raw mut captured_stats as *mut wbstartstruct_t)
                 .offset(num_captured_stats as isize) as *mut wbstartstruct_t

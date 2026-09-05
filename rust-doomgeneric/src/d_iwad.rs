@@ -5,7 +5,6 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
 }
 pub type size_t = usize;
-pub type boolean = ::core::ffi::c_uint;
 pub type GameMission_t = ::core::ffi::c_uint;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
@@ -120,7 +119,7 @@ static iwads: [iwad_t; 14] = [
     },
 ];
 pub const MAX_IWAD_DIRS: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-static mut iwad_dirs_built: boolean = false as boolean;
+static mut iwad_dirs_built: bool = false;
 static mut iwad_dirs: Vec<String> = Vec::new();
 
 unsafe fn file_exists(path: &str) -> bool {
@@ -184,7 +183,7 @@ fn identify_iwad_by_name(name: &str, mask: ::core::ffi::c_int) -> GameMission_t 
 }
 unsafe fn build_iwad_dir_list() {
     add_iwad_dir(FILES_DIR);
-    iwad_dirs_built = true as boolean;
+    iwad_dirs_built = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_FindWADByName(

@@ -1,4 +1,3 @@
-pub type boolean = ::core::ffi::c_uint;
 pub type GameMission_t = ::core::ffi::c_uint;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
@@ -45,8 +44,6 @@ pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
     pub version: GameVersion_t,
 }
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 static mut valid_modes: [C2RustUnnamed; 13] = [
     C2RustUnnamed {
         mission: pack_chex,
@@ -131,7 +128,7 @@ static mut valid_modes: [C2RustUnnamed; 13] = [
 pub unsafe extern "C" fn D_ValidGameMode(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
-) -> boolean {
+) -> bool {
     let mut i: ::core::ffi::c_int = 0;
     i = 0 as ::core::ffi::c_int;
     while (i as usize)
@@ -143,11 +140,11 @@ pub unsafe extern "C" fn D_ValidGameMode(
             && valid_modes[i as usize].mission as ::core::ffi::c_uint
                 == mission as ::core::ffi::c_uint
         {
-            return true_0 as boolean;
+            return true;
         }
         i += 1;
     }
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_ValidEpisodeMap(
@@ -155,7 +152,7 @@ pub unsafe extern "C" fn D_ValidEpisodeMap(
     mut mode: GameMode_t,
     mut episode: ::core::ffi::c_int,
     mut map: ::core::ffi::c_int,
-) -> boolean {
+) -> bool {
     let mut i: ::core::ffi::c_int = 0;
     if mission as ::core::ffi::c_uint
         == heretic as ::core::ffi::c_int as ::core::ffi::c_uint
@@ -164,13 +161,12 @@ pub unsafe extern "C" fn D_ValidEpisodeMap(
             == retail as ::core::ffi::c_int as ::core::ffi::c_uint
             && episode == 6 as ::core::ffi::c_int
         {
-            return (map >= 1 as ::core::ffi::c_int && map <= 3 as ::core::ffi::c_int)
-                as ::core::ffi::c_int as boolean
+            return map >= 1 as ::core::ffi::c_int && map <= 3 as ::core::ffi::c_int
         } else if mode as ::core::ffi::c_uint
             == registered as ::core::ffi::c_int as ::core::ffi::c_uint
             && episode == 4 as ::core::ffi::c_int
         {
-            return (map == 1 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean
+            return map == 1 as ::core::ffi::c_int
         }
     }
     i = 0 as ::core::ffi::c_int;
@@ -183,14 +179,13 @@ pub unsafe extern "C" fn D_ValidEpisodeMap(
             && mode as ::core::ffi::c_uint
                 == valid_modes[i as usize].mode as ::core::ffi::c_uint
         {
-            return (episode >= 1 as ::core::ffi::c_int
+            return episode >= 1 as ::core::ffi::c_int
                 && episode <= valid_modes[i as usize].episode
-                && map >= 1 as ::core::ffi::c_int && map <= valid_modes[i as usize].map)
-                as ::core::ffi::c_int as boolean;
+                && map >= 1 as ::core::ffi::c_int && map <= valid_modes[i as usize].map;
         }
         i += 1;
     }
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_GetNumEpisodes(
@@ -199,7 +194,7 @@ pub unsafe extern "C" fn D_GetNumEpisodes(
 ) -> ::core::ffi::c_int {
     let mut episode: ::core::ffi::c_int = 0;
     episode = 1 as ::core::ffi::c_int;
-    while D_ValidEpisodeMap(mission, mode, episode, 1 as ::core::ffi::c_int) != 0 {
+    while D_ValidEpisodeMap(mission, mode, episode, 1 as ::core::ffi::c_int) {
         episode += 1;
     }
     return episode - 1 as ::core::ffi::c_int;
@@ -250,7 +245,7 @@ static mut valid_versions: [C2RustUnnamed_0; 10] = [
 pub unsafe extern "C" fn D_ValidGameVersion(
     mut mission: GameMission_t,
     mut version: GameVersion_t,
-) -> boolean {
+) -> bool {
     let mut i: ::core::ffi::c_int = 0;
     if mission as ::core::ffi::c_uint
         == doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
@@ -275,17 +270,17 @@ pub unsafe extern "C" fn D_ValidGameVersion(
             && valid_versions[i as usize].version as ::core::ffi::c_uint
                 == version as ::core::ffi::c_uint
         {
-            return true_0 as boolean;
+            return true;
         }
         i += 1;
     }
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
-pub unsafe extern "C" fn D_IsEpisodeMap(mut mission: GameMission_t) -> boolean {
+pub unsafe extern "C" fn D_IsEpisodeMap(mut mission: GameMission_t) -> bool {
     match mission as ::core::ffi::c_uint {
-        0 | 6 | 4 => return true_0 as boolean,
-        9 | 7 | 1 | 5 | 2 | 3 | 8 | _ => return false_0 as boolean,
+        0 | 6 | 4 => return true,
+        9 | 7 | 1 | 5 | 2 | 3 | 8 | _ => return false,
     };
 }
 #[no_mangle]
