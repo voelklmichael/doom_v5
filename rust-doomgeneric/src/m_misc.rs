@@ -1,8 +1,6 @@
+use crate::src::i_system::FILE;
 use crate::src::i_system::I_Error;
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     fn fclose(__stream: *mut FILE) -> ::core::ffi::c_int;
     fn fopen(
         __filename: *const ::core::ffi::c_char,
@@ -79,58 +77,10 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
 }
-pub type __builtin_va_list = [__va_list_tag; 1];
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct __va_list_tag {
-    pub gp_offset: ::core::ffi::c_uint,
-    pub fp_offset: ::core::ffi::c_uint,
-    pub overflow_arg_area: *mut ::core::ffi::c_void,
-    pub reg_save_area: *mut ::core::ffi::c_void,
-}
 pub type size_t = usize;
-pub type __gnuc_va_list = __builtin_va_list;
 pub type __uint8_t = u8;
 pub type __int32_t = i32;
 pub type __mode_t = ::core::ffi::c_uint;
-pub type __off_t = ::core::ffi::c_long;
-pub type __off64_t = ::core::ffi::c_long;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: ::core::ffi::c_int,
-    pub _IO_read_ptr: *mut ::core::ffi::c_char,
-    pub _IO_read_end: *mut ::core::ffi::c_char,
-    pub _IO_read_base: *mut ::core::ffi::c_char,
-    pub _IO_write_base: *mut ::core::ffi::c_char,
-    pub _IO_write_ptr: *mut ::core::ffi::c_char,
-    pub _IO_write_end: *mut ::core::ffi::c_char,
-    pub _IO_buf_base: *mut ::core::ffi::c_char,
-    pub _IO_buf_end: *mut ::core::ffi::c_char,
-    pub _IO_save_base: *mut ::core::ffi::c_char,
-    pub _IO_backup_base: *mut ::core::ffi::c_char,
-    pub _IO_save_end: *mut ::core::ffi::c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: ::core::ffi::c_int,
-    pub _flags2: ::core::ffi::c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: ::core::ffi::c_ushort,
-    pub _vtable_offset: ::core::ffi::c_schar,
-    pub _shortbuf: [::core::ffi::c_char; 1],
-    pub _lock: *mut ::core::ffi::c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut ::core::ffi::c_void,
-    pub __pad5: size_t,
-    pub _mode: ::core::ffi::c_int,
-    pub _unused2: [::core::ffi::c_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type va_list = __gnuc_va_list;
 pub type uint8_t = __uint8_t;
 pub type boolean = ::core::ffi::c_uint;
 pub type byte = uint8_t;
