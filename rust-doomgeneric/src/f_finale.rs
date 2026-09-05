@@ -3018,8 +3018,11 @@ pub unsafe extern "C" fn F_DrawPatchCol(
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut desttop: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut count: ::core::ffi::c_int = 0;
-    column = (patch as *mut byte).offset((*patch).columnofs[col as usize] as isize)
-        as *mut column_t;
+    column = (patch as *mut byte)
+        .offset(
+            *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+                .offset(col as isize) as isize,
+        ) as *mut column_t;
     desttop = I_VideoBuffer.offset(x as isize);
     while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
         source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);

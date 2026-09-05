@@ -2175,8 +2175,10 @@ pub unsafe extern "C" fn R_DrawVisSprite(
             );
         }
         column = (patch as *mut byte)
-            .offset((*patch).columnofs[texturecolumn as usize] as isize)
-            as *mut column_t;
+            .offset(
+                *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+                    .offset(texturecolumn as isize) as isize,
+            ) as *mut column_t;
         R_DrawMaskedColumn(column);
         dc_x += 1;
         frac += (*vis).xiscale;

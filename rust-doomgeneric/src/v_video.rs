@@ -211,8 +211,11 @@ pub unsafe extern "C" fn V_DrawPatch(
     desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
     w = (*patch).width as ::core::ffi::c_int;
     while col < w {
-        column = (patch as *mut byte).offset((*patch).columnofs[col as usize] as isize)
-            as *mut column_t;
+        column = (patch as *mut byte)
+            .offset(
+                *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+                    .offset(col as isize) as isize,
+            ) as *mut column_t;
         while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
             source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
             dest = desttop
@@ -282,7 +285,8 @@ pub unsafe extern "C" fn V_DrawPatchFlipped(
     while col < w {
         column = (patch as *mut byte)
             .offset(
-                (*patch).columnofs[(w - 1 as ::core::ffi::c_int - col) as usize] as isize,
+                *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+                    .offset((w - 1 as ::core::ffi::c_int - col) as isize) as isize,
             ) as *mut column_t;
         while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
             source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
@@ -348,8 +352,11 @@ pub unsafe extern "C" fn V_DrawTLPatch(
     desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
     w = (*patch).width as ::core::ffi::c_int;
     while col < w {
-        column = (patch as *mut byte).offset((*patch).columnofs[col as usize] as isize)
-            as *mut column_t;
+        column = (patch as *mut byte)
+            .offset(
+                *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+                    .offset(col as isize) as isize,
+            ) as *mut column_t;
         while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
             source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
             dest = desttop
@@ -405,8 +412,11 @@ pub unsafe extern "C" fn V_DrawXlaPatch(
     desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
     w = (*patch).width as ::core::ffi::c_int;
     while col < w {
-        column = (patch as *mut byte).offset((*patch).columnofs[col as usize] as isize)
-            as *mut column_t;
+        column = (patch as *mut byte)
+            .offset(
+                *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+                    .offset(col as isize) as isize,
+            ) as *mut column_t;
         while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
             source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
             dest = desttop
@@ -467,8 +477,11 @@ pub unsafe extern "C" fn V_DrawAltTLPatch(
     desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
     w = (*patch).width as ::core::ffi::c_int;
     while col < w {
-        column = (patch as *mut byte).offset((*patch).columnofs[col as usize] as isize)
-            as *mut column_t;
+        column = (patch as *mut byte)
+            .offset(
+                *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+                    .offset(col as isize) as isize,
+            ) as *mut column_t;
         while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
             source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
             dest = desttop
@@ -535,8 +548,11 @@ pub unsafe extern "C" fn V_DrawShadowedPatch(
         .offset(2 as ::core::ffi::c_int as isize);
     w = (*patch).width as ::core::ffi::c_int;
     while col < w {
-        column = (patch as *mut byte).offset((*patch).columnofs[col as usize] as isize)
-            as *mut column_t;
+        column = (patch as *mut byte)
+            .offset(
+                *(&raw const (*patch).columnofs as *const ::core::ffi::c_int)
+                    .offset(col as isize) as isize,
+            ) as *mut column_t;
         while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
             source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
             dest = desttop
