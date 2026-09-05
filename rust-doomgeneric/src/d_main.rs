@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_StringEndsWith;
@@ -155,7 +156,6 @@ extern "C" {
     fn I_Endoom(data: *mut byte);
     fn I_InitJoystick();
     fn I_BindJoystickVariables();
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn I_PrintStartupBanner(gamedescription_0: *mut ::core::ffi::c_char);
     fn I_PrintBanner(text: *mut ::core::ffi::c_char);
@@ -2577,11 +2577,10 @@ unsafe extern "C" fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_ch
         );
         i += 1;
     }
-    I_Error(
-        b"Unknown mission pack name: %s\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        pack_name,
-    );
+    I_Error(&format!(
+        "Unknown mission pack name: {}",
+        ::std::ffi::CStr::from_ptr(pack_name).to_str().unwrap(),
+    ));
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_IdentifyVersion() {
@@ -2614,10 +2613,7 @@ pub unsafe extern "C" fn D_IdentifyVersion() {
         if gamemission as ::core::ffi::c_uint
             == none as ::core::ffi::c_int as ::core::ffi::c_uint
         {
-            I_Error(
-                b"Unknown or invalid IWAD file.\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("Unknown or invalid IWAD file.");
         }
     }
     if (if gamemission as ::core::ffi::c_uint
@@ -2910,12 +2906,10 @@ unsafe extern "C" fn InitGameVersion() {
                 );
                 i += 1;
             }
-            I_Error(
-                b"Unknown game version '%s'\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                myargv[(p + 1 as ::core::ffi::c_int) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
-            );
+            I_Error(&format!(
+                "Unknown game version '{}'",
+                myargv[(p + 1 as ::core::ffi::c_int) as usize].to_str().unwrap(),
+            ));
         }
     } else if gamemission as ::core::ffi::c_uint
         == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
@@ -3084,8 +3078,7 @@ pub unsafe extern "C" fn D_DoomMain() {
     );
     if iwadfile.is_null() {
         I_Error(
-            b"Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n",
         );
     }
     modifiedgame = false_0 as boolean;
@@ -3244,11 +3237,7 @@ pub unsafe extern "C" fn D_DoomMain() {
         if gamemode as ::core::ffi::c_uint
             == shareware as ::core::ffi::c_int as ::core::ffi::c_uint
         {
-            I_Error(
-                b"\nYou cannot -file with the shareware version. Register!\0"
-                    as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-            );
+            I_Error("\nYou cannot -file with the shareware version. Register!");
         }
         if gamemode as ::core::ffi::c_uint
             == registered as ::core::ffi::c_int as ::core::ffi::c_uint
@@ -3262,10 +3251,7 @@ pub unsafe extern "C" fn D_DoomMain() {
                     ),
                 ) < 0 as ::core::ffi::c_int
                 {
-                    I_Error(
-                        b"\nThis is not the registered version.\0" as *const u8
-                            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                    );
+                    I_Error("\nThis is not the registered version.");
                 }
                 i += 1;
             }

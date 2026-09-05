@@ -1,8 +1,8 @@
+use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_misc::M_FileExists;
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
 }
 pub type size_t = usize;
 pub type boolean = ::core::ffi::c_uint;
@@ -224,11 +224,10 @@ pub unsafe extern "C" fn D_FindIWAD(
             as *mut ::core::ffi::c_char;
         let result = D_FindWADByName(iwadfile);
         if result.is_null() {
-            I_Error(
-                b"IWAD file '%s' not found!\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                iwadfile,
-            );
+            I_Error(&format!(
+                "IWAD file '{}' not found!",
+                myargv[(iwadparm + 1 as ::core::ffi::c_int) as usize].to_str().unwrap(),
+            ));
         }
         *mission = identify_iwad_by_name(
             ::std::ffi::CStr::from_ptr(result).to_str().unwrap(),

@@ -1,6 +1,6 @@
+use crate::src::i_system::I_Error;
 use ::libc;
 extern "C" {
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -2371,13 +2371,12 @@ pub unsafe extern "C" fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
         i += 1;
     }
     if i == NUMMOBJTYPES as ::core::ffi::c_int {
-        I_Error(
-            b"P_SpawnMapThing: Unknown type %i at (%i, %i)\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        I_Error(&format!(
+            "P_SpawnMapThing: Unknown type {} at ({}, {})",
             (*mthing).type_0 as ::core::ffi::c_int,
             (*mthing).x as ::core::ffi::c_int,
             (*mthing).y as ::core::ffi::c_int,
-        );
+        ));
     }
     if deathmatch != 0
         && mobjinfo[i as usize].flags & MF_NOTDMATCH as ::core::ffi::c_int != 0

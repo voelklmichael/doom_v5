@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 extern "C" {
     pub type _IO_wide_data;
@@ -13,7 +14,6 @@ extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     fn P_Random() -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn M_StrToInt(
         str: *const ::core::ffi::c_char,
         result: *mut ::core::ffi::c_int,
@@ -2290,10 +2290,7 @@ pub unsafe extern "C" fn P_HitSlideLine(mut ld: *mut line_t) {
 pub unsafe extern "C" fn PTR_SlideTraverse(mut in_0: *mut intercept_t) -> boolean {
     let mut li: *mut line_t = ::core::ptr::null_mut::<line_t>();
     if (*in_0).isaline == 0 {
-        I_Error(
-            b"PTR_SlideTraverse: not a line?\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("PTR_SlideTraverse: not a line?");
     }
     li = (*in_0).d.line;
     if (*li).flags as ::core::ffi::c_int & ML_TWOSIDED == 0 {

@@ -1,5 +1,5 @@
+use crate::src::i_system::I_Error;
 extern "C" {
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static mut segs: *mut seg_t;
@@ -1665,12 +1665,7 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: ::core::ffi::c_int) -> boolea
     let mut frac: fixed_t = 0;
     let mut slope: fixed_t = 0;
     if num >= numsubsectors {
-        I_Error(
-            b"P_CrossSubsector: ss %i with numss = %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            num,
-            numsubsectors,
-        );
+        I_Error(&format!("P_CrossSubsector: ss {} with numss = {}", num, numsubsectors));
     }
     sub = subsectors.offset(num as isize) as *mut subsector_t;
     count = (*sub).numlines as ::core::ffi::c_int;

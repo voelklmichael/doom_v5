@@ -1,5 +1,5 @@
+use crate::src::i_system::I_Error;
 extern "C" {
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     static mut viewwidth: ::core::ffi::c_int;
     static mut segs: *mut seg_t;
     static mut numsubsectors: ::core::ffi::c_int;
@@ -1989,12 +1989,7 @@ pub unsafe extern "C" fn R_Subsector(mut num: ::core::ffi::c_int) {
     let mut line: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut sub: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
     if num >= numsubsectors {
-        I_Error(
-            b"R_Subsector: ss %i with numss = %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            num,
-            numsubsectors,
-        );
+        I_Error(&format!("R_Subsector: ss {} with numss = {}", num, numsubsectors));
     }
     sscount += 1;
     sub = subsectors.offset(num as isize) as *mut subsector_t;

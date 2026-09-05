@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -28,7 +29,6 @@ extern "C" {
     ) -> ::core::ffi::c_ulong;
     fn ftell(__stream: *mut FILE) -> ::core::ffi::c_long;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -2775,11 +2775,10 @@ pub unsafe extern "C" fn P_UnArchiveThinkers() {
                 P_AddThinker(&raw mut (*mobj).thinker);
             }
             _ => {
-                I_Error(
-                    b"Unknown tclass %i in savegame\0" as *const u8
-                        as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+                I_Error(&format!(
+                    "Unknown tclass {} in savegame",
                     tclass as ::core::ffi::c_int,
-                );
+                ));
             }
         }
     };
@@ -2996,11 +2995,10 @@ pub unsafe extern "C" fn P_UnArchiveSpecials() {
                 P_AddThinker(&raw mut (*glow).thinker);
             }
             _ => {
-                I_Error(
-                    b"P_UnarchiveSpecials:Unknown tclass %i in savegame\0" as *const u8
-                        as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+                I_Error(&format!(
+                    "P_UnarchiveSpecials:Unknown tclass {} in savegame",
                     tclass as ::core::ffi::c_int,
-                );
+                ));
             }
         }
     };

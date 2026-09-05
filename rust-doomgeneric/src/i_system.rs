@@ -153,11 +153,7 @@ unsafe extern "C" fn AutoAllocMemory(
     zonemem = ::core::ptr::null_mut::<byte>();
     while zonemem.is_null() {
         if default_ram < min_ram {
-            I_Error(
-                b"Unable to allocate %i MiB of RAM for zone\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                default_ram,
-            );
+            I_Error(&format!("Unable to allocate {} MiB of RAM for zone", default_ram));
         }
         *size = default_ram * 1024 as ::core::ffi::c_int * 1024 as ::core::ffi::c_int;
         zonemem = malloc(*size as size_t) as *mut byte;
@@ -317,10 +313,7 @@ unsafe extern "C" fn ZenityErrorBox(
     return result;
 }
 static mut already_quitting: boolean = false_0 as boolean;
-#[no_mangle]
-pub unsafe extern "C" fn I_Error(mut error: *mut ::core::ffi::c_char, mut args: ...) {
-    let mut msgbuf: [::core::ffi::c_char; 512] = [0; 512];
-    let mut argptr: ::core::ffi::VaListImpl;
+pub unsafe fn I_Error(message: &str) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
         atexit_listentry_t,
     >();
@@ -334,22 +327,15 @@ pub unsafe extern "C" fn I_Error(mut error: *mut ::core::ffi::c_char, mut args: 
     } else {
         already_quitting = true_0 as boolean;
     }
-    argptr = args.clone();
-    vfprintf(stderr, error, argptr.as_va_list());
+    let message_cstring = ::std::ffi::CString::new(message)
+        .unwrap_or_else(|_| ::std::ffi::CString::new("(error message contains NUL)").unwrap());
+    fprintf(
+        stderr,
+        b"%s\0" as *const u8 as *const ::core::ffi::c_char,
+        message_cstring.as_ptr(),
+    );
     fprintf(stderr, b"\n\n\0" as *const u8 as *const ::core::ffi::c_char);
     fflush(stderr);
-    argptr = args.clone();
-    memset(
-        &raw mut msgbuf as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
-        ::core::mem::size_of::<[::core::ffi::c_char; 512]>() as size_t,
-    );
-    M_vsnprintf(
-        &raw mut msgbuf as *mut ::core::ffi::c_char,
-        ::core::mem::size_of::<[::core::ffi::c_char; 512]>() as size_t,
-        error,
-        argptr.as_va_list(),
-    );
     entry = exit_funcs;
     while !entry.is_null() {
         if (*entry).run_on_error != 0 {
@@ -359,7 +345,7 @@ pub unsafe extern "C" fn I_Error(mut error: *mut ::core::ffi::c_char, mut args: 
     }
     exit_gui_popup = (M_ParmExists("-nogui") == 0) as ::core::ffi::c_int as boolean;
     if exit_gui_popup != 0 && I_ConsoleStdout() == 0 {
-        ZenityErrorBox(&raw mut msgbuf as *mut ::core::ffi::c_char);
+        ZenityErrorBox(message_cstring.as_ptr() as *mut ::core::ffi::c_char);
     }
     exit(-(1 as ::core::ffi::c_int));
 }

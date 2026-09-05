@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -72,7 +73,6 @@ extern "C" {
     fn toupper(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
     fn __errno_location() -> *mut ::core::ffi::c_int;
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     fn Z_Malloc(
         size: ::core::ffi::c_int,
         tag: ::core::ffi::c_int,
@@ -216,11 +216,7 @@ pub unsafe extern "C" fn M_ReadFile(
     handle = fopen(name, b"rb\0" as *const u8 as *const ::core::ffi::c_char)
         as *mut FILE;
     if handle.is_null() {
-        I_Error(
-            b"Couldn't read file %s\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            name,
-        );
+        I_Error(&format!("Couldn't read file {}", ::std::ffi::CStr::from_ptr(name).to_str().unwrap()));
     }
     length = M_FileLength(handle) as ::core::ffi::c_int;
     buf = Z_Malloc(length, PU_STATIC as ::core::ffi::c_int, NULL) as *mut byte;
@@ -228,11 +224,7 @@ pub unsafe extern "C" fn M_ReadFile(
         as ::core::ffi::c_int;
     fclose(handle);
     if count < length {
-        I_Error(
-            b"Couldn't read file %s\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            name,
-        );
+        I_Error(&format!("Couldn't read file {}", ::std::ffi::CStr::from_ptr(name).to_str().unwrap()));
     }
     *buffer = buf;
     return length;
@@ -369,10 +361,7 @@ pub unsafe extern "C" fn M_StringReplace(
     }
     result = malloc(result_len) as *mut ::core::ffi::c_char;
     if result.is_null() {
-        I_Error(
-            b"M_StringReplace: Failed to allocate new string\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("M_StringReplace: Failed to allocate new string");
         return ::core::ptr::null_mut::<::core::ffi::c_char>();
     }
     dst = result;
@@ -457,10 +446,7 @@ pub unsafe extern "C" fn M_StringJoin(
     }
     result = malloc(result_len) as *mut ::core::ffi::c_char;
     if result.is_null() {
-        I_Error(
-            b"M_StringJoin: Failed to allocate new string.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        );
+        I_Error("M_StringJoin: Failed to allocate new string.");
         return ::core::ptr::null_mut::<::core::ffi::c_char>();
     }
     M_StringCopy(result, s, result_len);

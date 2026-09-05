@@ -1,3 +1,4 @@
+use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
 extern "C" {
     fn V_CopyRect(
@@ -10,7 +11,6 @@ extern "C" {
         desty: ::core::ffi::c_int,
     );
     fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
     static mut st_backing_screen: *mut byte;
 }
 pub type __uint8_t = u8;
@@ -130,10 +130,7 @@ pub unsafe extern "C" fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: boo
     }
     x = (*n).x - numdigits * w;
     if (*n).y - ST_Y < 0 as ::core::ffi::c_int {
-        I_Error(
-            b"drawNum: n->y - ST_Y < 0\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        I_Error("drawNum: n->y - ST_Y < 0");
     }
     V_CopyRect(x, (*n).y - ST_Y, st_backing_screen, w * numdigits, h, x, (*n).y);
     if num == 1994 as ::core::ffi::c_int {
@@ -229,10 +226,7 @@ pub unsafe extern "C" fn STlib_updateMultIcon(
             w = (**(*mi).p.offset((*mi).oldinum as isize)).width as ::core::ffi::c_int;
             h = (**(*mi).p.offset((*mi).oldinum as isize)).height as ::core::ffi::c_int;
             if y - ST_Y < 0 as ::core::ffi::c_int {
-                I_Error(
-                    b"updateMultIcon: y - ST_Y < 0\0" as *const u8
-                        as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                );
+                I_Error("updateMultIcon: y - ST_Y < 0");
             }
             V_CopyRect(x, y - ST_Y, st_backing_screen, w, h, x, y);
         }
@@ -271,10 +265,7 @@ pub unsafe extern "C" fn STlib_updateBinIcon(
         w = (*(*bi).p).width as ::core::ffi::c_int;
         h = (*(*bi).p).height as ::core::ffi::c_int;
         if y - ST_Y < 0 as ::core::ffi::c_int {
-            I_Error(
-                b"updateBinIcon: y - ST_Y < 0\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("updateBinIcon: y - ST_Y < 0");
         }
         if *(*bi).val != 0 {
             V_DrawPatch((*bi).x, (*bi).y, (*bi).p);
