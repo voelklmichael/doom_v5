@@ -1705,7 +1705,7 @@ pub unsafe fn G_DoLoadGame() {
     P_UnArchivePlayers();
     P_UnArchiveWorld();
     P_UnArchiveThinkers();
-    P_UnArchiveSpecials();
+    P_UnArchiveSpecials(unsafe { &mut game_state().p_ceilng });
     if !P_ReadSaveGameEOF() {
         I_Error("Bad savegame");
     }
@@ -1766,7 +1766,7 @@ pub unsafe fn G_DoSaveGame() {
     P_ArchivePlayers();
     P_ArchiveWorld();
     P_ArchiveThinkers();
-    P_ArchiveSpecials();
+    P_ArchiveSpecials(unsafe { &mut game_state().p_ceilng });
     P_WriteSaveGameEOF();
     if vanilla_savegame_limit != 0
         && ftell(save_stream) > SAVEGAMESIZE as i64

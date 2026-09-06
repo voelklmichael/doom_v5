@@ -796,7 +796,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         41 => {
-            if EV_DoCeiling(line, lowerToFloor) != 0 {
+            if EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, lowerToFloor) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -808,7 +808,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         49 => {
-            if EV_DoCeiling(line, crushAndRaise) != 0 {
+            if EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, crushAndRaise) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -903,7 +903,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         43 => {
-            if EV_DoCeiling(line, lowerToFloor) != 0 {
+            if EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, lowerToFloor) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;

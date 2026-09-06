@@ -17,6 +17,7 @@ use crate::src::i_cdmus::ICdMusState;
 use crate::src::i_joystick::IJoystickState;
 use crate::src::i_timer::ITimerState;
 use crate::src::m_config::MConfigState;
+use crate::src::p_ceilng::PCeilngState;
 use crate::src::p_plats::PPlatsState;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_user::PUserState;
@@ -33,6 +34,7 @@ pub struct GameState {
     pub i_joystick: IJoystickState,
     pub i_timer: ITimerState,
     pub m_config: MConfigState,
+    pub p_ceilng: PCeilngState,
     pub p_plats: PPlatsState,
     pub p_switch: PSwitchState,
     pub p_user: PUserState,
@@ -52,6 +54,7 @@ impl GameState {
             i_joystick: IJoystickState::new(),
             i_timer: ITimerState::new(),
             m_config: MConfigState::new(),
+            p_ceilng: PCeilngState::new(),
             p_plats: PPlatsState::new(),
             p_switch: PSwitchState::new(),
             p_user: PUserState::new(),
