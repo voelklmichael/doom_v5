@@ -1833,7 +1833,7 @@ pub unsafe extern "C" fn R_InitTextures() {
     ) - 1 as i32;
     temp3 = (temp2 - temp1 + 63 as i32) / 64 as i32
         + (numtextures + 63 as i32) / 64 as i32;
-    if I_ConsoleStdout() != 0 {
+    if I_ConsoleStdout() {
         printf(b"[\0" as *const u8 as *const ::core::ffi::c_char);
         i = 0 as i32;
         while i < temp3 + 9 as i32 {

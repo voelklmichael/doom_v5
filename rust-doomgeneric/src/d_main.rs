@@ -1688,7 +1688,7 @@ pub unsafe extern "C" fn D_ProcessEvents() {
         if ev.is_null() {
             break;
         }
-        if M_Responder(ev) != 0 {
+        if M_Responder(ev) {
             continue;
         }
         G_Responder(ev);
@@ -1750,9 +1750,8 @@ pub unsafe extern "C" fn D_Display() {
                     redrawsbar = true_0 as boolean;
                 }
                 ST_Drawer(
-                    (viewheight == 200 as i32) as i32
-                        as boolean,
-                    redrawsbar,
+                    viewheight == 200 as i32,
+                    redrawsbar != 0,
                 );
                 fullscreen = viewheight == 200 as i32;
             }
@@ -2755,7 +2754,7 @@ pub unsafe fn D_DoomMain() {
         );
         bfgedition = true;
     }
-    modifiedgame = W_ParseCommandLine() != 0;
+    modifiedgame = W_ParseCommandLine();
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p == 0 {
         p = M_CheckParmWithArgs("-timedemo", 1 as i32);
@@ -2947,7 +2946,7 @@ pub unsafe fn D_DoomMain() {
     I_CheckIsScreensaver();
     I_InitTimer();
     I_InitJoystick();
-    I_InitSound(true_0 as boolean);
+    I_InitSound(true);
     I_InitMusic();
     D_ConnectNetGame();
     startskill = sk_medium;

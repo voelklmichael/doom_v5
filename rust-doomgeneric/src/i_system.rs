@@ -155,8 +155,8 @@ pub unsafe fn I_PrintStartupBanner(
     );
     I_PrintDivider();
 }
-pub unsafe fn I_ConsoleStdout() -> boolean {
-    return 0 as boolean;
+pub unsafe fn I_ConsoleStdout() -> bool {
+    return false;
 }
 pub unsafe fn I_Quit() {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
@@ -273,7 +273,7 @@ pub unsafe fn I_Error(message: &str) {
         entry = (*entry).next;
     }
     exit_gui_popup = (!M_ParmExists("-nogui")) as i32 as boolean;
-    if exit_gui_popup != 0 && I_ConsoleStdout() == 0 {
+    if exit_gui_popup != 0 && !I_ConsoleStdout() {
         ZenityErrorBox(message_cstring.as_ptr() as *mut ::core::ffi::c_char);
     }
     exit(-(1 as i32));
@@ -323,7 +323,7 @@ pub unsafe fn I_GetMemoryValue(
     mut offset: u32,
     mut value: *mut ::core::ffi::c_void,
     mut size: i32,
-) -> boolean {
+) -> bool {
     static mut firsttime: bool = true;
     if firsttime {
         let mut p: i32 = 0;
@@ -378,7 +378,7 @@ pub unsafe fn I_GetMemoryValue(
         1 => {
             *(value as *mut u8) = *dos_mem_dump
                 .offset(offset as isize);
-            return true_0 as boolean;
+            return true;
         }
         2 => {
             *(value as *mut u16) = (*dos_mem_dump
@@ -387,7 +387,7 @@ pub unsafe fn I_GetMemoryValue(
                     .offset(offset.wrapping_add(1 as u32) as isize)
                     as i32) << 8 as i32)
                 as u16;
-            return true_0 as boolean;
+            return true;
         }
         4 => {
             *(value as *mut u32) = (*dos_mem_dump.offset(offset as isize)
@@ -402,9 +402,9 @@ pub unsafe fn I_GetMemoryValue(
                     .offset(offset.wrapping_add(3 as u32) as isize)
                     as i32) << 24 as i32)
                 as u32;
-            return true_0 as boolean;
+            return true;
         }
         _ => {}
     }
-    return false_0 as boolean;
+    return false;
 }

@@ -1639,7 +1639,7 @@ pub unsafe fn P_BlockLinesIterator(
     mut x: i32,
     mut y: i32,
     mut func: Option<unsafe extern "C" fn(*mut line_t) -> boolean>,
-) -> boolean {
+) -> bool {
     let mut offset: i32 = 0;
     let mut list: *mut i16 = ::core::ptr::null_mut::<
         i16,
@@ -1648,7 +1648,7 @@ pub unsafe fn P_BlockLinesIterator(
     if x < 0 as i32 || y < 0 as i32 || x >= bmapwidth
         || y >= bmapheight
     {
-        return true_0 as boolean;
+        return true;
     }
     offset = y * bmapwidth + x;
     offset = *blockmap.offset(offset as isize) as i32;
@@ -1658,12 +1658,12 @@ pub unsafe fn P_BlockLinesIterator(
         if !((*ld).validcount == validcount) {
             (*ld).validcount = validcount;
             if func.expect("non-null function pointer")(ld) == 0 {
-                return false_0 as boolean;
+                return false;
             }
         }
         list = list.offset(1);
     }
-    return true_0 as boolean;
+    return true;
 }
 pub unsafe fn P_BlockThingsIterator(
     mut x: i32,
@@ -2025,7 +2025,7 @@ pub unsafe fn P_PathTraverse(
     mut y2: fixed_t,
     mut flags: i32,
     mut trav: Option<unsafe extern "C" fn(*mut intercept_t) -> boolean>,
-) -> boolean {
+) -> bool {
     let mut xt1: fixed_t = 0;
     let mut yt1: fixed_t = 0;
     let mut xt2: fixed_t = 0;
@@ -2116,15 +2116,15 @@ pub unsafe fn P_PathTraverse(
     count = 0 as i32;
     while count < 64 as i32 {
         if flags & PT_ADDLINES != 0 {
-            if P_BlockLinesIterator(
+            if !P_BlockLinesIterator(
                 mapx,
                 mapy,
                 Some(
                     PIT_AddLineIntercepts as unsafe extern "C" fn(*mut line_t) -> boolean,
                 ),
-            ) == 0
+            )
             {
-                return false_0 as boolean;
+                return false;
             }
         }
         if flags & PT_ADDTHINGS != 0 {
@@ -2137,7 +2137,7 @@ pub unsafe fn P_PathTraverse(
                 ),
             ) == 0
             {
-                return false_0 as boolean;
+                return false;
             }
         }
         if mapx == xt2 && mapy == yt2 {
@@ -2152,6 +2152,6 @@ pub unsafe fn P_PathTraverse(
         }
         count += 1;
     }
-    return P_TraverseIntercepts(trav as traverser_t, FRACUNIT) as i32 as boolean;
+    return P_TraverseIntercepts(trav as traverser_t, FRACUNIT);
 }
 pub const __INT_MAX__: i32 = 2147483647 as i32;

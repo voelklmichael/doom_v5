@@ -1488,7 +1488,7 @@ pub unsafe fn D_ConnectNetGame() {
         player_class: 0,
     };
     InitConnectData(&raw mut connect_data);
-    netgame = D_InitNetGame(&raw mut connect_data) != 0;
+    netgame = D_InitNetGame(&raw mut connect_data);
     if M_CheckParm("-solo-net") > 0 as i32 {
         netgame = true;
     }

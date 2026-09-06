@@ -2095,7 +2095,7 @@ pub unsafe extern "C" fn AM_maxOutWindowScale() {
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
     AM_activateNewScale();
 }
-pub unsafe fn AM_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn AM_Responder(mut ev: *mut event_t) -> bool {
     let mut rc: i32 = 0;
     static mut bigstate: i32 = 0 as i32;
     static mut buffer: [::core::ffi::c_char; 20] = [0; 20];
@@ -2238,7 +2238,7 @@ pub unsafe fn AM_Responder(mut ev: *mut event_t) -> boolean {
             ftom_zoommul = FRACUNIT as fixed_t;
         }
     }
-    return rc as boolean;
+    return rc != 0;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_changeWindowScale() {

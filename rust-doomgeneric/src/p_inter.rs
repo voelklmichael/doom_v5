@@ -1727,34 +1727,34 @@ pub unsafe extern "C" fn P_GiveCard(mut player: *mut player_t, mut card: card_t)
 pub unsafe fn P_GivePower(
     mut player: *mut player_t,
     mut power: i32,
-) -> boolean {
+) -> bool {
     if power == pw_invulnerability as i32 {
         (*player).powers[power as usize] = INVULNTICS as i32;
-        return true_0 as boolean;
+        return true;
     }
     if power == pw_invisibility as i32 {
         (*player).powers[power as usize] = INVISTICS as i32;
         (*(*player).mo).flags |= MF_SHADOW as i32;
-        return true_0 as boolean;
+        return true;
     }
     if power == pw_infrared as i32 {
         (*player).powers[power as usize] = INFRATICS as i32;
-        return true_0 as boolean;
+        return true;
     }
     if power == pw_ironfeet as i32 {
         (*player).powers[power as usize] = IRONTICS as i32;
-        return true_0 as boolean;
+        return true;
     }
     if power == pw_strength as i32 {
         P_GiveBody(player, 100 as i32);
         (*player).powers[power as usize] = 1 as i32;
-        return true_0 as boolean;
+        return true;
     }
     if (*player).powers[power as usize] != 0 {
-        return false_0 as boolean;
+        return false;
     }
     (*player).powers[power as usize] = 1 as i32;
-    return true_0 as boolean;
+    return true;
 }
 pub unsafe fn P_TouchSpecialThing(
     mut special: *mut mobj_t,
@@ -1912,7 +1912,7 @@ pub unsafe fn P_TouchSpecialThing(
             }
         }
         71 => {
-            if P_GivePower(player, pw_invulnerability as i32) == 0 {
+            if !P_GivePower(player, pw_invulnerability as i32) {
                 return;
             }
             (*player).message = b"Invulnerability!\0" as *const u8
@@ -1920,7 +1920,7 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_getpow as i32;
         }
         72 => {
-            if P_GivePower(player, pw_strength as i32) == 0 {
+            if !P_GivePower(player, pw_strength as i32) {
                 return;
             }
             (*player).message = b"Berserk!\0" as *const u8 as *const ::core::ffi::c_char
@@ -1933,7 +1933,7 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_getpow as i32;
         }
         73 => {
-            if P_GivePower(player, pw_invisibility as i32) == 0 {
+            if !P_GivePower(player, pw_invisibility as i32) {
                 return;
             }
             (*player).message = b"Partial Invisibility\0" as *const u8
@@ -1941,7 +1941,7 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_getpow as i32;
         }
         75 => {
-            if P_GivePower(player, pw_ironfeet as i32) == 0 {
+            if !P_GivePower(player, pw_ironfeet as i32) {
                 return;
             }
             (*player).message = b"Radiation Shielding Suit\0" as *const u8
@@ -1949,7 +1949,7 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_getpow as i32;
         }
         76 => {
-            if P_GivePower(player, pw_allmap as i32) == 0 {
+            if !P_GivePower(player, pw_allmap as i32) {
                 return;
             }
             (*player).message = b"Computer Area Map\0" as *const u8
@@ -1957,7 +1957,7 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_getpow as i32;
         }
         77 => {
-            if P_GivePower(player, pw_infrared as i32) == 0 {
+            if !P_GivePower(player, pw_infrared as i32) {
                 return;
             }
             (*player).message = b"Light Amplification Visor\0" as *const u8
