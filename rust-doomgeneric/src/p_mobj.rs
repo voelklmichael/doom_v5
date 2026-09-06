@@ -56,16 +56,9 @@ use crate::src::p_doors::vldoor_t;
 use crate::src::p_lights::{fireflicker_t, lightflash_t, strobe_t, glow_t};
 use libc::{memcpy, memset};
 use crate::src::info::{S_BLOOD2, S_BLOOD3, S_NULL, S_PLAY, S_PLAY_RUN1, S_PUFF3};
+use crate::src::p_inter::NUMCARDS;
 
 pub use crate::src::d_ticcmd::ticcmd_t;
-pub type C2RustUnnamed_0 = u32;
-pub const NUMCARDS: C2RustUnnamed_0 = 6;
-pub const it_redskull: C2RustUnnamed_0 = 5;
-pub const it_yellowskull: C2RustUnnamed_0 = 4;
-pub const it_blueskull: C2RustUnnamed_0 = 3;
-pub const it_redcard: C2RustUnnamed_0 = 2;
-pub const it_yellowcard: C2RustUnnamed_0 = 1;
-pub const it_bluecard: C2RustUnnamed_0 = 0;
 #[derive(Copy, Clone)]
 pub enum StateAction {
     None,

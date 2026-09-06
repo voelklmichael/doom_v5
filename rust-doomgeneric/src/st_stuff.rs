@@ -56,15 +56,8 @@ use crate::src::tables::angle_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::snprintf;
+use crate::src::p_inter::NUMCARDS;
 
-pub type C2RustUnnamed_0 = u32;
-pub const NUMCARDS: C2RustUnnamed_0 = 6;
-pub const it_redskull: C2RustUnnamed_0 = 5;
-pub const it_yellowskull: C2RustUnnamed_0 = 4;
-pub const it_blueskull: C2RustUnnamed_0 = 3;
-pub const it_redcard: C2RustUnnamed_0 = 2;
-pub const it_yellowcard: C2RustUnnamed_0 = 1;
-pub const it_bluecard: C2RustUnnamed_0 = 0;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub type st_stateenum_t = u32;
 pub const FirstPersonState: st_stateenum_t = 1;

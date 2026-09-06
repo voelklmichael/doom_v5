@@ -15,17 +15,10 @@ use crate::src::p_setup::sectors;
 use crate::src::m_fixed::FixedMul;
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::m_fixed::fixed_t;
+use crate::src::p_maputl::divline_t;
 
 
 pub const NUMMOBJTYPES: mobjtype_t = 137;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct divline_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-}
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
