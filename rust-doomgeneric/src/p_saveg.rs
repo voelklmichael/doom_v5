@@ -11,7 +11,7 @@ use crate::src::i_system::I_Error;
 use crate::src::p_ceilng::P_AddActiveCeiling;
 use crate::src::d_main::savegamedir;
 use crate::src::g_game::G_VanillaVersionCode;
-use crate::src::p_ceilng::activeceilings;
+use crate::src::p_ceilng::PCeilngState;
 use crate::src::p_tick::P_InitThinkers;
 use crate::src::p_setup::numlines;
 use crate::src::p_maputl::P_SetThingPosition;
@@ -70,6 +70,7 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::m_menu::SAVESTRINGSIZE;
 use crate::src::p_ceilng::MAXCEILINGS;
 use crate::src::m_fixed::FRACBITS;
+use crate::src::game_state::game_state;
 pub type intptr_t = isize;
 pub const tc_end: C2RustUnnamed_4 = 0;
 pub const tc_mobj: C2RustUnnamed_4 = 1;
@@ -974,7 +975,7 @@ pub unsafe fn P_UnArchiveThinkers() {
         next = (*currentthinker).next as *mut thinker_t;
         if matches!((*currentthinker).function, ThinkerFn::Mobj(_))
         {
-            P_RemoveMobj(currentthinker as *mut mobj_t);
+            P_RemoveMobj(unsafe { &mut game_state().p_mobj }, currentthinker as *mut mobj_t);
         } else {
             Z_Free(currentthinker as *mut ::core::ffi::c_void);
         }
@@ -1014,7 +1015,7 @@ pub unsafe fn P_UnArchiveThinkers() {
 }
 #[no_mangle]
 pub static mut specials_e: C2RustUnnamed_5 = tc_ceiling;
-pub unsafe fn P_ArchiveSpecials() {
+pub unsafe fn P_ArchiveSpecials(state: &mut PCeilngState) {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut i: i32 = 0;
     th = thinkercap.next as *mut thinker_t;
@@ -1023,7 +1024,7 @@ pub unsafe fn P_ArchiveSpecials() {
             ThinkerFn::Paused => {
                 i = 0 as i32;
                 while i < MAXCEILINGS {
-                    if activeceilings[i as usize] == th as *mut ceiling_t {
+                    if state.activeceilings[i as usize] == th as *mut ceiling_t {
                         break;
                     }
                     i += 1;
@@ -1075,7 +1076,7 @@ pub unsafe fn P_ArchiveSpecials() {
     }
     saveg_write8(tc_endspecials as i32 as byte);
 }
-pub unsafe fn P_UnArchiveSpecials() {
+pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
     let mut tclass: byte = 0;
     let mut ceiling: *mut ceiling_t = ::core::ptr::null_mut::<ceiling_t>();
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
@@ -1101,7 +1102,7 @@ pub unsafe fn P_UnArchiveSpecials() {
                     (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
                 }
                 P_AddThinker(&raw mut (*ceiling).thinker);
-                P_AddActiveCeiling(ceiling);
+                P_AddActiveCeiling(state, ceiling);
             }
             1 => {
                 saveg_read_pad();
@@ -1140,7 +1141,7 @@ pub unsafe fn P_UnArchiveSpecials() {
                     (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
                 }
                 P_AddThinker(&raw mut (*plat).thinker);
-                P_AddActivePlat(plat);
+                P_AddActivePlat(unsafe { &mut game_state().p_plats }, plat);
             }
             4 => {
                 saveg_read_pad();

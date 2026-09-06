@@ -68,6 +68,7 @@ use crate::src::m_fixed::INT_MIN;
 use crate::src::p_user::VIEWHEIGHT;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::p_enemy::MELEERANGE;
+use crate::src::game_state::game_state;
 
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
@@ -577,8 +578,6 @@ pub const MAXMOVE: i32 = 30 * FRACUNIT;
 pub const ONFLOORZ: i32 = INT_MIN;
 pub const ONCEILINGZ: i32 = INT_MAX;
 pub const ITEMQUESIZE: i32 = 128;
-#[no_mangle]
-pub static mut test: i32 = 0;
 pub unsafe fn P_SetMobjState(
     mut mobj: *mut mobj_t,
     mut state: statenum_t,
@@ -589,7 +588,7 @@ pub unsafe fn P_SetMobjState(
             == S_NULL as i32 as u32
         {
             (*mobj).state = ::core::ptr::null_mut::<state_t>();
-            P_RemoveMobj(mobj);
+            P_RemoveMobj(unsafe { &mut game_state().p_mobj }, mobj);
             return false;
         }
         st = (&raw mut states as *mut state_t).offset(state as isize) as *mut state_t;
@@ -612,18 +611,18 @@ pub unsafe fn P_ExplodeMissile(mut mo: *mut mobj_t) {
     (*mo).momy = (*mo).momz;
     (*mo).momx = (*mo).momy;
     P_SetMobjState(mo, mobjinfo[(*mo).type_0 as usize].deathstate as statenum_t);
-    (*mo).tics -= P_Random() & 3 as i32;
+    (*mo).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*mo).tics < 1 as i32 {
         (*mo).tics = 1 as i32;
     }
     (*mo).flags &= !(MF_MISSILE as i32);
     if (*(*mo).info).deathsound != 0 {
-        S_StartSound(mo as *mut ::core::ffi::c_void, (*(*mo).info).deathsound);
+        S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, (*(*mo).info).deathsound);
     }
 }
 pub const STOPSPEED: i32 = 0x1000;
 pub const FRICTION: i32 = 0xe800;
-pub unsafe fn P_XYMovement(mut mo: *mut mobj_t) {
+pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
     let mut ptryx: fixed_t = 0;
     let mut ptryy: fixed_t = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
@@ -676,7 +675,7 @@ pub unsafe fn P_XYMovement(mut mo: *mut mobj_t) {
                     && (*(*ceilingline).backsector).ceilingpic as i32
                         == skyflatnum
                 {
-                    P_RemoveMobj(mo);
+                    P_RemoveMobj(state, mo);
                     return;
                 }
                 P_ExplodeMissile(mo);
@@ -779,7 +778,7 @@ pub unsafe fn P_ZMovement(mut mo: *mut mobj_t) {
             if !(*mo).player.is_null() && (*mo).momz < -GRAVITY * 8 as i32
             {
                 (*(*mo).player).deltaviewheight = (*mo).momz >> 3 as i32;
-                S_StartSound(
+                S_StartSound(unsafe { &mut game_state().sounds }, 
                     mo as *mut ::core::ffi::c_void,
                     sfx_oof as i32,
                 );
@@ -821,7 +820,7 @@ pub unsafe fn P_ZMovement(mut mo: *mut mobj_t) {
         }
     }
 }
-pub unsafe fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
+pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
@@ -839,10 +838,10 @@ pub unsafe fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
         (*(*(*mobj).subsector).sector).floorheight,
         MT_TFOG,
     );
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_telept as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_telept as i32);
     ss = R_PointInSubsector(x, y);
     mo = P_SpawnMobj(x, y, (*(*ss).sector).floorheight, MT_TFOG);
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_telept as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_telept as i32);
     mthing = &raw mut (*mobj).spawnpoint;
     if (*(*mobj).info).flags & MF_SPAWNCEILING as i32 != 0 {
         z = ONCEILINGZ as fixed_t;
@@ -857,13 +856,13 @@ pub unsafe fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
         (*mo).flags |= MF_AMBUSH as i32;
     }
     (*mo).reactiontime = 18 as i32;
-    P_RemoveMobj(mobj);
+    P_RemoveMobj(state, mobj);
 }
 pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
     if (*mobj).momx != 0 || (*mobj).momy != 0
         || (*mobj).flags & MF_SKULLFLY as i32 != 0
     {
-        P_XYMovement(mobj);
+        P_XYMovement(unsafe { &mut game_state().p_mobj }, mobj);
         if matches!((*mobj).thinker.function, ThinkerFn::Removed) {
             return;
         }
@@ -895,10 +894,10 @@ pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
         if leveltime & 31 as i32 != 0 {
             return;
         }
-        if P_Random() > 4 as i32 {
+        if P_Random(unsafe { &mut game_state().m_random }) > 4 as i32 {
             return;
         }
-        P_NightmareRespawn(mobj);
+        P_NightmareRespawn(unsafe { &mut game_state().p_mobj }, mobj);
     };
 }
 pub unsafe fn P_SpawnMobj(
@@ -933,7 +932,7 @@ pub unsafe fn P_SpawnMobj(
     if gameskill as i32 != sk_nightmare as i32 {
         (*mobj).reactiontime = (*info).reactiontime;
     }
-    (*mobj).lastlook = P_Random() % MAXPLAYERS;
+    (*mobj).lastlook = P_Random(unsafe { &mut game_state().m_random }) % MAXPLAYERS;
     st = (&raw mut states as *mut state_t).offset((*info).spawnstate as isize)
         as *mut state_t;
     (*mobj).state = st;
@@ -955,19 +954,36 @@ pub unsafe fn P_SpawnMobj(
     P_AddThinker(&raw mut (*mobj).thinker);
     return mobj;
 }
-#[no_mangle]
-pub static mut itemrespawnque: [mapthing_t; 128] = [mapthing_t {
-    x: 0,
-    y: 0,
-    angle: 0,
-    type_0: 0,
-    options: 0,
-}; 128];
-#[no_mangle]
-pub static mut itemrespawntime: [i32; 128] = [0; 128];
-pub static mut iquehead: i32 = 0;
-pub static mut iquetail: i32 = 0;
-pub unsafe fn P_RemoveMobj(mut mobj: *mut mobj_t) {
+pub struct PMobjState {
+    // Genuinely unused anywhere in the codebase (confirmed by full-codebase
+    // grep) -- a vestigial c2rust-transpiled global. Kept, not deleted:
+    // dead-code removal is a different track's mandate, not this one's.
+    pub test: i32,
+    pub itemrespawnque: [mapthing_t; 128],
+    pub itemrespawntime: [i32; 128],
+    pub iquehead: i32,
+    pub iquetail: i32,
+}
+
+impl PMobjState {
+    pub const fn new() -> Self {
+        PMobjState {
+            test: 0,
+            itemrespawnque: [mapthing_t {
+                x: 0,
+                y: 0,
+                angle: 0,
+                type_0: 0,
+                options: 0,
+            }; 128],
+            itemrespawntime: [0; 128],
+            iquehead: 0,
+            iquetail: 0,
+        }
+    }
+}
+
+pub unsafe fn P_RemoveMobj(state: &mut PMobjState, mut mobj: *mut mobj_t) {
     if (*mobj).flags & MF_SPECIAL as i32 != 0
         && (*mobj).flags & MF_DROPPED as i32 == 0
         && (*mobj).type_0 as u32
@@ -975,12 +991,12 @@ pub unsafe fn P_RemoveMobj(mut mobj: *mut mobj_t) {
         && (*mobj).type_0 as u32
             != MT_INS as i32 as u32
     {
-        itemrespawnque[iquehead as usize] = (*mobj).spawnpoint;
-        itemrespawntime[iquehead as usize] = leveltime;
-        iquehead = iquehead + 1 as i32
+        state.itemrespawnque[state.iquehead as usize] = (*mobj).spawnpoint;
+        state.itemrespawntime[state.iquehead as usize] = leveltime;
+        state.iquehead = state.iquehead + 1 as i32
             & ITEMQUESIZE - 1 as i32;
-        if iquehead == iquetail {
-            iquetail = iquetail + 1 as i32
+        if state.iquehead == state.iquetail {
+            state.iquetail = state.iquetail + 1 as i32
                 & ITEMQUESIZE - 1 as i32;
         }
     }
@@ -988,7 +1004,7 @@ pub unsafe fn P_RemoveMobj(mut mobj: *mut mobj_t) {
     S_StopSound(mobj);
     P_RemoveThinker(mobj as *mut thinker_t);
 }
-pub unsafe fn P_RespawnSpecials() {
+pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
@@ -999,21 +1015,21 @@ pub unsafe fn P_RespawnSpecials() {
     if deathmatch != 2 as i32 {
         return;
     }
-    if iquehead == iquetail {
+    if state.iquehead == state.iquetail {
         return;
     }
-    if leveltime - itemrespawntime[iquetail as usize]
+    if leveltime - state.itemrespawntime[state.iquetail as usize]
         < 30 as i32 * TICRATE
     {
         return;
     }
-    mthing = (&raw mut itemrespawnque as *mut mapthing_t).offset(iquetail as isize)
+    mthing = (&raw mut state.itemrespawnque as *mut mapthing_t).offset(state.iquetail as isize)
         as *mut mapthing_t;
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
     ss = R_PointInSubsector(x, y);
     mo = P_SpawnMobj(x, y, (*(*ss).sector).floorheight, MT_IFOG);
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_itmbk as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_itmbk as i32);
     i = 0 as i32;
     while i < NUMMOBJTYPES as i32 {
         if (*mthing).type_0 as i32 == mobjinfo[i as usize].doomednum {
@@ -1030,7 +1046,7 @@ pub unsafe fn P_RespawnSpecials() {
     (*mo).spawnpoint = *mthing;
     (*mo).angle = (ANG45
         * ((*mthing).angle as i32 / 45 as i32)) as angle_t;
-    iquetail = iquetail + 1 as i32
+    state.iquetail = state.iquetail + 1 as i32
         & ITEMQUESIZE - 1 as i32;
 }
 pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
@@ -1177,7 +1193,7 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     mobj = P_SpawnMobj(x, y, z, i as mobjtype_t);
     (*mobj).spawnpoint = *mthing;
     if (*mobj).tics > 0 as i32 {
-        (*mobj).tics = 1 as i32 + P_Random() % (*mobj).tics;
+        (*mobj).tics = 1 as i32 + P_Random(unsafe { &mut game_state().m_random }) % (*mobj).tics;
     }
     if (*mobj).flags & MF_COUNTKILL as i32 != 0 {
         totalkills += 1;
@@ -1193,10 +1209,10 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
 }
 pub unsafe fn P_SpawnPuff(mut x: fixed_t, mut y: fixed_t, mut z: fixed_t) {
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    z += P_Random() - P_Random() << 10 as i32;
+    z += P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 10 as i32;
     th = P_SpawnMobj(x, y, z, MT_PUFF);
     (*th).momz = FRACUNIT as fixed_t;
-    (*th).tics -= P_Random() & 3 as i32;
+    (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
@@ -1211,10 +1227,10 @@ pub unsafe fn P_SpawnBlood(
     mut damage: i32,
 ) {
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    z += P_Random() - P_Random() << 10 as i32;
+    z += P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 10 as i32;
     th = P_SpawnMobj(x, y, z, MT_BLOOD);
     (*th).momz = (FRACUNIT * 2 as i32) as fixed_t;
-    (*th).tics -= P_Random() & 3 as i32;
+    (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
@@ -1225,7 +1241,7 @@ pub unsafe fn P_SpawnBlood(
     }
 }
 pub unsafe fn P_CheckMissileSpawn(mut th: *mut mobj_t) {
-    (*th).tics -= P_Random() & 3 as i32;
+    (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
@@ -1308,14 +1324,14 @@ pub unsafe fn P_SpawnMissile(
         type_0,
     );
     if (*(*th).info).seesound != 0 {
-        S_StartSound(th as *mut ::core::ffi::c_void, (*(*th).info).seesound);
+        S_StartSound(unsafe { &mut game_state().sounds }, th as *mut ::core::ffi::c_void, (*(*th).info).seesound);
     }
     (*th).target = source as *mut mobj_s;
     an = R_PointToAngle2((*source).x, (*source).y, (*dest).x, (*dest).y);
     if (*dest).flags & MF_SHADOW as i32 != 0 {
         an = an
             .wrapping_add(
-                (P_Random() - P_Random() << 20 as i32) as angle_t,
+                (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 20 as i32) as angle_t,
             );
     }
     (*th).angle = an;
@@ -1376,7 +1392,7 @@ pub unsafe fn P_SpawnPlayerMissile(
         + 4 as i32 * 8 as i32 * FRACUNIT) as fixed_t;
     th = P_SpawnMobj(x, y, z, type_0);
     if (*(*th).info).seesound != 0 {
-        S_StartSound(th as *mut ::core::ffi::c_void, (*(*th).info).seesound);
+        S_StartSound(unsafe { &mut game_state().sounds }, th as *mut ::core::ffi::c_void, (*(*th).info).seesound);
     }
     (*th).target = source as *mut mobj_s;
     (*th).angle = an;

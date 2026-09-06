@@ -42,6 +42,7 @@ use crate::src::p_enemy::MISSILERANGE;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::tables::FINEANGLES;
 use crate::src::p_enemy::MELEERANGE;
+use crate::src::game_state::game_state;
 
 
 pub const DEH_DEFAULT_BFG_CELLS_PER_SHOT: i32 = 40;
@@ -81,19 +82,31 @@ pub unsafe fn P_SetPsprite(
         }
     };
 }
-#[no_mangle]
-pub static mut swingx: fixed_t = 0;
-#[no_mangle]
-pub static mut swingy: fixed_t = 0;
-pub unsafe fn P_CalcSwing(mut player: *mut player_t) {
+pub struct PPsprState {
+    swingx: fixed_t,
+    swingy: fixed_t,
+    pub bulletslope: fixed_t,
+}
+
+impl PPsprState {
+    pub const fn new() -> Self {
+        PPsprState {
+            swingx: 0,
+            swingy: 0,
+            bulletslope: 0,
+        }
+    }
+}
+
+pub unsafe fn P_CalcSwing(state: &mut PPsprState, mut player: *mut player_t) {
     let mut swing: fixed_t = 0;
     let mut angle: i32 = 0;
     swing = (*player).bob;
     angle = FINEANGLES / 70 as i32 * leveltime & FINEMASK;
-    swingx = FixedMul(swing, finesine[angle as usize]);
+    state.swingx = FixedMul(swing, finesine[angle as usize]);
     angle = FINEANGLES / 70 as i32 * leveltime
         + FINEANGLES / 2 as i32 & FINEMASK;
-    swingy = -FixedMul(swingx, finesine[angle as usize]);
+    state.swingy = -FixedMul(state.swingx, finesine[angle as usize]);
 }
 pub unsafe fn P_BringUpWeapon(mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;
@@ -105,7 +118,7 @@ pub unsafe fn P_BringUpWeapon(mut player: *mut player_t) {
     if (*player).pendingweapon as u32
         == wp_chainsaw as i32 as u32
     {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_sawup as i32,
         );
@@ -229,7 +242,7 @@ pub unsafe fn A_WeaponReady(
             == (&raw mut states as *mut state_t)
                 .offset(S_SAW as i32 as isize) as *mut state_t
     {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_sawidl as i32,
         );
@@ -322,18 +335,18 @@ pub unsafe fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
     let mut slope: i32 = 0;
-    damage = (P_Random() % 10 as i32 + 1 as i32)
+    damage = (P_Random(unsafe { &mut game_state().m_random }) % 10 as i32 + 1 as i32)
         << 1 as i32;
     if (*player).powers[pw_strength as i32 as usize] != 0 {
         damage *= 10 as i32;
     }
     angle = (*(*player).mo).angle;
     angle = angle
-        .wrapping_add((P_Random() - P_Random() << 18 as i32) as angle_t);
+        .wrapping_add((P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 18 as i32) as angle_t);
     slope = P_AimLineAttack((*player).mo, angle, MELEERANGE) as i32;
     P_LineAttack((*player).mo, angle, MELEERANGE, slope as fixed_t, damage);
     if !linetarget.is_null() {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_punch as i32,
         );
@@ -350,10 +363,10 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut damage: i32 = 0;
     let mut slope: i32 = 0;
     damage = 2 as i32
-        * (P_Random() % 10 as i32 + 1 as i32);
+        * (P_Random(unsafe { &mut game_state().m_random }) % 10 as i32 + 1 as i32);
     angle = (*(*player).mo).angle;
     angle = angle
-        .wrapping_add((P_Random() - P_Random() << 18 as i32) as angle_t);
+        .wrapping_add((P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 18 as i32) as angle_t);
     slope = P_AimLineAttack((*player).mo, angle, MELEERANGE + 1 as fixed_t)
         as i32;
     P_LineAttack(
@@ -364,13 +377,13 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
         damage,
     );
     if linetarget.is_null() {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_sawful as i32,
         );
         return;
     }
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_sawhit as i32,
     );
@@ -446,27 +459,26 @@ pub unsafe fn A_FirePlasma(
         player,
         ps_flash as i32,
         (weaponinfo[(*player).readyweapon as usize].flashstate
-            + (P_Random() & 1 as i32)) as statenum_t,
+            + (P_Random(unsafe { &mut game_state().m_random }) & 1 as i32)) as statenum_t,
     );
     P_SpawnPlayerMissile((*player).mo, MT_PLASMA);
 }
-pub static mut bulletslope: fixed_t = 0;
-pub unsafe fn P_BulletSlope(mut mo: *mut mobj_t) {
+pub unsafe fn P_BulletSlope(state: &mut PPsprState, mut mo: *mut mobj_t) {
     let mut an: angle_t = 0;
     an = (*mo).angle;
-    bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+    state.bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
     if linetarget.is_null() {
         an = an
             .wrapping_add(
                 ((1 as i32) << 26 as i32) as angle_t,
             );
-        bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+        state.bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         if linetarget.is_null() {
             an = an
                 .wrapping_sub(
                     ((2 as i32) << 26 as i32) as angle_t,
                 );
-            bulletslope = P_AimLineAttack(
+            state.bulletslope = P_AimLineAttack(
                 mo,
                 an,
                 16 as fixed_t * 64 as fixed_t * FRACUNIT,
@@ -474,25 +486,25 @@ pub unsafe fn P_BulletSlope(mut mo: *mut mobj_t) {
         }
     }
 }
-pub unsafe fn P_GunShot(mut mo: *mut mobj_t, mut accurate: bool) {
+pub unsafe fn P_GunShot(state: &mut PPsprState, mut mo: *mut mobj_t, mut accurate: bool) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
     damage = 5 as i32
-        * (P_Random() % 3 as i32 + 1 as i32);
+        * (P_Random(unsafe { &mut game_state().m_random }) % 3 as i32 + 1 as i32);
     angle = (*mo).angle;
     if !accurate {
         angle = angle
             .wrapping_add(
-                (P_Random() - P_Random() << 18 as i32) as angle_t,
+                (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 18 as i32) as angle_t,
             );
     }
-    P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
+    P_LineAttack(mo, angle, MISSILERANGE, state.bulletslope, damage);
 }
 pub unsafe fn A_FirePistol(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_pistol as i32,
     );
@@ -507,15 +519,15 @@ pub unsafe fn A_FirePistol(
         ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
-    P_BulletSlope((*player).mo);
-    P_GunShot((*player).mo, (*player).refire == 0);
+    P_BulletSlope(unsafe { &mut game_state().p_pspr }, (*player).mo);
+    P_GunShot(unsafe { &mut game_state().p_pspr }, (*player).mo, (*player).refire == 0);
 }
 pub unsafe fn A_FireShotgun(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
     let mut i: i32 = 0;
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_shotgn as i32,
     );
@@ -530,10 +542,10 @@ pub unsafe fn A_FireShotgun(
         ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
-    P_BulletSlope((*player).mo);
+    P_BulletSlope(unsafe { &mut game_state().p_pspr }, (*player).mo);
     i = 0 as i32;
     while i < 7 as i32 {
-        P_GunShot((*player).mo, false);
+        P_GunShot(unsafe { &mut game_state().p_pspr }, (*player).mo, false);
         i += 1;
     }
 }
@@ -544,7 +556,7 @@ pub unsafe fn A_FireShotgun2(
     let mut i: i32 = 0;
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_dshtgn as i32,
     );
@@ -559,22 +571,22 @@ pub unsafe fn A_FireShotgun2(
         ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
-    P_BulletSlope((*player).mo);
+    P_BulletSlope(unsafe { &mut game_state().p_pspr }, (*player).mo);
     i = 0 as i32;
     while i < 20 as i32 {
         damage = 5 as i32
-            * (P_Random() % 3 as i32 + 1 as i32);
+            * (P_Random(unsafe { &mut game_state().m_random }) % 3 as i32 + 1 as i32);
         angle = (*(*player).mo).angle;
         angle = angle
             .wrapping_add(
-                (P_Random() - P_Random() << 19 as i32) as angle_t,
+                (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 19 as i32) as angle_t,
             );
         P_LineAttack(
             (*player).mo,
             angle,
             MISSILERANGE,
-            bulletslope
-                + ((P_Random() as fixed_t - P_Random() as fixed_t)
+            unsafe { game_state().p_pspr.bulletslope }
+                + ((P_Random(unsafe { &mut game_state().m_random }) as fixed_t - P_Random(unsafe { &mut game_state().m_random }) as fixed_t)
                     << 5 as i32),
             damage,
         );
@@ -582,7 +594,7 @@ pub unsafe fn A_FireShotgun2(
     }
 }
 pub unsafe fn A_FireCGun(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_pistol as i32,
     );
@@ -606,8 +618,8 @@ pub unsafe fn A_FireCGun(mut player: *mut player_t, mut psp: *mut pspdef_t) {
                     .offset(S_CHAIN1 as i32 as isize) as *mut state_t,
             ) as i64 as statenum_t,
     );
-    P_BulletSlope((*player).mo);
-    P_GunShot((*player).mo, (*player).refire == 0);
+    P_BulletSlope(unsafe { &mut game_state().p_pspr }, (*player).mo);
+    P_GunShot(unsafe { &mut game_state().p_pspr }, (*player).mo, (*player).refire == 0);
 }
 pub unsafe fn A_Light0(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     (*player).extralight = 0 as i32;
@@ -645,7 +657,7 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
             j = 0 as i32;
             while j < 15 as i32 {
                 damage
-                    += (P_Random() & 7 as i32) + 1 as i32;
+                    += (P_Random(unsafe { &mut game_state().m_random }) & 7 as i32) + 1 as i32;
                 j += 1;
             }
             P_DamageMobj(
@@ -659,7 +671,7 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
     }
 }
 pub unsafe fn A_BFGsound(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_bfg as i32,
     );

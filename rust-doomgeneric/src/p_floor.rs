@@ -25,6 +25,7 @@ use crate::src::doomdef::NULL;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::p_spec::ML_TWOSIDED;
+use crate::src::game_state::game_state;
 
 
 pub type floor_e = u32;
@@ -170,7 +171,7 @@ pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
         (*floor).direction,
     );
     if leveltime & 7 as i32 == 0 {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             &raw mut (*(*floor).sector).soundorg as *mut ::core::ffi::c_void,
             sfx_stnmov as i32,
         );
@@ -199,7 +200,7 @@ pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
             }
         }
         P_RemoveThinker(&raw mut (*floor).thinker);
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             &raw mut (*(*floor).sector).soundorg as *mut ::core::ffi::c_void,
             sfx_pstop as i32,
         );

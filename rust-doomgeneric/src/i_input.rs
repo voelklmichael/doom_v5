@@ -1,6 +1,7 @@
 use crate::src::d_event::event_t;
 use crate::src::d_event::D_PostEvent;
 use crate::src::d_event::{ev_keydown, ev_keyup};
+use crate::src::game_state::game_state;
 use crate::src::m_controls::KEY_RSHIFT;
 
 extern "C" {
@@ -9,9 +10,21 @@ extern "C" {
         key: *mut u8,
     ) -> i32;
 }
-pub static mut vanilla_keyboard_mapping: i32 = 1;
-static mut shiftdown: i32 = 0;
-static mut shiftxform: [::core::ffi::c_char; 128] = [
+pub struct IInputState {
+    pub vanilla_keyboard_mapping: i32,
+    shiftdown: i32,
+}
+
+impl IInputState {
+    pub const fn new() -> Self {
+        IInputState {
+            vanilla_keyboard_mapping: 1,
+            shiftdown: 0,
+        }
+    }
+}
+
+static shiftxform: [::core::ffi::c_char; 128] = [
     0 as i32 as ::core::ffi::c_char,
     1 as i32 as ::core::ffi::c_char,
     2 as i32 as ::core::ffi::c_char,
@@ -147,10 +160,11 @@ unsafe fn TranslateKey(
     return key;
 }
 unsafe fn GetTypedChar(
+    state: &mut IInputState,
     mut key: u8,
 ) -> u8 {
     key = TranslateKey(key);
-    if shiftdown > 0 as i32 {
+    if state.shiftdown > 0 as i32 {
         if key as i32 >= 0 as i32
             && (key as usize)
                 < (::core::mem::size_of::<[::core::ffi::c_char; 128]>() as usize)
@@ -164,6 +178,7 @@ unsafe fn GetTypedChar(
     return key;
 }
 unsafe fn UpdateShiftStatus(
+    state: &mut IInputState,
     mut pressed: i32,
     mut key: u8,
 ) {
@@ -174,10 +189,10 @@ unsafe fn UpdateShiftStatus(
         change = -(1 as i32);
     }
     if key as i32 == KEY_RSHIFT {
-        shiftdown += change;
+        state.shiftdown += change;
     }
 }
-pub unsafe fn I_GetEvent() {
+pub unsafe fn I_GetEvent(state: &mut IInputState) {
     let mut event: event_t = event_t {
         type_0: ev_keydown,
         data1: 0,
@@ -188,20 +203,20 @@ pub unsafe fn I_GetEvent() {
     let mut pressed: i32 = 0;
     let mut key: u8 = 0;
     while DG_GetKey(&raw mut pressed, &raw mut key) != 0 {
-        UpdateShiftStatus(pressed, key);
+        UpdateShiftStatus(state, pressed, key);
         if pressed != 0 {
             event.type_0 = ev_keydown;
             event.data1 = TranslateKey(key) as i32;
-            event.data2 = GetTypedChar(key) as i32;
+            event.data2 = GetTypedChar(state, key) as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&raw mut event);
+                D_PostEvent(&mut game_state().d_event, &raw mut event);
             }
         } else {
             event.type_0 = ev_keyup;
             event.data1 = TranslateKey(key) as i32;
             event.data2 = 0 as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&raw mut event);
+                D_PostEvent(&mut game_state().d_event, &raw mut event);
             }
             break;
         }

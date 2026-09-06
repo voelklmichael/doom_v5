@@ -40,6 +40,7 @@ use crate::src::m_controls::KEY_RSHIFT;
 use crate::src::m_controls::KEY_RALT;
 use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_controls::KEY_ESCAPE;
+use crate::src::game_state::game_state;
 
 pub const KEY_LALT: i32 = KEY_RALT;
 pub const HU_FONTSTART: i32 = '!' as i32;
@@ -662,12 +663,12 @@ pub unsafe fn HU_Ticker() {
                                 if gamemode as u32
                                     == commercial as i32 as u32
                                 {
-                                    S_StartSound(
+                                    S_StartSound(unsafe { &mut game_state().sounds }, 
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                         sfx_radio as i32,
                                     );
                                 } else {
-                                    S_StartSound(
+                                    S_StartSound(unsafe { &mut game_state().sounds }, 
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                         sfx_tink as i32,
                                     );

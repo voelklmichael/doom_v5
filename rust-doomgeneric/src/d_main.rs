@@ -24,6 +24,7 @@ use crate::src::s_sound::S_UpdateSounds;
 use crate::src::s_sound::snd_channels;
 use crate::src::v_video::V_DrawMouseSpeedBox;
 use crate::src::d_event::D_PopEvent;
+use crate::src::game_state::game_state;
 use crate::src::f_finale::F_Drawer;
 use crate::src::f_wipe::wipe_StartScreen;
 use crate::src::f_wipe::wipe_EndScreen;
@@ -242,7 +243,7 @@ pub unsafe fn D_ProcessEvents() {
         return;
     }
     loop {
-        ev = D_PopEvent();
+        ev = D_PopEvent(&mut game_state().d_event);
         if ev.is_null() {
             break;
         }
@@ -317,7 +318,7 @@ pub unsafe fn D_Display() {
             WI_Drawer();
         }
         2 => {
-            F_Drawer();
+            F_Drawer(unsafe { &mut game_state().f_finale });
         }
         3 => {
             D_PageDrawer();
@@ -403,10 +404,10 @@ pub unsafe fn D_Display() {
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    wipestart = I_GetTime() - 1 as i32;
+    wipestart = I_GetTime(unsafe { &mut game_state().i_timer }) - 1 as i32;
     loop {
         loop {
-            nowtime = I_GetTime();
+            nowtime = I_GetTime(unsafe { &mut game_state().i_timer });
             tics = nowtime - wipestart;
             I_Sleep(1 as i32);
             if !(tics <= 0 as i32) {
@@ -431,8 +432,8 @@ pub unsafe fn D_Display() {
 }
 pub unsafe fn D_BindVariables() {
     let mut i: i32 = 0;
-    I_BindJoystickVariables();
-    I_BindSoundVariables();
+    I_BindJoystickVariables(unsafe { &mut game_state().i_joystick });
+    I_BindSoundVariables(unsafe { &mut game_state().i_sound });
     M_BindBaseControls();
     M_BindWeaponControls();
     M_BindMapControls();
@@ -599,9 +600,9 @@ pub unsafe fn D_DoAdvanceDemo() {
             if gamemode as u32
                 == commercial as i32 as u32
             {
-                S_StartMusic(mus_dm2ttl as i32);
+                S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
             } else {
-                S_StartMusic(mus_intro as i32);
+                S_StartMusic(unsafe { &mut game_state().sounds }, mus_intro as i32);
             }
         }
         1 => {
@@ -630,7 +631,7 @@ pub unsafe fn D_DoAdvanceDemo() {
                 pagetic = TICRATE * 11 as i32;
                 pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartMusic(mus_dm2ttl as i32);
+                S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
             } else {
                 pagetic = 200 as i32;
                 if gamemode as u32
@@ -1217,7 +1218,7 @@ pub unsafe fn D_DoomMain() {
     if devparm {
         printf(D_DEVSTR.as_ptr());
     }
-    M_SetConfigDir(::core::ptr::null_mut::<::core::ffi::c_char>());
+    M_SetConfigDir(unsafe { &mut game_state().m_config }, ::core::ptr::null_mut::<::core::ffi::c_char>());
     p = M_CheckParm("-turbo");
     if p != 0 {
         let mut scale: i32 = 200 as i32;
@@ -1252,15 +1253,16 @@ pub unsafe fn D_DoomMain() {
             as *const ::core::ffi::c_char,
     );
     M_SetConfigFilenames(
+        unsafe { &mut game_state().m_config },
         b"default.cfg\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char,
         b"doomgenericdoom.cfg\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char,
     );
     D_BindVariables();
-    M_LoadDefaults();
+    M_LoadDefaults(unsafe { &mut game_state().m_config });
     I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
-    iwadfile = D_FindIWAD(
+    iwadfile = D_FindIWAD(unsafe { &mut game_state().d_iwad }, 
         (1 as i32) << doom as i32
             | (1 as i32) << doom2 as i32
             | (1 as i32) << pack_tnt as i32
@@ -1345,7 +1347,7 @@ pub unsafe fn D_DoomMain() {
     );
     W_GenerateHashTable();
     D_SetGameDescription();
-    savegamedir = M_GetSaveGameDir(D_SaveGameIWADName(gamemission));
+    savegamedir = M_GetSaveGameDir(unsafe { &mut game_state().m_config }, D_SaveGameIWADName(gamemission));
     if modifiedgame {
         let mut name: [[::core::ffi::c_char; 8]; 23] = [
             ::core::mem::transmute::<
@@ -1478,8 +1480,8 @@ pub unsafe fn D_DoomMain() {
         b"I_Init: Setting up machine state.\n\0" as *const u8
             as *const ::core::ffi::c_char,
     );
-    I_InitSound(true);
-    I_InitMusic();
+    I_InitSound(unsafe { &mut game_state().i_sound }, true);
+    I_InitMusic(unsafe { &mut game_state().i_sound });
     D_ConnectNetGame();
     startskill = sk_medium;
     startepisode = 1 as i32;
@@ -1562,7 +1564,7 @@ pub unsafe fn D_DoomMain() {
     );
     P_Init();
     printf(b"S_Init: Setting up sound.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    S_Init(sfxVolume * 8 as i32, musicVolume * 8 as i32);
+    S_Init(unsafe { &mut game_state().sounds }, sfxVolume * 8 as i32, musicVolume * 8 as i32);
     printf(
         b"D_CheckNetGame: Checking network game status.\n\0" as *const u8
             as *const ::core::ffi::c_char,

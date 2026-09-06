@@ -21,6 +21,7 @@ use crate::src::p_inter::{it_bluecard, it_blueskull, it_redcard, it_redskull, it
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
 use crate::src::m_fixed::FRACUNIT;
+use crate::src::game_state::game_state;
 pub type vldoor_e = u32;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
@@ -52,7 +53,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                 match (*door).type_0 as u32 {
                     5 => {
                         (*door).direction = -(1 as i32);
-                        S_StartSound(
+                        S_StartSound(unsafe { &mut game_state().sounds }, 
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
                             sfx_bdcls as i32,
@@ -60,7 +61,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                     }
                     0 => {
                         (*door).direction = -(1 as i32);
-                        S_StartSound(
+                        S_StartSound(unsafe { &mut game_state().sounds }, 
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
                             sfx_dorcls as i32,
@@ -68,7 +69,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                     }
                     1 => {
                         (*door).direction = 1 as i32;
-                        S_StartSound(
+                        S_StartSound(unsafe { &mut game_state().sounds }, 
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
@@ -85,7 +86,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                     4 => {
                         (*door).direction = 1 as i32;
                         (*door).type_0 = vld_normal;
-                        S_StartSound(
+                        S_StartSound(unsafe { &mut game_state().sounds }, 
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
@@ -111,7 +112,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                     5 | 7 => {
                         (*(*door).sector).specialdata = NULL;
                         P_RemoveThinker(&raw mut (*door).thinker);
-                        S_StartSound(
+                        S_StartSound(unsafe { &mut game_state().sounds }, 
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
                             sfx_bdcls as i32,
@@ -134,7 +135,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                     7 | 2 => {}
                     _ => {
                         (*door).direction = 1 as i32;
-                        S_StartSound(
+                        S_StartSound(unsafe { &mut game_state().sounds }, 
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
@@ -192,7 +193,7 @@ pub unsafe fn EV_DoLockedDoor(
                 (*p).message = b"You need a blue key to activate this object\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
                 return 0 as i32;
             }
         }
@@ -206,7 +207,7 @@ pub unsafe fn EV_DoLockedDoor(
                 (*p).message = b"You need a red key to activate this object\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
                 return 0 as i32;
             }
         }
@@ -220,7 +221,7 @@ pub unsafe fn EV_DoLockedDoor(
                 (*p).message = b"You need a yellow key to activate this object\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
                 return 0 as i32;
             }
         }
@@ -267,7 +268,7 @@ pub unsafe fn EV_DoDoor(
                 (*door).direction = -(1 as i32);
                 (*door).speed = (FRACUNIT * 2 as i32
                     * 4 as i32) as fixed_t;
-                S_StartSound(
+                S_StartSound(unsafe { &mut game_state().sounds }, 
                     &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
                     sfx_bdcls as i32,
                 );
@@ -276,7 +277,7 @@ pub unsafe fn EV_DoDoor(
                 (*door).topheight = P_FindLowestCeilingSurrounding(sec);
                 (*door).topheight -= 4 as i32 * FRACUNIT;
                 (*door).direction = -(1 as i32);
-                S_StartSound(
+                S_StartSound(unsafe { &mut game_state().sounds }, 
                     &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
                     sfx_dorcls as i32,
                 );
@@ -284,7 +285,7 @@ pub unsafe fn EV_DoDoor(
             1 => {
                 (*door).topheight = (*sec).ceilingheight;
                 (*door).direction = -(1 as i32);
-                S_StartSound(
+                S_StartSound(unsafe { &mut game_state().sounds }, 
                     &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
                     sfx_dorcls as i32,
                 );
@@ -296,7 +297,7 @@ pub unsafe fn EV_DoDoor(
                 (*door).speed = (FRACUNIT * 2 as i32
                     * 4 as i32) as fixed_t;
                 if (*door).topheight != (*sec).ceilingheight {
-                    S_StartSound(
+                    S_StartSound(unsafe { &mut game_state().sounds }, 
                         &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
                         sfx_bdopn as i32,
                     );
@@ -307,7 +308,7 @@ pub unsafe fn EV_DoDoor(
                 (*door).topheight = P_FindLowestCeilingSurrounding(sec);
                 (*door).topheight -= 4 as i32 * FRACUNIT;
                 if (*door).topheight != (*sec).ceilingheight {
-                    S_StartSound(
+                    S_StartSound(unsafe { &mut game_state().sounds }, 
                         &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
                         sfx_doropn as i32,
                     );
@@ -336,7 +337,7 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
                 (*player).message = b"You need a blue key to open this door\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
                 return;
             }
         }
@@ -350,7 +351,7 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
                 (*player).message = b"You need a yellow key to open this door\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
                 return;
             }
         }
@@ -364,7 +365,7 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
                 (*player).message = b"You need a red key to open this door\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
                 return;
             }
         }
@@ -405,19 +406,19 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
     }
     match (*line).special as i32 {
         117 | 118 => {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                 sfx_bdopn as i32,
             );
         }
         1 | 31 => {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                 sfx_doropn as i32,
             );
         }
         _ => {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                 sfx_doropn as i32,
             );

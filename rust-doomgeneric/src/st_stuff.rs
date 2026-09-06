@@ -64,6 +64,7 @@ use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::tables::ANG180;
 use crate::src::tables::ANG45;
 use crate::src::am_map::{AM_MSGHEADER, AM_MSGENTERED, AM_MSGEXITED};
+use crate::src::game_state::game_state;
 
 pub type st_stateenum_t = u32;
 pub const FirstPersonState: st_stateenum_t = 1;
@@ -521,7 +522,7 @@ pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
                         (*plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
                             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(musnum, 1 as i32);
+                        S_ChangeMusic(unsafe { &mut game_state().sounds }, musnum, 1 as i32);
                     }
                 } else {
                     musnum = mus_e1m1 as i32
@@ -537,7 +538,7 @@ pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
                         (*plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
                             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(musnum, 1 as i32);
+                        S_ChangeMusic(unsafe { &mut game_state().sounds }, musnum, 1 as i32);
                     }
                 }
             } else if (if gamemission as u32
@@ -891,7 +892,7 @@ pub unsafe fn ST_updateWidgets() {
 }
 pub unsafe fn ST_Ticker() {
     st_clock = st_clock.wrapping_add(1);
-    st_randomnumber = M_Random();
+    st_randomnumber = M_Random(unsafe { &mut game_state().m_random });
     ST_updateWidgets();
     st_oldhealth = (*plyr).health;
 }
@@ -949,22 +950,22 @@ pub unsafe fn ST_drawWidgets(mut refresh: bool) {
     let mut i: i32 = 0;
     st_armson = st_statusbaron && deathmatch == 0;
     st_fragson = deathmatch != 0 && st_statusbaron;
-    STlib_updateNum(&raw mut w_ready, refresh);
+    STlib_updateNum(unsafe { &mut game_state().st_lib }, &raw mut w_ready, refresh);
     i = 0 as i32;
     while i < 4 as i32 {
-        STlib_updateNum(
+        STlib_updateNum(unsafe { &mut game_state().st_lib }, 
             (&raw mut w_ammo as *mut st_number_t).offset(i as isize) as *mut st_number_t,
             refresh,
         );
-        STlib_updateNum(
+        STlib_updateNum(unsafe { &mut game_state().st_lib }, 
             (&raw mut w_maxammo as *mut st_number_t).offset(i as isize)
                 as *mut st_number_t,
             refresh,
         );
         i += 1;
     }
-    STlib_updatePercent(&raw mut w_health, refresh as i32);
-    STlib_updatePercent(&raw mut w_armor, refresh as i32);
+    STlib_updatePercent(unsafe { &mut game_state().st_lib }, &raw mut w_health, refresh as i32);
+    STlib_updatePercent(unsafe { &mut game_state().st_lib }, &raw mut w_armor, refresh as i32);
     STlib_updateBinIcon(&raw mut w_armsbg, refresh);
     i = 0 as i32;
     while i < 6 as i32 {
@@ -985,7 +986,7 @@ pub unsafe fn ST_drawWidgets(mut refresh: bool) {
         );
         i += 1;
     }
-    STlib_updateNum(&raw mut w_frags, refresh);
+    STlib_updateNum(unsafe { &mut game_state().st_lib }, &raw mut w_frags, refresh);
 }
 pub unsafe fn ST_doRefresh() {
     st_firsttime = false;
@@ -1306,7 +1307,7 @@ pub unsafe fn ST_initData() {
         keyboxes[i as usize] = -(1 as i32);
         i += 1;
     }
-    STlib_init();
+    STlib_init(unsafe { &mut game_state().st_lib });
 }
 pub unsafe fn ST_createWidgets() {
     let mut i: i32 = 0;

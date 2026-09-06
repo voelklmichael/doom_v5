@@ -42,6 +42,7 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG180;
 use crate::src::p_mobj::ONFLOORZ;
+use crate::src::game_state::game_state;
 
 
 pub type card_t = u32;
@@ -204,7 +205,7 @@ pub unsafe fn P_GiveWeapon(
             == (&raw mut players as *mut player_t).offset(consoleplayer as isize)
                 as *mut player_t
         {
-            S_StartSound(NULL, sfx_wpnup as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_wpnup as i32);
         }
         return false;
     }
@@ -665,13 +666,13 @@ pub unsafe fn P_TouchSpecialThing(
     if (*special).flags & MF_COUNTITEM as i32 != 0 {
         (*player).itemcount += 1;
     }
-    P_RemoveMobj(special);
+    P_RemoveMobj(unsafe { &mut game_state().p_mobj }, special);
     (*player).bonuscount += BONUSADD;
     if player
         == (&raw mut players as *mut player_t).offset(consoleplayer as isize)
             as *mut player_t
     {
-        S_StartSound(NULL, sound);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sound);
     }
 }
 pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
@@ -723,7 +724,7 @@ pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
     } else {
         P_SetMobjState(target, (*(*target).info).deathstate as statenum_t);
     }
-    (*target).tics -= P_Random() & 3 as i32;
+    (*target).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*target).tics < 1 as i32 {
         (*target).tics = 1 as i32;
     }
@@ -786,7 +787,7 @@ pub unsafe fn P_DamageMobj(
             * 100 as i32 / (*(*target).info).mass) as fixed_t;
         if damage < 40 as i32 && damage > (*target).health
             && (*target).z - (*inflictor).z > 64 as i32 * FRACUNIT
-            && P_Random() & 1 as i32 != 0
+            && P_Random(unsafe { &mut game_state().m_random }) & 1 as i32 != 0
         {
             ang = ang.wrapping_add(ANG180);
             thrust *= 4 as i32;
@@ -851,7 +852,7 @@ pub unsafe fn P_DamageMobj(
         P_KillMobj(source, target);
         return;
     }
-    if P_Random() < (*(*target).info).painchance
+    if P_Random(unsafe { &mut game_state().m_random }) < (*(*target).info).painchance
         && (*target).flags & MF_SKULLFLY as i32 == 0
     {
         (*target).flags |= MF_JUSTHIT as i32;

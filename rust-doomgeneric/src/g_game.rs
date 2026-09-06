@@ -12,8 +12,8 @@ use crate::src::w_wad::{
 };
 use crate::src::d_loop::singletics;
 use crate::src::d_loop::ticdup;
-use crate::src::m_random::rndindex;
-use crate::src::d_net::netcmds;
+use crate::src::m_random::MRandomState;
+use crate::src::d_net::DNetState;
 use crate::src::m_controls::key_right;
 use crate::src::m_controls::key_left;
 use crate::src::m_controls::key_up;
@@ -173,6 +173,7 @@ use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG45;
 use crate::src::d_loop::BACKUPTICS;
 use crate::src::m_fixed::FRACBITS;
+use crate::src::game_state::game_state;
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -942,7 +943,7 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
     if gamestate as u32
         == GS_FINALE as i32 as u32
     {
-        if F_Responder(ev) {
+        if F_Responder(unsafe { &mut game_state().f_finale }, ev) {
             return true;
         }
     }
@@ -997,7 +998,7 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
     }
     return false;
 }
-pub unsafe fn G_Ticker() {
+pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
     let mut i: i32 = 0;
     let mut buf: i32 = 0;
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
@@ -1034,7 +1035,7 @@ pub unsafe fn G_Ticker() {
                 G_DoCompleted();
             }
             7 => {
-                F_StartFinale();
+                F_StartFinale(unsafe { &mut game_state().f_finale });
             }
             8 => {
                 G_DoWorldDone();
@@ -1058,7 +1059,7 @@ pub unsafe fn G_Ticker() {
             cmd = &raw mut (*(&raw mut players as *mut player_t).offset(i as isize)).cmd;
             memcpy(
                 cmd as *mut ::core::ffi::c_void,
-                netcmds.offset(i as isize) as *mut ticcmd_t
+                d_net_state.netcmds.offset(i as isize) as *mut ticcmd_t
                     as *const ::core::ffi::c_void,
                 ::core::mem::size_of::<ticcmd_t>() as size_t,
             );
@@ -1101,7 +1102,7 @@ pub unsafe fn G_Ticker() {
                     consistancy[i as usize][buf as usize] = (*players[i as usize].mo).x
                         as byte;
                 } else {
-                    consistancy[i as usize][buf as usize] = rndindex as byte;
+                    consistancy[i as usize][buf as usize] = state.rndindex as byte;
                 }
             }
         }
@@ -1163,7 +1164,7 @@ pub unsafe fn G_Ticker() {
             WI_Ticker();
         }
         2 => {
-            F_Ticker();
+            F_Ticker(unsafe { &mut game_state().f_finale });
         }
         3 => {
             D_PageTicker();
@@ -1268,7 +1269,7 @@ pub unsafe fn G_CheckSpot(
         return false;
     }
     if bodyqueslot >= BODYQUESIZE {
-        P_RemoveMobj(bodyque[(bodyqueslot % BODYQUESIZE) as usize]);
+        P_RemoveMobj(unsafe { &mut game_state().p_mobj }, bodyque[(bodyqueslot % BODYQUESIZE) as usize]);
     }
     bodyque[(bodyqueslot % BODYQUESIZE) as usize] = players[playernum as usize].mo;
     bodyqueslot += 1;
@@ -1312,7 +1313,7 @@ pub unsafe fn G_CheckSpot(
         MT_TFOG,
     );
     if players[consoleplayer as usize].viewz != 1 as i32 {
-        S_StartSound(mo as *mut ::core::ffi::c_void, sfx_telept as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_telept as i32);
     }
     return true;
 }
@@ -1327,7 +1328,7 @@ pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
     }
     j = 0 as i32;
     while j < 20 as i32 {
-        i = P_Random() % selections;
+        i = P_Random(unsafe { &mut game_state().m_random }) % selections;
         if G_CheckSpot(
             playernum,
             (&raw mut deathmatchstarts as *mut mapthing_t).offset(i as isize)
@@ -1631,7 +1632,7 @@ pub unsafe fn G_DoCompleted() {
     gamestate = GS_INTERMISSION;
     viewactive = false;
     automapactive = false;
-    StatCopy(&raw mut wminfo);
+    StatCopy(unsafe { &mut game_state().statdump }, &raw mut wminfo);
     WI_Start(&raw mut wminfo);
 }
 pub unsafe fn G_WorldDone() {
@@ -1660,7 +1661,7 @@ pub unsafe fn G_WorldDone() {
         }
         match current_block_3 {
             9744923308842414524 => {
-                F_StartFinale();
+                F_StartFinale(unsafe { &mut game_state().f_finale });
             }
             _ => {}
         }
@@ -1704,7 +1705,7 @@ pub unsafe fn G_DoLoadGame() {
     P_UnArchivePlayers();
     P_UnArchiveWorld();
     P_UnArchiveThinkers();
-    P_UnArchiveSpecials();
+    P_UnArchiveSpecials(unsafe { &mut game_state().p_ceilng });
     if !P_ReadSaveGameEOF() {
         I_Error("Bad savegame");
     }
@@ -1765,7 +1766,7 @@ pub unsafe fn G_DoSaveGame() {
     P_ArchivePlayers();
     P_ArchiveWorld();
     P_ArchiveThinkers();
-    P_ArchiveSpecials();
+    P_ArchiveSpecials(unsafe { &mut game_state().p_ceilng });
     P_WriteSaveGameEOF();
     if vanilla_savegame_limit != 0
         && ftell(save_stream) > SAVEGAMESIZE as i64
@@ -1870,7 +1871,7 @@ pub unsafe fn G_InitNew(
     {
         map = 9 as i32;
     }
-    M_ClearRandom();
+    M_ClearRandom(unsafe { &mut game_state().m_random });
     if skill as i32 == sk_nightmare as i32
         || respawnparm
     {
@@ -2266,7 +2267,7 @@ pub unsafe fn G_DoPlayDemo() {
     precache = false;
     G_InitNew(skill, episode, map);
     precache = true;
-    starttime = I_GetTime();
+    starttime = I_GetTime(unsafe { &mut game_state().i_timer });
     usergame = false;
     demoplayback = true;
 }
@@ -2283,7 +2284,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
     if timingdemo {
         let mut fps: f32 = 0.;
         let mut realtics: i32 = 0;
-        endtime = I_GetTime();
+        endtime = I_GetTime(unsafe { &mut game_state().i_timer });
         realtics = endtime - starttime;
         fps = gametic as f32 * TICRATE as f32
             / realtics as f32;

@@ -101,15 +101,27 @@ static iwads: [iwad_t; 14] = [
     },
 ];
 pub const MAX_IWAD_DIRS: i32 = 128;
-static mut iwad_dirs_built: bool = false;
-static mut iwad_dirs: Vec<String> = Vec::new();
+
+pub struct DIwadState {
+    iwad_dirs_built: bool,
+    iwad_dirs: Vec<String>,
+}
+
+impl DIwadState {
+    pub const fn new() -> Self {
+        DIwadState {
+            iwad_dirs_built: false,
+            iwad_dirs: Vec::new(),
+        }
+    }
+}
 
 unsafe fn file_exists(path: &str) -> bool {
     let path_cstring = ::std::ffi::CString::new(path).unwrap();
     M_FileExists(path_cstring.as_ptr() as *mut ::core::ffi::c_char)
 }
-unsafe fn add_iwad_dir(dir: &str) {
-    iwad_dirs.push(dir.to_string());
+unsafe fn add_iwad_dir(state: &mut DIwadState, dir: &str) {
+    state.iwad_dirs.push(dir.to_string());
 }
 fn dir_is_file(path: &str, filename: &str) -> bool {
     path.len() >= filename.len() + 1
@@ -163,19 +175,20 @@ fn identify_iwad_by_name(name: &str, mask: i32) -> GameMission_t {
     }
     none
 }
-unsafe fn build_iwad_dir_list() {
-    add_iwad_dir(FILES_DIR);
-    iwad_dirs_built = true;
+unsafe fn build_iwad_dir_list(state: &mut DIwadState) {
+    add_iwad_dir(state, FILES_DIR);
+    state.iwad_dirs_built = true;
 }
 pub unsafe fn D_FindWADByName(
+    state: &mut DIwadState,
     mut name: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let name_str = ::std::ffi::CStr::from_ptr(name).to_str().unwrap();
     if file_exists(name_str) {
         return name;
     }
-    build_iwad_dir_list();
-    for dir in iwad_dirs.iter() {
+    build_iwad_dir_list(state);
+    for dir in state.iwad_dirs.iter() {
         if dir_is_file(dir, name_str) && file_exists(dir) {
             return ::std::ffi::CString::new(dir.as_str()).unwrap().into_raw();
         }
@@ -187,12 +200,14 @@ pub unsafe fn D_FindWADByName(
     ::core::ptr::null_mut::<::core::ffi::c_char>()
 }
 pub unsafe fn D_TryFindWADByName(
+    state: &mut DIwadState,
     mut filename: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
-    let result = D_FindWADByName(filename);
+    let result = D_FindWADByName(state, filename);
     if !result.is_null() { result } else { filename }
 }
 pub unsafe fn D_FindIWAD(
+    state: &mut DIwadState,
     mut mask: i32,
     mut mission: *mut GameMission_t,
 ) -> *mut ::core::ffi::c_char {
@@ -200,7 +215,7 @@ pub unsafe fn D_FindIWAD(
     if iwadparm != 0 {
         let iwadfile = myargv[(iwadparm + 1 as i32) as usize].as_ptr()
             as *mut ::core::ffi::c_char;
-        let result = D_FindWADByName(iwadfile);
+        let result = D_FindWADByName(state, iwadfile);
         if result.is_null() {
             I_Error(&format!(
                 "IWAD file '{}' not found!",
@@ -217,8 +232,8 @@ pub unsafe fn D_FindIWAD(
             b"-iwad not specified, trying a few iwad names\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
-        build_iwad_dir_list();
-        for dir in iwad_dirs.iter() {
+        build_iwad_dir_list(state);
+        for dir in state.iwad_dirs.iter() {
             if let Some(found) = search_directory_for_iwad(dir, mask, mission) {
                 return ::std::ffi::CString::new(found).unwrap().into_raw();
             }
@@ -227,6 +242,7 @@ pub unsafe fn D_FindIWAD(
     }
 }
 pub unsafe fn D_FindAllIWADs(
+    state: &mut DIwadState,
     mut mask: i32,
 ) -> *mut *const iwad_t {
     let mut result: Vec<*const iwad_t> = Vec::new();
@@ -235,7 +251,7 @@ pub unsafe fn D_FindAllIWADs(
             continue;
         }
         let name = ::std::ffi::CString::new(iwad.name).unwrap();
-        if !D_FindWADByName(name.as_ptr() as *mut ::core::ffi::c_char).is_null() {
+        if !D_FindWADByName(state, name.as_ptr() as *mut ::core::ffi::c_char).is_null() {
             result.push(iwad as *const iwad_t);
         }
     }

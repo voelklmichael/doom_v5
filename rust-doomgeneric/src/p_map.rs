@@ -16,8 +16,6 @@ use crate::src::p_maputl::P_PathTraverse;
 use crate::src::p_inter::P_TouchSpecialThing;
 use crate::src::p_spec::P_ShootSpecialLine;
 use crate::src::p_spec::P_CrossSpecialLine;
-use crate::src::p_sight::topslope;
-use crate::src::p_sight::bottomslope;
 use crate::src::p_maputl::P_LineOpening;
 use crate::src::p_maputl::P_BlockThingsIterator;
 use crate::src::p_maputl::openrange;
@@ -68,6 +66,7 @@ use crate::src::p_maputl::PT_ADDLINES;
 use crate::src::p_maputl::PT_ADDTHINGS;
 use crate::src::p_maputl::MAPBLOCKSHIFT;
 use crate::src::m_fixed::FRACBITS;
+use crate::src::game_state::game_state;
 
 pub const DEH_DEFAULT_SPECIES_INFIGHTING: i32 = 0;
 pub const deh_species_infighting: i32 = DEH_DEFAULT_SPECIES_INFIGHTING;
@@ -248,7 +247,7 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
         return true_0 as boolean;
     }
     if (*tmthing).flags & MF_SKULLFLY as i32 != 0 {
-        damage = (P_Random() % 8 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 8 as i32 + 1 as i32)
             * (*(*tmthing).info).damage;
         P_DamageMobj(thing, tmthing, tmthing, damage);
         (*tmthing).flags &= !(MF_SKULLFLY as i32);
@@ -291,7 +290,7 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
             return ((*thing).flags & MF_SOLID as i32 == 0)
                 as i32 as boolean;
         }
-        damage = (P_Random() % 8 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 8 as i32 + 1 as i32)
             * (*(*tmthing).info).damage;
         P_DamageMobj(thing, tmthing, (*tmthing).target as *mut mobj_t, damage);
         return false_0 as boolean;
@@ -675,19 +674,19 @@ pub unsafe extern "C" fn PTR_AimTraverse(mut in_0: *mut intercept_t) -> boolean 
             || (*(*li).frontsector).floorheight != (*(*li).backsector).floorheight
         {
             slope = FixedDiv(openbottom - shootz, dist);
-            if slope > bottomslope {
-                bottomslope = slope;
+            if slope > game_state().p_sight.bottomslope {
+                game_state().p_sight.bottomslope = slope;
             }
         }
         if (*li).backsector.is_null()
             || (*(*li).frontsector).ceilingheight != (*(*li).backsector).ceilingheight
         {
             slope = FixedDiv(opentop - shootz, dist);
-            if slope < topslope {
-                topslope = slope;
+            if slope < game_state().p_sight.topslope {
+                game_state().p_sight.topslope = slope;
             }
         }
-        if topslope <= bottomslope {
+        if game_state().p_sight.topslope <= game_state().p_sight.bottomslope {
             return false_0 as boolean;
         }
         return true_0 as boolean;
@@ -701,18 +700,18 @@ pub unsafe extern "C" fn PTR_AimTraverse(mut in_0: *mut intercept_t) -> boolean 
     }
     dist = FixedMul(attackrange, (*in_0).frac);
     thingtopslope = FixedDiv((*th).z + (*th).height - shootz, dist);
-    if thingtopslope < bottomslope {
+    if thingtopslope < game_state().p_sight.bottomslope {
         return true_0 as boolean;
     }
     thingbottomslope = FixedDiv((*th).z - shootz, dist);
-    if thingbottomslope > topslope {
+    if thingbottomslope > game_state().p_sight.topslope {
         return true_0 as boolean;
     }
-    if thingtopslope > topslope {
-        thingtopslope = topslope;
+    if thingtopslope > game_state().p_sight.topslope {
+        thingtopslope = game_state().p_sight.topslope;
     }
-    if thingbottomslope < bottomslope {
-        thingbottomslope = bottomslope;
+    if thingbottomslope < game_state().p_sight.bottomslope {
+        thingbottomslope = game_state().p_sight.bottomslope;
     }
     aimslope = ((thingtopslope as i32
         + thingbottomslope as i32) / 2 as i32) as fixed_t;
@@ -849,9 +848,9 @@ pub unsafe fn P_AimLineAttack(
     shootz = ((*t1).z as i32
         + ((*t1).height as i32 >> 1 as i32)
         + 8 as i32 * FRACUNIT) as fixed_t;
-    topslope = (100 as i32 * FRACUNIT / 160 as i32)
+    game_state().p_sight.topslope = (100 as i32 * FRACUNIT / 160 as i32)
         as fixed_t;
-    bottomslope = (-(100 as i32) * FRACUNIT / 160 as i32)
+    game_state().p_sight.bottomslope = (-(100 as i32) * FRACUNIT / 160 as i32)
         as fixed_t;
     attackrange = distance;
     linetarget = ::core::ptr::null_mut::<mobj_t>();
@@ -904,7 +903,7 @@ pub unsafe extern "C" fn PTR_UseTraverse(mut in_0: *mut intercept_t) -> boolean 
     if (*(*in_0).d.line).special == 0 {
         P_LineOpening((*in_0).d.line);
         if openrange <= 0 as i32 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 usething as *mut ::core::ffi::c_void,
                 sfx_noway as i32,
             );
@@ -918,7 +917,7 @@ pub unsafe extern "C" fn PTR_UseTraverse(mut in_0: *mut intercept_t) -> boolean 
     {
         side = 1 as i32;
     }
-    P_UseSpecialLine(usething, (*in_0).d.line, side);
+    P_UseSpecialLine(unsafe { &mut game_state().p_switch }, usething, (*in_0).d.line, side);
     return false_0 as boolean;
 }
 pub unsafe fn P_UseLines(mut player: *mut player_t) {
@@ -975,7 +974,7 @@ pub unsafe extern "C" fn PIT_RadiusAttack(mut thing: *mut mobj_t) -> boolean {
     if dist >= bombdamage {
         return true_0 as boolean;
     }
-    if P_CheckSight(thing, bombspot) {
+    if P_CheckSight(unsafe { &mut game_state().p_sight }, thing, bombspot) {
         P_DamageMobj(
             thing,
             bombspot,
@@ -1037,7 +1036,7 @@ pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
         return true_0 as boolean;
     }
     if (*thing).flags & MF_DROPPED as i32 != 0 {
-        P_RemoveMobj(thing);
+        P_RemoveMobj(unsafe { &mut game_state().p_mobj }, thing);
         return true_0 as boolean;
     }
     if (*thing).flags & MF_SHOOTABLE as i32 == 0 {
@@ -1057,8 +1056,8 @@ pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
             (*thing).z + (*thing).height / 2 as fixed_t,
             MT_BLOOD,
         );
-        (*mo).momx = (P_Random() - P_Random() << 12 as i32) as fixed_t;
-        (*mo).momy = (P_Random() - P_Random() << 12 as i32) as fixed_t;
+        (*mo).momx = (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 12 as i32) as fixed_t;
+        (*mo).momy = (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 12 as i32) as fixed_t;
     }
     return true_0 as boolean;
 }

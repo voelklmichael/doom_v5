@@ -16,6 +16,7 @@ use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::z_zone::Z_Free;
 use crate::src::doomdef::MAXPLAYERS;
+use crate::src::game_state::game_state;
 
 
 pub static mut leveltime: i32 = 0;
@@ -75,13 +76,14 @@ pub unsafe fn P_Ticker() {
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
             P_PlayerThink(
+                unsafe { &mut game_state().p_user },
                 (&raw mut players as *mut player_t).offset(i as isize) as *mut player_t,
             );
         }
         i += 1;
     }
     P_RunThinkers();
-    P_UpdateSpecials();
-    P_RespawnSpecials();
+    P_UpdateSpecials(unsafe { &mut game_state().p_switch });
+    P_RespawnSpecials(unsafe { &mut game_state().p_mobj });
     leveltime += 1;
 }

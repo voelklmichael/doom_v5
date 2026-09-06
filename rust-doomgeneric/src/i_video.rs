@@ -20,6 +20,7 @@ use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::doomgeneric::DOOMGENERIC_RESX;
 use crate::src::doomgeneric::DOOMGENERIC_RESY;
+use crate::src::game_state::game_state;
 
 extern "C" {
     static mut DG_ScreenBuffer: *mut pixel_t;
@@ -286,7 +287,7 @@ pub unsafe fn I_ShutdownGraphics() {
     Z_Free(I_VideoBuffer as *mut ::core::ffi::c_void);
 }
 pub unsafe fn I_StartTic() {
-    I_GetEvent();
+    I_GetEvent(unsafe { &mut game_state().i_input });
 }
 pub unsafe fn I_FinishUpdate() {
     let mut y: i32 = 0;
