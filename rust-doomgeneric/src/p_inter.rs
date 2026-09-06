@@ -1541,19 +1541,19 @@ pub unsafe extern "C" fn P_GiveAmmo(
     mut player: *mut player_t,
     mut ammo: ammotype_t,
     mut num: i32,
-) -> boolean {
+) -> bool {
     let mut oldammo: i32 = 0;
     if ammo as u32
         == am_noammo as i32 as u32
     {
-        return false_0 as boolean;
+        return false;
     }
     if ammo as u32 > NUMAMMO as i32 as u32
     {
         I_Error(&format!("P_GiveAmmo: bad type {}", ammo as u32));
     }
     if (*player).ammo[ammo as usize] == (*player).maxammo[ammo as usize] {
-        return false_0 as boolean;
+        return false;
     }
     if num != 0 {
         num *= clipammo[ammo as usize];
@@ -1571,7 +1571,7 @@ pub unsafe extern "C" fn P_GiveAmmo(
         (*player).ammo[ammo as usize] = (*player).maxammo[ammo as usize];
     }
     if oldammo != 0 {
-        return true_0 as boolean;
+        return true;
     }
     match ammo as u32 {
         0 => {
@@ -1621,19 +1621,19 @@ pub unsafe extern "C" fn P_GiveAmmo(
         }
         _ => {}
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_GiveWeapon(
     mut player: *mut player_t,
     mut weapon: weapontype_t,
-    mut dropped: boolean,
-) -> boolean {
-    let mut gaveammo: boolean = 0;
-    let mut gaveweapon: boolean = 0;
-    if netgame && deathmatch != 2 as i32 && dropped == 0 {
+    mut dropped: bool,
+) -> bool {
+    let mut gaveammo: bool = false;
+    let mut gaveweapon: bool;
+    if netgame && deathmatch != 2 as i32 && !dropped {
         if (*player).weaponowned[weapon as usize] {
-            return false_0 as boolean;
+            return false;
         }
         (*player).bonuscount += BONUSADD;
         (*player).weaponowned[weapon as usize] = true;
@@ -1657,12 +1657,12 @@ pub unsafe extern "C" fn P_GiveWeapon(
         {
             S_StartSound(NULL, sfx_wpnup as i32);
         }
-        return false_0 as boolean;
+        return false;
     }
     if weaponinfo[weapon as usize].ammo as u32
         != am_noammo as i32 as u32
     {
-        if dropped != 0 {
+        if dropped {
             gaveammo = P_GiveAmmo(
                 player,
                 weaponinfo[weapon as usize].ammo,
@@ -1676,45 +1676,45 @@ pub unsafe extern "C" fn P_GiveWeapon(
             );
         }
     } else {
-        gaveammo = false_0 as boolean;
+        gaveammo = false;
     }
     if (*player).weaponowned[weapon as usize] {
-        gaveweapon = false_0 as boolean;
+        gaveweapon = false;
     } else {
-        gaveweapon = true_0 as boolean;
+        gaveweapon = true;
         (*player).weaponowned[weapon as usize] = true;
         (*player).pendingweapon = weapon;
     }
-    return (gaveweapon != 0 || gaveammo != 0) as i32 as boolean;
+    return gaveweapon || gaveammo;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_GiveBody(
     mut player: *mut player_t,
     mut num: i32,
-) -> boolean {
+) -> bool {
     if (*player).health >= MAXHEALTH {
-        return false_0 as boolean;
+        return false;
     }
     (*player).health += num;
     if (*player).health > MAXHEALTH {
         (*player).health = MAXHEALTH;
     }
     (*(*player).mo).health = (*player).health;
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_GiveArmor(
     mut player: *mut player_t,
     mut armortype: i32,
-) -> boolean {
+) -> bool {
     let mut hits: i32 = 0;
     hits = armortype * 100 as i32;
     if (*player).armorpoints >= hits {
-        return false_0 as boolean;
+        return false;
     }
     (*player).armortype = armortype;
     (*player).armorpoints = hits;
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_GiveCard(mut player: *mut player_t, mut card: card_t) {
@@ -1775,14 +1775,14 @@ pub unsafe fn P_TouchSpecialThing(
     }
     match (*special).sprite as u32 {
         55 => {
-            if P_GiveArmor(player, deh_green_armor_class) == 0 {
+            if !P_GiveArmor(player, deh_green_armor_class) {
                 return;
             }
             (*player).message = b"Picked up the armor.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         56 => {
-            if P_GiveArmor(player, deh_blue_armor_class) == 0 {
+            if !P_GiveArmor(player, deh_blue_armor_class) {
                 return;
             }
             (*player).message = b"Picked up the MegaArmor!\0" as *const u8
@@ -1892,14 +1892,14 @@ pub unsafe fn P_TouchSpecialThing(
             }
         }
         68 => {
-            if P_GiveBody(player, 10 as i32) == 0 {
+            if !P_GiveBody(player, 10 as i32) {
                 return;
             }
             (*player).message = b"Picked up a stimpack.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         69 => {
-            if P_GiveBody(player, 25 as i32) == 0 {
+            if !P_GiveBody(player, 25 as i32) {
                 return;
             }
             if (*player).health < 25 as i32 {
@@ -1966,59 +1966,59 @@ pub unsafe fn P_TouchSpecialThing(
         }
         78 => {
             if (*special).flags & MF_DROPPED as i32 != 0 {
-                if P_GiveAmmo(player, am_clip, 0 as i32) == 0 {
+                if !P_GiveAmmo(player, am_clip, 0 as i32) {
                     return;
                 }
-            } else if P_GiveAmmo(player, am_clip, 1 as i32) == 0 {
+            } else if !P_GiveAmmo(player, am_clip, 1 as i32) {
                 return
             }
             (*player).message = b"Picked up a clip.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         79 => {
-            if P_GiveAmmo(player, am_clip, 5 as i32) == 0 {
+            if !P_GiveAmmo(player, am_clip, 5 as i32) {
                 return;
             }
             (*player).message = b"Picked up a box of bullets.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         80 => {
-            if P_GiveAmmo(player, am_misl, 1 as i32) == 0 {
+            if !P_GiveAmmo(player, am_misl, 1 as i32) {
                 return;
             }
             (*player).message = b"Picked up a rocket.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         81 => {
-            if P_GiveAmmo(player, am_misl, 5 as i32) == 0 {
+            if !P_GiveAmmo(player, am_misl, 5 as i32) {
                 return;
             }
             (*player).message = b"Picked up a box of rockets.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         82 => {
-            if P_GiveAmmo(player, am_cell, 1 as i32) == 0 {
+            if !P_GiveAmmo(player, am_cell, 1 as i32) {
                 return;
             }
             (*player).message = b"Picked up an energy cell.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         83 => {
-            if P_GiveAmmo(player, am_cell, 5 as i32) == 0 {
+            if !P_GiveAmmo(player, am_cell, 5 as i32) {
                 return;
             }
             (*player).message = b"Picked up an energy cell pack.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         84 => {
-            if P_GiveAmmo(player, am_shell, 1 as i32) == 0 {
+            if !P_GiveAmmo(player, am_shell, 1 as i32) {
                 return;
             }
             (*player).message = b"Picked up 4 shotgun shells.\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         85 => {
-            if P_GiveAmmo(player, am_shell, 5 as i32) == 0 {
+            if !P_GiveAmmo(player, am_shell, 5 as i32) {
                 return;
             }
             (*player).message = b"Picked up a box of shotgun shells.\0" as *const u8
@@ -2042,7 +2042,7 @@ pub unsafe fn P_TouchSpecialThing(
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         87 => {
-            if P_GiveWeapon(player, wp_bfg, false_0 as boolean) == 0 {
+            if !P_GiveWeapon(player, wp_bfg, false) {
                 return;
             }
             (*player).message = b"You got the BFG9000!  Oh, yes.\0" as *const u8
@@ -2050,12 +2050,11 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_wpnup as i32;
         }
         88 => {
-            if P_GiveWeapon(
+            if !P_GiveWeapon(
                 player,
                 wp_chaingun,
-                ((*special).flags & MF_DROPPED as i32
-                    != 0 as i32) as i32 as boolean,
-            ) == 0
+                (*special).flags & MF_DROPPED as i32 != 0,
+            )
             {
                 return;
             }
@@ -2064,7 +2063,7 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_wpnup as i32;
         }
         89 => {
-            if P_GiveWeapon(player, wp_chainsaw, false_0 as boolean) == 0 {
+            if !P_GiveWeapon(player, wp_chainsaw, false) {
                 return;
             }
             (*player).message = b"A chainsaw!  Find some meat!\0" as *const u8
@@ -2072,7 +2071,7 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_wpnup as i32;
         }
         90 => {
-            if P_GiveWeapon(player, wp_missile, false_0 as boolean) == 0 {
+            if !P_GiveWeapon(player, wp_missile, false) {
                 return;
             }
             (*player).message = b"You got the rocket launcher!\0" as *const u8
@@ -2080,7 +2079,7 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_wpnup as i32;
         }
         91 => {
-            if P_GiveWeapon(player, wp_plasma, false_0 as boolean) == 0 {
+            if !P_GiveWeapon(player, wp_plasma, false) {
                 return;
             }
             (*player).message = b"You got the plasma gun!\0" as *const u8
@@ -2088,12 +2087,11 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_wpnup as i32;
         }
         92 => {
-            if P_GiveWeapon(
+            if !P_GiveWeapon(
                 player,
                 wp_shotgun,
-                ((*special).flags & MF_DROPPED as i32
-                    != 0 as i32) as i32 as boolean,
-            ) == 0
+                (*special).flags & MF_DROPPED as i32 != 0,
+            )
             {
                 return;
             }
@@ -2102,12 +2100,11 @@ pub unsafe fn P_TouchSpecialThing(
             sound = sfx_wpnup as i32;
         }
         93 => {
-            if P_GiveWeapon(
+            if !P_GiveWeapon(
                 player,
                 wp_supershotgun,
-                ((*special).flags & MF_DROPPED as i32
-                    != 0 as i32) as i32 as boolean,
-            ) == 0
+                (*special).flags & MF_DROPPED as i32 != 0,
+            )
             {
                 return;
             }
