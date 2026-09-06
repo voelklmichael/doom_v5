@@ -32,6 +32,7 @@ use crate::src::p_setup::sectors;
 use crate::src::p_tick::leveltime;
 use crate::src::g_game::players;
 use crate::src::p_plats::P_AddActivePlat;
+use crate::src::m_misc::M_StringJoin;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -84,7 +85,6 @@ extern "C" {
     fn T_VerticalDoor(door: *mut vldoor_t);
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
-    fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

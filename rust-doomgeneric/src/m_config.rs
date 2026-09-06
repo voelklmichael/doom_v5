@@ -1,6 +1,7 @@
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_misc::M_MakeDirectory;
+use crate::src::m_misc::M_StringJoin;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -16,7 +17,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
     ) -> i32;
     fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
-    fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }
 pub type size_t = usize;
 pub type default_type_t = u32;

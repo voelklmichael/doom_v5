@@ -37,6 +37,7 @@ use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
 use crate::src::st_lib::STlib_init;
+use crate::src::v_video::V_CopyRect;
 
 extern "C" {
     fn snprintf(
@@ -54,15 +55,6 @@ extern "C" {
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn V_CopyRect(
-        srcx: i32,
-        srcy: i32,
-        source: *mut byte,
-        width: i32,
-        height: i32,
-        destx: i32,
-        desty: i32,
-    );
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
 }
 pub type size_t = usize;

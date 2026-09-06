@@ -49,6 +49,7 @@ use crate::src::r_draw::viewwidth;
 use crate::src::r_draw::viewheight;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::m_fixed::FixedMul;
+use crate::src::r_main::R_PointToAngle;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -76,7 +77,6 @@ extern "C" {
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
