@@ -171,6 +171,7 @@ use crate::src::doomdef::TICRATE;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG45;
+use crate::src::d_loop::BACKUPTICS;
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -190,7 +191,6 @@ pub const DEH_DEFAULT_INITIAL_BULLETS: i32 = 50 as i32;
 pub const deh_initial_health: i32 = DEH_DEFAULT_INITIAL_HEALTH;
 pub const deh_initial_bullets: i32 = DEH_DEFAULT_INITIAL_BULLETS;
 pub const DOOM_191_VERSION: i32 = 111 as i32;
-pub const BACKUPTICS: i32 = 128 as i32;
 pub const FRACBITS: i32 = 16 as i32;
 pub const SAVEGAMESIZE: i32 = 0x2c000 as i32;
 #[no_mangle]

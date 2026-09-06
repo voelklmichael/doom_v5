@@ -41,7 +41,7 @@ use crate::src::doomdef::NULL;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG180;
-use crate::src::m_fixed::INT_MIN;
+use crate::src::p_mobj::ONFLOORZ;
 
 
 pub type card_t = u32;
@@ -74,7 +74,6 @@ pub const deh_megasphere_health: i32 = DEH_DEFAULT_MEGASPHERE_HEALTH;
 pub const FRACBITS: i32 = 16 as i32;
 pub const MAXHEALTH: i32 = 100 as i32;
 pub const BASETHRESHOLD: i32 = 100 as i32;
-pub const ONFLOORZ: i32 = INT_MIN;
 pub const BONUSADD: i32 = 6 as i32;
 pub static mut maxammo: [i32; 4] = [
     200 as i32,

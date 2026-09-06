@@ -49,6 +49,9 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::r_things::FF_FRAMEMASK;
+use crate::src::hu_stuff::HU_FONTSTART;
+use crate::src::hu_stuff::HU_FONTSIZE;
 pub type finalestage_t = u32;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;
@@ -107,7 +110,6 @@ pub const CC_ARCH: &str = "ARCH-VILE";
 pub const CC_SPIDER: &str = "THE SPIDER MASTERMIND";
 pub const CC_CYBER: &str = "THE CYBERDEMON";
 pub const CC_HERO: &str = "OUR HERO";
-pub const FF_FRAMEMASK: i32 = 0x7fff as i32;
 #[no_mangle]
 pub static mut finalestage: finalestage_t = F_STAGE_TEXT;
 #[no_mangle]
@@ -406,10 +408,6 @@ pub unsafe fn F_Ticker() {
         }
     }
 }
-pub const HU_FONTSTART: i32 = '!' as i32;
-pub const HU_FONTEND: i32 = '_' as i32;
-pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART
-    + 1 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn F_TextWrite() {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();

@@ -24,6 +24,7 @@ use crate::src::m_fixed::fixed_t;
 use crate::src::doomdef::NULL;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
+use crate::src::p_spec::ML_TWOSIDED;
 
 
 pub type floor_e = u32;
@@ -48,7 +49,6 @@ pub const pastdest: result_e = 2;
 pub const crushed: result_e = 1;
 pub const ok: result_e = 0;
 pub const FRACBITS: i32 = 16 as i32;
-pub const ML_TWOSIDED: i32 = 4 as i32;
 pub const FLOORSPEED: i32 = FRACUNIT;
 pub unsafe fn T_MovePlane(
     mut sector: *mut sector_t,

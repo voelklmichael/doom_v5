@@ -56,15 +56,15 @@ use libc::memset;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG90;
+use crate::src::r_main::MAXLIGHTZ;
+use crate::src::r_main::LIGHTZSHIFT;
+use crate::src::r_segs::MAXDRAWSEGS;
+use crate::src::r_main::LIGHTSEGSHIFT;
+use crate::src::r_main::LIGHTLEVELS;
 
 pub type planefunction_t = Option<
     unsafe extern "C" fn(i32, i32) -> (),
 >;
-pub const MAXDRAWSEGS: i32 = 256 as i32;
-pub const LIGHTLEVELS: i32 = 16 as i32;
-pub const LIGHTSEGSHIFT: i32 = 4 as i32;
-pub const MAXLIGHTZ: i32 = 128 as i32;
-pub const LIGHTZSHIFT: i32 = 20 as i32;
 pub const ANGLETOSKYSHIFT: i32 = 22 as i32;
 #[no_mangle]
 pub static mut floorfunc: planefunction_t = None;

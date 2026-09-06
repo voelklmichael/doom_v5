@@ -410,3 +410,4 @@ pub unsafe fn I_GetMemoryValue(
     }
     return false;
 }
+pub const SEEK_SET: i32 = 0 as i32;

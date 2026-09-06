@@ -58,20 +58,20 @@ use crate::src::tables::ANG180;
 use crate::src::tables::ANG90;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::m_fixed::INT_MIN;
+use crate::src::p_spec::ML_MAPPED;
+use crate::src::r_main::MAXLIGHTSCALE;
+use crate::src::r_main::LIGHTSCALESHIFT;
+use crate::src::r_main::LIGHTSEGSHIFT;
+use crate::src::r_main::LIGHTLEVELS;
 
 pub const SHRT_MAX: i32 = __SHRT_MAX__;
 pub const ML_DONTPEGTOP: i32 = 8 as i32;
 pub const ML_DONTPEGBOTTOM: i32 = 16 as i32;
-pub const ML_MAPPED: i32 = 256 as i32;
 pub const FRACBITS: i32 = 16 as i32;
 pub const SIL_BOTTOM: i32 = 1 as i32;
 pub const SIL_TOP: i32 = 2 as i32;
 pub const SIL_BOTH: i32 = 3 as i32;
 pub const MAXDRAWSEGS: i32 = 256 as i32;
-pub const LIGHTLEVELS: i32 = 16 as i32;
-pub const LIGHTSEGSHIFT: i32 = 4 as i32;
-pub const MAXLIGHTSCALE: i32 = 48 as i32;
-pub const LIGHTSCALESHIFT: i32 = 12 as i32;
 #[no_mangle]
 pub static mut segtextured: bool = false;
 #[no_mangle]

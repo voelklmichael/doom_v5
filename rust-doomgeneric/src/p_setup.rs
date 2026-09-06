@@ -53,6 +53,8 @@ use crate::src::stdint_types::size_t;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::m_fixed::FRACUNIT;
+use crate::src::p_spec::ML_TWOSIDED;
+use crate::src::p_maputl::MAPBLOCKSHIFT;
 
 pub type C2RustUnnamed_1 = u32;
 pub const ML_BLOCKMAP: C2RustUnnamed_1 = 10;
@@ -130,7 +132,6 @@ pub struct mapnode_t {
     pub children: [u16; 2],
 }
 pub const FRACBITS: i32 = 16 as i32;
-pub const ML_TWOSIDED: i32 = 4 as i32;
 pub static mut numvertexes: i32 = 0;
 pub static mut vertexes: *mut vertex_t = ::core::ptr::null::<vertex_t>()
     as *mut vertex_t;
@@ -1025,4 +1026,3 @@ pub unsafe fn P_Init() {
     P_InitPicAnims();
     R_InitSprites(&raw mut sprnames as *mut *mut ::core::ffi::c_char);
 }
-pub const MAPBLOCKSHIFT: i32 = FRACBITS + 7 as i32;

@@ -10,6 +10,7 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::size_t;
 use crate::src::doomdef::NULL;
+use crate::src::i_system::SEEK_SET;
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -26,7 +27,6 @@ extern "C" {
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
 }
 pub type __mode_t = u32;
-pub const SEEK_SET: i32 = 0 as i32;
 pub const SEEK_END: i32 = 2 as i32;
 pub const EISDIR: i32 = 21 as i32;
 pub const DIR_SEPARATOR: i32 = '/' as i32;
