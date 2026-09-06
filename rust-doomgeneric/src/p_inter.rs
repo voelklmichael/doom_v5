@@ -22,9 +22,9 @@ use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
 
 extern "C" {
-    static mut gamemode: GameMode_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type __uint8_t = u8;

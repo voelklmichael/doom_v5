@@ -129,6 +129,7 @@ use crate::src::doomstat::gameversion;
 use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -162,7 +163,6 @@ extern "C" {
     ) -> i32;
     fn I_GetTime() -> i32;
     fn TryRunTics();
-    static mut gamemode: GameMode_t;
     fn Z_Init();
     fn Z_Malloc(
         size: i32,

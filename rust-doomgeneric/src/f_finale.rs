@@ -23,6 +23,7 @@ use crate::src::info::states;
 use crate::src::am_map::automapactive;
 use crate::src::doomstat::gameversion;
 use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -49,7 +50,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut gamemode: GameMode_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

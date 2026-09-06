@@ -22,6 +22,7 @@ use crate::src::doomstat::gameversion;
 use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
 
 extern "C" {
     fn snprintf(
@@ -31,7 +32,6 @@ extern "C" {
         ...
     ) -> i32;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut gamemode: GameMode_t;
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;

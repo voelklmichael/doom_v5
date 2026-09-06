@@ -28,6 +28,7 @@ use crate::src::g_game::playeringame;
 use crate::src::g_game::consoleplayer;
 use crate::src::p_tick::leveltime;
 use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
 
 extern "C" {
     fn Z_Malloc(
@@ -65,7 +66,6 @@ extern "C" {
     fn R_InitSprites(namelist: *mut *mut ::core::ffi::c_char);
     fn P_InitPicAnims();
     fn S_Start();
-    static mut gamemode: GameMode_t;
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;
