@@ -36,6 +36,7 @@ use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
+use crate::src::st_lib::STlib_init;
 
 extern "C" {
     fn snprintf(
@@ -53,7 +54,6 @@ extern "C" {
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn STlib_init();
     fn V_CopyRect(
         srcx: i32,
         srcy: i32,
@@ -2975,8 +2975,7 @@ pub unsafe extern "C" fn ST_Stop() {
     );
     st_stopped = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Init() {
+pub unsafe fn ST_Init() {
     ST_loadData();
     st_backing_screen = Z_Malloc(
         ST_WIDTH * ST_HEIGHT,

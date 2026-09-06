@@ -355,8 +355,7 @@ unsafe extern "C" fn SinglePlayerClear(mut set: *mut ticcmd_set_t) {
         i = i.wrapping_add(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn TryRunTics() {
+pub unsafe fn TryRunTics() {
     let mut i: i32 = 0;
     let mut lowtic: i32 = 0;
     let mut entertic: i32 = 0;

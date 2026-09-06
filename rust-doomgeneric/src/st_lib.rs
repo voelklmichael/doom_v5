@@ -75,8 +75,7 @@ pub const ST_Y: i32 = SCREENHEIGHT - ST_HEIGHT;
 pub const SCREENHEIGHT: i32 = 200 as i32;
 #[no_mangle]
 pub static mut sttminus: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
-#[no_mangle]
-pub unsafe extern "C" fn STlib_init() {
+pub unsafe fn STlib_init() {
     sttminus = W_CacheLumpName("STTMINUS",
         PU_STATIC as i32,
     ) as *mut patch_t;

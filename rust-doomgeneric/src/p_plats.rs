@@ -1697,8 +1697,7 @@ pub unsafe fn EV_StopPlat(mut line: *mut line_t) {
         j += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_AddActivePlat(mut plat: *mut plat_t) {
+pub unsafe fn P_AddActivePlat(mut plat: *mut plat_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLATS {

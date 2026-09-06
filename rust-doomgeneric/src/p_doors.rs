@@ -1750,8 +1750,7 @@ pub unsafe fn EV_DoDoor(
     }
     return rtn;
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
+pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();

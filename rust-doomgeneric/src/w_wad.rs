@@ -7,6 +7,8 @@ use crate::src::i_video::I_EndRead;
 use crate::src::m_misc::M_ExtractFileBase;
 use crate::src::w_file::W_OpenFile;
 use crate::src::z_zone::Z_ChangeTag2;
+use crate::src::w_file::W_Read;
+use crate::src::z_zone::Z_ChangeUser;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -50,13 +52,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn Z_ChangeUser(ptr: *mut ::core::ffi::c_void, user: *mut *mut ::core::ffi::c_void);
-    fn W_Read(
-        wad: *mut wad_file_t,
-        offset: u32,
-        buffer: *mut ::core::ffi::c_void,
-        buffer_len: size_t,
-    ) -> size_t;
 }
 pub type __uint8_t = u8;
 pub type __int32_t = i32;
@@ -387,8 +382,7 @@ pub unsafe extern "C" fn W_LumpLength(
     }
     return (*lumpinfo.offset(lump as isize)).size;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_ReadLump(
+pub unsafe fn W_ReadLump(
     mut lump: u32,
     mut dest: *mut ::core::ffi::c_void,
 ) {

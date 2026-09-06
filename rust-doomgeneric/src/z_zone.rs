@@ -69,8 +69,7 @@ pub unsafe extern "C" fn Z_ClearZone(mut zone: *mut memzone_t) {
         .wrapping_sub(::core::mem::size_of::<memzone_t>() as usize)
         as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_Init() {
+pub unsafe fn Z_Init() {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut size: i32 = 0;
     mainzone = I_ZoneBase(&raw mut size) as *mut memzone_t;
@@ -334,8 +333,7 @@ pub unsafe extern "C" fn Z_FileDumpHeap(mut f: *mut FILE) {
         block = (*block).next as *mut memblock_t;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_CheckHeap() {
+pub unsafe fn Z_CheckHeap() {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     block = (*mainzone).blocklist.next as *mut memblock_t;
     while !((*block).next == &raw mut (*mainzone).blocklist) {
@@ -381,8 +379,7 @@ pub unsafe fn Z_ChangeTag2(
     }
     (*block).tag = tag;
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_ChangeUser(
+pub unsafe fn Z_ChangeUser(
     mut ptr: *mut ::core::ffi::c_void,
     mut user: *mut *mut ::core::ffi::c_void,
 ) {

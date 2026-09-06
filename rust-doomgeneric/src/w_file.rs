@@ -63,8 +63,7 @@ pub unsafe fn W_OpenFile(
 pub unsafe extern "C" fn W_CloseFile(mut wad: *mut wad_file_t) {
     (*(*wad).file_class).CloseFile.expect("non-null function pointer")(wad);
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_Read(
+pub unsafe fn W_Read(
     mut wad: *mut wad_file_t,
     mut offset: u32,
     mut buffer: *mut ::core::ffi::c_void,

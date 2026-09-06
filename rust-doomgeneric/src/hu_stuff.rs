@@ -1901,8 +1901,7 @@ pub static mapnames_commercial: [&str; 96] = [
     THUSTR_31,
     THUSTR_32,
 ];
-#[no_mangle]
-pub unsafe extern "C" fn HU_Init() {
+pub unsafe fn HU_Init() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut buffer: [::core::ffi::c_char; 9] = [0; 9];

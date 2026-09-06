@@ -3,6 +3,7 @@ use crate::src::i_video::I_ReadScreen;
 use crate::src::m_random::M_Random;
 use crate::src::v_video::V_MarkRect;
 use crate::src::i_video::I_VideoBuffer;
+use crate::src::v_video::V_DrawBlock;
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -15,13 +16,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn V_DrawBlock(
-        x: i32,
-        y_0: i32,
-        width: i32,
-        height: i32,
-        src: *mut byte,
-    );
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

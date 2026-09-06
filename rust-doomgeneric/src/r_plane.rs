@@ -1477,8 +1477,7 @@ pub unsafe fn R_ClearPlanes() {
     basexscale = FixedDiv(*finecosine.offset(angle as isize), centerxfrac);
     baseyscale = -FixedDiv(finesine[angle as usize], centerxfrac);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_FindPlane(
+pub unsafe fn R_FindPlane(
     mut height: fixed_t,
     mut picnum: i32,
     mut lightlevel: i32,
@@ -1594,8 +1593,7 @@ pub unsafe extern "C" fn R_MakeSpans(
         b2 -= 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawPlanes() {
+pub unsafe fn R_DrawPlanes() {
     let mut pl: *mut visplane_t = ::core::ptr::null_mut::<visplane_t>();
     let mut light: i32 = 0;
     let mut x: i32 = 0;

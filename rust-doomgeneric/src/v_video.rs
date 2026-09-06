@@ -10,6 +10,7 @@ use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_misc::M_WriteFile;
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_misc::M_snprintf;
+use crate::src::i_video::I_GetPaletteIndex;
 
 extern "C" {
     fn memcpy(
@@ -23,11 +24,6 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn fabs(__x: f64) -> f64;
-    fn I_GetPaletteIndex(
-        r: i32,
-        g: i32,
-        b: i32,
-    ) -> i32;
     fn Z_Malloc(
         size: i32,
         tag: i32,
@@ -214,8 +210,7 @@ pub unsafe extern "C" fn V_DrawPatch(
         desttop = desttop.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawPatchFlipped(
+pub unsafe fn V_DrawPatchFlipped(
     mut x: i32,
     mut y: i32,
     mut patch: *mut patch_t,
@@ -561,8 +556,7 @@ pub unsafe extern "C" fn V_LoadXlaTable() {
         PU_STATIC as i32,
     ) as *mut byte;
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawBlock(
+pub unsafe fn V_DrawBlock(
     mut x: i32,
     mut y: i32,
     mut width: i32,
@@ -678,8 +672,7 @@ pub unsafe extern "C" fn V_DrawRawScreen(mut raw: *mut byte) {
         (SCREENWIDTH * SCREENHEIGHT) as size_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_Init() {}
+pub unsafe fn V_Init() {}
 pub unsafe fn V_UseBuffer(mut buffer: *mut byte) {
     dest_screen = buffer;
 }
@@ -769,8 +762,7 @@ pub unsafe extern "C" fn WritePCXfile(
     M_WriteFile(filename, pcx as *mut ::core::ffi::c_void, length);
     Z_Free(pcx as *mut ::core::ffi::c_void);
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
+pub unsafe fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
     let mut lbmname: [::core::ffi::c_char; 16] = [0; 16];
     let mut ext: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<

@@ -11,10 +11,9 @@ use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::doomstat::gamemode;
+use crate::src::p_spec::P_PlayerInSpecialSector;
 
-extern "C" {
-    fn P_PlayerInSpecialSector(player: *mut player_t);
-}
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;

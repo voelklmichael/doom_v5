@@ -3691,8 +3691,7 @@ pub unsafe extern "C" fn M_Ticker() {
         skullAnimCounter = 8 as i16;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_Init() {
+pub unsafe fn M_Init() {
     currentMenu = &raw mut MainDef;
     menuactive = false;
     itemOn = (*currentMenu).lastOn;

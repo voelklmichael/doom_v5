@@ -1922,8 +1922,7 @@ pub unsafe extern "C" fn M_SaveDefaultsAlternate(
     doom_defaults.filename = orig_main;
     extra_defaults.filename = orig_extra;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_LoadDefaults() {
+pub unsafe fn M_LoadDefaults() {
     let mut i: i32 = 0;
     i = M_CheckParmWithArgs("-config", 1 as i32);
     if i != 0 {

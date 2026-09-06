@@ -36,12 +36,12 @@ use crate::src::m_fixed::FixedDiv;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
+use crate::src::r_plane::R_DrawPlanes;
+use crate::src::r_things::R_DrawMasked;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn R_DrawPlanes();
-    fn R_DrawMasked();
     fn R_DrawColumn();
     fn R_DrawColumnLow();
     fn R_DrawFuzzColumn();
@@ -1832,8 +1832,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_Init() {
+pub unsafe fn R_Init() {
     R_InitData();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitPointToAngle();

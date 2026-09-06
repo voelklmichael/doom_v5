@@ -1900,8 +1900,7 @@ pub static mut anims: [anim_t; 32] = [anim_t {
 #[no_mangle]
 pub static mut lastanim: *mut anim_t = ::core::ptr::null::<anim_t>() as *mut anim_t;
 pub const MAXLINEANIMS: i32 = 64 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn P_InitPicAnims() {
+pub unsafe fn P_InitPicAnims() {
     let mut i: i32 = 0;
     lastanim = &raw mut anims as *mut anim_t;
     let mut current_block_13: u64;
@@ -2482,8 +2481,7 @@ pub unsafe fn P_ShootSpecialLine(
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_PlayerInSpecialSector(mut player: *mut player_t) {
+pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     sector = (*(*(*player).mo).subsector).sector;
     if (*(*player).mo).z != (*sector).floorheight {
@@ -2691,8 +2689,7 @@ unsafe extern "C" fn DonutOverrun(
     *s3_floorheight = tmp_s3_floorheight;
     *s3_floorpic = tmp_s3_floorpic as i16;
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoDonut(mut line: *mut line_t) -> i32 {
+pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
     let mut s1: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut s2: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut s3: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
