@@ -12,7 +12,7 @@ use crate::src::p_lights::P_SpawnStrobeFlash;
 use crate::src::p_lights::EV_StartLightStrobing;
 use crate::src::p_lights::EV_TurnTagLightsOff;
 use crate::src::p_lights::P_SpawnGlowingLight;
-use crate::src::p_switch::buttonlist;
+use crate::src::p_switch::PSwitchState;
 use crate::src::p_switch::P_ChangeSwitchTexture;
 use crate::src::p_plats::activeplats;
 use crate::src::p_plats::EV_StopPlat;
@@ -77,6 +77,7 @@ use crate::src::p_lights::SLOWDARK;
 use crate::src::p_plats::MAXPLATS;
 use crate::src::p_ceilng::MAXCEILINGS;
 use crate::src::p_switch::MAXBUTTONS;
+use crate::src::game_state::game_state;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {
@@ -1008,15 +1009,15 @@ pub unsafe fn P_ShootSpecialLine(
     match (*line).special as i32 {
         24 => {
             EV_DoFloor(line, raiseFloor);
-            P_ChangeSwitchTexture(line, 0 as i32);
+            P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 0 as i32);
         }
         46 => {
             EV_DoDoor(line, vld_open);
-            P_ChangeSwitchTexture(line, 1 as i32);
+            P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 1 as i32);
         }
         47 => {
             EV_DoPlat(line, raiseToNearestAndChange, 0 as i32);
-            P_ChangeSwitchTexture(line, 0 as i32);
+            P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 0 as i32);
         }
         _ => {}
     };
@@ -1096,7 +1097,7 @@ pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
 pub static mut levelTimer: bool = false;
 #[no_mangle]
 pub static mut levelTimeCount: i32 = 0;
-pub unsafe fn P_UpdateSpecials() {
+pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
     let mut anim: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
     let mut pic: i32 = 0;
     let mut i: i32 = 0;
@@ -1137,46 +1138,46 @@ pub unsafe fn P_UpdateSpecials() {
     }
     i = 0 as i32;
     while i < MAXBUTTONS {
-        if buttonlist[i as usize].btimer != 0 {
-            buttonlist[i as usize].btimer -= 1;
-            if buttonlist[i as usize].btimer == 0 {
-                match buttonlist[i as usize].where_0 as u32 {
+        if state.buttonlist[i as usize].btimer != 0 {
+            state.buttonlist[i as usize].btimer -= 1;
+            if state.buttonlist[i as usize].btimer == 0 {
+                match state.buttonlist[i as usize].where_0 as u32 {
                     0 => {
                         (*sides
                             .offset(
-                                (*buttonlist[i as usize].line)
+                                (*state.buttonlist[i as usize].line)
                                     .sidenum[0 as i32 as usize] as isize,
                             ))
-                            .toptexture = buttonlist[i as usize].btexture
+                            .toptexture = state.buttonlist[i as usize].btexture
                             as i16;
                     }
                     1 => {
                         (*sides
                             .offset(
-                                (*buttonlist[i as usize].line)
+                                (*state.buttonlist[i as usize].line)
                                     .sidenum[0 as i32 as usize] as isize,
                             ))
-                            .midtexture = buttonlist[i as usize].btexture
+                            .midtexture = state.buttonlist[i as usize].btexture
                             as i16;
                     }
                     2 => {
                         (*sides
                             .offset(
-                                (*buttonlist[i as usize].line)
+                                (*state.buttonlist[i as usize].line)
                                     .sidenum[0 as i32 as usize] as isize,
                             ))
-                            .bottomtexture = buttonlist[i as usize].btexture
+                            .bottomtexture = state.buttonlist[i as usize].btexture
                             as i16;
                     }
                     _ => {}
                 }
                 S_StartSound(
-                    &raw mut (*(&raw mut buttonlist as *mut button_t).offset(i as isize))
+                    &raw mut (*(&raw mut state.buttonlist as *mut button_t).offset(i as isize))
                         .soundorg as *mut ::core::ffi::c_void,
                     sfx_swtchn as i32,
                 );
                 memset(
-                    (&raw mut buttonlist as *mut button_t).offset(i as isize)
+                    (&raw mut state.buttonlist as *mut button_t).offset(i as isize)
                         as *mut button_t as *mut ::core::ffi::c_void,
                     0 as i32,
                     ::core::mem::size_of::<button_t>() as size_t,
@@ -1327,7 +1328,7 @@ pub static mut numlinespecials: i16 = 0;
 #[no_mangle]
 pub static mut linespeciallist: [*mut line_t; 64] = [::core::ptr::null::<line_t>()
     as *mut line_t; 64];
-pub unsafe fn P_SpawnSpecials() {
+pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: i32 = 0;
     if timelimit > 0 as i32 && deathmatch != 0 {
@@ -1410,7 +1411,7 @@ pub unsafe fn P_SpawnSpecials() {
     i = 0 as i32;
     while i < MAXBUTTONS {
         memset(
-            (&raw mut buttonlist as *mut button_t).offset(i as isize) as *mut button_t
+            (&raw mut state.buttonlist as *mut button_t).offset(i as isize) as *mut button_t
                 as *mut ::core::ffi::c_void,
             0 as i32,
             ::core::mem::size_of::<button_t>() as size_t,
