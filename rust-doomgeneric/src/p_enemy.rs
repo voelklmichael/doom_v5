@@ -1631,34 +1631,34 @@ pub unsafe fn P_NoiseAlert(
     P_RecursiveSound((*(*emmiter).subsector).sector, 0 as i32);
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> bool {
     let mut pl: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut dist: fixed_t = 0;
     if (*actor).target.is_null() {
-        return false_0 as boolean;
+        return false;
     }
     pl = (*actor).target as *mut mobj_t;
     dist = P_AproxDistance((*pl).x - (*actor).x, (*pl).y - (*actor).y);
     if dist >= MELEERANGE - 20 as i32 * FRACUNIT + (*(*pl).info).radius {
-        return false_0 as boolean;
+        return false;
     }
     if P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0 {
-        return false_0 as boolean;
+        return false;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_CheckMissileRange(mut actor: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn P_CheckMissileRange(mut actor: *mut mobj_t) -> bool {
     let mut dist: fixed_t = 0;
     if P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0 {
-        return false_0 as boolean;
+        return false;
     }
     if (*actor).flags & MF_JUSTHIT as i32 != 0 {
         (*actor).flags &= !(MF_JUSTHIT as i32);
-        return true_0 as boolean;
+        return true;
     }
     if (*actor).reactiontime != 0 {
-        return false_0 as boolean;
+        return false;
     }
     dist = (P_AproxDistance(
         (*actor).x - (*(*actor).target).x,
@@ -1672,14 +1672,14 @@ pub unsafe extern "C" fn P_CheckMissileRange(mut actor: *mut mobj_t) -> boolean 
         == MT_VILE as i32 as u32
     {
         if dist > 14 as i32 * 64 as i32 {
-            return false_0 as boolean;
+            return false;
         }
     }
     if (*actor).type_0 as u32
         == MT_UNDEAD as i32 as u32
     {
         if dist < 196 as i32 {
-            return false_0 as boolean;
+            return false;
         }
         dist >>= 1 as i32;
     }
@@ -1702,9 +1702,9 @@ pub unsafe extern "C" fn P_CheckMissileRange(mut actor: *mut mobj_t) -> boolean 
         dist = 160 as i32 as fixed_t;
     }
     if P_Random() < dist {
-        return false_0 as boolean;
+        return false;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut xspeed: [fixed_t; 8] = [
@@ -1729,14 +1729,14 @@ pub static mut yspeed: [fixed_t; 8] = [
     -(47000 as i32),
 ];
 #[no_mangle]
-pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> bool {
     let mut tryx: fixed_t = 0;
     let mut tryy: fixed_t = 0;
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut try_ok: boolean = 0;
-    let mut good: boolean = 0;
+    let mut good: bool;
     if (*actor).movedir == DI_NODIR as i32 {
-        return false_0 as boolean;
+        return false;
     }
     if (*actor).movedir as u32 >= 8 as u32 {
         I_Error("Weird actor->movedir!");
@@ -1754,13 +1754,13 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
                 (*actor).z -= FLOATSPEED;
             }
             (*actor).flags |= MF_INFLOAT as i32;
-            return true_0 as boolean;
+            return true;
         }
         if numspechit == 0 {
-            return false_0 as boolean;
+            return false;
         }
         (*actor).movedir = DI_NODIR as i32;
-        good = false_0 as boolean;
+        good = false;
         loop {
             let fresh0 = numspechit;
             numspechit = numspechit - 1;
@@ -1769,7 +1769,7 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
             }
             ld = spechit[numspechit as usize];
             if P_UseSpecialLine(actor, ld, 0 as i32) != 0 {
-                good = true_0 as boolean;
+                good = true;
             }
         }
         return good;
@@ -1779,15 +1779,15 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> boolean {
     if (*actor).flags & MF_FLOAT as i32 == 0 {
         (*actor).z = (*actor).floorz;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_TryWalk(mut actor: *mut mobj_t) -> boolean {
-    if P_Move(actor) == 0 {
-        return false_0 as boolean;
+pub unsafe extern "C" fn P_TryWalk(mut actor: *mut mobj_t) -> bool {
+    if !P_Move(actor) {
+        return false;
     }
     (*actor).movecount = P_Random() & 15 as i32;
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
@@ -1827,7 +1827,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
             as i32) << 1 as i32)
             + (deltax > 0 as i32) as i32) as usize]
             as i32;
-        if (*actor).movedir != turnaround as i32 && P_TryWalk(actor) != 0
+        if (*actor).movedir != turnaround as i32 && P_TryWalk(actor)
         {
             return;
         }
@@ -1853,7 +1853,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
         != DI_NODIR as i32 as u32
     {
         (*actor).movedir = d[1 as i32 as usize] as i32;
-        if P_TryWalk(actor) != 0 {
+        if P_TryWalk(actor) {
             return;
         }
     }
@@ -1861,7 +1861,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
         != DI_NODIR as i32 as u32
     {
         (*actor).movedir = d[2 as i32 as usize] as i32;
-        if P_TryWalk(actor) != 0 {
+        if P_TryWalk(actor) {
             return;
         }
     }
@@ -1869,7 +1869,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
         != DI_NODIR as i32 as u32
     {
         (*actor).movedir = olddir as i32;
-        if P_TryWalk(actor) != 0 {
+        if P_TryWalk(actor) {
             return;
         }
     }
@@ -1878,7 +1878,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
         while tdir <= DI_SOUTHEAST as i32 {
             if tdir != turnaround as i32 {
                 (*actor).movedir = tdir;
-                if P_TryWalk(actor) != 0 {
+                if P_TryWalk(actor) {
                     return;
                 }
             }
@@ -1889,7 +1889,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
         while tdir != DI_EAST as i32 - 1 as i32 {
             if tdir != turnaround as i32 {
                 (*actor).movedir = tdir;
-                if P_TryWalk(actor) != 0 {
+                if P_TryWalk(actor) {
                     return;
                 }
             }
@@ -1900,7 +1900,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
         != DI_NODIR as i32 as u32
     {
         (*actor).movedir = turnaround as i32;
-        if P_TryWalk(actor) != 0 {
+        if P_TryWalk(actor) {
             return;
         }
     }
@@ -1909,8 +1909,8 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
 #[no_mangle]
 pub unsafe extern "C" fn P_LookForPlayers(
     mut actor: *mut mobj_t,
-    mut allaround: boolean,
-) -> boolean {
+    mut allaround: bool,
+) -> bool {
     let mut c: i32 = 0;
     let mut stop: i32 = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
@@ -1924,13 +1924,13 @@ pub unsafe extern "C" fn P_LookForPlayers(
             let fresh1 = c;
             c = c + 1;
             if fresh1 == 2 as i32 || (*actor).lastlook == stop {
-                return false_0 as boolean;
+                return false;
             }
             player = (&raw mut players as *mut player_t)
                 .offset((*actor).lastlook as isize) as *mut player_t;
             if !((*player).health <= 0 as i32) {
                 if !(P_CheckSight(actor, (*player).mo) == 0) {
-                    if allaround == 0 {
+                    if !allaround {
                         an = R_PointToAngle2(
                                 (*actor).x,
                                 (*actor).y,
@@ -1958,7 +1958,7 @@ pub unsafe extern "C" fn P_LookForPlayers(
                         4644295000439058019 => {}
                         _ => {
                             (*actor).target = (*player).mo as *mut mobj_s;
-                            return true_0 as boolean;
+                            return true;
                         }
                     }
                 }
@@ -2033,7 +2033,7 @@ pub unsafe extern "C" fn A_Look(mut actor: *mut mobj_t) {
     }
     match current_block {
         15619007995458559411 => {
-            if P_LookForPlayers(actor, false_0 as boolean) == 0 {
+            if !P_LookForPlayers(actor, false) {
                 return;
             }
         }
@@ -2101,7 +2101,7 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
     if (*actor).target.is_null()
         || (*(*actor).target).flags & MF_SHOOTABLE as i32 == 0
     {
-        if P_LookForPlayers(actor, true_0 as boolean) != 0 {
+        if P_LookForPlayers(actor, true) {
             return;
         }
         P_SetMobjState(actor, (*(*actor).info).spawnstate as statenum_t);
@@ -2116,7 +2116,7 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
         }
         return;
     }
-    if (*(*actor).info).meleestate != 0 && P_CheckMeleeRange(actor) != 0 {
+    if (*(*actor).info).meleestate != 0 && P_CheckMeleeRange(actor) {
         if (*(*actor).info).attacksound != 0 {
             S_StartSound(
                 actor as *mut ::core::ffi::c_void,
@@ -2130,7 +2130,7 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
         if !((gameskill as i32) < sk_nightmare as i32
             && !fastparm && (*actor).movecount != 0)
         {
-            if !(P_CheckMissileRange(actor) == 0) {
+            if P_CheckMissileRange(actor) {
                 P_SetMobjState(actor, (*(*actor).info).missilestate as statenum_t);
                 (*actor).flags |= MF_JUSTATTACKED as i32;
                 return;
@@ -2140,12 +2140,12 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
     if netgame && (*actor).threshold == 0
         && P_CheckSight(actor, (*actor).target as *mut mobj_t) == 0
     {
-        if P_LookForPlayers(actor, true_0 as boolean) != 0 {
+        if P_LookForPlayers(actor, true) {
             return;
         }
     }
     (*actor).movecount -= 1;
-    if (*actor).movecount < 0 as i32 || P_Move(actor) == 0 {
+    if (*actor).movecount < 0 as i32 || !P_Move(actor) {
         P_NewChaseDir(actor);
     }
     if (*(*actor).info).activesound != 0 && P_Random() < 3 as i32 {
@@ -2271,7 +2271,7 @@ pub unsafe extern "C" fn A_TroopAttack(mut actor: *mut mobj_t) {
         return;
     }
     A_FaceTarget(actor);
-    if P_CheckMeleeRange(actor) != 0 {
+    if P_CheckMeleeRange(actor) {
         S_StartSound(actor as *mut ::core::ffi::c_void, sfx_claw as i32);
         damage = (P_Random() % 8 as i32 + 1 as i32)
             * 3 as i32;
@@ -2287,7 +2287,7 @@ pub unsafe extern "C" fn A_SargAttack(mut actor: *mut mobj_t) {
         return;
     }
     A_FaceTarget(actor);
-    if P_CheckMeleeRange(actor) != 0 {
+    if P_CheckMeleeRange(actor) {
         damage = (P_Random() % 10 as i32 + 1 as i32)
             * 4 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
@@ -2300,7 +2300,7 @@ pub unsafe extern "C" fn A_HeadAttack(mut actor: *mut mobj_t) {
         return;
     }
     A_FaceTarget(actor);
-    if P_CheckMeleeRange(actor) != 0 {
+    if P_CheckMeleeRange(actor) {
         damage = (P_Random() % 6 as i32 + 1 as i32)
             * 10 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
@@ -2322,7 +2322,7 @@ pub unsafe extern "C" fn A_BruisAttack(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
-    if P_CheckMeleeRange(actor) != 0 {
+    if P_CheckMeleeRange(actor) {
         S_StartSound(actor as *mut ::core::ffi::c_void, sfx_claw as i32);
         damage = (P_Random() % 8 as i32 + 1 as i32)
             * 10 as i32;
@@ -2423,7 +2423,7 @@ pub unsafe extern "C" fn A_SkelFist(mut actor: *mut mobj_t) {
         return;
     }
     A_FaceTarget(actor);
-    if P_CheckMeleeRange(actor) != 0 {
+    if P_CheckMeleeRange(actor) {
         damage = (P_Random() % 10 as i32 + 1 as i32)
             * 6 as i32;
         S_StartSound(
@@ -2818,52 +2818,47 @@ pub unsafe extern "C" fn A_Fall(mut actor: *mut mobj_t) {
 pub unsafe extern "C" fn A_Explode(mut thingy: *mut mobj_t) {
     P_RadiusAttack(thingy, (*thingy).target as *mut mobj_t, 128 as i32);
 }
-unsafe extern "C" fn CheckBossEnd(mut motype: mobjtype_t) -> boolean {
+unsafe extern "C" fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
     if (gameversion as u32)
         < exe_ultimate as i32 as u32
     {
         if gamemap != 8 as i32 {
-            return false_0 as boolean;
+            return false;
         }
         if motype as u32
             == MT_BRUISER as i32 as u32
             && gameepisode != 1 as i32
         {
-            return false_0 as boolean;
+            return false;
         }
-        return true_0 as boolean;
+        return true;
     } else {
         match gameepisode {
             1 => {
-                return (gamemap == 8 as i32
+                return gamemap == 8 as i32
                     && motype as u32
-                        == MT_BRUISER as i32 as u32)
-                    as i32 as boolean;
+                        == MT_BRUISER as i32 as u32;
             }
             2 => {
-                return (gamemap == 8 as i32
+                return gamemap == 8 as i32
                     && motype as u32
-                        == MT_CYBORG as i32 as u32)
-                    as i32 as boolean;
+                        == MT_CYBORG as i32 as u32;
             }
             3 => {
-                return (gamemap == 8 as i32
+                return gamemap == 8 as i32
                     && motype as u32
-                        == MT_SPIDER as i32 as u32)
-                    as i32 as boolean;
+                        == MT_SPIDER as i32 as u32;
             }
             4 => {
-                return (gamemap == 6 as i32
+                return gamemap == 6 as i32
                     && motype as u32
                         == MT_CYBORG as i32 as u32
                     || gamemap == 8 as i32
                         && motype as u32
-                            == MT_SPIDER as i32 as u32)
-                    as i32 as boolean;
+                            == MT_SPIDER as i32 as u32;
             }
             _ => {
-                return (gamemap == 8 as i32) as i32
-                    as boolean;
+                return gamemap == 8 as i32;
             }
         }
     };
@@ -2902,7 +2897,7 @@ pub unsafe extern "C" fn A_BossDeath(mut mo: *mut mobj_t) {
         {
             return;
         }
-    } else if CheckBossEnd((*mo).type_0) == 0 {
+    } else if !CheckBossEnd((*mo).type_0) {
         return
     }
     i = 0 as i32;
@@ -3171,7 +3166,7 @@ pub unsafe extern "C" fn A_SpawnFly(mut mo: *mut mobj_t) {
         type_0 = MT_BRUISER;
     }
     newmobj = P_SpawnMobj((*targ).x, (*targ).y, (*targ).z, type_0);
-    if P_LookForPlayers(newmobj, true_0 as boolean) != 0 {
+    if P_LookForPlayers(newmobj, true) {
         P_SetMobjState(newmobj, (*(*newmobj).info).seestate as statenum_t);
     }
     P_TeleportMove(newmobj, (*newmobj).x, (*newmobj).y);
