@@ -51,8 +51,7 @@ pub static mut dc_texturemid: fixed_t = 0;
 pub static mut dc_source: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut dccount: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawColumn() {
+pub unsafe fn R_DrawColumn() {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
@@ -87,8 +86,7 @@ pub unsafe extern "C" fn R_DrawColumn() {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawColumnLow() {
+pub unsafe fn R_DrawColumnLow() {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -187,8 +185,7 @@ pub static mut fuzzoffset: [i32; 50] = [
 ];
 #[no_mangle]
 pub static mut fuzzpos: i32 = 0 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawFuzzColumn() {
+pub unsafe fn R_DrawFuzzColumn() {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
@@ -231,8 +228,7 @@ pub unsafe extern "C" fn R_DrawFuzzColumn() {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawFuzzColumnLow() {
+pub unsafe fn R_DrawFuzzColumnLow() {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -289,8 +285,7 @@ pub unsafe extern "C" fn R_DrawFuzzColumnLow() {
 }
 pub static mut dc_translation: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 pub static mut translationtables: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawTranslatedColumn() {
+pub unsafe fn R_DrawTranslatedColumn() {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
@@ -323,8 +318,7 @@ pub unsafe extern "C" fn R_DrawTranslatedColumn() {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawTranslatedColumnLow() {
+pub unsafe fn R_DrawTranslatedColumnLow() {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -409,8 +403,7 @@ pub static mut ds_ystep: fixed_t = 0;
 pub static mut ds_source: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut dscount: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawSpan() {
+pub unsafe fn R_DrawSpan() {
     let mut position: u32 = 0;
     let mut step: u32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -448,8 +441,7 @@ pub unsafe extern "C" fn R_DrawSpan() {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawSpanLow() {
+pub unsafe fn R_DrawSpanLow() {
     let mut position: u32 = 0;
     let mut step: u32 = 0;
     let mut xtemp: u32 = 0;

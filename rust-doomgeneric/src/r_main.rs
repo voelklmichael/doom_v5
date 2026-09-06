@@ -45,17 +45,10 @@ use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::r_defs::lighttable_t;
 use libc::printf;
-
-extern "C" {
-    fn R_DrawColumn();
-    fn R_DrawColumnLow();
-    fn R_DrawFuzzColumn();
-    fn R_DrawFuzzColumnLow();
-    fn R_DrawTranslatedColumn();
-    fn R_DrawTranslatedColumnLow();
-    fn R_DrawSpan();
-    fn R_DrawSpanLow();
-}
+use crate::src::r_draw::{
+    R_DrawColumn, R_DrawColumnLow, R_DrawFuzzColumn, R_DrawFuzzColumnLow,
+    R_DrawTranslatedColumn, R_DrawTranslatedColumnLow, R_DrawSpan, R_DrawSpanLow,
+};
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1078,11 +1071,11 @@ pub static mut zlight: [[*mut lighttable_t; 128]; 16] = [[::core::ptr::null::<
     lighttable_t,
 >() as *mut lighttable_t; 128]; 16];
 pub static mut extralight: i32 = 0;
-pub static mut colfunc: Option<unsafe extern "C" fn() -> ()> = None;
-pub static mut basecolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-pub static mut fuzzcolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-pub static mut transcolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-pub static mut spanfunc: Option<unsafe extern "C" fn() -> ()> = None;
+pub static mut colfunc: Option<unsafe fn() -> ()> = None;
+pub static mut basecolfunc: Option<unsafe fn() -> ()> = None;
+pub static mut fuzzcolfunc: Option<unsafe fn() -> ()> = None;
+pub static mut transcolfunc: Option<unsafe fn() -> ()> = None;
+pub static mut spanfunc: Option<unsafe fn() -> ()> = None;
 #[no_mangle]
 pub unsafe extern "C" fn R_AddPointToBox(
     mut x: i32,
@@ -1458,25 +1451,17 @@ pub unsafe fn R_ExecuteSetViewSize() {
     centeryfrac = (centery << FRACBITS) as fixed_t;
     projection = centerxfrac;
     if detailshift == 0 {
-        basecolfunc = Some(R_DrawColumn as unsafe extern "C" fn() -> ())
-            as Option<unsafe extern "C" fn() -> ()>;
+        basecolfunc = Some(R_DrawColumn as unsafe fn() -> ());
         colfunc = basecolfunc;
-        fuzzcolfunc = Some(R_DrawFuzzColumn as unsafe extern "C" fn() -> ())
-            as Option<unsafe extern "C" fn() -> ()>;
-        transcolfunc = Some(R_DrawTranslatedColumn as unsafe extern "C" fn() -> ())
-            as Option<unsafe extern "C" fn() -> ()>;
-        spanfunc = Some(R_DrawSpan as unsafe extern "C" fn() -> ())
-            as Option<unsafe extern "C" fn() -> ()>;
+        fuzzcolfunc = Some(R_DrawFuzzColumn as unsafe fn() -> ());
+        transcolfunc = Some(R_DrawTranslatedColumn as unsafe fn() -> ());
+        spanfunc = Some(R_DrawSpan as unsafe fn() -> ());
     } else {
-        basecolfunc = Some(R_DrawColumnLow as unsafe extern "C" fn() -> ())
-            as Option<unsafe extern "C" fn() -> ()>;
+        basecolfunc = Some(R_DrawColumnLow as unsafe fn() -> ());
         colfunc = basecolfunc;
-        fuzzcolfunc = Some(R_DrawFuzzColumnLow as unsafe extern "C" fn() -> ())
-            as Option<unsafe extern "C" fn() -> ()>;
-        transcolfunc = Some(R_DrawTranslatedColumnLow as unsafe extern "C" fn() -> ())
-            as Option<unsafe extern "C" fn() -> ()>;
-        spanfunc = Some(R_DrawSpanLow as unsafe extern "C" fn() -> ())
-            as Option<unsafe extern "C" fn() -> ()>;
+        fuzzcolfunc = Some(R_DrawFuzzColumnLow as unsafe fn() -> ());
+        transcolfunc = Some(R_DrawTranslatedColumnLow as unsafe fn() -> ());
+        spanfunc = Some(R_DrawSpanLow as unsafe fn() -> ());
     }
     R_InitBuffer(scaledviewwidth, viewheight);
     R_InitTextureMapping();
