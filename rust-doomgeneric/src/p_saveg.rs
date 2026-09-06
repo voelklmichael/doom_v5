@@ -20,6 +20,7 @@ use crate::src::g_game::gameskill;
 use crate::src::info::mobjinfo;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_setup::lines;
+use crate::src::g_game::gameepisode;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -78,7 +79,6 @@ extern "C" {
     fn T_VerticalDoor(door: *mut vldoor_t);
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
-    static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut leveltime: i32;
     static mut players: [player_t; 4];

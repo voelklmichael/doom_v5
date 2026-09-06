@@ -119,6 +119,7 @@ use crate::src::v_video::V_RestoreBuffer;
 use crate::src::d_loop::gametic;
 use crate::src::w_wad::lumpinfo;
 use crate::src::g_game::demoplayback;
+use crate::src::r_draw::viewheight;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -188,7 +189,6 @@ extern "C" {
     fn HU_Init();
     fn ST_Init();
     fn P_Init();
-    static mut viewheight: i32;
     fn R_Init();
     fn StatDump();
     fn D_CheckNetGame();

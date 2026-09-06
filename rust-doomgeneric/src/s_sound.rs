@@ -22,6 +22,7 @@ use crate::src::i_sound::snd_musicdevice;
 use crate::src::sounds::S_sfx;
 use crate::src::sounds::S_music;
 use crate::src::i_system::I_AtExit;
+use crate::src::g_game::gameepisode;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -29,7 +30,6 @@ extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut gamemode: GameMode_t;
-    static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];

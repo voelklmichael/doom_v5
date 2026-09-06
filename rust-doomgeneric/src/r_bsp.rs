@@ -18,16 +18,16 @@ use crate::src::r_main::viewx;
 use crate::src::r_main::viewy;
 use crate::src::r_main::viewangle;
 use crate::src::r_main::viewz;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_sky::skyflatnum;
 
 extern "C" {
-    static mut viewwidth: i32;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
     fn R_FindPlane(
         height: fixed_t,
         picnum: i32,
         lightlevel: i32,
     ) -> *mut visplane_t;
-    static mut skyflatnum: i32;
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

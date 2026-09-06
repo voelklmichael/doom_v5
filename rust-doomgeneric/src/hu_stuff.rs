@@ -12,6 +12,7 @@ use crate::src::m_controls::key_message_refresh;
 use crate::src::m_controls::key_multi_msg;
 use crate::src::m_controls::key_multi_msgplayer;
 use crate::src::m_menu::showMessages;
+use crate::src::g_game::gameepisode;
 
 extern "C" {
     fn snprintf(
@@ -29,7 +30,6 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut netgame: bool;
     static mut automapactive: bool;

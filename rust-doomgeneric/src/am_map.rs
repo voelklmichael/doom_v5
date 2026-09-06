@@ -30,6 +30,7 @@ use crate::src::p_setup::bmaporgy;
 use crate::src::v_video::V_MarkRect;
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::p_setup::lines;
+use crate::src::g_game::gameepisode;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -62,7 +63,6 @@ extern "C" {
         ...
     ) -> i32;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut netgame: bool;
     static mut deathmatch: i32;

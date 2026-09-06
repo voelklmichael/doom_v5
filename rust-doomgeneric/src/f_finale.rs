@@ -17,6 +17,7 @@ use crate::src::s_sound::S_ChangeMusic;
 use crate::src::v_video::V_MarkRect;
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::info::mobjinfo;
+use crate::src::g_game::gameepisode;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -47,7 +48,6 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut automapactive: bool;
     static mut players: [player_t; 4];

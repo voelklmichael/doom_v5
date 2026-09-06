@@ -38,6 +38,8 @@ use crate::src::info::mobjinfo;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::r_main::validcount;
+use crate::src::g_game::gameepisode;
+use crate::src::p_mobj::P_SpawnMobj;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -47,17 +49,10 @@ extern "C" {
     static mut finecosine: *const fixed_t;
     static mut sides: *mut side_t;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_SpawnMobj(
-        x: fixed_t,
-        y: fixed_t,
-        z: fixed_t,
-        type_0: mobjtype_t,
-    ) -> *mut mobj_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
-    static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut netgame: bool;
     static mut players: [player_t; 4];

@@ -2,6 +2,7 @@ use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::p_map::P_TeleportMove;
 use crate::src::p_tick::thinkercap;
+use crate::src::p_mobj::P_SpawnMobj;
 extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
@@ -9,12 +10,6 @@ extern "C" {
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    fn P_SpawnMobj(
-        x: fixed_t,
-        y: fixed_t,
-        z: fixed_t,
-        type_0: mobjtype_t,
-    ) -> *mut mobj_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
 }
 pub type __uint8_t = u8;

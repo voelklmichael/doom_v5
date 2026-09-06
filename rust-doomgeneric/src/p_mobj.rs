@@ -26,6 +26,7 @@ use crate::src::r_main::R_PointInSubsector;
 use crate::src::g_game::gameskill;
 use crate::src::info::mobjinfo;
 use crate::src::p_tick::P_RemoveThinker;
+use crate::src::r_sky::skyflatnum;
 
 extern "C" {
     fn Z_Malloc(
@@ -58,7 +59,6 @@ extern "C" {
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    static mut skyflatnum: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -2057,8 +2057,7 @@ pub unsafe extern "C" fn P_MobjThinker(mut mobj: *mut mobj_t) {
         P_NightmareRespawn(mobj);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnMobj(
+pub unsafe fn P_SpawnMobj(
     mut x: fixed_t,
     mut y: fixed_t,
     mut z: fixed_t,

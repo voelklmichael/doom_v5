@@ -9,6 +9,7 @@ use crate::src::p_map::linetarget;
 use crate::src::p_map::P_AimLineAttack;
 use crate::src::p_inter::P_DamageMobj;
 use crate::src::p_mobj::P_SetMobjState;
+use crate::src::p_mobj::P_SpawnMobj;
 
 extern "C" {
     fn P_Random() -> i32;
@@ -17,12 +18,6 @@ extern "C" {
     static mut finecosine: *const fixed_t;
     static mut states: [state_t; 967];
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_SpawnMobj(
-        x: fixed_t,
-        y: fixed_t,
-        z: fixed_t,
-        type_0: mobjtype_t,
-    ) -> *mut mobj_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
     static mut leveltime: i32;
