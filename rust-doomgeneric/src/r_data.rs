@@ -2092,8 +2092,7 @@ pub unsafe fn R_CheckTextureNumForName(
     }
     return -(1 as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_TextureNumForName(
+pub unsafe fn R_TextureNumForName(
     mut name: *mut ::core::ffi::c_char,
 ) -> i32 {
     let mut i: i32 = 0;

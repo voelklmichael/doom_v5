@@ -64,6 +64,7 @@ use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
+use crate::src::i_timer::I_GetTime;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -96,7 +97,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn I_GetTime() -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
