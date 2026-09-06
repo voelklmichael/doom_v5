@@ -477,52 +477,76 @@ pub unsafe fn R_FillBackScreen() {
         }
         y += 1;
     }
-    V_UseBuffer(background_buffer);
+    V_UseBuffer(unsafe { &mut game_state().v_video }, background_buffer);
     patch = W_CacheLumpName("brdr_t", PU_CACHE as i32) as *mut patch_t;
     x = 0 as i32;
     while x < scaledviewwidth {
-        V_DrawPatch(viewwindowx + x, viewwindowy - 8 as i32, patch);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            viewwindowx + x,
+            viewwindowy - 8 as i32,
+            patch,
+        );
         x += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_b", PU_CACHE as i32) as *mut patch_t;
     x = 0 as i32;
     while x < scaledviewwidth {
-        V_DrawPatch(viewwindowx + x, viewwindowy + viewheight, patch);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            viewwindowx + x,
+            viewwindowy + viewheight,
+            patch,
+        );
         x += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_l", PU_CACHE as i32) as *mut patch_t;
     y = 0 as i32;
     while y < viewheight {
-        V_DrawPatch(viewwindowx - 8 as i32, viewwindowy + y, patch);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            viewwindowx - 8 as i32,
+            viewwindowy + y,
+            patch,
+        );
         y += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_r", PU_CACHE as i32) as *mut patch_t;
     y = 0 as i32;
     while y < viewheight {
-        V_DrawPatch(viewwindowx + scaledviewwidth, viewwindowy + y, patch);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            viewwindowx + scaledviewwidth,
+            viewwindowy + y,
+            patch,
+        );
         y += 8 as i32;
     }
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         viewwindowx - 8 as i32,
         viewwindowy - 8 as i32,
         W_CacheLumpName("brdr_tl", PU_CACHE as i32) as *mut patch_t,
     );
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         viewwindowx + scaledviewwidth,
         viewwindowy - 8 as i32,
         W_CacheLumpName("brdr_tr", PU_CACHE as i32) as *mut patch_t,
     );
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         viewwindowx - 8 as i32,
         viewwindowy + viewheight,
         W_CacheLumpName("brdr_bl", PU_CACHE as i32) as *mut patch_t,
     );
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         viewwindowx + scaledviewwidth,
         viewwindowy + viewheight,
         W_CacheLumpName("brdr_br", PU_CACHE as i32) as *mut patch_t,
     );
-    V_RestoreBuffer();
+    V_RestoreBuffer(unsafe { &mut game_state().v_video });
 }
 pub unsafe fn R_VideoErase(mut ofs: u32, mut count: i32) {
     if !background_buffer.is_null() {
@@ -554,5 +578,11 @@ pub unsafe fn R_DrawViewBorder() {
         ofs += SCREENWIDTH;
         i += 1;
     }
-    V_MarkRect(0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT - SBARHEIGHT);
+    V_MarkRect(
+        unsafe { &mut game_state().v_video },
+        0 as i32,
+        0 as i32,
+        SCREENWIDTH,
+        SCREENHEIGHT - SBARHEIGHT,
+    );
 }

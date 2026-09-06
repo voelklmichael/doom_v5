@@ -16,6 +16,7 @@ use crate::src::g_game::playeringame;
 use crate::src::g_game::players;
 use crate::src::g_game::singledemo;
 use crate::src::g_game::viewactive;
+use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::i_video::I_VideoBuffer;
@@ -1369,7 +1370,12 @@ pub unsafe fn AM_drawMarks() {
                     - (FixedMul(markpoints[i as usize].y - m_y, scale_mtof) >> 16 as i32)))
                 as i32;
             if fx >= f_x && fx <= f_w - w && fy >= f_y && fy <= f_h - h {
-                V_DrawPatch(fx, fy, marknums[i as usize]);
+                V_DrawPatch(
+                    unsafe { &mut game_state().v_video },
+                    fx,
+                    fy,
+                    marknums[i as usize],
+                );
             }
         }
         i += 1;
@@ -1393,7 +1399,7 @@ pub unsafe fn AM_Drawer() {
     }
     AM_drawCrosshair(XHAIRCOLORS);
     AM_drawMarks();
-    V_MarkRect(f_x, f_y, f_w, f_h);
+    V_MarkRect(unsafe { &mut game_state().v_video }, f_x, f_y, f_w, f_h);
 }
 unsafe extern "C" fn run_static_initializers() {
     cheat_amap = cheatseq_t {

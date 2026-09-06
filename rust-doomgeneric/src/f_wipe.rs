@@ -217,7 +217,14 @@ pub unsafe fn wipe_EndScreen(mut x: i32, mut y_0: i32, mut width: i32, mut heigh
         NULL,
     ) as *mut byte;
     I_ReadScreen(wipe_scr_end);
-    V_DrawBlock(x, y_0, width, height, wipe_scr_start);
+    V_DrawBlock(
+        unsafe { &mut game_state().v_video },
+        x,
+        y_0,
+        width,
+        height,
+        wipe_scr_start,
+    );
     return 0 as i32;
 }
 pub unsafe fn wipe_ScreenWipe(
@@ -249,7 +256,13 @@ pub unsafe fn wipe_ScreenWipe(
         )
         .expect("non-null function pointer")(width, height, ticks);
     }
-    V_MarkRect(0 as i32, 0 as i32, width, height);
+    V_MarkRect(
+        unsafe { &mut game_state().v_video },
+        0 as i32,
+        0 as i32,
+        width,
+        height,
+    );
     rc = Some(
         (*(&raw mut wipes as *mut Option<unsafe extern "C" fn(i32, i32, i32) -> i32>)
             .offset((wipeno * 3 as i32 + 1 as i32) as isize))
