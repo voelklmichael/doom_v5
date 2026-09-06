@@ -24,6 +24,7 @@ use crate::src::sounds::S_music;
 use crate::src::i_system::I_AtExit;
 use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
+use crate::src::r_main::R_PointToAngle2;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -39,7 +40,6 @@ extern "C" {
         s: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
         lump: i32,

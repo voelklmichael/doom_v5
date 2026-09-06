@@ -27,6 +27,8 @@ use crate::src::s_sound::S_ChangeMusic;
 use crate::src::v_video::V_RestoreBuffer;
 use crate::src::g_game::gameskill;
 use crate::src::doomstat::gamemission;
+use crate::src::am_map::automapactive;
+use crate::src::r_main::R_PointToAngle2;
 
 extern "C" {
     fn snprintf(
@@ -51,7 +53,6 @@ extern "C" {
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
     fn STlib_init();
-    fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn V_CopyRect(
         srcx: i32,
         srcy: i32,
@@ -66,7 +67,6 @@ extern "C" {
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
     static mut deathmatch: i32;
-    static mut automapactive: bool;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
 }

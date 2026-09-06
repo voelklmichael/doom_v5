@@ -12,11 +12,11 @@ use crate::src::p_setup::bmaporgy;
 use crate::src::r_main::R_PointInSubsector;
 use crate::src::p_setup::lines;
 use crate::src::r_main::validcount;
+use crate::src::m_fixed::FixedDiv;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
 }
 pub type __uint8_t = u8;
 pub type fixed_t = i32;

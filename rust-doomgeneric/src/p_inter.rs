@@ -11,6 +11,8 @@ use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::info::states;
+use crate::src::am_map::automapactive;
+use crate::src::r_main::R_PointToAngle2;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
@@ -20,11 +22,9 @@ extern "C" {
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
     static mut deathmatch: i32;
-    static mut automapactive: bool;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
     fn P_Random() -> i32;
-    fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type __uint8_t = u8;

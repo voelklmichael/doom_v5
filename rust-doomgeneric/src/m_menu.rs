@@ -57,6 +57,8 @@ use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::d_loop::gametic;
 use crate::src::g_game::demoplayback;
 use crate::src::doomstat::gamemission;
+use crate::src::am_map::automapactive;
+use crate::src::m_misc::M_StringCopy;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -90,16 +92,10 @@ extern "C" {
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn I_GetTime() -> i32;
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
-    static mut automapactive: bool;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
 }

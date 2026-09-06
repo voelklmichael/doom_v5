@@ -23,6 +23,7 @@ use crate::src::g_game::totalkills;
 use crate::src::g_game::totalitems;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::p_tick::P_InitThinkers;
+use crate::src::m_fixed::FixedDiv;
 
 extern "C" {
     fn Z_Malloc(
@@ -42,7 +43,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     fn memset(
         __s: *mut ::core::ffi::c_void,
         __c: i32,

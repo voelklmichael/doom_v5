@@ -28,6 +28,8 @@ use crate::src::info::mobjinfo;
 use crate::src::p_tick::P_RemoveThinker;
 use crate::src::r_sky::skyflatnum;
 use crate::src::info::states;
+use crate::src::p_tick::P_AddThinker;
+use crate::src::r_main::R_PointToAngle2;
 
 extern "C" {
     fn Z_Malloc(
@@ -49,8 +51,6 @@ extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_AddThinker(thinker: *mut thinker_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;

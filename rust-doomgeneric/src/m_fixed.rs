@@ -11,8 +11,7 @@ pub const FRACBITS: i32 = 16 as i32;
 pub unsafe extern "C" fn FixedMul(mut a: fixed_t, mut b: fixed_t) -> fixed_t {
     return (a as int64_t * b as int64_t >> FRACBITS) as fixed_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn FixedDiv(mut a: fixed_t, mut b: fixed_t) -> fixed_t {
+pub unsafe fn FixedDiv(mut a: fixed_t, mut b: fixed_t) -> fixed_t {
     if abs(a as i32) >> 14 as i32
         >= abs(b as i32)
     {

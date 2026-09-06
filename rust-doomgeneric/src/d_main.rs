@@ -121,6 +121,8 @@ use crate::src::w_wad::lumpinfo;
 use crate::src::g_game::demoplayback;
 use crate::src::r_draw::viewheight;
 use crate::src::doomstat::gamemission;
+use crate::src::am_map::automapactive;
+use crate::src::m_misc::M_StringCopy;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -158,7 +160,6 @@ extern "C" {
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
     static mut deathmatch: i32;
-    static mut automapactive: bool;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
     fn Z_Init();
@@ -172,11 +173,6 @@ extern "C" {
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     fn M_LoadDefaults();
     fn M_SaveDefaults();
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,

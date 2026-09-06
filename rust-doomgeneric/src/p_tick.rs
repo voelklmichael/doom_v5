@@ -1299,8 +1299,7 @@ pub unsafe fn P_InitThinkers() {
     thinkercap.next = &raw mut thinkercap as *mut thinker_s;
     thinkercap.prev = thinkercap.next;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_AddThinker(mut thinker: *mut thinker_t) {
+pub unsafe fn P_AddThinker(mut thinker: *mut thinker_t) {
     (*thinkercap.prev).next = thinker as *mut thinker_s;
     (*thinker).next = &raw mut thinkercap as *mut thinker_s;
     (*thinker).prev = thinkercap.prev;

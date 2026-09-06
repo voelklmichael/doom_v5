@@ -3,16 +3,12 @@ use crate::src::w_wad::lumpinfo_t;
 use crate::src::w_file::wad_file_t;
 use crate::src::w_wad::numlumps;
 use crate::src::w_wad::lumpinfo;
+use crate::src::m_misc::M_StringCopy;
 extern "C" {
     fn realloc(
         __ptr: *mut ::core::ffi::c_void,
         __size: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

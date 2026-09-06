@@ -121,6 +121,8 @@ use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::r_sky::skyflatnum;
 use crate::src::doomstat::gamemission;
 use crate::src::info::states;
+use crate::src::am_map::automapactive;
+use crate::src::m_misc::M_StringCopy;
 
 extern "C" {
     fn memcpy(
@@ -153,7 +155,6 @@ extern "C" {
     static mut finecosine: *const fixed_t;
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
-    static mut automapactive: bool;
     static mut leveltime: i32;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
     fn Z_Malloc(
@@ -163,11 +164,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn Z_CheckHeap();
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,

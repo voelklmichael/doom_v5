@@ -3,6 +3,7 @@ use crate::src::p_spec::P_FindMinSurroundingLight;
 use crate::src::p_spec::getNextSector;
 use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_setup::numsectors;
+use crate::src::p_tick::P_AddThinker;
 
 extern "C" {
     fn Z_Malloc(
@@ -12,7 +13,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn P_Random() -> i32;
     static mut sectors: *mut sector_t;
-    fn P_AddThinker(thinker: *mut thinker_t);
 }
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;
