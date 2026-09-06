@@ -619,7 +619,7 @@ pub unsafe fn P_ChangeSwitchTexture(
     i = 0 as i32;
     while i < state.numswitches * 2 as i32 {
         if state.switchlist[i as usize] == texTop {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
@@ -632,7 +632,7 @@ pub unsafe fn P_ChangeSwitchTexture(
             }
             return;
         } else if state.switchlist[i as usize] == texMid {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
@@ -645,7 +645,7 @@ pub unsafe fn P_ChangeSwitchTexture(
             }
             return;
         } else if state.switchlist[i as usize] == texBot {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,

@@ -590,9 +590,9 @@ pub unsafe fn A_Look(mut actor: *mut mobj_t) {
             || (*actor).type_0 as u32
                 == MT_CYBORG as i32 as u32
         {
-            S_StartSound(NULL, sound);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sound);
         } else {
-            S_StartSound(actor as *mut ::core::ffi::c_void, sound);
+            S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sound);
         }
     }
     P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
@@ -648,7 +648,7 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
     }
     if (*(*actor).info).meleestate != 0 && P_CheckMeleeRange(actor) {
         if (*(*actor).info).attacksound != 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 actor as *mut ::core::ffi::c_void,
                 (*(*actor).info).attacksound,
             );
@@ -679,7 +679,7 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
         P_NewChaseDir(actor);
     }
     if (*(*actor).info).activesound != 0 && P_Random() < 3 as i32 {
-        S_StartSound(actor as *mut ::core::ffi::c_void, (*(*actor).info).activesound);
+        S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, (*(*actor).info).activesound);
     }
 }
 pub unsafe fn A_FaceTarget(mut actor: *mut mobj_t) {
@@ -711,7 +711,7 @@ pub unsafe fn A_PosAttack(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
     angle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, angle as angle_t, MISSILERANGE) as i32;
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_pistol as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_pistol as i32);
     angle += P_Random() - P_Random() << 20 as i32;
     damage = (P_Random() % 5 as i32 + 1 as i32)
         * 3 as i32;
@@ -726,7 +726,7 @@ pub unsafe fn A_SPosAttack(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_shotgn as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_shotgn as i32);
     A_FaceTarget(actor);
     bangle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE)
@@ -748,7 +748,7 @@ pub unsafe fn A_CPosAttack(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_shotgn as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_shotgn as i32);
     A_FaceTarget(actor);
     bangle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE)
@@ -794,7 +794,7 @@ pub unsafe fn A_TroopAttack(mut actor: *mut mobj_t) {
     }
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) {
-        S_StartSound(actor as *mut ::core::ffi::c_void, sfx_claw as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_claw as i32);
         damage = (P_Random() % 8 as i32 + 1 as i32)
             * 3 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
@@ -841,7 +841,7 @@ pub unsafe fn A_BruisAttack(mut actor: *mut mobj_t) {
         return;
     }
     if P_CheckMeleeRange(actor) {
-        S_StartSound(actor as *mut ::core::ffi::c_void, sfx_claw as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_claw as i32);
         damage = (P_Random() % 8 as i32 + 1 as i32)
             * 10 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
@@ -929,7 +929,7 @@ pub unsafe fn A_SkelWhoosh(mut actor: *mut mobj_t) {
         return;
     }
     A_FaceTarget(actor);
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_skeswg as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_skeswg as i32);
 }
 pub unsafe fn A_SkelFist(mut actor: *mut mobj_t) {
     let mut damage: i32 = 0;
@@ -940,7 +940,7 @@ pub unsafe fn A_SkelFist(mut actor: *mut mobj_t) {
     if P_CheckMeleeRange(actor) {
         damage = (P_Random() % 10 as i32 + 1 as i32)
             * 6 as i32;
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             actor as *mut ::core::ffi::c_void,
             sfx_skepch as i32,
         );
@@ -1029,7 +1029,7 @@ pub unsafe fn A_VileChase(mut actor: *mut mobj_t) {
                     A_FaceTarget(actor);
                     (*actor).target = temp as *mut mobj_s;
                     P_SetMobjState(actor, S_VILE_HEAL1);
-                    S_StartSound(
+                    S_StartSound(unsafe { &mut game_state().sounds }, 
                         corpsehit as *mut ::core::ffi::c_void,
                         sfx_slop as i32,
                     );
@@ -1049,14 +1049,14 @@ pub unsafe fn A_VileChase(mut actor: *mut mobj_t) {
     A_Chase(actor);
 }
 pub unsafe fn A_VileStart(mut actor: *mut mobj_t) {
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_vilatk as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_vilatk as i32);
 }
 pub unsafe fn A_StartFire(mut actor: *mut mobj_t) {
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_flamst as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_flamst as i32);
     A_Fire(actor);
 }
 pub unsafe fn A_FireCrackle(mut actor: *mut mobj_t) {
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_flame as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_flame as i32);
     A_Fire(actor);
 }
 pub unsafe fn A_Fire(mut actor: *mut mobj_t) {
@@ -1106,7 +1106,7 @@ pub unsafe fn A_VileAttack(mut actor: *mut mobj_t) {
     if !P_CheckSight(actor, (*actor).target as *mut mobj_t) {
         return;
     }
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_barexp as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_barexp as i32);
     P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, 20 as i32);
     (*(*actor).target).momz = (1000 as i32 * FRACUNIT
         / (*(*(*actor).target).info).mass) as fixed_t;
@@ -1124,7 +1124,7 @@ pub unsafe fn A_VileAttack(mut actor: *mut mobj_t) {
 pub const FATSPREAD: i32 = ANG90 / 8 as i32;
 pub unsafe fn A_FatRaise(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_manatk as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_manatk as i32);
 }
 pub unsafe fn A_FatAttack1(mut actor: *mut mobj_t) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
@@ -1199,7 +1199,7 @@ pub unsafe fn A_SkullAttack(mut actor: *mut mobj_t) {
     }
     dest = (*actor).target as *mut mobj_t;
     (*actor).flags |= MF_SKULLFLY as i32;
-    S_StartSound(actor as *mut ::core::ffi::c_void, (*(*actor).info).attacksound);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, (*(*actor).info).attacksound);
     A_FaceTarget(actor);
     an = (*actor).angle >> ANGLETOFINESHIFT;
     (*actor).momx = FixedMul(SKULLSPEED, finecosine[an as isize]);
@@ -1289,17 +1289,17 @@ pub unsafe fn A_Scream(mut actor: *mut mobj_t) {
         || (*actor).type_0 as u32
             == MT_CYBORG as i32 as u32
     {
-        S_StartSound(NULL, sound);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sound);
     } else {
-        S_StartSound(actor as *mut ::core::ffi::c_void, sound);
+        S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sound);
     };
 }
 pub unsafe fn A_XScream(mut actor: *mut mobj_t) {
-    S_StartSound(actor as *mut ::core::ffi::c_void, sfx_slop as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_slop as i32);
 }
 pub unsafe fn A_Pain(mut actor: *mut mobj_t) {
     if (*(*actor).info).painsound != 0 {
-        S_StartSound(actor as *mut ::core::ffi::c_void, (*(*actor).info).painsound);
+        S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, (*(*actor).info).painsound);
     }
 }
 pub unsafe fn A_Fall(mut actor: *mut mobj_t) {
@@ -1463,22 +1463,22 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
     G_ExitLevel();
 }
 pub unsafe fn A_Hoof(mut mo: *mut mobj_t) {
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_hoof as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_hoof as i32);
     A_Chase(mo);
 }
 pub unsafe fn A_Metal(mut mo: *mut mobj_t) {
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_metal as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_metal as i32);
     A_Chase(mo);
 }
 pub unsafe fn A_BabyMetal(mut mo: *mut mobj_t) {
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_bspwlk as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_bspwlk as i32);
     A_Chase(mo);
 }
 pub unsafe fn A_OpenShotgun2(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_dbopn as i32,
     );
@@ -1487,7 +1487,7 @@ pub unsafe fn A_LoadShotgun2(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_dbload as i32,
     );
@@ -1496,7 +1496,7 @@ pub unsafe fn A_CloseShotgun2(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_dbcls as i32,
     );
@@ -1529,10 +1529,10 @@ pub unsafe fn A_BrainAwake(mut mo: *mut mobj_t) {
         }
         thinker = (*thinker).next as *mut thinker_t;
     }
-    S_StartSound(NULL, sfx_bossit as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_bossit as i32);
 }
 pub unsafe fn A_BrainPain(mut mo: *mut mobj_t) {
-    S_StartSound(NULL, sfx_bospn as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_bospn as i32);
 }
 pub unsafe fn A_BrainScream(mut mo: *mut mobj_t) {
     let mut x: i32 = 0;
@@ -1552,7 +1552,7 @@ pub unsafe fn A_BrainScream(mut mo: *mut mobj_t) {
         }
         x += FRACUNIT * 8 as i32;
     }
-    S_StartSound(NULL, sfx_bosdth as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_bosdth as i32);
 }
 pub unsafe fn A_BrainExplode(mut mo: *mut mobj_t) {
     let mut x: i32 = 0;
@@ -1589,10 +1589,10 @@ pub unsafe fn A_BrainSpit(mut mo: *mut mobj_t) {
     (*newmobj).reactiontime = ((*targ).y as i32
         - (*mo).y as i32) / (*newmobj).momy as i32
         / (*(*newmobj).state).tics;
-    S_StartSound(NULL, sfx_bospit as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_bospit as i32);
 }
 pub unsafe fn A_SpawnSound(mut mo: *mut mobj_t) {
-    S_StartSound(mo as *mut ::core::ffi::c_void, sfx_boscub as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_boscub as i32);
     A_SpawnFly(mo);
 }
 pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
@@ -1607,7 +1607,7 @@ pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
     }
     targ = P_SubstNullMobj((*mo).target as *mut mobj_t);
     fog = P_SpawnMobj((*targ).x, (*targ).y, (*targ).z, MT_SPAWNFIRE);
-    S_StartSound(fog as *mut ::core::ffi::c_void, sfx_telept as i32);
+    S_StartSound(unsafe { &mut game_state().sounds }, fog as *mut ::core::ffi::c_void, sfx_telept as i32);
     r = P_Random();
     if r < 50 as i32 {
         type_0 = MT_TROOP;
@@ -1647,5 +1647,5 @@ pub unsafe fn A_PlayerScream(mut mo: *mut mobj_t) {
     {
         sound = sfx_pdiehi as i32;
     }
-    S_StartSound(mo as *mut ::core::ffi::c_void, sound);
+    S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sound);
 }

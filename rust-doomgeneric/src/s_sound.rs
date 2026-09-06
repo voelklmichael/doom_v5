@@ -17,7 +17,6 @@ use crate::src::i_sound::I_PlaySong;
 use crate::src::i_sound::I_StopSong;
 use crate::src::i_sound::I_MusicIsPlaying;
 use crate::src::i_sound::snd_musicdevice;
-use crate::src::sounds::S_sfx;
 use crate::src::sounds::SoundsState;
 use crate::src::i_system::I_AtExit;
 use crate::src::g_game::gameepisode;
@@ -71,11 +70,12 @@ static mut mus_playing: *mut musicinfo_t = ::core::ptr::null::<musicinfo_t>()
     as *mut musicinfo_t;
 pub static mut snd_channels: i32 = 8;
 pub unsafe fn S_Init(
+    state: &mut SoundsState,
     mut sfxVolume_0: i32,
     mut musicVolume_0: i32,
 ) {
     let mut i: i32 = 0;
-    I_PrecacheSounds(&raw mut S_sfx as *mut sfxinfo_t, NUMSFX as i32);
+    I_PrecacheSounds(&raw mut state.S_sfx as *mut sfxinfo_t, NUMSFX as i32);
     S_SetSfxVolume(sfxVolume_0);
     S_SetMusicVolume(musicVolume_0);
     channels = Z_Malloc(
@@ -94,10 +94,10 @@ pub unsafe fn S_Init(
     mus_paused = false;
     i = 1 as i32;
     while i < NUMSFX as i32 {
-        let ref mut fresh1 = (*(&raw mut S_sfx as *mut sfxinfo_t).offset(i as isize))
+        let ref mut fresh1 = (*(&raw mut state.S_sfx as *mut sfxinfo_t).offset(i as isize))
             .usefulness;
         *fresh1 = -(1 as i32);
-        (*(&raw mut S_sfx as *mut sfxinfo_t).offset(i as isize)).lumpnum = *fresh1;
+        (*(&raw mut state.S_sfx as *mut sfxinfo_t).offset(i as isize)).lumpnum = *fresh1;
         i += 1;
     }
     I_AtExit(Some(S_Shutdown as unsafe extern "C" fn() -> ()), true);
@@ -263,6 +263,7 @@ unsafe fn S_AdjustSoundParams(
     return (*vol > 0 as i32) as i32;
 }
 pub unsafe fn S_StartSound(
+    state: &mut SoundsState,
     mut origin_p: *mut ::core::ffi::c_void,
     mut sfx_id: i32,
 ) {
@@ -277,7 +278,7 @@ pub unsafe fn S_StartSound(
     if sfx_id < 1 as i32 || sfx_id > NUMSFX as i32 {
         I_Error(&format!("Bad sfx #: {}", sfx_id));
     }
-    sfx = (&raw mut S_sfx as *mut sfxinfo_t).offset(sfx_id as isize) as *mut sfxinfo_t;
+    sfx = (&raw mut state.S_sfx as *mut sfxinfo_t).offset(sfx_id as isize) as *mut sfxinfo_t;
     if !(*sfx).link.is_null() {
         volume += (*sfx).volume;
         if volume < 1 as i32 {

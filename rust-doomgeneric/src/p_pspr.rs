@@ -42,6 +42,7 @@ use crate::src::p_enemy::MISSILERANGE;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::tables::FINEANGLES;
 use crate::src::p_enemy::MELEERANGE;
+use crate::src::game_state::game_state;
 
 
 pub const DEH_DEFAULT_BFG_CELLS_PER_SHOT: i32 = 40;
@@ -105,7 +106,7 @@ pub unsafe fn P_BringUpWeapon(mut player: *mut player_t) {
     if (*player).pendingweapon as u32
         == wp_chainsaw as i32 as u32
     {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_sawup as i32,
         );
@@ -229,7 +230,7 @@ pub unsafe fn A_WeaponReady(
             == (&raw mut states as *mut state_t)
                 .offset(S_SAW as i32 as isize) as *mut state_t
     {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_sawidl as i32,
         );
@@ -333,7 +334,7 @@ pub unsafe fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     slope = P_AimLineAttack((*player).mo, angle, MELEERANGE) as i32;
     P_LineAttack((*player).mo, angle, MELEERANGE, slope as fixed_t, damage);
     if !linetarget.is_null() {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_punch as i32,
         );
@@ -364,13 +365,13 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
         damage,
     );
     if linetarget.is_null() {
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_sawful as i32,
         );
         return;
     }
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_sawhit as i32,
     );
@@ -492,7 +493,7 @@ pub unsafe fn A_FirePistol(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_pistol as i32,
     );
@@ -515,7 +516,7 @@ pub unsafe fn A_FireShotgun(
     mut psp: *mut pspdef_t,
 ) {
     let mut i: i32 = 0;
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_shotgn as i32,
     );
@@ -544,7 +545,7 @@ pub unsafe fn A_FireShotgun2(
     let mut i: i32 = 0;
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_dshtgn as i32,
     );
@@ -582,7 +583,7 @@ pub unsafe fn A_FireShotgun2(
     }
 }
 pub unsafe fn A_FireCGun(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_pistol as i32,
     );
@@ -659,7 +660,7 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
     }
 }
 pub unsafe fn A_BFGsound(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    S_StartSound(
+    S_StartSound(unsafe { &mut game_state().sounds }, 
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_bfg as i32,
     );

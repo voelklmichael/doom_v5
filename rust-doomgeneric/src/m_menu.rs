@@ -1001,12 +1001,12 @@ pub static mut tempstring: [::core::ffi::c_char; 80] = [0; 80];
 pub unsafe extern "C" fn M_QuickSaveResponse(mut key: i32) {
     if key == key_menu_confirm {
         M_DoSave(quickSaveSlot);
-        S_StartSound(NULL, sfx_swtchx as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
     }
 }
 pub unsafe fn M_QuickSave() {
     if !usergame {
-        S_StartSound(NULL, sfx_oof as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
         return;
     }
     if gamestate as u32
@@ -1047,7 +1047,7 @@ pub unsafe fn M_QuickSave() {
 pub unsafe extern "C" fn M_QuickLoadResponse(mut key: i32) {
     if key == key_menu_confirm {
         M_LoadSelect(quickSaveSlot);
-        S_StartSound(NULL, sfx_swtchx as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
     }
 }
 pub unsafe fn M_QuickLoad() {
@@ -1397,7 +1397,7 @@ pub unsafe extern "C" fn M_EndGameResponse(mut key: i32) {
 pub unsafe extern "C" fn M_EndGame(mut choice: i32) {
     choice = 0 as i32;
     if !usergame {
-        S_StartSound(NULL, sfx_oof as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
         return;
     }
     if netgame {
@@ -1471,13 +1471,13 @@ pub unsafe extern "C" fn M_QuitResponse(mut key: i32) {
         if gamemode as u32
             == commercial as i32 as u32
         {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 NULL,
                 quitsounds2[(gametic >> 2 as i32
                     & 7 as i32) as usize],
             );
         } else {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 NULL,
                 quitsounds[(gametic >> 2 as i32 & 7 as i32)
                     as usize],
@@ -1749,7 +1749,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
         {
             M_QuitResponse(key_menu_confirm);
         } else {
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_QuitDOOM(0 as i32);
         }
         return true;
@@ -1910,7 +1910,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
             messageRoutine.expect("non-null function pointer")(key);
         }
         menuactive = false;
-        S_StartSound(NULL, sfx_swtchx as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
         return true;
     }
     if devparm && key == key_menu_help
@@ -1925,14 +1925,14 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
                 return false;
             }
             M_SizeDisplay(0 as i32);
-            S_StartSound(NULL, sfx_stnmov as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             return true;
         } else if key == key_menu_incscreen {
             if automapactive || chat_on {
                 return false;
             }
             M_SizeDisplay(1 as i32);
-            S_StartSound(NULL, sfx_stnmov as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             return true;
         } else if key == key_menu_help {
             M_StartControlPanel();
@@ -1944,46 +1944,46 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
                 currentMenu = &raw mut ReadDef1;
             }
             itemOn = 0 as i16;
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
         } else if key == key_menu_save {
             M_StartControlPanel();
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_SaveGame(0 as i32);
             return true;
         } else if key == key_menu_load {
             M_StartControlPanel();
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_LoadGame(0 as i32);
             return true;
         } else if key == key_menu_volume {
             M_StartControlPanel();
             currentMenu = &raw mut SoundDef;
             itemOn = sfx_vol as i32 as i16;
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
         } else if key == key_menu_detail {
             M_ChangeDetail(0 as i32);
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
         } else if key == key_menu_qsave {
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_QuickSave();
             return true;
         } else if key == key_menu_endgame {
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_EndGame(0 as i32);
             return true;
         } else if key == key_menu_messages {
             M_ChangeMessages(0 as i32);
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
         } else if key == key_menu_qload {
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_QuickLoad();
             return true;
         } else if key == key_menu_quit {
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_QuitDOOM(0 as i32);
             return true;
         } else if key == key_menu_gamma {
@@ -2004,7 +2004,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
     if !menuactive {
         if key == key_menu_activate {
             M_StartControlPanel();
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
         }
         return false;
@@ -2018,7 +2018,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
             } else {
                 itemOn += 1;
             }
-            S_StartSound(NULL, sfx_pstop as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pstop as i32);
             if !((*(*currentMenu).menuitems.offset(itemOn as isize)).status
                 as i32 == -(1 as i32))
             {
@@ -2034,7 +2034,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
             } else {
                 itemOn -= 1;
             }
-            S_StartSound(NULL, sfx_pstop as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pstop as i32);
             if !((*(*currentMenu).menuitems.offset(itemOn as isize)).status
                 as i32 == -(1 as i32))
             {
@@ -2047,7 +2047,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
             && (*(*currentMenu).menuitems.offset(itemOn as isize)).status
                 as i32 == 2 as i32
         {
-            S_StartSound(NULL, sfx_stnmov as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             (*(*currentMenu).menuitems.offset(itemOn as isize))
                 .routine
                 .expect("non-null function pointer")(0 as i32);
@@ -2058,7 +2058,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
             && (*(*currentMenu).menuitems.offset(itemOn as isize)).status
                 as i32 == 2 as i32
         {
-            S_StartSound(NULL, sfx_stnmov as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             (*(*currentMenu).menuitems.offset(itemOn as isize))
                 .routine
                 .expect("non-null function pointer")(1 as i32);
@@ -2076,26 +2076,26 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
                 (*(*currentMenu).menuitems.offset(itemOn as isize))
                     .routine
                     .expect("non-null function pointer")(1 as i32);
-                S_StartSound(NULL, sfx_stnmov as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             } else {
                 (*(*currentMenu).menuitems.offset(itemOn as isize))
                     .routine
                     .expect("non-null function pointer")(itemOn as i32);
-                S_StartSound(NULL, sfx_pistol as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pistol as i32);
             }
         }
         return true;
     } else if key == key_menu_activate {
         (*currentMenu).lastOn = itemOn;
         M_ClearMenus();
-        S_StartSound(NULL, sfx_swtchx as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
         return true;
     } else if key == key_menu_back {
         (*currentMenu).lastOn = itemOn;
         if !(*currentMenu).prevMenu.is_null() {
             currentMenu = (*currentMenu).prevMenu as *mut menu_t;
             itemOn = (*currentMenu).lastOn;
-            S_StartSound(NULL, sfx_swtchn as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
         }
         return true;
     } else if ch != 0 as i32 || IsNullKey(key) {
@@ -2105,7 +2105,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
                 as i32 == ch
             {
                 itemOn = i as i16;
-                S_StartSound(NULL, sfx_pstop as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pstop as i32);
                 return true;
             }
             i += 1;
@@ -2116,7 +2116,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
                 as i32 == ch
             {
                 itemOn = i as i16;
-                S_StartSound(NULL, sfx_pstop as i32);
+                S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pstop as i32);
                 return true;
             }
             i += 1;

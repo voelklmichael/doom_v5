@@ -905,7 +905,7 @@ pub unsafe extern "C" fn PTR_UseTraverse(mut in_0: *mut intercept_t) -> boolean 
     if (*(*in_0).d.line).special == 0 {
         P_LineOpening((*in_0).d.line);
         if openrange <= 0 as i32 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 usething as *mut ::core::ffi::c_void,
                 sfx_noway as i32,
             );

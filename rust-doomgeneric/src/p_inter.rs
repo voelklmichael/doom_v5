@@ -42,6 +42,7 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG180;
 use crate::src::p_mobj::ONFLOORZ;
+use crate::src::game_state::game_state;
 
 
 pub type card_t = u32;
@@ -204,7 +205,7 @@ pub unsafe fn P_GiveWeapon(
             == (&raw mut players as *mut player_t).offset(consoleplayer as isize)
                 as *mut player_t
         {
-            S_StartSound(NULL, sfx_wpnup as i32);
+            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_wpnup as i32);
         }
         return false;
     }
@@ -671,7 +672,7 @@ pub unsafe fn P_TouchSpecialThing(
         == (&raw mut players as *mut player_t).offset(consoleplayer as isize)
             as *mut player_t
     {
-        S_StartSound(NULL, sound);
+        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sound);
     }
 }
 pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
