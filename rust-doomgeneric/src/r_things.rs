@@ -52,6 +52,7 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::r_main::R_PointToAngle;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -96,16 +97,6 @@ pub const pw_ironfeet: C2RustUnnamed = 3;
 pub const pw_invisibility: C2RustUnnamed = 2;
 pub const pw_strength: C2RustUnnamed = 1;
 pub const pw_invulnerability: C2RustUnnamed = 0;
-pub type C2RustUnnamed_0 = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed_0 = 9;
-pub const PU_CACHE: C2RustUnnamed_0 = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed_0 = 7;
-pub const PU_LEVSPEC: C2RustUnnamed_0 = 6;
-pub const PU_LEVEL: C2RustUnnamed_0 = 5;
-pub const PU_FREE: C2RustUnnamed_0 = 4;
-pub const PU_MUSIC: C2RustUnnamed_0 = 3;
-pub const PU_SOUND: C2RustUnnamed_0 = 2;
-pub const PU_STATIC: C2RustUnnamed_0 = 1;
 pub type fixed_t = i32;
 pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;

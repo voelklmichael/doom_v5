@@ -24,6 +24,7 @@ use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
+use crate::src::z_zone::PU_STATIC;
 
 extern "C" {
     fn snprintf(
@@ -82,16 +83,6 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
-pub const PU_STATIC: C2RustUnnamed = 1;
 pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;

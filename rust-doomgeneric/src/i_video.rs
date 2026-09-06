@@ -5,6 +5,7 @@ use crate::src::i_input::I_GetEvent;
 use crate::src::tables::gammatable;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_STATIC;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -37,7 +38,6 @@ pub type uint32_t = __uint32_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
 pub type grabmouse_callback_t = Option<unsafe extern "C" fn() -> boolean>;
-pub const PU_STATIC: C2RustUnnamed = 1;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct FB_ScreenInfo {
@@ -74,15 +74,6 @@ pub struct col_t {
     pub b: byte,
 }
 pub type pixel_t = uint32_t;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
 pub const INT_MAX: i32 = __INT_MAX__;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,

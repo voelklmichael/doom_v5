@@ -11,6 +11,7 @@ use crate::src::w_file::W_Read;
 use crate::src::z_zone::Z_ChangeUser;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -71,16 +72,6 @@ pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
-pub const PU_STATIC: C2RustUnnamed = 1;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lumpinfo_s {

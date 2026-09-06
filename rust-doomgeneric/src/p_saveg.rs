@@ -35,6 +35,7 @@ use crate::src::p_plats::P_AddActivePlat;
 use crate::src::m_misc::M_StringJoin;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_LEVEL;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -88,16 +89,6 @@ pub type uint8_t = __uint8_t;
 pub type intptr_t = isize;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
-pub const PU_STATIC: C2RustUnnamed = 1;
 pub type fixed_t = i32;
 pub type angle_t = u32;
 pub type skill_t = i32;
