@@ -13,14 +13,14 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::d_mode::commercial;
+use crate::src::m_fixed::fixed_t;
+use crate::src::r_defs::lighttable_t;
 use libc::memcpy;
 
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type byte = uint8_t;
-pub type fixed_t = i32;
-pub type lighttable_t = byte;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

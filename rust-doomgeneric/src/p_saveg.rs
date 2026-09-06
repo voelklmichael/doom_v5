@@ -52,6 +52,8 @@ use crate::src::p_plats::plat_e;
 use crate::src::p_doors::vldoor_e;
 use crate::src::p_floor::floor_e;
 use crate::src::p_ceilng::ceiling_e;
+use crate::src::tables::angle_t;
+use crate::src::m_fixed::fixed_t;
 
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -69,8 +71,6 @@ pub type uint8_t = __uint8_t;
 pub type intptr_t = isize;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;

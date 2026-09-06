@@ -29,14 +29,14 @@ use crate::src::p_mobj::statenum_t;
 use crate::src::d_mode::{commercial, shareware};
 use crate::src::d_player::{wp_bfg, wp_chaingun, wp_chainsaw, wp_fist, wp_missile, wp_nochange, wp_pistol, wp_plasma, wp_shotgun, wp_supershotgun};
 use crate::src::d_player::{NUMAMMO, am_cell, am_clip, am_misl, am_noammo, am_shell, ammotype_t};
+use crate::src::tables::angle_t;
+use crate::src::m_fixed::fixed_t;
 
 
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

@@ -49,6 +49,9 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::PU_STATIC;
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::statenum_t;
+use crate::src::tables::angle_t;
+use crate::src::m_fixed::fixed_t;
+use crate::src::r_defs::lighttable_t;
 use libc::memset;
 
 pub type size_t = usize;
@@ -56,8 +59,6 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1027,7 +1028,6 @@ pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub type lighttable_t = byte;
 pub type planefunction_t = Option<
     unsafe extern "C" fn(i32, i32) -> (),
 >;

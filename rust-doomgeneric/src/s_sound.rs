@@ -48,6 +48,8 @@ use crate::src::sounds::{NUMMUSIC, mus_None, mus_e1m1, mus_e1m5, mus_e1m9, mus_e
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::statenum_t;
 use crate::src::d_mode::commercial;
+use crate::src::tables::angle_t;
+use crate::src::m_fixed::fixed_t;
 pub type C2RustUnnamed = u32;
 pub const SNDDEVICE_CD: C2RustUnnamed = 10;
 pub const SNDDEVICE_AWE32: C2RustUnnamed = 9;
@@ -60,9 +62,6 @@ pub const SNDDEVICE_SB: C2RustUnnamed = 3;
 pub const SNDDEVICE_ADLIB: C2RustUnnamed = 2;
 pub const SNDDEVICE_PCSPEAKER: C2RustUnnamed = 1;
 pub const SNDDEVICE_NONE: C2RustUnnamed = 0;
-pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
