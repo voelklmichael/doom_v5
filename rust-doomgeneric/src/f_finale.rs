@@ -36,7 +36,6 @@ use crate::src::p_mobj::{
 use crate::src::r_data::column_t;
 use crate::src::r_data::firstspritelump;
 use crate::src::r_defs::{spritedef_t, spriteframe_t};
-use crate::src::r_things::sprites;
 use crate::src::r_things::FF_FRAMEMASK;
 use crate::src::s_sound::S_ChangeMusic;
 use crate::src::s_sound::S_StartMusic;
@@ -862,7 +861,10 @@ pub unsafe fn F_CastDrawer(state: &mut FFinaleState) {
         W_CacheLumpName("BOSSBACK", PU_CACHE as i32) as *mut patch_t,
     );
     F_CastPrint(state.castorder[state.castnum as usize].name.unwrap());
-    sprdef = sprites.offset((*state.caststate).sprite as isize) as *mut spritedef_t;
+    sprdef = unsafe { game_state() }
+        .r_things
+        .sprites
+        .offset((*state.caststate).sprite as isize) as *mut spritedef_t;
     sprframe = (*sprdef)
         .spriteframes
         .offset(((*state.caststate).frame & FF_FRAMEMASK) as isize)

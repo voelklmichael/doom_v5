@@ -82,9 +82,9 @@ pub const deh_megasphere_health: i32 = DEH_DEFAULT_MEGASPHERE_HEALTH;
 pub const MAXHEALTH: i32 = 100;
 pub const BASETHRESHOLD: i32 = 100;
 pub const BONUSADD: i32 = 6;
-pub static mut maxammo: [i32; 4] = [200 as i32, 50 as i32, 300 as i32, 50 as i32];
+pub static maxammo: [i32; 4] = [200 as i32, 50 as i32, 300 as i32, 50 as i32];
 #[no_mangle]
-pub static mut clipammo: [i32; 4] = [10 as i32, 4 as i32, 20 as i32, 1 as i32];
+pub static clipammo: [i32; 4] = [10 as i32, 4 as i32, 20 as i32, 1 as i32];
 pub unsafe fn P_GiveAmmo(mut player: *mut player_t, mut ammo: ammotype_t, mut num: i32) -> bool {
     let mut oldammo: i32 = 0;
     if ammo as u32 == am_noammo as i32 as u32 {

@@ -2,6 +2,7 @@ use crate::src::d_loop::NetUpdate;
 use crate::src::d_player::player_t;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::game_state::game_state;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedDiv;
@@ -39,9 +40,6 @@ use crate::src::r_segs::rw_distance;
 use crate::src::r_segs::rw_normalangle;
 use crate::src::r_segs::walllights;
 use crate::src::r_sky::R_InitSkyMap;
-use crate::src::r_things::pspriteiscale;
-use crate::src::r_things::pspritescale;
-use crate::src::r_things::screenheightarray;
 use crate::src::r_things::R_ClearSprites;
 use crate::src::r_things::R_DrawMasked;
 use crate::src::tables::angle_t;
@@ -417,11 +415,12 @@ pub unsafe fn R_ExecuteSetViewSize() {
     }
     R_InitBuffer(scaledviewwidth, viewheight);
     R_InitTextureMapping();
-    pspritescale = (FRACUNIT * viewwidth / SCREENWIDTH) as fixed_t;
-    pspriteiscale = (FRACUNIT * SCREENWIDTH / viewwidth) as fixed_t;
+    unsafe { game_state() }.r_things.pspritescale = (FRACUNIT * viewwidth / SCREENWIDTH) as fixed_t;
+    unsafe { game_state() }.r_things.pspriteiscale =
+        (FRACUNIT * SCREENWIDTH / viewwidth) as fixed_t;
     i = 0 as i32;
     while i < viewwidth {
-        screenheightarray[i as usize] = viewheight as i16;
+        unsafe { game_state() }.r_things.screenheightarray[i as usize] = viewheight as i16;
         i += 1;
     }
     i = 0 as i32;

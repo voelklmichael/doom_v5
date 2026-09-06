@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
@@ -48,12 +49,6 @@ use crate::src::r_plane::floorplane;
 use crate::src::r_plane::lastopening;
 use crate::src::r_plane::R_CheckPlane;
 use crate::src::r_sky::skyflatnum;
-use crate::src::r_things::mceilingclip;
-use crate::src::r_things::mfloorclip;
-use crate::src::r_things::negonearray;
-use crate::src::r_things::screenheightarray;
-use crate::src::r_things::sprtopscreen;
-use crate::src::r_things::spryscale;
 use crate::src::r_things::R_DrawMaskedColumn;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
@@ -163,9 +158,10 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
     }
     maskedtexturecol = (*ds).maskedtexturecol;
     rw_scalestep = (*ds).scalestep;
-    spryscale = (*ds).scale1 + (x1 as fixed_t - (*ds).x1 as fixed_t) * rw_scalestep;
-    mfloorclip = (*ds).sprbottomclip;
-    mceilingclip = (*ds).sprtopclip;
+    unsafe { game_state() }.r_things.spryscale =
+        (*ds).scale1 + (x1 as fixed_t - (*ds).x1 as fixed_t) * rw_scalestep;
+    unsafe { game_state() }.r_things.mfloorclip = (*ds).sprbottomclip;
+    unsafe { game_state() }.r_things.mceilingclip = (*ds).sprtopclip;
     if (*(*curline).linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
         dc_texturemid = if (*frontsector).floorheight > (*backsector).floorheight {
             (*frontsector).floorheight
@@ -189,20 +185,23 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
     while dc_x <= x2 {
         if *maskedtexturecol.offset(dc_x as isize) as i32 != SHRT_MAX {
             if fixedcolormap.is_null() {
-                index = (spryscale >> LIGHTSCALESHIFT) as u32;
+                index = (unsafe { game_state() }.r_things.spryscale >> LIGHTSCALESHIFT) as u32;
                 if index >= MAXLIGHTSCALE as u32 {
                     index = (MAXLIGHTSCALE - 1 as i32) as u32;
                 }
                 dc_colormap = *walllights.offset(index as isize);
             }
-            sprtopscreen = centeryfrac - FixedMul(dc_texturemid, spryscale);
-            dc_iscale = (0xffffffff as u32).wrapping_div(spryscale as u32) as fixed_t;
+            unsafe { game_state() }.r_things.sprtopscreen =
+                centeryfrac - FixedMul(dc_texturemid, unsafe { game_state() }.r_things.spryscale);
+            dc_iscale = (0xffffffff as u32)
+                .wrapping_div(unsafe { game_state() }.r_things.spryscale as u32)
+                as fixed_t;
             col = R_GetColumn(texnum, *maskedtexturecol.offset(dc_x as isize) as i32)
                 .offset(-(3 as i32 as isize)) as *mut column_t;
             R_DrawMaskedColumn(col);
             *maskedtexturecol.offset(dc_x as isize) = SHRT_MAX as i16;
         }
-        spryscale += rw_scalestep;
+        unsafe { game_state() }.r_things.spryscale += rw_scalestep;
         dc_x += 1;
     }
 }
@@ -380,8 +379,9 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         }
         rw_midtexturemid += (*sidedef).rowoffset;
         (*ds_p).silhouette = SIL_BOTH;
-        (*ds_p).sprtopclip = &raw mut screenheightarray as *mut i16;
-        (*ds_p).sprbottomclip = &raw mut negonearray as *mut i16;
+        (*ds_p).sprtopclip =
+            &raw mut unsafe { game_state() }.r_things.screenheightarray as *mut i16;
+        (*ds_p).sprbottomclip = &raw mut unsafe { game_state() }.r_things.negonearray as *mut i16;
         (*ds_p).bsilheight = INT_MAX as fixed_t;
         (*ds_p).tsilheight = INT_MIN as fixed_t;
     } else {
@@ -403,12 +403,14 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
             (*ds_p).tsilheight = INT_MIN as fixed_t;
         }
         if (*backsector).ceilingheight <= (*frontsector).floorheight {
-            (*ds_p).sprbottomclip = &raw mut negonearray as *mut i16;
+            (*ds_p).sprbottomclip =
+                &raw mut unsafe { game_state() }.r_things.negonearray as *mut i16;
             (*ds_p).bsilheight = INT_MAX as fixed_t;
             (*ds_p).silhouette |= SIL_BOTTOM;
         }
         if (*backsector).floorheight >= (*frontsector).ceilingheight {
-            (*ds_p).sprtopclip = &raw mut screenheightarray as *mut i16;
+            (*ds_p).sprtopclip =
+                &raw mut unsafe { game_state() }.r_things.screenheightarray as *mut i16;
             (*ds_p).tsilheight = INT_MIN as fixed_t;
             (*ds_p).silhouette |= SIL_TOP;
         }

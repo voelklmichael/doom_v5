@@ -1,4 +1,5 @@
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedDiv;
@@ -49,7 +50,6 @@ use crate::src::r_segs::MAXDRAWSEGS;
 use crate::src::r_sky::skyflatnum;
 use crate::src::r_sky::skytexture;
 use crate::src::r_sky::skytexturemid;
-use crate::src::r_things::pspriteiscale;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::tables::angle_t;
@@ -315,7 +315,7 @@ pub unsafe fn R_DrawPlanes() {
     while pl < lastvisplane {
         if !((*pl).minx > (*pl).maxx) {
             if (*pl).picnum == skyflatnum {
-                dc_iscale = pspriteiscale >> detailshift;
+                dc_iscale = unsafe { game_state() }.r_things.pspriteiscale >> detailshift;
                 dc_colormap = colormaps;
                 dc_texturemid = skytexturemid as fixed_t;
                 x = (*pl).minx;

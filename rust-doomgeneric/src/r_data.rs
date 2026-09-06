@@ -18,8 +18,6 @@ use crate::src::p_tick::thinkercap;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::spriteframe_t;
 use crate::src::r_sky::skytexture;
-use crate::src::r_things::numsprites;
-use crate::src::r_things::sprites;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::w_wad::W_CacheLumpNum;
@@ -790,14 +788,14 @@ pub unsafe fn R_PrecacheLevel() {
     );
     spritepresent = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        numsprites,
+        unsafe { game_state() }.r_things.numsprites,
         PU_STATIC as i32,
         NULL,
     ) as *mut ::core::ffi::c_char;
     memset(
         spritepresent as *mut ::core::ffi::c_void,
         0 as i32,
-        numsprites as size_t,
+        unsafe { game_state() }.r_things.numsprites as size_t,
     );
     th = thinkercap.next as *mut thinker_t;
     while th != &raw mut thinkercap {
@@ -809,11 +807,11 @@ pub unsafe fn R_PrecacheLevel() {
     }
     spritememory = 0 as i32;
     i = 0 as i32;
-    while i < numsprites {
+    while i < unsafe { game_state() }.r_things.numsprites {
         if !(*spritepresent.offset(i as isize) == 0) {
             j = 0 as i32;
-            while j < (*sprites.offset(i as isize)).numframes {
-                sf = (*sprites.offset(i as isize))
+            while j < (*unsafe { game_state() }.r_things.sprites.offset(i as isize)).numframes {
+                sf = (*unsafe { game_state() }.r_things.sprites.offset(i as isize))
                     .spriteframes
                     .offset(j as isize) as *mut spriteframe_t;
                 k = 0 as i32;
