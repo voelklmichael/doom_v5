@@ -2247,7 +2247,7 @@ pub unsafe fn P_DamageMobj(
             thrust *= 4 as i32;
         }
         ang >>= ANGLETOFINESHIFT;
-        (*target).momx += FixedMul(thrust, *finecosine.offset(ang as isize));
+        (*target).momx += FixedMul(thrust, finecosine[ang as isize]);
         (*target).momy += FixedMul(thrust, finesine[ang as usize]);
     }
     if !player.is_null() {

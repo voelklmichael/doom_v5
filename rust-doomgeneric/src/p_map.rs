@@ -1945,8 +1945,8 @@ pub unsafe extern "C" fn P_HitSlideLine(mut ld: *mut line_t) {
     lineangle >>= ANGLETOFINESHIFT;
     deltaangle >>= ANGLETOFINESHIFT;
     movelen = P_AproxDistance(tmxmove, tmymove);
-    newlen = FixedMul(movelen, *finecosine.offset(deltaangle as isize));
-    tmxmove = FixedMul(newlen, *finecosine.offset(lineangle as isize));
+    newlen = FixedMul(movelen, finecosine[deltaangle as isize]);
+    tmxmove = FixedMul(newlen, finecosine[lineangle as isize]);
     tmymove = FixedMul(newlen, finesine[lineangle as usize]);
 }
 #[no_mangle]
@@ -2267,7 +2267,7 @@ pub unsafe fn P_AimLineAttack(
     t1 = P_SubstNullMobj(t1);
     angle >>= ANGLETOFINESHIFT;
     shootthing = t1;
-    x2 = (*t1).x + (distance >> FRACBITS) * *finecosine.offset(angle as isize);
+    x2 = (*t1).x + (distance >> FRACBITS) * finecosine[angle as isize];
     y2 = (*t1).y + (distance >> FRACBITS) * finesine[angle as usize];
     shootz = ((*t1).z as i32
         + ((*t1).height as i32 >> 1 as i32)
@@ -2303,7 +2303,7 @@ pub unsafe fn P_LineAttack(
     angle >>= ANGLETOFINESHIFT;
     shootthing = t1;
     la_damage = damage;
-    x2 = (*t1).x + (distance >> FRACBITS) * *finecosine.offset(angle as isize);
+    x2 = (*t1).x + (distance >> FRACBITS) * finecosine[angle as isize];
     y2 = (*t1).y + (distance >> FRACBITS) * finesine[angle as usize];
     shootz = ((*t1).z as i32
         + ((*t1).height as i32 >> 1 as i32)
@@ -2354,7 +2354,7 @@ pub unsafe fn P_UseLines(mut player: *mut player_t) {
     angle = ((*(*player).mo).angle >> ANGLETOFINESHIFT) as i32;
     x1 = (*(*player).mo).x;
     y1 = (*(*player).mo).y;
-    x2 = x1 + (USERANGE >> FRACBITS) * *finecosine.offset(angle as isize);
+    x2 = x1 + (USERANGE >> FRACBITS) * finecosine[angle as isize];
     y2 = y1 + (USERANGE >> FRACBITS) * finesine[angle as usize];
     P_PathTraverse(
         x1,

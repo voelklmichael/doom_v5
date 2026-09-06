@@ -2807,7 +2807,7 @@ pub unsafe extern "C" fn G_CheckSpot(
             ya = finetangent[3072 as i32 as usize];
         }
         0 | 1024 | 2048 | 3072 => {
-            xa = *finecosine.offset(an as isize);
+            xa = finecosine[an as isize];
             ya = finesine[an as usize];
         }
         _ => {

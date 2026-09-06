@@ -1438,7 +1438,7 @@ pub unsafe extern "C" fn R_MapPlane(
     }
     length = FixedMul(distance, distscale[x1 as usize]);
     angle = viewangle.wrapping_add(xtoviewangle[x1 as usize]) >> ANGLETOFINESHIFT;
-    ds_xfrac = viewx + FixedMul(*finecosine.offset(angle as isize), length);
+    ds_xfrac = viewx + FixedMul(finecosine[angle as isize], length);
     ds_yfrac = -viewy - FixedMul(finesine[angle as usize], length);
     if !fixedcolormap.is_null() {
         ds_colormap = fixedcolormap;
@@ -1471,7 +1471,7 @@ pub unsafe fn R_ClearPlanes() {
         ::core::mem::size_of::<[fixed_t; 200]>() as size_t,
     );
     angle = viewangle.wrapping_sub(ANG90 as angle_t) >> ANGLETOFINESHIFT;
-    basexscale = FixedDiv(*finecosine.offset(angle as isize), centerxfrac);
+    basexscale = FixedDiv(finecosine[angle as isize], centerxfrac);
     baseyscale = -FixedDiv(finesine[angle as usize], centerxfrac);
 }
 pub unsafe fn R_FindPlane(
