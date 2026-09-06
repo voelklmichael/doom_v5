@@ -4,6 +4,7 @@ use crate::src::m_random::M_Random;
 use crate::src::v_video::V_MarkRect;
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::v_video::V_DrawBlock;
+use crate::src::z_zone::Z_Free;
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -15,7 +16,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

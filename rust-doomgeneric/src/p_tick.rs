@@ -11,10 +11,9 @@ use crate::src::g_game::playeringame;
 use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
+use crate::src::z_zone::Z_Free;
 
-extern "C" {
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
-}
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;

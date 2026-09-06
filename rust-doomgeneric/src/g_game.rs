@@ -137,6 +137,7 @@ use crate::src::z_zone::Z_CheckHeap;
 use crate::src::r_data::R_FlatNumForName;
 use crate::src::i_timer::I_GetTime;
 use crate::src::r_data::R_TextureNumForName;
+use crate::src::z_zone::Z_Free;
 
 extern "C" {
     fn memcpy(
@@ -169,7 +170,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -90,8 +90,7 @@ pub unsafe fn Z_Init() {
         .wrapping_sub(::core::mem::size_of::<memzone_t>() as usize)
         as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_Free(mut ptr: *mut ::core::ffi::c_void) {
+pub unsafe fn Z_Free(mut ptr: *mut ::core::ffi::c_void) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut other: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     block = (ptr as *mut byte)

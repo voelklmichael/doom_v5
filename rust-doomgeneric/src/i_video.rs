@@ -3,6 +3,7 @@ use ::c2rust_bitfields;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::i_input::I_GetEvent;
 use crate::src::tables::gammatable;
+use crate::src::z_zone::Z_Free;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -25,7 +26,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn DG_DrawFrame();
