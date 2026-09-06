@@ -38,6 +38,7 @@ use crate::src::p_doors::EV_DoDoor;
 use crate::src::p_floor::EV_DoFloor;
 use crate::src::p_setup::numlines;
 use crate::src::p_inter::P_DamageMobj;
+use crate::src::p_setup::lines;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -61,7 +62,6 @@ extern "C" {
     fn P_Random() -> i32;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut lines: *mut line_t;
     static mut sides: *mut side_t;
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
@@ -2124,8 +2124,7 @@ pub unsafe fn P_FindHighestCeilingSurrounding(
     }
     return height;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindSectorFromLineTag(
+pub unsafe fn P_FindSectorFromLineTag(
     mut line: *mut line_t,
     mut start: i32,
 ) -> i32 {

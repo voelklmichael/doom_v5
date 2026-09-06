@@ -16,6 +16,10 @@ use crate::src::p_tick::P_InitThinkers;
 use crate::src::p_setup::numlines;
 use crate::src::p_maputl::P_SetThingPosition;
 use crate::src::p_tick::thinkercap;
+use crate::src::g_game::gameskill;
+use crate::src::info::mobjinfo;
+use crate::src::p_mobj::P_RemoveMobj;
+use crate::src::p_setup::lines;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -61,13 +65,10 @@ extern "C" {
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     static mut states: [state_t; 967];
-    static mut mobjinfo: [mobjinfo_t; 137];
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut lines: *mut line_t;
     static mut sides: *mut side_t;
     fn P_AddThinker(thinker: *mut thinker_t);
-    fn P_RemoveMobj(th: *mut mobj_t);
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn T_LightFlash(flash: *mut lightflash_t);
     fn T_StrobeFlash(flash: *mut strobe_t);
@@ -77,7 +78,6 @@ extern "C" {
     fn T_VerticalDoor(door: *mut vldoor_t);
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
-    static mut gameskill: skill_t;
     static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut leveltime: i32;

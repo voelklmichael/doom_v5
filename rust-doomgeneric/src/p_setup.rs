@@ -1464,7 +1464,6 @@ pub static mut subsectors: *mut subsector_t = ::core::ptr::null::<subsector_t>()
 pub static mut numnodes: i32 = 0;
 pub static mut nodes: *mut node_t = ::core::ptr::null::<node_t>() as *mut node_t;
 pub static mut numlines: i32 = 0;
-#[no_mangle]
 pub static mut lines: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
 pub static mut numsides: i32 = 0;
 #[no_mangle]

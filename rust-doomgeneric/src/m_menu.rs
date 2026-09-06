@@ -55,6 +55,7 @@ use crate::src::i_video::I_SetPalette;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::d_loop::gametic;
+use crate::src::g_game::demoplayback;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -100,7 +101,6 @@ extern "C" {
     static mut netgame: bool;
     static mut automapactive: bool;
     static mut consoleplayer: i32;
-    static mut demoplayback: bool;
     static mut players: [player_t; 4];
 }
 pub type size_t = usize;

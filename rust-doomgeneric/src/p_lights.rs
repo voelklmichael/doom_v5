@@ -1,6 +1,7 @@
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::p_spec::P_FindMinSurroundingLight;
 use crate::src::p_spec::getNextSector;
+use crate::src::p_spec::P_FindSectorFromLineTag;
 
 extern "C" {
     fn Z_Malloc(
@@ -12,10 +13,6 @@ extern "C" {
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
-    fn P_FindSectorFromLineTag(
-        line: *mut line_t,
-        start: i32,
-    ) -> i32;
 }
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;

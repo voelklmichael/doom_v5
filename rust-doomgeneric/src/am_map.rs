@@ -2,7 +2,7 @@ use crate::src::i_system::FILE;
 use crate::src::hu_lib::patch_t;
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::d_event::event_t;
-use crate::src::p_mobj::{sector_t, line_t, actionf_t};
+use crate::src::p_mobj::{sector_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_ReleaseLumpName};
@@ -28,6 +28,8 @@ use crate::src::p_setup::numlines;
 use crate::src::p_setup::bmaporgx;
 use crate::src::p_setup::bmaporgy;
 use crate::src::v_video::V_MarkRect;
+use crate::src::i_video::I_VideoBuffer;
+use crate::src::p_setup::lines;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -51,10 +53,8 @@ extern "C" {
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut I_VideoBuffer: *mut byte;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut lines: *mut line_t;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,

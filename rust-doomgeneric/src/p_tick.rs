@@ -6,12 +6,12 @@ use crate::src::p_mobj::P_RespawnSpecials;
 use crate::src::p_spec::P_UpdateSpecials;
 use crate::src::g_game::paused;
 use crate::src::m_menu::menuactive;
+use crate::src::g_game::demoplayback;
 
 extern "C" {
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     static mut netgame: bool;
     static mut consoleplayer: i32;
-    static mut demoplayback: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
 }
@@ -1306,8 +1306,7 @@ pub unsafe extern "C" fn P_AddThinker(mut thinker: *mut thinker_t) {
     (*thinker).prev = thinkercap.prev;
     thinkercap.prev = thinker as *mut thinker_s;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_RemoveThinker(mut thinker: *mut thinker_t) {
+pub unsafe fn P_RemoveThinker(mut thinker: *mut thinker_t) {
     (*thinker).function.acv = ::core::mem::transmute::<
         ::libc::intptr_t,
         actionf_v,

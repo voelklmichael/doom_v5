@@ -1,9 +1,9 @@
 use crate::src::p_mobj::{state_t, actionf_t};
 use crate::src::d_player::{player_t, PST_LIVE, PST_DEAD, PST_REBORN};
-use crate::src::p_mobj::{mobj_t};
 use crate::src::d_ticcmd::{ticcmd_t};
 use crate::src::p_pspr::P_MovePsprites;
 use crate::src::p_map::P_UseLines;
+use crate::src::p_mobj::P_SetMobjState;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
@@ -11,7 +11,6 @@ extern "C" {
     static mut finecosine: *const fixed_t;
     static mut states: [state_t; 967];
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn P_PlayerInSpecialSector(player: *mut player_t);
     static mut gamemode: GameMode_t;
     static mut leveltime: i32;

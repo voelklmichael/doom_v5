@@ -34,6 +34,10 @@ use crate::src::p_maputl::P_SetThingPosition;
 use crate::src::p_setup::bmaporgx;
 use crate::src::p_setup::bmaporgy;
 use crate::src::r_main::R_PointInSubsector;
+use crate::src::p_mobj::P_SetMobjState;
+use crate::src::p_mobj::P_RemoveMobj;
+use crate::src::p_setup::lines;
+use crate::src::r_main::validcount;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -48,8 +52,6 @@ extern "C" {
     fn P_Random() -> i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut lines: *mut line_t;
-    static mut validcount: i32;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn P_SpawnMobj(
         x: fixed_t,
@@ -57,8 +59,6 @@ extern "C" {
         z: fixed_t,
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
-    fn P_RemoveMobj(th: *mut mobj_t);
-    fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemap: i32;
     static mut leveltime: i32;

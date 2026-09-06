@@ -33,6 +33,11 @@ use crate::src::p_maputl::P_SetThingPosition;
 use crate::src::p_setup::bmaporgx;
 use crate::src::p_setup::bmaporgy;
 use crate::src::p_tick::thinkercap;
+use crate::src::g_game::gameskill;
+use crate::src::info::mobjinfo;
+use crate::src::p_mobj::P_SetMobjState;
+use crate::src::p_mobj::P_RemoveMobj;
+use crate::src::r_main::validcount;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -40,9 +45,7 @@ extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut mobjinfo: [mobjinfo_t; 137];
     static mut sides: *mut side_t;
-    static mut validcount: i32;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn P_SpawnMobj(
         x: fixed_t,
@@ -50,13 +53,10 @@ extern "C" {
         z: fixed_t,
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
-    fn P_RemoveMobj(th: *mut mobj_t);
-    fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
-    static mut gameskill: skill_t;
     static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut netgame: bool;
