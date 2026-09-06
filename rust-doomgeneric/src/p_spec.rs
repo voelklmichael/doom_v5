@@ -1055,7 +1055,7 @@ pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
         }
         16 | 4 => {
             if (*player).powers[pw_ironfeet as i32 as usize] == 0
-                || P_Random() < 5 as i32
+                || P_Random(unsafe { &mut game_state().m_random }) < 5 as i32
             {
                 if leveltime & 0x1f as i32 == 0 {
                     P_DamageMobj(

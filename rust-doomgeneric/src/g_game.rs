@@ -12,7 +12,7 @@ use crate::src::w_wad::{
 };
 use crate::src::d_loop::singletics;
 use crate::src::d_loop::ticdup;
-use crate::src::m_random::rndindex;
+use crate::src::m_random::MRandomState;
 use crate::src::d_net::netcmds;
 use crate::src::m_controls::key_right;
 use crate::src::m_controls::key_left;
@@ -998,7 +998,7 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
     }
     return false;
 }
-pub unsafe fn G_Ticker() {
+pub unsafe fn G_Ticker(state: &mut MRandomState) {
     let mut i: i32 = 0;
     let mut buf: i32 = 0;
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
@@ -1102,7 +1102,7 @@ pub unsafe fn G_Ticker() {
                     consistancy[i as usize][buf as usize] = (*players[i as usize].mo).x
                         as byte;
                 } else {
-                    consistancy[i as usize][buf as usize] = rndindex as byte;
+                    consistancy[i as usize][buf as usize] = state.rndindex as byte;
                 }
             }
         }
@@ -1328,7 +1328,7 @@ pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
     }
     j = 0 as i32;
     while j < 20 as i32 {
-        i = P_Random() % selections;
+        i = P_Random(unsafe { &mut game_state().m_random }) % selections;
         if G_CheckSpot(
             playernum,
             (&raw mut deathmatchstarts as *mut mapthing_t).offset(i as isize)
@@ -1871,7 +1871,7 @@ pub unsafe fn G_InitNew(
     {
         map = 9 as i32;
     }
-    M_ClearRandom();
+    M_ClearRandom(unsafe { &mut game_state().m_random });
     if skill as i32 == sk_nightmare as i32
         || respawnparm
     {

@@ -9,6 +9,7 @@ use crate::src::p_setup::sectors;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::p_mobj::ThinkerFn;
+use crate::src::game_state::game_state;
 
 
 #[derive(Copy, Clone)]
@@ -60,7 +61,7 @@ pub unsafe fn T_FireFlicker(mut flick: *mut fireflicker_t) {
     if (*flick).count != 0 {
         return;
     }
-    amount = (P_Random() & 3 as i32) * 16 as i32;
+    amount = (P_Random(unsafe { &mut game_state().m_random }) & 3 as i32) * 16 as i32;
     if (*(*flick).sector).lightlevel as i32 - amount < (*flick).minlight {
         (*(*flick).sector).lightlevel = (*flick).minlight as i16;
     } else {
@@ -94,10 +95,10 @@ pub unsafe fn T_LightFlash(mut flash: *mut lightflash_t) {
     }
     if (*(*flash).sector).lightlevel as i32 == (*flash).maxlight {
         (*(*flash).sector).lightlevel = (*flash).minlight as i16;
-        (*flash).count = (P_Random() & (*flash).mintime) + 1 as i32;
+        (*flash).count = (P_Random(unsafe { &mut game_state().m_random }) & (*flash).mintime) + 1 as i32;
     } else {
         (*(*flash).sector).lightlevel = (*flash).maxlight as i16;
-        (*flash).count = (P_Random() & (*flash).maxtime) + 1 as i32;
+        (*flash).count = (P_Random(unsafe { &mut game_state().m_random }) & (*flash).maxtime) + 1 as i32;
     };
 }
 pub unsafe fn P_SpawnLightFlash(mut sector: *mut sector_t) {
@@ -118,7 +119,7 @@ pub unsafe fn P_SpawnLightFlash(mut sector: *mut sector_t) {
     );
     (*flash).maxtime = 64 as i32;
     (*flash).mintime = 7 as i32;
-    (*flash).count = (P_Random() & (*flash).maxtime) + 1 as i32;
+    (*flash).count = (P_Random(unsafe { &mut game_state().m_random }) & (*flash).maxtime) + 1 as i32;
 }
 pub unsafe fn T_StrobeFlash(mut flash: *mut strobe_t) {
     (*flash).count -= 1;
@@ -159,7 +160,7 @@ pub unsafe fn P_SpawnStrobeFlash(
     }
     (*sector).special = 0 as i16;
     if inSync == 0 {
-        (*flash).count = (P_Random() & 7 as i32)
+        (*flash).count = (P_Random(unsafe { &mut game_state().m_random }) & 7 as i32)
             + 1 as i32;
     } else {
         (*flash).count = 1 as i32;

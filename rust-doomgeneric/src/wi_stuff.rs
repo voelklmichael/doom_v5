@@ -924,12 +924,12 @@ pub unsafe fn WI_initAnimatedBack() {
         if (*a).type_0 as u32
             == ANIM_ALWAYS as i32 as u32
         {
-            (*a).nexttic = bcnt + 1 as i32 + M_Random() % (*a).period;
+            (*a).nexttic = bcnt + 1 as i32 + M_Random(unsafe { &mut game_state().m_random }) % (*a).period;
         } else if (*a).type_0 as u32
             == ANIM_RANDOM as i32 as u32
         {
             (*a).nexttic = bcnt + 1 as i32 + (*a).data2
-                + M_Random() % (*a).data1;
+                + M_Random(unsafe { &mut game_state().m_random }) % (*a).data1;
         } else if (*a).type_0 as u32
             == ANIM_LEVEL as i32 as u32
         {
@@ -966,7 +966,7 @@ pub unsafe fn WI_updateAnimatedBack() {
                     (*a).ctr += 1;
                     if (*a).ctr == (*a).nanims {
                         (*a).ctr = -(1 as i32);
-                        (*a).nexttic = bcnt + (*a).data2 + M_Random() % (*a).data1;
+                        (*a).nexttic = bcnt + (*a).data2 + M_Random(unsafe { &mut game_state().m_random }) % (*a).data1;
                     } else {
                         (*a).nexttic = bcnt + (*a).period;
                     }

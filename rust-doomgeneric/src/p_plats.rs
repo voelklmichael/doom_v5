@@ -255,7 +255,7 @@ pub unsafe fn EV_DoPlat(
                     (*plat).high = (*sec).floorheight;
                 }
                 (*plat).wait = TICRATE * PLATWAIT;
-                (*plat).status = (P_Random() & 1 as i32) as plat_e;
+                (*plat).status = (P_Random(unsafe { &mut game_state().m_random }) & 1 as i32) as plat_e;
                 S_StartSound(unsafe { &mut game_state().sounds }, 
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,

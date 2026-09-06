@@ -1,4 +1,4 @@
-static mut rndtable: [u8; 256] = [
+static rndtable: [u8; 256] = [
     0 as i32 as u8,
     8 as i32 as u8,
     109 as i32 as u8,
@@ -256,18 +256,29 @@ static mut rndtable: [u8; 256] = [
     236 as i32 as u8,
     249 as i32 as u8,
 ];
-pub static mut rndindex: i32 = 0;
-#[no_mangle]
-pub static mut prndindex: i32 = 0;
-pub unsafe fn P_Random() -> i32 {
-    prndindex = prndindex + 1 as i32 & 0xff as i32;
-    return rndtable[prndindex as usize] as i32;
+pub struct MRandomState {
+    pub rndindex: i32,
+    pub prndindex: i32,
 }
-pub unsafe fn M_Random() -> i32 {
-    rndindex = rndindex + 1 as i32 & 0xff as i32;
-    return rndtable[rndindex as usize] as i32;
+
+impl MRandomState {
+    pub const fn new() -> Self {
+        MRandomState {
+            rndindex: 0,
+            prndindex: 0,
+        }
+    }
 }
-pub unsafe fn M_ClearRandom() {
-    prndindex = 0 as i32;
-    rndindex = prndindex;
+
+pub fn P_Random(state: &mut MRandomState) -> i32 {
+    state.prndindex = state.prndindex + 1 as i32 & 0xff as i32;
+    return rndtable[state.prndindex as usize] as i32;
+}
+pub fn M_Random(state: &mut MRandomState) -> i32 {
+    state.rndindex = state.rndindex + 1 as i32 & 0xff as i32;
+    return rndtable[state.rndindex as usize] as i32;
+}
+pub fn M_ClearRandom(state: &mut MRandomState) {
+    state.prndindex = 0 as i32;
+    state.rndindex = state.prndindex;
 }

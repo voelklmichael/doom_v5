@@ -13,6 +13,7 @@ use libc::memcpy;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::game_state::game_state;
 static mut go: bool = false;
 static mut wipe_scr_start: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr_end: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
@@ -136,11 +137,11 @@ pub unsafe fn wipe_initMelt(
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut i32;
-    *y.offset(0 as i32 as isize) = -(M_Random()
+    *y.offset(0 as i32 as isize) = -(M_Random(unsafe { &mut game_state().m_random })
         % 16 as i32);
     i = 1 as i32;
     while i < width {
-        r = M_Random() % 3 as i32 - 1 as i32;
+        r = M_Random(unsafe { &mut game_state().m_random }) % 3 as i32 - 1 as i32;
         *y.offset(i as isize) = *y.offset((i - 1 as i32) as isize) + r;
         if *y.offset(i as isize) > 0 as i32 {
             *y.offset(i as isize) = 0 as i32;

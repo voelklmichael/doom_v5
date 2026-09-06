@@ -242,7 +242,7 @@ pub unsafe fn P_CheckMissileRange(mut actor: *mut mobj_t) -> bool {
     {
         dist = 160 as i32 as fixed_t;
     }
-    if P_Random() < dist {
+    if P_Random(unsafe { &mut game_state().m_random }) < dist {
         return false;
     }
     return true;
@@ -325,7 +325,7 @@ pub unsafe fn P_TryWalk(mut actor: *mut mobj_t) -> bool {
     if !P_Move(actor) {
         return false;
     }
-    (*actor).movecount = P_Random() & 15 as i32;
+    (*actor).movecount = P_Random(unsafe { &mut game_state().m_random }) & 15 as i32;
     return true;
 }
 pub unsafe fn P_NewChaseDir(mut actor: *mut mobj_t) {
@@ -370,7 +370,7 @@ pub unsafe fn P_NewChaseDir(mut actor: *mut mobj_t) {
             return;
         }
     }
-    if P_Random() > 200 as i32
+    if P_Random(unsafe { &mut game_state().m_random }) > 200 as i32
         || (deltay as i32).abs() > (deltax as i32).abs()
     {
         tdir = d[1 as i32 as usize] as i32;
@@ -411,7 +411,7 @@ pub unsafe fn P_NewChaseDir(mut actor: *mut mobj_t) {
             return;
         }
     }
-    if P_Random() & 1 as i32 != 0 {
+    if P_Random(unsafe { &mut game_state().m_random }) & 1 as i32 != 0 {
         tdir = DI_EAST as i32;
         while tdir <= DI_SOUTHEAST as i32 {
             if tdir != turnaround as i32 {
@@ -575,11 +575,11 @@ pub unsafe fn A_Look(mut actor: *mut mobj_t) {
         match (*(*actor).info).seesound {
             36 | 37 | 38 => {
                 sound = sfx_posit1 as i32
-                    + P_Random() % 3 as i32;
+                    + P_Random(unsafe { &mut game_state().m_random }) % 3 as i32;
             }
             39 | 40 => {
                 sound = sfx_bgsit1 as i32
-                    + P_Random() % 2 as i32;
+                    + P_Random(unsafe { &mut game_state().m_random }) % 2 as i32;
             }
             _ => {
                 sound = (*(*actor).info).seesound;
@@ -678,7 +678,7 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
     if (*actor).movecount < 0 as i32 || !P_Move(actor) {
         P_NewChaseDir(actor);
     }
-    if (*(*actor).info).activesound != 0 && P_Random() < 3 as i32 {
+    if (*(*actor).info).activesound != 0 && P_Random(unsafe { &mut game_state().m_random }) < 3 as i32 {
         S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, (*(*actor).info).activesound);
     }
 }
@@ -697,7 +697,7 @@ pub unsafe fn A_FaceTarget(mut actor: *mut mobj_t) {
         (*actor).angle = (*actor)
             .angle
             .wrapping_add(
-                (P_Random() - P_Random() << 21 as i32) as angle_t,
+                (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 21 as i32) as angle_t,
             );
     }
 }
@@ -712,8 +712,8 @@ pub unsafe fn A_PosAttack(mut actor: *mut mobj_t) {
     angle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, angle as angle_t, MISSILERANGE) as i32;
     S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_pistol as i32);
-    angle += P_Random() - P_Random() << 20 as i32;
-    damage = (P_Random() % 5 as i32 + 1 as i32)
+    angle += P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 20 as i32;
+    damage = (P_Random(unsafe { &mut game_state().m_random }) % 5 as i32 + 1 as i32)
         * 3 as i32;
     P_LineAttack(actor, angle as angle_t, MISSILERANGE, slope as fixed_t, damage);
 }
@@ -733,8 +733,8 @@ pub unsafe fn A_SPosAttack(mut actor: *mut mobj_t) {
         as i32;
     i = 0 as i32;
     while i < 3 as i32 {
-        angle = bangle + (P_Random() - P_Random() << 20 as i32);
-        damage = (P_Random() % 5 as i32 + 1 as i32)
+        angle = bangle + (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 20 as i32);
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 5 as i32 + 1 as i32)
             * 3 as i32;
         P_LineAttack(actor, angle as angle_t, MISSILERANGE, slope as fixed_t, damage);
         i += 1;
@@ -753,14 +753,14 @@ pub unsafe fn A_CPosAttack(mut actor: *mut mobj_t) {
     bangle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE)
         as i32;
-    angle = bangle + (P_Random() - P_Random() << 20 as i32);
-    damage = (P_Random() % 5 as i32 + 1 as i32)
+    angle = bangle + (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 20 as i32);
+    damage = (P_Random(unsafe { &mut game_state().m_random }) % 5 as i32 + 1 as i32)
         * 3 as i32;
     P_LineAttack(actor, angle as angle_t, MISSILERANGE, slope as fixed_t, damage);
 }
 pub unsafe fn A_CPosRefire(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
-    if P_Random() < 40 as i32 {
+    if P_Random(unsafe { &mut game_state().m_random }) < 40 as i32 {
         return;
     }
     if (*actor).target.is_null() || (*(*actor).target).health <= 0 as i32
@@ -771,7 +771,7 @@ pub unsafe fn A_CPosRefire(mut actor: *mut mobj_t) {
 }
 pub unsafe fn A_SpidRefire(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
-    if P_Random() < 10 as i32 {
+    if P_Random(unsafe { &mut game_state().m_random }) < 10 as i32 {
         return;
     }
     if (*actor).target.is_null() || (*(*actor).target).health <= 0 as i32
@@ -795,7 +795,7 @@ pub unsafe fn A_TroopAttack(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) {
         S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_claw as i32);
-        damage = (P_Random() % 8 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 8 as i32 + 1 as i32)
             * 3 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
         return;
@@ -809,7 +809,7 @@ pub unsafe fn A_SargAttack(mut actor: *mut mobj_t) {
     }
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) {
-        damage = (P_Random() % 10 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 10 as i32 + 1 as i32)
             * 4 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
     }
@@ -821,7 +821,7 @@ pub unsafe fn A_HeadAttack(mut actor: *mut mobj_t) {
     }
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) {
-        damage = (P_Random() % 6 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 6 as i32 + 1 as i32)
             * 10 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
         return;
@@ -842,7 +842,7 @@ pub unsafe fn A_BruisAttack(mut actor: *mut mobj_t) {
     }
     if P_CheckMeleeRange(actor) {
         S_StartSound(unsafe { &mut game_state().sounds }, actor as *mut ::core::ffi::c_void, sfx_claw as i32);
-        damage = (P_Random() % 8 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 8 as i32 + 1 as i32)
             * 10 as i32;
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
         return;
@@ -881,7 +881,7 @@ pub unsafe fn A_Tracer(mut actor: *mut mobj_t) {
         MT_SMOKE,
     );
     (*th).momz = FRACUNIT as fixed_t;
-    (*th).tics -= P_Random() & 3 as i32;
+    (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
@@ -938,7 +938,7 @@ pub unsafe fn A_SkelFist(mut actor: *mut mobj_t) {
     }
     A_FaceTarget(actor);
     if P_CheckMeleeRange(actor) {
-        damage = (P_Random() % 10 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 10 as i32 + 1 as i32)
             * 6 as i32;
         S_StartSound(unsafe { &mut game_state().sounds }, 
             actor as *mut ::core::ffi::c_void,
@@ -1274,11 +1274,11 @@ pub unsafe fn A_Scream(mut actor: *mut mobj_t) {
         0 => return,
         59 | 60 | 61 => {
             sound = sfx_podth1 as i32
-                + P_Random() % 3 as i32;
+                + P_Random(unsafe { &mut game_state().m_random }) % 3 as i32;
         }
         62 | 63 => {
             sound = sfx_bgdth1 as i32
-                + P_Random() % 2 as i32;
+                + P_Random(unsafe { &mut game_state().m_random }) % 2 as i32;
         }
         _ => {
             sound = (*(*actor).info).deathsound;
@@ -1542,11 +1542,11 @@ pub unsafe fn A_BrainScream(mut mo: *mut mobj_t) {
     x = (*mo).x as i32 - 196 as i32 * FRACUNIT;
     while x < (*mo).x as i32 + 320 as i32 * FRACUNIT {
         y = (*mo).y as i32 - 320 as i32 * FRACUNIT;
-        z = 128 as i32 + P_Random() * 2 as i32 * FRACUNIT;
+        z = 128 as i32 + P_Random(unsafe { &mut game_state().m_random }) * 2 as i32 * FRACUNIT;
         th = P_SpawnMobj(x as fixed_t, y as fixed_t, z as fixed_t, MT_ROCKET);
-        (*th).momz = (P_Random() * 512 as i32) as fixed_t;
+        (*th).momz = (P_Random(unsafe { &mut game_state().m_random }) * 512 as i32) as fixed_t;
         P_SetMobjState(th, S_BRAINEXPLODE1);
-        (*th).tics -= P_Random() & 7 as i32;
+        (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 7 as i32;
         if (*th).tics < 1 as i32 {
             (*th).tics = 1 as i32;
         }
@@ -1560,13 +1560,13 @@ pub unsafe fn A_BrainExplode(mut mo: *mut mobj_t) {
     let mut z: i32 = 0;
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     x = (*mo).x as i32
-        + (P_Random() - P_Random()) * 2048 as i32;
+        + (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random })) * 2048 as i32;
     y = (*mo).y as i32;
-    z = 128 as i32 + P_Random() * 2 as i32 * FRACUNIT;
+    z = 128 as i32 + P_Random(unsafe { &mut game_state().m_random }) * 2 as i32 * FRACUNIT;
     th = P_SpawnMobj(x as fixed_t, y as fixed_t, z as fixed_t, MT_ROCKET);
-    (*th).momz = (P_Random() * 512 as i32) as fixed_t;
+    (*th).momz = (P_Random(unsafe { &mut game_state().m_random }) * 512 as i32) as fixed_t;
     P_SetMobjState(th, S_BRAINEXPLODE1);
-    (*th).tics -= P_Random() & 7 as i32;
+    (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 7 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
@@ -1608,7 +1608,7 @@ pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
     targ = P_SubstNullMobj((*mo).target as *mut mobj_t);
     fog = P_SpawnMobj((*targ).x, (*targ).y, (*targ).z, MT_SPAWNFIRE);
     S_StartSound(unsafe { &mut game_state().sounds }, fog as *mut ::core::ffi::c_void, sfx_telept as i32);
-    r = P_Random();
+    r = P_Random(unsafe { &mut game_state().m_random });
     if r < 50 as i32 {
         type_0 = MT_TROOP;
     } else if r < 90 as i32 {

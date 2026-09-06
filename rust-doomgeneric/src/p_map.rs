@@ -249,7 +249,7 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
         return true_0 as boolean;
     }
     if (*tmthing).flags & MF_SKULLFLY as i32 != 0 {
-        damage = (P_Random() % 8 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 8 as i32 + 1 as i32)
             * (*(*tmthing).info).damage;
         P_DamageMobj(thing, tmthing, tmthing, damage);
         (*tmthing).flags &= !(MF_SKULLFLY as i32);
@@ -292,7 +292,7 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
             return ((*thing).flags & MF_SOLID as i32 == 0)
                 as i32 as boolean;
         }
-        damage = (P_Random() % 8 as i32 + 1 as i32)
+        damage = (P_Random(unsafe { &mut game_state().m_random }) % 8 as i32 + 1 as i32)
             * (*(*tmthing).info).damage;
         P_DamageMobj(thing, tmthing, (*tmthing).target as *mut mobj_t, damage);
         return false_0 as boolean;
@@ -1058,8 +1058,8 @@ pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
             (*thing).z + (*thing).height / 2 as fixed_t,
             MT_BLOOD,
         );
-        (*mo).momx = (P_Random() - P_Random() << 12 as i32) as fixed_t;
-        (*mo).momy = (P_Random() - P_Random() << 12 as i32) as fixed_t;
+        (*mo).momx = (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 12 as i32) as fixed_t;
+        (*mo).momy = (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 12 as i32) as fixed_t;
     }
     return true_0 as boolean;
 }
