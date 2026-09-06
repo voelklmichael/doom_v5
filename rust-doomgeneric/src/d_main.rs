@@ -24,6 +24,7 @@ use crate::src::s_sound::S_UpdateSounds;
 use crate::src::s_sound::snd_channels;
 use crate::src::v_video::V_DrawMouseSpeedBox;
 use crate::src::d_event::D_PopEvent;
+use crate::src::game_state::game_state;
 use crate::src::f_finale::F_Drawer;
 use crate::src::f_wipe::wipe_StartScreen;
 use crate::src::f_wipe::wipe_EndScreen;
@@ -242,7 +243,7 @@ pub unsafe fn D_ProcessEvents() {
         return;
     }
     loop {
-        ev = D_PopEvent();
+        ev = D_PopEvent(&mut game_state().d_event);
         if ev.is_null() {
             break;
         }

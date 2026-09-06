@@ -1,6 +1,7 @@
 use crate::src::d_event::event_t;
 use crate::src::d_event::D_PostEvent;
 use crate::src::d_event::{ev_keydown, ev_keyup};
+use crate::src::game_state::game_state;
 use crate::src::m_controls::KEY_RSHIFT;
 
 extern "C" {
@@ -194,14 +195,14 @@ pub unsafe fn I_GetEvent() {
             event.data1 = TranslateKey(key) as i32;
             event.data2 = GetTypedChar(key) as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&raw mut event);
+                D_PostEvent(&mut game_state().d_event, &raw mut event);
             }
         } else {
             event.type_0 = ev_keyup;
             event.data1 = TranslateKey(key) as i32;
             event.data2 = 0 as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&raw mut event);
+                D_PostEvent(&mut game_state().d_event, &raw mut event);
             }
             break;
         }
