@@ -47,9 +47,6 @@ use crate::src::r_main::LIGHTSEGSHIFT;
 use crate::src::r_main::LIGHTZSHIFT;
 use crate::src::r_main::MAXLIGHTZ;
 use crate::src::r_segs::MAXDRAWSEGS;
-use crate::src::r_sky::skyflatnum;
-use crate::src::r_sky::skytexture;
-use crate::src::r_sky::skytexturemid;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::tables::angle_t;
@@ -180,7 +177,7 @@ pub unsafe fn R_FindPlane(
     mut lightlevel: i32,
 ) -> *mut visplane_t {
     let mut check: *mut visplane_t = ::core::ptr::null_mut::<visplane_t>();
-    if picnum == skyflatnum {
+    if picnum == unsafe { game_state() }.r_sky.skyflatnum {
         height = 0 as i32 as fixed_t;
         lightlevel = 0 as i32;
     }
@@ -314,10 +311,10 @@ pub unsafe fn R_DrawPlanes() {
     pl = &raw mut visplanes as *mut visplane_t;
     while pl < lastvisplane {
         if !((*pl).minx > (*pl).maxx) {
-            if (*pl).picnum == skyflatnum {
+            if (*pl).picnum == unsafe { game_state() }.r_sky.skyflatnum {
                 dc_iscale = unsafe { game_state() }.r_things.pspriteiscale >> detailshift;
                 dc_colormap = colormaps;
-                dc_texturemid = skytexturemid as fixed_t;
+                dc_texturemid = unsafe { game_state() }.r_sky.skytexturemid as fixed_t;
                 x = (*pl).minx;
                 while x <= (*pl).maxx {
                     dc_yl = (*pl).top[x as usize] as i32;
@@ -326,7 +323,7 @@ pub unsafe fn R_DrawPlanes() {
                         angle = (viewangle.wrapping_add(xtoviewangle[x as usize])
                             >> ANGLETOSKYSHIFT) as i32;
                         dc_x = x;
-                        dc_source = R_GetColumn(skytexture, angle);
+                        dc_source = R_GetColumn(unsafe { game_state() }.r_sky.skytexture, angle);
                         colfunc.expect("non-null function pointer")();
                     }
                     x += 1;

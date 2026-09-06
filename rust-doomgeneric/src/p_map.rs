@@ -7,7 +7,7 @@ use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::info::S_GIBS;
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedDiv;
@@ -57,7 +57,6 @@ use crate::src::p_tick::leveltime;
 use crate::src::r_main::validcount;
 use crate::src::r_main::R_PointInSubsector;
 use crate::src::r_main::R_PointToAngle2;
-use crate::src::r_sky::skyflatnum;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::sfx_noway;
 use crate::src::tables::angle_t;
@@ -890,11 +889,13 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
                 unsafe { game_state() }.p_map.aimslope,
                 FixedMul(frac, unsafe { game_state() }.p_map.attackrange),
             );
-        if (*(*li).frontsector).ceilingpic as i32 == skyflatnum {
+        if (*(*li).frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum {
             if z > (*(*li).frontsector).ceilingheight {
                 return false_0 as boolean;
             }
-            if !(*li).backsector.is_null() && (*(*li).backsector).ceilingpic as i32 == skyflatnum {
+            if !(*li).backsector.is_null()
+                && (*(*li).backsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+            {
                 return false_0 as boolean;
             }
         }
@@ -1198,7 +1199,8 @@ unsafe fn SpechitOverrun(mut ld: *mut line_t) {
         p = M_CheckParmWithArgs("-spechit", 1 as i32);
         if p > 0 as i32 {
             M_StrToInt(
-                myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 &raw mut unsafe { game_state() }.p_map.baseaddr as *mut i32,
             );
         } else {

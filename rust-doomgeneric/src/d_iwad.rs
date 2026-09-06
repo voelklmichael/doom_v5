@@ -3,8 +3,9 @@ use crate::src::d_mode::{
     doom, doom2, heretic, hexen, none, pack_chex, pack_hacx, pack_plut, pack_tnt, strife,
     GameMission_t,
 };
+use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_misc::M_FileExists;
 use libc::printf;
 #[derive(Copy, Clone)]
@@ -224,12 +225,15 @@ pub unsafe fn D_FindIWAD(
 ) -> *mut ::core::ffi::c_char {
     let iwadparm = M_CheckParmWithArgs("-iwad", 1 as i32);
     if iwadparm != 0 {
-        let iwadfile = myargv[(iwadparm + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
+        let iwadfile = unsafe { game_state() }.m_argv.myargv[(iwadparm + 1 as i32) as usize]
+            .as_ptr() as *mut ::core::ffi::c_char;
         let result = D_FindWADByName(state, iwadfile);
         if result.is_null() {
             I_Error(&format!(
                 "IWAD file '{}' not found!",
-                myargv[(iwadparm + 1 as i32) as usize].to_str().unwrap(),
+                unsafe { game_state() }.m_argv.myargv[(iwadparm + 1 as i32) as usize]
+                    .to_str()
+                    .unwrap(),
             ));
         }
         *mission =

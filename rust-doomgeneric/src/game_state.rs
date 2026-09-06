@@ -23,6 +23,7 @@ use crate::src::i_joystick::IJoystickState;
 use crate::src::i_scale::IScaleState;
 use crate::src::i_sound::ISoundState;
 use crate::src::i_timer::ITimerState;
+use crate::src::m_argv::MArgvState;
 use crate::src::m_config::MConfigState;
 use crate::src::m_random::MRandomState;
 use crate::src::p_ceilng::PCeilngState;
@@ -37,6 +38,7 @@ use crate::src::p_sight::PSightState;
 use crate::src::p_spec::PSpecState;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_user::PUserState;
+use crate::src::r_sky::RSkyState;
 use crate::src::r_things::RThingsState;
 use crate::src::sounds::SoundsState;
 use crate::src::st_lib::StLibState;
@@ -61,12 +63,14 @@ pub struct GameState {
     pub i_scale: IScaleState,
     pub i_sound: ISoundState,
     pub i_timer: ITimerState,
+    pub m_argv: MArgvState,
     pub m_config: MConfigState,
     pub m_random: MRandomState,
     pub p_ceilng: PCeilngState,
     pub p_enemy: PEnemyState,
     pub p_map: PMapState,
     pub p_maputl: PMaputlState,
+    pub r_sky: RSkyState,
     pub p_mobj: PMobjState,
     pub p_plats: PPlatsState,
     pub p_pspr: PPsprState,
@@ -101,12 +105,14 @@ impl GameState {
             i_scale: IScaleState::new(),
             i_sound: ISoundState::new(),
             i_timer: ITimerState::new(),
+            m_argv: MArgvState::new(),
             m_config: MConfigState::new(),
             m_random: MRandomState::new(),
             p_ceilng: PCeilngState::new(),
             p_enemy: PEnemyState::new(),
             p_map: PMapState::new(),
             p_maputl: PMaputlState::new(),
+            r_sky: RSkyState::new(),
             p_mobj: PMobjState::new(),
             p_plats: PPlatsState::new(),
             p_pspr: PPsprState::new(),

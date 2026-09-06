@@ -86,7 +86,7 @@ use crate::src::i_video::I_InitGraphics;
 use crate::src::i_video::I_SetGrabMouseCallback;
 use crate::src::i_video::I_SetPalette;
 use crate::src::i_video::I_SetWindowTitle;
-use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
+use crate::src::m_argv::{M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_config::M_GetSaveGameDir;
 use crate::src::m_config::M_LoadDefaults;
@@ -787,7 +787,8 @@ pub unsafe fn D_IdentifyVersion() {
         p = M_CheckParmWithArgs("-pack", 1 as i32);
         if p > 0 as i32 {
             SetMissionForPackName(
-                myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
             );
         }
     };
@@ -987,7 +988,7 @@ unsafe fn InitGameVersion() {
         i = 0 as i32;
         while !gameversions[i as usize].description.is_null() {
             if strcmp(
-                myargv[(p + 1 as i32) as usize].as_ptr(),
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 gameversions[i as usize].cmdline,
             ) == 0
             {
@@ -1010,7 +1011,9 @@ unsafe fn InitGameVersion() {
             }
             I_Error(&format!(
                 "Unknown game version '{}'",
-                myargv[(p + 1 as i32) as usize].to_str().unwrap(),
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+                    .to_str()
+                    .unwrap(),
             ));
         }
     } else if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
@@ -1102,8 +1105,11 @@ pub unsafe fn D_DoomMain() {
     p = M_CheckParm("-turbo");
     if p != 0 {
         let mut scale: i32 = 200 as i32;
-        if p < myargv.len() as i32 - 1 as i32 {
-            scale = atoi(myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+        if p < unsafe { game_state() }.m_argv.myargv.len() as i32 - 1 as i32 {
+            scale = atoi(
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
+            );
         }
         if scale < 10 as i32 {
             scale = 10 as i32;
@@ -1165,10 +1171,16 @@ pub unsafe fn D_DoomMain() {
         p = M_CheckParmWithArgs("-timedemo", 1 as i32);
     }
     if p != 0 {
-        if M_StringEndsWith(myargv[(p + 1 as i32) as usize].to_str().unwrap(), ".lmp") {
+        if M_StringEndsWith(
+            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+                .to_str()
+                .unwrap(),
+            ".lmp",
+        ) {
             M_StringCopy(
                 &raw mut file as *mut ::core::ffi::c_char,
-                myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
             );
         } else {
@@ -1176,7 +1188,8 @@ pub unsafe fn D_DoomMain() {
                 &raw mut file as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
                 b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
-                myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
             );
         }
         if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) {
@@ -1194,7 +1207,8 @@ pub unsafe fn D_DoomMain() {
         } else {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
-                myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         }
@@ -1285,7 +1299,7 @@ pub unsafe fn D_DoomMain() {
     autostart = false;
     p = M_CheckParmWithArgs("-skill", 1 as i32);
     if p != 0 {
-        startskill = (myargv[(p + 1 as i32) as usize]
+        startskill = (unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
             .as_bytes()
             .first()
             .copied()
@@ -1295,7 +1309,7 @@ pub unsafe fn D_DoomMain() {
     }
     p = M_CheckParmWithArgs("-episode", 1 as i32);
     if p != 0 {
-        startepisode = myargv[(p + 1 as i32) as usize]
+        startepisode = unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
             .as_bytes()
             .first()
             .copied()
@@ -1307,7 +1321,10 @@ pub unsafe fn D_DoomMain() {
     timelimit = 0 as i32;
     p = M_CheckParmWithArgs("-timer", 1 as i32);
     if p != 0 {
-        timelimit = atoi(myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+        timelimit = atoi(
+            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
     }
     p = M_CheckParm("-avg");
     if p != 0 {
@@ -1316,16 +1333,19 @@ pub unsafe fn D_DoomMain() {
     p = M_CheckParmWithArgs("-warp", 1 as i32);
     if p != 0 {
         if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-            startmap = atoi(myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+            startmap = atoi(
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
+            );
         } else {
-            startepisode = myargv[(p + 1 as i32) as usize]
+            startepisode = unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
                 .as_bytes()
                 .first()
                 .copied()
                 .unwrap_or(0) as i32
                 - '0' as i32;
-            if (p + 2 as i32) < myargv.len() as i32 {
-                startmap = myargv[(p + 2 as i32) as usize]
+            if (p + 2 as i32) < unsafe { game_state() }.m_argv.myargv.len() as i32 {
+                startmap = unsafe { game_state() }.m_argv.myargv[(p + 2 as i32) as usize]
                     .as_bytes()
                     .first()
                     .copied()
@@ -1346,7 +1366,10 @@ pub unsafe fn D_DoomMain() {
     }
     p = M_CheckParmWithArgs("-loadgame", 1 as i32);
     if p != 0 {
-        startloadgame = atoi(myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+        startloadgame = atoi(
+            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
     } else {
         startloadgame = -(1 as i32);
     }
@@ -1383,7 +1406,10 @@ pub unsafe fn D_DoomMain() {
     }
     p = M_CheckParmWithArgs("-record", 1 as i32);
     if p != 0 {
-        G_RecordDemo(myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+        G_RecordDemo(
+            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
         autostart = true;
     }
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);

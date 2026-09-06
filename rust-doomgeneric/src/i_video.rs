@@ -8,7 +8,7 @@ use crate::src::doomgeneric::DOOMGENERIC_RESY;
 use crate::src::game_state::game_state;
 use crate::src::i_input::I_GetEvent;
 use crate::src::i_system::I_Error;
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::stdint_types::size_t;
 use crate::src::stdint_types::uint32_t;
@@ -175,7 +175,8 @@ pub unsafe fn I_InitGraphics() {
     s_Fb.yres_virtual = s_Fb.yres;
     gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1 as i32);
     if gfxmodeparm != 0 {
-        mode = myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
+        mode = unsafe { game_state() }.m_argv.myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr()
+            as *mut ::core::ffi::c_char;
     } else {
         mode = b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
@@ -238,7 +239,10 @@ pub unsafe fn I_InitGraphics() {
     );
     i = M_CheckParmWithArgs("-scaling", 1 as i32);
     if i > 0 as i32 {
-        i = atoi(myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+        i = atoi(
+            unsafe { game_state() }.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
         fb_scaling = i;
         printf(
             b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8 as *const ::core::ffi::c_char,

@@ -50,7 +50,6 @@ use crate::src::p_tick::P_RemoveThinker;
 use crate::src::p_user::VIEWHEIGHT;
 use crate::src::r_main::R_PointInSubsector;
 use crate::src::r_main::R_PointToAngle2;
-use crate::src::r_sky::skyflatnum;
 use crate::src::s_sound::S_StartSound;
 use crate::src::s_sound::S_StopSound;
 use crate::src::sounds::{sfx_itmbk, sfx_oof, sfx_telept};
@@ -667,7 +666,7 @@ pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
                         .backsector
                         .is_null()
                     && (*(*unsafe { game_state() }.p_map.ceilingline).backsector).ceilingpic as i32
-                        == skyflatnum
+                        == unsafe { game_state() }.r_sky.skyflatnum
                 {
                     P_RemoveMobj(state, mo);
                     return;

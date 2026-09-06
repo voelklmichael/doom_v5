@@ -55,7 +55,7 @@ use crate::src::i_timer::I_GetTime;
 use crate::src::info::mobjinfo;
 use crate::src::info::states;
 use crate::src::info::{S_SARG_PAIN2, S_SARG_RUN1};
-use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
+use crate::src::m_argv::{M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_controls::dclick_use;
 use crate::src::m_controls::joybfire;
 use crate::src::m_controls::joybnextweapon;
@@ -146,8 +146,6 @@ use crate::src::r_draw::R_FillBackScreen;
 use crate::src::r_main::setsizeneeded;
 use crate::src::r_main::R_ExecuteSetViewSize;
 use crate::src::r_main::R_PointInSubsector;
-use crate::src::r_sky::skyflatnum;
-use crate::src::r_sky::skytexture;
 use crate::src::s_sound::S_PauseSound;
 use crate::src::s_sound::S_ResumeSound;
 use crate::src::s_sound::S_StartSound;
@@ -705,7 +703,7 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
 }
 pub unsafe fn G_DoLoadLevel() {
     let mut i: i32 = 0;
-    skyflatnum = R_FlatNumForName(
+    unsafe { game_state() }.r_sky.skyflatnum = R_FlatNumForName(
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     );
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32
@@ -725,7 +723,7 @@ pub unsafe fn G_DoLoadLevel() {
                 b"SKY3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         skytexturename = skytexturename;
-        skytexture = R_TextureNumForName(skytexturename);
+        unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(skytexturename);
     }
     levelstarttic = unsafe { game_state() }.d_loop.gametic;
     if wipegamestate as u32 == GS_LEVEL as u32 {
@@ -1732,7 +1730,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
         }
     }
     skytexturename = skytexturename;
-    skytexture = R_TextureNumForName(skytexturename);
+    unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(skytexturename);
     G_DoLoadLevel();
 }
 pub const DEMOMARKER: i32 = 0x80;
@@ -1849,8 +1847,10 @@ pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     maxsize = 0x20000 as i32;
     i = M_CheckParmWithArgs("-maxdemo", 1 as i32);
     if i != 0 {
-        maxsize = atoi(myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char)
-            * 1024 as i32;
+        maxsize = atoi(
+            unsafe { game_state() }.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        ) * 1024 as i32;
     }
     demobuffer = Z_Malloc(
         unsafe { &mut game_state().z_zone },

@@ -48,7 +48,6 @@ use crate::src::r_plane::floorclip;
 use crate::src::r_plane::floorplane;
 use crate::src::r_plane::lastopening;
 use crate::src::r_plane::R_CheckPlane;
-use crate::src::r_sky::skyflatnum;
 use crate::src::r_things::R_DrawMaskedColumn;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
@@ -416,8 +415,8 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         }
         worldhigh = ((*backsector).ceilingheight - viewz) as i32;
         worldlow = ((*backsector).floorheight - viewz) as i32;
-        if (*frontsector).ceilingpic as i32 == skyflatnum
-            && (*backsector).ceilingpic as i32 == skyflatnum
+        if (*frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+            && (*backsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
         {
             worldtop = worldhigh;
         }
@@ -513,7 +512,9 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
     if (*frontsector).floorheight >= viewz {
         markfloor = false;
     }
-    if (*frontsector).ceilingheight <= viewz && (*frontsector).ceilingpic as i32 != skyflatnum {
+    if (*frontsector).ceilingheight <= viewz
+        && (*frontsector).ceilingpic as i32 != unsafe { game_state() }.r_sky.skyflatnum
+    {
         markceiling = false;
     }
     worldtop >>= 4 as i32;

@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
@@ -22,7 +23,6 @@ use crate::src::r_plane::floorplane;
 use crate::src::r_plane::R_FindPlane;
 use crate::src::r_segs::rw_angle1;
 use crate::src::r_segs::R_StoreWallRange;
-use crate::src::r_sky::skyflatnum;
 use crate::src::r_things::R_AddSprites;
 use crate::src::tables::angle_t;
 use crate::src::tables::ANG180;
@@ -341,7 +341,9 @@ pub unsafe fn R_Subsector(mut num: i32) {
     } else {
         floorplane = ::core::ptr::null_mut::<visplane_t>();
     }
-    if (*frontsector).ceilingheight > viewz || (*frontsector).ceilingpic as i32 == skyflatnum {
+    if (*frontsector).ceilingheight > viewz
+        || (*frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+    {
         ceilingplane = R_FindPlane(
             (*frontsector).ceilingheight,
             (*frontsector).ceilingpic as i32,
