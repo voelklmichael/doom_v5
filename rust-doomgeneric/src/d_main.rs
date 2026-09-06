@@ -2660,7 +2660,7 @@ pub unsafe fn D_DoomMain() {
     let mut p: i32 = 0;
     let mut file: [::core::ffi::c_char; 256] = [0; 256];
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
-    I_AtExit(Some(D_Endoom as unsafe extern "C" fn() -> ()), false_0 as boolean);
+    I_AtExit(Some(D_Endoom as unsafe extern "C" fn() -> ()), false);
     I_PrintBanner(PACKAGE_STRING.as_ptr() as *mut ::core::ffi::c_char);
     printf(
         b"Z_Init: Init zone memory allocation daemon. \n\0" as *const u8
@@ -2724,7 +2724,7 @@ pub unsafe fn D_DoomMain() {
     );
     D_BindVariables();
     M_LoadDefaults();
-    I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false_0 as boolean);
+    I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
     iwadfile = D_FindIWAD(
         (1 as i32) << doom as i32
             | (1 as i32) << doom2 as i32
@@ -2806,7 +2806,7 @@ pub unsafe fn D_DoomMain() {
             Option<unsafe extern "C" fn() -> boolean>,
             atexit_func_t,
         >(Some(G_CheckDemoStatus as unsafe extern "C" fn() -> boolean)),
-        true_0 as boolean,
+        true,
     );
     W_GenerateHashTable();
     D_SetGameDescription();
@@ -3052,7 +3052,7 @@ pub unsafe fn D_DoomMain() {
         storedemo = true;
     }
     if M_CheckParmWithArgs("-statdump", 1 as i32) != 0 {
-        I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true_0 as boolean);
+        I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true);
         printf(
             b"External statistics registered.\n\0" as *const u8
                 as *const ::core::ffi::c_char,

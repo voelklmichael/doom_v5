@@ -63,14 +63,14 @@ pub const MIN_RAM: i32 = 6 as i32;
 static mut exit_funcs: *mut atexit_listentry_t = ::core::ptr::null::<
     atexit_listentry_t,
 >() as *mut atexit_listentry_t;
-pub unsafe fn I_AtExit(mut func: atexit_func_t, mut run_on_error: boolean) {
+pub unsafe fn I_AtExit(mut func: atexit_func_t, mut run_on_error: bool) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
         atexit_listentry_t,
     >();
     entry = malloc(::core::mem::size_of::<atexit_listentry_t>() as size_t)
         as *mut atexit_listentry_t;
     (*entry).func = func;
-    (*entry).run_on_error = run_on_error;
+    (*entry).run_on_error = run_on_error as i32 as boolean;
     (*entry).next = exit_funcs;
     exit_funcs = entry;
 }

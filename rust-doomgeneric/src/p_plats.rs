@@ -1463,7 +1463,7 @@ pub unsafe extern "C" fn T_PlatRaise(mut plat: *mut plat_t) {
             }
             if res as u32
                 == crushed as i32 as u32
-                && (*plat).crush == 0
+                && !(*plat).crush
             {
                 (*plat).count = (*plat).wait;
                 (*plat).status = down;
@@ -1496,7 +1496,7 @@ pub unsafe extern "C" fn T_PlatRaise(mut plat: *mut plat_t) {
                 (*plat).sector,
                 (*plat).speed,
                 (*plat).low,
-                false_0 as boolean,
+                false,
                 0 as i32,
                 -(1 as i32),
             );
@@ -1568,7 +1568,7 @@ pub unsafe fn EV_DoPlat(
             Option<unsafe extern "C" fn(*mut plat_t) -> ()>,
             actionf_p1,
         >(Some(T_PlatRaise as unsafe extern "C" fn(*mut plat_t) -> ()));
-        (*plat).crush = false_0 as boolean;
+        (*plat).crush = false;
         (*plat).tag = (*line).tag as i32;
         match type_0 as u32 {
             3 => {

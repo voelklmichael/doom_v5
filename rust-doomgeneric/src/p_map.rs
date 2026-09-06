@@ -1731,7 +1731,7 @@ pub unsafe fn P_CheckPosition(
     mut thing: *mut mobj_t,
     mut x: fixed_t,
     mut y: fixed_t,
-) -> boolean {
+) -> bool {
     let mut xl: i32 = 0;
     let mut xh: i32 = 0;
     let mut yl: i32 = 0;
@@ -1755,7 +1755,7 @@ pub unsafe fn P_CheckPosition(
     validcount += 1;
     numspechit = 0 as i32;
     if tmflags & MF_NOCLIP as i32 != 0 {
-        return true_0 as boolean;
+        return true;
     }
     xl = tmbbox[BOXLEFT as i32 as usize] - bmaporgx as i32
         - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
@@ -1776,7 +1776,7 @@ pub unsafe fn P_CheckPosition(
                 Some(PIT_CheckThing as unsafe extern "C" fn(*mut mobj_t) -> boolean),
             )
             {
-                return false_0 as boolean;
+                return false;
             }
             by += 1;
         }
@@ -1800,13 +1800,13 @@ pub unsafe fn P_CheckPosition(
                 Some(PIT_CheckLine as unsafe extern "C" fn(*mut line_t) -> boolean),
             )
             {
-                return false_0 as boolean;
+                return false;
             }
             by += 1;
         }
         bx += 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 pub unsafe fn P_TryMove(
     mut thing: *mut mobj_t,
@@ -1819,7 +1819,7 @@ pub unsafe fn P_TryMove(
     let mut oldside: i32 = 0;
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
     floatok = false;
-    if P_CheckPosition(thing, x, y) == 0 {
+    if !P_CheckPosition(thing, x, y) {
         return false;
     }
     if (*thing).flags & MF_NOCLIP as i32 == 0 {
@@ -2487,12 +2487,12 @@ pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
 }
 pub unsafe fn P_ChangeSector(
     mut sector: *mut sector_t,
-    mut crunch: boolean,
-) -> boolean {
+    mut crunch: bool,
+) -> bool {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     nofit = false_0 as boolean;
-    crushchange = crunch;
+    crushchange = crunch as i32 as boolean;
     x = (*sector).blockbox[BOXLEFT as i32 as usize];
     while x <= (*sector).blockbox[BOXRIGHT as i32 as usize] {
         y = (*sector).blockbox[BOXBOTTOM as i32 as usize];
@@ -2506,7 +2506,7 @@ pub unsafe fn P_ChangeSector(
         }
         x += 1;
     }
-    return nofit;
+    return nofit != 0;
 }
 unsafe extern "C" fn SpechitOverrun(mut ld: *mut line_t) {
     static mut baseaddr: u32 = 0 as u32;

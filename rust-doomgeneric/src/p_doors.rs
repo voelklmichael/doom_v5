@@ -1525,7 +1525,7 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
                 (*door).sector,
                 (*door).speed,
                 (*(*door).sector).floorheight,
-                false_0 as boolean,
+                false,
                 1 as i32,
                 (*door).direction,
             );
@@ -1573,7 +1573,7 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
                 (*door).sector,
                 (*door).speed,
                 (*door).topheight,
-                false_0 as boolean,
+                false,
                 1 as i32,
                 (*door).direction,
             );

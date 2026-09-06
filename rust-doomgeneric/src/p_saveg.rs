@@ -1931,7 +1931,7 @@ unsafe extern "C" fn saveg_read_ceiling_t(mut str: *mut ceiling_t) {
     (*str).bottomheight = saveg_read32() as fixed_t;
     (*str).topheight = saveg_read32() as fixed_t;
     (*str).speed = saveg_read32() as fixed_t;
-    (*str).crush = saveg_read32() as boolean;
+    (*str).crush = saveg_read32() != 0;
     (*str).direction = saveg_read32();
     (*str).tag = saveg_read32();
     (*str).olddirection = saveg_read32();
@@ -1978,7 +1978,7 @@ unsafe extern "C" fn saveg_read_floormove_t(mut str: *mut floormove_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as floor_e;
-    (*str).crush = saveg_read32() as boolean;
+    (*str).crush = saveg_read32() != 0;
     sector = saveg_read32();
     (*str).sector = sectors.offset(sector as isize) as *mut sector_t;
     (*str).direction = saveg_read32();
@@ -2012,7 +2012,7 @@ unsafe extern "C" fn saveg_read_plat_t(mut str: *mut plat_t) {
     (*str).count = saveg_read32();
     (*str).status = saveg_read32() as plat_e;
     (*str).oldstatus = saveg_read32() as plat_e;
-    (*str).crush = saveg_read32() as boolean;
+    (*str).crush = saveg_read32() != 0;
     (*str).tag = saveg_read32();
     (*str).type_0 = saveg_read32() as plattype_e;
 }

@@ -1581,7 +1581,7 @@ pub unsafe fn S_Init(
         (*(&raw mut S_sfx as *mut sfxinfo_t).offset(i as isize)).lumpnum = *fresh1;
         i += 1;
     }
-    I_AtExit(Some(S_Shutdown as unsafe extern "C" fn() -> ()), true_0 as boolean);
+    I_AtExit(Some(S_Shutdown as unsafe extern "C" fn() -> ()), true);
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_Shutdown() {
