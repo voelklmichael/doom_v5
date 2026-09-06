@@ -1,5 +1,12 @@
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::p_mobj::{mobj_t, pspdef_t};
+pub type ammotype_t = u32;
+pub const am_noammo: ammotype_t = 5;
+pub const NUMAMMO: ammotype_t = 4;
+pub const am_misl: ammotype_t = 3;
+pub const am_cell: ammotype_t = 2;
+pub const am_shell: ammotype_t = 1;
+pub const am_clip: ammotype_t = 0;
 pub type C2RustUnnamed_2 = u32;
 pub const NUMPSPRITES: C2RustUnnamed_2 = 2;
 pub const ps_flash: C2RustUnnamed_2 = 1;
