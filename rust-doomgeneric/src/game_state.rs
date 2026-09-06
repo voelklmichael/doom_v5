@@ -16,6 +16,7 @@ use crate::src::f_finale::FFinaleState;
 use crate::src::i_cdmus::ICdMusState;
 use crate::src::i_joystick::IJoystickState;
 use crate::src::i_timer::ITimerState;
+use crate::src::m_config::MConfigState;
 use crate::src::p_user::PUserState;
 use crate::src::st_lib::StLibState;
 use crate::src::statdump::StatDumpState;
@@ -29,6 +30,7 @@ pub struct GameState {
     pub i_cdmus: ICdMusState,
     pub i_joystick: IJoystickState,
     pub i_timer: ITimerState,
+    pub m_config: MConfigState,
     pub p_user: PUserState,
     pub st_lib: StLibState,
     pub statdump: StatDumpState,
@@ -45,6 +47,7 @@ impl GameState {
             i_cdmus: ICdMusState::new(),
             i_joystick: IJoystickState::new(),
             i_timer: ITimerState::new(),
+            m_config: MConfigState::new(),
             p_user: PUserState::new(),
             st_lib: StLibState::new(),
             statdump: StatDumpState::new(),

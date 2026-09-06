@@ -72,16 +72,24 @@ pub const KEY_PRTSCR: i32 = 0x80
 pub const KEYP_5: i32 = '5' as i32;
 pub const KEYP_PLUS: i32 = '+' as i32;
 pub const KEYP_MULTIPLY: i32 = '*' as i32;
-#[no_mangle]
-pub static mut configdir: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
-static mut default_main_config: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
-static mut default_extra_config: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
+pub struct MConfigState {
+    configdir: *mut ::core::ffi::c_char,
+    default_main_config: *mut ::core::ffi::c_char,
+    default_extra_config: *mut ::core::ffi::c_char,
+}
+
+impl MConfigState {
+    pub const fn new() -> Self {
+        MConfigState {
+            configdir: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            default_main_config: ::core::ptr::null::<::core::ffi::c_char>()
+                as *mut ::core::ffi::c_char,
+            default_extra_config: ::core::ptr::null::<::core::ffi::c_char>()
+                as *mut ::core::ffi::c_char,
+        }
+    }
+}
+
 static mut doom_defaults_list: [default_t; 76] = [
     default_t {
         name: "mouse_sensitivity",
@@ -1670,7 +1678,7 @@ unsafe fn SearchCollection(
     }
     return ::core::ptr::null_mut::<default_t>();
 }
-static mut scantokey: [i32; 128] = [
+static scantokey: [i32; 128] = [
     0 as i32,
     27 as i32,
     '1' as i32,
@@ -1856,11 +1864,12 @@ unsafe fn SetVariable(
     };
 }
 pub unsafe fn M_SetConfigFilenames(
+    state: &mut MConfigState,
     mut main_config: *mut ::core::ffi::c_char,
     mut extra_config: *mut ::core::ffi::c_char,
 ) {
-    default_main_config = main_config;
-    default_extra_config = extra_config;
+    state.default_main_config = main_config;
+    state.default_extra_config = extra_config;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveDefaults() {}
@@ -1882,7 +1891,7 @@ pub unsafe fn M_SaveDefaultsAlternate(
     doom_defaults.filename = orig_main;
     extra_defaults.filename = orig_extra;
 }
-pub unsafe fn M_LoadDefaults() {
+pub unsafe fn M_LoadDefaults(state: &mut MConfigState) {
     let mut i: i32 = 0;
     i = M_CheckParmWithArgs("-config", 1 as i32);
     if i != 0 {
@@ -1893,7 +1902,7 @@ pub unsafe fn M_LoadDefaults() {
             doom_defaults.filename,
         );
     } else {
-        doom_defaults.filename = M_StringJoin(configdir, default_main_config, NULL);
+        doom_defaults.filename = M_StringJoin(state.configdir, state.default_main_config, NULL);
     }
     printf(
         b"saving config in %s\n\0" as *const u8 as *const ::core::ffi::c_char,
@@ -1909,7 +1918,7 @@ pub unsafe fn M_LoadDefaults() {
             extra_defaults.filename,
         );
     } else {
-        extra_defaults.filename = M_StringJoin(configdir, default_extra_config, NULL);
+        extra_defaults.filename = M_StringJoin(state.configdir, state.default_extra_config, NULL);
     }
 }
 unsafe fn GetDefaultForName(name: &str) -> *mut default_t {
@@ -1981,34 +1990,35 @@ unsafe fn GetDefaultConfigDir() -> *mut ::core::ffi::c_char {
         as ::core::ffi::c_char;
     return result;
 }
-pub unsafe fn M_SetConfigDir(mut dir: *mut ::core::ffi::c_char) {
+pub unsafe fn M_SetConfigDir(state: &mut MConfigState, mut dir: *mut ::core::ffi::c_char) {
     if !dir.is_null() {
-        configdir = dir;
+        state.configdir = dir;
     } else {
-        configdir = GetDefaultConfigDir();
+        state.configdir = GetDefaultConfigDir();
     }
-    if strcmp(configdir, b"\0" as *const u8 as *const ::core::ffi::c_char)
+    if strcmp(state.configdir, b"\0" as *const u8 as *const ::core::ffi::c_char)
         != 0 as i32
     {
         printf(
             b"Using %s for configuration and saves\n\0" as *const u8
                 as *const ::core::ffi::c_char,
-            configdir,
+            state.configdir,
         );
     }
-    M_MakeDirectory(configdir);
+    M_MakeDirectory(state.configdir);
 }
 pub unsafe fn M_GetSaveGameDir(
+    state: &mut MConfigState,
     mut iwadname: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    if strcmp(configdir, b"\0" as *const u8 as *const ::core::ffi::c_char) == 0 {
+    if strcmp(state.configdir, b"\0" as *const u8 as *const ::core::ffi::c_char) == 0 {
         savegamedir = strdup(b"\0" as *const u8 as *const ::core::ffi::c_char);
     } else {
         savegamedir = M_StringJoin(
-            configdir,
+            state.configdir,
             DIR_SEPARATOR_S.as_ptr(),
             b".savegame/\0" as *const u8 as *const ::core::ffi::c_char,
             NULL,

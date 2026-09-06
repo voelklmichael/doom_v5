@@ -1218,7 +1218,7 @@ pub unsafe fn D_DoomMain() {
     if devparm {
         printf(D_DEVSTR.as_ptr());
     }
-    M_SetConfigDir(::core::ptr::null_mut::<::core::ffi::c_char>());
+    M_SetConfigDir(unsafe { &mut game_state().m_config }, ::core::ptr::null_mut::<::core::ffi::c_char>());
     p = M_CheckParm("-turbo");
     if p != 0 {
         let mut scale: i32 = 200 as i32;
@@ -1253,13 +1253,14 @@ pub unsafe fn D_DoomMain() {
             as *const ::core::ffi::c_char,
     );
     M_SetConfigFilenames(
+        unsafe { &mut game_state().m_config },
         b"default.cfg\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char,
         b"doomgenericdoom.cfg\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char,
     );
     D_BindVariables();
-    M_LoadDefaults();
+    M_LoadDefaults(unsafe { &mut game_state().m_config });
     I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
     iwadfile = D_FindIWAD(unsafe { &mut game_state().d_iwad }, 
         (1 as i32) << doom as i32
@@ -1346,7 +1347,7 @@ pub unsafe fn D_DoomMain() {
     );
     W_GenerateHashTable();
     D_SetGameDescription();
-    savegamedir = M_GetSaveGameDir(D_SaveGameIWADName(gamemission));
+    savegamedir = M_GetSaveGameDir(unsafe { &mut game_state().m_config }, D_SaveGameIWADName(gamemission));
     if modifiedgame {
         let mut name: [[::core::ffi::c_char; 8]; 23] = [
             ::core::mem::transmute::<
