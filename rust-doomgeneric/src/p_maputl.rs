@@ -1807,7 +1807,7 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
 pub unsafe extern "C" fn P_TraverseIntercepts(
     mut func: traverser_t,
     mut maxfrac: fixed_t,
-) -> boolean {
+) -> bool {
     let mut count: i32 = 0;
     let mut dist: fixed_t = 0;
     let mut scan: *mut intercept_t = ::core::ptr::null_mut::<intercept_t>();
@@ -1831,14 +1831,14 @@ pub unsafe extern "C" fn P_TraverseIntercepts(
             scan = scan.offset(1);
         }
         if dist > maxfrac {
-            return true_0 as boolean;
+            return true;
         }
         if func.expect("non-null function pointer")(in_0) == 0 {
-            return false_0 as boolean;
+            return false;
         }
         (*in_0).frac = INT_MAX as fixed_t;
     }
-    return true_0 as boolean;
+    return true;
 }
 static mut intercepts_overrun: [intercepts_overrun_t; 23] = unsafe {
     [
@@ -2152,6 +2152,6 @@ pub unsafe fn P_PathTraverse(
         }
         count += 1;
     }
-    return P_TraverseIntercepts(trav as traverser_t, FRACUNIT);
+    return P_TraverseIntercepts(trav as traverser_t, FRACUNIT) as i32 as boolean;
 }
 pub const __INT_MAX__: i32 = 2147483647 as i32;

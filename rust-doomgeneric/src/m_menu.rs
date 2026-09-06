@@ -2392,7 +2392,7 @@ pub unsafe extern "C" fn M_LoadGame(mut choice: i32) {
         M_StartMessage(
             "you can't do load while in a net game!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
@@ -2457,7 +2457,7 @@ pub unsafe extern "C" fn M_SaveGame(mut choice: i32) {
         M_StartMessage(
             "you can't save if you aren't playing!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
@@ -2515,7 +2515,7 @@ pub unsafe extern "C" fn M_QuickSave() {
             Option<unsafe extern "C" fn(i32) -> ()>,
             *mut ::core::ffi::c_void,
         >(Some(M_QuickSaveResponse as unsafe extern "C" fn(i32) -> ())),
-        true_0 as boolean,
+        true,
     );
 }
 #[no_mangle]
@@ -2531,7 +2531,7 @@ pub unsafe extern "C" fn M_QuickLoad() {
         M_StartMessage(
             "you can't quickload during a netgame!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
@@ -2539,7 +2539,7 @@ pub unsafe extern "C" fn M_QuickLoad() {
         M_StartMessage(
             "you haven't picked a quicksave slot yet!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
@@ -2562,7 +2562,7 @@ pub unsafe extern "C" fn M_QuickLoad() {
             Option<unsafe extern "C" fn(i32) -> ()>,
             *mut ::core::ffi::c_void,
         >(Some(M_QuickLoadResponse as unsafe extern "C" fn(i32) -> ())),
-        true_0 as boolean,
+        true,
     );
 }
 #[no_mangle]
@@ -2718,7 +2718,7 @@ pub unsafe extern "C" fn M_NewGame(mut choice: i32) {
         M_StartMessage(
             "you can't start a new game\nwhile in a network game.\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
@@ -2765,7 +2765,7 @@ pub unsafe extern "C" fn M_ChooseSkill(mut choice: i32) {
                 Option<unsafe extern "C" fn(i32) -> ()>,
                 *mut ::core::ffi::c_void,
             >(Some(M_VerifyNightmare as unsafe extern "C" fn(i32) -> ())),
-            true_0 as boolean,
+            true,
         );
         return;
     }
@@ -2784,7 +2784,7 @@ pub unsafe extern "C" fn M_Episode(mut choice: i32) {
         M_StartMessage(
             "this is the shareware version of doom.\n\nyou need to order the entire trilogy.\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         M_SetupNextMenu(&raw mut ReadDef1);
         return;
@@ -2880,7 +2880,7 @@ pub unsafe extern "C" fn M_EndGame(mut choice: i32) {
         M_StartMessage(
             "you can't end a netgame!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
@@ -2890,7 +2890,7 @@ pub unsafe extern "C" fn M_EndGame(mut choice: i32) {
             Option<unsafe extern "C" fn(i32) -> ()>,
             *mut ::core::ffi::c_void,
         >(Some(M_EndGameResponse as unsafe extern "C" fn(i32) -> ())),
-        true_0 as boolean,
+        true,
     );
 }
 #[no_mangle]
@@ -3001,7 +3001,7 @@ pub unsafe extern "C" fn M_QuitDOOM(mut choice: i32) {
             Option<unsafe extern "C" fn(i32) -> ()>,
             *mut ::core::ffi::c_void,
         >(Some(M_QuitResponse as unsafe extern "C" fn(i32) -> ())),
-        true_0 as boolean,
+        true,
     );
 }
 #[no_mangle]
@@ -3126,7 +3126,7 @@ pub unsafe extern "C" fn M_DrawSelCell(
 pub unsafe fn M_StartMessage(
     string: &str,
     mut routine: *mut ::core::ffi::c_void,
-    mut input: boolean,
+    mut input: bool,
 ) {
     messageLastMenuActive = menuactive as i32;
     messageToPrint = 1 as i32;
@@ -3135,7 +3135,7 @@ pub unsafe fn M_StartMessage(
         *mut ::core::ffi::c_void,
         Option<unsafe extern "C" fn(i32) -> ()>,
     >(routine);
-    messageNeedsInput = input != 0;
+    messageNeedsInput = input;
     menuactive = true;
 }
 #[no_mangle]
@@ -3195,9 +3195,9 @@ pub unsafe fn M_WriteText(x: i32, y: i32, string: &str) {
         }
     };
 }
-unsafe extern "C" fn IsNullKey(mut key: i32) -> boolean {
-    return (key == KEY_PAUSE || key == KEY_CAPSLOCK || key == KEY_SCRLCK
-        || key == KEY_NUMLOCK) as i32 as boolean;
+unsafe extern "C" fn IsNullKey(mut key: i32) -> bool {
+    return key == KEY_PAUSE || key == KEY_CAPSLOCK || key == KEY_SCRLCK
+        || key == KEY_NUMLOCK;
 }
 pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
     let mut ch: i32 = 0;
@@ -3579,7 +3579,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
             S_StartSound(NULL, sfx_swtchn as i32);
         }
         return true_0 as boolean;
-    } else if ch != 0 as i32 || IsNullKey(key) != 0 {
+    } else if ch != 0 as i32 || IsNullKey(key) {
         i = itemOn as i32 + 1 as i32;
         while i < (*currentMenu).numitems as i32 {
             if (*(*currentMenu).menuitems.offset(i as isize)).alphaKey

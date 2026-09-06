@@ -1379,7 +1379,7 @@ pub unsafe extern "C" fn P_InterceptVector2(
     return frac;
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> boolean {
+pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> bool {
     let mut seg: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut s1: i32 = 0;
@@ -1423,10 +1423,10 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> boolean {
                 s2 = P_DivlineSide(t2x, t2y, &raw mut divl);
                 if !(s1 == s2) {
                     if (*line).backsector.is_null() {
-                        return false_0 as boolean;
+                        return false;
                     }
                     if (*line).flags as i32 & ML_TWOSIDED == 0 {
-                        return false_0 as boolean;
+                        return false;
                     }
                     front = (*seg).frontsector;
                     back = (*seg).backsector;
@@ -1444,7 +1444,7 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> boolean {
                             openbottom = (*back).floorheight;
                         }
                         if openbottom >= opentop {
-                            return false_0 as boolean;
+                            return false;
                         }
                         frac = P_InterceptVector2(&raw mut strace, &raw mut divl);
                         if (*front).floorheight != (*back).floorheight {
@@ -1460,7 +1460,7 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> boolean {
                             }
                         }
                         if topslope <= bottomslope {
-                            return false_0 as boolean;
+                            return false;
                         }
                     }
                 }
@@ -1469,10 +1469,10 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> boolean {
         seg = seg.offset(1);
         count -= 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_CrossBSPNode(mut bspnum: i32) -> boolean {
+pub unsafe extern "C" fn P_CrossBSPNode(mut bspnum: i32) -> bool {
     let mut bsp: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     if bspnum & NF_SUBSECTOR != 0 {
@@ -1487,11 +1487,11 @@ pub unsafe extern "C" fn P_CrossBSPNode(mut bspnum: i32) -> boolean {
     if side == 2 as i32 {
         side = 0 as i32;
     }
-    if P_CrossBSPNode((*bsp).children[side as usize] as i32) == 0 {
-        return false_0 as boolean;
+    if !P_CrossBSPNode((*bsp).children[side as usize] as i32) {
+        return false;
     }
     if side == P_DivlineSide(t2x, t2y, bsp as *mut divline_t) {
-        return true_0 as boolean;
+        return true;
     }
     return P_CrossBSPNode(
         (*bsp).children[(side ^ 1 as i32) as usize] as i32,
@@ -1528,5 +1528,5 @@ pub unsafe fn P_CheckSight(
     t2y = (*t2).y;
     strace.dx = (*t2).x - (*t1).x;
     strace.dy = (*t2).y - (*t1).y;
-    return P_CrossBSPNode(numnodes - 1 as i32);
+    return P_CrossBSPNode(numnodes - 1 as i32) as i32 as boolean;
 }

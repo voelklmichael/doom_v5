@@ -89,7 +89,7 @@ pub unsafe fn STlib_initNum(
     (*n).p = pl;
 }
 #[no_mangle]
-pub unsafe extern "C" fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: boolean) {
+pub unsafe extern "C" fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: bool) {
     let mut numdigits: i32 = (*n).width;
     let mut num: i32 = *(*n).num;
     let mut w: i32 = (**(*n).p.offset(0 as i32 as isize))
@@ -143,7 +143,7 @@ pub unsafe extern "C" fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: boo
 }
 pub unsafe fn STlib_updateNum(mut n: *mut st_number_t, mut refresh: boolean) {
     if *(*n).on {
-        STlib_drawNum(n, refresh);
+        STlib_drawNum(n, refresh != 0);
     }
 }
 pub unsafe fn STlib_initPercent(

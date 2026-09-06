@@ -1879,21 +1879,21 @@ pub unsafe fn P_TryMove(
     return true_0 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_ThingHeightClip(mut thing: *mut mobj_t) -> boolean {
-    let mut onfloor: boolean = 0;
-    onfloor = ((*thing).z == (*thing).floorz) as i32 as boolean;
+pub unsafe extern "C" fn P_ThingHeightClip(mut thing: *mut mobj_t) -> bool {
+    let mut onfloor: bool;
+    onfloor = (*thing).z == (*thing).floorz;
     P_CheckPosition(thing, (*thing).x, (*thing).y);
     (*thing).floorz = tmfloorz;
     (*thing).ceilingz = tmceilingz;
-    if onfloor != 0 {
+    if onfloor {
         (*thing).z = (*thing).floorz;
     } else if (*thing).z + (*thing).height > (*thing).ceilingz {
         (*thing).z = (*thing).ceilingz - (*thing).height;
     }
     if (*thing).ceilingz - (*thing).floorz < (*thing).height {
-        return false_0 as boolean;
+        return false;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut bestslidefrac: fixed_t = 0;
@@ -2449,7 +2449,7 @@ pub static mut nofit: boolean = 0;
 #[no_mangle]
 pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    if P_ThingHeightClip(thing) != 0 {
+    if P_ThingHeightClip(thing) {
         return true_0 as boolean;
     }
     if (*thing).health <= 0 as i32 {

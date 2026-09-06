@@ -1876,7 +1876,7 @@ pub unsafe fn F_Responder(mut event: *mut event_t) -> boolean {
     if finalestage as u32
         == F_STAGE_CAST as i32 as u32
     {
-        return F_CastResponder(event);
+        return F_CastResponder(event) as i32 as boolean;
     }
     return false_0 as boolean;
 }
@@ -2333,14 +2333,14 @@ pub unsafe extern "C" fn F_CastTicker() {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
+pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> bool {
     if (*ev).type_0 as u32
         != ev_keydown as i32 as u32
     {
-        return false_0 as boolean;
+        return false;
     }
     if castdeath {
-        return true_0 as boolean;
+        return true;
     }
     castdeath = true;
     caststate = (&raw mut states as *mut state_t)
@@ -2361,7 +2361,7 @@ pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
             mobjinfo[castorder[castnum as usize].type_0 as usize].deathsound,
         );
     }
-    return true_0 as boolean;
+    return true;
 }
 pub unsafe fn F_CastPrint(text: &str) {
     let mut c: i32 = 0;

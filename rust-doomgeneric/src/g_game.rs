@@ -1939,7 +1939,7 @@ pub unsafe extern "C" fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
     }
     return sum;
 }
-unsafe extern "C" fn WeaponSelectable(mut weapon: weapontype_t) -> boolean {
+unsafe extern "C" fn WeaponSelectable(mut weapon: weapontype_t) -> bool {
     if weapon as u32
         == wp_supershotgun as i32 as u32
         && (if gamemission as u32
@@ -1956,7 +1956,7 @@ unsafe extern "C" fn WeaponSelectable(mut weapon: weapontype_t) -> boolean {
             })
         }) == doom as i32 as u32
     {
-        return false_0 as boolean;
+        return false;
     }
     if (weapon as u32
         == wp_plasma as i32 as u32
@@ -1967,10 +1967,10 @@ unsafe extern "C" fn WeaponSelectable(mut weapon: weapontype_t) -> boolean {
         && gamemode as u32
             == shareware as i32 as u32
     {
-        return false_0 as boolean;
+        return false;
     }
     if !players[consoleplayer as usize].weaponowned[weapon as usize] {
-        return false_0 as boolean;
+        return false;
     }
     if weapon as u32
         == wp_fist as i32 as u32
@@ -1979,9 +1979,9 @@ unsafe extern "C" fn WeaponSelectable(mut weapon: weapontype_t) -> boolean {
         && players[consoleplayer as usize]
             .powers[pw_strength as i32 as usize] == 0
     {
-        return false_0 as boolean;
+        return false;
     }
-    return true_0 as boolean;
+    return true;
 }
 unsafe extern "C" fn G_NextWeapon(
     mut direction: i32,
@@ -2021,7 +2021,7 @@ unsafe extern "C" fn G_NextWeapon(
                     .wrapping_div(::core::mem::size_of::<C2RustUnnamed_5>() as usize),
             ) as i32;
         if !(i != start_i
-            && WeaponSelectable(weapon_order_table[i as usize].weapon) == 0)
+            && !WeaponSelectable(weapon_order_table[i as usize].weapon))
         {
             break;
         }
@@ -2753,7 +2753,7 @@ pub unsafe fn G_PlayerReborn(mut player: i32) {
 pub unsafe extern "C" fn G_CheckSpot(
     mut playernum: i32,
     mut mthing: *mut mapthing_t,
-) -> boolean {
+) -> bool {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
@@ -2767,16 +2767,16 @@ pub unsafe extern "C" fn G_CheckSpot(
                 && (*players[i as usize].mo).y
                     == ((*mthing).y as i32) << FRACBITS
             {
-                return false_0 as boolean;
+                return false;
             }
             i += 1;
         }
-        return true_0 as boolean;
+        return true;
     }
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
     if P_CheckPosition(players[playernum as usize].mo, x, y) == 0 {
-        return false_0 as boolean;
+        return false;
     }
     if bodyqueslot >= BODYQUESIZE {
         P_RemoveMobj(bodyque[(bodyqueslot % BODYQUESIZE) as usize]);
@@ -2825,7 +2825,7 @@ pub unsafe extern "C" fn G_CheckSpot(
     if players[consoleplayer as usize].viewz != 1 as i32 {
         S_StartSound(mo as *mut ::core::ffi::c_void, sfx_telept as i32);
     }
-    return true_0 as boolean;
+    return true;
 }
 pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
     let mut i: i32 = 0;
@@ -2843,7 +2843,7 @@ pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
             playernum,
             (&raw mut deathmatchstarts as *mut mapthing_t).offset(i as isize)
                 as *mut mapthing_t,
-        ) != 0
+        )
         {
             deathmatchstarts[i as usize].type_0 = (playernum + 1 as i32)
                 as i16;
@@ -2875,7 +2875,7 @@ pub unsafe extern "C" fn G_DoReborn(mut playernum: i32) {
             playernum,
             (&raw mut playerstarts as *mut mapthing_t).offset(playernum as isize)
                 as *mut mapthing_t,
-        ) != 0
+        )
         {
             P_SpawnPlayer(
                 (&raw mut playerstarts as *mut mapthing_t).offset(playernum as isize)
@@ -2889,7 +2889,7 @@ pub unsafe extern "C" fn G_DoReborn(mut playernum: i32) {
                 playernum,
                 (&raw mut playerstarts as *mut mapthing_t).offset(i as isize)
                     as *mut mapthing_t,
-            ) != 0
+            )
             {
                 playerstarts[i as usize].type_0 = (playernum + 1 as i32)
                     as i16;

@@ -2438,11 +2438,11 @@ pub unsafe extern "C" fn D_SetGameDescription() {
 }
 #[no_mangle]
 pub static mut title: [::core::ffi::c_char; 128] = [0; 128];
-unsafe extern "C" fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> boolean {
+unsafe extern "C" fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> bool {
     let mut handle: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     printf(b" adding %s\n\0" as *const u8 as *const ::core::ffi::c_char, filename);
     handle = W_AddFile(filename);
-    return (handle != NULL as *mut wad_file_t) as i32 as boolean;
+    return handle != NULL as *mut wad_file_t;
 }
 static copyright_banners: [&str; 3] = [
     "===========================================================================\nATTENTION:  This version of DOOM has been modified.  If you would like to\nget a copy of the original game, call 1-800-IDGAMES or see the readme file.\n        You will not receive technical support for modified games.\n                      press enter to continue\n===========================================================================\n",
@@ -2781,7 +2781,7 @@ pub unsafe fn D_DoomMain() {
                     as *mut ::core::ffi::c_char,
             );
         }
-        if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) != 0 {
+        if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
                 &raw mut (*lumpinfo

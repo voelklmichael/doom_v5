@@ -1933,8 +1933,8 @@ pub unsafe fn S_ChangeMusic(
     mus_playing = music;
 }
 #[no_mangle]
-pub unsafe extern "C" fn S_MusicPlaying() -> boolean {
-    return I_MusicIsPlaying();
+pub unsafe extern "C" fn S_MusicPlaying() -> bool {
+    return I_MusicIsPlaying() != 0;
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_StopMusic() {
