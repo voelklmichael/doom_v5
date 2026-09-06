@@ -18,7 +18,7 @@ pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
 pub const SEEK_SET: i32 = 0 as i32;
-unsafe extern "C" fn W_StdC_OpenFile(
+unsafe fn W_StdC_OpenFile(
     mut path: *mut ::core::ffi::c_char,
 ) -> *mut wad_file_t {
     let mut result: *mut stdc_wad_file_t = ::core::ptr::null_mut::<stdc_wad_file_t>();
@@ -39,14 +39,13 @@ unsafe extern "C" fn W_StdC_OpenFile(
     (*result).fstream = fstream;
     return &raw mut (*result).wad;
 }
-unsafe extern "C" fn W_StdC_CloseFile(mut wad: *mut wad_file_t) {
+unsafe fn W_StdC_CloseFile(mut wad: *mut wad_file_t) {
     let mut stdc_wad: *mut stdc_wad_file_t = ::core::ptr::null_mut::<stdc_wad_file_t>();
     stdc_wad = wad as *mut stdc_wad_file_t;
     fclose((*stdc_wad).fstream);
     Z_Free(stdc_wad as *mut ::core::ffi::c_void);
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_StdC_Read(
+pub unsafe fn W_StdC_Read(
     mut wad: *mut wad_file_t,
     mut offset: u32,
     mut buffer: *mut ::core::ffi::c_void,
@@ -63,12 +62,12 @@ pub static mut stdc_wad_file: wad_file_class_t = unsafe {
     wad_file_class_t {
         OpenFile: Some(
             W_StdC_OpenFile
-                as unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
+                as unsafe fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
         ),
-        CloseFile: Some(W_StdC_CloseFile as unsafe extern "C" fn(*mut wad_file_t) -> ()),
+        CloseFile: Some(W_StdC_CloseFile as unsafe fn(*mut wad_file_t) -> ()),
         Read: Some(
             W_StdC_Read
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     *mut wad_file_t,
                     u32,
                     *mut ::core::ffi::c_void,

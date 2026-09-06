@@ -1044,7 +1044,7 @@ pub const GetChatState: st_chatstateenum_t = 2;
 pub const WaitDestState: st_chatstateenum_t = 1;
 pub const StartChatState: st_chatstateenum_t = 0;
 pub type load_callback_t = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
+    unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
 >;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
@@ -1999,7 +1999,7 @@ pub unsafe fn ST_Drawer(mut fullscreen: bool, mut refresh: bool) {
         ST_diffDraw();
     };
 }
-unsafe extern "C" fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
+unsafe fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut facenum: i32 = 0;
@@ -2229,7 +2229,7 @@ unsafe extern "C" fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
     );
     facenum += 1;
 }
-unsafe extern "C" fn ST_loadCallback(
+unsafe fn ST_loadCallback(
     mut lumpname: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
@@ -2243,7 +2243,7 @@ pub unsafe extern "C" fn ST_loadGraphics() {
     ST_loadUnloadGraphics(
         Some(
             ST_loadCallback
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     *mut ::core::ffi::c_char,
                     *mut *mut patch_t,
                 ) -> (),
@@ -2256,7 +2256,7 @@ pub unsafe extern "C" fn ST_loadData() {
     );
     ST_loadGraphics();
 }
-unsafe extern "C" fn ST_unloadCallback(
+unsafe fn ST_unloadCallback(
     mut lumpname: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
@@ -2268,7 +2268,7 @@ pub unsafe extern "C" fn ST_unloadGraphics() {
     ST_loadUnloadGraphics(
         Some(
             ST_unloadCallback
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     *mut ::core::ffi::c_char,
                     *mut *mut patch_t,
                 ) -> (),
