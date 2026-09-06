@@ -1,7 +1,5 @@
 use libc::{memcpy, memset};
-extern "C" {
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-}
+use libc::strlen;
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type __uint32_t = u32;

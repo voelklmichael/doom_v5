@@ -145,10 +145,9 @@ use crate::src::sounds::sfx_telept;
 use crate::src::d_ticcmd::{BTS_PAUSE, BTS_SAVEGAME, BTS_SAVEMASK, BTS_SAVESHIFT, BT_ATTACK, BT_CHANGE, BT_SPECIAL, BT_SPECIALMASK, BT_USE, BT_WEAPONSHIFT};
 use crate::src::d_player::pw_strength;
 use libc::{memcpy, memset};
+use libc::{atoi, strlen};
 
 extern "C" {
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     fn abs(__x: i32) -> i32;
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
     fn rename(

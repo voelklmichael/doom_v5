@@ -67,10 +67,10 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::i_timer::I_GetTime;
 use crate::src::z_zone::PU_CACHE;
 use crate::src::sounds::{sfx_boscub, sfx_bspact, sfx_dmpain, sfx_getpow, sfx_kntdth, sfx_oof, sfx_pistol, sfx_pldeth, sfx_popain, sfx_posit1, sfx_posit3, sfx_pstop, sfx_sgtatk, sfx_skeswg, sfx_slop, sfx_stnmov, sfx_swtchn, sfx_swtchx, sfx_telept, sfx_vilact};
+use libc::toupper;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: i32) -> i32;
     static mut stderr: *mut FILE;
     fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
@@ -94,11 +94,6 @@ extern "C" {
         __n: size_t,
         __stream: *mut FILE,
     ) -> u64;
-    fn strcmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -57,14 +57,10 @@ use crate::src::p_mobj::{MF_SHADOW, MF_TRANSLATION, MF_TRANSSHIFT};
 use crate::src::d_player::pw_invisibility;
 use crate::src::d_player::NUMPSPRITES;
 use libc::{memcpy, memset};
+use libc::strncasecmp;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn strncasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

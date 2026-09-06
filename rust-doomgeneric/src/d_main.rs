@@ -147,6 +147,7 @@ use crate::src::v_video::V_DrawPatch;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::sounds::{mus_dm2ttl, mus_intro};
+use libc::{atoi, strcasecmp, strcmp, strlen, strncasecmp};
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -157,27 +158,12 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     fn exit(__status: i32) -> !;
     fn memmove(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn strcmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn strcasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn strncasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> i32;
     fn M_SaveDefaults();
     fn G_CheckDemoStatus() -> boolean;
     fn StatDump();
