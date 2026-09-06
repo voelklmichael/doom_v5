@@ -34,6 +34,9 @@ use crate::src::p_spec::P_InitPicAnims;
 use crate::src::r_things::R_InitSprites;
 use crate::src::s_sound::S_Start;
 use crate::src::w_wad::W_ReadLump;
+use crate::src::r_data::R_FlatNumForName;
+use crate::src::w_wad::W_LumpLength;
+use crate::src::w_wad::W_ReleaseLumpNum;
 
 extern "C" {
     fn Z_Malloc(
@@ -58,13 +61,10 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpNum(lump: i32);
-    fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
 }
 pub type __uint8_t = u8;

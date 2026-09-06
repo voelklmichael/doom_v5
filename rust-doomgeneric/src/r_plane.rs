@@ -45,6 +45,7 @@ use crate::src::m_fixed::FixedDiv;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
+use crate::src::w_wad::W_ReleaseLumpNum;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -52,7 +53,6 @@ extern "C" {
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpNum(lump: i32);
     fn memset(
         __s: *mut ::core::ffi::c_void,
         __c: i32,
