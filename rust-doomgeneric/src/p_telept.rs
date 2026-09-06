@@ -1485,7 +1485,7 @@ pub unsafe fn EV_Teleport(
                             oldx = (*thing).x;
                             oldy = (*thing).y;
                             oldz = (*thing).z;
-                            if P_TeleportMove(thing, (*m).x, (*m).y) == 0 {
+                            if !P_TeleportMove(thing, (*m).x, (*m).y) {
                                 return 0 as i32;
                             }
                             if gameversion as u32

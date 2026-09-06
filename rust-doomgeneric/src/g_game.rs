@@ -2440,7 +2440,7 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
         if HU_Responder(ev) {
             return true;
         }
-        if ST_Responder(ev) != 0 {
+        if ST_Responder(ev) {
             return true;
         }
         if AM_Responder(ev) {

@@ -1500,7 +1500,7 @@ pub unsafe extern "C" fn P_CrossBSPNode(mut bspnum: i32) -> bool {
 pub unsafe fn P_CheckSight(
     mut t1: *mut mobj_t,
     mut t2: *mut mobj_t,
-) -> boolean {
+) -> bool {
     let mut s1: i32 = 0;
     let mut s2: i32 = 0;
     let mut pnum: i32 = 0;
@@ -1515,7 +1515,7 @@ pub unsafe fn P_CheckSight(
     bitnum = (1 as i32) << (pnum & 7 as i32);
     if *rejectmatrix.offset(bytenum as isize) as i32 & bitnum != 0 {
         sightcounts[0 as i32 as usize] += 1;
-        return false_0 as boolean;
+        return false;
     }
     sightcounts[1 as i32 as usize] += 1;
     validcount += 1;
@@ -1528,5 +1528,5 @@ pub unsafe fn P_CheckSight(
     t2y = (*t2).y;
     strace.dx = (*t2).x - (*t1).x;
     strace.dy = (*t2).y - (*t1).y;
-    return P_CrossBSPNode(numnodes - 1 as i32) as i32 as boolean;
+    return P_CrossBSPNode(numnodes - 1 as i32);
 }

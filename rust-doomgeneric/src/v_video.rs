@@ -773,7 +773,7 @@ pub unsafe fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
             i,
             ext,
         );
-        if M_FileExists(&raw mut lbmname as *mut ::core::ffi::c_char) == 0 {
+        if !M_FileExists(&raw mut lbmname as *mut ::core::ffi::c_char) {
             break;
         }
         i += 1;

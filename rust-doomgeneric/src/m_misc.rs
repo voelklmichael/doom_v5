@@ -107,15 +107,15 @@ pub unsafe fn M_MakeDirectory(mut path: *mut ::core::ffi::c_char) {
 }
 pub unsafe fn M_FileExists(
     mut filename: *mut ::core::ffi::c_char,
-) -> boolean {
+) -> bool {
     let mut fstream: *mut FILE = ::core::ptr::null_mut::<FILE>();
     fstream = fopen(filename, b"r\0" as *const u8 as *const ::core::ffi::c_char)
         as *mut FILE;
     if !fstream.is_null() {
         fclose(fstream);
-        return true_0 as boolean;
+        return true;
     } else {
-        return (*__errno_location() == EISDIR) as i32 as boolean
+        return *__errno_location() == EISDIR
     };
 }
 pub unsafe fn M_FileLength(mut handle: *mut FILE) -> i64 {
@@ -131,20 +131,20 @@ pub unsafe fn M_WriteFile(
     mut name: *mut ::core::ffi::c_char,
     mut source: *mut ::core::ffi::c_void,
     mut length: i32,
-) -> boolean {
+) -> bool {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
     let mut count: i32 = 0;
     handle = fopen(name, b"wb\0" as *const u8 as *const ::core::ffi::c_char)
         as *mut FILE;
     if handle.is_null() {
-        return false_0 as boolean;
+        return false;
     }
     count = fwrite(source, 1 as size_t, length as size_t, handle) as i32;
     fclose(handle);
     if count < length {
-        return false_0 as boolean;
+        return false;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ReadFile(

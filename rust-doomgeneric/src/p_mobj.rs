@@ -1807,7 +1807,7 @@ pub unsafe extern "C" fn P_XYMovement(mut mo: *mut mobj_t) {
             ymove = 0 as i32 as fixed_t;
             xmove = ymove;
         }
-        if P_TryMove(mo, ptryx, ptryy) == 0 {
+        if !P_TryMove(mo, ptryx, ptryy) {
             if !(*mo).player.is_null() {
                 P_SlideMove(mo);
             } else if (*mo).flags & MF_MISSILE as i32 != 0 {
@@ -2388,7 +2388,7 @@ pub unsafe extern "C" fn P_CheckMissileSpawn(mut th: *mut mobj_t) {
     (*th).x += (*th).momx >> 1 as i32;
     (*th).y += (*th).momy >> 1 as i32;
     (*th).z += (*th).momz >> 1 as i32;
-    if P_TryMove(th, (*th).x, (*th).y) == 0 {
+    if !P_TryMove(th, (*th).x, (*th).y) {
         P_ExplodeMissile(th);
     }
 }

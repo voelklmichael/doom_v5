@@ -124,7 +124,7 @@ static mut iwad_dirs: Vec<String> = Vec::new();
 
 unsafe fn file_exists(path: &str) -> bool {
     let path_cstring = ::std::ffi::CString::new(path).unwrap();
-    M_FileExists(path_cstring.as_ptr() as *mut ::core::ffi::c_char) != 0
+    M_FileExists(path_cstring.as_ptr() as *mut ::core::ffi::c_char)
 }
 unsafe fn add_iwad_dir(dir: &str) {
     iwad_dirs.push(dir.to_string());

@@ -1669,21 +1669,21 @@ pub unsafe fn P_BlockThingsIterator(
     mut x: i32,
     mut y: i32,
     mut func: Option<unsafe extern "C" fn(*mut mobj_t) -> boolean>,
-) -> boolean {
+) -> bool {
     let mut mobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     if x < 0 as i32 || y < 0 as i32 || x >= bmapwidth
         || y >= bmapheight
     {
-        return true_0 as boolean;
+        return true;
     }
     mobj = *blocklinks.offset((y * bmapwidth + x) as isize);
     while !mobj.is_null() {
         if func.expect("non-null function pointer")(mobj) == 0 {
-            return false_0 as boolean;
+            return false;
         }
         mobj = (*mobj).bnext as *mut mobj_t;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut intercepts: [intercept_t; 189] = [intercept_t {
@@ -2128,14 +2128,14 @@ pub unsafe fn P_PathTraverse(
             }
         }
         if flags & PT_ADDTHINGS != 0 {
-            if P_BlockThingsIterator(
+            if !P_BlockThingsIterator(
                 mapx,
                 mapy,
                 Some(
                     PIT_AddThingIntercepts
                         as unsafe extern "C" fn(*mut mobj_t) -> boolean,
                 ),
-            ) == 0
+            )
             {
                 return false;
             }

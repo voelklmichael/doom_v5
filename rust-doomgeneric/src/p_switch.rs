@@ -2075,16 +2075,16 @@ pub unsafe fn P_UseSpecialLine(
     mut thing: *mut mobj_t,
     mut line: *mut line_t,
     mut side: i32,
-) -> boolean {
+) -> bool {
     if side != 0 {
         match (*line).special as i32 {
             124 => {}
-            _ => return false_0 as boolean,
+            _ => return false,
         }
     }
     if (*thing).player.is_null() {
         if (*line).flags as i32 & ML_SECRET != 0 {
-            return false_0 as boolean;
+            return false;
         }
         let mut current_block_6: u64;
         match (*line).special as i32 {
@@ -2100,7 +2100,7 @@ pub unsafe fn P_UseSpecialLine(
             34 => {
                 current_block_6 = 3514215265213398008;
             }
-            _ => return false_0 as boolean,
+            _ => return false,
         }
         match current_block_6 {
             12497116384748537712 => {
@@ -2505,5 +2505,5 @@ pub unsafe fn P_UseSpecialLine(
         }
         _ => {}
     }
-    return true_0 as boolean;
+    return true;
 }

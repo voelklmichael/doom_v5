@@ -1542,7 +1542,7 @@ pub unsafe fn P_TeleportMove(
     mut thing: *mut mobj_t,
     mut x: fixed_t,
     mut y: fixed_t,
-) -> boolean {
+) -> bool {
     let mut xl: i32 = 0;
     let mut xh: i32 = 0;
     let mut yl: i32 = 0;
@@ -1578,13 +1578,13 @@ pub unsafe fn P_TeleportMove(
     while bx <= xh {
         by = yl;
         while by <= yh {
-            if P_BlockThingsIterator(
+            if !P_BlockThingsIterator(
                 bx,
                 by,
                 Some(PIT_StompThing as unsafe extern "C" fn(*mut mobj_t) -> boolean),
-            ) == 0
+            )
             {
-                return false_0 as boolean;
+                return false;
             }
             by += 1;
         }
@@ -1596,7 +1596,7 @@ pub unsafe fn P_TeleportMove(
     (*thing).x = x;
     (*thing).y = y;
     P_SetThingPosition(thing);
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn PIT_CheckLine(mut ld: *mut line_t) -> boolean {
@@ -1770,11 +1770,11 @@ pub unsafe fn P_CheckPosition(
     while bx <= xh {
         by = yl;
         while by <= yh {
-            if P_BlockThingsIterator(
+            if !P_BlockThingsIterator(
                 bx,
                 by,
                 Some(PIT_CheckThing as unsafe extern "C" fn(*mut mobj_t) -> boolean),
-            ) == 0
+            )
             {
                 return false_0 as boolean;
             }
@@ -1812,7 +1812,7 @@ pub unsafe fn P_TryMove(
     mut thing: *mut mobj_t,
     mut x: fixed_t,
     mut y: fixed_t,
-) -> boolean {
+) -> bool {
     let mut oldx: fixed_t = 0;
     let mut oldy: fixed_t = 0;
     let mut side: i32 = 0;
@@ -1820,28 +1820,28 @@ pub unsafe fn P_TryMove(
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
     floatok = false;
     if P_CheckPosition(thing, x, y) == 0 {
-        return false_0 as boolean;
+        return false;
     }
     if (*thing).flags & MF_NOCLIP as i32 == 0 {
         if tmceilingz - tmfloorz < (*thing).height {
-            return false_0 as boolean;
+            return false;
         }
         floatok = true;
         if (*thing).flags & MF_TELEPORT as i32 == 0
             && tmceilingz - (*thing).z < (*thing).height
         {
-            return false_0 as boolean;
+            return false;
         }
         if (*thing).flags & MF_TELEPORT as i32 == 0
             && tmfloorz - (*thing).z > 24 as i32 * FRACUNIT
         {
-            return false_0 as boolean;
+            return false;
         }
         if (*thing).flags
             & (MF_DROPOFF as i32 | MF_FLOAT as i32) == 0
             && tmfloorz - tmdropoffz > 24 as i32 * FRACUNIT
         {
-            return false_0 as boolean;
+            return false;
         }
     }
     P_UnsetThingPosition(thing);
@@ -1876,7 +1876,7 @@ pub unsafe fn P_TryMove(
             }
         }
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_ThingHeightClip(mut thing: *mut mobj_t) -> bool {
@@ -2039,7 +2039,7 @@ pub unsafe fn P_SlideMove(mut mo: *mut mobj_t) {
         if bestslidefrac > 0 as i32 {
             newx = FixedMul((*mo).momx, bestslidefrac);
             newy = FixedMul((*mo).momy, bestslidefrac);
-            if P_TryMove(mo, (*mo).x + newx, (*mo).y + newy) == 0 {
+            if !P_TryMove(mo, (*mo).x + newx, (*mo).y + newy) {
                 break;
             }
         }
@@ -2057,12 +2057,12 @@ pub unsafe fn P_SlideMove(mut mo: *mut mobj_t) {
         P_HitSlideLine(bestslideline);
         (*mo).momx = tmxmove;
         (*mo).momy = tmymove;
-        if P_TryMove(mo, (*mo).x + tmxmove, (*mo).y + tmymove) == 0 {
+        if !P_TryMove(mo, (*mo).x + tmxmove, (*mo).y + tmymove) {
             continue;
         }
         return;
     }
-    if P_TryMove(mo, (*mo).x, (*mo).y + (*mo).momy) == 0 {
+    if !P_TryMove(mo, (*mo).x, (*mo).y + (*mo).momy) {
         P_TryMove(mo, (*mo).x + (*mo).momx, (*mo).y);
     }
 }
@@ -2398,7 +2398,7 @@ pub unsafe extern "C" fn PIT_RadiusAttack(mut thing: *mut mobj_t) -> boolean {
     if dist >= bombdamage {
         return true_0 as boolean;
     }
-    if P_CheckSight(thing, bombspot) != 0 {
+    if P_CheckSight(thing, bombspot) {
         P_DamageMobj(
             thing,
             bombspot,

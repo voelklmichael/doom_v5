@@ -1835,7 +1835,7 @@ pub unsafe extern "C" fn ST_refreshBackground() {
         );
     }
 }
-pub unsafe fn ST_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
     let mut i: i32 = 0;
     if (*ev).type_0 as u32
         == ev_keyup as i32 as u32
@@ -2097,41 +2097,41 @@ pub unsafe fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 epsd = 1 as i32;
             }
             if epsd < 1 as i32 {
-                return false_0 as boolean;
+                return false;
             }
             if map < 1 as i32 {
-                return false_0 as boolean;
+                return false;
             }
             if gamemode as u32
                 == retail as i32 as u32
                 && (epsd > 4 as i32 || map > 9 as i32)
             {
-                return false_0 as boolean;
+                return false;
             }
             if gamemode as u32
                 == registered as i32 as u32
                 && (epsd > 3 as i32 || map > 9 as i32)
             {
-                return false_0 as boolean;
+                return false;
             }
             if gamemode as u32
                 == shareware as i32 as u32
                 && (epsd > 1 as i32 || map > 9 as i32)
             {
-                return false_0 as boolean;
+                return false;
             }
             if gamemode as u32
                 == commercial as i32 as u32
                 && (epsd > 1 as i32 || map > 40 as i32)
             {
-                return false_0 as boolean;
+                return false;
             }
             (*plyr).message = b"Changing Level...\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             G_DeferedInitNew(gameskill, epsd, map);
         }
     }
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_calcPainOffset() -> i32 {
