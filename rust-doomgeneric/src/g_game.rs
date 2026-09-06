@@ -125,6 +125,9 @@ use crate::src::am_map::automapactive;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::m_random::P_Random;
 use crate::src::m_misc::M_snprintf;
+use crate::src::doomstat::gameversion;
+use crate::src::p_tick::leveltime;
+use crate::src::tables::finecosine;
 
 extern "C" {
     fn memcpy(
@@ -154,10 +157,7 @@ extern "C" {
     fn ftell(__stream: *mut FILE) -> i64;
     fn I_GetTime() -> i32;
     static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
     static mut gamemode: GameMode_t;
-    static mut gameversion: GameVersion_t;
-    static mut leveltime: i32;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
     fn Z_Malloc(
         size: i32,
@@ -1723,7 +1723,6 @@ pub static mut nodrawers: bool = false;
 pub static mut starttime: i32 = 0;
 pub static mut viewactive: bool = false;
 pub static mut deathmatch: i32 = 0;
-#[no_mangle]
 pub static mut netgame: bool = false;
 pub static mut playeringame: [boolean; 4] = [0; 4];
 #[no_mangle]
@@ -1782,7 +1781,6 @@ pub static mut players: [player_t; 4] = [player_s {
 }; 4];
 #[no_mangle]
 pub static mut turbodetected: [boolean; 4] = [0; 4];
-#[no_mangle]
 pub static mut consoleplayer: i32 = 0;
 pub static mut displayplayer: i32 = 0;
 #[no_mangle]

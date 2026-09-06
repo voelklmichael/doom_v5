@@ -2,7 +2,7 @@ use crate::src::i_system::FILE;
 use crate::src::hu_lib::patch_t;
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::d_event::event_t;
-use crate::src::p_mobj::{sector_t, actionf_t};
+use crate::src::p_mobj::{actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_ReleaseLumpName};
@@ -37,6 +37,10 @@ use crate::src::m_fixed::FixedDiv;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::playeringame;
 use crate::src::m_misc::M_snprintf;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
+use crate::src::p_setup::sectors;
+use crate::src::tables::finecosine;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -58,11 +62,7 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
-    static mut sectors: *mut sector_t;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    static mut netgame: bool;
-    static mut consoleplayer: i32;
     static mut players: [player_t; 4];
 }
 pub type size_t = usize;

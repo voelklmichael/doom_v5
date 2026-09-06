@@ -11,6 +11,7 @@ use crate::src::s_sound::S_ChangeMusic;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::playeringame;
+use crate::src::g_game::netgame;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -27,7 +28,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut netgame: bool;
     static mut players: [player_t; 4];
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
 }

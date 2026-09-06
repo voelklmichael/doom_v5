@@ -22,6 +22,7 @@ use crate::src::doomstat::gamemission;
 use crate::src::g_game::gamemap;
 use crate::src::info::states;
 use crate::src::am_map::automapactive;
+use crate::src::doomstat::gameversion;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -49,7 +50,6 @@ extern "C" {
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut gameversion: GameVersion_t;
     static mut players: [player_t; 4];
 }
 pub type size_t = usize;

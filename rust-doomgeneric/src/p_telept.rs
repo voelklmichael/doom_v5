@@ -4,12 +4,12 @@ use crate::src::p_map::P_TeleportMove;
 use crate::src::p_tick::thinkercap;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_setup::numsectors;
+use crate::src::doomstat::gameversion;
+use crate::src::p_setup::sectors;
+use crate::src::tables::finecosine;
 extern "C" {
     static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
-    static mut gameversion: GameVersion_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut sectors: *mut sector_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
 }
 pub type __uint8_t = u8;

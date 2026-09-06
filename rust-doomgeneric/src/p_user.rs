@@ -6,14 +6,14 @@ use crate::src::p_map::P_UseLines;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::info::states;
 use crate::src::r_main::R_PointToAngle2;
+use crate::src::p_tick::leveltime;
+use crate::src::tables::finecosine;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
     fn P_PlayerInSpecialSector(player: *mut player_t);
     static mut gamemode: GameMode_t;
-    static mut leveltime: i32;
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

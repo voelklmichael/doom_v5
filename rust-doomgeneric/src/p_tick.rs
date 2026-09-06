@@ -8,11 +8,11 @@ use crate::src::g_game::paused;
 use crate::src::m_menu::menuactive;
 use crate::src::g_game::demoplayback;
 use crate::src::g_game::playeringame;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
 
 extern "C" {
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    static mut netgame: bool;
-    static mut consoleplayer: i32;
     static mut players: [player_t; 4];
 }
 pub type __uint8_t = u8;
@@ -1288,7 +1288,6 @@ pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
 pub const MAXPLAYERS: i32 = 4 as i32;
-#[no_mangle]
 pub static mut leveltime: i32 = 0;
 pub static mut thinkercap: thinker_t = thinker_s {
     prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
