@@ -30,26 +30,41 @@ pub struct event_t {
     pub data4: i32,
 }
 pub const MAXEVENTS: i32 = 64;
-static mut events: [event_t; 64] = [event_t {
-    type_0: ev_keydown,
-    data1: 0,
-    data2: 0,
-    data3: 0,
-    data4: 0,
-}; 64];
-static mut eventhead: i32 = 0;
-static mut eventtail: i32 = 0;
-pub unsafe fn D_PostEvent(mut ev: *mut event_t) {
-    events[eventhead as usize] = *ev;
-    eventhead = (eventhead + 1 as i32) % MAXEVENTS;
+
+pub struct DEventState {
+    events: [event_t; 64],
+    eventhead: i32,
+    eventtail: i32,
 }
-pub unsafe fn D_PopEvent() -> *mut event_t {
-    let mut result: *mut event_t = ::core::ptr::null_mut::<event_t>();
-    if eventtail == eventhead {
+
+impl DEventState {
+    pub const fn new() -> Self {
+        DEventState {
+            events: [event_t {
+                type_0: ev_keydown,
+                data1: 0,
+                data2: 0,
+                data3: 0,
+                data4: 0,
+            }; 64],
+            eventhead: 0,
+            eventtail: 0,
+        }
+    }
+}
+
+pub fn D_PostEvent(state: &mut DEventState, mut ev: *mut event_t) {
+    state.events[state.eventhead as usize] = unsafe { *ev };
+    state.eventhead = (state.eventhead + 1 as i32) % MAXEVENTS;
+}
+pub fn D_PopEvent(state: &mut DEventState) -> *mut event_t {
+    if state.eventtail == state.eventhead {
         return ::core::ptr::null_mut::<event_t>();
     }
-    result = (&raw mut events as *mut event_t).offset(eventtail as isize)
-        as *mut event_t;
-    eventtail = (eventtail + 1 as i32) % MAXEVENTS;
+    let result = unsafe {
+        (&raw mut state.events as *mut event_t).offset(state.eventtail as isize)
+            as *mut event_t
+    };
+    state.eventtail = (state.eventtail + 1 as i32) % MAXEVENTS;
     return result;
 }

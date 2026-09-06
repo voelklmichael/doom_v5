@@ -4,11 +4,17 @@
 // explicitly; both are deleted once the whole codebase is converted.
 // See /docs/track16-gamestate-plan.md for the full plan.
 
-pub struct GameState {}
+use crate::src::d_event::DEventState;
+
+pub struct GameState {
+    pub d_event: DEventState,
+}
 
 impl GameState {
     pub const fn new() -> Self {
-        GameState {}
+        GameState {
+            d_event: DEventState::new(),
+        }
     }
 }
 
