@@ -51,7 +51,7 @@ pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
     pub version: GameVersion_t,
 }
-static mut valid_modes: [C2RustUnnamed; 13] = [
+static valid_modes: [C2RustUnnamed; 13] = [
     C2RustUnnamed {
         mission: pack_chex,
         mode: shareware,
@@ -131,7 +131,7 @@ static mut valid_modes: [C2RustUnnamed; 13] = [
         map: 34 as i32,
     },
 ];
-pub unsafe fn D_ValidGameMode(
+pub fn D_ValidGameMode(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
 ) -> bool {
@@ -152,7 +152,7 @@ pub unsafe fn D_ValidGameMode(
     }
     return false;
 }
-pub unsafe fn D_ValidEpisodeMap(
+pub fn D_ValidEpisodeMap(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
     mut episode: i32,
@@ -192,7 +192,7 @@ pub unsafe fn D_ValidEpisodeMap(
     }
     return false;
 }
-pub unsafe fn D_GetNumEpisodes(
+pub fn D_GetNumEpisodes(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
 ) -> i32 {
@@ -203,7 +203,7 @@ pub unsafe fn D_GetNumEpisodes(
     }
     return episode - 1 as i32;
 }
-static mut valid_versions: [C2RustUnnamed_0; 10] = [
+static valid_versions: [C2RustUnnamed_0; 10] = [
     C2RustUnnamed_0 {
         mission: doom,
         version: exe_doom_1_9,
@@ -245,7 +245,7 @@ static mut valid_versions: [C2RustUnnamed_0; 10] = [
         version: exe_strife_1_31,
     },
 ];
-pub unsafe fn D_ValidGameVersion(
+pub fn D_ValidGameVersion(
     mut mission: GameMission_t,
     mut version: GameVersion_t,
 ) -> bool {

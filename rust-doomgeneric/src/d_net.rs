@@ -49,6 +49,7 @@ use crate::src::doomdef::false_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::tables::ANG90;
 use crate::src::tables::ANG270;
+use crate::src::game_state::game_state;
 pub static mut netcmds: *mut ticcmd_t = ::core::ptr::null::<ticcmd_t>() as *mut ticcmd_t;
 unsafe fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
@@ -155,7 +156,7 @@ unsafe fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
     (*connect_data).gamemission = gamemission as i32;
     (*connect_data).lowres_turn = (M_CheckParm("-record") > 0 as i32
         && M_CheckParm("-longtics") == 0 as i32) as i32;
-    W_Checksum(&raw mut (*connect_data).wad_sha1sum as *mut byte);
+    W_Checksum(unsafe { &mut game_state().w_checksum }, &raw mut (*connect_data).wad_sha1sum as *mut byte);
     (*connect_data).is_freedoom = (W_CheckNumForName("FREEDOOM")
         >= 0 as i32) as i32;
 }

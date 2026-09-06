@@ -12,31 +12,43 @@ extern "C" {
         __size: size_t,
     ) -> *mut ::core::ffi::c_void;
 }
-static mut open_wadfiles: *mut *mut wad_file_t = ::core::ptr::null::<*mut wad_file_t>()
-    as *mut *mut wad_file_t;
-static mut num_open_wadfiles: i32 = 0;
-unsafe fn GetFileNumber(mut handle: *mut wad_file_t) -> i32 {
+pub struct WChecksumState {
+    open_wadfiles: *mut *mut wad_file_t,
+    num_open_wadfiles: i32,
+}
+
+impl WChecksumState {
+    pub const fn new() -> Self {
+        WChecksumState {
+            open_wadfiles: ::core::ptr::null::<*mut wad_file_t>() as *mut *mut wad_file_t,
+            num_open_wadfiles: 0,
+        }
+    }
+}
+
+unsafe fn GetFileNumber(state: &mut WChecksumState, mut handle: *mut wad_file_t) -> i32 {
     let mut i: i32 = 0;
     let mut result: i32 = 0;
     i = 0 as i32;
-    while i < num_open_wadfiles {
-        if *open_wadfiles.offset(i as isize) == handle {
+    while i < state.num_open_wadfiles {
+        if *state.open_wadfiles.offset(i as isize) == handle {
             return i;
         }
         i += 1;
     }
-    open_wadfiles = realloc(
-        open_wadfiles as *mut ::core::ffi::c_void,
+    state.open_wadfiles = realloc(
+        state.open_wadfiles as *mut ::core::ffi::c_void,
         (::core::mem::size_of::<*mut wad_file_t>() as size_t)
-            .wrapping_mul((num_open_wadfiles + 1 as i32) as size_t),
+            .wrapping_mul((state.num_open_wadfiles + 1 as i32) as size_t),
     ) as *mut *mut wad_file_t;
-    let ref mut fresh0 = *open_wadfiles.offset(num_open_wadfiles as isize);
+    let ref mut fresh0 = *state.open_wadfiles.offset(state.num_open_wadfiles as isize);
     *fresh0 = handle;
-    result = num_open_wadfiles;
-    num_open_wadfiles += 1;
+    result = state.num_open_wadfiles;
+    state.num_open_wadfiles += 1;
     return result;
 }
 unsafe fn ChecksumAddLump(
+    state: &mut WChecksumState,
     mut sha1_context: *mut sha1_context_t,
     mut lump: *mut lumpinfo_t,
 ) {
@@ -49,12 +61,12 @@ unsafe fn ChecksumAddLump(
     SHA1_UpdateString(sha1_context, &raw mut buf as *mut ::core::ffi::c_char);
     SHA1_UpdateInt32(
         sha1_context,
-        GetFileNumber((*lump).wad_file) as u32,
+        GetFileNumber(state, (*lump).wad_file) as u32,
     );
     SHA1_UpdateInt32(sha1_context, (*lump).position as u32);
     SHA1_UpdateInt32(sha1_context, (*lump).size as u32);
 }
-pub unsafe fn W_Checksum(mut digest: *mut byte) {
+pub unsafe fn W_Checksum(state: &mut WChecksumState, mut digest: *mut byte) {
     let mut sha1_context: sha1_context_t = sha1_context_s {
         h0: 0,
         h1: 0,
@@ -67,10 +79,11 @@ pub unsafe fn W_Checksum(mut digest: *mut byte) {
     };
     let mut i: u32 = 0;
     SHA1_Init(&raw mut sha1_context);
-    num_open_wadfiles = 0 as i32;
+    state.num_open_wadfiles = 0 as i32;
     i = 0 as u32;
     while i < numlumps {
         ChecksumAddLump(
+            state,
             &raw mut sha1_context,
             lumpinfo.offset(i as isize) as *mut lumpinfo_t,
         );
