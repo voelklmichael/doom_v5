@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_snprintf;
 use crate::src::stdint_types::size_t;
@@ -38,34 +39,42 @@ impl IJoystickState {
 pub unsafe fn I_BindJoystickVariables(state: &mut IJoystickState) {
     let mut i: i32 = 0;
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "use_joystick",
         &raw mut state.usejoystick as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "joystick_index",
         &raw mut state.joystick_index as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "joystick_x_axis",
         &raw mut state.joystick_x_axis as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "joystick_y_axis",
         &raw mut state.joystick_y_axis as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "joystick_strafe_axis",
         &raw mut state.joystick_strafe_axis as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "joystick_x_invert",
         &raw mut state.joystick_x_invert as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "joystick_y_invert",
         &raw mut state.joystick_y_invert as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "joystick_strafe_invert",
         &raw mut state.joystick_strafe_invert as *mut ::core::ffi::c_void,
     );
@@ -79,6 +88,7 @@ pub unsafe fn I_BindJoystickVariables(state: &mut IJoystickState) {
             i,
         );
         M_BindVariable(
+            unsafe { &mut game_state().m_config },
             ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),

@@ -398,39 +398,52 @@ pub unsafe fn D_BindVariables() {
     key_multi_msgplayer[2 as i32 as usize] = HUSTR_KEYBROWN;
     key_multi_msgplayer[3 as i32 as usize] = HUSTR_KEYRED;
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "mouse_sensitivity",
         &raw mut mouseSensitivity as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("sfx_volume", &raw mut sfxVolume as *mut ::core::ffi::c_void);
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
+        "sfx_volume",
+        &raw mut sfxVolume as *mut ::core::ffi::c_void,
+    );
+    M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "music_volume",
         &raw mut musicVolume as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "show_messages",
         &raw mut showMessages as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "screenblocks",
         &raw mut screenblocks as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "detaillevel",
         &raw mut detailLevel as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_channels",
         &raw mut snd_channels as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "vanilla_savegame_limit",
         &raw mut vanilla_savegame_limit as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "vanilla_demo_limit",
         &raw mut vanilla_demo_limit as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "show_endoom",
         &raw mut show_endoom as *mut ::core::ffi::c_void,
     );
@@ -444,6 +457,7 @@ pub unsafe fn D_BindVariables() {
             i,
         );
         M_BindVariable(
+            unsafe { &mut game_state().m_config },
             ::std::ffi::CStr::from_ptr(&raw mut buf as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),

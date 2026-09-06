@@ -4,6 +4,7 @@ use crate::src::m_config::M_BindVariable;
 
 use crate::src::doomdef::boolean;
 use crate::src::doomdef::NULL;
+use crate::src::game_state::game_state;
 use crate::src::sounds::sfxinfo_t;
 pub type snddevice_t = u32;
 pub const SNDDEVICE_CD: snddevice_t = 10;
@@ -321,42 +322,52 @@ pub unsafe fn I_BindSoundVariables(state: &mut ISoundState) {
         static mut libsamplerate_scale: f32;
     }
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_musicdevice",
         &raw mut state.snd_musicdevice as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_sfxdevice",
         &raw mut state.snd_sfxdevice as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_sbport",
         &raw mut state.snd_sbport as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_sbirq",
         &raw mut state.snd_sbirq as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_sbdma",
         &raw mut state.snd_sbdma as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_mport",
         &raw mut state.snd_mport as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_maxslicetime_ms",
         &raw mut state.snd_maxslicetime_ms as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_musiccmd",
         &raw mut state.snd_musiccmd as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_samplerate",
         &raw mut state.snd_samplerate as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
+        unsafe { &mut game_state().m_config },
         "snd_cachesize",
         &raw mut state.snd_cachesize as *mut ::core::ffi::c_void,
     );
