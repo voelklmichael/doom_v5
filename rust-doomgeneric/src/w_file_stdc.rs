@@ -3,6 +3,7 @@ use crate::src::w_file::{wad_file_class_t, wad_file_t};
 use crate::src::m_misc::M_FileLength;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_STATIC;
 
 extern "C" {
     fn fclose(__stream: *mut FILE) -> i32;
@@ -26,16 +27,6 @@ pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type byte = uint8_t;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
-pub const PU_STATIC: C2RustUnnamed = 1;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct stdc_wad_file_t {

@@ -1,6 +1,7 @@
 use crate::src::i_system::FILE;
 use crate::src::i_system::I_Error;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_STATIC;
 extern "C" {
     fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
@@ -80,16 +81,6 @@ pub type __mode_t = u32;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub const PU_STATIC: C2RustUnnamed = 1;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
 pub const SEEK_SET: i32 = 0 as i32;
 pub const SEEK_END: i32 = 2 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<

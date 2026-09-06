@@ -50,6 +50,7 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::r_data::R_FlatNumForName;
 use crate::src::r_data::R_TextureNumForName;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_LEVSPEC;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -1350,16 +1351,6 @@ pub type C2RustUnnamed_0 = u32;
 pub const CF_NOMOMENTUM: C2RustUnnamed_0 = 4;
 pub const CF_GODMODE: C2RustUnnamed_0 = 2;
 pub const CF_NOCLIP: C2RustUnnamed_0 = 1;
-pub type C2RustUnnamed_1 = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed_1 = 9;
-pub const PU_CACHE: C2RustUnnamed_1 = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed_1 = 7;
-pub const PU_LEVSPEC: C2RustUnnamed_1 = 6;
-pub const PU_LEVEL: C2RustUnnamed_1 = 5;
-pub const PU_FREE: C2RustUnnamed_1 = 4;
-pub const PU_MUSIC: C2RustUnnamed_1 = 3;
-pub const PU_SOUND: C2RustUnnamed_1 = 2;
-pub const PU_STATIC: C2RustUnnamed_1 = 1;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {

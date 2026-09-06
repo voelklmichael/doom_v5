@@ -139,6 +139,7 @@ use crate::src::i_timer::I_GetTime;
 use crate::src::r_data::R_TextureNumForName;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_STATIC;
 
 extern "C" {
     fn memcpy(
@@ -1539,16 +1540,6 @@ pub const MF_NOSECTOR: C2RustUnnamed_1 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_1 = 4;
 pub const MF_SOLID: C2RustUnnamed_1 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_1 = 1;
-pub type C2RustUnnamed_2 = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed_2 = 9;
-pub const PU_CACHE: C2RustUnnamed_2 = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed_2 = 7;
-pub const PU_LEVSPEC: C2RustUnnamed_2 = 6;
-pub const PU_LEVEL: C2RustUnnamed_2 = 5;
-pub const PU_FREE: C2RustUnnamed_2 = 4;
-pub const PU_MUSIC: C2RustUnnamed_2 = 3;
-pub const PU_SOUND: C2RustUnnamed_2 = 2;
-pub const PU_STATIC: C2RustUnnamed_2 = 1;
 pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;

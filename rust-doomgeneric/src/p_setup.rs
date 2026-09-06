@@ -40,6 +40,7 @@ use crate::src::w_wad::W_ReleaseLumpNum;
 use crate::src::r_data::R_TextureNumForName;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::{PU_LEVEL, PU_PURGELEVEL, PU_STATIC};
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -62,16 +63,6 @@ extern "C" {
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
-pub const PU_STATIC: C2RustUnnamed = 1;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;

@@ -43,6 +43,7 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::g_game::players;
 use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_LEVEL;
 
 extern "C" {
     fn memcpy(
@@ -62,16 +63,6 @@ pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
 pub use crate::src::d_ticcmd::ticcmd_t;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
-pub const PU_STATIC: C2RustUnnamed = 1;
 pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;

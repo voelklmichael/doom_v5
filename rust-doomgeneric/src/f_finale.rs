@@ -28,6 +28,7 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::v_video::V_DrawPatchFlipped;
 use crate::src::v_video::V_DrawPatch;
 use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::z_zone::{PU_CACHE, PU_LEVEL};
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -56,16 +57,6 @@ pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
-pub const PU_STATIC: C2RustUnnamed = 1;
 pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;

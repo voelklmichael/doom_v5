@@ -145,6 +145,7 @@ use crate::src::z_zone::Z_Init;
 use crate::src::i_timer::I_GetTime;
 use crate::src::v_video::V_DrawPatch;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -1591,16 +1592,6 @@ pub const mus_e1m3: C2RustUnnamed_0 = 3;
 pub const mus_e1m2: C2RustUnnamed_0 = 2;
 pub const mus_e1m1: C2RustUnnamed_0 = 1;
 pub const mus_None: C2RustUnnamed_0 = 0;
-pub type C2RustUnnamed_1 = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed_1 = 9;
-pub const PU_CACHE: C2RustUnnamed_1 = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed_1 = 7;
-pub const PU_LEVSPEC: C2RustUnnamed_1 = 6;
-pub const PU_LEVEL: C2RustUnnamed_1 = 5;
-pub const PU_FREE: C2RustUnnamed_1 = 4;
-pub const PU_MUSIC: C2RustUnnamed_1 = 3;
-pub const PU_SOUND: C2RustUnnamed_1 = 2;
-pub const PU_STATIC: C2RustUnnamed_1 = 1;
 pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;

@@ -1,5 +1,6 @@
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_STATIC;
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn memcpy(
@@ -26,16 +27,6 @@ pub type mem_rel_t = u32;
 pub const MEM_SEEK_END: mem_rel_t = 2;
 pub const MEM_SEEK_CUR: mem_rel_t = 1;
 pub const MEM_SEEK_SET: mem_rel_t = 0;
-pub const PU_STATIC: C2RustUnnamed = 1;
-pub type C2RustUnnamed = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed = 9;
-pub const PU_CACHE: C2RustUnnamed = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed = 7;
-pub const PU_LEVSPEC: C2RustUnnamed = 6;
-pub const PU_LEVEL: C2RustUnnamed = 5;
-pub const PU_FREE: C2RustUnnamed = 4;
-pub const PU_MUSIC: C2RustUnnamed = 3;
-pub const PU_SOUND: C2RustUnnamed = 2;
 #[no_mangle]
 pub unsafe extern "C" fn mem_fopen_read(
     mut buf: *mut ::core::ffi::c_void,

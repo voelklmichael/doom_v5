@@ -45,6 +45,7 @@ pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
 use crate::src::sounds::{sfxinfo_t, musicinfo_t};
+use crate::src::z_zone::PU_STATIC;
 pub type C2RustUnnamed = u32;
 pub const SNDDEVICE_CD: C2RustUnnamed = 10;
 pub const SNDDEVICE_AWE32: C2RustUnnamed = 9;
@@ -1520,16 +1521,6 @@ pub struct channel_t {
     pub origin: *mut mobj_t,
     pub handle: i32,
 }
-pub const PU_STATIC: C2RustUnnamed_2 = 1;
-pub type C2RustUnnamed_2 = u32;
-pub const PU_NUM_TAGS: C2RustUnnamed_2 = 9;
-pub const PU_CACHE: C2RustUnnamed_2 = 8;
-pub const PU_PURGELEVEL: C2RustUnnamed_2 = 7;
-pub const PU_LEVSPEC: C2RustUnnamed_2 = 6;
-pub const PU_LEVEL: C2RustUnnamed_2 = 5;
-pub const PU_FREE: C2RustUnnamed_2 = 4;
-pub const PU_MUSIC: C2RustUnnamed_2 = 3;
-pub const PU_SOUND: C2RustUnnamed_2 = 2;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
