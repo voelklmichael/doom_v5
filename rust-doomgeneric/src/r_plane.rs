@@ -50,9 +50,6 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::PU_STATIC;
 use libc::memset;
 
-extern "C" {
-    fn abs(__x: i32) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -1635,9 +1632,9 @@ pub unsafe fn R_DrawPlanes() {
                 lumpnum = firstflat + *flattranslation.offset((*pl).picnum as isize);
                 ds_source = W_CacheLumpNum(lumpnum, PU_STATIC as i32)
                     as *mut byte;
-                planeheight = abs(
-                    (*pl).height as i32 - viewz as i32,
-                ) as fixed_t;
+                planeheight = (
+                    (*pl).height as i32 - viewz as i32
+                ).abs() as fixed_t;
                 light = ((*pl).lightlevel >> LIGHTSEGSHIFT) + extralight;
                 if light >= LIGHTLEVELS {
                     light = LIGHTLEVELS - 1 as i32;

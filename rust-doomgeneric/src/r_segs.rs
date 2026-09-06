@@ -50,9 +50,6 @@ use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use libc::memcpy;
 
-extern "C" {
-    fn abs(__x: i32) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -1662,9 +1659,9 @@ pub unsafe fn R_StoreWallRange(
     (*linedef).flags = ((*linedef).flags as i32 | ML_MAPPED)
         as i16;
     rw_normalangle = (*curline).angle.wrapping_add(ANG90 as angle_t);
-    offsetangle = abs(
-        rw_normalangle.wrapping_sub(rw_angle1 as angle_t) as i32,
-    ) as angle_t;
+    offsetangle = (
+        rw_normalangle.wrapping_sub(rw_angle1 as angle_t) as i32
+    ).abs() as angle_t;
     if offsetangle > ANG90 as angle_t {
         offsetangle = ANG90 as angle_t;
     }

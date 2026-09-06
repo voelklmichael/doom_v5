@@ -59,9 +59,6 @@ use crate::src::d_player::NUMPSPRITES;
 use libc::{memcpy, memset};
 use libc::strncasecmp;
 
-extern "C" {
-    fn abs(__x: i32) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -1733,7 +1730,7 @@ pub unsafe extern "C" fn R_DrawVisSprite(
                     as isize,
             );
     }
-    dc_iscale = (abs((*vis).xiscale as i32) >> detailshift) as fixed_t;
+    dc_iscale = (((*vis).xiscale as i32).abs() >> detailshift) as fixed_t;
     dc_texturemid = (*vis).texturemid;
     frac = (*vis).startfrac;
     spryscale = (*vis).scale;
@@ -1789,7 +1786,7 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
     gxt = -FixedMul(tr_x, viewsin);
     gyt = FixedMul(tr_y, viewcos);
     tx = -(gyt + gxt);
-    if abs(tx as i32) > tz << 2 as i32 {
+    if (tx as i32).abs() > tz << 2 as i32 {
         return;
     }
     if (*thing).sprite as u32 >= numsprites as u32 {

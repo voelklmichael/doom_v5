@@ -36,9 +36,6 @@ use crate::src::w_wad::W_ReleaseLumpNum;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Malloc;
 
-extern "C" {
-    fn abs(__x: i32) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
@@ -1519,9 +1516,9 @@ unsafe extern "C" fn S_AdjustSoundParams(
     let mut adx: fixed_t = 0;
     let mut ady: fixed_t = 0;
     let mut angle: angle_t = 0;
-    adx = abs((*listener).x as i32 - (*source).x as i32)
+    adx = ((*listener).x as i32 - (*source).x as i32).abs()
         as fixed_t;
-    ady = abs((*listener).y as i32 - (*source).y as i32)
+    ady = ((*listener).y as i32 - (*source).y as i32).abs()
         as fixed_t;
     approx_dist = adx + ady
         - ((if adx < ady { adx } else { ady }) >> 1 as i32);

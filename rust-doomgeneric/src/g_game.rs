@@ -149,7 +149,6 @@ use libc::{atoi, strlen};
 use libc::printf;
 
 extern "C" {
-    fn abs(__x: i32) -> i32;
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
     fn rename(
         __old: *const ::core::ffi::c_char,
@@ -2283,7 +2282,7 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
         && (*ev).type_0 as u32
             == ev_mouse as i32 as u32
     {
-        testcontrols_mousespeed = abs((*ev).data2);
+        testcontrols_mousespeed = ((*ev).data2).abs();
     }
     if (*ev).type_0 as u32
         == ev_keydown as i32 as u32

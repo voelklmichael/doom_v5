@@ -60,7 +60,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn abs(__x: i32) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1382,8 +1381,8 @@ pub unsafe extern "C" fn PIT_StompThing(mut thing: *mut mobj_t) -> boolean {
         return true_0 as boolean;
     }
     blockdist = (*thing).radius + (*tmthing).radius;
-    if abs((*thing).x as i32 - tmx as i32) >= blockdist
-        || abs((*thing).y as i32 - tmy as i32) >= blockdist
+    if ((*thing).x as i32 - tmx as i32).abs() >= blockdist
+        || ((*thing).y as i32 - tmy as i32).abs() >= blockdist
     {
         return true_0 as boolean;
     }
@@ -1518,8 +1517,8 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
         return true_0 as boolean;
     }
     blockdist = (*thing).radius + (*tmthing).radius;
-    if abs((*thing).x as i32 - tmx as i32) >= blockdist
-        || abs((*thing).y as i32 - tmy as i32) >= blockdist
+    if ((*thing).x as i32 - tmx as i32).abs() >= blockdist
+        || ((*thing).y as i32 - tmy as i32).abs() >= blockdist
     {
         return true_0 as boolean;
     }
@@ -2244,9 +2243,9 @@ pub unsafe extern "C" fn PIT_RadiusAttack(mut thing: *mut mobj_t) -> boolean {
     {
         return true_0 as boolean;
     }
-    dx = abs((*thing).x as i32 - (*bombspot).x as i32)
+    dx = ((*thing).x as i32 - (*bombspot).x as i32).abs()
         as fixed_t;
-    dy = abs((*thing).y as i32 - (*bombspot).y as i32)
+    dy = ((*thing).y as i32 - (*bombspot).y as i32).abs()
         as fixed_t;
     dist = if dx > dy { dx } else { dy };
     dist = dist - (*thing).radius >> FRACBITS;
