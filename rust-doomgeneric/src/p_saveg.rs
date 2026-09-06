@@ -45,6 +45,7 @@ use crate::src::i_system::{fprintf, fread, ftell, fwrite, stderr};
 use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::d_mode::skill_t;
 
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -64,13 +65,6 @@ pub type boolean = u32;
 pub type byte = uint8_t;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type skill_t = i32;
-pub const sk_nightmare: skill_t = 4;
-pub const sk_hard: skill_t = 3;
-pub const sk_medium: skill_t = 2;
-pub const sk_easy: skill_t = 1;
-pub const sk_baby: skill_t = 0;
-pub const sk_noitems: skill_t = -1;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;

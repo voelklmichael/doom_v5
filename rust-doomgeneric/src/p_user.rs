@@ -18,18 +18,13 @@ use crate::src::d_player::{pw_infrared, pw_invisibility, pw_invulnerability, pw_
 use crate::src::d_player::{CF_NOCLIP, CF_NOMOMENTUM};
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::statenum_t;
+use crate::src::d_mode::{commercial, shareware};
 
 
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMode_t = u32;
-pub const indetermined: GameMode_t = 4;
-pub const retail: GameMode_t = 3;
-pub const commercial: GameMode_t = 2;
-pub const registered: GameMode_t = 1;
-pub const shareware: GameMode_t = 0;
 pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
