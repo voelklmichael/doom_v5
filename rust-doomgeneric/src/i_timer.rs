@@ -10,8 +10,7 @@ static mut basetime: uint32_t = 0 as uint32_t;
 pub unsafe extern "C" fn I_GetTicks() -> i32 {
     return DG_GetTicksMs() as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_GetTime() -> i32 {
+pub unsafe fn I_GetTime() -> i32 {
     let mut ticks: uint32_t = 0;
     ticks = I_GetTicks() as uint32_t;
     if basetime == 0 as uint32_t {

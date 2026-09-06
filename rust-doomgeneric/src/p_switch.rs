@@ -16,10 +16,9 @@ use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
 use crate::src::p_doors::EV_VerticalDoor;
 use crate::src::p_spec::EV_DoDonut;
+use crate::src::r_data::R_TextureNumForName;
 
-extern "C" {
-    fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
-}
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;

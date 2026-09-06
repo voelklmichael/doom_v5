@@ -142,6 +142,7 @@ use crate::src::s_sound::S_Init;
 use crate::src::st_stuff::ST_Init;
 use crate::src::v_video::V_Init;
 use crate::src::z_zone::Z_Init;
+use crate::src::i_timer::I_GetTime;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -173,7 +174,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
     ) -> i32;
-    fn I_GetTime() -> i32;
     fn Z_Malloc(
         size: i32,
         tag: i32,

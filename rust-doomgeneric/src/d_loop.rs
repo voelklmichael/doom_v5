@@ -5,6 +5,7 @@ use crate::src::dummy::net_client_connected;
 use crate::src::dummy::drone;
 use crate::src::i_timer::I_Sleep;
 use crate::src::i_system::I_AtExit;
+use crate::src::i_timer::I_GetTime;
 
 extern "C" {
     fn memcpy(
@@ -18,7 +19,6 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn I_GetTime() -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
