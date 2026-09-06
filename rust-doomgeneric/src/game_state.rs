@@ -22,6 +22,7 @@ use crate::src::m_config::MConfigState;
 use crate::src::m_random::MRandomState;
 use crate::src::p_ceilng::PCeilngState;
 use crate::src::p_maputl::fixup_intercepts_overrun;
+use crate::src::p_mobj::PMobjState;
 use crate::src::p_plats::PPlatsState;
 use crate::src::p_pspr::PPsprState;
 use crate::src::p_sight::PSightState;
@@ -45,6 +46,7 @@ pub struct GameState {
     pub m_config: MConfigState,
     pub m_random: MRandomState,
     pub p_ceilng: PCeilngState,
+    pub p_mobj: PMobjState,
     pub p_plats: PPlatsState,
     pub p_pspr: PPsprState,
     pub p_sight: PSightState,
@@ -71,6 +73,7 @@ impl GameState {
             m_config: MConfigState::new(),
             m_random: MRandomState::new(),
             p_ceilng: PCeilngState::new(),
+            p_mobj: PMobjState::new(),
             p_plats: PPlatsState::new(),
             p_pspr: PPsprState::new(),
             p_sight: PSightState::new(),

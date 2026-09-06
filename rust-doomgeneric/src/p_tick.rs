@@ -84,6 +84,6 @@ pub unsafe fn P_Ticker() {
     }
     P_RunThinkers();
     P_UpdateSpecials(unsafe { &mut game_state().p_switch });
-    P_RespawnSpecials();
+    P_RespawnSpecials(unsafe { &mut game_state().p_mobj });
     leveltime += 1;
 }

@@ -1269,7 +1269,7 @@ pub unsafe fn G_CheckSpot(
         return false;
     }
     if bodyqueslot >= BODYQUESIZE {
-        P_RemoveMobj(bodyque[(bodyqueslot % BODYQUESIZE) as usize]);
+        P_RemoveMobj(unsafe { &mut game_state().p_mobj }, bodyque[(bodyqueslot % BODYQUESIZE) as usize]);
     }
     bodyque[(bodyqueslot % BODYQUESIZE) as usize] = players[playernum as usize].mo;
     bodyqueslot += 1;
