@@ -281,20 +281,13 @@ pub unsafe fn I_InitGraphics() {
         NULL,
     ) as *mut byte;
     screenvisible = true;
-    extern "C" {
-        #[link_name = "I_InitInput"]
-        fn I_InitInput_0();
-    }
-    I_InitInput_0();
 }
 pub unsafe fn I_ShutdownGraphics() {
     Z_Free(I_VideoBuffer as *mut ::core::ffi::c_void);
 }
-pub unsafe fn I_StartFrame() {}
 pub unsafe fn I_StartTic() {
     I_GetEvent();
 }
-pub unsafe fn I_UpdateNoBlit() {}
 pub unsafe fn I_FinishUpdate() {
     let mut y: i32 = 0;
     let mut x_offset: i32 = 0;
@@ -424,14 +417,7 @@ pub unsafe fn I_GetPaletteIndex(
     }
     return best;
 }
-pub unsafe fn I_BeginRead() {}
-pub unsafe fn I_EndRead() {}
 pub unsafe fn I_SetWindowTitle(mut title: *mut ::core::ffi::c_char) {
     DG_SetWindowTitle(title);
 }
-pub unsafe fn I_GraphicsCheckCommandLine() {}
 pub unsafe fn I_SetGrabMouseCallback(mut func: grabmouse_callback_t) {}
-pub unsafe fn I_EnableLoadingDisk() {}
-pub unsafe fn I_BindVideoVariables() {}
-pub unsafe fn I_DisplayFPSDots(mut dots_on: bool) {}
-pub unsafe fn I_CheckIsScreensaver() {}

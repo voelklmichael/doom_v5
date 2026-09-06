@@ -207,5 +207,3 @@ pub unsafe fn I_GetEvent() {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_InitInput() {}

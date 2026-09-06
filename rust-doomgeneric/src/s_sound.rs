@@ -8,7 +8,6 @@ use crate::src::i_sound::I_StartSound;
 use crate::src::i_sound::I_StopSound;
 use crate::src::i_sound::I_SoundIsPlaying;
 use crate::src::i_sound::I_PrecacheSounds;
-use crate::src::i_sound::I_ShutdownMusic;
 use crate::src::i_sound::I_SetMusicVolume;
 use crate::src::i_sound::I_PauseSong;
 use crate::src::i_sound::I_ResumeSong;
@@ -106,7 +105,6 @@ pub unsafe fn S_Init(
 #[no_mangle]
 pub unsafe extern "C" fn S_Shutdown() {
     I_ShutdownSound();
-    I_ShutdownMusic();
 }
 unsafe fn S_StopChannel(mut cnum: i32) {
     let mut i: i32 = 0;

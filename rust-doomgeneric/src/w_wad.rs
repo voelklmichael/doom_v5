@@ -2,8 +2,6 @@ use crate::src::w_file::wad_file_t;
 use crate::src::i_system::I_Error;
 use crate::src::d_mode::D_GameMissionString;
 use crate::src::d_iwad::D_SuggestGameName;
-use crate::src::i_video::I_BeginRead;
-use crate::src::i_video::I_EndRead;
 use crate::src::m_misc::M_ExtractFileBase;
 use crate::src::w_file::W_OpenFile;
 use crate::src::z_zone::Z_ChangeTag2;
@@ -328,7 +326,6 @@ pub unsafe fn W_ReadLump(
         I_Error(&format!("W_ReadLump: {} >= numlumps", lump));
     }
     l = lumpinfo.offset(lump as isize);
-    I_BeginRead();
     c = W_Read(
         (*l).wad_file,
         (*l).position as u32,
@@ -338,7 +335,6 @@ pub unsafe fn W_ReadLump(
     if c < (*l).size {
         I_Error(&format!("W_ReadLump: only read {} of {} on lump {}", c, (*l).size, lump));
     }
-    I_EndRead();
 }
 pub unsafe fn W_CacheLumpNum(
     mut lumpnum: i32,
