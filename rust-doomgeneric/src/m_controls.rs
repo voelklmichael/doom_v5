@@ -585,3 +585,7 @@ pub unsafe fn M_BindChatControls(mut num_players: u32) {
     }
 }
 pub unsafe fn M_ApplyPlatformDefaults() {}
+pub const KEY_CAPSLOCK: i32 = 0x80 as i32
+    + 0x3a as i32;
+pub const KEY_SCRLCK: i32 = 0x80 as i32
+    + 0x46 as i32;

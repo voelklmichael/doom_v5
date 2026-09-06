@@ -1,6 +1,7 @@
 use crate::src::d_event::event_t;
 use crate::src::d_event::D_PostEvent;
 use crate::src::d_event::{ev_keydown, ev_keyup};
+use crate::src::m_controls::KEY_RSHIFT;
 
 extern "C" {
     fn DG_GetKey(
@@ -208,5 +209,3 @@ pub unsafe fn I_GetEvent() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_InitInput() {}
-pub const KEY_RSHIFT: i32 = 0x80 as i32
-    + 0x36 as i32;

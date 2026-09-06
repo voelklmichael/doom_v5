@@ -82,6 +82,12 @@ use crate::src::stdint_types::size_t;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::m_controls::KEY_BACKSPACE;
+use crate::src::m_controls::KEY_PAUSE;
+use crate::src::m_controls::KEY_ENTER;
+use crate::src::m_controls::KEY_ESCAPE;
+use crate::src::m_controls::KEY_CAPSLOCK;
+use crate::src::m_controls::KEY_SCRLCK;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -154,16 +160,8 @@ pub const load4: C2RustUnnamed_8 = 3;
 pub const load3: C2RustUnnamed_8 = 2;
 pub const load2: C2RustUnnamed_8 = 1;
 pub const load1: C2RustUnnamed_8 = 0;
-pub const KEY_ESCAPE: i32 = 27 as i32;
-pub const KEY_ENTER: i32 = 13;
-pub const KEY_BACKSPACE: i32 = 0x7f;
-pub const KEY_PAUSE: i32 = 0xff as i32;
-pub const KEY_CAPSLOCK: i32 = 0x80 as i32
-    + 0x3a as i32;
 pub const KEY_NUMLOCK: i32 = 0x80 as i32
     + 0x45 as i32;
-pub const KEY_SCRLCK: i32 = 0x80 as i32
-    + 0x46 as i32;
 pub const GAMMALVL0: &str = "Gamma correction OFF\0";
 pub const GAMMALVL1: &str = "Gamma correction level 1\0";
 pub const GAMMALVL2: &str = "Gamma correction level 2\0";
