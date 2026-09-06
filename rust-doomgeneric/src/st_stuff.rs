@@ -30,6 +30,7 @@ use crate::src::doomstat::gamemission;
 use crate::src::am_map::automapactive;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::g_game::deathmatch;
+use crate::src::m_misc::M_snprintf;
 
 extern "C" {
     fn snprintf(
@@ -43,12 +44,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn W_CacheLumpNum(
         lump: i32,
         tag: i32,

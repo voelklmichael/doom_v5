@@ -124,6 +124,7 @@ use crate::src::info::states;
 use crate::src::am_map::automapactive;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::m_random::P_Random;
+use crate::src::m_misc::M_snprintf;
 
 extern "C" {
     fn memcpy(
@@ -165,12 +166,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn Z_CheckHeap();
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;

@@ -27,6 +27,7 @@ use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sides;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::g_game::playeringame;
+use crate::src::m_misc::M_snprintf;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -84,12 +85,6 @@ extern "C" {
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -420,7 +420,6 @@ pub unsafe fn M_vsnprintf(
     }
     return result;
 }
-#[no_mangle]
 pub unsafe extern "C" fn M_snprintf(
     mut buf: *mut ::core::ffi::c_char,
     mut buf_len: size_t,

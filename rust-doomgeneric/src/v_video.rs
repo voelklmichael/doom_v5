@@ -9,6 +9,7 @@ use crate::src::i_video::usemouse;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_misc::M_WriteFile;
 use crate::src::i_video::I_VideoBuffer;
+use crate::src::m_misc::M_snprintf;
 
 extern "C" {
     fn memcpy(
@@ -26,12 +27,6 @@ extern "C" {
         r: i32,
         g: i32,
         b: i32,
-    ) -> i32;
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
     ) -> i32;
     fn Z_Malloc(
         size: i32,
