@@ -23,7 +23,6 @@ use crate::src::p_enemy::P_NoiseAlert;
 use crate::src::p_enemy::MELEERANGE;
 use crate::src::p_enemy::MISSILERANGE;
 use crate::src::p_inter::P_DamageMobj;
-use crate::src::p_map::linetarget;
 use crate::src::p_map::P_AimLineAttack;
 use crate::src::p_map::P_LineAttack;
 use crate::src::p_mobj::statenum_t;
@@ -306,7 +305,7 @@ pub unsafe fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     );
     slope = P_AimLineAttack((*player).mo, angle, MELEERANGE) as i32;
     P_LineAttack((*player).mo, angle, MELEERANGE, slope as fixed_t, damage);
-    if !linetarget.is_null() {
+    if !unsafe { game_state() }.p_map.linetarget.is_null() {
         S_StartSound(
             unsafe { &mut game_state().sounds },
             (*player).mo as *mut ::core::ffi::c_void,
@@ -315,8 +314,8 @@ pub unsafe fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
         (*(*player).mo).angle = R_PointToAngle2(
             (*(*player).mo).x,
             (*(*player).mo).y,
-            (*linetarget).x,
-            (*linetarget).y,
+            (*unsafe { game_state() }.p_map.linetarget).x,
+            (*unsafe { game_state() }.p_map.linetarget).y,
         );
     }
 }
@@ -339,7 +338,7 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
         slope as fixed_t,
         damage,
     );
-    if linetarget.is_null() {
+    if unsafe { game_state() }.p_map.linetarget.is_null() {
         S_StartSound(
             unsafe { &mut game_state().sounds },
             (*player).mo as *mut ::core::ffi::c_void,
@@ -355,8 +354,8 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     angle = R_PointToAngle2(
         (*(*player).mo).x,
         (*(*player).mo).y,
-        (*linetarget).x,
-        (*linetarget).y,
+        (*unsafe { game_state() }.p_map.linetarget).x,
+        (*unsafe { game_state() }.p_map.linetarget).y,
     );
     if angle.wrapping_sub((*(*player).mo).angle) > ANG180 {
         if (angle.wrapping_sub((*(*player).mo).angle) as i32) < -ANG90 / 20 as i32 {
@@ -416,10 +415,10 @@ pub unsafe fn P_BulletSlope(state: &mut PPsprState, mut mo: *mut mobj_t) {
     let mut an: angle_t = 0;
     an = (*mo).angle;
     state.bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
-    if linetarget.is_null() {
+    if unsafe { game_state() }.p_map.linetarget.is_null() {
         an = an.wrapping_add(((1 as i32) << 26 as i32) as angle_t);
         state.bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
-        if linetarget.is_null() {
+        if unsafe { game_state() }.p_map.linetarget.is_null() {
             an = an.wrapping_sub(((2 as i32) << 26 as i32) as angle_t);
             state.bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         }
@@ -588,11 +587,12 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
             an,
             16 as fixed_t * 64 as fixed_t * FRACUNIT,
         );
-        if !linetarget.is_null() {
+        if !unsafe { game_state() }.p_map.linetarget.is_null() {
             P_SpawnMobj(
-                (*linetarget).x,
-                (*linetarget).y,
-                (*linetarget).z + ((*linetarget).height >> 2 as i32),
+                (*unsafe { game_state() }.p_map.linetarget).x,
+                (*unsafe { game_state() }.p_map.linetarget).y,
+                (*unsafe { game_state() }.p_map.linetarget).z
+                    + ((*unsafe { game_state() }.p_map.linetarget).height >> 2 as i32),
                 MT_EXTRABFG,
             );
             damage = 0 as i32;
@@ -602,7 +602,7 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
                 j += 1;
             }
             P_DamageMobj(
-                linetarget,
+                unsafe { game_state() }.p_map.linetarget,
                 (*mo).target as *mut mobj_t,
                 (*mo).target as *mut mobj_t,
                 damage,

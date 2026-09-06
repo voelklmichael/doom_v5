@@ -795,8 +795,8 @@ pub unsafe fn ST_updateWidgets() {
         w_ready.num = &raw mut largeammo;
     } else {
         w_ready.num = (&raw mut (*plyr).ammo as *mut i32).offset(
-            (*(&raw mut weaponinfo as *mut weaponinfo_t).offset((*plyr).readyweapon as isize)).ammo
-                as isize,
+            (*(&raw const weaponinfo as *mut weaponinfo_t).offset((*plyr).readyweapon as isize))
+                .ammo as isize,
         ) as *mut i32;
     }
     w_ready.data = (*plyr).readyweapon as i32;
@@ -1192,8 +1192,8 @@ pub unsafe fn ST_createWidgets() {
         ST_AMMOY,
         &raw mut tallnum as *mut *mut patch_t,
         (&raw mut (*plyr).ammo as *mut i32).offset(
-            (*(&raw mut weaponinfo as *mut weaponinfo_t).offset((*plyr).readyweapon as isize)).ammo
-                as isize,
+            (*(&raw const weaponinfo as *mut weaponinfo_t).offset((*plyr).readyweapon as isize))
+                .ammo as isize,
         ) as *mut i32,
         &raw mut st_statusbaron,
         ST_AMMOWIDTH,

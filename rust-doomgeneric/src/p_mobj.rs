@@ -32,9 +32,6 @@ use crate::src::p_doors::vldoor_t;
 use crate::src::p_enemy::MELEERANGE;
 use crate::src::p_inter::NUMCARDS;
 use crate::src::p_lights::{fireflicker_t, glow_t, lightflash_t, strobe_t};
-use crate::src::p_map::attackrange;
-use crate::src::p_map::ceilingline;
-use crate::src::p_map::linetarget;
 use crate::src::p_map::P_AimLineAttack;
 use crate::src::p_map::P_CheckPosition;
 use crate::src::p_map::P_SlideMove;
@@ -665,9 +662,12 @@ pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
             if !(*mo).player.is_null() {
                 P_SlideMove(mo);
             } else if (*mo).flags & MF_MISSILE as i32 != 0 {
-                if !ceilingline.is_null()
-                    && !(*ceilingline).backsector.is_null()
-                    && (*(*ceilingline).backsector).ceilingpic as i32 == skyflatnum
+                if !unsafe { game_state() }.p_map.ceilingline.is_null()
+                    && !(*unsafe { game_state() }.p_map.ceilingline)
+                        .backsector
+                        .is_null()
+                    && (*(*unsafe { game_state() }.p_map.ceilingline).backsector).ceilingpic as i32
+                        == skyflatnum
                 {
                     P_RemoveMobj(state, mo);
                     return;
@@ -1220,7 +1220,7 @@ pub unsafe fn P_SpawnPuff(mut x: fixed_t, mut y: fixed_t, mut z: fixed_t) {
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
-    if attackrange == MELEERANGE {
+    if unsafe { game_state() }.p_map.attackrange == MELEERANGE {
         P_SetMobjState(th, S_PUFF3);
     }
 }
@@ -1315,14 +1315,14 @@ pub unsafe fn P_SpawnPlayerMissile(mut source: *mut mobj_t, mut type_0: mobjtype
     let mut slope: fixed_t = 0;
     an = (*source).angle;
     slope = P_AimLineAttack(source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
-    if linetarget.is_null() {
+    if unsafe { game_state() }.p_map.linetarget.is_null() {
         an = an.wrapping_add(((1 as i32) << 26 as i32) as angle_t);
         slope = P_AimLineAttack(source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
-        if linetarget.is_null() {
+        if unsafe { game_state() }.p_map.linetarget.is_null() {
             an = an.wrapping_sub(((2 as i32) << 26 as i32) as angle_t);
             slope = P_AimLineAttack(source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         }
-        if linetarget.is_null() {
+        if unsafe { game_state() }.p_map.linetarget.is_null() {
             an = (*source).angle;
             slope = 0 as i32 as fixed_t;
         }

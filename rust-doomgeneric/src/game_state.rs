@@ -24,7 +24,10 @@ use crate::src::i_timer::ITimerState;
 use crate::src::m_config::MConfigState;
 use crate::src::m_random::MRandomState;
 use crate::src::p_ceilng::PCeilngState;
+use crate::src::p_enemy::PEnemyState;
+use crate::src::p_map::PMapState;
 use crate::src::p_maputl::fixup_intercepts_overrun;
+use crate::src::p_maputl::PMaputlState;
 use crate::src::p_mobj::PMobjState;
 use crate::src::p_plats::PPlatsState;
 use crate::src::p_pspr::PPsprState;
@@ -54,6 +57,9 @@ pub struct GameState {
     pub m_config: MConfigState,
     pub m_random: MRandomState,
     pub p_ceilng: PCeilngState,
+    pub p_enemy: PEnemyState,
+    pub p_map: PMapState,
+    pub p_maputl: PMaputlState,
     pub p_mobj: PMobjState,
     pub p_plats: PPlatsState,
     pub p_pspr: PPsprState,
@@ -86,6 +92,9 @@ impl GameState {
             m_config: MConfigState::new(),
             m_random: MRandomState::new(),
             p_ceilng: PCeilngState::new(),
+            p_enemy: PEnemyState::new(),
+            p_map: PMapState::new(),
+            p_maputl: PMaputlState::new(),
             p_mobj: PMobjState::new(),
             p_plats: PPlatsState::new(),
             p_pspr: PPsprState::new(),
