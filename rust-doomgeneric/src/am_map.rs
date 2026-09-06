@@ -42,6 +42,7 @@ use crate::src::g_game::consoleplayer;
 use crate::src::p_setup::sectors;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
+use crate::src::m_fixed::FixedMul;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -61,7 +62,6 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     static mut players: [player_t; 4];
 }

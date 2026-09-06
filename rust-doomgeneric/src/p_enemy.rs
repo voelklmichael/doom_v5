@@ -48,10 +48,10 @@ use crate::src::doomstat::gameversion;
 use crate::src::g_game::netgame;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
+use crate::src::m_fixed::FixedMul;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;

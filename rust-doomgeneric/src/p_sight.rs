@@ -12,10 +12,9 @@ use crate::src::r_main::validcount;
 use crate::src::p_setup::numsectors;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::p_setup::sectors;
+use crate::src::m_fixed::FixedMul;
 
-extern "C" {
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-}
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
