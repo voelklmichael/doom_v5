@@ -1006,7 +1006,8 @@ pub unsafe fn P_SetupLevel(
     }
     iquetail = 0 as i32;
     iquehead = iquetail;
-    P_SpawnSpecials(unsafe { &mut game_state().p_switch });
+    let gs = unsafe { game_state() };
+    P_SpawnSpecials(&mut gs.p_switch, &mut gs.p_plats);
     if precache {
         R_PrecacheLevel();
     }

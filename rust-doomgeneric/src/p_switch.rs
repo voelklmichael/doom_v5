@@ -25,6 +25,7 @@ use crate::src::p_floor::{lowerFloor, lowerFloorToLowest, raiseFloor, raiseFloor
 use crate::src::p_floor::{build8, turbo16};
 use crate::src::p_ceilng::{crushAndRaise, lowerToFloor};
 use crate::src::p_spec::ML_SECRET;
+use crate::src::game_state::game_state;
 
 
 pub type bwhere_e = u32;
@@ -753,13 +754,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         14 => {
-            if EV_DoPlat(line, raiseAndChange, 32 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseAndChange, 32 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         15 => {
-            if EV_DoPlat(line, raiseAndChange, 24 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseAndChange, 24 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -771,13 +772,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         20 => {
-            if EV_DoPlat(line, raiseToNearestAndChange, 0 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         21 => {
-            if EV_DoPlat(line, downWaitUpStay, 0 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, downWaitUpStay, 0 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -866,7 +867,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         122 => {
-            if EV_DoPlat(line, blazeDWUS, 0 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, blazeDWUS, 0 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -926,7 +927,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         62 => {
-            if EV_DoPlat(line, downWaitUpStay, 1 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, downWaitUpStay, 1 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -944,13 +945,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         66 => {
-            if EV_DoPlat(line, raiseAndChange, 24 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseAndChange, 24 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         67 => {
-            if EV_DoPlat(line, raiseAndChange, 32 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseAndChange, 32 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -962,7 +963,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         68 => {
-            if EV_DoPlat(line, raiseToNearestAndChange, 0 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -998,7 +999,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         123 => {
-            if EV_DoPlat(line, blazeDWUS, 0 as i32) != 0 {
+            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, blazeDWUS, 0 as i32) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;

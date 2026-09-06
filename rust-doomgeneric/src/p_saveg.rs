@@ -70,6 +70,7 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::m_menu::SAVESTRINGSIZE;
 use crate::src::p_ceilng::MAXCEILINGS;
 use crate::src::m_fixed::FRACBITS;
+use crate::src::game_state::game_state;
 pub type intptr_t = isize;
 pub const tc_end: C2RustUnnamed_4 = 0;
 pub const tc_mobj: C2RustUnnamed_4 = 1;
@@ -1140,7 +1141,7 @@ pub unsafe fn P_UnArchiveSpecials() {
                     (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
                 }
                 P_AddThinker(&raw mut (*plat).thinker);
-                P_AddActivePlat(plat);
+                P_AddActivePlat(unsafe { &mut game_state().p_plats }, plat);
             }
             4 => {
                 saveg_read_pad();

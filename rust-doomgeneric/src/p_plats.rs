@@ -22,6 +22,7 @@ use crate::src::m_fixed::fixed_t;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
 use crate::src::m_fixed::FRACUNIT;
+use crate::src::game_state::game_state;
 
 pub type plat_e = u32;
 pub const in_stasis: plat_e = 3;
@@ -37,8 +38,18 @@ pub const perpetualRaise: plattype_e = 0;
 pub const PLATWAIT: i32 = 3;
 pub const PLATSPEED: i32 = FRACUNIT;
 pub const MAXPLATS: i32 = 30;
-pub static mut activeplats: [*mut plat_t; 30] = [::core::ptr::null::<plat_t>()
-    as *mut plat_t; 30];
+pub struct PPlatsState {
+    pub activeplats: [*mut plat_t; 30],
+}
+
+impl PPlatsState {
+    pub const fn new() -> Self {
+        PPlatsState {
+            activeplats: [::core::ptr::null::<plat_t>() as *mut plat_t; 30],
+        }
+    }
+}
+
 pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
     let mut res: result_e = ok;
     match (*plat).status as u32 {
@@ -85,10 +96,10 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
                 );
                 match (*plat).type_0 as u32 {
                     4 | 1 => {
-                        P_RemoveActivePlat(plat);
+                        P_RemoveActivePlat(unsafe { &mut game_state().p_plats }, plat);
                     }
                     2 | 3 => {
-                        P_RemoveActivePlat(plat);
+                        P_RemoveActivePlat(unsafe { &mut game_state().p_plats }, plat);
                     }
                     _ => {}
                 }
@@ -132,6 +143,7 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
     };
 }
 pub unsafe fn EV_DoPlat(
+    state: &mut PPlatsState,
     mut line: *mut line_t,
     mut type_0: plattype_e,
     mut amount: i32,
@@ -144,7 +156,7 @@ pub unsafe fn EV_DoPlat(
     rtn = 0 as i32;
     match type_0 as u32 {
         0 => {
-            P_ActivateInStasis((*line).tag as i32);
+            P_ActivateInStasis(state, (*line).tag as i32);
         }
         _ => {}
     }
@@ -251,64 +263,64 @@ pub unsafe fn EV_DoPlat(
             }
             _ => {}
         }
-        P_AddActivePlat(plat);
+        P_AddActivePlat(state, plat);
     }
     return rtn;
 }
-pub unsafe fn P_ActivateInStasis(mut tag: i32) {
+pub unsafe fn P_ActivateInStasis(state: &mut PPlatsState, mut tag: i32) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLATS {
-        if !activeplats[i as usize].is_null() && (*activeplats[i as usize]).tag == tag
-            && (*activeplats[i as usize]).status as u32
+        if !state.activeplats[i as usize].is_null() && (*state.activeplats[i as usize]).tag == tag
+            && (*state.activeplats[i as usize]).status as u32
                 == in_stasis as i32 as u32
         {
-            (*activeplats[i as usize]).status = (*activeplats[i as usize]).oldstatus;
-            (*activeplats[i as usize]).thinker.function = ThinkerFn::Plat(T_PlatRaise);
+            (*state.activeplats[i as usize]).status = (*state.activeplats[i as usize]).oldstatus;
+            (*state.activeplats[i as usize]).thinker.function = ThinkerFn::Plat(T_PlatRaise);
         }
         i += 1;
     }
 }
-pub unsafe fn EV_StopPlat(mut line: *mut line_t) {
+pub unsafe fn EV_StopPlat(state: &mut PPlatsState, mut line: *mut line_t) {
     let mut j: i32 = 0;
     j = 0 as i32;
     while j < MAXPLATS {
-        if !activeplats[j as usize].is_null()
-            && (*activeplats[j as usize]).status as u32
+        if !state.activeplats[j as usize].is_null()
+            && (*state.activeplats[j as usize]).status as u32
                 != in_stasis as i32 as u32
-            && (*activeplats[j as usize]).tag == (*line).tag as i32
+            && (*state.activeplats[j as usize]).tag == (*line).tag as i32
         {
-            (*activeplats[j as usize]).oldstatus = (*activeplats[j as usize]).status;
-            (*activeplats[j as usize]).status = in_stasis;
-            (*activeplats[j as usize]).thinker.function = ThinkerFn::Paused;
+            (*state.activeplats[j as usize]).oldstatus = (*state.activeplats[j as usize]).status;
+            (*state.activeplats[j as usize]).status = in_stasis;
+            (*state.activeplats[j as usize]).thinker.function = ThinkerFn::Paused;
         }
         j += 1;
     }
 }
-pub unsafe fn P_AddActivePlat(mut plat: *mut plat_t) {
+pub unsafe fn P_AddActivePlat(state: &mut PPlatsState, mut plat: *mut plat_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLATS {
-        if activeplats[i as usize].is_null() {
-            activeplats[i as usize] = plat;
+        if state.activeplats[i as usize].is_null() {
+            state.activeplats[i as usize] = plat;
             return;
         }
         i += 1;
     }
     I_Error("P_AddActivePlat: no more plats!");
 }
-pub unsafe fn P_RemoveActivePlat(mut plat: *mut plat_t) {
+pub unsafe fn P_RemoveActivePlat(state: &mut PPlatsState, mut plat: *mut plat_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLATS {
-        if plat == activeplats[i as usize] {
-            (*(*activeplats[i as usize]).sector).specialdata = NULL;
+        if plat == state.activeplats[i as usize] {
+            (*(*state.activeplats[i as usize]).sector).specialdata = NULL;
             P_RemoveThinker(
-                &raw mut (**(&raw mut activeplats as *mut *mut plat_t)
+                &raw mut (**(&raw mut state.activeplats as *mut *mut plat_t)
                     .offset(i as isize))
                     .thinker,
             );
-            activeplats[i as usize] = ::core::ptr::null_mut::<plat_t>();
+            state.activeplats[i as usize] = ::core::ptr::null_mut::<plat_t>();
             return;
         }
         i += 1;
