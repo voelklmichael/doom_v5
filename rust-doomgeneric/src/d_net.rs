@@ -1493,8 +1493,7 @@ pub unsafe fn D_ConnectNetGame() {
         netgame = true;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_CheckNetGame() {
+pub unsafe fn D_CheckNetGame() {
     let mut settings: net_gamesettings_t = net_gamesettings_t {
         ticdup: 0,
         extratics: 0,

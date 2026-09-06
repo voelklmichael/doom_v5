@@ -178,8 +178,7 @@ pub unsafe fn I_GetSfxLumpNum(
         return 0 as i32
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_UpdateSound() {
+pub unsafe fn I_UpdateSound() {
     if !sound_module.is_null() {
         (*sound_module).Update.expect("non-null function pointer")();
     }

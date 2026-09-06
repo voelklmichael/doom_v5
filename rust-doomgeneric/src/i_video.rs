@@ -203,8 +203,7 @@ pub unsafe extern "C" fn cmap_to_fb(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_InitGraphics() {
+pub unsafe fn I_InitGraphics() {
     let mut i: i32 = 0;
     let mut gfxmodeparm: i32 = 0;
     let mut mode: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
@@ -422,8 +421,7 @@ pub unsafe fn I_SetPalette(mut palette: *mut byte) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_GetPaletteIndex(
+pub unsafe fn I_GetPaletteIndex(
     mut r: i32,
     mut g: i32,
     mut b: i32,

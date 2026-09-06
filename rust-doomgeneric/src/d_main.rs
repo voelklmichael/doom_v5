@@ -130,6 +130,18 @@ use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
+use crate::src::d_loop::TryRunTics;
+use crate::src::d_net::D_CheckNetGame;
+use crate::src::hu_stuff::HU_Init;
+use crate::src::i_video::I_InitGraphics;
+use crate::src::m_config::M_LoadDefaults;
+use crate::src::m_menu::M_Init;
+use crate::src::p_setup::P_Init;
+use crate::src::r_main::R_Init;
+use crate::src::s_sound::S_Init;
+use crate::src::st_stuff::ST_Init;
+use crate::src::v_video::V_Init;
+use crate::src::z_zone::Z_Init;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -162,27 +174,15 @@ extern "C" {
         __n: size_t,
     ) -> i32;
     fn I_GetTime() -> i32;
-    fn TryRunTics();
-    fn Z_Init();
     fn Z_Malloc(
         size: i32,
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn S_Init(sfxVolume_0: i32, musicVolume_0: i32);
-    fn V_Init();
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    fn M_LoadDefaults();
     fn M_SaveDefaults();
-    fn M_Init();
-    fn I_InitGraphics();
     fn G_CheckDemoStatus() -> boolean;
-    fn HU_Init();
-    fn ST_Init();
-    fn P_Init();
-    fn R_Init();
     fn StatDump();
-    fn D_CheckNetGame();
 }
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;

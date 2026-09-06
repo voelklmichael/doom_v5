@@ -29,6 +29,11 @@ use crate::src::g_game::consoleplayer;
 use crate::src::p_tick::leveltime;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
+use crate::src::p_mobj::P_SpawnMapThing;
+use crate::src::p_spec::P_InitPicAnims;
+use crate::src::r_things::R_InitSprites;
+use crate::src::s_sound::S_Start;
+use crate::src::w_wad::W_ReadLump;
 
 extern "C" {
     fn Z_Malloc(
@@ -54,18 +59,13 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn W_LumpLength(lump: u32) -> i32;
-    fn W_ReadLump(lump: u32, dest: *mut ::core::ffi::c_void);
     fn W_CacheLumpNum(
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
     fn W_ReleaseLumpNum(lump: i32);
-    fn P_SpawnMapThing(mthing: *mut mapthing_t);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
-    fn R_InitSprites(namelist: *mut *mut ::core::ffi::c_char);
-    fn P_InitPicAnims();
-    fn S_Start();
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;
@@ -2336,8 +2336,7 @@ pub unsafe fn P_SetupLevel(
         R_PrecacheLevel();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_Init() {
+pub unsafe fn P_Init() {
     P_InitSwitchList();
     P_InitPicAnims();
     R_InitSprites(&raw mut sprnames as *mut *mut ::core::ffi::c_char);

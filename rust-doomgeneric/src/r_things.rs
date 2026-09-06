@@ -1692,8 +1692,7 @@ pub static mut vissprite_p: *mut vissprite_t = ::core::ptr::null::<vissprite_t>(
     as *mut vissprite_t;
 #[no_mangle]
 pub static mut newvissprite: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_InitSprites(mut namelist: *mut *mut ::core::ffi::c_char) {
+pub unsafe fn R_InitSprites(mut namelist: *mut *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < SCREENWIDTH {
@@ -2280,8 +2279,7 @@ pub unsafe extern "C" fn R_DrawSprite(mut spr: *mut vissprite_t) {
     mceilingclip = &raw mut cliptop as *mut i16;
     R_DrawVisSprite(spr, (*spr).x1, (*spr).x2);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawMasked() {
+pub unsafe fn R_DrawMasked() {
     let mut spr: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut ds: *mut drawseg_t = ::core::ptr::null_mut::<drawseg_t>();
     R_SortVisSprites();

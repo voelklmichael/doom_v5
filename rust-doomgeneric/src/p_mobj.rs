@@ -2192,8 +2192,7 @@ pub unsafe fn P_RespawnSpecials() {
     iquetail = iquetail + 1 as i32
         & ITEMQUESIZE - 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
+pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
@@ -2253,8 +2252,7 @@ pub unsafe extern "C" fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
         HU_Start();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
+pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     let mut i: i32 = 0;
     let mut bit: i32 = 0;
     let mut mobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();

@@ -25,6 +25,7 @@ use crate::src::doomstat::gameversion;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
+use crate::src::v_video::V_DrawPatchFlipped;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -35,11 +36,6 @@ extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn toupper(__c: i32) -> i32;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    fn V_DrawPatchFlipped(
-        x: i32,
-        y: i32,
-        patch: *mut patch_t,
-    );
     fn W_CacheLumpNum(
         lump: i32,
         tag: i32,

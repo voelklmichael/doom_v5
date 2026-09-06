@@ -31,6 +31,7 @@ use crate::src::m_misc::M_snprintf;
 use crate::src::p_setup::sectors;
 use crate::src::p_tick::leveltime;
 use crate::src::g_game::players;
+use crate::src::p_plats::P_AddActivePlat;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -80,7 +81,6 @@ extern "C" {
     fn T_StrobeFlash(flash: *mut strobe_t);
     fn T_Glow(g: *mut glow_t);
     fn T_PlatRaise(plat: *mut plat_t);
-    fn P_AddActivePlat(plat: *mut plat_t);
     fn T_VerticalDoor(door: *mut vldoor_t);
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);

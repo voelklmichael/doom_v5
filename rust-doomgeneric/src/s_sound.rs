@@ -30,10 +30,10 @@ use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
+use crate::src::i_sound::I_UpdateSound;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn I_UpdateSound();
     fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
         lump: i32,
@@ -1558,8 +1558,7 @@ static mut mus_paused: bool = false;
 static mut mus_playing: *mut musicinfo_t = ::core::ptr::null::<musicinfo_t>()
     as *mut musicinfo_t;
 pub static mut snd_channels: i32 = 8 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn S_Init(
+pub unsafe fn S_Init(
     mut sfxVolume_0: i32,
     mut musicVolume_0: i32,
 ) {
@@ -1615,8 +1614,7 @@ unsafe extern "C" fn S_StopChannel(mut cnum: i32) {
         (*c).sfxinfo = ::core::ptr::null_mut::<sfxinfo_t>();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_Start() {
+pub unsafe fn S_Start() {
     let mut cnum: i32 = 0;
     let mut mnum: i32 = 0;
     cnum = 0 as i32;

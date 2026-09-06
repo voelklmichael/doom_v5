@@ -131,6 +131,9 @@ use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
+use crate::src::p_mobj::P_SpawnPlayer;
+use crate::src::v_video::V_ScreenShot;
+use crate::src::z_zone::Z_CheckHeap;
 
 extern "C" {
     fn memcpy(
@@ -159,15 +162,12 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn ftell(__stream: *mut FILE) -> i64;
     fn I_GetTime() -> i32;
-    fn P_SpawnPlayer(mthing: *mut mapthing_t);
     fn Z_Malloc(
         size: i32,
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn Z_CheckHeap();
-    fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
 }
