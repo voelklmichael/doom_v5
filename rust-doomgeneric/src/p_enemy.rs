@@ -2390,7 +2390,7 @@ pub unsafe extern "C" fn A_Tracer(mut actor: *mut mobj_t) {
     exact = (*actor).angle >> ANGLETOFINESHIFT;
     (*actor).momx = FixedMul(
         (*(*actor).info).speed as fixed_t,
-        *finecosine.offset(exact as isize),
+        finecosine[exact as isize],
     );
     (*actor).momy = FixedMul(
         (*(*actor).info).speed as fixed_t,
@@ -2565,7 +2565,7 @@ pub unsafe extern "C" fn A_Fire(mut actor: *mut mobj_t) {
     an = ((*dest).angle >> ANGLETOFINESHIFT) as u32;
     P_UnsetThingPosition(actor);
     (*actor).x = (*dest).x
-        + FixedMul(24 as fixed_t * FRACUNIT, *finecosine.offset(an as isize));
+        + FixedMul(24 as fixed_t * FRACUNIT, finecosine[an as isize]);
     (*actor).y = (*dest).y + FixedMul(24 as fixed_t * FRACUNIT, finesine[an as usize]);
     (*actor).z = (*dest).z;
     P_SetThingPosition(actor);
@@ -2609,7 +2609,7 @@ pub unsafe extern "C" fn A_VileAttack(mut actor: *mut mobj_t) {
         return;
     }
     (*fire).x = (*(*actor).target).x
-        - FixedMul(24 as fixed_t * FRACUNIT, *finecosine.offset(an as isize));
+        - FixedMul(24 as fixed_t * FRACUNIT, finecosine[an as isize]);
     (*fire).y = (*(*actor).target).y
         - FixedMul(24 as fixed_t * FRACUNIT, finesine[an as usize]);
     P_RadiusAttack(fire, actor, 70 as i32);
@@ -2634,7 +2634,7 @@ pub unsafe extern "C" fn A_FatAttack1(mut actor: *mut mobj_t) {
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul(
         (*(*mo).info).speed as fixed_t,
-        *finecosine.offset(an as isize),
+        finecosine[an as isize],
     );
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
@@ -2654,7 +2654,7 @@ pub unsafe extern "C" fn A_FatAttack2(mut actor: *mut mobj_t) {
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul(
         (*(*mo).info).speed as fixed_t,
-        *finecosine.offset(an as isize),
+        finecosine[an as isize],
     );
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
@@ -2672,7 +2672,7 @@ pub unsafe extern "C" fn A_FatAttack3(mut actor: *mut mobj_t) {
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul(
         (*(*mo).info).speed as fixed_t,
-        *finecosine.offset(an as isize),
+        finecosine[an as isize],
     );
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
     mo = P_SpawnMissile(actor, target, MT_FATSHOT);
@@ -2682,7 +2682,7 @@ pub unsafe extern "C" fn A_FatAttack3(mut actor: *mut mobj_t) {
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul(
         (*(*mo).info).speed as fixed_t,
-        *finecosine.offset(an as isize),
+        finecosine[an as isize],
     );
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
@@ -2700,7 +2700,7 @@ pub unsafe extern "C" fn A_SkullAttack(mut actor: *mut mobj_t) {
     S_StartSound(actor as *mut ::core::ffi::c_void, (*(*actor).info).attacksound);
     A_FaceTarget(actor);
     an = (*actor).angle >> ANGLETOFINESHIFT;
-    (*actor).momx = FixedMul(SKULLSPEED, *finecosine.offset(an as isize));
+    (*actor).momx = FixedMul(SKULLSPEED, finecosine[an as isize]);
     (*actor).momy = FixedMul(SKULLSPEED, finesine[an as usize]);
     dist = P_AproxDistance((*dest).x - (*actor).x, (*dest).y - (*actor).y)
         as i32;
@@ -2746,7 +2746,7 @@ pub unsafe extern "C" fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: ang
             * ((*(*actor).info).radius
                 + mobjinfo[MT_SKULL as i32 as usize].radius)
             / 2 as i32;
-    x = (*actor).x + FixedMul(prestep as fixed_t, *finecosine.offset(an as isize));
+    x = (*actor).x + FixedMul(prestep as fixed_t, finecosine[an as isize]);
     y = (*actor).y + FixedMul(prestep as fixed_t, finesine[an as usize]);
     z = ((*actor).z as i32 + 8 as i32 * FRACUNIT)
         as fixed_t;

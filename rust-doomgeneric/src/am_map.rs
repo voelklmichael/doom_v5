@@ -2660,10 +2660,10 @@ pub unsafe extern "C" fn AM_rotate(
     mut a: angle_t,
 ) {
     let mut tmpx: fixed_t = 0;
-    tmpx = FixedMul(*x, *finecosine.offset((a >> ANGLETOFINESHIFT) as isize))
+    tmpx = FixedMul(*x, finecosine[(a >> ANGLETOFINESHIFT) as isize])
         - FixedMul(*y, finesine[(a >> ANGLETOFINESHIFT) as usize]);
     *y = FixedMul(*x, finesine[(a >> ANGLETOFINESHIFT) as usize])
-        + FixedMul(*y, *finecosine.offset((a >> ANGLETOFINESHIFT) as isize));
+        + FixedMul(*y, finecosine[(a >> ANGLETOFINESHIFT) as isize]);
     *x = tmpx;
 }
 #[no_mangle]

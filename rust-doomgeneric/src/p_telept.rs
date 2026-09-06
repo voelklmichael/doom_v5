@@ -1504,7 +1504,7 @@ pub unsafe fn EV_Teleport(
                             );
                             an = ((*m).angle >> ANGLETOFINESHIFT) as u32;
                             fog = P_SpawnMobj(
-                                (*m).x + 20 as fixed_t * *finecosine.offset(an as isize),
+                                (*m).x + 20 as fixed_t * finecosine[an as isize],
                                 (*m).y + 20 as fixed_t * finesine[an as usize],
                                 (*thing).z,
                                 MT_TFOG,

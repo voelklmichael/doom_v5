@@ -1366,7 +1366,7 @@ pub unsafe extern "C" fn P_Thrust(
     mut move_0: fixed_t,
 ) {
     angle >>= ANGLETOFINESHIFT;
-    (*(*player).mo).momx += FixedMul(move_0, *finecosine.offset(angle as isize));
+    (*(*player).mo).momx += FixedMul(move_0, finecosine[angle as isize]);
     (*(*player).mo).momy += FixedMul(move_0, finesine[angle as usize]);
 }
 #[no_mangle]

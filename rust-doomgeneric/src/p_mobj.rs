@@ -2478,7 +2478,7 @@ pub unsafe fn P_SpawnMissile(
     an >>= ANGLETOFINESHIFT;
     (*th).momx = FixedMul(
         (*(*th).info).speed as fixed_t,
-        *finecosine.offset(an as isize),
+        finecosine[an as isize],
     );
     (*th).momy = FixedMul((*(*th).info).speed as fixed_t, finesine[an as usize]);
     dist = P_AproxDistance((*dest).x - (*source).x, (*dest).y - (*source).y)
@@ -2538,7 +2538,7 @@ pub unsafe fn P_SpawnPlayerMissile(
     (*th).angle = an;
     (*th).momx = FixedMul(
         (*(*th).info).speed as fixed_t,
-        *finecosine.offset((an >> ANGLETOFINESHIFT) as isize),
+        finecosine[(an >> ANGLETOFINESHIFT) as isize],
     );
     (*th).momy = FixedMul(
         (*(*th).info).speed as fixed_t,

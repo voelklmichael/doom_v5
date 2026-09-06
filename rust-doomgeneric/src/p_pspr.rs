@@ -1712,7 +1712,7 @@ pub unsafe extern "C" fn A_WeaponReady(
         (*player).attackdown = false_0;
     }
     angle = 128 as i32 * leveltime & FINEMASK;
-    (*psp).sx = FRACUNIT + FixedMul((*player).bob, *finecosine.offset(angle as isize));
+    (*psp).sx = FRACUNIT + FixedMul((*player).bob, finecosine[angle as isize]);
     angle &= FINEANGLES / 2 as i32 - 1 as i32;
     (*psp).sy = 32 as fixed_t * FRACUNIT
         + FixedMul((*player).bob, finesine[angle as usize]);

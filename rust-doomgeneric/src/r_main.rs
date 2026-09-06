@@ -1805,7 +1805,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
     i = 0 as i32;
     while i < viewwidth {
         cosadj = abs(
-            *finecosine.offset((xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize)
+            finecosine[(xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize]
                 as i32,
         ) as fixed_t;
         distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
@@ -1876,7 +1876,7 @@ pub unsafe extern "C" fn R_SetupFrame(mut player: *mut player_t) {
     extralight = (*player).extralight;
     viewz = (*player).viewz;
     viewsin = finesine[(viewangle >> ANGLETOFINESHIFT) as usize];
-    viewcos = *finecosine.offset((viewangle >> ANGLETOFINESHIFT) as isize);
+    viewcos = finecosine[(viewangle >> ANGLETOFINESHIFT) as isize];
     sscount = 0 as i32;
     if (*player).fixedcolormap != 0 {
         fixedcolormap = colormaps
