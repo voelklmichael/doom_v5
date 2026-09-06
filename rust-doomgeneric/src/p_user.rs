@@ -8,10 +8,10 @@ use crate::src::info::states;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::p_tick::leveltime;
 use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
     fn P_PlayerInSpecialSector(player: *mut player_t);
     static mut gamemode: GameMode_t;
 }

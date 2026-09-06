@@ -4120,7 +4120,6 @@ pub static mut finetangent: [i32; 4096] = [
     56965752 as i32,
     170910304 as i32,
 ];
-#[no_mangle]
 pub static mut finesine: [i32; 10240] = [
     25 as i32,
     75 as i32,

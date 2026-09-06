@@ -43,6 +43,7 @@ use crate::src::r_draw::viewheight;
 use crate::src::r_sky::skyflatnum;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -57,7 +58,6 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
