@@ -22,7 +22,6 @@ use crate::src::r_things::numsprites;
 use crate::src::r_things::sprites;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use crate::src::w_wad::lumpinfo;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::w_wad::W_LumpLength;
 use crate::src::w_wad::W_LumpNameHash;
@@ -738,7 +737,7 @@ pub unsafe fn R_PrecacheLevel() {
     while i < numflats {
         if *flatpresent.offset(i as isize) != 0 {
             lump = firstflat + i;
-            flatmemory += (*lumpinfo.offset(lump as isize)).size;
+            flatmemory += (*unsafe { game_state() }.w_wad.lumpinfo.offset(lump as isize)).size;
             W_CacheLumpNum(lump, PU_CACHE as i32);
         }
         i += 1;
@@ -777,7 +776,8 @@ pub unsafe fn R_PrecacheLevel() {
             j = 0 as i32;
             while j < (*texture).patchcount as i32 {
                 lump = (*(&raw mut (*texture).patches as *mut texpatch_t).offset(j as isize)).patch;
-                texturememory += (*lumpinfo.offset(lump as isize)).size;
+                texturememory +=
+                    (*unsafe { game_state() }.w_wad.lumpinfo.offset(lump as isize)).size;
                 W_CacheLumpNum(lump, PU_CACHE as i32);
                 j += 1;
             }
@@ -819,7 +819,8 @@ pub unsafe fn R_PrecacheLevel() {
                 k = 0 as i32;
                 while k < 8 as i32 {
                     lump = firstspritelump + (*sf).lump[k as usize] as i32;
-                    spritememory += (*lumpinfo.offset(lump as isize)).size;
+                    spritememory +=
+                        (*unsafe { game_state() }.w_wad.lumpinfo.offset(lump as isize)).size;
                     W_CacheLumpNum(lump, PU_CACHE as i32);
                     k += 1;
                 }

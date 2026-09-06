@@ -141,8 +141,6 @@ use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::v_video::V_RestoreBuffer;
 use crate::src::w_file::wad_file_t;
 use crate::src::w_main::W_ParseCommandLine;
-use crate::src::w_wad::lumpinfo;
-use crate::src::w_wad::numlumps;
 use crate::src::w_wad::W_AddFile;
 use crate::src::w_wad::W_CheckCorrectIWAD;
 use crate::src::w_wad::W_GenerateHashTable;
@@ -737,9 +735,10 @@ pub unsafe fn D_IdentifyVersion() {
     if unsafe { game_state() }.doomstat.gamemission as u32 == none as i32 as u32 {
         let mut i: u32 = 0;
         i = 0 as u32;
-        while i < numlumps {
+        while i < unsafe { game_state() }.w_wad.numlumps {
             if strncasecmp(
-                &raw mut (*lumpinfo.offset(i as isize)).name as *mut ::core::ffi::c_char,
+                &raw mut (*unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize)).name
+                    as *mut ::core::ffi::c_char,
                 b"MAP01\0" as *const u8 as *const ::core::ffi::c_char,
                 8 as size_t,
             ) == 0
@@ -747,7 +746,8 @@ pub unsafe fn D_IdentifyVersion() {
                 unsafe { game_state() }.doomstat.gamemission = doom2;
                 break;
             } else if strncasecmp(
-                &raw mut (*lumpinfo.offset(i as isize)).name as *mut ::core::ffi::c_char,
+                &raw mut (*unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize)).name
+                    as *mut ::core::ffi::c_char,
                 b"E1M1\0" as *const u8 as *const ::core::ffi::c_char,
                 8 as size_t,
             ) == 0
@@ -1180,8 +1180,13 @@ pub unsafe fn D_DoomMain() {
         if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
-                &raw mut (*lumpinfo.offset(numlumps.wrapping_sub(1 as u32) as isize)).name
-                    as *mut ::core::ffi::c_char,
+                &raw mut (*unsafe { game_state() }.w_wad.lumpinfo.offset(
+                    unsafe { game_state() }
+                        .w_wad
+                        .numlumps
+                        .wrapping_sub(1 as u32) as isize,
+                ))
+                .name as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         } else {

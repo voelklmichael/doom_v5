@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::sha1::{
     sha1_context_s, sha1_context_t, SHA1_Final, SHA1_Init, SHA1_UpdateInt32, SHA1_UpdateString,
@@ -5,9 +6,7 @@ use crate::src::sha1::{
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::w_file::wad_file_t;
-use crate::src::w_wad::lumpinfo;
 use crate::src::w_wad::lumpinfo_t;
-use crate::src::w_wad::numlumps;
 extern "C" {
     fn realloc(__ptr: *mut ::core::ffi::c_void, __size: size_t) -> *mut ::core::ffi::c_void;
 }
@@ -77,11 +76,11 @@ pub unsafe fn W_Checksum(state: &mut WChecksumState, mut digest: *mut byte) {
     SHA1_Init(&raw mut sha1_context);
     state.num_open_wadfiles = 0 as i32;
     i = 0 as u32;
-    while i < numlumps {
+    while i < unsafe { game_state() }.w_wad.numlumps {
         ChecksumAddLump(
             state,
             &raw mut sha1_context,
-            lumpinfo.offset(i as isize) as *mut lumpinfo_t,
+            unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize) as *mut lumpinfo_t,
         );
         i = i.wrapping_add(1);
     }
