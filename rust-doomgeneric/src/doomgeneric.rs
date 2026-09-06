@@ -1,9 +1,9 @@
 use crate::src::m_argv::{myargv, M_FindResponseFile};
 use crate::src::d_main::D_DoomMain;
+use libc::malloc;
 
 
 extern "C" {
-    fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn DG_Init();
 }
 pub type size_t = usize;

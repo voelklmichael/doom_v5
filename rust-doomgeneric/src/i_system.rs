@@ -2,12 +2,10 @@ use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::m_misc::M_snprintf;
 use libc::{atoi, strcasecmp, strlen};
+use libc::{exit, free, malloc, printf, puts};
 
 extern "C" {
     pub type FILE;
-    fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn free(__ptr: *mut ::core::ffi::c_void);
-    fn exit(__status: i32) -> !;
     fn system(__command: *const ::core::ffi::c_char) -> i32;
     static mut stderr: *mut FILE;
     fn fflush(__stream: *mut FILE) -> i32;
@@ -16,14 +14,12 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn vfprintf(
         __s: *mut FILE,
         __format: *const ::core::ffi::c_char,
         __arg: ::core::ffi::VaList,
     ) -> i32;
     fn putchar(__c: i32) -> i32;
-    fn puts(__s: *const ::core::ffi::c_char) -> i32;
     fn strchr(
         __s: *const ::core::ffi::c_char,
         __c: i32,

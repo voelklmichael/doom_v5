@@ -14,12 +14,11 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{memcpy, memset};
 use libc::{strcasecmp, strlen, strncasecmp, strncmp, strncpy, toupper};
+use libc::{free, printf};
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
-    fn free(__ptr: *mut ::core::ffi::c_void);
 }
 pub type __uint8_t = u8;
 pub type __int32_t = i32;

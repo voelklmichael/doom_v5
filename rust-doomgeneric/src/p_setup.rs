@@ -43,17 +43,12 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_LEVEL, PU_PURGELEVEL, PU_STATIC};
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use libc::memset;
+use libc::snprintf;
 
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
         __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-    fn snprintf(
-        __s: *mut ::core::ffi::c_char,
-        __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;

@@ -146,6 +146,7 @@ use crate::src::d_ticcmd::{BTS_PAUSE, BTS_SAVEGAME, BTS_SAVEMASK, BTS_SAVESHIFT,
 use crate::src::d_player::pw_strength;
 use libc::{memcpy, memset};
 use libc::{atoi, strlen};
+use libc::printf;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -159,7 +160,6 @@ extern "C" {
         __filename: *const ::core::ffi::c_char,
         __modes: *const ::core::ffi::c_char,
     ) -> *mut FILE;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn ftell(__stream: *mut FILE) -> i64;
 }
 pub type size_t = usize;

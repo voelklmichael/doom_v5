@@ -45,15 +45,8 @@ use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::sounds::{mus_e1m1, mus_runnin};
 use crate::src::d_player::{pw_invulnerability, pw_ironfeet, pw_strength};
 use crate::src::d_player::{CF_GODMODE, CF_NOCLIP};
+use libc::snprintf;
 
-extern "C" {
-    fn snprintf(
-        __s: *mut ::core::ffi::c_char,
-        __maxlen: size_t,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

@@ -28,9 +28,9 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{memcpy, memset};
 use libc::strncasecmp;
+use libc::printf;
 
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn P_MobjThinker(mobj: *mut mobj_t);
 }
 pub type size_t = usize;

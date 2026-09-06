@@ -1,6 +1,7 @@
 use crate::src::i_system::FILE;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_ZoneBase;
+use libc::printf;
 
 extern "C" {
     fn fprintf(
@@ -8,7 +9,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

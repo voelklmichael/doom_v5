@@ -33,9 +33,9 @@ use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
+use libc::printf;
 
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn D_ProcessEvents();
     fn M_Ticker();
     fn G_CheckDemoStatus() -> boolean;

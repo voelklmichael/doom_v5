@@ -21,16 +21,8 @@ use crate::src::z_zone::PU_STATIC;
 use crate::src::sounds::{sfx_barexp, sfx_pistol, sfx_pldeth, sfx_sgcock, sfx_slop};
 use crate::src::sounds::{mus_dm2int, mus_inter};
 use crate::src::d_ticcmd::{BT_ATTACK, BT_USE};
+use libc::{printf, snprintf};
 
-extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn snprintf(
-        __s: *mut ::core::ffi::c_char,
-        __maxlen: size_t,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
