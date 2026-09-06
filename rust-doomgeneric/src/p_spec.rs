@@ -52,6 +52,8 @@ use crate::src::r_data::R_TextureNumForName;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::sfx_swtchn;
+use crate::src::d_player::pw_ironfeet;
+use crate::src::d_player::CF_GODMODE;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -84,14 +86,6 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed = u32;
-pub const NUMPOWERS: C2RustUnnamed = 6;
-pub const pw_infrared: C2RustUnnamed = 5;
-pub const pw_allmap: C2RustUnnamed = 4;
-pub const pw_ironfeet: C2RustUnnamed = 3;
-pub const pw_invisibility: C2RustUnnamed = 2;
-pub const pw_strength: C2RustUnnamed = 1;
-pub const pw_invulnerability: C2RustUnnamed = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
@@ -1348,10 +1342,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_0 = u32;
-pub const CF_NOMOMENTUM: C2RustUnnamed_0 = 4;
-pub const CF_GODMODE: C2RustUnnamed_0 = 2;
-pub const CF_NOCLIP: C2RustUnnamed_0 = 1;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {

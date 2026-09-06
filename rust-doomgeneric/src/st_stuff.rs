@@ -43,6 +43,8 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::sounds::{mus_e1m1, mus_runnin};
+use crate::src::d_player::{pw_invulnerability, pw_ironfeet, pw_strength};
+use crate::src::d_player::{CF_GODMODE, CF_NOCLIP};
 
 extern "C" {
     fn snprintf(
@@ -129,14 +131,6 @@ pub const am_misl: ammotype_t = 3;
 pub const am_cell: ammotype_t = 2;
 pub const am_shell: ammotype_t = 1;
 pub const am_clip: ammotype_t = 0;
-pub type C2RustUnnamed_1 = u32;
-pub const NUMPOWERS: C2RustUnnamed_1 = 6;
-pub const pw_infrared: C2RustUnnamed_1 = 5;
-pub const pw_allmap: C2RustUnnamed_1 = 4;
-pub const pw_ironfeet: C2RustUnnamed_1 = 3;
-pub const pw_invisibility: C2RustUnnamed_1 = 2;
-pub const pw_strength: C2RustUnnamed_1 = 1;
-pub const pw_invulnerability: C2RustUnnamed_1 = 0;
 pub type fixed_t = i32;
 pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
@@ -1393,8 +1387,6 @@ pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
 pub type think_t = actionf_t;
 pub type angle_t = u32;
-pub const CF_NOCLIP: C2RustUnnamed_2 = 1;
-pub const CF_GODMODE: C2RustUnnamed_2 = 2;
 pub type st_stateenum_t = u32;
 pub const FirstPersonState: st_stateenum_t = 1;
 pub const AutomapState: st_stateenum_t = 0;
@@ -1405,8 +1397,6 @@ pub const StartChatState: st_chatstateenum_t = 0;
 pub type load_callback_t = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
 >;
-pub type C2RustUnnamed_2 = u32;
-pub const CF_NOMOMENTUM: C2RustUnnamed_2 = 4;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 pub const SCREENWIDTH: i32 = 320 as i32;

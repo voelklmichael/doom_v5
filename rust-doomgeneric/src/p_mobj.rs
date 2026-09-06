@@ -45,6 +45,7 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVEL;
 use crate::src::sounds::{sfx_itmbk, sfx_oof, sfx_telept};
+use crate::src::d_player::CF_NOMOMENTUM;
 
 extern "C" {
     fn memcpy(
@@ -1568,10 +1569,6 @@ pub struct degenmobj_t {
 }
 pub type line_t = line_s;
 pub type subsector_t = subsector_s;
-pub type C2RustUnnamed_2 = u32;
-pub const CF_NOMOMENTUM: C2RustUnnamed_2 = 4;
-pub const CF_GODMODE: C2RustUnnamed_2 = 2;
-pub const CF_NOCLIP: C2RustUnnamed_2 = 1;
 pub const INT_MAX: i32 = __INT_MAX__;
 pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<

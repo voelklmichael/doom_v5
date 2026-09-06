@@ -143,6 +143,7 @@ use crate::src::z_zone::PU_STATIC;
 use crate::src::p_mobj::MF_SHADOW;
 use crate::src::sounds::sfx_telept;
 use crate::src::d_ticcmd::{BTS_PAUSE, BTS_SAVEGAME, BTS_SAVEMASK, BTS_SAVESHIFT, BT_ATTACK, BT_CHANGE, BT_SPECIAL, BT_SPECIALMASK, BT_USE, BT_WEAPONSHIFT};
+use crate::src::d_player::pw_strength;
 
 extern "C" {
     fn memcpy(
@@ -250,14 +251,6 @@ pub const am_misl: C2RustUnnamed = 3;
 pub const am_cell: C2RustUnnamed = 2;
 pub const am_shell: C2RustUnnamed = 1;
 pub const am_clip: C2RustUnnamed = 0;
-pub type C2RustUnnamed_0 = u32;
-pub const NUMPOWERS: C2RustUnnamed_0 = 6;
-pub const pw_infrared: C2RustUnnamed_0 = 5;
-pub const pw_allmap: C2RustUnnamed_0 = 4;
-pub const pw_ironfeet: C2RustUnnamed_0 = 3;
-pub const pw_invisibility: C2RustUnnamed_0 = 2;
-pub const pw_strength: C2RustUnnamed_0 = 1;
-pub const pw_invulnerability: C2RustUnnamed_0 = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
