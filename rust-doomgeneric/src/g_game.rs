@@ -13,7 +13,7 @@ use crate::src::w_wad::{
 use crate::src::d_loop::singletics;
 use crate::src::d_loop::ticdup;
 use crate::src::m_random::MRandomState;
-use crate::src::d_net::netcmds;
+use crate::src::d_net::DNetState;
 use crate::src::m_controls::key_right;
 use crate::src::m_controls::key_left;
 use crate::src::m_controls::key_up;
@@ -998,7 +998,7 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
     }
     return false;
 }
-pub unsafe fn G_Ticker(state: &mut MRandomState) {
+pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
     let mut i: i32 = 0;
     let mut buf: i32 = 0;
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
@@ -1059,7 +1059,7 @@ pub unsafe fn G_Ticker(state: &mut MRandomState) {
             cmd = &raw mut (*(&raw mut players as *mut player_t).offset(i as isize)).cmd;
             memcpy(
                 cmd as *mut ::core::ffi::c_void,
-                netcmds.offset(i as isize) as *mut ticcmd_t
+                d_net_state.netcmds.offset(i as isize) as *mut ticcmd_t
                     as *const ::core::ffi::c_void,
                 ::core::mem::size_of::<ticcmd_t>() as size_t,
             );
