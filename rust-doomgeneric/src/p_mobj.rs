@@ -578,8 +578,6 @@ pub const MAXMOVE: i32 = 30 * FRACUNIT;
 pub const ONFLOORZ: i32 = INT_MIN;
 pub const ONCEILINGZ: i32 = INT_MAX;
 pub const ITEMQUESIZE: i32 = 128;
-#[no_mangle]
-pub static mut test: i32 = 0;
 pub unsafe fn P_SetMobjState(
     mut mobj: *mut mobj_t,
     mut state: statenum_t,
@@ -590,7 +588,7 @@ pub unsafe fn P_SetMobjState(
             == S_NULL as i32 as u32
         {
             (*mobj).state = ::core::ptr::null_mut::<state_t>();
-            P_RemoveMobj(mobj);
+            P_RemoveMobj(unsafe { &mut game_state().p_mobj }, mobj);
             return false;
         }
         st = (&raw mut states as *mut state_t).offset(state as isize) as *mut state_t;
@@ -624,7 +622,7 @@ pub unsafe fn P_ExplodeMissile(mut mo: *mut mobj_t) {
 }
 pub const STOPSPEED: i32 = 0x1000;
 pub const FRICTION: i32 = 0xe800;
-pub unsafe fn P_XYMovement(mut mo: *mut mobj_t) {
+pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
     let mut ptryx: fixed_t = 0;
     let mut ptryy: fixed_t = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
@@ -677,7 +675,7 @@ pub unsafe fn P_XYMovement(mut mo: *mut mobj_t) {
                     && (*(*ceilingline).backsector).ceilingpic as i32
                         == skyflatnum
                 {
-                    P_RemoveMobj(mo);
+                    P_RemoveMobj(state, mo);
                     return;
                 }
                 P_ExplodeMissile(mo);
@@ -822,7 +820,7 @@ pub unsafe fn P_ZMovement(mut mo: *mut mobj_t) {
         }
     }
 }
-pub unsafe fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
+pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
@@ -858,13 +856,13 @@ pub unsafe fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
         (*mo).flags |= MF_AMBUSH as i32;
     }
     (*mo).reactiontime = 18 as i32;
-    P_RemoveMobj(mobj);
+    P_RemoveMobj(state, mobj);
 }
 pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
     if (*mobj).momx != 0 || (*mobj).momy != 0
         || (*mobj).flags & MF_SKULLFLY as i32 != 0
     {
-        P_XYMovement(mobj);
+        P_XYMovement(unsafe { &mut game_state().p_mobj }, mobj);
         if matches!((*mobj).thinker.function, ThinkerFn::Removed) {
             return;
         }
@@ -899,7 +897,7 @@ pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
         if P_Random(unsafe { &mut game_state().m_random }) > 4 as i32 {
             return;
         }
-        P_NightmareRespawn(mobj);
+        P_NightmareRespawn(unsafe { &mut game_state().p_mobj }, mobj);
     };
 }
 pub unsafe fn P_SpawnMobj(
@@ -956,19 +954,36 @@ pub unsafe fn P_SpawnMobj(
     P_AddThinker(&raw mut (*mobj).thinker);
     return mobj;
 }
-#[no_mangle]
-pub static mut itemrespawnque: [mapthing_t; 128] = [mapthing_t {
-    x: 0,
-    y: 0,
-    angle: 0,
-    type_0: 0,
-    options: 0,
-}; 128];
-#[no_mangle]
-pub static mut itemrespawntime: [i32; 128] = [0; 128];
-pub static mut iquehead: i32 = 0;
-pub static mut iquetail: i32 = 0;
-pub unsafe fn P_RemoveMobj(mut mobj: *mut mobj_t) {
+pub struct PMobjState {
+    // Genuinely unused anywhere in the codebase (confirmed by full-codebase
+    // grep) -- a vestigial c2rust-transpiled global. Kept, not deleted:
+    // dead-code removal is a different track's mandate, not this one's.
+    pub test: i32,
+    pub itemrespawnque: [mapthing_t; 128],
+    pub itemrespawntime: [i32; 128],
+    pub iquehead: i32,
+    pub iquetail: i32,
+}
+
+impl PMobjState {
+    pub const fn new() -> Self {
+        PMobjState {
+            test: 0,
+            itemrespawnque: [mapthing_t {
+                x: 0,
+                y: 0,
+                angle: 0,
+                type_0: 0,
+                options: 0,
+            }; 128],
+            itemrespawntime: [0; 128],
+            iquehead: 0,
+            iquetail: 0,
+        }
+    }
+}
+
+pub unsafe fn P_RemoveMobj(state: &mut PMobjState, mut mobj: *mut mobj_t) {
     if (*mobj).flags & MF_SPECIAL as i32 != 0
         && (*mobj).flags & MF_DROPPED as i32 == 0
         && (*mobj).type_0 as u32
@@ -976,12 +991,12 @@ pub unsafe fn P_RemoveMobj(mut mobj: *mut mobj_t) {
         && (*mobj).type_0 as u32
             != MT_INS as i32 as u32
     {
-        itemrespawnque[iquehead as usize] = (*mobj).spawnpoint;
-        itemrespawntime[iquehead as usize] = leveltime;
-        iquehead = iquehead + 1 as i32
+        state.itemrespawnque[state.iquehead as usize] = (*mobj).spawnpoint;
+        state.itemrespawntime[state.iquehead as usize] = leveltime;
+        state.iquehead = state.iquehead + 1 as i32
             & ITEMQUESIZE - 1 as i32;
-        if iquehead == iquetail {
-            iquetail = iquetail + 1 as i32
+        if state.iquehead == state.iquetail {
+            state.iquetail = state.iquetail + 1 as i32
                 & ITEMQUESIZE - 1 as i32;
         }
     }
@@ -989,7 +1004,7 @@ pub unsafe fn P_RemoveMobj(mut mobj: *mut mobj_t) {
     S_StopSound(mobj);
     P_RemoveThinker(mobj as *mut thinker_t);
 }
-pub unsafe fn P_RespawnSpecials() {
+pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
@@ -1000,15 +1015,15 @@ pub unsafe fn P_RespawnSpecials() {
     if deathmatch != 2 as i32 {
         return;
     }
-    if iquehead == iquetail {
+    if state.iquehead == state.iquetail {
         return;
     }
-    if leveltime - itemrespawntime[iquetail as usize]
+    if leveltime - state.itemrespawntime[state.iquetail as usize]
         < 30 as i32 * TICRATE
     {
         return;
     }
-    mthing = (&raw mut itemrespawnque as *mut mapthing_t).offset(iquetail as isize)
+    mthing = (&raw mut state.itemrespawnque as *mut mapthing_t).offset(state.iquetail as isize)
         as *mut mapthing_t;
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
@@ -1031,7 +1046,7 @@ pub unsafe fn P_RespawnSpecials() {
     (*mo).spawnpoint = *mthing;
     (*mo).angle = (ANG45
         * ((*mthing).angle as i32 / 45 as i32)) as angle_t;
-    iquetail = iquetail + 1 as i32
+    state.iquetail = state.iquetail + 1 as i32
         & ITEMQUESIZE - 1 as i32;
 }
 pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {

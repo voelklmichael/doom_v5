@@ -9,8 +9,6 @@ use crate::src::g_game::G_DeathMatchSpawnPlayer;
 use crate::src::i_system::I_GetMemoryValue;
 use crate::src::info::sprnames;
 use crate::src::r_data::R_PrecacheLevel;
-use crate::src::p_mobj::iquehead;
-use crate::src::p_mobj::iquetail;
 use crate::src::p_spec::P_SpawnSpecials;
 use crate::src::p_switch::P_InitSwitchList;
 use crate::src::g_game::wminfo;
@@ -1004,9 +1002,9 @@ pub unsafe fn P_SetupLevel(
             i += 1;
         }
     }
-    iquetail = 0 as i32;
-    iquehead = iquetail;
     let gs = unsafe { game_state() };
+    gs.p_mobj.iquetail = 0 as i32;
+    gs.p_mobj.iquehead = gs.p_mobj.iquetail;
     P_SpawnSpecials(&mut gs.p_switch, &mut gs.p_plats, &mut gs.p_ceilng);
     if precache {
         R_PrecacheLevel();

@@ -1637,7 +1637,7 @@ pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
         P_SetMobjState(newmobj, (*(*newmobj).info).seestate as statenum_t);
     }
     P_TeleportMove(newmobj, (*newmobj).x, (*newmobj).y);
-    P_RemoveMobj(mo);
+    P_RemoveMobj(unsafe { &mut game_state().p_mobj }, mo);
 }
 pub unsafe fn A_PlayerScream(mut mo: *mut mobj_t) {
     let mut sound: i32 = sfx_pldeth as i32;

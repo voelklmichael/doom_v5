@@ -1036,7 +1036,7 @@ pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
         return true_0 as boolean;
     }
     if (*thing).flags & MF_DROPPED as i32 != 0 {
-        P_RemoveMobj(thing);
+        P_RemoveMobj(unsafe { &mut game_state().p_mobj }, thing);
         return true_0 as boolean;
     }
     if (*thing).flags & MF_SHOOTABLE as i32 == 0 {

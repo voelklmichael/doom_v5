@@ -666,7 +666,7 @@ pub unsafe fn P_TouchSpecialThing(
     if (*special).flags & MF_COUNTITEM as i32 != 0 {
         (*player).itemcount += 1;
     }
-    P_RemoveMobj(special);
+    P_RemoveMobj(unsafe { &mut game_state().p_mobj }, special);
     (*player).bonuscount += BONUSADD;
     if player
         == (&raw mut players as *mut player_t).offset(consoleplayer as isize)
