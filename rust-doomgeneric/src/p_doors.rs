@@ -1,4 +1,3 @@
-use crate::src::i_system::FILE;
 use crate::src::p_spec::{plat_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
@@ -14,13 +13,8 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_bdcls, sfx_bdopn, sfx_dorcls, sfx_doropn, sfx_oof};
+use crate::src::i_system::{fprintf, stderr};
 extern "C" {
-    static mut stderr: *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn T_PlatRaise(plat: *mut plat_t);
 }
 pub type size_t = usize;

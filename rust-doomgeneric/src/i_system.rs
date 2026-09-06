@@ -7,18 +7,41 @@ use libc::{exit, free, malloc, printf, puts};
 extern "C" {
     pub type FILE;
     fn system(__command: *const ::core::ffi::c_char) -> i32;
-    static mut stderr: *mut FILE;
-    fn fflush(__stream: *mut FILE) -> i32;
-    fn fprintf(
+    pub static mut stderr: *mut FILE;
+    pub fn fflush(__stream: *mut FILE) -> i32;
+    pub fn fprintf(
         __stream: *mut FILE,
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn vfprintf(
+    pub fn vfprintf(
         __s: *mut FILE,
         __format: *const ::core::ffi::c_char,
         __arg: ::core::ffi::VaList,
     ) -> i32;
+    pub fn fopen(
+        __filename: *const ::core::ffi::c_char,
+        __modes: *const ::core::ffi::c_char,
+    ) -> *mut FILE;
+    pub fn fclose(__stream: *mut FILE) -> i32;
+    pub fn fread(
+        __ptr: *mut ::core::ffi::c_void,
+        __size: size_t,
+        __n: size_t,
+        __stream: *mut FILE,
+    ) -> u64;
+    pub fn fwrite(
+        __ptr: *const ::core::ffi::c_void,
+        __size: size_t,
+        __n: size_t,
+        __s: *mut FILE,
+    ) -> u64;
+    pub fn fseek(
+        __stream: *mut FILE,
+        __off: i64,
+        __whence: i32,
+    ) -> i32;
+    pub fn ftell(__stream: *mut FILE) -> i64;
     fn putchar(__c: i32) -> i32;
     fn strchr(
         __s: *const ::core::ffi::c_char,

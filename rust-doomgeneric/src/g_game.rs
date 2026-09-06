@@ -147,6 +147,7 @@ use crate::src::d_player::pw_strength;
 use libc::{memcpy, memset};
 use libc::{atoi, strlen};
 use libc::printf;
+use crate::src::i_system::{fclose, fopen, ftell};
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -154,12 +155,6 @@ extern "C" {
         __old: *const ::core::ffi::c_char,
         __new: *const ::core::ffi::c_char,
     ) -> i32;
-    fn fclose(__stream: *mut FILE) -> i32;
-    fn fopen(
-        __filename: *const ::core::ffi::c_char,
-        __modes: *const ::core::ffi::c_char,
-    ) -> *mut FILE;
-    fn ftell(__stream: *mut FILE) -> i64;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

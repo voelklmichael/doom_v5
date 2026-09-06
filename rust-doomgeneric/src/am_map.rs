@@ -1,4 +1,3 @@
-use crate::src::i_system::FILE;
 use crate::src::hu_lib::patch_t;
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::d_event::event_t;
@@ -49,15 +48,8 @@ use crate::src::z_zone::PU_STATIC;
 use crate::src::d_player::{pw_allmap, pw_invisibility};
 use libc::memset;
 use libc::snprintf;
+use crate::src::i_system::{fprintf, stderr};
 
-extern "C" {
-    static mut stderr: *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

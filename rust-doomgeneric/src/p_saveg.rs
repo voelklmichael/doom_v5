@@ -41,27 +41,9 @@ use crate::src::d_player::NUMPSPRITES;
 use libc::memset;
 use libc::{strcmp, strlen};
 use libc::{malloc, snprintf};
+use crate::src::i_system::{fprintf, fread, ftell, fwrite, stderr};
 
 extern "C" {
-    static mut stderr: *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-    fn fread(
-        __ptr: *mut ::core::ffi::c_void,
-        __size: size_t,
-        __n: size_t,
-        __stream: *mut FILE,
-    ) -> u64;
-    fn fwrite(
-        __ptr: *const ::core::ffi::c_void,
-        __size: size_t,
-        __n: size_t,
-        __s: *mut FILE,
-    ) -> u64;
-    fn ftell(__stream: *mut FILE) -> i64;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn T_LightFlash(flash: *mut lightflash_t);
     fn T_StrobeFlash(flash: *mut strobe_t);
