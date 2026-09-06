@@ -21,9 +21,6 @@ use crate::src::p_mobj::statenum_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::doomdef::boolean;
 
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

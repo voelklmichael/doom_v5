@@ -1,9 +1,9 @@
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
+use crate::src::stdint_types::size_t;
 use libc::memcpy;
 use libc::printf;
-pub type size_t = usize;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _MEMFILE {

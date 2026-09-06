@@ -2,13 +2,13 @@ use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_misc::M_MakeDirectory;
 use crate::src::m_misc::M_StringJoin;
+use crate::src::stdint_types::size_t;
 use libc::{strcmp, strdup};
 use libc::{malloc, printf, sscanf};
 
 extern "C" {
     fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
 }
-pub type size_t = usize;
 pub type default_type_t = u32;
 pub const DEFAULT_KEY: default_type_t = 4;
 pub const DEFAULT_FLOAT: default_type_t = 3;

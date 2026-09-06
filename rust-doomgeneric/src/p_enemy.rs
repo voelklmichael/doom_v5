@@ -69,9 +69,6 @@ extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn A_ReFire(player: *mut player_t, psp: *mut pspdef_t);
 }
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

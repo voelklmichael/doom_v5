@@ -28,9 +28,6 @@ use crate::src::p_floor::{build8, turbo16};
 use crate::src::p_ceilng::{crushAndRaise, lowerToFloor};
 
 
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

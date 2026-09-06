@@ -10,13 +10,11 @@ use crate::src::d_ticcmd::BT_SPECIAL;
 use crate::src::m_fixed::fixed_t;
 use crate::src::sha1::sha1_digest_t;
 use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
 use libc::printf;
 
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
 #[repr(C)]

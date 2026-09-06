@@ -1,3 +1,4 @@
+use crate::src::stdint_types::byte;
 pub type C2RustUnnamed = u32;
 pub const BTS_SAVESHIFT: C2RustUnnamed = 2;
 pub const BTS_SAVEMASK: C2RustUnnamed = 28;
@@ -10,7 +11,6 @@ pub const BT_SPECIALMASK: C2RustUnnamed = 3;
 pub const BT_SPECIAL: C2RustUnnamed = 128;
 pub const BT_USE: C2RustUnnamed = 2;
 pub const BT_ATTACK: C2RustUnnamed = 1;
-pub type byte = u8;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
