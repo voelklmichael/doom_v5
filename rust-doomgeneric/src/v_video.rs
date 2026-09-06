@@ -635,7 +635,6 @@ pub unsafe fn V_DrawRawScreen(mut raw: *mut byte) {
         (SCREENWIDTH * SCREENHEIGHT) as size_t,
     );
 }
-pub unsafe fn V_Init() {}
 pub unsafe fn V_UseBuffer(mut buffer: *mut byte) {
     dest_screen = buffer;
 }

@@ -34,7 +34,6 @@ pub mod g_game;
 pub mod hu_lib;
 pub mod hu_stuff;
 pub mod i_cdmus;
-pub mod i_endoom;
 pub mod i_input;
 pub mod i_joystick;
 pub mod i_scale;

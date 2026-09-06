@@ -134,7 +134,6 @@ unsafe fn InitSfxModule(mut use_sfx_prefix: bool) {
         i += 1;
     }
 }
-unsafe fn InitMusicModule() {}
 pub unsafe fn I_InitSound(mut use_sfx_prefix: bool) {
     let mut nosound: bool = false;
     let mut nosfx: bool = false;
@@ -149,9 +148,6 @@ pub unsafe fn I_InitSound(mut use_sfx_prefix: bool) {
                 || snd_musicdevice == SNDDEVICE_GUS as i32);
         if !nosfx {
             InitSfxModule(use_sfx_prefix);
-        }
-        if nomusic == 0 {
-            InitMusicModule();
         }
     }
 }
@@ -251,7 +247,6 @@ pub unsafe fn I_InitMusic() {
         (*music_module).Init.expect("non-null function pointer")();
     }
 }
-pub unsafe fn I_ShutdownMusic() {}
 pub unsafe fn I_SetMusicVolume(mut volume: i32) {
     if !music_module.is_null() {
         (*music_module).SetMusicVolume.expect("non-null function pointer")(volume);

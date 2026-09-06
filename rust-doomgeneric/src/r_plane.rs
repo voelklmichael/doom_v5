@@ -123,7 +123,6 @@ pub static mut cacheddistance: [fixed_t; 200] = [0; 200];
 pub static mut cachedxstep: [fixed_t; 200] = [0; 200];
 #[no_mangle]
 pub static mut cachedystep: [fixed_t; 200] = [0; 200];
-pub unsafe fn R_InitPlanes() {}
 pub unsafe fn R_MapPlane(
     mut y: i32,
     mut x1: i32,

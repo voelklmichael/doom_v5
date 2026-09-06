@@ -11,7 +11,6 @@ use crate::src::r_bsp::R_ClearDrawSegs;
 use crate::src::r_bsp::R_RenderBSPNode;
 use crate::src::r_plane::yslope;
 use crate::src::r_plane::distscale;
-use crate::src::r_plane::R_InitPlanes;
 use crate::src::r_plane::R_ClearPlanes;
 use crate::src::r_things::pspritescale;
 use crate::src::r_things::R_ClearSprites;
@@ -327,7 +326,6 @@ pub unsafe fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
     dist = FixedDiv(dx, finesine[angle as usize]);
     return dist;
 }
-pub unsafe fn R_InitPointToAngle() {}
 pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
     let mut scale: fixed_t = 0;
     let mut anglea: angle_t = 0;
@@ -354,7 +352,6 @@ pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
     }
     return scale;
 }
-pub unsafe fn R_InitTables() {}
 pub unsafe fn R_InitTextureMapping() {
     let mut i: i32 = 0;
     let mut x: i32 = 0;
@@ -539,12 +536,8 @@ pub unsafe fn R_ExecuteSetViewSize() {
 pub unsafe fn R_Init() {
     R_InitData();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    R_InitPointToAngle();
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    R_InitTables();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_SetViewSize(screenblocks, detailLevel);
-    R_InitPlanes();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitLightTables();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);

@@ -7,7 +7,6 @@ use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_StringEndsWith;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_CheckNumForName};
-use crate::src::i_timer::I_InitTimer;
 use crate::src::d_loop::D_StartGameLoop;
 use crate::src::doomstat::gamedescription;
 use crate::src::g_game::nodrawers;
@@ -37,25 +36,15 @@ use crate::src::m_controls::M_BindWeaponControls;
 use crate::src::m_controls::M_BindMapControls;
 use crate::src::m_controls::M_BindMenuControls;
 use crate::src::m_controls::M_BindChatControls;
-use crate::src::m_controls::M_ApplyPlatformDefaults;
 use crate::src::m_menu::M_Responder;
 use crate::src::m_menu::M_Drawer;
-use crate::src::i_endoom::I_Endoom;
-use crate::src::i_joystick::I_InitJoystick;
 use crate::src::i_joystick::I_BindJoystickVariables;
 use crate::src::i_system::I_PrintStartupBanner;
 use crate::src::i_system::I_PrintBanner;
 use crate::src::i_system::I_PrintDivider;
-use crate::src::i_video::I_GraphicsCheckCommandLine;
-use crate::src::i_video::I_UpdateNoBlit;
 use crate::src::i_video::I_FinishUpdate;
 use crate::src::i_video::I_SetWindowTitle;
-use crate::src::i_video::I_CheckIsScreensaver;
 use crate::src::i_video::I_SetGrabMouseCallback;
-use crate::src::i_video::I_DisplayFPSDots;
-use crate::src::i_video::I_BindVideoVariables;
-use crate::src::i_video::I_StartFrame;
-use crate::src::i_video::I_EnableLoadingDisk;
 use crate::src::i_video::screenvisible;
 use crate::src::g_game::G_InitNew;
 use crate::src::g_game::G_DeferedPlayDemo;
@@ -139,7 +128,6 @@ use crate::src::p_setup::P_Init;
 use crate::src::r_main::R_Init;
 use crate::src::s_sound::S_Init;
 use crate::src::st_stuff::ST_Init;
-use crate::src::v_video::V_Init;
 use crate::src::z_zone::Z_Init;
 use crate::src::i_timer::I_GetTime;
 use crate::src::v_video::V_DrawPatch;
@@ -336,7 +324,6 @@ pub unsafe fn D_Display() {
         }
         _ => {}
     }
-    I_UpdateNoBlit();
     if gamestate as u32
         == GS_LEVEL as i32 as u32 && !automapactive
         && gametic != 0
@@ -435,7 +422,6 @@ pub unsafe fn D_Display() {
             SCREENHEIGHT,
             tics,
         ) != 0;
-        I_UpdateNoBlit();
         M_Drawer();
         I_FinishUpdate();
         if done {
@@ -445,8 +431,6 @@ pub unsafe fn D_Display() {
 }
 pub unsafe fn D_BindVariables() {
     let mut i: i32 = 0;
-    M_ApplyPlatformDefaults();
-    I_BindVideoVariables();
     I_BindJoystickVariables();
     I_BindSoundVariables();
     M_BindBaseControls();
@@ -520,7 +504,6 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
 }
 #[no_mangle]
 pub unsafe extern "C" fn doomgeneric_Tick() {
-    I_StartFrame();
     TryRunTics();
     S_UpdateSounds(players[consoleplayer as usize].mo);
     if screenvisible {
@@ -545,12 +528,10 @@ pub unsafe fn D_DoomLoop() {
     main_loop_started = true;
     TryRunTics();
     I_SetWindowTitle(gamedescription);
-    I_GraphicsCheckCommandLine();
     I_SetGrabMouseCallback(
         Some(D_GrabMouseCallback as unsafe fn() -> boolean),
     );
     I_InitGraphics();
-    I_EnableLoadingDisk();
     V_RestoreBuffer();
     R_ExecuteSetViewSize();
     D_StartGameLoop();
@@ -1205,16 +1186,11 @@ pub unsafe fn PrintGameVersion() {
     }
 }
 unsafe extern "C" fn D_Endoom() {
-    let mut endoom: *mut byte = ::core::ptr::null_mut::<byte>();
     if show_endoom == 0 || !main_loop_started || screensaver_mode
         || M_CheckParm("-testcontrols") > 0 as i32
     {
         return;
     }
-    endoom = W_CacheLumpName("ENDOOM",
-        PU_STATIC as i32,
-    ) as *mut byte;
-    I_Endoom(endoom);
     exit(0 as i32);
 }
 pub unsafe fn D_DoomMain() {
@@ -1232,7 +1208,6 @@ pub unsafe fn D_DoomMain() {
     respawnparm = M_CheckParm("-respawn") != 0;
     fastparm = M_CheckParm("-fast") != 0;
     devparm = M_CheckParm("-devparm") != 0;
-    I_DisplayFPSDots(devparm);
     if M_CheckParm("-deathmatch") != 0 {
         deathmatch = 1 as i32;
     }
@@ -1272,7 +1247,6 @@ pub unsafe fn D_DoomMain() {
             as usize] * scale / 100 as i32;
     }
     printf(b"V_Init: allocate screens.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    V_Init();
     printf(
         b"M_LoadDefaults: Load system defaults.\n\0" as *const u8
             as *const ::core::ffi::c_char,
@@ -1504,9 +1478,6 @@ pub unsafe fn D_DoomMain() {
         b"I_Init: Setting up machine state.\n\0" as *const u8
             as *const ::core::ffi::c_char,
     );
-    I_CheckIsScreensaver();
-    I_InitTimer();
-    I_InitJoystick();
     I_InitSound(true);
     I_InitMusic();
     D_ConnectNetGame();

@@ -37,7 +37,6 @@ pub unsafe fn P_AddThinker(mut thinker: *mut thinker_t) {
 pub unsafe fn P_RemoveThinker(mut thinker: *mut thinker_t) {
     (*thinker).function = ThinkerFn::Removed;
 }
-pub unsafe fn P_AllocateThinker(mut thinker: *mut thinker_t) {}
 pub unsafe fn P_RunThinkers() {
     let mut currentthinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     currentthinker = thinkercap.next as *mut thinker_t;

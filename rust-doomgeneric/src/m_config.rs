@@ -1800,7 +1800,6 @@ static mut scantokey: [i32; 128] = [
     KEY_PRTSCR,
     0 as i32,
 ];
-unsafe fn SaveDefaultCollection(mut collection: *mut default_collection_t) {}
 unsafe fn ParseIntParameter(
     mut strparm: *mut ::core::ffi::c_char,
 ) -> i32 {
@@ -1856,7 +1855,6 @@ unsafe fn SetVariable(
         _ => {}
     };
 }
-unsafe fn LoadDefaultCollection(mut collection: *mut default_collection_t) {}
 pub unsafe fn M_SetConfigFilenames(
     mut main_config: *mut ::core::ffi::c_char,
     mut extra_config: *mut ::core::ffi::c_char,
@@ -1865,10 +1863,7 @@ pub unsafe fn M_SetConfigFilenames(
     default_extra_config = extra_config;
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SaveDefaults() {
-    SaveDefaultCollection(&raw mut doom_defaults);
-    SaveDefaultCollection(&raw mut extra_defaults);
-}
+pub unsafe extern "C" fn M_SaveDefaults() {}
 pub unsafe fn M_SaveDefaultsAlternate(
     mut main_0: *mut ::core::ffi::c_char,
     mut extra: *mut ::core::ffi::c_char,
@@ -1916,8 +1911,6 @@ pub unsafe fn M_LoadDefaults() {
     } else {
         extra_defaults.filename = M_StringJoin(configdir, default_extra_config, NULL);
     }
-    LoadDefaultCollection(&raw mut doom_defaults);
-    LoadDefaultCollection(&raw mut extra_defaults);
 }
 unsafe fn GetDefaultForName(name: &str) -> *mut default_t {
     let mut result: *mut default_t = ::core::ptr::null_mut::<default_t>();

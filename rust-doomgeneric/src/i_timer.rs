@@ -29,5 +29,3 @@ pub unsafe fn I_GetTimeMS() -> i32 {
 pub unsafe fn I_Sleep(mut ms: i32) {
     DG_SleepMs(ms as uint32_t);
 }
-pub unsafe fn I_WaitVBL(mut count: i32) {}
-pub unsafe fn I_InitTimer() {}

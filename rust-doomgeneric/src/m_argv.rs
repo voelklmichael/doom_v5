@@ -22,13 +22,9 @@ pub unsafe fn M_ParmExists(check: &str) -> bool {
 pub unsafe fn M_CheckParm(check: &str) -> i32 {
     return M_CheckParmWithArgs(check, 0 as i32);
 }
-unsafe fn LoadResponseFile(mut argv_index: i32) {}
 pub unsafe fn M_FindResponseFile() {
     let mut i: i32 = 1 as i32;
     while i < myargv.len() as i32 {
-        if myargv[i as usize].as_bytes().first() == Some(&b'@') {
-            LoadResponseFile(i);
-        }
         i += 1;
     }
 }
