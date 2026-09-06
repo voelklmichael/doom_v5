@@ -1716,7 +1716,7 @@ pub static mut test: i32 = 0;
 pub unsafe fn P_SetMobjState(
     mut mobj: *mut mobj_t,
     mut state: statenum_t,
-) -> boolean {
+) -> bool {
     let mut st: *mut state_t = ::core::ptr::null_mut::<state_t>();
     loop {
         if state as u32
@@ -1724,7 +1724,7 @@ pub unsafe fn P_SetMobjState(
         {
             (*mobj).state = ::core::ptr::null_mut::<state_t>();
             P_RemoveMobj(mobj);
-            return false_0 as boolean;
+            return false;
         }
         st = (&raw mut states as *mut state_t).offset(state as isize) as *mut state_t;
         (*mobj).state = st;
@@ -1742,7 +1742,7 @@ pub unsafe fn P_SetMobjState(
             break;
         }
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_ExplodeMissile(mut mo: *mut mobj_t) {
@@ -2029,7 +2029,7 @@ pub unsafe extern "C" fn P_MobjThinker(mut mobj: *mut mobj_t) {
     if (*mobj).tics != -(1 as i32) {
         (*mobj).tics -= 1;
         if (*mobj).tics == 0 {
-            if P_SetMobjState(mobj, (*(*mobj).state).nextstate) == 0 {
+            if !P_SetMobjState(mobj, (*(*mobj).state).nextstate) {
                 return;
             }
         }

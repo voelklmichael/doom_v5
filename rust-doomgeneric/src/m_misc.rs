@@ -326,18 +326,17 @@ pub unsafe fn M_StringCopy(
     mut dest: *mut ::core::ffi::c_char,
     mut src: *const ::core::ffi::c_char,
     mut dest_size: size_t,
-) -> boolean {
+) -> bool {
     let mut len: size_t = 0;
     if dest_size >= 1 as size_t {
         *dest.offset(dest_size.wrapping_sub(1 as size_t) as isize) = '\0' as i32
             as ::core::ffi::c_char;
         strncpy(dest, src, dest_size.wrapping_sub(1 as size_t));
     } else {
-        return false_0 as boolean
+        return false
     }
     len = strlen(dest);
-    return (*src.offset(len as isize) as i32 == '\0' as i32)
-        as i32 as boolean;
+    return *src.offset(len as isize) as i32 == '\0' as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_StringConcat(
@@ -354,7 +353,7 @@ pub unsafe extern "C" fn M_StringConcat(
         dest.offset(offset as isize),
         src,
         dest_size.wrapping_sub(offset),
-    ) != 0;
+    );
 }
 pub fn M_StringStartsWith(s: &str, prefix: &str) -> bool {
     s.len() > prefix.len() && s.starts_with(prefix)
