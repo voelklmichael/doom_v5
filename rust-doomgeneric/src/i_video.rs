@@ -22,7 +22,7 @@ extern "C" {
 }
 pub type __uint16_t = u16;
 pub type uint16_t = __uint16_t;
-pub type grabmouse_callback_t = Option<unsafe extern "C" fn() -> boolean>;
+pub type grabmouse_callback_t = Option<unsafe fn() -> boolean>;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct FB_ScreenInfo {

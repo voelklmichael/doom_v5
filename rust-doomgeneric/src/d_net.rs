@@ -41,11 +41,11 @@ use crate::src::stdint_types::size_t;
 use libc::printf;
 
 extern "C" {
-    fn D_ProcessEvents();
-    fn M_Ticker();
     fn G_CheckDemoStatus() -> boolean;
-    fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
 }
+use crate::src::d_main::D_ProcessEvents;
+use crate::src::m_menu::M_Ticker;
+use crate::src::g_game::G_BuildTiccmd;
 pub type netgame_startup_callback_t = Option<
     unsafe extern "C" fn(i32, i32) -> boolean,
 >;
@@ -1047,7 +1047,7 @@ unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
         G_CheckDemoStatus();
     }
 }
-unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
+unsafe fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
     let mut i: u32 = 0;
     i = 0 as u32;
     while i < MAXPLAYERS as u32 {
@@ -1068,13 +1068,13 @@ unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
 }
 static mut doom_loop_interface: loop_interface_t = unsafe {
     loop_interface_t {
-        ProcessEvents: Some(D_ProcessEvents as unsafe extern "C" fn() -> ()),
+        ProcessEvents: Some(D_ProcessEvents as unsafe fn() -> ()),
         BuildTiccmd: Some(
             G_BuildTiccmd
-                as unsafe extern "C" fn(*mut ticcmd_t, i32) -> (),
+                as unsafe fn(*mut ticcmd_t, i32) -> (),
         ),
-        RunTic: Some(RunTic as unsafe extern "C" fn(*mut ticcmd_t, *mut boolean) -> ()),
-        RunMenu: Some(M_Ticker as unsafe extern "C" fn() -> ()),
+        RunTic: Some(RunTic as unsafe fn(*mut ticcmd_t, *mut boolean) -> ()),
+        RunMenu: Some(M_Ticker as unsafe fn() -> ()),
     }
 };
 unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
