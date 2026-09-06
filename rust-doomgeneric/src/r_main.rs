@@ -1492,8 +1492,7 @@ pub unsafe fn R_PointOnSegSide(
     }
     return 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle_t {
+pub unsafe fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle_t {
     x -= viewx;
     y -= viewy;
     if x == 0 && y == 0 {

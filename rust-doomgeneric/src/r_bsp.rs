@@ -21,10 +21,9 @@ use crate::src::r_main::viewz;
 use crate::src::r_draw::viewwidth;
 use crate::src::r_sky::skyflatnum;
 use crate::src::r_plane::R_FindPlane;
+use crate::src::r_main::R_PointToAngle;
 
-extern "C" {
-    fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
-}
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;

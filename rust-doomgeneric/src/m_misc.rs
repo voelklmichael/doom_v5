@@ -366,7 +366,6 @@ pub fn M_StringStartsWith(s: &str, prefix: &str) -> bool {
 pub fn M_StringEndsWith(s: &str, suffix: &str) -> bool {
     s.ends_with(suffix)
 }
-#[no_mangle]
 pub unsafe extern "C" fn M_StringJoin(
     mut s: *const ::core::ffi::c_char,
     mut args: ...

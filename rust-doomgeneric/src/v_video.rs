@@ -96,8 +96,7 @@ pub unsafe fn V_MarkRect(
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_CopyRect(
+pub unsafe fn V_CopyRect(
     mut srcx: i32,
     mut srcy: i32,
     mut source: *mut byte,

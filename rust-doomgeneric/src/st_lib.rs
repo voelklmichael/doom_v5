@@ -2,17 +2,9 @@ use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
 use crate::src::st_stuff::st_backing_screen;
+use crate::src::v_video::V_CopyRect;
 
 extern "C" {
-    fn V_CopyRect(
-        srcx: i32,
-        srcy: i32,
-        source: *mut byte,
-        width: i32,
-        height: i32,
-        destx: i32,
-        desty: i32,
-    );
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
 }
 pub type __uint8_t = u8;
