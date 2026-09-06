@@ -20,6 +20,9 @@ use crate::src::d_main::advancedemo;
 use crate::src::d_main::respawnparm;
 use crate::src::g_game::demorecording;
 use crate::src::r_main::viewangleoffset;
+use crate::src::d_main::nomonsters;
+use crate::src::d_main::fastparm;
+use crate::src::g_game::timelimit;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -32,12 +35,9 @@ extern "C" {
     ) -> boolean;
     fn G_CheckDemoStatus() -> boolean;
     fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
-    static mut nomonsters: bool;
-    static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut timelimit: i32;
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut consoleplayer: i32;

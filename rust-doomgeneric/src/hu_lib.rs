@@ -2,14 +2,10 @@
 use crate::src::r_draw::R_VideoErase;
 use crate::src::r_draw::viewwindowx;
 use crate::src::r_draw::viewwindowy;
+use crate::src::v_video::V_DrawPatchDirect;
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn toupper(__c: i32) -> i32;
-    fn V_DrawPatchDirect(
-        x: i32,
-        y: i32,
-        patch: *mut patch_t,
-    );
     static mut viewwidth: i32;
     static mut viewheight: i32;
     static mut automapactive: bool;

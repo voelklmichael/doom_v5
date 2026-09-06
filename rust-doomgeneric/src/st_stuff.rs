@@ -21,6 +21,10 @@ use crate::src::p_inter::P_GivePower;
 use crate::src::g_game::G_DeferedInitNew;
 use crate::src::m_cheat::cht_CheckCheat;
 use crate::src::v_video::V_UseBuffer;
+use crate::src::i_video::I_SetPalette;
+use crate::src::m_random::M_Random;
+use crate::src::s_sound::S_ChangeMusic;
+use crate::src::v_video::V_RestoreBuffer;
 
 extern "C" {
     fn snprintf(
@@ -29,7 +33,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn I_SetPalette(palette: *mut byte);
     fn Z_Malloc(
         size: i32,
         tag: i32,
@@ -41,14 +44,12 @@ extern "C" {
         s: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn M_Random() -> i32;
     fn W_CacheLumpNum(
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
     fn STlib_init();
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn S_ChangeMusic(music_id: i32, looping: i32);
     fn V_CopyRect(
         srcx: i32,
         srcy: i32,
@@ -59,7 +60,6 @@ extern "C" {
         desty: i32,
     );
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    fn V_RestoreBuffer();
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;

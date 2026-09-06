@@ -1459,13 +1459,10 @@ pub static mut numsectors: i32 = 0;
 #[no_mangle]
 pub static mut sectors: *mut sector_t = ::core::ptr::null::<sector_t>() as *mut sector_t;
 pub static mut numsubsectors: i32 = 0;
-#[no_mangle]
 pub static mut subsectors: *mut subsector_t = ::core::ptr::null::<subsector_t>()
     as *mut subsector_t;
 pub static mut numnodes: i32 = 0;
-#[no_mangle]
 pub static mut nodes: *mut node_t = ::core::ptr::null::<node_t>() as *mut node_t;
-#[no_mangle]
 pub static mut numlines: i32 = 0;
 #[no_mangle]
 pub static mut lines: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
@@ -1497,7 +1494,6 @@ pub static mut deathmatchstarts: [mapthing_t; 10] = [mapthing_t {
 }; 10];
 pub static mut deathmatch_p: *mut mapthing_t = ::core::ptr::null::<mapthing_t>()
     as *mut mapthing_t;
-#[no_mangle]
 pub static mut playerstarts: [mapthing_t; 4] = [mapthing_t {
     x: 0,
     y: 0,

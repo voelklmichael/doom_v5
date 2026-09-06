@@ -6,6 +6,8 @@ use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
 };
 use crate::src::g_game::G_WorldDone;
+use crate::src::m_random::M_Random;
+use crate::src::s_sound::S_ChangeMusic;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -25,9 +27,7 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    fn M_Random() -> i32;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    fn S_ChangeMusic(music_id: i32, looping: i32);
     static mut gamemode: GameMode_t;
     static mut netgame: bool;
     static mut deathmatch: i32;

@@ -28,6 +28,20 @@ use crate::src::r_main::scalelight;
 use crate::src::r_plane::floorplane;
 use crate::src::r_plane::ceilingplane;
 use crate::src::r_things::screenheightarray;
+use crate::src::r_bsp::drawsegs;
+use crate::src::r_bsp::ds_p;
+use crate::src::r_draw::dc_colormap;
+use crate::src::r_draw::dc_x;
+use crate::src::r_draw::dc_yl;
+use crate::src::r_draw::dc_yh;
+use crate::src::r_draw::dc_iscale;
+use crate::src::r_draw::dc_texturemid;
+use crate::src::r_draw::dc_source;
+use crate::src::r_main::fixedcolormap;
+use crate::src::r_main::viewangle;
+use crate::src::r_main::extralight;
+use crate::src::r_main::colfunc;
+use crate::src::tables::finetangent;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -38,24 +52,10 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
-    static finetangent: [fixed_t; 4096];
     static mut skyflatnum: i32;
     static mut viewwidth: i32;
     static mut viewheight: i32;
     static mut viewz: fixed_t;
-    static mut viewangle: angle_t;
-    static mut extralight: i32;
-    static mut fixedcolormap: *mut lighttable_t;
-    static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
-    static mut drawsegs: [drawseg_t; 256];
-    static mut ds_p: *mut drawseg_t;
-    static mut dc_colormap: *mut lighttable_t;
-    static mut dc_x: i32;
-    static mut dc_yl: i32;
-    static mut dc_yh: i32;
-    static mut dc_iscale: fixed_t;
-    static mut dc_texturemid: fixed_t;
-    static mut dc_source: *mut byte;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

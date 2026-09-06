@@ -5,6 +5,7 @@ use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::p_spec::P_FindLowestCeilingSurrounding;
+use crate::src::p_floor::T_MovePlane;
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -26,14 +27,6 @@ extern "C" {
         start: i32,
     ) -> i32;
     fn T_PlatRaise(plat: *mut plat_t);
-    fn T_MovePlane(
-        sector: *mut sector_t,
-        speed: fixed_t,
-        dest: fixed_t,
-        crush: boolean,
-        floorOrCeiling: i32,
-        direction: i32,
-    ) -> result_e;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;
@@ -1668,8 +1661,7 @@ pub unsafe fn EV_DoLockedDoor(
     }
     return EV_DoDoor(line, type_0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoDoor(
+pub unsafe fn EV_DoDoor(
     mut line: *mut line_t,
     mut type_0: vldoor_e,
 ) -> i32 {

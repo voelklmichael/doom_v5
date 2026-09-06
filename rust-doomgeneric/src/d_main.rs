@@ -109,6 +109,14 @@ use crate::src::s_sound::sfxVolume;
 use crate::src::s_sound::musicVolume;
 use crate::src::w_wad::W_AddFile;
 use crate::src::w_wad::numlumps;
+use crate::src::g_game::gamestate;
+use crate::src::g_game::timelimit;
+use crate::src::g_game::viewactive;
+use crate::src::i_system::I_AtExit;
+use crate::src::i_video::I_SetPalette;
+use crate::src::p_saveg::P_SaveGameFile;
+use crate::src::v_video::V_DrawPatchDirect;
+use crate::src::v_video::V_RestoreBuffer;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -146,14 +154,11 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut timelimit: i32;
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut automapactive: bool;
-    static mut viewactive: bool;
     static mut consoleplayer: i32;
     static mut demoplayback: bool;
-    static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     fn Z_Init();
     fn Z_Malloc(
@@ -165,12 +170,6 @@ extern "C" {
     fn S_Init(sfxVolume_0: i32, musicVolume_0: i32);
     fn V_Init();
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    fn V_DrawPatchDirect(
-        x: i32,
-        y: i32,
-        patch: *mut patch_t,
-    );
-    fn V_RestoreBuffer();
     fn M_LoadDefaults();
     fn M_SaveDefaults();
     fn M_StringCopy(
@@ -185,10 +184,7 @@ extern "C" {
         ...
     ) -> i32;
     fn M_Init();
-    fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
-    fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn I_InitGraphics();
-    fn I_SetPalette(palette: *mut byte);
     fn G_CheckDemoStatus() -> boolean;
     fn HU_Init();
     fn ST_Init();
@@ -1674,10 +1670,8 @@ pub static mut iwadfile: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
 pub static mut devparm: bool = false;
-#[no_mangle]
 pub static mut nomonsters: bool = false;
 pub static mut respawnparm: bool = false;
-#[no_mangle]
 pub static mut fastparm: bool = false;
 pub static mut startskill: skill_t = sk_baby;
 pub static mut startepisode: i32 = 0;

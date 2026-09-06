@@ -9,15 +9,15 @@ use crate::src::p_ceilng::EV_DoCeiling;
 use crate::src::p_floor::EV_BuildStairs;
 use crate::src::p_lights::EV_LightTurnOn;
 use crate::src::p_plats::EV_DoPlat;
+use crate::src::g_game::G_ExitLevel;
+use crate::src::p_doors::EV_DoDoor;
+use crate::src::p_floor::EV_DoFloor;
 
 extern "C" {
     static mut sides: *mut side_t;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn EV_DoDonut(line: *mut line_t) -> i32;
     fn EV_VerticalDoor(line: *mut line_t, thing: *mut mobj_t);
-    fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
-    fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
-    fn G_ExitLevel();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
 }

@@ -15,6 +15,12 @@ use crate::src::p_map::P_TryMove;
 use crate::src::p_map::linetarget;
 use crate::src::p_setup::deathmatchstarts;
 use crate::src::p_setup::deathmatch_p;
+use crate::src::d_main::nomonsters;
+use crate::src::p_map::P_CheckPosition;
+use crate::src::p_map::P_AimLineAttack;
+use crate::src::p_maputl::P_AproxDistance;
+use crate::src::p_maputl::P_UnsetThingPosition;
+use crate::src::p_setup::playerstarts;
 
 extern "C" {
     fn Z_Malloc(
@@ -42,13 +48,8 @@ extern "C" {
     fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_AproxDistance(dx: fixed_t, dy: fixed_t) -> fixed_t;
-    fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
-    fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut nomonsters: bool;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;
     static mut netgame: bool;
@@ -57,7 +58,6 @@ extern "C" {
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    static mut playerstarts: [mapthing_t; 4];
     static mut skyflatnum: i32;
 }
 pub type size_t = usize;

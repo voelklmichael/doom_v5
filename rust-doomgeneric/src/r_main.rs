@@ -26,6 +26,9 @@ use crate::src::r_draw::scaledviewwidth;
 use crate::src::r_things::pspriteiscale;
 use crate::src::r_things::screenheightarray;
 use crate::src::tables::tantoangle;
+use crate::src::p_setup::subsectors;
+use crate::src::p_setup::nodes;
+use crate::src::tables::finetangent;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -34,12 +37,9 @@ extern "C" {
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static finetangent: [fixed_t; 4096];
     static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut subsectors: *mut subsector_t;
-    static mut nodes: *mut node_t;
     fn R_DrawPlanes();
     fn R_DrawMasked();
     fn R_DrawColumn();
@@ -1345,7 +1345,6 @@ pub const FIELDOFVIEW: i32 = 2048 as i32;
 pub static mut viewangleoffset: i32 = 0;
 #[no_mangle]
 pub static mut validcount: i32 = 1 as i32;
-#[no_mangle]
 pub static mut fixedcolormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
 #[no_mangle]
@@ -1361,13 +1360,10 @@ pub static mut sscount: i32 = 0;
 pub static mut linecount: i32 = 0;
 #[no_mangle]
 pub static mut loopcount: i32 = 0;
-#[no_mangle]
 pub static mut viewx: fixed_t = 0;
-#[no_mangle]
 pub static mut viewy: fixed_t = 0;
 #[no_mangle]
 pub static mut viewz: fixed_t = 0;
-#[no_mangle]
 pub static mut viewangle: angle_t = 0;
 pub static mut viewcos: fixed_t = 0;
 pub static mut viewsin: fixed_t = 0;
@@ -1387,9 +1383,7 @@ pub static mut scalelightfixed: [*mut lighttable_t; 48] = [::core::ptr::null::<
 pub static mut zlight: [[*mut lighttable_t; 128]; 16] = [[::core::ptr::null::<
     lighttable_t,
 >() as *mut lighttable_t; 128]; 16];
-#[no_mangle]
 pub static mut extralight: i32 = 0;
-#[no_mangle]
 pub static mut colfunc: Option<unsafe extern "C" fn() -> ()> = None;
 pub static mut basecolfunc: Option<unsafe extern "C" fn() -> ()> = None;
 pub static mut fuzzcolfunc: Option<unsafe extern "C" fn() -> ()> = None;

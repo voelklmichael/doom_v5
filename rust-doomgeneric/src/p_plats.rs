@@ -5,6 +5,7 @@ use crate::src::i_system::I_Error;
 use crate::src::p_spec::P_FindLowestFloorSurrounding;
 use crate::src::p_spec::P_FindHighestFloorSurrounding;
 use crate::src::p_spec::P_FindNextHighestFloor;
+use crate::src::p_floor::T_MovePlane;
 extern "C" {
     fn Z_Malloc(
         size: i32,
@@ -20,14 +21,6 @@ extern "C" {
         line: *mut line_t,
         start: i32,
     ) -> i32;
-    fn T_MovePlane(
-        sector: *mut sector_t,
-        speed: fixed_t,
-        dest: fixed_t,
-        crush: boolean,
-        floorOrCeiling: i32,
-        direction: i32,
-    ) -> result_e;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut leveltime: i32;
 }

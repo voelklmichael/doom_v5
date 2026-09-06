@@ -6,6 +6,7 @@ use crate::src::p_mobj::P_SpawnPlayerMissile;
 use crate::src::p_enemy::P_NoiseAlert;
 use crate::src::p_map::P_LineAttack;
 use crate::src::p_map::linetarget;
+use crate::src::p_map::P_AimLineAttack;
 
 extern "C" {
     fn P_Random() -> i32;
@@ -21,7 +22,6 @@ extern "C" {
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
     fn P_DamageMobj(
         target: *mut mobj_t,
         inflictor: *mut mobj_t,

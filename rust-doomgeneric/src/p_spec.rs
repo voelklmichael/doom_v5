@@ -31,6 +31,12 @@ use crate::src::p_lights::EV_LightTurnOn;
 use crate::src::p_plats::EV_DoPlat;
 use crate::src::r_data::flattranslation;
 use crate::src::r_data::texturetranslation;
+use crate::src::g_game::G_ExitLevel;
+use crate::src::g_game::timelimit;
+use crate::src::m_misc::M_StrToInt;
+use crate::src::p_doors::EV_DoDoor;
+use crate::src::p_floor::EV_DoFloor;
+use crate::src::p_setup::numlines;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -44,7 +50,6 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    static mut timelimit: i32;
     static mut deathmatch: i32;
     static mut leveltime: i32;
     fn Z_Malloc(
@@ -52,14 +57,9 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn M_StrToInt(
-        str: *const ::core::ffi::c_char,
-        result: *mut i32,
-    ) -> boolean;
     fn P_Random() -> i32;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut numlines: i32;
     static mut lines: *mut line_t;
     static mut sides: *mut side_t;
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
@@ -71,10 +71,7 @@ extern "C" {
         source: *mut mobj_t,
         damage: i32,
     );
-    fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
-    fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
     fn T_MoveFloor(floor: *mut floormove_t);
-    fn G_ExitLevel();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;

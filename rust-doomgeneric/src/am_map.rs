@@ -23,6 +23,8 @@ use crate::src::m_controls::key_map_clearmark;
 use crate::src::g_game::singledemo;
 use crate::src::m_cheat::cht_CheckCheat;
 use crate::src::st_stuff::ST_Responder;
+use crate::src::g_game::viewactive;
+use crate::src::p_setup::numlines;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -49,7 +51,6 @@ extern "C" {
     static mut I_VideoBuffer: *mut byte;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut numlines: i32;
     static mut lines: *mut line_t;
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
@@ -70,7 +71,6 @@ extern "C" {
     static mut gamemap: i32;
     static mut netgame: bool;
     static mut deathmatch: i32;
-    static mut viewactive: bool;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];

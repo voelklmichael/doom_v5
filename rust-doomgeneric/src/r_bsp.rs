@@ -12,15 +12,15 @@ use crate::src::p_setup::segs;
 use crate::src::p_setup::numsubsectors;
 use crate::src::r_plane::floorplane;
 use crate::src::r_plane::ceilingplane;
+use crate::src::p_setup::subsectors;
+use crate::src::p_setup::nodes;
+use crate::src::r_main::viewx;
+use crate::src::r_main::viewy;
+use crate::src::r_main::viewangle;
 
 extern "C" {
     static mut viewwidth: i32;
-    static mut subsectors: *mut subsector_t;
-    static mut nodes: *mut node_t;
-    static mut viewx: fixed_t;
-    static mut viewy: fixed_t;
     static mut viewz: fixed_t;
-    static mut viewangle: angle_t;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
     fn R_FindPlane(
         height: fixed_t,
@@ -1328,7 +1328,6 @@ pub static mut frontsector: *mut sector_t = ::core::ptr::null::<sector_t>()
     as *mut sector_t;
 pub static mut backsector: *mut sector_t = ::core::ptr::null::<sector_t>()
     as *mut sector_t;
-#[no_mangle]
 pub static mut drawsegs: [drawseg_t; 256] = [drawseg_s {
     curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
     x1: 0,
@@ -1345,7 +1344,6 @@ pub static mut drawsegs: [drawseg_t; 256] = [drawseg_s {
     maskedtexturecol: ::core::ptr::null::<i16>()
         as *mut i16,
 }; 256];
-#[no_mangle]
 pub static mut ds_p: *mut drawseg_t = ::core::ptr::null::<drawseg_t>() as *mut drawseg_t;
 pub unsafe fn R_ClearDrawSegs() {
     ds_p = &raw mut drawsegs as *mut drawseg_t;

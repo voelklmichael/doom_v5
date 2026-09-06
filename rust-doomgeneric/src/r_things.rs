@@ -28,6 +28,20 @@ use crate::src::r_main::centerxfrac;
 use crate::src::r_main::centeryfrac;
 use crate::src::r_main::detailshift;
 use crate::src::r_main::scalelight;
+use crate::src::r_bsp::drawsegs;
+use crate::src::r_bsp::ds_p;
+use crate::src::r_draw::dc_colormap;
+use crate::src::r_draw::dc_x;
+use crate::src::r_draw::dc_yl;
+use crate::src::r_draw::dc_yh;
+use crate::src::r_draw::dc_iscale;
+use crate::src::r_draw::dc_texturemid;
+use crate::src::r_draw::dc_source;
+use crate::src::r_main::fixedcolormap;
+use crate::src::r_main::viewx;
+use crate::src::r_main::viewy;
+use crate::src::r_main::extralight;
+use crate::src::r_main::colfunc;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -61,23 +75,9 @@ extern "C" {
     static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut viewx: fixed_t;
-    static mut viewy: fixed_t;
     static mut viewz: fixed_t;
     static mut validcount: i32;
-    static mut extralight: i32;
-    static mut fixedcolormap: *mut lighttable_t;
-    static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
-    static mut drawsegs: [drawseg_t; 256];
-    static mut ds_p: *mut drawseg_t;
-    static mut dc_colormap: *mut lighttable_t;
-    static mut dc_x: i32;
-    static mut dc_yl: i32;
-    static mut dc_yh: i32;
-    static mut dc_iscale: fixed_t;
-    static mut dc_texturemid: fixed_t;
-    static mut dc_source: *mut byte;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
