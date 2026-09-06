@@ -34,9 +34,6 @@ use crate::src::sounds::{mus_bunny, mus_evil, mus_read_m, mus_victor};
 use libc::memcpy;
 use libc::toupper;
 use libc::snprintf;
-extern "C" {
-    fn __ctype_toupper_loc() -> *mut *const __int32_t;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type __int32_t = i32;

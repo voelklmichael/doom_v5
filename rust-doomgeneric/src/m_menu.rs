@@ -69,9 +69,9 @@ use crate::src::z_zone::PU_CACHE;
 use crate::src::sounds::{sfx_boscub, sfx_bspact, sfx_dmpain, sfx_getpow, sfx_kntdth, sfx_oof, sfx_pistol, sfx_pldeth, sfx_popain, sfx_posit1, sfx_posit3, sfx_pstop, sfx_sgtatk, sfx_skeswg, sfx_slop, sfx_stnmov, sfx_swtchn, sfx_swtchx, sfx_telept, sfx_vilact};
 use libc::toupper;
 use libc::snprintf;
+use crate::src::m_misc::__ctype_toupper_loc;
 
 extern "C" {
-    fn __ctype_toupper_loc() -> *mut *const __int32_t;
     static mut stderr: *mut FILE;
     fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
