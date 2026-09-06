@@ -203,7 +203,7 @@ pub const sfx_dshtgn: C2RustUnnamed = 4;
 pub const sfx_sgcock: C2RustUnnamed = 3;
 pub const sfx_shotgn: C2RustUnnamed = 2;
 pub const sfx_None: C2RustUnnamed = 0;
-pub static mut S_music: [musicinfo_t; 68] = [
+const INITIAL_S_MUSIC: [musicinfo_t; 68] = [
     musicinfo_t {
         name: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
         lumpnum: 0 as i32,
@@ -680,6 +680,19 @@ pub static mut S_music: [musicinfo_t; 68] = [
         handle: NULL,
     },
 ];
+
+pub struct SoundsState {
+    pub S_music: [musicinfo_t; 68],
+}
+
+impl SoundsState {
+    pub const fn new() -> Self {
+        SoundsState {
+            S_music: INITIAL_S_MUSIC,
+        }
+    }
+}
+
 pub static mut S_sfx: [sfxinfo_t; 109] = [sfxinfo_struct {
     tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
     name: [0; 9],

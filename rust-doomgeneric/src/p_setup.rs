@@ -944,7 +944,7 @@ pub unsafe fn P_SetupLevel(
         i += 1;
     }
     players[consoleplayer as usize].viewz = 1 as i32 as fixed_t;
-    S_Start();
+    S_Start(unsafe { &mut game_state().sounds });
     Z_FreeTags(
         PU_LEVEL as i32,
         PU_PURGELEVEL as i32 - 1 as i32,

@@ -18,7 +18,7 @@ use crate::src::i_sound::I_StopSong;
 use crate::src::i_sound::I_MusicIsPlaying;
 use crate::src::i_sound::snd_musicdevice;
 use crate::src::sounds::S_sfx;
-use crate::src::sounds::S_music;
+use crate::src::sounds::SoundsState;
 use crate::src::i_system::I_AtExit;
 use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
@@ -125,7 +125,7 @@ unsafe fn S_StopChannel(mut cnum: i32) {
         (*c).sfxinfo = ::core::ptr::null_mut::<sfxinfo_t>();
     }
 }
-pub unsafe fn S_Start() {
+pub unsafe fn S_Start(state: &mut SoundsState) {
     let mut cnum: i32 = 0;
     let mut mnum: i32 = 0;
     cnum = 0 as i32;
@@ -160,7 +160,7 @@ pub unsafe fn S_Start() {
             mnum = spmus[(gamemap - 1 as i32) as usize];
         }
     }
-    S_ChangeMusic(mnum, true_0);
+    S_ChangeMusic(state, mnum, true_0);
 }
 pub unsafe fn S_StopSound(mut origin: *mut mobj_t) {
     let mut cnum: i32 = 0;
@@ -400,10 +400,11 @@ pub unsafe fn S_SetSfxVolume(mut volume: i32) {
     }
     snd_SfxVolume = volume;
 }
-pub unsafe fn S_StartMusic(mut m_id: i32) {
-    S_ChangeMusic(m_id, false_0);
+pub unsafe fn S_StartMusic(state: &mut SoundsState, mut m_id: i32) {
+    S_ChangeMusic(state, m_id, false_0);
 }
 pub unsafe fn S_ChangeMusic(
+    state: &mut SoundsState,
     mut musicnum: i32,
     mut looping: i32,
 ) {
@@ -423,7 +424,7 @@ pub unsafe fn S_ChangeMusic(
     {
         I_Error(&format!("Bad music number {}", musicnum));
     } else {
-        music = (&raw mut S_music as *mut musicinfo_t).offset(musicnum as isize)
+        music = (&raw mut state.S_music as *mut musicinfo_t).offset(musicnum as isize)
             as *mut musicinfo_t;
     }
     if mus_playing == music {

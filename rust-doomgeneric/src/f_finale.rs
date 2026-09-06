@@ -52,6 +52,7 @@ use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::r_things::FF_FRAMEMASK;
 use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::hu_stuff::HU_FONTSIZE;
+use crate::src::game_state::game_state;
 pub type finalestage_t = u32;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;
@@ -327,9 +328,9 @@ pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
         })
     }) == doom as i32 as u32
     {
-        S_ChangeMusic(mus_victor as i32, true_0);
+        S_ChangeMusic(unsafe { &mut game_state().sounds }, mus_victor as i32, true_0);
     } else {
-        S_ChangeMusic(mus_read_m as i32, true_0);
+        S_ChangeMusic(unsafe { &mut game_state().sounds }, mus_read_m as i32, true_0);
     }
     i = 0 as size_t;
     while i
@@ -435,7 +436,7 @@ pub unsafe fn F_Ticker(state: &mut FFinaleState) {
         state.finalestage = F_STAGE_ARTSCREEN;
         wipegamestate = 4294967295 as gamestate_t;
         if gameepisode == 3 as i32 {
-            S_StartMusic(mus_bunny as i32);
+            S_StartMusic(unsafe { &mut game_state().sounds }, mus_bunny as i32);
         }
     }
 }
@@ -610,7 +611,7 @@ pub unsafe fn F_StartCast(state: &mut FFinaleState) {
     state.castframes = 0 as i32;
     state.castonmelee = 0 as i32;
     state.castattacking = false;
-    S_ChangeMusic(mus_evil as i32, true_0);
+    S_ChangeMusic(unsafe { &mut game_state().sounds }, mus_evil as i32, true_0);
 }
 pub unsafe fn F_CastTicker(state: &mut FFinaleState) {
     let mut current_block: u64;

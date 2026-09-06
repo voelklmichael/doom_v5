@@ -600,9 +600,9 @@ pub unsafe fn D_DoAdvanceDemo() {
             if gamemode as u32
                 == commercial as i32 as u32
             {
-                S_StartMusic(mus_dm2ttl as i32);
+                S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
             } else {
-                S_StartMusic(mus_intro as i32);
+                S_StartMusic(unsafe { &mut game_state().sounds }, mus_intro as i32);
             }
         }
         1 => {
@@ -631,7 +631,7 @@ pub unsafe fn D_DoAdvanceDemo() {
                 pagetic = TICRATE * 11 as i32;
                 pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartMusic(mus_dm2ttl as i32);
+                S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
             } else {
                 pagetic = 200 as i32;
                 if gamemode as u32

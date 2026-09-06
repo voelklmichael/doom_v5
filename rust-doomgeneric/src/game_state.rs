@@ -21,6 +21,7 @@ use crate::src::p_ceilng::PCeilngState;
 use crate::src::p_plats::PPlatsState;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_user::PUserState;
+use crate::src::sounds::SoundsState;
 use crate::src::st_lib::StLibState;
 use crate::src::statdump::StatDumpState;
 use crate::src::w_checksum::WChecksumState;
@@ -38,6 +39,7 @@ pub struct GameState {
     pub p_plats: PPlatsState,
     pub p_switch: PSwitchState,
     pub p_user: PUserState,
+    pub sounds: SoundsState,
     pub st_lib: StLibState,
     pub statdump: StatDumpState,
     pub w_checksum: WChecksumState,
@@ -58,6 +60,7 @@ impl GameState {
             p_plats: PPlatsState::new(),
             p_switch: PSwitchState::new(),
             p_user: PUserState::new(),
+            sounds: SoundsState::new(),
             st_lib: StLibState::new(),
             statdump: StatDumpState::new(),
             w_checksum: WChecksumState::new(),
