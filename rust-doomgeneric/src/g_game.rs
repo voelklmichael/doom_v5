@@ -430,29 +430,29 @@ pub unsafe fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
     return sum;
 }
 unsafe fn WeaponSelectable(mut weapon: weapontype_t) -> bool {
-    if weapon as u32 == wp_supershotgun as i32 as u32
-        && (if gamemission as u32 == pack_chex as i32 as u32 {
-            doom as i32 as u32
+    if weapon as u32 == wp_supershotgun as u32
+        && (if gamemission as u32 == pack_chex as u32 {
+            doom as u32
         } else {
-            (if gamemission as u32 == pack_hacx as i32 as u32 {
-                doom2 as i32 as u32
+            (if gamemission as u32 == pack_hacx as u32 {
+                doom2 as u32
             } else {
                 gamemission as u32
             })
-        }) == doom as i32 as u32
+        }) == doom as u32
     {
         return false;
     }
-    if (weapon as u32 == wp_plasma as i32 as u32 || weapon as u32 == wp_bfg as i32 as u32)
-        && gamemission as u32 == doom as i32 as u32
-        && gamemode as u32 == shareware as i32 as u32
+    if (weapon as u32 == wp_plasma as u32 || weapon as u32 == wp_bfg as u32)
+        && gamemission as u32 == doom as u32
+        && gamemode as u32 == shareware as u32
     {
         return false;
     }
     if !players[consoleplayer as usize].weaponowned[weapon as usize] {
         return false;
     }
-    if weapon as u32 == wp_fist as i32 as u32
+    if weapon as u32 == wp_fist as u32
         && players[consoleplayer as usize].weaponowned[wp_chainsaw as i32 as usize]
         && players[consoleplayer as usize].powers[pw_strength as i32 as usize] == 0
     {
@@ -464,7 +464,7 @@ unsafe fn G_NextWeapon(mut direction: i32) -> i32 {
     let mut weapon: weapontype_t = wp_fist;
     let mut start_i: i32 = 0;
     let mut i: i32 = 0;
-    if players[consoleplayer as usize].pendingweapon as u32 == wp_nochange as i32 as u32 {
+    if players[consoleplayer as usize].pendingweapon as u32 == wp_nochange as u32 {
         weapon = players[consoleplayer as usize].readyweapon;
     } else {
         weapon = players[consoleplayer as usize].pendingweapon;
@@ -601,7 +601,7 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_USE as i32) as byte;
         dclicks = 0 as i32;
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 && next_weapon != 0 as i32 {
+    if gamestate as u32 == GS_LEVEL as u32 && next_weapon != 0 as i32 {
         i = G_NextWeapon(next_weapon);
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_CHANGE as i32) as byte;
         (*cmd).buttons = ((*cmd).buttons as i32 | i << BT_WEAPONSHIFT as i32) as byte;
@@ -714,9 +714,8 @@ pub unsafe fn G_DoLoadLevel() {
     skyflatnum = R_FlatNumForName(
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     );
-    if gamemode as u32 == commercial as i32 as u32
-        && (gameversion as u32 == exe_final2 as i32 as u32
-            || gameversion as u32 == exe_chex as i32 as u32)
+    if gamemode as u32 == commercial as u32
+        && (gameversion as u32 == exe_final2 as u32 || gameversion as u32 == exe_chex as u32)
     {
         let mut skytexturename: *mut ::core::ffi::c_char =
             ::core::ptr::null_mut::<::core::ffi::c_char>();
@@ -734,7 +733,7 @@ pub unsafe fn G_DoLoadLevel() {
         skytexture = R_TextureNumForName(skytexturename);
     }
     levelstarttic = gametic;
-    if wipegamestate as u32 == GS_LEVEL as i32 as u32 {
+    if wipegamestate as u32 == GS_LEVEL as u32 {
         wipegamestate = 4294967295 as gamestate_t;
     }
     gamestate = GS_LEVEL;
@@ -742,7 +741,7 @@ pub unsafe fn G_DoLoadLevel() {
     while i < MAXPLAYERS {
         turbodetected[i as usize] = false_0 as boolean;
         if playeringame[i as usize] != 0
-            && players[i as usize].playerstate as u32 == PST_DEAD as i32 as u32
+            && players[i as usize].playerstate as u32 == PST_DEAD as u32
         {
             players[i as usize].playerstate = PST_REBORN;
         }
@@ -807,8 +806,7 @@ unsafe fn SetMouseButtons(mut buttons_mask: u32) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAX_MOUSE_BUTTONS {
-        let mut button_on: u32 =
-            (buttons_mask & ((1 as i32) << i) as u32 != 0 as u32) as i32 as u32;
+        let mut button_on: u32 = (buttons_mask & ((1 as i32) << i) as u32 != 0 as u32) as u32;
         if *mousebuttons.offset(i as isize) == 0 && button_on != 0 {
             if i == mousebprevweapon {
                 next_weapon = -(1 as i32);
@@ -820,10 +818,10 @@ unsafe fn SetMouseButtons(mut buttons_mask: u32) {
         i += 1;
     }
 }
-pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
-    if gamestate as u32 == GS_LEVEL as i32 as u32
-        && (*ev).type_0 as u32 == ev_keydown as i32 as u32
-        && (*ev).data1 == key_spy
+pub unsafe fn G_Responder(mut ev: event_t) -> bool {
+    if gamestate == GS_LEVEL
+        && ev.type_0 as u32 == ev_keydown as u32
+        && ev.data1 == key_spy
         && (singledemo || deathmatch == 0)
     {
         loop {
@@ -837,69 +835,66 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
         }
         return true;
     }
-    if gameaction as u32 == ga_nothing as i32 as u32
-        && !singledemo
-        && (demoplayback || gamestate as u32 == GS_DEMOSCREEN as i32 as u32)
-    {
-        if (*ev).type_0 as u32 == ev_keydown as i32 as u32
-            || (*ev).type_0 as u32 == ev_mouse as i32 as u32 && (*ev).data1 != 0
-            || (*ev).type_0 as u32 == ev_joystick as i32 as u32 && (*ev).data1 != 0
+    if gameaction == ga_nothing && !singledemo && (demoplayback || gamestate == GS_DEMOSCREEN) {
+        if ev.type_0 == ev_keydown
+            || ev.type_0 == ev_mouse && ev.data1 != 0
+            || ev.type_0 == ev_joystick && ev.data1 != 0
         {
             M_StartControlPanel();
             return true;
         }
         return false;
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 {
-        if HU_Responder(ev) {
+    if gamestate == GS_LEVEL {
+        if HU_Responder(&ev) {
             return true;
         }
-        if ST_Responder(ev) {
+        if ST_Responder(&ev) {
             return true;
         }
-        if AM_Responder(ev) {
-            return true;
-        }
-    }
-    if gamestate as u32 == GS_FINALE as i32 as u32 {
-        if F_Responder(unsafe { &mut game_state().f_finale }, ev) {
+        if AM_Responder(&ev) {
             return true;
         }
     }
-    if testcontrols && (*ev).type_0 as u32 == ev_mouse as i32 as u32 {
-        testcontrols_mousespeed = ((*ev).data2).abs();
+    if gamestate == GS_FINALE {
+        if F_Responder(unsafe { &mut game_state().f_finale }, &ev) {
+            return true;
+        }
     }
-    if (*ev).type_0 as u32 == ev_keydown as i32 as u32 && (*ev).data1 == key_prevweapon {
-        next_weapon = -(1 as i32);
-    } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 && (*ev).data1 == key_nextweapon {
-        next_weapon = 1 as i32;
+    if testcontrols && ev.type_0 == ev_mouse {
+        testcontrols_mousespeed = (ev.data2).abs();
     }
-    match (*ev).type_0 as u32 {
+    if ev.type_0 == ev_keydown && ev.data1 == key_prevweapon {
+        next_weapon = -1;
+    } else if ev.type_0 == ev_keydown && ev.data1 == key_nextweapon {
+        next_weapon = 1;
+    }
+    match ev.type_0 as u32 {
         0 => {
-            if (*ev).data1 == key_pause {
+            if ev.data1 == key_pause {
                 sendpause = true;
-            } else if (*ev).data1 < NUMKEYS {
-                gamekeydown[(*ev).data1 as usize] = true_0 as boolean;
+            } else if ev.data1 < NUMKEYS {
+                gamekeydown[ev.data1 as usize] = true_0 as boolean;
             }
             return true;
         }
         1 => {
-            if (*ev).data1 < NUMKEYS {
-                gamekeydown[(*ev).data1 as usize] = false_0 as boolean;
+            if ev.data1 < NUMKEYS {
+                gamekeydown[ev.data1 as usize] = false_0 as boolean;
             }
             return false;
         }
         2 => {
-            SetMouseButtons((*ev).data1 as u32);
-            mousex = (*ev).data2 * (mouseSensitivity + 5 as i32) / 10 as i32;
-            mousey = (*ev).data3 * (mouseSensitivity + 5 as i32) / 10 as i32;
+            SetMouseButtons(ev.data1 as u32);
+            mousex = ev.data2 * (mouseSensitivity + 5 as i32) / 10 as i32;
+            mousey = ev.data3 * (mouseSensitivity + 5 as i32) / 10 as i32;
             return true;
         }
         3 => {
-            SetJoyButtons((*ev).data1 as u32);
-            joyxmove = (*ev).data2;
-            joyymove = (*ev).data3;
-            joystrafemove = (*ev).data4;
+            SetJoyButtons(ev.data1 as u32);
+            joyxmove = ev.data2;
+            joyymove = ev.data3;
+            joystrafemove = ev.data4;
             return true;
         }
         _ => {}
@@ -913,13 +908,13 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
     i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0
-            && players[i as usize].playerstate as u32 == PST_REBORN as i32 as u32
+            && players[i as usize].playerstate as u32 == PST_REBORN as u32
         {
             G_DoReborn(i);
         }
         i += 1;
     }
-    while gameaction as u32 != ga_nothing as i32 as u32 {
+    while gameaction as u32 != ga_nothing as u32 {
         match gameaction as u32 {
             1 => {
                 G_DoLoadLevel();
@@ -1044,9 +1039,7 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
         }
         i += 1;
     }
-    if oldgamestate as u32 == GS_INTERMISSION as i32 as u32
-        && gamestate as u32 != GS_INTERMISSION as i32 as u32
-    {
+    if oldgamestate as u32 == GS_INTERMISSION as u32 && gamestate as u32 != GS_INTERMISSION as u32 {
         WI_End();
     }
     oldgamestate = gamestate;
@@ -1320,7 +1313,7 @@ pub unsafe fn G_ExitLevel() {
     gameaction = ga_completed;
 }
 pub unsafe fn G_SecretExitLevel() {
-    if gamemode as u32 == commercial as i32 as u32 && W_CheckNumForName("map31") < 0 as i32 {
+    if gamemode as u32 == commercial as u32 && W_CheckNumForName("map31") < 0 as i32 {
         secretexit = false;
     } else {
         secretexit = true;
@@ -1340,8 +1333,8 @@ pub unsafe fn G_DoCompleted() {
     if automapactive {
         AM_Stop();
     }
-    if gamemode as u32 != commercial as i32 as u32 {
-        if gameversion as u32 == exe_chex as i32 as u32 {
+    if gamemode as u32 != commercial as u32 {
+        if gameversion as u32 == exe_chex as u32 {
             if gamemap == 5 as i32 {
                 gameaction = ga_victory;
                 return;
@@ -1363,11 +1356,11 @@ pub unsafe fn G_DoCompleted() {
             }
         }
     }
-    if gamemap == 8 as i32 && gamemode as u32 != commercial as i32 as u32 {
+    if gamemap == 8 as i32 && gamemode as u32 != commercial as u32 {
         gameaction = ga_victory;
         return;
     }
-    if gamemap == 9 as i32 && gamemode as u32 != commercial as i32 as u32 {
+    if gamemap == 9 as i32 && gamemode as u32 != commercial as u32 {
         i = 0 as i32;
         while i < MAXPLAYERS {
             players[i as usize].didsecret = true;
@@ -1377,7 +1370,7 @@ pub unsafe fn G_DoCompleted() {
     wminfo.didsecret = players[consoleplayer as usize].didsecret;
     wminfo.epsd = gameepisode - 1 as i32;
     wminfo.last = gamemap - 1 as i32;
-    if gamemode as u32 == commercial as i32 as u32 {
+    if gamemode as u32 == commercial as u32 {
         if secretexit {
             match gamemap {
                 15 => {
@@ -1423,7 +1416,7 @@ pub unsafe fn G_DoCompleted() {
     wminfo.maxitems = totalitems;
     wminfo.maxsecret = totalsecret;
     wminfo.maxfrags = 0 as i32;
-    if gamemode as u32 == commercial as i32 as u32 {
+    if gamemode as u32 == commercial as u32 {
         wminfo.partime = TICRATE * cpars[(gamemap - 1 as i32) as usize];
     } else if gameepisode < 4 as i32 {
         wminfo.partime = TICRATE * pars[gameepisode as usize][gamemap as usize];
@@ -1458,7 +1451,7 @@ pub unsafe fn G_WorldDone() {
     if secretexit {
         players[consoleplayer as usize].didsecret = true;
     }
-    if gamemode as u32 == commercial as i32 as u32 {
+    if gamemode as u32 == commercial as u32 {
         let mut current_block_3: u64;
         match gamemap {
             15 | 31 => {
@@ -1643,7 +1636,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     if skill as i32 > sk_nightmare as i32 {
         skill = sk_nightmare;
     }
-    if gameversion as u32 >= exe_ultimate as i32 as u32 {
+    if gameversion as u32 >= exe_ultimate as u32 {
         if episode == 0 as i32 {
             episode = 4 as i32;
         }
@@ -1655,13 +1648,13 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
             episode = 3 as i32;
         }
     }
-    if episode > 1 as i32 && gamemode as u32 == shareware as i32 as u32 {
+    if episode > 1 as i32 && gamemode as u32 == shareware as u32 {
         episode = 1 as i32;
     }
     if map < 1 as i32 {
         map = 1 as i32;
     }
-    if map > 9 as i32 && gamemode as u32 != commercial as i32 as u32 {
+    if map > 9 as i32 && gamemode as u32 != commercial as u32 {
         map = 9 as i32;
     }
     M_ClearRandom(unsafe { &mut game_state().m_random });
@@ -1703,7 +1696,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     gamemap = map;
     gameskill = skill;
     viewactive = true;
-    if gamemode as u32 == commercial as i32 as u32 {
+    if gamemode as u32 == commercial as u32 {
         if gamemap < 12 as i32 {
             skytexturename =
                 b"SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;

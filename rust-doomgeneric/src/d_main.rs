@@ -243,11 +243,8 @@ pub unsafe fn D_ProcessEvents() {
         return;
     }
     loop {
-        ev = D_PopEvent(&mut game_state().d_event);
-        if ev.is_null() {
-            break;
-        }
-        if M_Responder(ev) {
+        let Some( mut ev) = D_PopEvent(&mut game_state().d_event) else {break;};
+        if M_Responder(&mut ev) {
             continue;
         }
         G_Responder(ev);

@@ -1470,7 +1470,7 @@ pub unsafe fn M_WriteText(x: i32, y: i32, string: &str) {
 unsafe fn IsNullKey(mut key: i32) -> bool {
     return key == KEY_PAUSE || key == KEY_CAPSLOCK || key == KEY_SCRLCK || key == KEY_NUMLOCK;
 }
-pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
+pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     let mut ch: i32 = 0;
     let mut key: i32 = 0;
     let mut i: i32 = 0;

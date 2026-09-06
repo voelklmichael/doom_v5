@@ -399,7 +399,7 @@ pub unsafe fn ST_refreshBackground() {
         );
     }
 }
-pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
+pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
     let mut i: i32 = 0;
     if (*ev).type_0 as u32 == ev_keyup as i32 as u32
         && (*ev).data1 as u32 & 0xffff0000 as u32 == AM_MSGHEADER as u32

@@ -197,14 +197,14 @@ pub unsafe fn I_GetEvent(state: &mut IInputState) {
             event.data1 = TranslateKey(key) as i32;
             event.data2 = GetTypedChar(state, key) as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&mut game_state().d_event, &raw mut event);
+                D_PostEvent(&mut game_state().d_event, event);
             }
         } else {
             event.type_0 = ev_keyup;
             event.data1 = TranslateKey(key) as i32;
             event.data2 = 0 as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&mut game_state().d_event, &raw mut event);
+                D_PostEvent(&mut game_state().d_event, event);
             }
             break;
         }

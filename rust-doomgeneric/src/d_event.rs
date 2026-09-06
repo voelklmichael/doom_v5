@@ -29,10 +29,10 @@ pub struct event_t {
     pub data3: i32,
     pub data4: i32,
 }
-pub const MAXEVENTS: i32 = 64;
+const MAXEVENTS: i32 = 64;
 
 pub struct DEventState {
-    events: [event_t; 64],
+    events: [event_t; MAXEVENTS as usize],
     eventhead: i32,
     eventtail: i32,
 }
@@ -53,17 +53,16 @@ impl DEventState {
     }
 }
 
-pub fn D_PostEvent(state: &mut DEventState, mut ev: *mut event_t) {
-    state.events[state.eventhead as usize] = unsafe { *ev };
+pub fn D_PostEvent(state: &mut DEventState, ev: event_t) {
+    state.events[state.eventhead as usize] = ev;
     state.eventhead = (state.eventhead + 1 as i32) % MAXEVENTS;
 }
-pub fn D_PopEvent(state: &mut DEventState) -> *mut event_t {
+pub fn D_PopEvent(state: &mut DEventState) -> Option<event_t> {
     if state.eventtail == state.eventhead {
-        return ::core::ptr::null_mut::<event_t>();
+        return None;
     }
-    let result = unsafe {
-        (&raw mut state.events as *mut event_t).offset(state.eventtail as isize) as *mut event_t
-    };
+    let event = state.events[state.eventtail as usize].clone();
+
     state.eventtail = (state.eventtail + 1 as i32) % MAXEVENTS;
-    return result;
+    return Some(event);
 }

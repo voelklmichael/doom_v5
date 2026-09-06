@@ -386,7 +386,7 @@ pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
     state.finalestage = F_STAGE_TEXT;
     state.finalecount = 0 as u32;
 }
-pub unsafe fn F_Responder(state: &mut FFinaleState, mut event: *mut event_t) -> bool {
+pub unsafe fn F_Responder(state: &mut FFinaleState, mut event: &event_t) -> bool {
     if state.finalestage as u32 == F_STAGE_CAST as i32 as u32 {
         return F_CastResponder(state, event);
     }
@@ -781,8 +781,8 @@ pub unsafe fn F_CastTicker(state: &mut FFinaleState) {
         state.casttics = 15 as i32;
     }
 }
-pub unsafe fn F_CastResponder(state: &mut FFinaleState, mut ev: *mut event_t) -> bool {
-    if (*ev).type_0 as u32 != ev_keydown as i32 as u32 {
+pub unsafe fn F_CastResponder(state: &mut FFinaleState, mut ev: &event_t) -> bool {
+    if ev.type_0 != ev_keydown as u32 {
         return false;
     }
     if state.castdeath {

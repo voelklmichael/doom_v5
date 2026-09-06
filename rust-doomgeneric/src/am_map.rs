@@ -638,7 +638,7 @@ pub unsafe fn AM_initVariables() {
     old_m_y = m_y;
     old_m_w = m_w;
     old_m_h = m_h;
-    ST_Responder(&raw mut st_notify);
+    ST_Responder(&st_notify);
 }
 pub unsafe fn AM_loadPics() {
     let mut i: i32 = 0;
@@ -708,7 +708,7 @@ pub unsafe fn AM_Stop() {
     };
     AM_unloadPics();
     automapactive = false;
-    ST_Responder(&raw mut st_notify);
+    ST_Responder(&st_notify);
     stopped = true;
 }
 pub unsafe fn AM_Start() {
@@ -736,7 +736,7 @@ pub unsafe fn AM_maxOutWindowScale() {
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
     AM_activateNewScale();
 }
-pub unsafe fn AM_Responder(mut ev: *mut event_t) -> bool {
+pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
     let mut rc: i32 = 0;
     static mut bigstate: i32 = 0;
     static mut buffer: [::core::ffi::c_char; 20] = [0; 20];

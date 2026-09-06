@@ -554,7 +554,7 @@ pub unsafe fn HU_dequeueChatChar() -> ::core::ffi::c_char {
     }
     return c;
 }
-pub unsafe fn HU_Responder(mut ev: *mut event_t) -> bool {
+pub unsafe fn HU_Responder(mut ev: &event_t) -> bool {
     static mut lastmessage: [::core::ffi::c_char; 81] = [0; 81];
     let mut macromessage: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut eatkey: bool = false;
