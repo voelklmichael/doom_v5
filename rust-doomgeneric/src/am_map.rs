@@ -44,6 +44,7 @@ use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::g_game::players;
+use crate::src::v_video::V_DrawPatch;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -63,7 +64,6 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

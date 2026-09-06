@@ -38,6 +38,8 @@ use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
 use crate::src::st_lib::STlib_init;
 use crate::src::v_video::V_CopyRect;
+use crate::src::v_video::V_DrawPatch;
+use crate::src::w_wad::W_CacheLumpNum;
 
 extern "C" {
     fn snprintf(
@@ -51,11 +53,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn W_CacheLumpNum(
-        lump: i32,
-        tag: i32,
-    ) -> *mut ::core::ffi::c_void;
-    fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

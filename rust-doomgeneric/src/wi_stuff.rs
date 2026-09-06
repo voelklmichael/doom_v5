@@ -15,6 +15,7 @@ use crate::src::g_game::netgame;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
+use crate::src::v_video::V_DrawPatch;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -29,7 +30,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -50,6 +50,7 @@ use crate::src::r_draw::viewheight;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::m_fixed::FixedMul;
 use crate::src::r_main::R_PointToAngle;
+use crate::src::w_wad::W_CacheLumpNum;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -72,10 +73,6 @@ extern "C" {
         size: i32,
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_CacheLumpNum(
-        lump: i32,
-        tag: i32,
     ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;

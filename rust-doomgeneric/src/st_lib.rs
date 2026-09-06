@@ -3,10 +3,9 @@ use crate::src::i_system::I_Error;
 use crate::src::w_wad::W_CacheLumpName;
 use crate::src::st_stuff::st_backing_screen;
 use crate::src::v_video::V_CopyRect;
+use crate::src::v_video::V_DrawPatch;
 
-extern "C" {
-    fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-}
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;

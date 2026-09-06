@@ -403,8 +403,7 @@ pub unsafe fn W_ReadLump(
     }
     I_EndRead();
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_CacheLumpNum(
+pub unsafe fn W_CacheLumpNum(
     mut lumpnum: i32,
     mut tag: i32,
 ) -> *mut ::core::ffi::c_void {

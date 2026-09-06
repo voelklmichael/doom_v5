@@ -38,6 +38,7 @@ use crate::src::r_data::R_FlatNumForName;
 use crate::src::w_wad::W_LumpLength;
 use crate::src::w_wad::W_ReleaseLumpNum;
 use crate::src::r_data::R_TextureNumForName;
+use crate::src::w_wad::W_CacheLumpNum;
 
 extern "C" {
     fn Z_Malloc(
@@ -61,10 +62,6 @@ extern "C" {
         __s: *mut ::core::ffi::c_void,
         __c: i32,
         __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_CacheLumpNum(
-        lump: i32,
-        tag: i32,
     ) -> *mut ::core::ffi::c_void;
 }
 pub type __uint8_t = u8;
