@@ -42,6 +42,14 @@ use crate::src::s_sound::S_SetSfxVolume;
 use crate::src::d_main::devparm;
 use crate::src::hu_stuff::message_dontfuckwithme;
 use crate::src::hu_stuff::chat_on;
+use crate::src::g_game::G_LoadGame;
+use crate::src::g_game::G_DeferedInitNew;
+use crate::src::g_game::usergame;
+use crate::src::g_game::testcontrols;
+use crate::src::hu_stuff::hu_font;
+use crate::src::i_system::I_Quit;
+use crate::src::s_sound::sfxVolume;
+use crate::src::s_sound::musicVolume;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -75,7 +83,6 @@ extern "C" {
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn I_GetTime() -> i32;
-    fn I_Quit();
     fn I_SetPalette(palette: *mut byte);
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
@@ -87,12 +94,6 @@ extern "C" {
         y: i32,
         patch: *mut patch_t,
     );
-    fn G_DeferedInitNew(
-        skill: skill_t,
-        episode: i32,
-        map: i32,
-    );
-    fn G_LoadGame(name: *mut ::core::ffi::c_char);
     fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gametic: i32;
@@ -100,16 +101,11 @@ extern "C" {
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
-    static mut sfxVolume: i32;
-    static mut musicVolume: i32;
     static mut automapactive: bool;
-    static mut testcontrols: bool;
     static mut consoleplayer: i32;
-    static mut usergame: bool;
     static mut demoplayback: bool;
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
-    static mut hu_font: [*mut patch_t; 63];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1656,13 +1652,9 @@ pub const HU_FONTEND: i32 = '_' as i32;
 pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART
     + 1 as i32;
 pub const SAVESTRINGSIZE: i32 = 24 as i32;
-#[no_mangle]
 pub static mut mouseSensitivity: i32 = 5 as i32;
-#[no_mangle]
 pub static mut showMessages: i32 = 1 as i32;
-#[no_mangle]
 pub static mut detailLevel: i32 = 0 as i32;
-#[no_mangle]
 pub static mut screenblocks: i32 = 10 as i32;
 #[no_mangle]
 pub static mut screenSize: i32 = 0;
@@ -1691,7 +1683,6 @@ pub static mut saveCharIndex: i32 = 0;
 #[no_mangle]
 pub static mut saveOldString: String = String::new();
 pub static mut inhelpscreens: bool = false;
-#[no_mangle]
 pub static mut menuactive: bool = false;
 pub const SKULLXOFF: i32 = -(32 as i32);
 pub const LINEHEIGHT: i32 = 16 as i32;

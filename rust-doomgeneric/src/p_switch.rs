@@ -4,24 +4,20 @@ use crate::src::p_mobj::{degenmobj_t, line_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
 use crate::src::p_doors::EV_DoLockedDoor;
+use crate::src::g_game::G_SecretExitLevel;
+use crate::src::p_ceilng::EV_DoCeiling;
+use crate::src::p_floor::EV_BuildStairs;
+use crate::src::p_lights::EV_LightTurnOn;
+use crate::src::p_plats::EV_DoPlat;
 
 extern "C" {
     static mut sides: *mut side_t;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn EV_DoDonut(line: *mut line_t) -> i32;
-    fn EV_LightTurnOn(line: *mut line_t, bright: i32);
-    fn EV_DoPlat(
-        line: *mut line_t,
-        type_0: plattype_e,
-        amount: i32,
-    ) -> i32;
     fn EV_VerticalDoor(line: *mut line_t, thing: *mut mobj_t);
     fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
-    fn EV_DoCeiling(line: *mut line_t, type_0: ceiling_e) -> i32;
-    fn EV_BuildStairs(line: *mut line_t, type_0: stair_e) -> i32;
     fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
     fn G_ExitLevel();
-    fn G_SecretExitLevel();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
 }
@@ -2077,8 +2073,7 @@ pub unsafe fn P_ChangeSwitchTexture(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_UseSpecialLine(
+pub unsafe fn P_UseSpecialLine(
     mut thing: *mut mobj_t,
     mut line: *mut line_t,
     mut side: i32,

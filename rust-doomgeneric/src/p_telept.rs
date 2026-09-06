@@ -1,5 +1,6 @@
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
+use crate::src::p_map::P_TeleportMove;
 extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
@@ -15,7 +16,6 @@ extern "C" {
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
-    fn P_TeleportMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

@@ -4,6 +4,8 @@ use crate::src::d_player::{player_t, PST_DEAD};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::p_mobj::P_SpawnPlayerMissile;
 use crate::src::p_enemy::P_NoiseAlert;
+use crate::src::p_map::P_LineAttack;
+use crate::src::p_map::linetarget;
 
 extern "C" {
     fn P_Random() -> i32;
@@ -19,15 +21,7 @@ extern "C" {
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    static mut linetarget: *mut mobj_t;
     fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
-    fn P_LineAttack(
-        t1: *mut mobj_t,
-        angle: angle_t,
-        distance: fixed_t,
-        slope: fixed_t,
-        damage: i32,
-    );
     fn P_DamageMobj(
         target: *mut mobj_t,
         inflictor: *mut mobj_t,

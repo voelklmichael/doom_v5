@@ -3,16 +3,16 @@ use crate::src::p_mobj::{sector_t, vertex_t, line_t, subsector_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
 use crate::src::p_setup::rejectmatrix;
+use crate::src::p_setup::segs;
+use crate::src::p_setup::numsubsectors;
+use crate::src::p_setup::numnodes;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut segs: *mut seg_t;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut numsubsectors: i32;
     static mut subsectors: *mut subsector_t;
-    static mut numnodes: i32;
     static mut nodes: *mut node_t;
     static mut validcount: i32;
 }
@@ -1498,8 +1498,7 @@ pub unsafe extern "C" fn P_CrossBSPNode(mut bspnum: i32) -> boolean {
         (*bsp).children[(side ^ 1 as i32) as usize] as i32,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CheckSight(
+pub unsafe fn P_CheckSight(
     mut t1: *mut mobj_t,
     mut t2: *mut mobj_t,
 ) -> boolean {

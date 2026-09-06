@@ -5,6 +5,7 @@ use crate::src::p_mobj::{mobj_s, mobj_t};
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_Tactile;
 use crate::src::p_pspr::P_DropWeapon;
+use crate::src::am_map::AM_Stop;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
@@ -20,7 +21,6 @@ extern "C" {
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
     fn P_Random() -> i32;
-    fn AM_Stop();
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn P_SpawnMobj(
         x: fixed_t,

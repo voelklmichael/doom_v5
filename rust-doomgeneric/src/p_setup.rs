@@ -18,6 +18,11 @@ use crate::src::p_switch::P_InitSwitchList;
 use crate::src::g_game::wminfo;
 use crate::src::g_game::precache;
 use crate::src::g_game::bodyqueslot;
+use crate::src::g_game::totalsecret;
+use crate::src::g_game::totalkills;
+use crate::src::g_game::totalitems;
+use crate::src::m_bbox::M_AddToBox;
+use crate::src::p_tick::P_InitThinkers;
 
 extern "C" {
     fn Z_Malloc(
@@ -38,7 +43,6 @@ extern "C" {
         ...
     ) -> i32;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn M_AddToBox(box_0: *mut fixed_t, x: fixed_t, y: fixed_t);
     fn memset(
         __s: *mut ::core::ffi::c_void,
         __c: i32,
@@ -55,15 +59,11 @@ extern "C" {
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_InitSprites(namelist: *mut *mut ::core::ffi::c_char);
-    fn P_InitThinkers();
     fn P_InitPicAnims();
     fn S_Start();
     static mut gamemode: GameMode_t;
     static mut deathmatch: i32;
     static mut consoleplayer: i32;
-    static mut totalkills: i32;
-    static mut totalitems: i32;
-    static mut totalsecret: i32;
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
@@ -1453,18 +1453,15 @@ pub static mut vertexes: *mut vertex_t = ::core::ptr::null::<vertex_t>()
     as *mut vertex_t;
 #[no_mangle]
 pub static mut numsegs: i32 = 0;
-#[no_mangle]
 pub static mut segs: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
 #[no_mangle]
 pub static mut numsectors: i32 = 0;
 #[no_mangle]
 pub static mut sectors: *mut sector_t = ::core::ptr::null::<sector_t>() as *mut sector_t;
-#[no_mangle]
 pub static mut numsubsectors: i32 = 0;
 #[no_mangle]
 pub static mut subsectors: *mut subsector_t = ::core::ptr::null::<subsector_t>()
     as *mut subsector_t;
-#[no_mangle]
 pub static mut numnodes: i32 = 0;
 #[no_mangle]
 pub static mut nodes: *mut node_t = ::core::ptr::null::<node_t>() as *mut node_t;
@@ -1491,7 +1488,6 @@ pub static mut bmaporgy: fixed_t = 0;
 pub static mut blocklinks: *mut *mut mobj_t = ::core::ptr::null::<*mut mobj_t>()
     as *mut *mut mobj_t;
 pub static mut rejectmatrix: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
 pub static mut deathmatchstarts: [mapthing_t; 10] = [mapthing_t {
     x: 0,
     y: 0,
@@ -1499,7 +1495,6 @@ pub static mut deathmatchstarts: [mapthing_t; 10] = [mapthing_t {
     type_0: 0,
     options: 0,
 }; 10];
-#[no_mangle]
 pub static mut deathmatch_p: *mut mapthing_t = ::core::ptr::null::<mapthing_t>()
     as *mut mapthing_t;
 #[no_mangle]

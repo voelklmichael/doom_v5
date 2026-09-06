@@ -143,7 +143,6 @@ pub static mut key_pause: i32 = KEY_PAUSE;
 pub static mut key_demo_quit: i32 = 'q' as i32;
 pub static mut key_spy: i32 = KEY_F12;
 pub static mut key_multi_msg: i32 = 't' as i32;
-#[no_mangle]
 pub static mut key_multi_msgplayer: [i32; 8] = [0; 8];
 pub static mut key_weapon1: i32 = '1' as i32;
 pub static mut key_weapon2: i32 = '2' as i32;

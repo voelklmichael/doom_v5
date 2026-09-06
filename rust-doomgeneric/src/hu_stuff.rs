@@ -10,6 +10,8 @@ use crate::src::hu_lib::{
 };
 use crate::src::m_controls::key_message_refresh;
 use crate::src::m_controls::key_multi_msg;
+use crate::src::m_controls::key_multi_msgplayer;
+use crate::src::m_menu::showMessages;
 
 extern "C" {
     fn snprintf(
@@ -18,7 +20,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    static mut key_multi_msgplayer: [i32; 8];
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
         src: *const ::core::ffi::c_char,
@@ -35,7 +36,6 @@ extern "C" {
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    static mut showMessages: i32;
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;
@@ -1686,7 +1686,6 @@ pub static mut player_names: [*mut ::core::ffi::c_char; 4] = [
 #[no_mangle]
 pub static mut chat_char: ::core::ffi::c_char = 0;
 static mut plr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t;
-#[no_mangle]
 pub static mut hu_font: [*mut patch_t; 63] = [::core::ptr::null::<patch_t>()
     as *mut patch_t; 63];
 static mut w_title: hu_textline_t = hu_textline_t {

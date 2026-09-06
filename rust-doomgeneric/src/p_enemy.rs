@@ -9,6 +9,16 @@ use crate::src::p_map::tmfloorz;
 use crate::src::p_map::spechit;
 use crate::src::p_map::numspechit;
 use crate::src::p_map::P_RadiusAttack;
+use crate::src::p_map::P_TeleportMove;
+use crate::src::p_map::P_TryMove;
+use crate::src::p_map::P_LineAttack;
+use crate::src::p_maputl::P_LineOpening;
+use crate::src::p_maputl::P_BlockThingsIterator;
+use crate::src::p_maputl::openrange;
+use crate::src::p_mobj::P_SpawnPuff;
+use crate::src::p_mobj::P_SubstNullMobj;
+use crate::src::p_sight::P_CheckSight;
+use crate::src::p_switch::P_UseSpecialLine;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -28,32 +38,13 @@ extern "C" {
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
     fn P_RemoveMobj(th: *mut mobj_t);
-    fn P_SubstNullMobj(th: *mut mobj_t) -> *mut mobj_t;
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn P_MobjThinker(mobj: *mut mobj_t);
-    fn P_SpawnPuff(x: fixed_t, y: fixed_t, z: fixed_t);
     fn P_AproxDistance(dx: fixed_t, dy: fixed_t) -> fixed_t;
-    static mut openrange: fixed_t;
-    fn P_LineOpening(linedef: *mut line_t);
-    fn P_BlockThingsIterator(
-        x: i32,
-        y: i32,
-        func: Option<unsafe extern "C" fn(*mut mobj_t) -> boolean>,
-    ) -> boolean;
     fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
     fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    fn P_TryMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    fn P_TeleportMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    fn P_CheckSight(t1: *mut mobj_t, t2: *mut mobj_t) -> boolean;
     fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
-    fn P_LineAttack(
-        t1: *mut mobj_t,
-        angle: angle_t,
-        distance: fixed_t,
-        slope: fixed_t,
-        damage: i32,
-    );
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
     fn P_DamageMobj(
@@ -62,11 +53,6 @@ extern "C" {
         source: *mut mobj_t,
         damage: i32,
     );
-    fn P_UseSpecialLine(
-        thing: *mut mobj_t,
-        line: *mut line_t,
-        side: i32,
-    ) -> boolean;
     fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
     fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);

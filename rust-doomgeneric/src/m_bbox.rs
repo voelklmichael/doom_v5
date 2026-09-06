@@ -12,8 +12,7 @@ pub unsafe fn M_ClearBox(mut box_0: *mut fixed_t) {
     *fresh1 = INT_MAX as fixed_t;
     *box_0.offset(BOXBOTTOM as i32 as isize) = *fresh1;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_AddToBox(
+pub unsafe fn M_AddToBox(
     mut box_0: *mut fixed_t,
     mut x: fixed_t,
     mut y: fixed_t,

@@ -79,6 +79,36 @@ use crate::src::m_menu::inhelpscreens;
 use crate::src::d_net::D_ConnectNetGame;
 use crate::src::g_game::forwardmove;
 use crate::src::g_game::sidemove;
+use crate::src::d_loop::NetUpdate;
+use crate::src::doomstat::modifiedgame;
+use crate::src::dummy::drone;
+use crate::src::g_game::G_LoadGame;
+use crate::src::g_game::G_VanillaVersionCode;
+use crate::src::g_game::gameaction;
+use crate::src::g_game::paused;
+use crate::src::g_game::usergame;
+use crate::src::g_game::demorecording;
+use crate::src::g_game::singledemo;
+use crate::src::g_game::testcontrols;
+use crate::src::i_timer::I_Sleep;
+use crate::src::i_video::screensaver_mode;
+use crate::src::m_controls::key_multi_msgplayer;
+use crate::src::m_menu::mouseSensitivity;
+use crate::src::m_menu::showMessages;
+use crate::src::m_menu::detailLevel;
+use crate::src::m_menu::screenblocks;
+use crate::src::m_menu::menuactive;
+use crate::src::r_draw::R_FillBackScreen;
+use crate::src::r_draw::scaledviewwidth;
+use crate::src::r_draw::viewwindowx;
+use crate::src::r_draw::viewwindowy;
+use crate::src::r_main::R_ExecuteSetViewSize;
+use crate::src::r_main::setsizeneeded;
+use crate::src::s_sound::S_StartMusic;
+use crate::src::s_sound::sfxVolume;
+use crate::src::s_sound::musicVolume;
+use crate::src::w_wad::W_AddFile;
+use crate::src::w_wad::numlumps;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -111,32 +141,20 @@ extern "C" {
         __n: size_t,
     ) -> i32;
     fn I_GetTime() -> i32;
-    fn I_Sleep(ms: i32);
-    fn NetUpdate();
     fn TryRunTics();
     static mut gametic: i32;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut modifiedgame: bool;
     static mut timelimit: i32;
     static mut netgame: bool;
     static mut deathmatch: i32;
-    static mut sfxVolume: i32;
-    static mut musicVolume: i32;
     static mut automapactive: bool;
-    static mut menuactive: bool;
-    static mut paused: bool;
     static mut viewactive: bool;
-    static mut testcontrols: bool;
     static mut consoleplayer: i32;
-    static mut usergame: bool;
     static mut demoplayback: bool;
-    static mut demorecording: bool;
-    static mut singledemo: bool;
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
-    static mut mouseSensitivity: i32;
     fn Z_Init();
     fn Z_Malloc(
         size: i32,
@@ -144,10 +162,7 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     static mut lumpinfo: *mut lumpinfo_t;
-    static mut numlumps: u32;
-    fn W_AddFile(filename: *mut ::core::ffi::c_char) -> *mut wad_file_t;
     fn S_Init(sfxVolume_0: i32, musicVolume_0: i32);
-    fn S_StartMusic(music_id: i32);
     fn V_Init();
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     fn V_DrawPatchDirect(
@@ -158,7 +173,6 @@ extern "C" {
     fn V_RestoreBuffer();
     fn M_LoadDefaults();
     fn M_SaveDefaults();
-    static mut key_multi_msgplayer: [i32; 8];
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
         src: *const ::core::ffi::c_char,
@@ -171,32 +185,18 @@ extern "C" {
         ...
     ) -> i32;
     fn M_Init();
-    static mut detailLevel: i32;
-    static mut screenblocks: i32;
     fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
     fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn I_InitGraphics();
     fn I_SetPalette(palette: *mut byte);
-    static mut screensaver_mode: bool;
-    fn G_LoadGame(name: *mut ::core::ffi::c_char);
     fn G_CheckDemoStatus() -> boolean;
-    fn G_VanillaVersionCode() -> i32;
     fn HU_Init();
     fn ST_Init();
-    static mut drone: bool;
     fn P_Init();
-    static mut scaledviewwidth: i32;
     static mut viewheight: i32;
-    static mut viewwindowx: i32;
-    static mut viewwindowy: i32;
     fn R_Init();
-    fn R_FillBackScreen();
     fn StatDump();
-    static mut gameaction: gameaction_t;
     fn D_CheckNetGame();
-    static mut setsizeneeded: bool;
-    static mut showMessages: i32;
-    fn R_ExecuteSetViewSize();
 }
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;
@@ -1676,7 +1676,6 @@ pub static mut iwadfile: *mut ::core::ffi::c_char = ::core::ptr::null::<
 pub static mut devparm: bool = false;
 #[no_mangle]
 pub static mut nomonsters: bool = false;
-#[no_mangle]
 pub static mut respawnparm: bool = false;
 #[no_mangle]
 pub static mut fastparm: bool = false;
@@ -1715,7 +1714,6 @@ pub unsafe extern "C" fn D_ProcessEvents() {
         G_Responder(ev);
     };
 }
-#[no_mangle]
 pub static mut wipegamestate: gamestate_t = GS_DEMOSCREEN;
 #[no_mangle]
 pub unsafe extern "C" fn D_Display() {

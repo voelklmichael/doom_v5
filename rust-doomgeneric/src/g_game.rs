@@ -94,6 +94,18 @@ use crate::src::f_finale::F_Responder;
 use crate::src::f_finale::F_Ticker;
 use crate::src::f_finale::F_StartFinale;
 use crate::src::hu_stuff::player_names;
+use crate::src::am_map::AM_Stop;
+use crate::src::d_main::respawnparm;
+use crate::src::d_main::wipegamestate;
+use crate::src::i_system::I_Quit;
+use crate::src::m_menu::mouseSensitivity;
+use crate::src::m_misc::M_WriteFile;
+use crate::src::p_setup::deathmatchstarts;
+use crate::src::p_setup::deathmatch_p;
+use crate::src::r_draw::R_FillBackScreen;
+use crate::src::r_main::R_ExecuteSetViewSize;
+use crate::src::r_main::setsizeneeded;
+use crate::src::st_stuff::ST_Responder;
 
 extern "C" {
     fn memcpy(
@@ -129,22 +141,15 @@ extern "C" {
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
     static mut nomonsters: bool;
-    static mut respawnparm: bool;
     static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut automapactive: bool;
     static mut leveltime: i32;
-    static mut deathmatchstarts: [mapthing_t; 10];
-    static mut deathmatch_p: *mut mapthing_t;
     static mut playerstarts: [mapthing_t; 4];
-    static mut wipegamestate: gamestate_t;
-    static mut mouseSensitivity: i32;
     static mut skyflatnum: i32;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
-    static mut setsizeneeded: bool;
-    fn R_ExecuteSetViewSize();
     fn Z_Malloc(
         size: i32,
         tag: i32,
@@ -152,11 +157,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn Z_CheckHeap();
-    fn M_WriteFile(
-        name: *mut ::core::ffi::c_char,
-        source: *mut ::core::ffi::c_void,
-        length: i32,
-    ) -> boolean;
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
         src: *const ::core::ffi::c_char,
@@ -169,15 +169,11 @@ extern "C" {
         ...
     ) -> i32;
     fn P_Random() -> i32;
-    fn I_Quit();
     fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
-    fn ST_Responder(ev: *mut event_t) -> boolean;
-    fn AM_Stop();
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
-    fn R_FillBackScreen();
     fn P_SpawnMobj(
         x: fixed_t,
         y: fixed_t,
@@ -1721,7 +1717,6 @@ pub const ANG45: i32 = 0x20000000 as i32;
 pub const SAVEGAMESIZE: i32 = 0x2c000 as i32;
 #[no_mangle]
 pub static mut oldgamestate: gamestate_t = GS_LEVEL;
-#[no_mangle]
 pub static mut gameaction: gameaction_t = ga_nothing;
 #[no_mangle]
 pub static mut gamestate: gamestate_t = GS_LEVEL;
@@ -1734,13 +1729,11 @@ pub static mut gameepisode: i32 = 0;
 pub static mut gamemap: i32 = 0;
 #[no_mangle]
 pub static mut timelimit: i32 = 0;
-#[no_mangle]
 pub static mut paused: bool = false;
 #[no_mangle]
 pub static mut sendpause: bool = false;
 #[no_mangle]
 pub static mut sendsave: bool = false;
-#[no_mangle]
 pub static mut usergame: bool = false;
 #[no_mangle]
 pub static mut timingdemo: bool = false;
@@ -1816,17 +1809,13 @@ pub static mut consoleplayer: i32 = 0;
 pub static mut displayplayer: i32 = 0;
 #[no_mangle]
 pub static mut levelstarttic: i32 = 0;
-#[no_mangle]
 pub static mut totalsecret: i32 = 0;
-#[no_mangle]
 pub static mut totalkills: i32 = 0;
-#[no_mangle]
 pub static mut totalitems: i32 = 0;
 #[no_mangle]
 pub static mut demoname: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
-#[no_mangle]
 pub static mut demorecording: bool = false;
 #[no_mangle]
 pub static mut longtics: bool = false;
@@ -1841,10 +1830,8 @@ pub static mut demobuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 pub static mut demo_p: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut demoend: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
 pub static mut singledemo: bool = false;
 pub static mut precache: bool = true;
-#[no_mangle]
 pub static mut testcontrols: bool = false;
 pub static mut testcontrols_mousespeed: i32 = 0;
 pub static mut wminfo: wbstartstruct_t = wbstartstruct_t {
@@ -3037,8 +3024,7 @@ pub unsafe extern "C" fn G_ExitLevel() {
     secretexit = false;
     gameaction = ga_completed;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_SecretExitLevel() {
+pub unsafe fn G_SecretExitLevel() {
     if gamemode as u32
         == commercial as i32 as u32
         && W_CheckNumForName("map31",
@@ -3234,8 +3220,7 @@ pub unsafe extern "C" fn G_DoWorldDone() {
 }
 #[no_mangle]
 pub static mut savename: [::core::ffi::c_char; 256] = [0; 256];
-#[no_mangle]
-pub unsafe extern "C" fn G_LoadGame(mut name: *mut ::core::ffi::c_char) {
+pub unsafe fn G_LoadGame(mut name: *mut ::core::ffi::c_char) {
     M_StringCopy(
         &raw mut savename as *mut ::core::ffi::c_char,
         name,
@@ -3360,8 +3345,7 @@ pub static mut d_skill: skill_t = sk_baby;
 pub static mut d_episode: i32 = 0;
 #[no_mangle]
 pub static mut d_map: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn G_DeferedInitNew(
+pub unsafe fn G_DeferedInitNew(
     mut skill: skill_t,
     mut episode: i32,
     mut map: i32,
@@ -3651,8 +3635,7 @@ pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     demoend = demobuffer.offset(maxsize as isize);
     demorecording = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_VanillaVersionCode() -> i32 {
+pub unsafe fn G_VanillaVersionCode() -> i32 {
     match gameversion as u32 {
         0 => {
             I_Error("Doom 1.2 does not have a version code!");

@@ -1,5 +1,5 @@
 use crate::src::r_data::column_t;
-use crate::src::r_defs::{drawseg_t, visplane_t};
+use crate::src::r_defs::drawseg_t;
 use crate::src::p_mobj::{actionf_t};
 use crate::src::i_system::I_Error;
 use crate::src::r_main::R_PointToDist;
@@ -19,6 +19,15 @@ use crate::src::r_things::mceilingclip;
 use crate::src::r_things::spryscale;
 use crate::src::r_things::sprtopscreen;
 use crate::src::r_things::R_DrawMaskedColumn;
+use crate::src::r_data::R_GetColumn;
+use crate::src::r_data::textureheight;
+use crate::src::r_data::texturetranslation;
+use crate::src::r_main::centeryfrac;
+use crate::src::r_main::xtoviewangle;
+use crate::src::r_main::scalelight;
+use crate::src::r_plane::floorplane;
+use crate::src::r_plane::ceilingplane;
+use crate::src::r_things::screenheightarray;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -31,24 +40,15 @@ extern "C" {
     static finesine: [fixed_t; 10240];
     static finetangent: [fixed_t; 4096];
     static mut skyflatnum: i32;
-    static mut textureheight: *mut fixed_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut texturetranslation: *mut i32;
     static mut viewz: fixed_t;
     static mut viewangle: angle_t;
-    static mut xtoviewangle: [angle_t; 321];
-    static mut floorplane: *mut visplane_t;
-    static mut ceilingplane: *mut visplane_t;
-    fn R_GetColumn(tex: i32, col: i32) -> *mut byte;
-    static mut centeryfrac: fixed_t;
-    static mut scalelight: [[*mut lighttable_t; 48]; 16];
     static mut extralight: i32;
     static mut fixedcolormap: *mut lighttable_t;
     static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
     static mut drawsegs: [drawseg_t; 256];
     static mut ds_p: *mut drawseg_t;
-    static mut screenheightarray: [i16; 320];
     static mut dc_colormap: *mut lighttable_t;
     static mut dc_x: i32;
     static mut dc_yl: i32;

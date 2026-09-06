@@ -18,6 +18,9 @@ use crate::src::st_lib::STlib_updateMultIcon;
 use crate::src::st_lib::STlib_initBinIcon;
 use crate::src::st_lib::STlib_updateBinIcon;
 use crate::src::p_inter::P_GivePower;
+use crate::src::g_game::G_DeferedInitNew;
+use crate::src::m_cheat::cht_CheckCheat;
+use crate::src::v_video::V_UseBuffer;
 
 extern "C" {
     fn snprintf(
@@ -43,15 +46,6 @@ extern "C" {
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
-    fn G_DeferedInitNew(
-        skill: skill_t,
-        episode: i32,
-        map: i32,
-    );
-    fn cht_CheckCheat(
-        cht: *mut cheatseq_t,
-        key: ::core::ffi::c_char,
-    ) -> i32;
     fn STlib_init();
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn S_ChangeMusic(music_id: i32, looping: i32);
@@ -65,7 +59,6 @@ extern "C" {
         desty: i32,
     );
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    fn V_UseBuffer(buffer: *mut byte);
     fn V_RestoreBuffer();
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
@@ -1862,8 +1855,7 @@ pub unsafe extern "C" fn ST_refreshBackground() {
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn ST_Responder(mut ev: *mut event_t) -> boolean {
     let mut i: i32 = 0;
     if (*ev).type_0 as u32
         == ev_keyup as i32 as u32

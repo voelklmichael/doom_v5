@@ -4,6 +4,7 @@ use crate::src::p_spec::{plat_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
+use crate::src::p_spec::P_FindLowestCeilingSurrounding;
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -20,7 +21,6 @@ extern "C" {
     static mut sides: *mut side_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_FindLowestCeilingSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindSectorFromLineTag(
         line: *mut line_t,
         start: i32,

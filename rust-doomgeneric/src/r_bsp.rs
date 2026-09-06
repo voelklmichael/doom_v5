@@ -8,19 +8,19 @@ use crate::src::r_main::sscount;
 use crate::src::r_main::R_PointOnSide;
 use crate::src::r_things::R_AddSprites;
 use crate::src::r_segs::R_StoreWallRange;
+use crate::src::p_setup::segs;
+use crate::src::p_setup::numsubsectors;
+use crate::src::r_plane::floorplane;
+use crate::src::r_plane::ceilingplane;
 
 extern "C" {
     static mut viewwidth: i32;
-    static mut segs: *mut seg_t;
-    static mut numsubsectors: i32;
     static mut subsectors: *mut subsector_t;
     static mut nodes: *mut node_t;
     static mut viewx: fixed_t;
     static mut viewy: fixed_t;
     static mut viewz: fixed_t;
     static mut viewangle: angle_t;
-    static mut floorplane: *mut visplane_t;
-    static mut ceilingplane: *mut visplane_t;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
     fn R_FindPlane(
         height: fixed_t,

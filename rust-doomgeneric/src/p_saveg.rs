@@ -10,6 +10,9 @@ use crate::src::d_ticcmd::{ticcmd_t};
 use crate::src::i_system::I_Error;
 use crate::src::p_ceilng::P_AddActiveCeiling;
 use crate::src::d_main::savegamedir;
+use crate::src::g_game::G_VanillaVersionCode;
+use crate::src::p_ceilng::activeceilings;
+use crate::src::p_tick::P_InitThinkers;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -62,7 +65,6 @@ extern "C" {
     static mut lines: *mut line_t;
     static mut sides: *mut side_t;
     static mut thinkercap: thinker_t;
-    fn P_InitThinkers();
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -73,7 +75,6 @@ extern "C" {
     fn T_PlatRaise(plat: *mut plat_t);
     fn P_AddActivePlat(plat: *mut plat_t);
     fn T_VerticalDoor(door: *mut vldoor_t);
-    static mut activeceilings: [*mut ceiling_t; 30];
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
     static mut gameskill: skill_t;
@@ -82,7 +83,6 @@ extern "C" {
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    fn G_VanillaVersionCode() -> i32;
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,

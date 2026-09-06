@@ -14366,7 +14366,6 @@ pub static mut finesine: [i32; 10240] = [
 ];
 #[no_mangle]
 pub static mut finecosine: *const fixed_t = ::core::ptr::null::<fixed_t>();
-#[no_mangle]
 pub static mut tantoangle: [angle_t; 2049] = [
     0 as i32 as angle_t,
     333772 as i32 as angle_t,
@@ -16418,7 +16417,6 @@ pub static mut tantoangle: [angle_t; 2049] = [
     536704000 as i32 as angle_t,
     536870912 as i32 as angle_t,
 ];
-#[no_mangle]
 pub static mut gammatable: [[byte; 256]; 5] = [
     [
         1 as i32 as byte,

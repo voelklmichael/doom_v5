@@ -2,6 +2,8 @@ use crate::src::i_system::I_Error;
 use crate::src::i_timer::I_GetTimeMS;
 use crate::src::i_video::I_StartTic;
 use crate::src::dummy::net_client_connected;
+use crate::src::dummy::drone;
+use crate::src::i_timer::I_Sleep;
 
 extern "C" {
     fn memcpy(
@@ -17,8 +19,6 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn I_GetTime() -> i32;
-    fn I_Sleep(ms: i32);
-    static mut drone: bool;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -197,8 +197,7 @@ unsafe extern "C" fn BuildNewTic() -> boolean {
 }
 #[no_mangle]
 pub static mut lasttime: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn NetUpdate() {
+pub unsafe fn NetUpdate() {
     let mut nowtime: i32 = 0;
     let mut newtics: i32 = 0;
     let mut i: i32 = 0;

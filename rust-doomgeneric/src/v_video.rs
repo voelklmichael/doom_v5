@@ -6,6 +6,8 @@ use crate::src::i_video::mouse_acceleration;
 use crate::src::i_video::mouse_threshold;
 use crate::src::m_misc::M_FileExists;
 use crate::src::i_video::usemouse;
+use crate::src::m_bbox::M_AddToBox;
+use crate::src::m_misc::M_WriteFile;
 
 extern "C" {
     fn memcpy(
@@ -25,12 +27,6 @@ extern "C" {
         b: i32,
     ) -> i32;
     static mut I_VideoBuffer: *mut byte;
-    fn M_AddToBox(box_0: *mut fixed_t, x: fixed_t, y: fixed_t);
-    fn M_WriteFile(
-        name: *mut ::core::ffi::c_char,
-        source: *mut ::core::ffi::c_void,
-        length: i32,
-    ) -> boolean;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
@@ -691,8 +687,7 @@ pub unsafe extern "C" fn V_DrawRawScreen(mut raw: *mut byte) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn V_Init() {}
-#[no_mangle]
-pub unsafe extern "C" fn V_UseBuffer(mut buffer: *mut byte) {
+pub unsafe fn V_UseBuffer(mut buffer: *mut byte) {
     dest_screen = buffer;
 }
 #[no_mangle]

@@ -20,6 +20,9 @@ use crate::src::m_controls::key_map_follow;
 use crate::src::m_controls::key_map_grid;
 use crate::src::m_controls::key_map_mark;
 use crate::src::m_controls::key_map_clearmark;
+use crate::src::g_game::singledemo;
+use crate::src::m_cheat::cht_CheckCheat;
+use crate::src::st_stuff::ST_Responder;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -39,11 +42,6 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn cht_CheckCheat(
-        cht: *mut cheatseq_t,
-        key: ::core::ffi::c_char,
-    ) -> i32;
-    fn ST_Responder(ev: *mut event_t) -> boolean;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
@@ -74,7 +72,6 @@ extern "C" {
     static mut deathmatch: i32;
     static mut viewactive: bool;
     static mut consoleplayer: i32;
-    static mut singledemo: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
 }
@@ -2068,8 +2065,7 @@ pub unsafe extern "C" fn AM_LevelInit() {
     }
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Stop() {
+pub unsafe fn AM_Stop() {
     static mut st_notify: event_t = event_t {
         type_0: ev_keydown,
         data1: ev_keyup as i32,

@@ -1540,11 +1540,9 @@ pub unsafe extern "C" fn P_InterceptVector(
 }
 pub static mut opentop: fixed_t = 0;
 pub static mut openbottom: fixed_t = 0;
-#[no_mangle]
 pub static mut openrange: fixed_t = 0;
 pub static mut lowfloor: fixed_t = 0;
-#[no_mangle]
-pub unsafe extern "C" fn P_LineOpening(mut linedef: *mut line_t) {
+pub unsafe fn P_LineOpening(mut linedef: *mut line_t) {
     let mut front: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut back: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     if (*linedef).sidenum[1 as i32 as usize] as i32
@@ -1670,8 +1668,7 @@ pub unsafe fn P_BlockLinesIterator(
     }
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_BlockThingsIterator(
+pub unsafe fn P_BlockThingsIterator(
     mut x: i32,
     mut y: i32,
     mut func: Option<unsafe extern "C" fn(*mut mobj_t) -> boolean>,
