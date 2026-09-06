@@ -57,6 +57,13 @@ use libc::memset;
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_plats::{blazeDWUS, downWaitUpStay, perpetualRaise, plattype_e, raiseToNearestAndChange};
+use crate::src::p_plats::plat_e;
+use crate::src::p_doors::{vld_blazeClose, vld_blazeOpen, vld_blazeRaise, vld_close, vld_close30ThenOpen, vld_normal, vld_open};
+use crate::src::p_floor::{donutRaise, floor_e, lowerAndChange, lowerFloor, lowerFloorToLowest, raiseFloor, raiseFloor24, raiseFloor24AndChange, raiseFloorCrush, raiseFloorToNearest, raiseFloorTurbo, raiseToTexture, turboLower};
+use crate::src::p_floor::{build8, turbo16};
+use crate::src::p_ceilng::{ceiling_e, crushAndRaise, fastCrushAndRaise, lowerAndCrush, raiseToHighest, silentCrushAndRaise};
+use crate::src::p_switch::bwhere_e;
 
 extern "C" {
     fn T_MoveFloor(floor: *mut floormove_t);
@@ -1063,10 +1070,6 @@ pub struct button_t {
     pub btimer: i32,
     pub soundorg: *mut degenmobj_t,
 }
-pub type bwhere_e = u32;
-pub const bottom: bwhere_e = 2;
-pub const middle: bwhere_e = 1;
-pub const top: bwhere_e = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct plat_t {
@@ -1083,17 +1086,6 @@ pub struct plat_t {
     pub tag: i32,
     pub type_0: plattype_e,
 }
-pub type plattype_e = u32;
-pub const blazeDWUS: plattype_e = 4;
-pub const raiseToNearestAndChange: plattype_e = 3;
-pub const raiseAndChange: plattype_e = 2;
-pub const downWaitUpStay: plattype_e = 1;
-pub const perpetualRaise: plattype_e = 0;
-pub type plat_e = u32;
-pub const in_stasis: plat_e = 3;
-pub const waiting: plat_e = 2;
-pub const down: plat_e = 1;
-pub const up: plat_e = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct ceiling_t {
@@ -1108,39 +1100,6 @@ pub struct ceiling_t {
     pub tag: i32,
     pub olddirection: i32,
 }
-pub type ceiling_e = u32;
-pub const silentCrushAndRaise: ceiling_e = 5;
-pub const fastCrushAndRaise: ceiling_e = 4;
-pub const crushAndRaise: ceiling_e = 3;
-pub const lowerAndCrush: ceiling_e = 2;
-pub const raiseToHighest: ceiling_e = 1;
-pub const lowerToFloor: ceiling_e = 0;
-pub type vldoor_e = u32;
-pub const vld_blazeClose: vldoor_e = 7;
-pub const vld_blazeOpen: vldoor_e = 6;
-pub const vld_blazeRaise: vldoor_e = 5;
-pub const vld_raiseIn5Mins: vldoor_e = 4;
-pub const vld_open: vldoor_e = 3;
-pub const vld_close: vldoor_e = 2;
-pub const vld_close30ThenOpen: vldoor_e = 1;
-pub const vld_normal: vldoor_e = 0;
-pub type floor_e = u32;
-pub const raiseFloor512: floor_e = 12;
-pub const donutRaise: floor_e = 11;
-pub const raiseFloorTurbo: floor_e = 10;
-pub const raiseFloorCrush: floor_e = 9;
-pub const raiseFloor24AndChange: floor_e = 8;
-pub const raiseFloor24: floor_e = 7;
-pub const lowerAndChange: floor_e = 6;
-pub const raiseToTexture: floor_e = 5;
-pub const raiseFloorToNearest: floor_e = 4;
-pub const raiseFloor: floor_e = 3;
-pub const turboLower: floor_e = 2;
-pub const lowerFloorToLowest: floor_e = 1;
-pub const lowerFloor: floor_e = 0;
-pub type stair_e = u32;
-pub const turbo16: stair_e = 1;
-pub const build8: stair_e = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct floormove_t {

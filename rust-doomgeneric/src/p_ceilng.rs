@@ -13,6 +13,7 @@ use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_pstop, sfx_stnmov};
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::{actionf_p1, actionf_v, statenum_t};
+use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 
 
 pub type __uint8_t = u8;
@@ -997,10 +998,6 @@ pub const crushAndRaise: ceiling_e = 3;
 pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
-pub const crushed: result_e = 1;
-pub type result_e = u32;
-pub const pastdest: result_e = 2;
-pub const ok: result_e = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
