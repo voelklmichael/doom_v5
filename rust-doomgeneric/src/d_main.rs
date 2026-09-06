@@ -701,7 +701,7 @@ static banners: [&str; 7] = [
     "                     DOOM 2: TNT - Evilution v%i.%i                           ",
     "                   DOOM 2: Plutonia Experiment v%i.%i                           ",
 ];
-unsafe extern "C" fn GetGameName(
+unsafe fn GetGameName(
     mut gamename: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut i: size_t = 0;
@@ -765,7 +765,7 @@ unsafe extern "C" fn GetGameName(
     }
     return gamename;
 }
-unsafe extern "C" fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_char) {
+unsafe fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
     static mut packs: [C2RustUnnamed_3; 3] = [
         C2RustUnnamed_3 {
@@ -1000,7 +1000,7 @@ pub unsafe fn D_SetGameDescription() {
 }
 #[no_mangle]
 pub static mut title: [::core::ffi::c_char; 128] = [0; 128];
-unsafe extern "C" fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> bool {
+unsafe fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> bool {
     let mut handle: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     printf(b" adding %s\n\0" as *const u8 as *const ::core::ffi::c_char, filename);
     handle = W_AddFile(filename);
@@ -1101,7 +1101,7 @@ static mut gameversions: [C2RustUnnamed_4; 10] = [
         version: exe_doom_1_2,
     },
 ];
-unsafe extern "C" fn InitGameVersion() {
+unsafe fn InitGameVersion() {
     let mut p: i32 = 0;
     let mut i: i32 = 0;
     p = M_CheckParmWithArgs("-gameversion", 1 as i32);

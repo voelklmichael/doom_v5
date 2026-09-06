@@ -1189,7 +1189,7 @@ pub unsafe fn P_UpdateSpecials() {
 }
 pub const DONUT_FLOORHEIGHT_DEFAULT: i32 = 0;
 pub const DONUT_FLOORPIC_DEFAULT: i32 = 0x16;
-unsafe extern "C" fn DonutOverrun(
+unsafe fn DonutOverrun(
     mut s3_floorheight: *mut fixed_t,
     mut s3_floorpic: *mut i16,
     mut line: *mut line_t,

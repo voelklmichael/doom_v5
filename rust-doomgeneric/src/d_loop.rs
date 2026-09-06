@@ -106,7 +106,7 @@ static mut loop_interface: *mut loop_interface_t = ::core::ptr::null::<
 >() as *mut loop_interface_t;
 static mut local_playeringame: [boolean; 8] = [0; 8];
 static mut player_class: i32 = 0;
-unsafe extern "C" fn GetAdjustedTime() -> i32 {
+unsafe fn GetAdjustedTime() -> i32 {
     let mut time_ms: i32 = 0;
     time_ms = I_GetTimeMS();
     if new_sync {
@@ -114,7 +114,7 @@ unsafe extern "C" fn GetAdjustedTime() -> i32 {
     }
     return time_ms * TICRATE / 1000 as i32;
 }
-unsafe extern "C" fn BuildNewTic() -> bool {
+unsafe fn BuildNewTic() -> bool {
     let mut gameticdiv: i32 = 0;
     let mut cmd: ticcmd_t = ticcmd_t {
         forwardmove: 0,
@@ -192,7 +192,7 @@ pub unsafe fn NetUpdate() {
         i += 1;
     }
 }
-unsafe extern "C" fn D_Disconnected() {
+unsafe fn D_Disconnected() {
     if drone {
         I_Error("Disconnected from server in drone mode.");
     }
@@ -245,7 +245,7 @@ pub unsafe fn D_InitNetGame(
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_QuitNetGame() {}
-unsafe extern "C" fn GetLowTic() -> i32 {
+unsafe fn GetLowTic() -> i32 {
     let mut lowtic: i32 = 0;
     lowtic = maketic;
     return lowtic;
@@ -253,7 +253,7 @@ unsafe extern "C" fn GetLowTic() -> i32 {
 static mut frameon: i32 = 0;
 static mut frameskip: [i32; 4] = [0; 4];
 static mut oldnettics: i32 = 0;
-unsafe extern "C" fn OldNetSync() {
+unsafe fn OldNetSync() {
     let mut i: u32 = 0;
     let mut keyplayer: i32 = -(1 as i32);
     frameon += 1;
@@ -285,7 +285,7 @@ unsafe extern "C" fn OldNetSync() {
         }
     }
 }
-unsafe extern "C" fn PlayersInGame() -> bool {
+unsafe fn PlayersInGame() -> bool {
     let mut result: bool = false;
     let mut i: u32 = 0;
     if net_client_connected {
@@ -300,7 +300,7 @@ unsafe extern "C" fn PlayersInGame() -> bool {
     }
     return result;
 }
-unsafe extern "C" fn TicdupSquash(mut set: *mut ticcmd_set_t) {
+unsafe fn TicdupSquash(mut set: *mut ticcmd_set_t) {
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     let mut i: u32 = 0;
     i = 0 as u32;
@@ -314,7 +314,7 @@ unsafe extern "C" fn TicdupSquash(mut set: *mut ticcmd_set_t) {
         i = i.wrapping_add(1);
     }
 }
-unsafe extern "C" fn SinglePlayerClear(mut set: *mut ticcmd_set_t) {
+unsafe fn SinglePlayerClear(mut set: *mut ticcmd_set_t) {
     let mut i: u32 = 0;
     i = 0 as u32;
     while i < NET_MAXPLAYERS as u32 {

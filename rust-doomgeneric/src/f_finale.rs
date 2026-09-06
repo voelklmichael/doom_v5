@@ -1007,7 +1007,7 @@ pub unsafe fn F_BunnyScroll() {
         ) as *mut patch_t,
     );
 }
-unsafe extern "C" fn F_ArtScreenDrawer() {
+unsafe fn F_ArtScreenDrawer() {
     let mut lumpname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();

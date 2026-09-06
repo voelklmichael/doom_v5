@@ -1307,7 +1307,7 @@ pub unsafe fn A_Fall(mut actor: *mut mobj_t) {
 pub unsafe fn A_Explode(mut thingy: *mut mobj_t) {
     P_RadiusAttack(thingy, (*thingy).target as *mut mobj_t, 128 as i32);
 }
-unsafe extern "C" fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
+unsafe fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
     if (gameversion as u32)
         < exe_ultimate as i32 as u32
     {

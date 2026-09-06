@@ -141,12 +141,12 @@ static mut shiftxform: [::core::ffi::c_char; 128] = [
     '~' as i32 as ::core::ffi::c_char,
     127 as i32 as ::core::ffi::c_char,
 ];
-unsafe extern "C" fn TranslateKey(
+unsafe fn TranslateKey(
     mut key: u8,
 ) -> u8 {
     return key;
 }
-unsafe extern "C" fn GetTypedChar(
+unsafe fn GetTypedChar(
     mut key: u8,
 ) -> u8 {
     key = TranslateKey(key);
@@ -163,7 +163,7 @@ unsafe extern "C" fn GetTypedChar(
     }
     return key;
 }
-unsafe extern "C" fn UpdateShiftStatus(
+unsafe fn UpdateShiftStatus(
     mut pressed: i32,
     mut key: u8,
 ) {

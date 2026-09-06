@@ -1085,7 +1085,7 @@ pub unsafe fn P_ChangeSector(
     }
     return nofit != 0;
 }
-unsafe extern "C" fn SpechitOverrun(mut ld: *mut line_t) {
+unsafe fn SpechitOverrun(mut ld: *mut line_t) {
     static mut baseaddr: u32 = 0 as u32;
     let mut addr: u32 = 0;
     if baseaddr == 0 as u32 {

@@ -1715,7 +1715,7 @@ pub unsafe fn M_WriteText(x: i32, y: i32, string: &str) {
         }
     };
 }
-unsafe extern "C" fn IsNullKey(mut key: i32) -> bool {
+unsafe fn IsNullKey(mut key: i32) -> bool {
     return key == KEY_PAUSE || key == KEY_CAPSLOCK || key == KEY_SCRLCK
         || key == KEY_NUMLOCK;
 }

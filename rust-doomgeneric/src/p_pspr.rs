@@ -403,7 +403,7 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     }
     (*(*player).mo).flags |= MF_JUSTATTACKED as i32;
 }
-unsafe extern "C" fn DecreaseAmmo(
+unsafe fn DecreaseAmmo(
     mut player: *mut player_t,
     mut ammonum: i32,
     mut amount: i32,

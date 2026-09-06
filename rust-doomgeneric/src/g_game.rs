@@ -434,7 +434,7 @@ pub unsafe fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
     }
     return sum;
 }
-unsafe extern "C" fn WeaponSelectable(mut weapon: weapontype_t) -> bool {
+unsafe fn WeaponSelectable(mut weapon: weapontype_t) -> bool {
     if weapon as u32
         == wp_supershotgun as i32 as u32
         && (if gamemission as u32
@@ -478,7 +478,7 @@ unsafe extern "C" fn WeaponSelectable(mut weapon: weapontype_t) -> bool {
     }
     return true;
 }
-unsafe extern "C" fn G_NextWeapon(
+unsafe fn G_NextWeapon(
     mut direction: i32,
 ) -> i32 {
     let mut weapon: weapontype_t = wp_fist;
@@ -850,7 +850,7 @@ pub unsafe fn G_DoLoadLevel() {
             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
 }
-unsafe extern "C" fn SetJoyButtons(mut buttons_mask: u32) {
+unsafe fn SetJoyButtons(mut buttons_mask: u32) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAX_JOY_BUTTONS {
@@ -868,7 +868,7 @@ unsafe extern "C" fn SetJoyButtons(mut buttons_mask: u32) {
         i += 1;
     }
 }
-unsafe extern "C" fn SetMouseButtons(mut buttons_mask: u32) {
+unsafe fn SetMouseButtons(mut buttons_mask: u32) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAX_MOUSE_BUTTONS {
@@ -1990,7 +1990,7 @@ pub unsafe fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
     demo_p = demo_p.offset(1);
     (*cmd).buttons = *fresh23 as u8 as byte;
 }
-unsafe extern "C" fn IncreaseDemoBuffer() {
+unsafe fn IncreaseDemoBuffer() {
     let mut current_length: i32 = 0;
     let mut new_demobuffer: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut new_demop: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -2151,7 +2151,7 @@ pub unsafe fn G_DeferedPlayDemo(mut name: *mut ::core::ffi::c_char) {
     defdemoname = name;
     gameaction = ga_playdemo;
 }
-unsafe extern "C" fn DemoVersionDescription(
+unsafe fn DemoVersionDescription(
     mut version: i32,
 ) -> *mut ::core::ffi::c_char {
     static mut resultbuf: [::core::ffi::c_char; 16] = [0; 16];

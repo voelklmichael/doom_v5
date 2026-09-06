@@ -1800,8 +1800,8 @@ static mut scantokey: [i32; 128] = [
     KEY_PRTSCR,
     0 as i32,
 ];
-unsafe extern "C" fn SaveDefaultCollection(mut collection: *mut default_collection_t) {}
-unsafe extern "C" fn ParseIntParameter(
+unsafe fn SaveDefaultCollection(mut collection: *mut default_collection_t) {}
+unsafe fn ParseIntParameter(
     mut strparm: *mut ::core::ffi::c_char,
 ) -> i32 {
     let mut parm: i32 = 0;
@@ -1824,7 +1824,7 @@ unsafe extern "C" fn ParseIntParameter(
     }
     return parm;
 }
-unsafe extern "C" fn SetVariable(
+unsafe fn SetVariable(
     mut def: *mut default_t,
     mut value: *mut ::core::ffi::c_char,
 ) {
@@ -1856,7 +1856,7 @@ unsafe extern "C" fn SetVariable(
         _ => {}
     };
 }
-unsafe extern "C" fn LoadDefaultCollection(mut collection: *mut default_collection_t) {}
+unsafe fn LoadDefaultCollection(mut collection: *mut default_collection_t) {}
 pub unsafe fn M_SetConfigFilenames(
     mut main_config: *mut ::core::ffi::c_char,
     mut extra_config: *mut ::core::ffi::c_char,
@@ -1980,7 +1980,7 @@ pub unsafe fn M_GetFloatVariable(name: &str) -> f32 {
     }
     return *((*variable).location as *mut f32);
 }
-unsafe extern "C" fn GetDefaultConfigDir() -> *mut ::core::ffi::c_char {
+unsafe fn GetDefaultConfigDir() -> *mut ::core::ffi::c_char {
     let mut result: *mut ::core::ffi::c_char = malloc(2 as size_t)
         as *mut ::core::ffi::c_char;
     *result.offset(0 as i32 as isize) = '.' as i32 as ::core::ffi::c_char;

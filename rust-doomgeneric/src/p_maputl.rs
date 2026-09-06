@@ -650,7 +650,7 @@ static mut intercepts_overrun: [intercepts_overrun_t; 23] = unsafe {
         },
     ]
 };
-unsafe extern "C" fn InterceptsMemoryOverrun(
+unsafe fn InterceptsMemoryOverrun(
     mut location: i32,
     mut value: i32,
 ) {
@@ -686,7 +686,7 @@ unsafe extern "C" fn InterceptsMemoryOverrun(
         }
     }
 }
-unsafe extern "C" fn InterceptsOverrun(
+unsafe fn InterceptsOverrun(
     mut num_intercepts: i32,
     mut intercept: *mut intercept_t,
 ) {
