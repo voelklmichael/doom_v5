@@ -26,6 +26,8 @@ use crate::src::p_tick::P_InitThinkers;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::playeringame;
+use crate::src::g_game::consoleplayer;
+use crate::src::p_tick::leveltime;
 
 extern "C" {
     fn Z_Malloc(
@@ -64,8 +66,6 @@ extern "C" {
     fn P_InitPicAnims();
     fn S_Start();
     static mut gamemode: GameMode_t;
-    static mut consoleplayer: i32;
-    static mut leveltime: i32;
     static mut players: [player_t; 4];
 }
 pub type __uint8_t = u8;
@@ -1455,7 +1455,6 @@ pub static mut vertexes: *mut vertex_t = ::core::ptr::null::<vertex_t>()
 pub static mut numsegs: i32 = 0;
 pub static mut segs: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
 pub static mut numsectors: i32 = 0;
-#[no_mangle]
 pub static mut sectors: *mut sector_t = ::core::ptr::null::<sector_t>() as *mut sector_t;
 pub static mut numsubsectors: i32 = 0;
 pub static mut subsectors: *mut subsector_t = ::core::ptr::null::<subsector_t>()

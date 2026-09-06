@@ -1,6 +1,6 @@
 use crate::src::r_defs::spriteframe_t;
 use crate::src::hu_lib::patch_t;
-use crate::src::p_mobj::{thinker_t, sector_t, actionf_t};
+use crate::src::p_mobj::{thinker_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::{
@@ -20,6 +20,7 @@ use crate::src::g_game::demoplayback;
 use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sides;
 use crate::src::m_misc::M_StringCopy;
+use crate::src::p_setup::sectors;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -49,7 +50,6 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    static mut sectors: *mut sector_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
 }
 pub type size_t = usize;

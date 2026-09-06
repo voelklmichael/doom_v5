@@ -33,13 +33,13 @@ use crate::src::r_data::colormaps;
 use crate::src::r_draw::viewwidth;
 use crate::src::r_draw::viewheight;
 use crate::src::m_fixed::FixedDiv;
+use crate::src::tables::finecosine;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
     fn R_DrawPlanes();
     fn R_DrawMasked();
     fn R_DrawColumn();

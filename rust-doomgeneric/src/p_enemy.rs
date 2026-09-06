@@ -44,17 +44,17 @@ use crate::src::p_setup::sides;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::g_game::playeringame;
 use crate::src::m_random::P_Random;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::netgame;
+use crate::src::tables::finecosine;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut gameversion: GameVersion_t;
-    static mut netgame: bool;
     static mut players: [player_t; 4];
     fn A_ReFire(player: *mut player_t, psp: *mut pspdef_t);
 }

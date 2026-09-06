@@ -44,6 +44,8 @@ use crate::src::g_game::gamemap;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::m_random::P_Random;
+use crate::src::p_tick::leveltime;
+use crate::src::tables::finecosine;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -55,9 +57,7 @@ extern "C" {
     fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut leveltime: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

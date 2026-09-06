@@ -9,6 +9,7 @@ use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_tick::P_RemoveThinker;
 use crate::src::p_setup::sides;
 use crate::src::p_tick::P_AddThinker;
+use crate::src::p_setup::sectors;
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -21,7 +22,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    static mut sectors: *mut sector_t;
     fn T_PlatRaise(plat: *mut plat_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }

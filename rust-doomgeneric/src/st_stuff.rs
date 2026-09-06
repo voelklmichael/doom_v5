@@ -31,6 +31,9 @@ use crate::src::am_map::automapactive;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::g_game::deathmatch;
 use crate::src::m_misc::M_snprintf;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
 
 extern "C" {
     fn snprintf(
@@ -60,9 +63,6 @@ extern "C" {
     );
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     static mut gamemode: GameMode_t;
-    static mut gameversion: GameVersion_t;
-    static mut netgame: bool;
-    static mut consoleplayer: i32;
     static mut players: [player_t; 4];
 }
 pub type size_t = usize;

@@ -5,6 +5,7 @@ use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_setup::numsectors;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::m_random::P_Random;
+use crate::src::p_setup::sectors;
 
 extern "C" {
     fn Z_Malloc(
@@ -12,7 +13,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    static mut sectors: *mut sector_t;
 }
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;

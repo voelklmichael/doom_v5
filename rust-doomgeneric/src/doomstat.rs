@@ -34,7 +34,6 @@ pub const exe_doom_1_2: GameVersion_t = 0;
 #[no_mangle]
 pub static mut gamemode: GameMode_t = indetermined;
 pub static mut gamemission: GameMission_t = doom;
-#[no_mangle]
 pub static mut gameversion: GameVersion_t = exe_final2;
 pub static mut gamedescription: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,

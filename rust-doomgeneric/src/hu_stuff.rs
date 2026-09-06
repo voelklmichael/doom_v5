@@ -18,6 +18,9 @@ use crate::src::g_game::gamemap;
 use crate::src::am_map::automapactive;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::g_game::playeringame;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
 
 extern "C" {
     fn snprintf(
@@ -28,9 +31,6 @@ extern "C" {
     ) -> i32;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut gameversion: GameVersion_t;
-    static mut netgame: bool;
-    static mut consoleplayer: i32;
     static mut players: [player_t; 4];
 }
 pub type __uint8_t = u8;

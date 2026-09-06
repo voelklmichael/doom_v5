@@ -14363,7 +14363,6 @@ pub static mut finesine: [i32; 10240] = [
     65535 as i32,
     65535 as i32,
 ];
-#[no_mangle]
 pub static mut finecosine: *const fixed_t = ::core::ptr::null::<fixed_t>();
 pub static mut tantoangle: [angle_t; 2049] = [
     0 as i32 as angle_t,

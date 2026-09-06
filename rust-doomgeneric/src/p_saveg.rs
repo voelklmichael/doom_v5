@@ -28,6 +28,8 @@ use crate::src::p_setup::sides;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::g_game::playeringame;
 use crate::src::m_misc::M_snprintf;
+use crate::src::p_setup::sectors;
+use crate::src::p_tick::leveltime;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -72,7 +74,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    static mut sectors: *mut sector_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn T_LightFlash(flash: *mut lightflash_t);
     fn T_StrobeFlash(flash: *mut strobe_t);
@@ -82,7 +83,6 @@ extern "C" {
     fn T_VerticalDoor(door: *mut vldoor_t);
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
-    static mut leveltime: i32;
     static mut players: [player_t; 4];
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }

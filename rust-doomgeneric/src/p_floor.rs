@@ -13,6 +13,8 @@ use crate::src::r_data::textureheight;
 use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_tick::P_RemoveThinker;
 use crate::src::p_tick::P_AddThinker;
+use crate::src::p_setup::sectors;
+use crate::src::p_tick::leveltime;
 
 extern "C" {
     fn Z_Malloc(
@@ -20,9 +22,7 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    static mut sectors: *mut sector_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut leveltime: i32;
 }
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;
