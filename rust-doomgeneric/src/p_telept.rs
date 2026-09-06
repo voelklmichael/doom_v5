@@ -7,8 +7,8 @@ use crate::src::p_setup::numsectors;
 use crate::src::doomstat::gameversion;
 use crate::src::p_setup::sectors;
 use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
 extern "C" {
-    static finesine: [fixed_t; 10240];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     fn P_MobjThinker(mobj: *mut mobj_t);
 }

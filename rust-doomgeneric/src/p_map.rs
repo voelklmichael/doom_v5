@@ -46,6 +46,7 @@ use crate::src::r_main::R_PointToAngle2;
 use crate::src::m_random::P_Random;
 use crate::src::p_tick::leveltime;
 use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -56,7 +57,6 @@ extern "C" {
     ) -> i32;
     fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;

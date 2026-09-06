@@ -27,12 +27,12 @@ use crate::src::g_game::gamemap;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::m_misc::M_snprintf;
 use crate::src::g_game::consoleplayer;
+use crate::src::tables::finesine;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn I_UpdateSound();
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
     static mut gamemode: GameMode_t;
     static mut players: [player_t; 4];
     fn W_LumpLength(lump: u32) -> i32;

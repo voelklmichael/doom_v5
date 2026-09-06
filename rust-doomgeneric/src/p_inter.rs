@@ -19,10 +19,10 @@ use crate::src::doomstat::gameversion;
 use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
     static mut gamemode: GameMode_t;
     static mut players: [player_t; 4];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
