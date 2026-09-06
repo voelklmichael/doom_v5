@@ -16,8 +16,6 @@ use crate::src::p_maputl::P_PathTraverse;
 use crate::src::p_inter::P_TouchSpecialThing;
 use crate::src::p_spec::P_ShootSpecialLine;
 use crate::src::p_spec::P_CrossSpecialLine;
-use crate::src::p_sight::topslope;
-use crate::src::p_sight::bottomslope;
 use crate::src::p_maputl::P_LineOpening;
 use crate::src::p_maputl::P_BlockThingsIterator;
 use crate::src::p_maputl::openrange;
@@ -676,19 +674,19 @@ pub unsafe extern "C" fn PTR_AimTraverse(mut in_0: *mut intercept_t) -> boolean 
             || (*(*li).frontsector).floorheight != (*(*li).backsector).floorheight
         {
             slope = FixedDiv(openbottom - shootz, dist);
-            if slope > bottomslope {
-                bottomslope = slope;
+            if slope > game_state().p_sight.bottomslope {
+                game_state().p_sight.bottomslope = slope;
             }
         }
         if (*li).backsector.is_null()
             || (*(*li).frontsector).ceilingheight != (*(*li).backsector).ceilingheight
         {
             slope = FixedDiv(opentop - shootz, dist);
-            if slope < topslope {
-                topslope = slope;
+            if slope < game_state().p_sight.topslope {
+                game_state().p_sight.topslope = slope;
             }
         }
-        if topslope <= bottomslope {
+        if game_state().p_sight.topslope <= game_state().p_sight.bottomslope {
             return false_0 as boolean;
         }
         return true_0 as boolean;
@@ -702,18 +700,18 @@ pub unsafe extern "C" fn PTR_AimTraverse(mut in_0: *mut intercept_t) -> boolean 
     }
     dist = FixedMul(attackrange, (*in_0).frac);
     thingtopslope = FixedDiv((*th).z + (*th).height - shootz, dist);
-    if thingtopslope < bottomslope {
+    if thingtopslope < game_state().p_sight.bottomslope {
         return true_0 as boolean;
     }
     thingbottomslope = FixedDiv((*th).z - shootz, dist);
-    if thingbottomslope > topslope {
+    if thingbottomslope > game_state().p_sight.topslope {
         return true_0 as boolean;
     }
-    if thingtopslope > topslope {
-        thingtopslope = topslope;
+    if thingtopslope > game_state().p_sight.topslope {
+        thingtopslope = game_state().p_sight.topslope;
     }
-    if thingbottomslope < bottomslope {
-        thingbottomslope = bottomslope;
+    if thingbottomslope < game_state().p_sight.bottomslope {
+        thingbottomslope = game_state().p_sight.bottomslope;
     }
     aimslope = ((thingtopslope as i32
         + thingbottomslope as i32) / 2 as i32) as fixed_t;
@@ -850,9 +848,9 @@ pub unsafe fn P_AimLineAttack(
     shootz = ((*t1).z as i32
         + ((*t1).height as i32 >> 1 as i32)
         + 8 as i32 * FRACUNIT) as fixed_t;
-    topslope = (100 as i32 * FRACUNIT / 160 as i32)
+    game_state().p_sight.topslope = (100 as i32 * FRACUNIT / 160 as i32)
         as fixed_t;
-    bottomslope = (-(100 as i32) * FRACUNIT / 160 as i32)
+    game_state().p_sight.bottomslope = (-(100 as i32) * FRACUNIT / 160 as i32)
         as fixed_t;
     attackrange = distance;
     linetarget = ::core::ptr::null_mut::<mobj_t>();
@@ -976,7 +974,7 @@ pub unsafe extern "C" fn PIT_RadiusAttack(mut thing: *mut mobj_t) -> boolean {
     if dist >= bombdamage {
         return true_0 as boolean;
     }
-    if P_CheckSight(thing, bombspot) {
+    if P_CheckSight(unsafe { &mut game_state().p_sight }, thing, bombspot) {
         P_DamageMobj(
             thing,
             bombspot,

@@ -22,6 +22,7 @@ use crate::src::m_config::MConfigState;
 use crate::src::m_random::MRandomState;
 use crate::src::p_ceilng::PCeilngState;
 use crate::src::p_plats::PPlatsState;
+use crate::src::p_sight::PSightState;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_user::PUserState;
 use crate::src::sounds::SoundsState;
@@ -43,6 +44,7 @@ pub struct GameState {
     pub m_random: MRandomState,
     pub p_ceilng: PCeilngState,
     pub p_plats: PPlatsState,
+    pub p_sight: PSightState,
     pub p_switch: PSwitchState,
     pub p_user: PUserState,
     pub sounds: SoundsState,
@@ -67,6 +69,7 @@ impl GameState {
             m_random: MRandomState::new(),
             p_ceilng: PCeilngState::new(),
             p_plats: PPlatsState::new(),
+            p_sight: PSightState::new(),
             p_switch: PSwitchState::new(),
             p_user: PUserState::new(),
             sounds: SoundsState::new(),
