@@ -116,6 +116,7 @@ pub unsafe fn game_state() -> &'static mut GameState {
         // stable 'static address -- i.e. here, not inside any XxxState::new().
         state.sounds.fixup_self_links();
         fixup_intercepts_overrun(state);
+        state.m_config.fixup_defaults();
     }
     state
 }
