@@ -24,7 +24,7 @@ use crate::src::r_data::numflats;
 use crate::src::g_game::G_SecretExitLevel;
 use crate::src::g_game::totalsecret;
 use crate::src::p_ceilng::EV_DoCeiling;
-use crate::src::p_ceilng::activeceilings;
+use crate::src::p_ceilng::PCeilngState;
 use crate::src::p_floor::EV_BuildStairs;
 use crate::src::p_lights::EV_LightTurnOn;
 use crate::src::p_plats::EV_DoPlat;
@@ -744,7 +744,7 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         6 => {
-            EV_DoCeiling(line, fastCrushAndRaise);
+            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, fastCrushAndRaise);
             (*line).special = 0 as i16;
         }
         8 => {
@@ -780,7 +780,7 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         25 => {
-            EV_DoCeiling(line, crushAndRaise);
+            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, crushAndRaise);
             (*line).special = 0 as i16;
         }
         30 => {
@@ -808,12 +808,12 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         40 => {
-            EV_DoCeiling(line, raiseToHighest);
+            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, raiseToHighest);
             EV_DoFloor(line, lowerFloorToLowest);
             (*line).special = 0 as i16;
         }
         44 => {
-            EV_DoCeiling(line, lowerAndCrush);
+            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, lowerAndCrush);
             (*line).special = 0 as i16;
         }
         52 => {
@@ -832,7 +832,7 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         57 => {
-            EV_CeilingCrushStop(line);
+            EV_CeilingCrushStop(unsafe { &mut game_state().p_ceilng }, line);
             (*line).special = 0 as i16;
         }
         58 => {
@@ -885,17 +885,17 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         141 => {
-            EV_DoCeiling(line, silentCrushAndRaise);
+            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, silentCrushAndRaise);
             (*line).special = 0 as i16;
         }
         72 => {
-            EV_DoCeiling(line, lowerAndCrush);
+            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, lowerAndCrush);
         }
         73 => {
-            EV_DoCeiling(line, crushAndRaise);
+            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, crushAndRaise);
         }
         74 => {
-            EV_CeilingCrushStop(line);
+            EV_CeilingCrushStop(unsafe { &mut game_state().p_ceilng }, line);
         }
         75 => {
             EV_DoDoor(line, vld_close);
@@ -904,7 +904,7 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoDoor(line, vld_close30ThenOpen);
         }
         77 => {
-            EV_DoCeiling(line, fastCrushAndRaise);
+            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, fastCrushAndRaise);
         }
         79 => {
             EV_LightTurnOn(line, 35 as i32);
@@ -1328,7 +1328,7 @@ pub static mut numlinespecials: i16 = 0;
 #[no_mangle]
 pub static mut linespeciallist: [*mut line_t; 64] = [::core::ptr::null::<line_t>()
     as *mut line_t; 64];
-pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState, plats_state: &mut PPlatsState) {
+pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState, plats_state: &mut PPlatsState, ceilng_state: &mut PCeilngState) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: i32 = 0;
     if timelimit > 0 as i32 && deathmatch != 0 {
@@ -1400,7 +1400,7 @@ pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState, plats_state: &mut PPlats
     }
     i = 0 as i32;
     while i < MAXCEILINGS {
-        activeceilings[i as usize] = ::core::ptr::null_mut::<ceiling_t>();
+        ceilng_state.activeceilings[i as usize] = ::core::ptr::null_mut::<ceiling_t>();
         i += 1;
     }
     i = 0 as i32;
