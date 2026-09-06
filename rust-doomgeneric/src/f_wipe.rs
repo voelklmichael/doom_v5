@@ -7,11 +7,9 @@ use crate::src::v_video::V_DrawBlock;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use libc::memcpy;
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

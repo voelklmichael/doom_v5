@@ -3,9 +3,8 @@ use crate::src::i_system::I_Error;
 use crate::src::i_system::I_ZoneBase;
 use libc::printf;
 use crate::src::i_system::fprintf;
+use crate::src::stdint_types::byte;
 
-pub type size_t = usize;
-pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
@@ -34,8 +33,6 @@ pub struct memblock_s {
     pub next: *mut memblock_s,
     pub prev: *mut memblock_s,
 }
-pub type byte = uint8_t;
-pub type uint8_t = __uint8_t;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

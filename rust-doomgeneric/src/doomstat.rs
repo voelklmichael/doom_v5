@@ -1,7 +1,6 @@
 use crate::src::d_mode::{GameMode_t, indetermined};
 use crate::src::d_mode::{GameVersion_t, exe_final2};
 use crate::src::d_mode::{GameMission_t, doom};
-pub type boolean = u32;
 pub static mut gamemode: GameMode_t = indetermined;
 pub static mut gamemission: GameMission_t = doom;
 pub static mut gameversion: GameVersion_t = exe_final2;

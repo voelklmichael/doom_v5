@@ -1,6 +1,9 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::m_misc::M_snprintf;
+use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use libc::{atoi, strcasecmp, strlen};
 use libc::{exit, free, malloc, printf, puts};
 
@@ -48,11 +51,6 @@ extern "C" {
         __c: i32,
     ) -> *mut ::core::ffi::c_char;
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
 pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
 pub type atexit_listentry_t = atexit_listentry_s;
 #[derive(Copy, Clone)]

@@ -1,11 +1,8 @@
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::uint32_t;
+use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
 use libc::strlen;
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type __uint32_t = u32;
-pub type uint8_t = __uint8_t;
-pub type uint32_t = __uint32_t;
-pub type byte = uint8_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct sha1_context_s {

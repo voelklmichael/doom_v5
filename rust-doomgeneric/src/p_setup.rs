@@ -50,12 +50,10 @@ use crate::src::d_mode::commercial;
 use crate::src::d_mode::skill_t;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
+use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 
-pub type __uint8_t = u8;
-pub type size_t = usize;
-pub type uint8_t = __uint8_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
 pub type C2RustUnnamed_1 = u32;
 pub const ML_BLOCKMAP: C2RustUnnamed_1 = 10;
 pub const ML_REJECT: C2RustUnnamed_1 = 9;

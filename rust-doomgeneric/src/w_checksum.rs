@@ -4,19 +4,14 @@ use crate::src::w_file::wad_file_t;
 use crate::src::w_wad::numlumps;
 use crate::src::w_wad::lumpinfo;
 use crate::src::m_misc::M_StringCopy;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 extern "C" {
     fn realloc(
         __ptr: *mut ::core::ffi::c_void,
         __size: size_t,
     ) -> *mut ::core::ffi::c_void;
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type __uint32_t = u32;
-pub type uint8_t = __uint8_t;
-pub type uint32_t = __uint32_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

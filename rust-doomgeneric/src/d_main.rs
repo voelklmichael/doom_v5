@@ -155,6 +155,9 @@ use crate::src::d_mode::{sk_baby, sk_medium, skill_t};
 use crate::src::d_event::{GS_DEMOSCREEN, GS_LEVEL, gamestate_t};
 use crate::src::d_event::{ga_loadgame, ga_nothing, ga_playdemo};
 use crate::src::i_system::atexit_func_t;
+use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use libc::{atoi, strcasecmp, strcmp, strlen, strncasecmp};
 use libc::{exit, printf, snprintf};
 
@@ -169,7 +172,6 @@ extern "C" {
     fn G_CheckDemoStatus() -> boolean;
     fn StatDump();
 }
-pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;
 pub const _ISalnum: C2RustUnnamed = 8;
 pub const _ISpunct: C2RustUnnamed = 4;
@@ -183,10 +185,6 @@ pub const _ISdigit: C2RustUnnamed = 2048;
 pub const _ISalpha: C2RustUnnamed = 1024;
 pub const _ISlower: C2RustUnnamed = 512;
 pub const _ISupper: C2RustUnnamed = 256;
-pub type size_t = usize;
-pub type uint8_t = __uint8_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

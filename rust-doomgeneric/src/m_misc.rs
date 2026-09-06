@@ -6,6 +6,9 @@ use libc::memset;
 use libc::{strlen, strncmp, strncpy, toupper};
 use libc::{malloc, printf, sscanf};
 use crate::src::i_system::{fclose, fopen, fread, fseek, ftell, fwrite};
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::__int32_t;
+use crate::src::stdint_types::size_t;
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -21,13 +24,7 @@ extern "C" {
     fn __errno_location() -> *mut i32;
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type __int32_t = i32;
 pub type __mode_t = u32;
-pub type uint8_t = __uint8_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
 pub const SEEK_SET: i32 = 0 as i32;
 pub const SEEK_END: i32 = 2 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
