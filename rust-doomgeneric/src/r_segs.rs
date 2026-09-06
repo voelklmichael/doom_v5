@@ -43,6 +43,9 @@ use crate::src::r_main::extralight;
 use crate::src::r_main::colfunc;
 use crate::src::tables::finetangent;
 use crate::src::r_main::viewz;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_draw::viewheight;
+use crate::src::r_sky::skyflatnum;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -53,9 +56,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
-    static mut skyflatnum: i32;
-    static mut viewwidth: i32;
-    static mut viewheight: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

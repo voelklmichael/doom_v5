@@ -2,6 +2,7 @@ use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::p_spec::P_FindMinSurroundingLight;
 use crate::src::p_spec::getNextSector;
 use crate::src::p_spec::P_FindSectorFromLineTag;
+use crate::src::p_setup::numsectors;
 
 extern "C" {
     fn Z_Malloc(
@@ -10,7 +11,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn P_Random() -> i32;
-    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
 }

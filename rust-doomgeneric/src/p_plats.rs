@@ -1,4 +1,3 @@
-use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{plat_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::i_system::I_Error;
@@ -8,6 +7,7 @@ use crate::src::p_spec::P_FindNextHighestFloor;
 use crate::src::p_floor::T_MovePlane;
 use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_tick::P_RemoveThinker;
+use crate::src::p_setup::sides;
 extern "C" {
     fn Z_Malloc(
         size: i32,
@@ -16,7 +16,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn P_Random() -> i32;
     static mut sectors: *mut sector_t;
-    static mut sides: *mut side_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut leveltime: i32;

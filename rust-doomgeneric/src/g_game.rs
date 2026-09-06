@@ -117,6 +117,10 @@ use crate::src::d_loop::gametic;
 use crate::src::r_main::R_PointInSubsector;
 use crate::src::info::mobjinfo;
 use crate::src::p_mobj::P_RemoveMobj;
+use crate::src::p_mobj::P_SpawnMobj;
+use crate::src::r_sky::skyflatnum;
+use crate::src::doomstat::gamemission;
+use crate::src::info::states;
 
 extern "C" {
     fn memcpy(
@@ -147,13 +151,10 @@ extern "C" {
     fn I_GetTime() -> i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut states: [state_t; 967];
     static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut automapactive: bool;
     static mut leveltime: i32;
-    static mut skyflatnum: i32;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
     fn Z_Malloc(
         size: i32,
@@ -177,12 +178,6 @@ extern "C" {
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
-    fn P_SpawnMobj(
-        x: fixed_t,
-        y: fixed_t,
-        z: fixed_t,
-        type_0: mobjtype_t,
-    ) -> *mut mobj_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;
@@ -1721,9 +1716,7 @@ pub static mut gameaction: gameaction_t = ga_nothing;
 pub static mut gamestate: gamestate_t = GS_LEVEL;
 pub static mut gameskill: skill_t = sk_baby;
 pub static mut respawnmonsters: bool = false;
-#[no_mangle]
 pub static mut gameepisode: i32 = 0;
-#[no_mangle]
 pub static mut gamemap: i32 = 0;
 pub static mut timelimit: i32 = 0;
 pub static mut paused: bool = false;

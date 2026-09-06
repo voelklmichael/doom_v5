@@ -54,10 +54,8 @@ pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const SBARHEIGHT: i32 = 32 as i32;
 #[no_mangle]
 pub static mut viewimage: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
 pub static mut viewwidth: i32 = 0;
 pub static mut scaledviewwidth: i32 = 0;
-#[no_mangle]
 pub static mut viewheight: i32 = 0;
 pub static mut viewwindowx: i32 = 0;
 pub static mut viewwindowy: i32 = 0;

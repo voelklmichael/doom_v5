@@ -1,4 +1,4 @@
-use crate::src::r_defs::{side_t, spriteframe_t};
+use crate::src::r_defs::spriteframe_t;
 use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{thinker_t, sector_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
@@ -17,6 +17,8 @@ use crate::src::r_sky::skytexture;
 use crate::src::p_tick::thinkercap;
 use crate::src::w_wad::lumpinfo;
 use crate::src::g_game::demoplayback;
+use crate::src::p_setup::numsectors;
+use crate::src::p_setup::sides;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -51,9 +53,7 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut sides: *mut side_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
 }
 pub type size_t = usize;

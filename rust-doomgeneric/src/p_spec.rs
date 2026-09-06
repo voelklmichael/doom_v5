@@ -39,6 +39,8 @@ use crate::src::p_floor::EV_DoFloor;
 use crate::src::p_setup::numlines;
 use crate::src::p_inter::P_DamageMobj;
 use crate::src::p_setup::lines;
+use crate::src::p_setup::numsectors;
+use crate::src::p_setup::sides;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -60,9 +62,7 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn P_Random() -> i32;
-    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut sides: *mut side_t;
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn P_AddThinker(thinker: *mut thinker_t);

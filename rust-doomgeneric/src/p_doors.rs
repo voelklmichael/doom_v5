@@ -1,5 +1,4 @@
 use crate::src::i_system::FILE;
-use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{plat_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
@@ -8,6 +7,7 @@ use crate::src::p_spec::P_FindLowestCeilingSurrounding;
 use crate::src::p_floor::T_MovePlane;
 use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_tick::P_RemoveThinker;
+use crate::src::p_setup::sides;
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -21,7 +21,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     static mut sectors: *mut sector_t;
-    static mut sides: *mut side_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn T_PlatRaise(plat: *mut plat_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);

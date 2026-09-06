@@ -9,12 +9,13 @@ use crate::src::am_map::AM_Stop;
 use crate::src::g_game::gameskill;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_RemoveMobj;
+use crate::src::p_mobj::P_SpawnMobj;
+use crate::src::info::states;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut states: [state_t; 967];
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
@@ -24,12 +25,6 @@ extern "C" {
     static mut players: [player_t; 4];
     fn P_Random() -> i32;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_SpawnMobj(
-        x: fixed_t,
-        y: fixed_t,
-        z: fixed_t,
-        type_0: mobjtype_t,
-    ) -> *mut mobj_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type __uint8_t = u8;

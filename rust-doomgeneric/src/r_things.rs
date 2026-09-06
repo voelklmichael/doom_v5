@@ -45,6 +45,8 @@ use crate::src::r_data::colormaps;
 use crate::src::r_main::viewz;
 use crate::src::w_wad::lumpinfo;
 use crate::src::r_main::validcount;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_draw::viewheight;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -74,8 +76,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut viewwidth: i32;
-    static mut viewheight: i32;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
 }
 pub type size_t = usize;
