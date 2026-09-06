@@ -1,16 +1,16 @@
-use crate::src::i_system::FILE;
+use crate::src::doomdef::NULL;
 use crate::src::i_system::I_Error;
+use crate::src::i_system::FILE;
+use crate::src::i_system::SEEK_SET;
+use crate::src::i_system::{fclose, fopen, fread, fseek, ftell, fwrite};
+use crate::src::stdint_types::__int32_t;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memset;
-use libc::{strlen, strncmp, strncpy, toupper};
 use libc::{malloc, printf, sscanf};
-use crate::src::i_system::{fclose, fopen, fread, fseek, ftell, fwrite};
-use crate::src::stdint_types::byte;
-use crate::src::stdint_types::__int32_t;
-use crate::src::stdint_types::size_t;
-use crate::src::doomdef::NULL;
-use crate::src::i_system::SEEK_SET;
+use libc::{strlen, strncmp, strncpy, toupper};
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -30,23 +30,19 @@ pub type __mode_t = u32;
 pub const SEEK_END: i32 = 2;
 pub const EISDIR: i32 = 21;
 pub const DIR_SEPARATOR: i32 = '/' as i32;
-pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
-    ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
-};
+pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] =
+    unsafe { ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0") };
 pub unsafe fn M_MakeDirectory(mut path: *mut ::core::ffi::c_char) {
     mkdir(path, 0o755 as __mode_t);
 }
-pub unsafe fn M_FileExists(
-    mut filename: *mut ::core::ffi::c_char,
-) -> bool {
+pub unsafe fn M_FileExists(mut filename: *mut ::core::ffi::c_char) -> bool {
     let mut fstream: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    fstream = fopen(filename, b"r\0" as *const u8 as *const ::core::ffi::c_char)
-        as *mut FILE;
+    fstream = fopen(filename, b"r\0" as *const u8 as *const ::core::ffi::c_char) as *mut FILE;
     if !fstream.is_null() {
         fclose(fstream);
         return true;
     } else {
-        return *__errno_location() == EISDIR
+        return *__errno_location() == EISDIR;
     };
 }
 pub unsafe fn M_FileLength(mut handle: *mut FILE) -> i64 {
@@ -65,8 +61,7 @@ pub unsafe fn M_WriteFile(
 ) -> bool {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
     let mut count: i32 = 0;
-    handle = fopen(name, b"wb\0" as *const u8 as *const ::core::ffi::c_char)
-        as *mut FILE;
+    handle = fopen(name, b"wb\0" as *const u8 as *const ::core::ffi::c_char) as *mut FILE;
     if handle.is_null() {
         return false;
     }
@@ -77,77 +72,80 @@ pub unsafe fn M_WriteFile(
     }
     return true;
 }
-pub unsafe fn M_ReadFile(
-    mut name: *mut ::core::ffi::c_char,
-    mut buffer: *mut *mut byte,
-) -> i32 {
+pub unsafe fn M_ReadFile(mut name: *mut ::core::ffi::c_char, mut buffer: *mut *mut byte) -> i32 {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
     let mut count: i32 = 0;
     let mut length: i32 = 0;
     let mut buf: *mut byte = ::core::ptr::null_mut::<byte>();
-    handle = fopen(name, b"rb\0" as *const u8 as *const ::core::ffi::c_char)
-        as *mut FILE;
+    handle = fopen(name, b"rb\0" as *const u8 as *const ::core::ffi::c_char) as *mut FILE;
     if handle.is_null() {
-        I_Error(&format!("Couldn't read file {}", ::std::ffi::CStr::from_ptr(name).to_str().unwrap()));
+        I_Error(&format!(
+            "Couldn't read file {}",
+            ::std::ffi::CStr::from_ptr(name).to_str().unwrap()
+        ));
     }
     length = M_FileLength(handle) as i32;
     buf = Z_Malloc(length, PU_STATIC as i32, NULL) as *mut byte;
-    count = fread(buf as *mut ::core::ffi::c_void, 1 as size_t, length as size_t, handle)
-        as i32;
+    count = fread(
+        buf as *mut ::core::ffi::c_void,
+        1 as size_t,
+        length as size_t,
+        handle,
+    ) as i32;
     fclose(handle);
     if count < length {
-        I_Error(&format!("Couldn't read file {}", ::std::ffi::CStr::from_ptr(name).to_str().unwrap()));
+        I_Error(&format!(
+            "Couldn't read file {}",
+            ::std::ffi::CStr::from_ptr(name).to_str().unwrap()
+        ));
     }
     *buffer = buf;
     return length;
 }
-pub unsafe fn M_TempFile(
-    mut s: *mut ::core::ffi::c_char,
-) -> *mut ::core::ffi::c_char {
-    let mut tempdir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    tempdir = b"/tmp\0" as *const u8 as *const ::core::ffi::c_char
-        as *mut ::core::ffi::c_char;
+pub unsafe fn M_TempFile(mut s: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char {
+    let mut tempdir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    tempdir = b"/tmp\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     return M_StringJoin(tempdir, DIR_SEPARATOR_S.as_ptr(), s, NULL);
 }
-pub unsafe fn M_StrToInt(
-    mut str: *const ::core::ffi::c_char,
-    mut result: *mut i32,
-) -> bool {
-    return sscanf(str, b" 0x%x\0" as *const u8 as *const ::core::ffi::c_char, result)
-        == 1 as i32
-        || sscanf(str, b" 0X%x\0" as *const u8 as *const ::core::ffi::c_char, result)
-            == 1 as i32
-        || sscanf(str, b" 0%o\0" as *const u8 as *const ::core::ffi::c_char, result)
-            == 1 as i32
-        || sscanf(str, b" %d\0" as *const u8 as *const ::core::ffi::c_char, result)
-            == 1 as i32;
+pub unsafe fn M_StrToInt(mut str: *const ::core::ffi::c_char, mut result: *mut i32) -> bool {
+    return sscanf(
+        str,
+        b" 0x%x\0" as *const u8 as *const ::core::ffi::c_char,
+        result,
+    ) == 1 as i32
+        || sscanf(
+            str,
+            b" 0X%x\0" as *const u8 as *const ::core::ffi::c_char,
+            result,
+        ) == 1 as i32
+        || sscanf(
+            str,
+            b" 0%o\0" as *const u8 as *const ::core::ffi::c_char,
+            result,
+        ) == 1 as i32
+        || sscanf(
+            str,
+            b" %d\0" as *const u8 as *const ::core::ffi::c_char,
+            result,
+        ) == 1 as i32;
 }
 pub unsafe fn M_ExtractFileBase(
     mut path: *mut ::core::ffi::c_char,
     mut dest: *mut ::core::ffi::c_char,
 ) {
-    let mut src: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+    let mut src: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut length: i32 = 0;
-    src = path.offset(strlen(path) as isize).offset(-(1 as i32 as isize));
-    while src != path
-        && *src.offset(-(1 as i32 as isize)) as i32
-            != DIR_SEPARATOR
-    {
+    src = path
+        .offset(strlen(path) as isize)
+        .offset(-(1 as i32 as isize));
+    while src != path && *src.offset(-(1 as i32 as isize)) as i32 != DIR_SEPARATOR {
         src = src.offset(-1);
     }
     filename = src;
     length = 0 as i32;
     memset(dest as *mut ::core::ffi::c_void, 0 as i32, 8 as size_t);
-    while *src as i32 != '\0' as i32
-        && *src as i32 != '.' as i32
-    {
+    while *src as i32 != '\0' as i32 && *src as i32 != '.' as i32 {
         if length >= 8 as i32 {
             printf(
                 b"Warning: Truncated '%s' lump name to '%.8s'.\n\0" as *const u8
@@ -166,9 +164,7 @@ pub unsafe fn M_ExtractFileBase(
                         let fresh0 = src;
                         src = src.offset(1);
                         let mut __c: i32 = *fresh0 as i32;
-                        __res = (if __c < -(128 as i32)
-                            || __c > 255 as i32
-                        {
+                        __res = (if __c < -(128 as i32) || __c > 255 as i32 {
                             __c as __int32_t
                         } else {
                             *(*__ctype_toupper_loc()).offset(__c as isize)
@@ -181,9 +177,7 @@ pub unsafe fn M_ExtractFileBase(
                 } else {
                     let fresh2 = src;
                     src = src.offset(1);
-                    __res = *(*__ctype_toupper_loc())
-                        .offset(*fresh2 as i32 as isize)
-                        as i32;
+                    __res = *(*__ctype_toupper_loc()).offset(*fresh2 as i32 as isize) as i32;
                 }
                 __res
             }) as ::core::ffi::c_char;
@@ -206,12 +200,8 @@ pub unsafe fn M_StringReplace(
     mut needle: *const ::core::ffi::c_char,
     mut replacement: *const ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut dst: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let mut dst: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut p: *const ::core::ffi::c_char = ::core::ptr::null::<::core::ffi::c_char>();
     let mut needle_len: size_t = strlen(needle);
     let mut result_len: size_t = 0;
@@ -224,8 +214,7 @@ pub unsafe fn M_StringReplace(
             break;
         }
         p = p.offset(needle_len as isize);
-        result_len = result_len
-            .wrapping_add(strlen(replacement).wrapping_sub(needle_len));
+        result_len = result_len.wrapping_add(strlen(replacement).wrapping_sub(needle_len));
     }
     result = malloc(result_len) as *mut ::core::ffi::c_char;
     if result.is_null() {
@@ -258,11 +247,11 @@ pub unsafe fn M_StringCopy(
 ) -> bool {
     let mut len: size_t = 0;
     if dest_size >= 1 as size_t {
-        *dest.offset(dest_size.wrapping_sub(1 as size_t) as isize) = '\0' as i32
-            as ::core::ffi::c_char;
+        *dest.offset(dest_size.wrapping_sub(1 as size_t) as isize) =
+            '\0' as i32 as ::core::ffi::c_char;
         strncpy(dest, src, dest_size.wrapping_sub(1 as size_t));
     } else {
-        return false
+        return false;
     }
     len = strlen(dest);
     return *src.offset(len as isize) as i32 == '\0' as i32;
@@ -293,9 +282,7 @@ pub unsafe extern "C" fn M_StringJoin(
     mut s: *const ::core::ffi::c_char,
     mut args: ...
 ) -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut v: *const ::core::ffi::c_char = ::core::ptr::null::<::core::ffi::c_char>();
     let mut args_0: ::core::ffi::VaListImpl;
     let mut result_len: size_t = 0;
@@ -336,8 +323,8 @@ pub unsafe fn M_vsnprintf(
     }
     result = vsnprintf(buf, buf_len, s, args.as_va_list());
     if result < 0 as i32 || result as size_t >= buf_len {
-        *buf.offset(buf_len.wrapping_sub(1 as size_t) as isize) = '\0' as i32
-            as ::core::ffi::c_char;
+        *buf.offset(buf_len.wrapping_sub(1 as size_t) as isize) =
+            '\0' as i32 as ::core::ffi::c_char;
         result = buf_len.wrapping_sub(1 as size_t) as i32;
     }
     return result;

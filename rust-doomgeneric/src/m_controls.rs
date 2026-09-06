@@ -13,50 +13,30 @@ pub const KEY_FIRE: i32 = 0xa3;
 pub const KEY_ESCAPE: i32 = 27;
 pub const KEY_ENTER: i32 = 13;
 pub const KEY_TAB: i32 = 9;
-pub const KEY_F1: i32 = 0x80
-    + 0x3b as i32;
-pub const KEY_F2: i32 = 0x80
-    + 0x3c as i32;
-pub const KEY_F3: i32 = 0x80
-    + 0x3d as i32;
-pub const KEY_F4: i32 = 0x80
-    + 0x3e as i32;
-pub const KEY_F5: i32 = 0x80
-    + 0x3f as i32;
-pub const KEY_F6: i32 = 0x80
-    + 0x40 as i32;
-pub const KEY_F7: i32 = 0x80
-    + 0x41 as i32;
-pub const KEY_F8: i32 = 0x80
-    + 0x42 as i32;
-pub const KEY_F9: i32 = 0x80
-    + 0x43 as i32;
-pub const KEY_F10: i32 = 0x80
-    + 0x44 as i32;
-pub const KEY_F11: i32 = 0x80
-    + 0x57 as i32;
-pub const KEY_F12: i32 = 0x80
-    + 0x58 as i32;
+pub const KEY_F1: i32 = 0x80 + 0x3b as i32;
+pub const KEY_F2: i32 = 0x80 + 0x3c as i32;
+pub const KEY_F3: i32 = 0x80 + 0x3d as i32;
+pub const KEY_F4: i32 = 0x80 + 0x3e as i32;
+pub const KEY_F5: i32 = 0x80 + 0x3f as i32;
+pub const KEY_F6: i32 = 0x80 + 0x40 as i32;
+pub const KEY_F7: i32 = 0x80 + 0x41 as i32;
+pub const KEY_F8: i32 = 0x80 + 0x42 as i32;
+pub const KEY_F9: i32 = 0x80 + 0x43 as i32;
+pub const KEY_F10: i32 = 0x80 + 0x44 as i32;
+pub const KEY_F11: i32 = 0x80 + 0x57 as i32;
+pub const KEY_F12: i32 = 0x80 + 0x58 as i32;
 pub const KEY_BACKSPACE: i32 = 0x7f;
 pub const KEY_PAUSE: i32 = 0xff;
 pub const KEY_EQUALS: i32 = 0x3d;
 pub const KEY_MINUS: i32 = 0x2d;
-pub const KEY_RSHIFT: i32 = 0x80
-    + 0x36 as i32;
-pub const KEY_RALT: i32 = 0x80
-    + 0x38 as i32;
-pub const KEY_HOME: i32 = 0x80
-    + 0x47 as i32;
-pub const KEY_END: i32 = 0x80
-    + 0x4f as i32;
-pub const KEY_PGUP: i32 = 0x80
-    + 0x49 as i32;
-pub const KEY_PGDN: i32 = 0x80
-    + 0x51 as i32;
-pub const KEY_INS: i32 = 0x80
-    + 0x52 as i32;
-pub const KEY_DEL: i32 = 0x80
-    + 0x53 as i32;
+pub const KEY_RSHIFT: i32 = 0x80 + 0x36 as i32;
+pub const KEY_RALT: i32 = 0x80 + 0x38 as i32;
+pub const KEY_HOME: i32 = 0x80 + 0x47 as i32;
+pub const KEY_END: i32 = 0x80 + 0x4f as i32;
+pub const KEY_PGUP: i32 = 0x80 + 0x49 as i32;
+pub const KEY_PGDN: i32 = 0x80 + 0x51 as i32;
+pub const KEY_INS: i32 = 0x80 + 0x52 as i32;
+pub const KEY_DEL: i32 = 0x80 + 0x53 as i32;
 pub static mut key_right: i32 = KEY_RIGHTARROW;
 pub static mut key_left: i32 = KEY_LEFTARROW;
 pub static mut key_up: i32 = KEY_UPARROW;
@@ -196,149 +176,151 @@ pub static mut joybnextweapon: i32 = -1;
 pub static mut joybmenu: i32 = -1;
 pub static mut dclick_use: i32 = 1;
 pub unsafe fn M_BindBaseControls() {
-    M_BindVariable("key_right",
-        &raw mut key_right as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_left",
-        &raw mut key_left as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_up",
-        &raw mut key_up as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_down",
-        &raw mut key_down as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_strafeleft",
+    M_BindVariable("key_right", &raw mut key_right as *mut ::core::ffi::c_void);
+    M_BindVariable("key_left", &raw mut key_left as *mut ::core::ffi::c_void);
+    M_BindVariable("key_up", &raw mut key_up as *mut ::core::ffi::c_void);
+    M_BindVariable("key_down", &raw mut key_down as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "key_strafeleft",
         &raw mut key_strafeleft as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_straferight",
+    M_BindVariable(
+        "key_straferight",
         &raw mut key_straferight as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_fire",
-        &raw mut key_fire as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_use",
-        &raw mut key_use as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_strafe",
+    M_BindVariable("key_fire", &raw mut key_fire as *mut ::core::ffi::c_void);
+    M_BindVariable("key_use", &raw mut key_use as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "key_strafe",
         &raw mut key_strafe as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_speed",
-        &raw mut key_speed as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("mouseb_fire",
+    M_BindVariable("key_speed", &raw mut key_speed as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "mouseb_fire",
         &raw mut mousebfire as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("mouseb_strafe",
+    M_BindVariable(
+        "mouseb_strafe",
         &raw mut mousebstrafe as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("mouseb_forward",
+    M_BindVariable(
+        "mouseb_forward",
         &raw mut mousebforward as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joyb_fire",
-        &raw mut joybfire as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("joyb_strafe",
+    M_BindVariable("joyb_fire", &raw mut joybfire as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "joyb_strafe",
         &raw mut joybstrafe as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joyb_use",
-        &raw mut joybuse as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("joyb_speed",
-        &raw mut joybspeed as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("joyb_menu_activate",
+    M_BindVariable("joyb_use", &raw mut joybuse as *mut ::core::ffi::c_void);
+    M_BindVariable("joyb_speed", &raw mut joybspeed as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "joyb_menu_activate",
         &raw mut joybmenu as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joyb_strafeleft",
+    M_BindVariable(
+        "joyb_strafeleft",
         &raw mut joybstrafeleft as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joyb_straferight",
+    M_BindVariable(
+        "joyb_straferight",
         &raw mut joybstraferight as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("mouseb_strafeleft",
+    M_BindVariable(
+        "mouseb_strafeleft",
         &raw mut mousebstrafeleft as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("mouseb_straferight",
+    M_BindVariable(
+        "mouseb_straferight",
         &raw mut mousebstraferight as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("mouseb_use",
-        &raw mut mousebuse as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("mouseb_backward",
+    M_BindVariable("mouseb_use", &raw mut mousebuse as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "mouseb_backward",
         &raw mut mousebbackward as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("dclick_use",
+    M_BindVariable(
+        "dclick_use",
         &raw mut dclick_use as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_pause",
-        &raw mut key_pause as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_message_refresh",
+    M_BindVariable("key_pause", &raw mut key_pause as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "key_message_refresh",
         &raw mut key_message_refresh as *mut ::core::ffi::c_void,
     );
 }
 pub unsafe fn M_BindHereticControls() {
-    M_BindVariable("key_flyup",
-        &raw mut key_flyup as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_flydown",
+    M_BindVariable("key_flyup", &raw mut key_flyup as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "key_flydown",
         &raw mut key_flydown as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_flycenter",
+    M_BindVariable(
+        "key_flycenter",
         &raw mut key_flycenter as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_lookup",
+    M_BindVariable(
+        "key_lookup",
         &raw mut key_lookup as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_lookdown",
+    M_BindVariable(
+        "key_lookdown",
         &raw mut key_lookdown as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_lookcenter",
+    M_BindVariable(
+        "key_lookcenter",
         &raw mut key_lookcenter as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invleft",
+    M_BindVariable(
+        "key_invleft",
         &raw mut key_invleft as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invright",
+    M_BindVariable(
+        "key_invright",
         &raw mut key_invright as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_useartifact",
+    M_BindVariable(
+        "key_useartifact",
         &raw mut key_useartifact as *mut ::core::ffi::c_void,
     );
 }
 pub unsafe fn M_BindHexenControls() {
-    M_BindVariable("key_jump",
-        &raw mut key_jump as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("mouseb_jump",
+    M_BindVariable("key_jump", &raw mut key_jump as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "mouseb_jump",
         &raw mut mousebjump as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joyb_jump",
-        &raw mut joybjump as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_arti_all",
+    M_BindVariable("joyb_jump", &raw mut joybjump as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "key_arti_all",
         &raw mut key_arti_all as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_arti_health",
+    M_BindVariable(
+        "key_arti_health",
         &raw mut key_arti_health as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_arti_poisonbag",
+    M_BindVariable(
+        "key_arti_poisonbag",
         &raw mut key_arti_poisonbag as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_arti_blastradius",
+    M_BindVariable(
+        "key_arti_blastradius",
         &raw mut key_arti_blastradius as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_arti_teleport",
+    M_BindVariable(
+        "key_arti_teleport",
         &raw mut key_arti_teleport as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_arti_teleportother",
+    M_BindVariable(
+        "key_arti_teleportother",
         &raw mut key_arti_teleportother as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_arti_egg",
+    M_BindVariable(
+        "key_arti_egg",
         &raw mut key_arti_egg as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_arti_invulnerability",
+    M_BindVariable(
+        "key_arti_invulnerability",
         &raw mut key_arti_invulnerability as *mut ::core::ffi::c_void,
     );
 }
@@ -349,218 +331,277 @@ pub unsafe fn M_BindStrifeControls() {
     key_lookdown = KEY_PGDN;
     key_invleft = KEY_INS;
     key_invright = KEY_DEL;
-    M_BindVariable("key_jump",
-        &raw mut key_jump as *mut ::core::ffi::c_void,
-    );
-    M_BindVariable("key_lookUp",
+    M_BindVariable("key_jump", &raw mut key_jump as *mut ::core::ffi::c_void);
+    M_BindVariable(
+        "key_lookUp",
         &raw mut key_lookup as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_lookDown",
+    M_BindVariable(
+        "key_lookDown",
         &raw mut key_lookdown as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invLeft",
+    M_BindVariable(
+        "key_invLeft",
         &raw mut key_invleft as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invRight",
+    M_BindVariable(
+        "key_invRight",
         &raw mut key_invright as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_useHealth",
+    M_BindVariable(
+        "key_useHealth",
         &raw mut key_usehealth as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invquery",
+    M_BindVariable(
+        "key_invquery",
         &raw mut key_invquery as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_mission",
+    M_BindVariable(
+        "key_mission",
         &raw mut key_mission as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invPop",
+    M_BindVariable(
+        "key_invPop",
         &raw mut key_invpop as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invKey",
+    M_BindVariable(
+        "key_invKey",
         &raw mut key_invkey as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invHome",
+    M_BindVariable(
+        "key_invHome",
         &raw mut key_invhome as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invEnd",
+    M_BindVariable(
+        "key_invEnd",
         &raw mut key_invend as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invUse",
+    M_BindVariable(
+        "key_invUse",
         &raw mut key_invuse as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_invDrop",
+    M_BindVariable(
+        "key_invDrop",
         &raw mut key_invdrop as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("mouseb_jump",
+    M_BindVariable(
+        "mouseb_jump",
         &raw mut mousebjump as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joyb_jump",
-        &raw mut joybjump as *mut ::core::ffi::c_void,
-    );
+    M_BindVariable("joyb_jump", &raw mut joybjump as *mut ::core::ffi::c_void);
 }
 pub unsafe fn M_BindWeaponControls() {
-    M_BindVariable("key_weapon1",
+    M_BindVariable(
+        "key_weapon1",
         &raw mut key_weapon1 as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_weapon2",
+    M_BindVariable(
+        "key_weapon2",
         &raw mut key_weapon2 as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_weapon3",
+    M_BindVariable(
+        "key_weapon3",
         &raw mut key_weapon3 as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_weapon4",
+    M_BindVariable(
+        "key_weapon4",
         &raw mut key_weapon4 as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_weapon5",
+    M_BindVariable(
+        "key_weapon5",
         &raw mut key_weapon5 as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_weapon6",
+    M_BindVariable(
+        "key_weapon6",
         &raw mut key_weapon6 as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_weapon7",
+    M_BindVariable(
+        "key_weapon7",
         &raw mut key_weapon7 as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_weapon8",
+    M_BindVariable(
+        "key_weapon8",
         &raw mut key_weapon8 as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_prevweapon",
+    M_BindVariable(
+        "key_prevweapon",
         &raw mut key_prevweapon as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_nextweapon",
+    M_BindVariable(
+        "key_nextweapon",
         &raw mut key_nextweapon as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joyb_prevweapon",
+    M_BindVariable(
+        "joyb_prevweapon",
         &raw mut joybprevweapon as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joyb_nextweapon",
+    M_BindVariable(
+        "joyb_nextweapon",
         &raw mut joybnextweapon as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("mouseb_prevweapon",
+    M_BindVariable(
+        "mouseb_prevweapon",
         &raw mut mousebprevweapon as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("mouseb_nextweapon",
+    M_BindVariable(
+        "mouseb_nextweapon",
         &raw mut mousebnextweapon as *mut ::core::ffi::c_void,
     );
 }
 pub unsafe fn M_BindMapControls() {
-    M_BindVariable("key_map_north",
+    M_BindVariable(
+        "key_map_north",
         &raw mut key_map_north as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_south",
+    M_BindVariable(
+        "key_map_south",
         &raw mut key_map_south as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_east",
+    M_BindVariable(
+        "key_map_east",
         &raw mut key_map_east as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_west",
+    M_BindVariable(
+        "key_map_west",
         &raw mut key_map_west as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_zoomin",
+    M_BindVariable(
+        "key_map_zoomin",
         &raw mut key_map_zoomin as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_zoomout",
+    M_BindVariable(
+        "key_map_zoomout",
         &raw mut key_map_zoomout as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_toggle",
+    M_BindVariable(
+        "key_map_toggle",
         &raw mut key_map_toggle as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_maxzoom",
+    M_BindVariable(
+        "key_map_maxzoom",
         &raw mut key_map_maxzoom as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_follow",
+    M_BindVariable(
+        "key_map_follow",
         &raw mut key_map_follow as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_grid",
+    M_BindVariable(
+        "key_map_grid",
         &raw mut key_map_grid as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_mark",
+    M_BindVariable(
+        "key_map_mark",
         &raw mut key_map_mark as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_map_clearmark",
+    M_BindVariable(
+        "key_map_clearmark",
         &raw mut key_map_clearmark as *mut ::core::ffi::c_void,
     );
 }
 pub unsafe fn M_BindMenuControls() {
-    M_BindVariable("key_menu_activate",
+    M_BindVariable(
+        "key_menu_activate",
         &raw mut key_menu_activate as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_up",
+    M_BindVariable(
+        "key_menu_up",
         &raw mut key_menu_up as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_down",
+    M_BindVariable(
+        "key_menu_down",
         &raw mut key_menu_down as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_left",
+    M_BindVariable(
+        "key_menu_left",
         &raw mut key_menu_left as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_right",
+    M_BindVariable(
+        "key_menu_right",
         &raw mut key_menu_right as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_back",
+    M_BindVariable(
+        "key_menu_back",
         &raw mut key_menu_back as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_forward",
+    M_BindVariable(
+        "key_menu_forward",
         &raw mut key_menu_forward as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_confirm",
+    M_BindVariable(
+        "key_menu_confirm",
         &raw mut key_menu_confirm as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_abort",
+    M_BindVariable(
+        "key_menu_abort",
         &raw mut key_menu_abort as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_help",
+    M_BindVariable(
+        "key_menu_help",
         &raw mut key_menu_help as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_save",
+    M_BindVariable(
+        "key_menu_save",
         &raw mut key_menu_save as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_load",
+    M_BindVariable(
+        "key_menu_load",
         &raw mut key_menu_load as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_volume",
+    M_BindVariable(
+        "key_menu_volume",
         &raw mut key_menu_volume as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_detail",
+    M_BindVariable(
+        "key_menu_detail",
         &raw mut key_menu_detail as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_qsave",
+    M_BindVariable(
+        "key_menu_qsave",
         &raw mut key_menu_qsave as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_endgame",
+    M_BindVariable(
+        "key_menu_endgame",
         &raw mut key_menu_endgame as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_messages",
+    M_BindVariable(
+        "key_menu_messages",
         &raw mut key_menu_messages as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_qload",
+    M_BindVariable(
+        "key_menu_qload",
         &raw mut key_menu_qload as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_quit",
+    M_BindVariable(
+        "key_menu_quit",
         &raw mut key_menu_quit as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_gamma",
+    M_BindVariable(
+        "key_menu_gamma",
         &raw mut key_menu_gamma as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_incscreen",
+    M_BindVariable(
+        "key_menu_incscreen",
         &raw mut key_menu_incscreen as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_decscreen",
+    M_BindVariable(
+        "key_menu_decscreen",
         &raw mut key_menu_decscreen as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_menu_screenshot",
+    M_BindVariable(
+        "key_menu_screenshot",
         &raw mut key_menu_screenshot as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_demo_quit",
+    M_BindVariable(
+        "key_demo_quit",
         &raw mut key_demo_quit as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("key_spy",
-        &raw mut key_spy as *mut ::core::ffi::c_void,
-    );
+    M_BindVariable("key_spy", &raw mut key_spy as *mut ::core::ffi::c_void);
 }
 pub unsafe fn M_BindChatControls(mut num_players: u32) {
     let mut name: [::core::ffi::c_char; 32] = [0; 32];
     let mut i: u32 = 0;
-    M_BindVariable("key_multi_msg",
+    M_BindVariable(
+        "key_multi_msg",
         &raw mut key_multi_msg as *mut ::core::ffi::c_void,
     );
     i = 0 as u32;
@@ -575,14 +616,12 @@ pub unsafe fn M_BindChatControls(mut num_players: u32) {
             ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),
-            (&raw mut key_multi_msgplayer as *mut i32).offset(i as isize)
-                as *mut i32 as *mut ::core::ffi::c_void,
+            (&raw mut key_multi_msgplayer as *mut i32).offset(i as isize) as *mut i32
+                as *mut ::core::ffi::c_void,
         );
         i = i.wrapping_add(1);
     }
 }
 pub unsafe fn M_ApplyPlatformDefaults() {}
-pub const KEY_CAPSLOCK: i32 = 0x80
-    + 0x3a as i32;
-pub const KEY_SCRLCK: i32 = 0x80
-    + 0x46 as i32;
+pub const KEY_CAPSLOCK: i32 = 0x80 + 0x3a as i32;
+pub const KEY_SCRLCK: i32 = 0x80 + 0x46 as i32;

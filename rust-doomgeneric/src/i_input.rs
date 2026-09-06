@@ -5,10 +5,7 @@ use crate::src::game_state::game_state;
 use crate::src::m_controls::KEY_RSHIFT;
 
 extern "C" {
-    fn DG_GetKey(
-        pressed: *mut i32,
-        key: *mut u8,
-    ) -> i32;
+    fn DG_GetKey(pressed: *mut i32, key: *mut u8) -> i32;
 }
 pub struct IInputState {
     pub vanilla_keyboard_mapping: i32,
@@ -154,15 +151,10 @@ static shiftxform: [::core::ffi::c_char; 128] = [
     '~' as i32 as ::core::ffi::c_char,
     127 as i32 as ::core::ffi::c_char,
 ];
-unsafe fn TranslateKey(
-    mut key: u8,
-) -> u8 {
+unsafe fn TranslateKey(mut key: u8) -> u8 {
     return key;
 }
-unsafe fn GetTypedChar(
-    state: &mut IInputState,
-    mut key: u8,
-) -> u8 {
+unsafe fn GetTypedChar(state: &mut IInputState, mut key: u8) -> u8 {
     key = TranslateKey(key);
     if state.shiftdown > 0 as i32 {
         if key as i32 >= 0 as i32
@@ -177,11 +169,7 @@ unsafe fn GetTypedChar(
     }
     return key;
 }
-unsafe fn UpdateShiftStatus(
-    state: &mut IInputState,
-    mut pressed: i32,
-    mut key: u8,
-) {
+unsafe fn UpdateShiftStatus(state: &mut IInputState, mut pressed: i32, mut key: u8) {
     let mut change: i32 = 0;
     if pressed != 0 {
         change = 1 as i32;
@@ -209,14 +197,14 @@ pub unsafe fn I_GetEvent(state: &mut IInputState) {
             event.data1 = TranslateKey(key) as i32;
             event.data2 = GetTypedChar(state, key) as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&mut game_state().d_event, &raw mut event);
+                D_PostEvent(&mut game_state().d_event, event);
             }
         } else {
             event.type_0 = ev_keyup;
             event.data1 = TranslateKey(key) as i32;
             event.data2 = 0 as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&mut game_state().d_event, &raw mut event);
+                D_PostEvent(&mut game_state().d_event, event);
             }
             break;
         }

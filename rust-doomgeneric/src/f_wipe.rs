@@ -1,33 +1,26 @@
-
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::game_state::game_state;
 use crate::src::i_video::I_ReadScreen;
-use crate::src::m_random::M_Random;
-use crate::src::v_video::V_MarkRect;
 use crate::src::i_video::I_VideoBuffer;
+use crate::src::m_random::M_Random;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use crate::src::v_video::V_DrawBlock;
+use crate::src::v_video::V_MarkRect;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
 use libc::memcpy;
-use crate::src::doomdef::NULL;
-use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomdef::SCREENHEIGHT;
-use crate::src::game_state::game_state;
 static mut go: bool = false;
 static mut wipe_scr_start: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr_end: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-pub unsafe fn wipe_shittyColMajorXform(
-    mut array: *mut i16,
-    mut width: i32,
-    mut height: i32,
-) {
+pub unsafe fn wipe_shittyColMajorXform(mut array: *mut i16, mut width: i32, mut height: i32) {
     let mut x: i32 = 0;
     let mut y_0: i32 = 0;
-    let mut dest: *mut i16 = ::core::ptr::null_mut::<
-        i16,
-    >();
+    let mut dest: *mut i16 = ::core::ptr::null_mut::<i16>();
     dest = Z_Malloc(
         width * height * 2 as i32,
         PU_STATIC as i32,
@@ -37,8 +30,7 @@ pub unsafe fn wipe_shittyColMajorXform(
     while y_0 < height {
         x = 0 as i32;
         while x < width {
-            *dest.offset((x * height + y_0) as isize) = *array
-                .offset((y_0 * width + x) as isize);
+            *dest.offset((x * height + y_0) as isize) = *array.offset((y_0 * width + x) as isize);
             x += 1;
         }
         y_0 += 1;
@@ -50,11 +42,7 @@ pub unsafe fn wipe_shittyColMajorXform(
     );
     Z_Free(dest as *mut ::core::ffi::c_void);
 }
-pub unsafe fn wipe_initColorXForm(
-    mut width: i32,
-    mut height: i32,
-    mut ticks: i32,
-) -> i32 {
+pub unsafe fn wipe_initColorXForm(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     memcpy(
         wipe_scr as *mut ::core::ffi::c_void,
         wipe_scr_start as *const ::core::ffi::c_void,
@@ -62,11 +50,7 @@ pub unsafe fn wipe_initColorXForm(
     );
     return 0 as i32;
 }
-pub unsafe fn wipe_doColorXForm(
-    mut width: i32,
-    mut height: i32,
-    mut ticks: i32,
-) -> i32 {
+pub unsafe fn wipe_doColorXForm(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     let mut changed: bool;
     let mut w: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut e: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -99,20 +83,11 @@ pub unsafe fn wipe_doColorXForm(
     }
     return (!changed) as i32;
 }
-pub unsafe fn wipe_exitColorXForm(
-    mut width: i32,
-    mut height: i32,
-    mut ticks: i32,
-) -> i32 {
+pub unsafe fn wipe_exitColorXForm(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     return 0 as i32;
 }
-static mut y: *mut i32 = ::core::ptr::null::<i32>()
-    as *mut i32;
-pub unsafe fn wipe_initMelt(
-    mut width: i32,
-    mut height: i32,
-    mut ticks: i32,
-) -> i32 {
+static mut y: *mut i32 = ::core::ptr::null::<i32>() as *mut i32;
+pub unsafe fn wipe_initMelt(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     let mut i: i32 = 0;
     let mut r: i32 = 0;
     memcpy(
@@ -120,25 +95,14 @@ pub unsafe fn wipe_initMelt(
         wipe_scr_start as *const ::core::ffi::c_void,
         (width * height) as size_t,
     );
-    wipe_shittyColMajorXform(
-        wipe_scr_start as *mut i16,
-        width / 2 as i32,
-        height,
-    );
-    wipe_shittyColMajorXform(
-        wipe_scr_end as *mut i16,
-        width / 2 as i32,
-        height,
-    );
+    wipe_shittyColMajorXform(wipe_scr_start as *mut i16, width / 2 as i32, height);
+    wipe_shittyColMajorXform(wipe_scr_end as *mut i16, width / 2 as i32, height);
     y = Z_Malloc(
-        (width as usize)
-            .wrapping_mul(::core::mem::size_of::<i32>() as usize)
-            as i32,
+        (width as usize).wrapping_mul(::core::mem::size_of::<i32>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut i32;
-    *y.offset(0 as i32 as isize) = -(M_Random(unsafe { &mut game_state().m_random })
-        % 16 as i32);
+    *y.offset(0 as i32 as isize) = -(M_Random(unsafe { &mut game_state().m_random }) % 16 as i32);
     i = 1 as i32;
     while i < width {
         r = M_Random(unsafe { &mut game_state().m_random }) % 3 as i32 - 1 as i32;
@@ -152,21 +116,13 @@ pub unsafe fn wipe_initMelt(
     }
     return 0 as i32;
 }
-pub unsafe fn wipe_doMelt(
-    mut width: i32,
-    mut height: i32,
-    mut ticks: i32,
-) -> i32 {
+pub unsafe fn wipe_doMelt(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut dy: i32 = 0;
     let mut idx: i32 = 0;
-    let mut s: *mut i16 = ::core::ptr::null_mut::<
-        i16,
-    >();
-    let mut d: *mut i16 = ::core::ptr::null_mut::<
-        i16,
-    >();
+    let mut s: *mut i16 = ::core::ptr::null_mut::<i16>();
+    let mut d: *mut i16 = ::core::ptr::null_mut::<i16>();
     let mut done: bool = true;
     width /= 2 as i32;
     loop {
@@ -190,11 +146,9 @@ pub unsafe fn wipe_doMelt(
                 if *y.offset(i as isize) + dy >= height {
                     dy = height - *y.offset(i as isize);
                 }
-                s = (wipe_scr_end as *mut i16)
-                    .offset((i * height + *y.offset(i as isize)) as isize)
+                s = (wipe_scr_end as *mut i16).offset((i * height + *y.offset(i as isize)) as isize)
                     as *mut i16;
-                d = (wipe_scr as *mut i16)
-                    .offset((*y.offset(i as isize) * width + i) as isize)
+                d = (wipe_scr as *mut i16).offset((*y.offset(i as isize) * width + i) as isize)
                     as *mut i16;
                 idx = 0 as i32;
                 j = dy;
@@ -206,10 +160,8 @@ pub unsafe fn wipe_doMelt(
                     j -= 1;
                 }
                 *y.offset(i as isize) += dy;
-                s = (wipe_scr_start as *mut i16)
-                    .offset((i * height) as isize) as *mut i16;
-                d = (wipe_scr as *mut i16)
-                    .offset((*y.offset(i as isize) * width + i) as isize)
+                s = (wipe_scr_start as *mut i16).offset((i * height) as isize) as *mut i16;
+                d = (wipe_scr as *mut i16).offset((*y.offset(i as isize) * width + i) as isize)
                     as *mut i16;
                 idx = 0 as i32;
                 j = height - *y.offset(i as isize);
@@ -227,41 +179,19 @@ pub unsafe fn wipe_doMelt(
     }
     return done as i32;
 }
-pub unsafe fn wipe_exitMelt(
-    mut width: i32,
-    mut height: i32,
-    mut ticks: i32,
-) -> i32 {
+pub unsafe fn wipe_exitMelt(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     Z_Free(y as *mut ::core::ffi::c_void);
     Z_Free(wipe_scr_start as *mut ::core::ffi::c_void);
     Z_Free(wipe_scr_end as *mut ::core::ffi::c_void);
     return 0 as i32;
 }
-pub unsafe fn wipe_StartScreen(
-    mut x: i32,
-    mut y_0: i32,
-    mut width: i32,
-    mut height: i32,
-) -> i32 {
-    wipe_scr_start = Z_Malloc(
-        SCREENWIDTH * SCREENHEIGHT,
-        PU_STATIC as i32,
-        NULL,
-    ) as *mut byte;
+pub unsafe fn wipe_StartScreen(mut x: i32, mut y_0: i32, mut width: i32, mut height: i32) -> i32 {
+    wipe_scr_start = Z_Malloc(SCREENWIDTH * SCREENHEIGHT, PU_STATIC as i32, NULL) as *mut byte;
     I_ReadScreen(wipe_scr_start);
     return 0 as i32;
 }
-pub unsafe fn wipe_EndScreen(
-    mut x: i32,
-    mut y_0: i32,
-    mut width: i32,
-    mut height: i32,
-) -> i32 {
-    wipe_scr_end = Z_Malloc(
-        SCREENWIDTH * SCREENHEIGHT,
-        PU_STATIC as i32,
-        NULL,
-    ) as *mut byte;
+pub unsafe fn wipe_EndScreen(mut x: i32, mut y_0: i32, mut width: i32, mut height: i32) -> i32 {
+    wipe_scr_end = Z_Malloc(SCREENWIDTH * SCREENHEIGHT, PU_STATIC as i32, NULL) as *mut byte;
     I_ReadScreen(wipe_scr_end);
     V_DrawBlock(x, y_0, width, height, wipe_scr_start);
     return 0 as i32;
@@ -275,115 +205,41 @@ pub unsafe fn wipe_ScreenWipe(
     mut ticks: i32,
 ) -> i32 {
     let mut rc: i32 = 0;
-    static mut wipes: [Option<
-        unsafe fn(
-            i32,
-            i32,
-            i32,
-        ) -> i32,
-    >; 6] = unsafe {
+    static mut wipes: [Option<unsafe fn(i32, i32, i32) -> i32>; 6] = unsafe {
         [
-            Some(
-                wipe_initColorXForm
-                    as unsafe fn(
-                        i32,
-                        i32,
-                        i32,
-                    ) -> i32,
-            ),
-            Some(
-                wipe_doColorXForm
-                    as unsafe fn(
-                        i32,
-                        i32,
-                        i32,
-                    ) -> i32,
-            ),
-            Some(
-                wipe_exitColorXForm
-                    as unsafe fn(
-                        i32,
-                        i32,
-                        i32,
-                    ) -> i32,
-            ),
-            Some(
-                wipe_initMelt
-                    as unsafe fn(
-                        i32,
-                        i32,
-                        i32,
-                    ) -> i32,
-            ),
-            Some(
-                wipe_doMelt
-                    as unsafe fn(
-                        i32,
-                        i32,
-                        i32,
-                    ) -> i32,
-            ),
-            Some(
-                wipe_exitMelt
-                    as unsafe fn(
-                        i32,
-                        i32,
-                        i32,
-                    ) -> i32,
-            ),
+            Some(wipe_initColorXForm as unsafe fn(i32, i32, i32) -> i32),
+            Some(wipe_doColorXForm as unsafe fn(i32, i32, i32) -> i32),
+            Some(wipe_exitColorXForm as unsafe fn(i32, i32, i32) -> i32),
+            Some(wipe_initMelt as unsafe fn(i32, i32, i32) -> i32),
+            Some(wipe_doMelt as unsafe fn(i32, i32, i32) -> i32),
+            Some(wipe_exitMelt as unsafe fn(i32, i32, i32) -> i32),
         ]
     };
     if !go {
         go = true;
         wipe_scr = I_VideoBuffer;
         Some(
-                (*(&raw mut wipes
-                    as *mut Option<
-                        unsafe extern "C" fn(
-                            i32,
-                            i32,
-                            i32,
-                        ) -> i32,
-                    >)
-                    .offset((wipeno * 3 as i32) as isize))
-                    .expect("non-null function pointer"),
-            )
-            .expect("non-null function pointer")(width, height, ticks);
+            (*(&raw mut wipes as *mut Option<unsafe extern "C" fn(i32, i32, i32) -> i32>)
+                .offset((wipeno * 3 as i32) as isize))
+            .expect("non-null function pointer"),
+        )
+        .expect("non-null function pointer")(width, height, ticks);
     }
     V_MarkRect(0 as i32, 0 as i32, width, height);
     rc = Some(
-            (*(&raw mut wipes
-                as *mut Option<
-                    unsafe extern "C" fn(
-                        i32,
-                        i32,
-                        i32,
-                    ) -> i32,
-                >)
-                .offset(
-                    (wipeno * 3 as i32 + 1 as i32) as isize,
-                ))
-                .expect("non-null function pointer"),
-        )
-        .expect("non-null function pointer")(width, height, ticks);
+        (*(&raw mut wipes as *mut Option<unsafe extern "C" fn(i32, i32, i32) -> i32>)
+            .offset((wipeno * 3 as i32 + 1 as i32) as isize))
+        .expect("non-null function pointer"),
+    )
+    .expect("non-null function pointer")(width, height, ticks);
     if rc != 0 {
         go = false;
         Some(
-                (*(&raw mut wipes
-                    as *mut Option<
-                        unsafe extern "C" fn(
-                            i32,
-                            i32,
-                            i32,
-                        ) -> i32,
-                    >)
-                    .offset(
-                        (wipeno * 3 as i32 + 2 as i32)
-                            as isize,
-                    ))
-                    .expect("non-null function pointer"),
-            )
-            .expect("non-null function pointer")(width, height, ticks);
+            (*(&raw mut wipes as *mut Option<unsafe extern "C" fn(i32, i32, i32) -> i32>)
+                .offset((wipeno * 3 as i32 + 2 as i32) as isize))
+            .expect("non-null function pointer"),
+        )
+        .expect("non-null function pointer")(width, height, ticks);
     }
     return (!go) as i32;
 }

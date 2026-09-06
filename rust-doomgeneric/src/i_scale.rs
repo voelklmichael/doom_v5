@@ -1,17 +1,17 @@
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::i_system::fflush;
 use crate::src::i_system::FILE;
 use crate::src::m_argv::M_CheckParm;
+use crate::src::m_fixed::INT_MAX;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::{memcpy, memset};
 use libc::{printf, puts};
-use crate::src::i_system::fflush;
-use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
-use crate::src::doomdef::NULL;
-use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomdef::SCREENHEIGHT;
-use crate::src::m_fixed::INT_MAX;
 extern "C" {
     static mut stdout: *mut FILE;
 }
@@ -21,14 +21,7 @@ pub struct screen_mode_t {
     pub width: i32,
     pub height: i32,
     pub InitMode: Option<unsafe fn(*mut byte) -> ()>,
-    pub DrawScreen: Option<
-        unsafe fn(
-            i32,
-            i32,
-            i32,
-            i32,
-        ) -> bool,
-    >,
+    pub DrawScreen: Option<unsafe fn(i32, i32, i32, i32) -> bool>,
     pub poor_quality: bool,
 }
 pub const SCREENWIDTH_4_3: i32 = 256;
@@ -50,18 +43,17 @@ pub unsafe fn I_InitScale(
     dest_buffer = _dest_buffer;
     dest_pitch = _dest_pitch;
 }
-unsafe fn I_Scale1x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Scale1x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
     let mut w: i32 = x2 - x1;
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer
+        .offset((y1 * dest_pitch) as isize)
+        .offset(x1 as isize);
     y = y1;
     while y < y2 {
         memcpy(
@@ -81,24 +73,11 @@ pub static mut mode_scale_1x: screen_mode_t = unsafe {
         width: SCREENWIDTH,
         height: SCREENHEIGHT,
         InitMode: None,
-        DrawScreen: Some(
-            I_Scale1x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Scale1x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
-unsafe fn I_Scale2x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Scale2x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -106,9 +85,10 @@ unsafe fn I_Scale2x(
     let mut y: i32 = 0;
     let mut multi_pitch: i32 = 0;
     multi_pitch = dest_pitch * 2 as i32;
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer
-        .offset(((y1 * dest_pitch + x1) * 2 as i32) as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer.offset(((y1 * dest_pitch + x1) * 2 as i32) as isize);
     screenp2 = screenp.offset(dest_pitch as isize);
     y = y1;
     while y < y2 {
@@ -148,24 +128,11 @@ pub static mut mode_scale_2x: screen_mode_t = unsafe {
         width: SCREENWIDTH * 2 as i32,
         height: SCREENHEIGHT * 2 as i32,
         InitMode: None,
-        DrawScreen: Some(
-            I_Scale2x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Scale2x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
-unsafe fn I_Scale3x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Scale3x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -174,9 +141,10 @@ unsafe fn I_Scale3x(
     let mut y: i32 = 0;
     let mut multi_pitch: i32 = 0;
     multi_pitch = dest_pitch * 3 as i32;
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer
-        .offset(((y1 * dest_pitch + x1) * 3 as i32) as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer.offset(((y1 * dest_pitch + x1) * 3 as i32) as isize);
     screenp2 = screenp.offset(dest_pitch as isize);
     screenp3 = screenp.offset((dest_pitch * 2 as i32) as isize);
     y = y1;
@@ -235,24 +203,11 @@ pub static mut mode_scale_3x: screen_mode_t = unsafe {
         width: SCREENWIDTH * 3 as i32,
         height: SCREENHEIGHT * 3 as i32,
         InitMode: None,
-        DrawScreen: Some(
-            I_Scale3x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Scale3x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
-unsafe fn I_Scale4x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Scale4x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -262,9 +217,10 @@ unsafe fn I_Scale4x(
     let mut y: i32 = 0;
     let mut multi_pitch: i32 = 0;
     multi_pitch = dest_pitch * 4 as i32;
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer
-        .offset(((y1 * dest_pitch + x1) * 4 as i32) as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer.offset(((y1 * dest_pitch + x1) * 4 as i32) as isize);
     screenp2 = screenp.offset(dest_pitch as isize);
     screenp3 = screenp.offset((dest_pitch * 2 as i32) as isize);
     screenp4 = screenp.offset((dest_pitch * 3 as i32) as isize);
@@ -348,24 +304,11 @@ pub static mut mode_scale_4x: screen_mode_t = unsafe {
         width: SCREENWIDTH * 4 as i32,
         height: SCREENHEIGHT * 4 as i32,
         InitMode: None,
-        DrawScreen: Some(
-            I_Scale4x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Scale4x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
-unsafe fn I_Scale5x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Scale5x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -376,9 +319,10 @@ unsafe fn I_Scale5x(
     let mut y: i32 = 0;
     let mut multi_pitch: i32 = 0;
     multi_pitch = dest_pitch * 5 as i32;
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer
-        .offset(((y1 * dest_pitch + x1) * 5 as i32) as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer.offset(((y1 * dest_pitch + x1) * 5 as i32) as isize);
     screenp2 = screenp.offset(dest_pitch as isize);
     screenp3 = screenp.offset((dest_pitch * 2 as i32) as isize);
     screenp4 = screenp.offset((dest_pitch * 3 as i32) as isize);
@@ -493,24 +437,11 @@ pub static mut mode_scale_5x: screen_mode_t = unsafe {
         width: SCREENWIDTH * 5 as i32,
         height: SCREENHEIGHT * 5 as i32,
         InitMode: None,
-        DrawScreen: Some(
-            I_Scale5x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Scale5x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
-unsafe fn FindNearestColor(
-    mut palette: *mut byte,
-    mut r: i32,
-    mut g: i32,
-    mut b: i32,
-) -> i32 {
+unsafe fn FindNearestColor(mut palette: *mut byte, mut r: i32, mut g: i32, mut b: i32) -> i32 {
     let mut col: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut best: i32 = 0;
     let mut best_diff: i32 = 0;
@@ -524,15 +455,11 @@ unsafe fn FindNearestColor(
         diff = (r - *col.offset(0 as i32 as isize) as i32)
             * (r - *col.offset(0 as i32 as isize) as i32)
             + (g - *col.offset(1 as i32 as isize) as i32)
-                * (g
-                    - *col.offset(1 as i32 as isize)
-                        as i32)
+                * (g - *col.offset(1 as i32 as isize) as i32)
             + (b - *col.offset(2 as i32 as isize) as i32)
-                * (b
-                    - *col.offset(2 as i32 as isize)
-                        as i32);
+                * (b - *col.offset(2 as i32 as isize) as i32);
         if diff == 0 as i32 {
-            return i
+            return i;
         } else if diff < best_diff {
             best = i;
             best_diff = diff;
@@ -541,10 +468,7 @@ unsafe fn FindNearestColor(
     }
     return best;
 }
-unsafe fn GenerateStretchTable(
-    mut palette: *mut byte,
-    mut pct: i32,
-) -> *mut byte {
+unsafe fn GenerateStretchTable(mut palette: *mut byte, mut pct: i32) -> *mut byte {
     let mut result: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut x: i32 = 0;
     let mut y: i32 = 0;
@@ -553,35 +477,24 @@ unsafe fn GenerateStretchTable(
     let mut b: i32 = 0;
     let mut col1: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut col2: *mut byte = ::core::ptr::null_mut::<byte>();
-    result = Z_Malloc(
-        256 as i32 * 256 as i32,
-        PU_STATIC as i32,
-        NULL,
-    ) as *mut byte;
+    result = Z_Malloc(256 as i32 * 256 as i32, PU_STATIC as i32, NULL) as *mut byte;
     x = 0 as i32;
     while x < 256 as i32 {
         y = 0 as i32;
         while y < 256 as i32 {
             col1 = palette.offset((x * 3 as i32) as isize);
             col2 = palette.offset((y * 3 as i32) as isize);
-            r = (*col1.offset(0 as i32 as isize) as i32
-                * pct
-                + *col2.offset(0 as i32 as isize) as i32
-                    * (100 as i32 - pct)) / 100 as i32;
-            g = (*col1.offset(1 as i32 as isize) as i32
-                * pct
-                + *col2.offset(1 as i32 as isize) as i32
-                    * (100 as i32 - pct)) / 100 as i32;
-            b = (*col1.offset(2 as i32 as isize) as i32
-                * pct
-                + *col2.offset(2 as i32 as isize) as i32
-                    * (100 as i32 - pct)) / 100 as i32;
-            *result.offset((x * 256 as i32 + y) as isize) = FindNearestColor(
-                palette,
-                r,
-                g,
-                b,
-            ) as byte;
+            r = (*col1.offset(0 as i32 as isize) as i32 * pct
+                + *col2.offset(0 as i32 as isize) as i32 * (100 as i32 - pct))
+                / 100 as i32;
+            g = (*col1.offset(1 as i32 as isize) as i32 * pct
+                + *col2.offset(1 as i32 as isize) as i32 * (100 as i32 - pct))
+                / 100 as i32;
+            b = (*col1.offset(2 as i32 as isize) as i32 * pct
+                + *col2.offset(2 as i32 as isize) as i32 * (100 as i32 - pct))
+                / 100 as i32;
+            *result.offset((x * 256 as i32 + y) as isize) =
+                FindNearestColor(palette, r, g, b) as byte;
             y += 1;
         }
         x += 1;
@@ -597,16 +510,10 @@ unsafe fn I_InitStretchTables(mut palette: *mut byte) {
             as *const ::core::ffi::c_char,
     );
     fflush(stdout);
-    stretch_tables[0 as i32 as usize] = GenerateStretchTable(
-        palette,
-        20 as i32,
-    );
+    stretch_tables[0 as i32 as usize] = GenerateStretchTable(palette, 20 as i32);
     printf(b"..\0" as *const u8 as *const ::core::ffi::c_char);
     fflush(stdout);
-    stretch_tables[1 as i32 as usize] = GenerateStretchTable(
-        palette,
-        40 as i32,
-    );
+    stretch_tables[1 as i32 as usize] = GenerateStretchTable(palette, 40 as i32);
     puts(b"\0" as *const u8 as *const ::core::ffi::c_char);
 }
 unsafe fn I_InitSquashTable(mut palette: *mut byte) {
@@ -623,24 +530,14 @@ unsafe fn I_InitSquashTable(mut palette: *mut byte) {
 }
 pub unsafe fn I_ResetScaleTables(mut palette: *mut byte) {
     if !stretch_tables[0 as i32 as usize].is_null() {
-        Z_Free(
-            stretch_tables[0 as i32 as usize] as *mut ::core::ffi::c_void,
-        );
-        Z_Free(
-            stretch_tables[1 as i32 as usize] as *mut ::core::ffi::c_void,
-        );
+        Z_Free(stretch_tables[0 as i32 as usize] as *mut ::core::ffi::c_void);
+        Z_Free(stretch_tables[1 as i32 as usize] as *mut ::core::ffi::c_void);
         printf(
             b"I_ResetScaleTables: Regenerating lookup tables..\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
-        stretch_tables[0 as i32 as usize] = GenerateStretchTable(
-            palette,
-            20 as i32,
-        );
-        stretch_tables[1 as i32 as usize] = GenerateStretchTable(
-            palette,
-            40 as i32,
-        );
+        stretch_tables[0 as i32 as usize] = GenerateStretchTable(palette, 20 as i32);
+        stretch_tables[1 as i32 as usize] = GenerateStretchTable(palette, 40 as i32);
     }
     if !half_stretch_table.is_null() {
         Z_Free(half_stretch_table as *mut ::core::ffi::c_void);
@@ -661,33 +558,26 @@ unsafe fn WriteBlendedLine1x(
     let mut x: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
-        *dest = *stretch_table
-            .offset(
-                (*src1 as i32 * 256 as i32
-                    + *src2 as i32) as isize,
-            );
+        *dest = *stretch_table.offset((*src1 as i32 * 256 as i32 + *src2 as i32) as isize);
         dest = dest.offset(1);
         src1 = src1.offset(1);
         src2 = src2.offset(1);
         x += 1;
     }
 }
-unsafe fn I_Stretch1x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Stretch1x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer
+        .offset((y1 * dest_pitch) as isize)
+        .offset(x1 as isize);
     y = 0 as i32;
     while y < SCREENHEIGHT {
         memcpy(
@@ -745,15 +635,7 @@ pub static mut mode_stretch_1x: screen_mode_t = unsafe {
         width: SCREENWIDTH,
         height: SCREENHEIGHT_4_3,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Stretch1x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Stretch1x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: true,
     }
 };
@@ -780,11 +662,7 @@ unsafe fn WriteBlendedLine2x(
     let mut val: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
-        val = *stretch_table
-            .offset(
-                (*src1 as i32 * 256 as i32
-                    + *src2 as i32) as isize,
-            ) as i32;
+        val = *stretch_table.offset((*src1 as i32 * 256 as i32 + *src2 as i32) as isize) as i32;
         *dest.offset(0 as i32 as isize) = val as byte;
         *dest.offset(1 as i32 as isize) = val as byte;
         dest = dest.offset(2 as i32 as isize);
@@ -793,22 +671,19 @@ unsafe fn WriteBlendedLine2x(
         x += 1;
     }
 }
-unsafe fn I_Stretch2x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Stretch2x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer
+        .offset((y1 * dest_pitch) as isize)
+        .offset(x1 as isize);
     y = 0 as i32;
     while y < SCREENHEIGHT {
         WriteLine2x(screenp, bufp);
@@ -870,15 +745,7 @@ pub static mut mode_stretch_2x: screen_mode_t = unsafe {
         width: SCREENWIDTH * 2 as i32,
         height: SCREENHEIGHT_4_3 * 2 as i32,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Stretch2x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Stretch2x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
@@ -906,11 +773,7 @@ unsafe fn WriteBlendedLine3x(
     let mut val: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
-        val = *stretch_table
-            .offset(
-                (*src1 as i32 * 256 as i32
-                    + *src2 as i32) as isize,
-            ) as i32;
+        val = *stretch_table.offset((*src1 as i32 * 256 as i32 + *src2 as i32) as isize) as i32;
         *dest.offset(0 as i32 as isize) = val as byte;
         *dest.offset(1 as i32 as isize) = val as byte;
         *dest.offset(2 as i32 as isize) = val as byte;
@@ -920,22 +783,19 @@ unsafe fn WriteBlendedLine3x(
         x += 1;
     }
 }
-unsafe fn I_Stretch3x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Stretch3x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer
+        .offset((y1 * dest_pitch) as isize)
+        .offset(x1 as isize);
     y = 0 as i32;
     while y < SCREENHEIGHT {
         WriteLine3x(screenp, bufp);
@@ -1009,15 +869,7 @@ pub static mut mode_stretch_3x: screen_mode_t = unsafe {
         width: SCREENWIDTH * 3 as i32,
         height: SCREENHEIGHT_4_3 * 3 as i32,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Stretch3x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Stretch3x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
@@ -1046,11 +898,7 @@ unsafe fn WriteBlendedLine4x(
     let mut val: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
-        val = *stretch_table
-            .offset(
-                (*src1 as i32 * 256 as i32
-                    + *src2 as i32) as isize,
-            ) as i32;
+        val = *stretch_table.offset((*src1 as i32 * 256 as i32 + *src2 as i32) as isize) as i32;
         *dest.offset(0 as i32 as isize) = val as byte;
         *dest.offset(1 as i32 as isize) = val as byte;
         *dest.offset(2 as i32 as isize) = val as byte;
@@ -1061,22 +909,19 @@ unsafe fn WriteBlendedLine4x(
         x += 1;
     }
 }
-unsafe fn I_Stretch4x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Stretch4x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer
+        .offset((y1 * dest_pitch) as isize)
+        .offset(x1 as isize);
     y = 0 as i32;
     while y < SCREENHEIGHT {
         WriteLine4x(screenp, bufp);
@@ -1162,15 +1007,7 @@ pub static mut mode_stretch_4x: screen_mode_t = unsafe {
         width: SCREENWIDTH * 4 as i32,
         height: SCREENHEIGHT_4_3 * 4 as i32,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Stretch4x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Stretch4x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
@@ -1189,22 +1026,19 @@ unsafe fn WriteLine5x(mut dest: *mut byte, mut src: *mut byte) {
         x += 1;
     }
 }
-unsafe fn I_Stretch5x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Stretch5x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
-    bufp = src_buffer.offset((y1 * SCREENWIDTH) as isize).offset(x1 as isize);
-    screenp = dest_buffer.offset((y1 * dest_pitch) as isize).offset(x1 as isize);
+    bufp = src_buffer
+        .offset((y1 * SCREENWIDTH) as isize)
+        .offset(x1 as isize);
+    screenp = dest_buffer
+        .offset((y1 * dest_pitch) as isize)
+        .offset(x1 as isize);
     y = 0 as i32;
     while y < SCREENHEIGHT {
         WriteLine5x(screenp, bufp);
@@ -1243,15 +1077,7 @@ pub static mut mode_stretch_5x: screen_mode_t = unsafe {
         width: SCREENWIDTH * 5 as i32,
         height: SCREENHEIGHT_4_3 * 5 as i32,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Stretch5x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Stretch5x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
@@ -1262,56 +1088,37 @@ unsafe fn WriteSquashedLine1x(mut dest: *mut byte, mut src: *mut byte) {
     while x < SCREENWIDTH {
         let fresh54 = dest;
         dest = dest.offset(1);
-        *fresh54 = *stretch_tables[0 as i32 as usize]
-            .offset(
-                (*src.offset(1 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(0 as i32 as isize)
-                        as i32) as isize,
-            );
+        *fresh54 = *stretch_tables[0 as i32 as usize].offset(
+            (*src.offset(1 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(0 as i32 as isize) as i32) as isize,
+        );
         let fresh55 = dest;
         dest = dest.offset(1);
-        *fresh55 = *stretch_tables[1 as i32 as usize]
-            .offset(
-                (*src.offset(2 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(1 as i32 as isize)
-                        as i32) as isize,
-            );
+        *fresh55 = *stretch_tables[1 as i32 as usize].offset(
+            (*src.offset(2 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(1 as i32 as isize) as i32) as isize,
+        );
         let fresh56 = dest;
         dest = dest.offset(1);
-        *fresh56 = *stretch_tables[1 as i32 as usize]
-            .offset(
-                (*src.offset(2 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(3 as i32 as isize)
-                        as i32) as isize,
-            );
+        *fresh56 = *stretch_tables[1 as i32 as usize].offset(
+            (*src.offset(2 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(3 as i32 as isize) as i32) as isize,
+        );
         let fresh57 = dest;
         dest = dest.offset(1);
-        *fresh57 = *stretch_tables[0 as i32 as usize]
-            .offset(
-                (*src.offset(3 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(4 as i32 as isize)
-                        as i32) as isize,
-            );
+        *fresh57 = *stretch_tables[0 as i32 as usize].offset(
+            (*src.offset(3 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(4 as i32 as isize) as i32) as isize,
+        );
         x += 5 as i32;
         src = src.offset(5 as i32 as isize);
     }
 }
-unsafe fn I_Squash1x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Squash1x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
     bufp = src_buffer;
@@ -1331,15 +1138,7 @@ pub static mut mode_squash_1x: screen_mode_t = unsafe {
         width: SCREENWIDTH_4_3,
         height: SCREENHEIGHT,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Squash1x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Squash1x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: true,
     }
 };
@@ -1358,13 +1157,10 @@ unsafe fn WriteSquashedLine2x(mut dest: *mut byte, mut src: *mut byte) {
         let fresh59 = dest;
         dest = dest.offset(1);
         *fresh59 = *fresh58;
-        c = *stretch_tables[1 as i32 as usize]
-            .offset(
-                (*src.offset(1 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(0 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *stretch_tables[1 as i32 as usize].offset(
+            (*src.offset(1 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(0 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh60 = dest2;
         dest2 = dest2.offset(1);
         *fresh60 = c as byte;
@@ -1378,26 +1174,20 @@ unsafe fn WriteSquashedLine2x(mut dest: *mut byte, mut src: *mut byte) {
         let fresh63 = dest;
         dest = dest.offset(1);
         *fresh63 = *fresh62;
-        c = *stretch_tables[0 as i32 as usize]
-            .offset(
-                (*src.offset(1 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(2 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *stretch_tables[0 as i32 as usize].offset(
+            (*src.offset(1 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(2 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh64 = dest2;
         dest2 = dest2.offset(1);
         *fresh64 = c as byte;
         let fresh65 = dest;
         dest = dest.offset(1);
         *fresh65 = *fresh64;
-        c = *stretch_tables[0 as i32 as usize]
-            .offset(
-                (*src.offset(3 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(2 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *stretch_tables[0 as i32 as usize].offset(
+            (*src.offset(3 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(2 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh66 = dest2;
         dest2 = dest2.offset(1);
         *fresh66 = c as byte;
@@ -1411,13 +1201,10 @@ unsafe fn WriteSquashedLine2x(mut dest: *mut byte, mut src: *mut byte) {
         let fresh69 = dest;
         dest = dest.offset(1);
         *fresh69 = *fresh68;
-        c = *stretch_tables[1 as i32 as usize]
-            .offset(
-                (*src.offset(3 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(4 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *stretch_tables[1 as i32 as usize].offset(
+            (*src.offset(3 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(4 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh70 = dest2;
         dest2 = dest2.offset(1);
         *fresh70 = c as byte;
@@ -1435,18 +1222,11 @@ unsafe fn WriteSquashedLine2x(mut dest: *mut byte, mut src: *mut byte) {
         src = src.offset(5 as i32 as isize);
     }
 }
-unsafe fn I_Squash2x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Squash2x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
     bufp = src_buffer;
@@ -1466,15 +1246,7 @@ pub static mut mode_squash_2x: screen_mode_t = unsafe {
         width: SCREENWIDTH_4_3 * 2 as i32,
         height: SCREENHEIGHT * 2 as i32,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Squash2x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Squash2x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
@@ -1507,13 +1279,10 @@ unsafe fn WriteSquashedLine3x(mut dest: *mut byte, mut src: *mut byte) {
         let fresh79 = dest;
         dest = dest.offset(1);
         *fresh79 = *fresh78;
-        c = *half_stretch_table
-            .offset(
-                (*src.offset(0 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(1 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *half_stretch_table.offset(
+            (*src.offset(0 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(1 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh80 = dest3;
         dest3 = dest3.offset(1);
         *fresh80 = c as byte;
@@ -1546,18 +1315,11 @@ unsafe fn WriteSquashedLine3x(mut dest: *mut byte, mut src: *mut byte) {
         src = src.offset(2 as i32 as isize);
     }
 }
-unsafe fn I_Squash3x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Squash3x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
     bufp = src_buffer;
@@ -1577,15 +1339,7 @@ pub static mut mode_squash_3x: screen_mode_t = unsafe {
         width: 800 as i32,
         height: 600 as i32,
         InitMode: Some(I_InitSquashTable as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Squash3x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Squash3x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
@@ -1638,13 +1392,10 @@ unsafe fn WriteSquashedLine4x(mut dest: *mut byte, mut src: *mut byte) {
         let fresh100 = dest;
         dest = dest.offset(1);
         *fresh100 = *fresh99;
-        c = *stretch_tables[0 as i32 as usize]
-            .offset(
-                (*src.offset(0 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(1 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *stretch_tables[0 as i32 as usize].offset(
+            (*src.offset(0 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(1 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh101 = dest4;
         dest4 = dest4.offset(1);
         *fresh101 = c as byte;
@@ -1682,13 +1433,10 @@ unsafe fn WriteSquashedLine4x(mut dest: *mut byte, mut src: *mut byte) {
         let fresh112 = dest;
         dest = dest.offset(1);
         *fresh112 = *fresh111;
-        c = *stretch_tables[1 as i32 as usize]
-            .offset(
-                (*src.offset(1 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(2 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *stretch_tables[1 as i32 as usize].offset(
+            (*src.offset(1 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(2 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh113 = dest4;
         dest4 = dest4.offset(1);
         *fresh113 = c as byte;
@@ -1726,13 +1474,10 @@ unsafe fn WriteSquashedLine4x(mut dest: *mut byte, mut src: *mut byte) {
         let fresh124 = dest;
         dest = dest.offset(1);
         *fresh124 = *fresh123;
-        c = *stretch_tables[1 as i32 as usize]
-            .offset(
-                (*src.offset(3 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(2 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *stretch_tables[1 as i32 as usize].offset(
+            (*src.offset(3 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(2 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh125 = dest4;
         dest4 = dest4.offset(1);
         *fresh125 = c as byte;
@@ -1770,13 +1515,10 @@ unsafe fn WriteSquashedLine4x(mut dest: *mut byte, mut src: *mut byte) {
         let fresh136 = dest;
         dest = dest.offset(1);
         *fresh136 = *fresh135;
-        c = *stretch_tables[0 as i32 as usize]
-            .offset(
-                (*src.offset(4 as i32 as isize) as i32
-                    * 256 as i32
-                    + *src.offset(3 as i32 as isize)
-                        as i32) as isize,
-            ) as i32;
+        c = *stretch_tables[0 as i32 as usize].offset(
+            (*src.offset(4 as i32 as isize) as i32 * 256 as i32
+                + *src.offset(3 as i32 as isize) as i32) as isize,
+        ) as i32;
         let fresh137 = dest4;
         dest4 = dest4.offset(1);
         *fresh137 = c as byte;
@@ -1830,18 +1572,11 @@ unsafe fn WriteSquashedLine4x(mut dest: *mut byte, mut src: *mut byte) {
         src = src.offset(5 as i32 as isize);
     }
 }
-unsafe fn I_Squash4x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Squash4x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
     bufp = src_buffer;
@@ -1861,15 +1596,7 @@ pub static mut mode_squash_4x: screen_mode_t = unsafe {
         width: SCREENWIDTH_4_3 * 4 as i32,
         height: SCREENHEIGHT * 4 as i32,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Squash4x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Squash4x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };
@@ -1953,18 +1680,11 @@ unsafe fn WriteSquashedLine5x(mut dest: *mut byte, mut src: *mut byte) {
         x += 1;
     }
 }
-unsafe fn I_Squash5x(
-    mut x1: i32,
-    mut y1: i32,
-    mut x2: i32,
-    mut y2: i32,
-) -> bool {
+unsafe fn I_Squash5x(mut x1: i32, mut y1: i32, mut x2: i32, mut y2: i32) -> bool {
     let mut bufp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut screenp: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut y: i32 = 0;
-    if x1 != 0 as i32 || y1 != 0 as i32
-        || x2 != SCREENWIDTH || y2 != SCREENHEIGHT
-    {
+    if x1 != 0 as i32 || y1 != 0 as i32 || x2 != SCREENWIDTH || y2 != SCREENHEIGHT {
         return false;
     }
     bufp = src_buffer;
@@ -1984,15 +1704,7 @@ pub static mut mode_squash_5x: screen_mode_t = unsafe {
         width: SCREENWIDTH_4_3 * 5 as i32,
         height: SCREENHEIGHT * 5 as i32,
         InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
-        DrawScreen: Some(
-            I_Squash5x
-                as unsafe fn(
-                    i32,
-                    i32,
-                    i32,
-                    i32,
-                ) -> bool,
-        ),
+        DrawScreen: Some(I_Squash5x as unsafe fn(i32, i32, i32, i32) -> bool),
         poor_quality: false,
     }
 };

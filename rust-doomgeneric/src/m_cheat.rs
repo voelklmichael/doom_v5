@@ -1,8 +1,8 @@
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::true_0;
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
 use libc::strlen;
-use crate::src::doomdef::true_0;
-use crate::src::doomdef::false_0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cheatseq_t {
@@ -13,20 +13,14 @@ pub struct cheatseq_t {
     pub param_chars_read: i32,
     pub parameter_buf: [::core::ffi::c_char; 5],
 }
-pub unsafe fn cht_CheckCheat(
-    mut cht: *mut cheatseq_t,
-    mut key: ::core::ffi::c_char,
-) -> i32 {
+pub unsafe fn cht_CheckCheat(mut cht: *mut cheatseq_t, mut key: ::core::ffi::c_char) -> i32 {
     if (*cht).parameter_chars > 0 as i32
-        && strlen(&raw mut (*cht).sequence as *mut ::core::ffi::c_char)
-            < (*cht).sequence_len
+        && strlen(&raw mut (*cht).sequence as *mut ::core::ffi::c_char) < (*cht).sequence_len
     {
         return false_0;
     }
     if (*cht).chars_read < strlen(&raw mut (*cht).sequence as *mut ::core::ffi::c_char) {
-        if key as i32
-            == (*cht).sequence[(*cht).chars_read as usize] as i32
-        {
+        if key as i32 == (*cht).sequence[(*cht).chars_read as usize] as i32 {
             (*cht).chars_read = (*cht).chars_read.wrapping_add(1);
         } else {
             (*cht).chars_read = 0 as size_t;
@@ -45,14 +39,10 @@ pub unsafe fn cht_CheckCheat(
     }
     return false_0;
 }
-pub unsafe fn cht_GetParam(
-    mut cht: *mut cheatseq_t,
-    mut buffer: *mut ::core::ffi::c_char,
-) {
+pub unsafe fn cht_GetParam(mut cht: *mut cheatseq_t, mut buffer: *mut ::core::ffi::c_char) {
     memcpy(
         buffer as *mut ::core::ffi::c_void,
-        &raw mut (*cht).parameter_buf as *mut ::core::ffi::c_char
-            as *const ::core::ffi::c_void,
+        &raw mut (*cht).parameter_buf as *mut ::core::ffi::c_char as *const ::core::ffi::c_void,
         (*cht).parameter_chars as size_t,
     );
 }

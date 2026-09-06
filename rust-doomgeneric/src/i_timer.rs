@@ -1,5 +1,5 @@
-use crate::src::stdint_types::uint32_t;
 use crate::src::doomdef::TICRATE;
+use crate::src::stdint_types::uint32_t;
 extern "C" {
     fn DG_SleepMs(ms: uint32_t);
     fn DG_GetTicksMs() -> uint32_t;
@@ -24,8 +24,9 @@ pub fn I_GetTime(state: &mut ITimerState) -> i32 {
         state.basetime = ticks;
     }
     ticks = ticks.wrapping_sub(state.basetime);
-    return ticks.wrapping_mul(TICRATE as uint32_t).wrapping_div(1000 as uint32_t)
-        as i32;
+    return ticks
+        .wrapping_mul(TICRATE as uint32_t)
+        .wrapping_div(1000 as uint32_t) as i32;
 }
 pub fn I_GetTimeMS(state: &mut ITimerState) -> i32 {
     let mut ticks: uint32_t = 0;

@@ -1,8 +1,11 @@
+use crate::src::d_mode::{commercial, indetermined, retail, shareware, GameMode_t};
+use crate::src::d_mode::{
+    doom, doom2, heretic, hexen, none, pack_chex, pack_hacx, pack_plut, pack_tnt, strife,
+    GameMission_t,
+};
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_misc::M_FileExists;
-use crate::src::d_mode::{GameMode_t, commercial, indetermined, retail, shareware};
-use crate::src::d_mode::{GameMission_t, doom, doom2, heretic, hexen, none, pack_chex, pack_hacx, pack_plut, pack_tnt, strife};
 use libc::printf;
 #[derive(Copy, Clone)]
 pub struct iwad_t {
@@ -142,7 +145,11 @@ unsafe fn check_directory_has_iwad(dir: &str, iwadname: &str) -> Option<String> 
         b"Trying IWAD file:%s\n\0" as *const u8 as *const ::core::ffi::c_char,
         filename_cstring.as_ptr(),
     );
-    if file_exists(&filename) { Some(filename) } else { None }
+    if file_exists(&filename) {
+        Some(filename)
+    } else {
+        None
+    }
 }
 unsafe fn search_directory_for_iwad(
     dir: &str,
@@ -204,7 +211,11 @@ pub unsafe fn D_TryFindWADByName(
     mut filename: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let result = D_FindWADByName(state, filename);
-    if !result.is_null() { result } else { filename }
+    if !result.is_null() {
+        result
+    } else {
+        filename
+    }
 }
 pub unsafe fn D_FindIWAD(
     state: &mut DIwadState,
@@ -213,8 +224,7 @@ pub unsafe fn D_FindIWAD(
 ) -> *mut ::core::ffi::c_char {
     let iwadparm = M_CheckParmWithArgs("-iwad", 1 as i32);
     if iwadparm != 0 {
-        let iwadfile = myargv[(iwadparm + 1 as i32) as usize].as_ptr()
-            as *mut ::core::ffi::c_char;
+        let iwadfile = myargv[(iwadparm + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
         let result = D_FindWADByName(state, iwadfile);
         if result.is_null() {
             I_Error(&format!(
@@ -222,10 +232,8 @@ pub unsafe fn D_FindIWAD(
                 myargv[(iwadparm + 1 as i32) as usize].to_str().unwrap(),
             ));
         }
-        *mission = identify_iwad_by_name(
-            ::std::ffi::CStr::from_ptr(result).to_str().unwrap(),
-            mask,
-        );
+        *mission =
+            identify_iwad_by_name(::std::ffi::CStr::from_ptr(result).to_str().unwrap(), mask);
         result
     } else {
         printf(
@@ -241,10 +249,7 @@ pub unsafe fn D_FindIWAD(
         ::core::ptr::null_mut::<::core::ffi::c_char>()
     }
 }
-pub unsafe fn D_FindAllIWADs(
-    state: &mut DIwadState,
-    mut mask: i32,
-) -> *mut *const iwad_t {
+pub unsafe fn D_FindAllIWADs(state: &mut DIwadState, mut mask: i32) -> *mut *const iwad_t {
     let mut result: Vec<*const iwad_t> = Vec::new();
     for iwad in iwads.iter() {
         if (1 as i32) << iwad.mission & mask == 0 as i32 {
@@ -258,9 +263,7 @@ pub unsafe fn D_FindAllIWADs(
     result.push(::core::ptr::null());
     Box::leak(result.into_boxed_slice()).as_mut_ptr()
 }
-pub unsafe fn D_SaveGameIWADName(
-    mut gamemission: GameMission_t,
-) -> *mut ::core::ffi::c_char {
+pub unsafe fn D_SaveGameIWADName(mut gamemission: GameMission_t) -> *mut ::core::ffi::c_char {
     for iwad in iwads.iter() {
         if gamemission == iwad.mission {
             return ::std::ffi::CString::new(iwad.name).unwrap().into_raw();
@@ -285,8 +288,12 @@ pub unsafe fn D_SuggestGameName(
 ) -> *mut ::core::ffi::c_char {
     for iwad in iwads.iter() {
         if iwad.mission == mission && (mode == indetermined || iwad.mode == mode) {
-            return ::std::ffi::CString::new(iwad.description).unwrap().into_raw();
+            return ::std::ffi::CString::new(iwad.description)
+                .unwrap()
+                .into_raw();
         }
     }
-    ::std::ffi::CString::new("Unknown game?").unwrap().into_raw()
+    ::std::ffi::CString::new("Unknown game?")
+        .unwrap()
+        .into_raw()
 }

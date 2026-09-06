@@ -1,26 +1,26 @@
-use crate::src::i_system::I_Error;
-use ::c2rust_bitfields;
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::doomdef::boolean;
+use crate::src::doomdef::pixel_t;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomgeneric::DOOMGENERIC_RESX;
+use crate::src::doomgeneric::DOOMGENERIC_RESY;
+use crate::src::game_state::game_state;
 use crate::src::i_input::I_GetEvent;
+use crate::src::i_system::I_Error;
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_fixed::INT_MAX;
+use crate::src::stdint_types::size_t;
+use crate::src::stdint_types::uint32_t;
+use crate::src::stdint_types::{byte, uint8_t};
 use crate::src::tables::gammatable;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use crate::src::doomdef::boolean;
-use crate::src::doomdef::pixel_t;
-use crate::src::stdint_types::{byte, uint8_t};
-use crate::src::stdint_types::uint32_t;
-use crate::src::stdint_types::size_t;
-use libc::{memcpy, memset};
-use libc::{atoi, strcmp};
+use ::c2rust_bitfields;
 use libc::printf;
-use crate::src::doomdef::NULL;
-use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomdef::SCREENHEIGHT;
-use crate::src::m_fixed::INT_MAX;
-use crate::src::doomgeneric::DOOMGENERIC_RESX;
-use crate::src::doomgeneric::DOOMGENERIC_RESY;
-use crate::src::game_state::game_state;
+use libc::{atoi, strcmp};
+use libc::{memcpy, memset};
 
 extern "C" {
     static mut DG_ScreenBuffer: *mut pixel_t;
@@ -99,11 +99,7 @@ pub static mut mouse_acceleration: f32 = 2.0f32;
 pub static mut mouse_threshold: i32 = 10;
 pub static mut usegamma: i32 = 0;
 static mut rgb565_palette: [uint16_t; 256] = [0; 256];
-pub unsafe fn cmap_to_rgb565(
-    mut out: *mut uint16_t,
-    mut in_0: *mut uint8_t,
-    mut in_pixels: i32,
-) {
+pub unsafe fn cmap_to_rgb565(mut out: *mut uint16_t, mut in_0: *mut uint8_t, mut in_pixels: i32) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut c: color = color { b_g_r_a: [0; 4] };
@@ -113,14 +109,10 @@ pub unsafe fn cmap_to_rgb565(
     i = 0 as i32;
     while i < in_pixels {
         c = colors[*in_0 as usize];
-        r = (((c.r() as i32 >> 3 as i32) as uint16_t
-            as i32) << 11 as i32) as uint16_t;
-        g = (((c.g() as i32 >> 2 as i32) as uint16_t
-            as i32) << 5 as i32) as uint16_t;
-        b = (((c.b() as i32 >> 3 as i32) as uint16_t
-            as i32) << 0 as i32) as uint16_t;
-        *out = (r as i32 | g as i32
-            | b as i32) as uint16_t;
+        r = (((c.r() as i32 >> 3 as i32) as uint16_t as i32) << 11 as i32) as uint16_t;
+        g = (((c.g() as i32 >> 2 as i32) as uint16_t as i32) << 5 as i32) as uint16_t;
+        b = (((c.b() as i32 >> 3 as i32) as uint16_t as i32) << 0 as i32) as uint16_t;
+        *out = (r as i32 | g as i32 | b as i32) as uint16_t;
         in_0 = in_0.offset(1);
         j = 0 as i32;
         while j < fb_scaling {
@@ -130,11 +122,7 @@ pub unsafe fn cmap_to_rgb565(
         i += 1;
     }
 }
-pub unsafe fn cmap_to_fb(
-    mut out: *mut uint8_t,
-    mut in_0: *mut uint8_t,
-    mut in_pixels: i32,
-) {
+pub unsafe fn cmap_to_fb(mut out: *mut uint8_t, mut in_0: *mut uint8_t, mut in_pixels: i32) {
     let mut i: i32 = 0;
     let mut k: i32 = 0;
     let mut c: color = color { b_g_r_a: [0; 4] };
@@ -143,10 +131,8 @@ pub unsafe fn cmap_to_fb(
     while i < in_pixels {
         c = colors[*in_0 as usize];
         if s_Fb.bits_per_pixel == 16 as uint32_t {
-            let mut p: uint16_t = ((c.r() as i32
-                & 0xf8 as i32) << 8 as i32
-                | (c.g() as i32 & 0xfc as i32)
-                    << 3 as i32
+            let mut p: uint16_t = ((c.r() as i32 & 0xf8 as i32) << 8 as i32
+                | (c.g() as i32 & 0xfc as i32) << 3 as i32
                 | c.b() as i32 >> 3 as i32) as uint16_t;
             k = 0 as i32;
             while k < fb_scaling {
@@ -165,7 +151,10 @@ pub unsafe fn cmap_to_fb(
                 k += 1;
             }
         } else {
-            I_Error(&format!("No idea how to convert {} bpp pixels", s_Fb.bits_per_pixel));
+            I_Error(&format!(
+                "No idea how to convert {} bpp pixels",
+                s_Fb.bits_per_pixel
+            ));
         }
         in_0 = in_0.offset(1);
         i += 1;
@@ -174,9 +163,7 @@ pub unsafe fn cmap_to_fb(
 pub unsafe fn I_InitGraphics() {
     let mut i: i32 = 0;
     let mut gfxmodeparm: i32 = 0;
-    let mut mode: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+    let mut mode: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     memset(
         &raw mut s_Fb as *mut ::core::ffi::c_void,
         0 as i32,
@@ -188,14 +175,14 @@ pub unsafe fn I_InitGraphics() {
     s_Fb.yres_virtual = s_Fb.yres;
     gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1 as i32);
     if gfxmodeparm != 0 {
-        mode = myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr()
-            as *mut ::core::ffi::c_char;
+        mode = myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
     } else {
-        mode = b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char;
+        mode = b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
-    if strcmp(mode, b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char)
-        == 0 as i32
+    if strcmp(
+        mode,
+        b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char,
+    ) == 0 as i32
     {
         s_Fb.bits_per_pixel = 32 as uint32_t;
         s_Fb.blue.length = 8 as uint32_t;
@@ -206,9 +193,7 @@ pub unsafe fn I_InitGraphics() {
         s_Fb.green.offset = 8 as uint32_t;
         s_Fb.red.offset = 16 as uint32_t;
         s_Fb.transp.offset = 24 as uint32_t;
-    } else if strcmp(mode, b"rgb565\0" as *const u8 as *const ::core::ffi::c_char)
-        == 0 as i32
-    {
+    } else if strcmp(mode, b"rgb565\0" as *const u8 as *const ::core::ffi::c_char) == 0 as i32 {
         s_Fb.bits_per_pixel = 16 as uint32_t;
         s_Fb.blue.length = 5 as uint32_t;
         s_Fb.green.length = 6 as uint32_t;
@@ -253,22 +238,16 @@ pub unsafe fn I_InitGraphics() {
     );
     i = M_CheckParmWithArgs("-scaling", 1 as i32);
     if i > 0 as i32 {
-        i = atoi(
-            myargv[(i + 1 as i32) as usize].as_ptr()
-                as *mut ::core::ffi::c_char,
-        );
+        i = atoi(myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
         fb_scaling = i;
         printf(
-            b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8
-                as *const ::core::ffi::c_char,
+            b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8 as *const ::core::ffi::c_char,
             fb_scaling,
         );
     } else {
-        fb_scaling = s_Fb.xres.wrapping_div(SCREENWIDTH as uint32_t)
-            as i32;
+        fb_scaling = s_Fb.xres.wrapping_div(SCREENWIDTH as uint32_t) as i32;
         if s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) < fb_scaling as uint32_t {
-            fb_scaling = s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t)
-                as i32;
+            fb_scaling = s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) as i32;
         }
         printf(
             b"I_InitGraphics: Auto-scaling factor: %d\n\0" as *const u8
@@ -276,11 +255,7 @@ pub unsafe fn I_InitGraphics() {
             fb_scaling,
         );
     }
-    I_VideoBuffer = Z_Malloc(
-        SCREENWIDTH * SCREENHEIGHT,
-        PU_STATIC as i32,
-        NULL,
-    ) as *mut byte;
+    I_VideoBuffer = Z_Malloc(SCREENWIDTH * SCREENHEIGHT, PU_STATIC as i32, NULL) as *mut byte;
     screenvisible = true;
 }
 pub unsafe fn I_ShutdownGraphics() {
@@ -294,12 +269,8 @@ pub unsafe fn I_FinishUpdate() {
     let mut x_offset: i32 = 0;
     let mut y_offset: i32 = 0;
     let mut x_offset_end: i32 = 0;
-    let mut line_in: *mut u8 = ::core::ptr::null_mut::<
-        u8,
-    >();
-    let mut line_out: *mut u8 = ::core::ptr::null_mut::<
-        u8,
-    >();
+    let mut line_in: *mut u8 = ::core::ptr::null_mut::<u8>();
+    let mut line_out: *mut u8 = ::core::ptr::null_mut::<u8>();
     y_offset = s_Fb
         .yres
         .wrapping_sub((SCREENHEIGHT * fb_scaling) as uint32_t)
@@ -336,12 +307,11 @@ pub unsafe fn I_FinishUpdate() {
                 line_in as *mut ::core::ffi::c_void as *mut uint8_t,
                 SCREENWIDTH,
             );
-            line_out = line_out
-                .offset(
-                    ((SCREENWIDTH * fb_scaling) as uint32_t)
-                        .wrapping_mul(s_Fb.bits_per_pixel.wrapping_div(8 as uint32_t))
-                        .wrapping_add(x_offset_end as uint32_t) as isize,
-                );
+            line_out = line_out.offset(
+                ((SCREENWIDTH * fb_scaling) as uint32_t)
+                    .wrapping_mul(s_Fb.bits_per_pixel.wrapping_div(8 as uint32_t))
+                    .wrapping_add(x_offset_end as uint32_t) as isize,
+            );
             i += 1;
         }
         line_in = line_in.offset(SCREENWIDTH as isize);
@@ -381,11 +351,7 @@ pub unsafe fn I_SetPalette(mut palette: *mut byte) {
         i += 1;
     }
 }
-pub unsafe fn I_GetPaletteIndex(
-    mut r: i32,
-    mut g: i32,
-    mut b: i32,
-) -> i32 {
+pub unsafe fn I_GetPaletteIndex(mut r: i32, mut g: i32, mut b: i32) -> i32 {
     let mut best: i32 = 0;
     let mut best_diff: i32 = 0;
     let mut diff: i32 = 0;
@@ -396,14 +362,9 @@ pub unsafe fn I_GetPaletteIndex(
     best_diff = INT_MAX;
     i = 0 as i32;
     while i < 256 as i32 {
-        color.r = ((0xf800 as i32
-            & rgb565_palette[i as usize] as i32)
-            >> 11 as i32) as byte;
-        color.g = ((0x7e0 as i32
-            & rgb565_palette[i as usize] as i32)
-            >> 5 as i32) as byte;
-        color.b = (0x1f as i32
-            & rgb565_palette[i as usize] as i32) as byte;
+        color.r = ((0xf800 as i32 & rgb565_palette[i as usize] as i32) >> 11 as i32) as byte;
+        color.g = ((0x7e0 as i32 & rgb565_palette[i as usize] as i32) >> 5 as i32) as byte;
+        color.b = (0x1f as i32 & rgb565_palette[i as usize] as i32) as byte;
         diff = (r - color.r as i32) * (r - color.r as i32)
             + (g - color.g as i32) * (g - color.g as i32)
             + (b - color.b as i32) * (b - color.b as i32);

@@ -1,9 +1,9 @@
-use crate::src::i_system::FILE;
+use crate::src::i_system::fprintf;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_ZoneBase;
-use libc::printf;
-use crate::src::i_system::fprintf;
+use crate::src::i_system::FILE;
 use crate::src::stdint_types::byte;
+use libc::printf;
 
 pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
@@ -36,52 +36,45 @@ pub struct memblock_s {
 pub const MEM_ALIGN: usize = ::core::mem::size_of::<*mut ::core::ffi::c_void>();
 pub const ZONEID: i32 = 0x1d4a11;
 #[no_mangle]
-pub static mut mainzone: *mut memzone_t = ::core::ptr::null::<memzone_t>()
-    as *mut memzone_t;
+pub static mut mainzone: *mut memzone_t = ::core::ptr::null::<memzone_t>() as *mut memzone_t;
 pub unsafe fn Z_ClearZone(mut zone: *mut memzone_t) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
-    block = (zone as *mut byte)
-        .offset(::core::mem::size_of::<memzone_t>() as usize as isize)
+    block = (zone as *mut byte).offset(::core::mem::size_of::<memzone_t>() as usize as isize)
         as *mut memblock_t;
     (*zone).blocklist.prev = block as *mut memblock_s;
     (*zone).blocklist.next = (*zone).blocklist.prev;
-    (*zone).blocklist.user = zone as *mut ::core::ffi::c_void
-        as *mut *mut ::core::ffi::c_void;
+    (*zone).blocklist.user = zone as *mut ::core::ffi::c_void as *mut *mut ::core::ffi::c_void;
     (*zone).blocklist.tag = PU_STATIC as i32;
     (*zone).rover = block;
     (*block).next = &raw mut (*zone).blocklist as *mut memblock_s;
     (*block).prev = (*block).next;
     (*block).tag = PU_FREE as i32;
-    (*block).size = ((*zone).size as usize)
-        .wrapping_sub(::core::mem::size_of::<memzone_t>() as usize)
-        as i32;
+    (*block).size =
+        ((*zone).size as usize).wrapping_sub(::core::mem::size_of::<memzone_t>() as usize) as i32;
 }
 pub unsafe fn Z_Init() {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut size: i32 = 0;
     mainzone = I_ZoneBase(&raw mut size) as *mut memzone_t;
     (*mainzone).size = size;
-    block = (mainzone as *mut byte)
-        .offset(::core::mem::size_of::<memzone_t>() as usize as isize)
+    block = (mainzone as *mut byte).offset(::core::mem::size_of::<memzone_t>() as usize as isize)
         as *mut memblock_t;
     (*mainzone).blocklist.prev = block as *mut memblock_s;
     (*mainzone).blocklist.next = (*mainzone).blocklist.prev;
-    (*mainzone).blocklist.user = mainzone as *mut ::core::ffi::c_void
-        as *mut *mut ::core::ffi::c_void;
+    (*mainzone).blocklist.user =
+        mainzone as *mut ::core::ffi::c_void as *mut *mut ::core::ffi::c_void;
     (*mainzone).blocklist.tag = PU_STATIC as i32;
     (*mainzone).rover = block;
     (*block).next = &raw mut (*mainzone).blocklist as *mut memblock_s;
     (*block).prev = (*block).next;
     (*block).tag = PU_FREE as i32;
     (*block).size = ((*mainzone).size as usize)
-        .wrapping_sub(::core::mem::size_of::<memzone_t>() as usize)
-        as i32;
+        .wrapping_sub(::core::mem::size_of::<memzone_t>() as usize) as i32;
 }
 pub unsafe fn Z_Free(mut ptr: *mut ::core::ffi::c_void) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut other: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
-    block = (ptr as *mut byte)
-        .offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
+    block = (ptr as *mut byte).offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
         as *mut memblock_t;
     if (*block).id != ZONEID {
         I_Error("Z_Free: freed a pointer without ZONEID");
@@ -123,15 +116,13 @@ pub unsafe fn Z_Malloc(
     let mut rover: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut newblock: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut base: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
-    let mut result: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-        ::core::ffi::c_void,
-    >();
-    size = ((size as usize).wrapping_add(MEM_ALIGN).wrapping_sub(1 as usize)
+    let mut result: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<::core::ffi::c_void>();
+    size = ((size as usize)
+        .wrapping_add(MEM_ALIGN)
+        .wrapping_sub(1 as usize)
         & !MEM_ALIGN.wrapping_sub(1 as usize)) as i32;
-    size = (size as u64)
-        .wrapping_add(
-            ::core::mem::size_of::<memblock_t>() as usize as u64,
-        ) as i32 as i32;
+    size = (size as u64).wrapping_add(::core::mem::size_of::<memblock_t>() as usize as u64) as i32
+        as i32;
     base = (*mainzone).rover;
     if (*(*base).prev).tag == PU_FREE as i32 {
         base = (*base).prev as *mut memblock_t;
@@ -180,8 +171,7 @@ pub unsafe fn Z_Malloc(
     }
     (*base).user = user as *mut *mut ::core::ffi::c_void;
     (*base).tag = tag;
-    result = (base as *mut byte)
-        .offset(::core::mem::size_of::<memblock_t>() as usize as isize)
+    result = (base as *mut byte).offset(::core::mem::size_of::<memblock_t>() as usize as isize)
         as *mut ::core::ffi::c_void;
     if !(*base).user.is_null() {
         *(*base).user = result;
@@ -190,10 +180,7 @@ pub unsafe fn Z_Malloc(
     (*base).id = ZONEID;
     return result;
 }
-pub unsafe fn Z_FreeTags(
-    mut lowtag: i32,
-    mut hightag: i32,
-) {
+pub unsafe fn Z_FreeTags(mut lowtag: i32, mut hightag: i32) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut next: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     block = (*mainzone).blocklist.next as *mut memblock_t;
@@ -211,10 +198,7 @@ pub unsafe fn Z_FreeTags(
         block = next;
     }
 }
-pub unsafe fn Z_DumpHeap(
-    mut lowtag: i32,
-    mut hightag: i32,
-) {
+pub unsafe fn Z_DumpHeap(mut lowtag: i32, mut hightag: i32) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     printf(
         b"zone size: %i  location: %p\n\0" as *const u8 as *const ::core::ffi::c_char,
@@ -241,9 +225,7 @@ pub unsafe fn Z_DumpHeap(
         if (*block).next == &raw mut (*mainzone).blocklist {
             break;
         }
-        if (block as *mut byte).offset((*block).size as isize)
-            != (*block).next as *mut byte
-        {
+        if (block as *mut byte).offset((*block).size as isize) != (*block).next as *mut byte {
             printf(
                 b"ERROR: block size does not touch the next block\n\0" as *const u8
                     as *const ::core::ffi::c_char,
@@ -255,16 +237,14 @@ pub unsafe fn Z_DumpHeap(
                     as *const ::core::ffi::c_char,
             );
         }
-        if (*block).tag == PU_FREE as i32
-            && (*(*block).next).tag == PU_FREE as i32
-        {
+        if (*block).tag == PU_FREE as i32 && (*(*block).next).tag == PU_FREE as i32 {
             printf(
                 b"ERROR: two consecutive free blocks\n\0" as *const u8
                     as *const ::core::ffi::c_char,
             );
         }
         block = (*block).next as *mut memblock_t;
-    };
+    }
 }
 pub unsafe fn Z_FileDumpHeap(mut f: *mut FILE) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
@@ -288,9 +268,7 @@ pub unsafe fn Z_FileDumpHeap(mut f: *mut FILE) {
         if (*block).next == &raw mut (*mainzone).blocklist {
             break;
         }
-        if (block as *mut byte).offset((*block).size as isize)
-            != (*block).next as *mut byte
-        {
+        if (block as *mut byte).offset((*block).size as isize) != (*block).next as *mut byte {
             fprintf(
                 f,
                 b"ERROR: block size does not touch the next block\n\0" as *const u8
@@ -304,9 +282,7 @@ pub unsafe fn Z_FileDumpHeap(mut f: *mut FILE) {
                     as *const ::core::ffi::c_char,
             );
         }
-        if (*block).tag == PU_FREE as i32
-            && (*(*block).next).tag == PU_FREE as i32
-        {
+        if (*block).tag == PU_FREE as i32 && (*(*block).next).tag == PU_FREE as i32 {
             fprintf(
                 f,
                 b"ERROR: two consecutive free blocks\n\0" as *const u8
@@ -314,23 +290,19 @@ pub unsafe fn Z_FileDumpHeap(mut f: *mut FILE) {
             );
         }
         block = (*block).next as *mut memblock_t;
-    };
+    }
 }
 pub unsafe fn Z_CheckHeap() {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     block = (*mainzone).blocklist.next as *mut memblock_t;
     while !((*block).next == &raw mut (*mainzone).blocklist) {
-        if (block as *mut byte).offset((*block).size as isize)
-            != (*block).next as *mut byte
-        {
+        if (block as *mut byte).offset((*block).size as isize) != (*block).next as *mut byte {
             I_Error("Z_CheckHeap: block size does not touch the next block\n");
         }
         if (*(*block).next).prev != block {
             I_Error("Z_CheckHeap: next block doesn't have proper back link\n");
         }
-        if (*block).tag == PU_FREE as i32
-            && (*(*block).next).tag == PU_FREE as i32
-        {
+        if (*block).tag == PU_FREE as i32 && (*(*block).next).tag == PU_FREE as i32 {
             I_Error("Z_CheckHeap: two consecutive free blocks\n");
         }
         block = (*block).next as *mut memblock_t;
@@ -343,8 +315,7 @@ pub unsafe fn Z_ChangeTag2(
     mut line: i32,
 ) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
-    block = (ptr as *mut byte)
-        .offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
+    block = (ptr as *mut byte).offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
         as *mut memblock_t;
     if (*block).id != ZONEID {
         I_Error(&format!(
@@ -367,8 +338,7 @@ pub unsafe fn Z_ChangeUser(
     mut user: *mut *mut ::core::ffi::c_void,
 ) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
-    block = (ptr as *mut byte)
-        .offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
+    block = (ptr as *mut byte).offset(-(::core::mem::size_of::<memblock_t>() as usize as isize))
         as *mut memblock_t;
     if (*block).id != ZONEID {
         I_Error("Z_ChangeUser: Tried to change user for invalid block!");
@@ -382,9 +352,7 @@ pub unsafe fn Z_FreeMemory() -> i32 {
     free = 0 as i32;
     block = (*mainzone).blocklist.next as *mut memblock_t;
     while block != &raw mut (*mainzone).blocklist {
-        if (*block).tag == PU_FREE as i32
-            || (*block).tag >= PU_PURGELEVEL as i32
-        {
+        if (*block).tag == PU_FREE as i32 || (*block).tag >= PU_PURGELEVEL as i32 {
             free += (*block).size;
         }
         block = (*block).next as *mut memblock_t;

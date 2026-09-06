@@ -28,16 +28,8 @@ impl IJoystickState {
             joystick_strafe_axis: -1,
             joystick_strafe_invert: 0,
             joystick_physical_buttons: [
-                0 as i32,
-                1 as i32,
-                2 as i32,
-                3 as i32,
-                4 as i32,
-                5 as i32,
-                6 as i32,
-                7 as i32,
-                8 as i32,
-                9 as i32,
+                0 as i32, 1 as i32, 2 as i32, 3 as i32, 4 as i32, 5 as i32, 6 as i32, 7 as i32,
+                8 as i32, 9 as i32,
             ],
         }
     }
@@ -45,28 +37,36 @@ impl IJoystickState {
 
 pub unsafe fn I_BindJoystickVariables(state: &mut IJoystickState) {
     let mut i: i32 = 0;
-    M_BindVariable("use_joystick",
+    M_BindVariable(
+        "use_joystick",
         &raw mut state.usejoystick as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joystick_index",
+    M_BindVariable(
+        "joystick_index",
         &raw mut state.joystick_index as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joystick_x_axis",
+    M_BindVariable(
+        "joystick_x_axis",
         &raw mut state.joystick_x_axis as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joystick_y_axis",
+    M_BindVariable(
+        "joystick_y_axis",
         &raw mut state.joystick_y_axis as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joystick_strafe_axis",
+    M_BindVariable(
+        "joystick_strafe_axis",
         &raw mut state.joystick_strafe_axis as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joystick_x_invert",
+    M_BindVariable(
+        "joystick_x_invert",
         &raw mut state.joystick_x_invert as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joystick_y_invert",
+    M_BindVariable(
+        "joystick_y_invert",
         &raw mut state.joystick_y_invert as *mut ::core::ffi::c_void,
     );
-    M_BindVariable("joystick_strafe_invert",
+    M_BindVariable(
+        "joystick_strafe_invert",
         &raw mut state.joystick_strafe_invert as *mut ::core::ffi::c_void,
     );
     i = 0 as i32;
@@ -82,8 +82,7 @@ pub unsafe fn I_BindJoystickVariables(state: &mut IJoystickState) {
             ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),
-            (&raw mut state.joystick_physical_buttons as *mut i32)
-                .offset(i as isize) as *mut i32
+            (&raw mut state.joystick_physical_buttons as *mut i32).offset(i as isize) as *mut i32
                 as *mut ::core::ffi::c_void,
         );
         i += 1;

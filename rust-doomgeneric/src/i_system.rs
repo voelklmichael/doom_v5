@@ -11,11 +11,7 @@ extern "C" {
     fn system(__command: *const ::core::ffi::c_char) -> i32;
     pub static mut stderr: *mut FILE;
     pub fn fflush(__stream: *mut FILE) -> i32;
-    pub fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
+    pub fn fprintf(__stream: *mut FILE, __format: *const ::core::ffi::c_char, ...) -> i32;
     pub fn vfprintf(
         __s: *mut FILE,
         __format: *const ::core::ffi::c_char,
@@ -38,17 +34,10 @@ extern "C" {
         __n: size_t,
         __s: *mut FILE,
     ) -> u64;
-    pub fn fseek(
-        __stream: *mut FILE,
-        __off: i64,
-        __whence: i32,
-    ) -> i32;
+    pub fn fseek(__stream: *mut FILE, __off: i64, __whence: i32) -> i32;
     pub fn ftell(__stream: *mut FILE) -> i64;
     fn putchar(__c: i32) -> i32;
-    fn strchr(
-        __s: *const ::core::ffi::c_char,
-        __c: i32,
-    ) -> *mut ::core::ffi::c_char;
+    fn strchr(__s: *const ::core::ffi::c_char, __c: i32) -> *mut ::core::ffi::c_char;
 }
 pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
 pub type atexit_listentry_t = atexit_listentry_s;
@@ -61,35 +50,27 @@ pub struct atexit_listentry_s {
 }
 pub const DEFAULT_RAM: i32 = 6;
 pub const MIN_RAM: i32 = 6;
-static mut exit_funcs: *mut atexit_listentry_t = ::core::ptr::null::<
-    atexit_listentry_t,
->() as *mut atexit_listentry_t;
+static mut exit_funcs: *mut atexit_listentry_t =
+    ::core::ptr::null::<atexit_listentry_t>() as *mut atexit_listentry_t;
 pub unsafe fn I_AtExit(mut func: atexit_func_t, mut run_on_error: bool) {
-    let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
-        atexit_listentry_t,
-    >();
-    entry = malloc(::core::mem::size_of::<atexit_listentry_t>() as size_t)
-        as *mut atexit_listentry_t;
+    let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
+    entry =
+        malloc(::core::mem::size_of::<atexit_listentry_t>() as size_t) as *mut atexit_listentry_t;
     (*entry).func = func;
     (*entry).run_on_error = run_on_error;
     (*entry).next = exit_funcs;
     exit_funcs = entry;
 }
-pub unsafe fn I_Tactile(
-    mut on: i32,
-    mut off: i32,
-    mut total: i32,
-) {}
-unsafe fn AutoAllocMemory(
-    mut size: *mut i32,
-    mut default_ram: i32,
-    mut min_ram: i32,
-) -> *mut byte {
+pub unsafe fn I_Tactile(mut on: i32, mut off: i32, mut total: i32) {}
+unsafe fn AutoAllocMemory(mut size: *mut i32, mut default_ram: i32, mut min_ram: i32) -> *mut byte {
     let mut zonemem: *mut byte = ::core::ptr::null_mut::<byte>();
     zonemem = ::core::ptr::null_mut::<byte>();
     while zonemem.is_null() {
         if default_ram < min_ram {
-            I_Error(&format!("Unable to allocate {} MiB of RAM for zone", default_ram));
+            I_Error(&format!(
+                "Unable to allocate {} MiB of RAM for zone",
+                default_ram
+            ));
         }
         *size = default_ram * 1024 as i32 * 1024 as i32;
         zonemem = malloc(*size as size_t) as *mut byte;
@@ -106,10 +87,7 @@ pub unsafe fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
     let mut p: i32 = 0;
     p = M_CheckParmWithArgs("-mb", 1 as i32);
     if p > 0 as i32 {
-        default_ram = atoi(
-            myargv[(p + 1 as i32) as usize].as_ptr()
-                as *mut ::core::ffi::c_char,
-        );
+        default_ram = atoi(myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
         min_ram = default_ram;
     } else {
         default_ram = DEFAULT_RAM;
@@ -117,8 +95,7 @@ pub unsafe fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
     }
     zonemem = AutoAllocMemory(size, default_ram, min_ram);
     printf(
-        b"zone memory: %p, %x allocated for zone\n\0" as *const u8
-            as *const ::core::ffi::c_char,
+        b"zone memory: %p, %x allocated for zone\n\0" as *const u8 as *const ::core::ffi::c_char,
         zonemem,
         *size,
     );
@@ -126,8 +103,7 @@ pub unsafe fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
 }
 pub unsafe fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
-    let mut spaces: i32 = (35 as size_t)
-        .wrapping_sub(strlen(msg).wrapping_div(2 as size_t)) as i32;
+    let mut spaces: i32 = (35 as size_t).wrapping_sub(strlen(msg).wrapping_div(2 as size_t)) as i32;
     i = 0 as i32;
     while i < spaces {
         putchar(' ' as i32);
@@ -144,9 +120,7 @@ pub unsafe fn I_PrintDivider() {
     }
     putchar('\n' as i32);
 }
-pub unsafe fn I_PrintStartupBanner(
-    mut gamedescription: *mut ::core::ffi::c_char,
-) {
+pub unsafe fn I_PrintStartupBanner(mut gamedescription: *mut ::core::ffi::c_char) {
     I_PrintDivider();
     I_PrintBanner(gamedescription);
     I_PrintDivider();
@@ -160,44 +134,39 @@ pub unsafe fn I_ConsoleStdout() -> bool {
     return false;
 }
 pub unsafe fn I_Quit() {
-    let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
-        atexit_listentry_t,
-    >();
+    let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
     entry = exit_funcs;
     while !entry.is_null() {
         (*entry).func.expect("non-null function pointer")();
         entry = (*entry).next;
     }
 }
-pub const ZENITY_BINARY: [::core::ffi::c_char; 16] = unsafe {
-    ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"/usr/bin/zenity\0")
-};
+pub const ZENITY_BINARY: [::core::ffi::c_char; 16] =
+    unsafe { ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"/usr/bin/zenity\0") };
 unsafe fn ZenityAvailable() -> i32 {
     return (system(
-        b"/usr/bin/zenity --help >/dev/null 2>&1\0" as *const u8
-            as *const ::core::ffi::c_char,
+        b"/usr/bin/zenity --help >/dev/null 2>&1\0" as *const u8 as *const ::core::ffi::c_char,
     ) == 0 as i32) as i32;
 }
-unsafe fn EscapeShellString(
-    mut string: *mut ::core::ffi::c_char,
-) -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+unsafe fn EscapeShellString(mut string: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char {
+    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut r: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut s: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    result = malloc(strlen(string).wrapping_mul(2 as size_t).wrapping_add(3 as size_t))
-        as *mut ::core::ffi::c_char;
+    result = malloc(
+        strlen(string)
+            .wrapping_mul(2 as size_t)
+            .wrapping_add(3 as size_t),
+    ) as *mut ::core::ffi::c_char;
     r = result;
     *r = '"' as i32 as ::core::ffi::c_char;
     r = r.offset(1);
     s = string;
     while *s as i32 != '\0' as i32 {
         if !strchr(
-                b"$`\\!\0" as *const u8 as *const ::core::ffi::c_char,
-                *s as i32,
-            )
-            .is_null()
+            b"$`\\!\0" as *const u8 as *const ::core::ffi::c_char,
+            *s as i32,
+        )
+        .is_null()
         {
             *r = '\\' as i32 as ::core::ffi::c_char;
             r = r.offset(1);
@@ -211,16 +180,11 @@ unsafe fn EscapeShellString(
     *r = '\0' as i32 as ::core::ffi::c_char;
     return result;
 }
-unsafe fn ZenityErrorBox(
-    mut message: *mut ::core::ffi::c_char,
-) -> i32 {
+unsafe fn ZenityErrorBox(mut message: *mut ::core::ffi::c_char) -> i32 {
     let mut result: i32 = 0;
-    let mut escaped_message: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut errorboxpath: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+    let mut escaped_message: *mut ::core::ffi::c_char =
+        ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let mut errorboxpath: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     static mut errorboxpath_size: size_t = 0;
     if ZenityAvailable() == 0 {
         return 0 as i32;
@@ -244,9 +208,7 @@ unsafe fn ZenityErrorBox(
 }
 static mut already_quitting: bool = false;
 pub unsafe fn I_Error(message: &str) {
-    let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
-        atexit_listentry_t,
-    >();
+    let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
     let mut exit_gui_popup: bool = false;
     if already_quitting {
         fprintf(
@@ -317,9 +279,7 @@ static mut mem_dump_dosbox: [u8; 10] = [
     0 as i32 as u8,
 ];
 static mut mem_dump_custom: [u8; 10] = [0; 10];
-static mut dos_mem_dump: *const u8 = unsafe {
-    &raw const mem_dump_dos622 as *const u8
-};
+static mut dos_mem_dump: *const u8 = unsafe { &raw const mem_dump_dos622 as *const u8 };
 pub unsafe fn I_GetMemoryValue(
     mut offset: u32,
     mut value: *mut ::core::ffi::c_void,
@@ -377,32 +337,22 @@ pub unsafe fn I_GetMemoryValue(
     }
     match size {
         1 => {
-            *(value as *mut u8) = *dos_mem_dump
-                .offset(offset as isize);
+            *(value as *mut u8) = *dos_mem_dump.offset(offset as isize);
             return true;
         }
         2 => {
-            *(value as *mut u16) = (*dos_mem_dump
-                .offset(offset as isize) as i32
-                | (*dos_mem_dump
-                    .offset(offset.wrapping_add(1 as u32) as isize)
-                    as i32) << 8 as i32)
+            *(value as *mut u16) = (*dos_mem_dump.offset(offset as isize) as i32
+                | (*dos_mem_dump.offset(offset.wrapping_add(1 as u32) as isize) as i32) << 8 as i32)
                 as u16;
             return true;
         }
         4 => {
-            *(value as *mut u32) = (*dos_mem_dump.offset(offset as isize)
-                as i32
-                | (*dos_mem_dump
-                    .offset(offset.wrapping_add(1 as u32) as isize)
-                    as i32) << 8 as i32
-                | (*dos_mem_dump
-                    .offset(offset.wrapping_add(2 as u32) as isize)
-                    as i32) << 16 as i32
-                | (*dos_mem_dump
-                    .offset(offset.wrapping_add(3 as u32) as isize)
-                    as i32) << 24 as i32)
-                as u32;
+            *(value as *mut u32) = (*dos_mem_dump.offset(offset as isize) as i32
+                | (*dos_mem_dump.offset(offset.wrapping_add(1 as u32) as isize) as i32) << 8 as i32
+                | (*dos_mem_dump.offset(offset.wrapping_add(2 as u32) as isize) as i32)
+                    << 16 as i32
+                | (*dos_mem_dump.offset(offset.wrapping_add(3 as u32) as isize) as i32)
+                    << 24 as i32) as u32;
             return true;
         }
         _ => {}

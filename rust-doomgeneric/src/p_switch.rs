@@ -1,32 +1,36 @@
-use crate::src::p_spec::{button_t};
-use crate::src::p_mobj::{degenmobj_t, line_t};
-use crate::src::p_mobj::{mobj_t};
-use crate::src::i_system::I_Error;
-use crate::src::p_doors::EV_DoLockedDoor;
-use crate::src::g_game::G_SecretExitLevel;
-use crate::src::p_ceilng::EV_DoCeiling;
-use crate::src::p_floor::EV_BuildStairs;
-use crate::src::p_lights::EV_LightTurnOn;
-use crate::src::p_plats::EV_DoPlat;
-use crate::src::g_game::G_ExitLevel;
-use crate::src::p_doors::EV_DoDoor;
-use crate::src::p_floor::EV_DoFloor;
-use crate::src::p_setup::sides;
-use crate::src::doomstat::gamemode;
-use crate::src::s_sound::S_StartSound;
-use crate::src::p_doors::EV_VerticalDoor;
-use crate::src::p_spec::EV_DoDonut;
-use crate::src::r_data::R_TextureNumForName;
-use crate::src::sounds::{sfx_swtchn, sfx_swtchx};
 use crate::src::d_mode::{commercial, registered, retail};
-use crate::src::p_plats::{blazeDWUS, downWaitUpStay, raiseAndChange, raiseToNearestAndChange};
-use crate::src::p_doors::{vld_blazeClose, vld_blazeOpen, vld_blazeRaise, vld_close, vld_normal, vld_open};
-use crate::src::p_floor::{lowerFloor, lowerFloorToLowest, raiseFloor, raiseFloor512, raiseFloorCrush, raiseFloorToNearest, raiseFloorTurbo, turboLower};
-use crate::src::p_floor::{build8, turbo16};
-use crate::src::p_ceilng::{crushAndRaise, lowerToFloor};
-use crate::src::p_spec::ML_SECRET;
+use crate::src::doomstat::gamemode;
+use crate::src::g_game::G_ExitLevel;
+use crate::src::g_game::G_SecretExitLevel;
 use crate::src::game_state::game_state;
-
+use crate::src::i_system::I_Error;
+use crate::src::p_ceilng::EV_DoCeiling;
+use crate::src::p_ceilng::{crushAndRaise, lowerToFloor};
+use crate::src::p_doors::EV_DoDoor;
+use crate::src::p_doors::EV_DoLockedDoor;
+use crate::src::p_doors::EV_VerticalDoor;
+use crate::src::p_doors::{
+    vld_blazeClose, vld_blazeOpen, vld_blazeRaise, vld_close, vld_normal, vld_open,
+};
+use crate::src::p_floor::EV_BuildStairs;
+use crate::src::p_floor::EV_DoFloor;
+use crate::src::p_floor::{build8, turbo16};
+use crate::src::p_floor::{
+    lowerFloor, lowerFloorToLowest, raiseFloor, raiseFloor512, raiseFloorCrush,
+    raiseFloorToNearest, raiseFloorTurbo, turboLower,
+};
+use crate::src::p_lights::EV_LightTurnOn;
+use crate::src::p_mobj::mobj_t;
+use crate::src::p_mobj::{degenmobj_t, line_t};
+use crate::src::p_plats::EV_DoPlat;
+use crate::src::p_plats::{blazeDWUS, downWaitUpStay, raiseAndChange, raiseToNearestAndChange};
+use crate::src::p_setup::sides;
+use crate::src::p_spec::button_t;
+use crate::src::p_spec::EV_DoDonut;
+use crate::src::p_spec::ML_SECRET;
+use crate::src::r_data::R_TextureNumForName;
+use crate::src::s_sound::S_StartSound;
+use crate::src::sounds::{sfx_swtchn, sfx_swtchx};
 
 pub type bwhere_e = u32;
 pub const bottom: bwhere_e = 2;
@@ -46,454 +50,212 @@ pub const BUTTONTIME: i32 = 35;
 pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
     [
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1BRCOM\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2BRCOM\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1BRCOM\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2BRCOM\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1BRN1\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2BRN1\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1BRN1\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2BRN1\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1BRN2\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2BRN2\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1BRN2\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2BRN2\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1BRNGN\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2BRNGN\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1BRNGN\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2BRNGN\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1BROWN\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2BROWN\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1BROWN\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2BROWN\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1COMM\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2COMM\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1COMM\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2COMM\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1COMP\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2COMP\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1COMP\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2COMP\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1DIRT\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2DIRT\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1DIRT\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2DIRT\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1EXIT\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2EXIT\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1EXIT\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2EXIT\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1GRAY\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2GRAY\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1GRAY\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2GRAY\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1GRAY1\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2GRAY1\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1GRAY1\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2GRAY1\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1METAL\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2METAL\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1METAL\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2METAL\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1PIPE\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2PIPE\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1PIPE\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2PIPE\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1SLAD\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2SLAD\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1SLAD\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2SLAD\0\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1STARG\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2STARG\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1STARG\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2STARG\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1STON1\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2STON1\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1STON1\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2STON1\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1STON2\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2STON2\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1STON2\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2STON2\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1STONE\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2STONE\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1STONE\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2STONE\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1STRTN\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2STRTN\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1STRTN\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2STRTN\0"),
             episode: 1 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1BLUE\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2BLUE\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1BLUE\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2BLUE\0\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1CMT\0\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2CMT\0\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1CMT\0\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2CMT\0\0\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1GARG\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2GARG\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1GARG\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2GARG\0\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1GSTON\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2GSTON\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1GSTON\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2GSTON\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1HOT\0\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2HOT\0\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1HOT\0\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2HOT\0\0\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1LION\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2LION\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1LION\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2LION\0\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1SATYR\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2SATYR\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1SATYR\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2SATYR\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1SKIN\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2SKIN\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1SKIN\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2SKIN\0\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1VINE\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2VINE\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1VINE\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2VINE\0\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1WOOD\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2WOOD\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1WOOD\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2WOOD\0\0"),
             episode: 2 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1PANEL\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2PANEL\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1PANEL\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2PANEL\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1ROCK\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2ROCK\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1ROCK\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2ROCK\0\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1MET2\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2MET2\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1MET2\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2MET2\0\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1WDMET\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2WDMET\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1WDMET\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2WDMET\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1BRIK\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2BRIK\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1BRIK\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2BRIK\0\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1MOD1\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2MOD1\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1MOD1\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2MOD1\0\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1ZIM\0\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2ZIM\0\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1ZIM\0\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2ZIM\0\0\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1STON6\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2STON6\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1STON6\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2STON6\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1TEK\0\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2TEK\0\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1TEK\0\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2TEK\0\0\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1MARB\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2MARB\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1MARB\0\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2MARB\0\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW1SKULL\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SW2SKULL\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1SKULL\0"),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW2SKULL\0"),
             episode: 3 as i16,
         },
         switchlist_t {
-            name1: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"\0\0\0\0\0\0\0\0\0"),
-            name2: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"\0\0\0\0\0\0\0\0\0"),
+            name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"\0\0\0\0\0\0\0\0\0",
+            ),
+            name2: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"\0\0\0\0\0\0\0\0\0",
+            ),
             episode: 0 as i16,
         },
     ]
@@ -525,15 +287,9 @@ pub unsafe fn P_InitSwitchList(state: &mut PSwitchState) {
     let mut index: i32 = 0;
     let mut episode: i32 = 0;
     episode = 1 as i32;
-    if gamemode as u32
-        == registered as i32 as u32
-        || gamemode as u32
-            == retail as i32 as u32
-    {
+    if gamemode as u32 == registered as i32 as u32 || gamemode as u32 == retail as i32 as u32 {
         episode = 2 as i32;
-    } else if gamemode as u32
-        == commercial as i32 as u32
-    {
+    } else if gamemode as u32 == commercial as i32 as u32 {
         episode = 3 as i32;
     }
     index = 0 as i32;
@@ -548,15 +304,13 @@ pub unsafe fn P_InitSwitchList(state: &mut PSwitchState) {
                 let fresh0 = index;
                 index = index + 1;
                 state.switchlist[fresh0 as usize] = R_TextureNumForName(
-                    &raw mut (*(&raw mut alphSwitchList as *mut switchlist_t)
-                        .offset(i as isize))
+                    &raw mut (*(&raw mut alphSwitchList as *mut switchlist_t).offset(i as isize))
                         .name1 as *mut ::core::ffi::c_char,
                 );
                 let fresh1 = index;
                 index = index + 1;
                 state.switchlist[fresh1 as usize] = R_TextureNumForName(
-                    &raw mut (*(&raw mut alphSwitchList as *mut switchlist_t)
-                        .offset(i as isize))
+                    &raw mut (*(&raw mut alphSwitchList as *mut switchlist_t).offset(i as isize))
                         .name2 as *mut ::core::ffi::c_char,
                 );
             }
@@ -606,12 +360,9 @@ pub unsafe fn P_ChangeSwitchTexture(
     if useAgain == 0 {
         (*line).special = 0 as i16;
     }
-    texTop = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-        .toptexture as i32;
-    texMid = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-        .midtexture as i32;
-    texBot = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-        .bottomtexture as i32;
+    texTop = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).toptexture as i32;
+    texMid = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).midtexture as i32;
+    texBot = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).bottomtexture as i32;
     sound = sfx_swtchn as i32;
     if (*line).special as i32 == 11 as i32 {
         sound = sfx_swtchx as i32;
@@ -619,42 +370,54 @@ pub unsafe fn P_ChangeSwitchTexture(
     i = 0 as i32;
     while i < state.numswitches * 2 as i32 {
         if state.switchlist[i as usize] == texTop {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-                .toptexture = state.switchlist[(i ^ 1 as i32) as usize]
-                as i16;
+            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).toptexture =
+                state.switchlist[(i ^ 1 as i32) as usize] as i16;
             if useAgain != 0 {
                 P_StartButton(state, line, top, state.switchlist[i as usize], BUTTONTIME);
             }
             return;
         } else if state.switchlist[i as usize] == texMid {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-                .midtexture = state.switchlist[(i ^ 1 as i32) as usize]
-                as i16;
+            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).midtexture =
+                state.switchlist[(i ^ 1 as i32) as usize] as i16;
             if useAgain != 0 {
-                P_StartButton(state, line, middle, state.switchlist[i as usize], BUTTONTIME);
+                P_StartButton(
+                    state,
+                    line,
+                    middle,
+                    state.switchlist[i as usize],
+                    BUTTONTIME,
+                );
             }
             return;
         } else if state.switchlist[i as usize] == texBot {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-                .bottomtexture = state.switchlist[(i ^ 1 as i32) as usize]
-                as i16;
+            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).bottomtexture =
+                state.switchlist[(i ^ 1 as i32) as usize] as i16;
             if useAgain != 0 {
-                P_StartButton(state, line, bottom, state.switchlist[i as usize], BUTTONTIME);
+                P_StartButton(
+                    state,
+                    line,
+                    bottom,
+                    state.switchlist[i as usize],
+                    BUTTONTIME,
+                );
             }
             return;
         }
@@ -754,13 +517,25 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         14 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseAndChange, 32 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseAndChange,
+                32 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         15 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseAndChange, 24 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseAndChange,
+                24 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -772,13 +547,25 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         20 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseToNearestAndChange,
+                0 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         21 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, downWaitUpStay, 0 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                downWaitUpStay,
+                0 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -867,7 +654,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         122 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, blazeDWUS, 0 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                blazeDWUS,
+                0 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -927,7 +720,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         62 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, downWaitUpStay, 1 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                downWaitUpStay,
+                1 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -945,13 +744,25 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         66 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseAndChange, 24 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseAndChange,
+                24 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         67 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseAndChange, 32 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseAndChange,
+                32 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -963,7 +774,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         68 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseToNearestAndChange,
+                0 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -999,7 +816,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         123 => {
-            if EV_DoPlat(unsafe { &mut game_state().p_plats }, line, blazeDWUS, 0 as i32) != 0 {
+            if EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                blazeDWUS,
+                0 as i32,
+            ) != 0
+            {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;

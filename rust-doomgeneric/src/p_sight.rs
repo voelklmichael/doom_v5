@@ -1,24 +1,23 @@
-use crate::src::r_defs::{node_t, seg_t};
-use crate::src::p_mobj::{sector_t, vertex_t, line_t, subsector_t};
-use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
-use crate::src::p_setup::rejectmatrix;
-use crate::src::p_setup::segs;
-use crate::src::p_setup::numsubsectors;
-use crate::src::p_setup::numnodes;
-use crate::src::p_setup::subsectors;
-use crate::src::p_setup::nodes;
-use crate::src::r_main::validcount;
-use crate::src::p_setup::numsectors;
-use crate::src::m_fixed::FixedDiv;
-use crate::src::p_setup::sectors;
-use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::fixed_t;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::m_fixed::FixedMul;
+use crate::src::m_fixed::FRACBITS;
 use crate::src::p_maputl::divline_t;
+use crate::src::p_mobj::mobj_t;
+use crate::src::p_mobj::{line_t, sector_t, subsector_t, vertex_t};
+use crate::src::p_setup::nodes;
+use crate::src::p_setup::numnodes;
+use crate::src::p_setup::numsectors;
+use crate::src::p_setup::numsubsectors;
+use crate::src::p_setup::rejectmatrix;
+use crate::src::p_setup::sectors;
+use crate::src::p_setup::segs;
+use crate::src::p_setup::subsectors;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::r_bsp::NF_SUBSECTOR;
-use crate::src::m_fixed::FRACBITS;
-
+use crate::src::r_defs::{node_t, seg_t};
+use crate::src::r_main::validcount;
 
 pub struct PSightState {
     sightzstart: fixed_t,
@@ -48,11 +47,7 @@ impl PSightState {
         }
     }
 }
-pub unsafe fn P_DivlineSide(
-    mut x: fixed_t,
-    mut y: fixed_t,
-    mut node: *mut divline_t,
-) -> i32 {
+pub unsafe fn P_DivlineSide(mut x: fixed_t, mut y: fixed_t, mut node: *mut divline_t) -> i32 {
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut left: fixed_t = 0;
@@ -87,15 +82,11 @@ pub unsafe fn P_DivlineSide(
     }
     return 1 as i32;
 }
-pub unsafe fn P_InterceptVector2(
-    mut v2: *mut divline_t,
-    mut v1: *mut divline_t,
-) -> fixed_t {
+pub unsafe fn P_InterceptVector2(mut v2: *mut divline_t, mut v1: *mut divline_t) -> fixed_t {
     let mut frac: fixed_t = 0;
     let mut num: fixed_t = 0;
     let mut den: fixed_t = 0;
-    den = FixedMul((*v1).dy >> 8 as i32, (*v2).dx)
-        - FixedMul((*v1).dx >> 8 as i32, (*v2).dy);
+    den = FixedMul((*v1).dy >> 8 as i32, (*v2).dx) - FixedMul((*v1).dx >> 8 as i32, (*v2).dy);
     if den == 0 as i32 {
         return 0 as fixed_t;
     }
@@ -126,7 +117,10 @@ pub unsafe fn P_CrossSubsector(state: &mut PSightState, mut num: i32) -> bool {
     let mut frac: fixed_t = 0;
     let mut slope: fixed_t = 0;
     if num >= numsubsectors {
-        I_Error(&format!("P_CrossSubsector: ss {} with numss = {}", num, numsubsectors));
+        I_Error(&format!(
+            "P_CrossSubsector: ss {} with numss = {}",
+            num, numsubsectors
+        ));
     }
     sub = subsectors.offset(num as isize) as *mut subsector_t;
     count = (*sub).numlines as i32;
@@ -201,9 +195,9 @@ pub unsafe fn P_CrossBSPNode(state: &mut PSightState, mut bspnum: i32) -> bool {
     let mut side: i32 = 0;
     if bspnum & NF_SUBSECTOR != 0 {
         if bspnum == -(1 as i32) {
-            return P_CrossSubsector(state, 0 as i32)
+            return P_CrossSubsector(state, 0 as i32);
         } else {
-            return P_CrossSubsector(state, bspnum & !NF_SUBSECTOR)
+            return P_CrossSubsector(state, bspnum & !NF_SUBSECTOR);
         }
     }
     bsp = nodes.offset(bspnum as isize) as *mut node_t;
@@ -217,10 +211,7 @@ pub unsafe fn P_CrossBSPNode(state: &mut PSightState, mut bspnum: i32) -> bool {
     if side == P_DivlineSide(state.t2x, state.t2y, bsp as *mut divline_t) {
         return true;
     }
-    return P_CrossBSPNode(
-        state,
-        (*bsp).children[(side ^ 1 as i32) as usize] as i32,
-    );
+    return P_CrossBSPNode(state, (*bsp).children[(side ^ 1 as i32) as usize] as i32);
 }
 pub unsafe fn P_CheckSight(
     state: &mut PSightState,
@@ -232,10 +223,8 @@ pub unsafe fn P_CheckSight(
     let mut pnum: i32 = 0;
     let mut bytenum: i32 = 0;
     let mut bitnum: i32 = 0;
-    s1 = (*(*t1).subsector).sector.offset_from(sectors) as i64
-        as i32;
-    s2 = (*(*t2).subsector).sector.offset_from(sectors) as i64
-        as i32;
+    s1 = (*(*t1).subsector).sector.offset_from(sectors) as i64 as i32;
+    s2 = (*(*t2).subsector).sector.offset_from(sectors) as i64 as i32;
     pnum = s1 * numsectors + s2;
     bytenum = pnum >> 3 as i32;
     bitnum = (1 as i32) << (pnum & 7 as i32);

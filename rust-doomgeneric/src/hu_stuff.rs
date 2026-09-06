@@ -1,6 +1,24 @@
+use crate::src::am_map::automapactive;
+use crate::src::d_event::ev_keydown;
 use crate::src::d_event::event_t;
-use crate::src::d_player::{player_t};
-use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::d_mode::commercial;
+use crate::src::d_mode::exe_chex;
+use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
+use crate::src::d_player::player_t;
+use crate::src::doomdef::boolean;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::TICRATE;
+use crate::src::doomstat::gamemission;
+use crate::src::doomstat::gamemode;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::consoleplayer;
+use crate::src::g_game::gameepisode;
+use crate::src::g_game::gamemap;
+use crate::src::g_game::netgame;
+use crate::src::g_game::playeringame;
+use crate::src::g_game::players;
+use crate::src::game_state::game_state;
 use crate::src::hu_lib::{
     hu_itext_t, hu_stext_t, hu_textline_t, patch_t, HUlib_addCharToTextLine,
     HUlib_addMessageToSText, HUlib_drawIText, HUlib_drawSText, HUlib_drawTextLine,
@@ -10,43 +28,24 @@ use crate::src::hu_lib::{
 use crate::src::m_controls::key_message_refresh;
 use crate::src::m_controls::key_multi_msg;
 use crate::src::m_controls::key_multi_msgplayer;
-use crate::src::m_menu::showMessages;
-use crate::src::g_game::gameepisode;
-use crate::src::doomstat::gamemission;
-use crate::src::g_game::gamemap;
-use crate::src::am_map::automapactive;
-use crate::src::m_misc::M_StringCopy;
-use crate::src::g_game::playeringame;
-use crate::src::doomstat::gameversion;
-use crate::src::g_game::netgame;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::players;
-use crate::src::doomstat::gamemode;
-use crate::src::s_sound::S_StartSound;
-use crate::src::z_zone::PU_STATIC;
-use crate::src::sounds::{sfx_radio, sfx_tink};
-use crate::src::d_mode::commercial;
-use crate::src::d_mode::exe_chex;
-use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
-use crate::src::d_event::ev_keydown;
-use crate::src::doomdef::boolean;
-use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
-use libc::snprintf;
-use crate::src::doomdef::false_0;
-use crate::src::doomdef::MAXPLAYERS;
-use crate::src::doomdef::TICRATE;
-use crate::src::m_controls::KEY_RSHIFT;
-use crate::src::m_controls::KEY_RALT;
 use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_controls::KEY_ESCAPE;
-use crate::src::game_state::game_state;
+use crate::src::m_controls::KEY_RALT;
+use crate::src::m_controls::KEY_RSHIFT;
+use crate::src::m_menu::showMessages;
+use crate::src::m_misc::M_StringCopy;
+use crate::src::s_sound::S_StartSound;
+use crate::src::sounds::{sfx_radio, sfx_tink};
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::z_zone::PU_STATIC;
+use libc::snprintf;
 
 pub const KEY_LALT: i32 = KEY_RALT;
 pub const HU_FONTSTART: i32 = '!' as i32;
 pub const HU_FONTEND: i32 = '_' as i32;
-pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART
-    + 1 as i32;
+pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART + 1 as i32;
 pub const HU_BROADCAST: i32 = 5;
 pub const HU_MSGX: i32 = 0;
 pub const HU_MSGY: i32 = 0;
@@ -187,45 +186,35 @@ pub const THUSTR_32: &str = "level 32: caribbean";
 pub const HUSTR_CHATMACRO1: [::core::ffi::c_char; 24] = unsafe {
     ::core::mem::transmute::<[u8; 24], [::core::ffi::c_char; 24]>(*b"I'm ready to kick butt!\0")
 };
-pub const HUSTR_CHATMACRO2: [::core::ffi::c_char; 8] = unsafe {
-    ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"I'm OK.\0")
-};
+pub const HUSTR_CHATMACRO2: [::core::ffi::c_char; 8] =
+    unsafe { ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"I'm OK.\0") };
 pub const HUSTR_CHATMACRO3: [::core::ffi::c_char; 26] = unsafe {
     ::core::mem::transmute::<[u8; 26], [::core::ffi::c_char; 26]>(*b"I'm not looking too good!\0")
 };
-pub const HUSTR_CHATMACRO4: [::core::ffi::c_char; 6] = unsafe {
-    ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Help!\0")
-};
-pub const HUSTR_CHATMACRO5: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"You suck!\0")
-};
+pub const HUSTR_CHATMACRO4: [::core::ffi::c_char; 6] =
+    unsafe { ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Help!\0") };
+pub const HUSTR_CHATMACRO5: [::core::ffi::c_char; 10] =
+    unsafe { ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"You suck!\0") };
 pub const HUSTR_CHATMACRO6: [::core::ffi::c_char; 22] = unsafe {
     ::core::mem::transmute::<[u8; 22], [::core::ffi::c_char; 22]>(*b"Next time, scumbag...\0")
 };
-pub const HUSTR_CHATMACRO7: [::core::ffi::c_char; 11] = unsafe {
-    ::core::mem::transmute::<[u8; 11], [::core::ffi::c_char; 11]>(*b"Come here!\0")
-};
+pub const HUSTR_CHATMACRO7: [::core::ffi::c_char; 11] =
+    unsafe { ::core::mem::transmute::<[u8; 11], [::core::ffi::c_char; 11]>(*b"Come here!\0") };
 pub const HUSTR_CHATMACRO8: [::core::ffi::c_char; 22] = unsafe {
     ::core::mem::transmute::<[u8; 22], [::core::ffi::c_char; 22]>(*b"I'll take care of it.\0")
 };
-pub const HUSTR_CHATMACRO9: [::core::ffi::c_char; 4] = unsafe {
-    ::core::mem::transmute::<[u8; 4], [::core::ffi::c_char; 4]>(*b"Yes\0")
-};
-pub const HUSTR_CHATMACRO0: [::core::ffi::c_char; 3] = unsafe {
-    ::core::mem::transmute::<[u8; 3], [::core::ffi::c_char; 3]>(*b"No\0")
-};
-pub const HUSTR_PLRGREEN: [::core::ffi::c_char; 8] = unsafe {
-    ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"Green: \0")
-};
-pub const HUSTR_PLRINDIGO: [::core::ffi::c_char; 9] = unsafe {
-    ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"Indigo: \0")
-};
-pub const HUSTR_PLRBROWN: [::core::ffi::c_char; 8] = unsafe {
-    ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"Brown: \0")
-};
-pub const HUSTR_PLRRED: [::core::ffi::c_char; 6] = unsafe {
-    ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Red: \0")
-};
+pub const HUSTR_CHATMACRO9: [::core::ffi::c_char; 4] =
+    unsafe { ::core::mem::transmute::<[u8; 4], [::core::ffi::c_char; 4]>(*b"Yes\0") };
+pub const HUSTR_CHATMACRO0: [::core::ffi::c_char; 3] =
+    unsafe { ::core::mem::transmute::<[u8; 3], [::core::ffi::c_char; 3]>(*b"No\0") };
+pub const HUSTR_PLRGREEN: [::core::ffi::c_char; 8] =
+    unsafe { ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"Green: \0") };
+pub const HUSTR_PLRINDIGO: [::core::ffi::c_char; 9] =
+    unsafe { ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"Indigo: \0") };
+pub const HUSTR_PLRBROWN: [::core::ffi::c_char; 8] =
+    unsafe { ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"Brown: \0") };
+pub const HUSTR_PLRRED: [::core::ffi::c_char; 6] =
+    unsafe { ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Red: \0") };
 pub const HU_TITLEX: i32 = 0;
 pub const HU_INPUTX: i32 = HU_MSGX;
 pub static mut chat_macros: [*mut ::core::ffi::c_char; 10] = [
@@ -249,8 +238,7 @@ pub static mut player_names: [*mut ::core::ffi::c_char; 4] = [
 #[no_mangle]
 pub static mut chat_char: ::core::ffi::c_char = 0;
 static mut plr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t;
-pub static mut hu_font: [*mut patch_t; 63] = [::core::ptr::null::<patch_t>()
-    as *mut patch_t; 63];
+pub static mut hu_font: [*mut patch_t; 63] = [::core::ptr::null::<patch_t>() as *mut patch_t; 63];
 static mut w_title: hu_textline_t = hu_textline_t {
     x: 0,
     y: 0,
@@ -324,148 +312,25 @@ static mut w_message: hu_stext_t = hu_stext_t {
 static mut message_counter: i32 = 0;
 static mut headsupactive: bool = false;
 pub static mapnames: [&str; 45] = [
-    HUSTR_E1M1,
-    HUSTR_E1M2,
-    HUSTR_E1M3,
-    HUSTR_E1M4,
-    HUSTR_E1M5,
-    HUSTR_E1M6,
-    HUSTR_E1M7,
-    HUSTR_E1M8,
-    HUSTR_E1M9,
-    HUSTR_E2M1,
-    HUSTR_E2M2,
-    HUSTR_E2M3,
-    HUSTR_E2M4,
-    HUSTR_E2M5,
-    HUSTR_E2M6,
-    HUSTR_E2M7,
-    HUSTR_E2M8,
-    HUSTR_E2M9,
-    HUSTR_E3M1,
-    HUSTR_E3M2,
-    HUSTR_E3M3,
-    HUSTR_E3M4,
-    HUSTR_E3M5,
-    HUSTR_E3M6,
-    HUSTR_E3M7,
-    HUSTR_E3M8,
-    HUSTR_E3M9,
-    HUSTR_E4M1,
-    HUSTR_E4M2,
-    HUSTR_E4M3,
-    HUSTR_E4M4,
-    HUSTR_E4M5,
-    HUSTR_E4M6,
-    HUSTR_E4M7,
-    HUSTR_E4M8,
-    HUSTR_E4M9,
-    "NEWLEVEL",
-    "NEWLEVEL",
-    "NEWLEVEL",
-    "NEWLEVEL",
-    "NEWLEVEL",
-    "NEWLEVEL",
-    "NEWLEVEL",
-    "NEWLEVEL",
-    "NEWLEVEL",
+    HUSTR_E1M1, HUSTR_E1M2, HUSTR_E1M3, HUSTR_E1M4, HUSTR_E1M5, HUSTR_E1M6, HUSTR_E1M7, HUSTR_E1M8,
+    HUSTR_E1M9, HUSTR_E2M1, HUSTR_E2M2, HUSTR_E2M3, HUSTR_E2M4, HUSTR_E2M5, HUSTR_E2M6, HUSTR_E2M7,
+    HUSTR_E2M8, HUSTR_E2M9, HUSTR_E3M1, HUSTR_E3M2, HUSTR_E3M3, HUSTR_E3M4, HUSTR_E3M5, HUSTR_E3M6,
+    HUSTR_E3M7, HUSTR_E3M8, HUSTR_E3M9, HUSTR_E4M1, HUSTR_E4M2, HUSTR_E4M3, HUSTR_E4M4, HUSTR_E4M5,
+    HUSTR_E4M6, HUSTR_E4M7, HUSTR_E4M8, HUSTR_E4M9, "NEWLEVEL", "NEWLEVEL", "NEWLEVEL", "NEWLEVEL",
+    "NEWLEVEL", "NEWLEVEL", "NEWLEVEL", "NEWLEVEL", "NEWLEVEL",
 ];
 pub static mapnames_commercial: [&str; 96] = [
-    HUSTR_1,
-    HUSTR_2,
-    HUSTR_3,
-    HUSTR_4,
-    HUSTR_5,
-    HUSTR_6,
-    HUSTR_7,
-    HUSTR_8,
-    HUSTR_9,
-    HUSTR_10,
-    HUSTR_11,
-    HUSTR_12,
-    HUSTR_13,
-    HUSTR_14,
-    HUSTR_15,
-    HUSTR_16,
-    HUSTR_17,
-    HUSTR_18,
-    HUSTR_19,
-    HUSTR_20,
-    HUSTR_21,
-    HUSTR_22,
-    HUSTR_23,
-    HUSTR_24,
-    HUSTR_25,
-    HUSTR_26,
-    HUSTR_27,
-    HUSTR_28,
-    HUSTR_29,
-    HUSTR_30,
-    HUSTR_31,
-    HUSTR_32,
-    PHUSTR_1,
-    PHUSTR_2,
-    PHUSTR_3,
-    PHUSTR_4,
-    PHUSTR_5,
-    PHUSTR_6,
-    PHUSTR_7,
-    PHUSTR_8,
-    PHUSTR_9,
-    PHUSTR_10,
-    PHUSTR_11,
-    PHUSTR_12,
-    PHUSTR_13,
-    PHUSTR_14,
-    PHUSTR_15,
-    PHUSTR_16,
-    PHUSTR_17,
-    PHUSTR_18,
-    PHUSTR_19,
-    PHUSTR_20,
-    PHUSTR_21,
-    PHUSTR_22,
-    PHUSTR_23,
-    PHUSTR_24,
-    PHUSTR_25,
-    PHUSTR_26,
-    PHUSTR_27,
-    PHUSTR_28,
-    PHUSTR_29,
-    PHUSTR_30,
-    PHUSTR_31,
-    PHUSTR_32,
-    THUSTR_1,
-    THUSTR_2,
-    THUSTR_3,
-    THUSTR_4,
-    THUSTR_5,
-    THUSTR_6,
-    THUSTR_7,
-    THUSTR_8,
-    THUSTR_9,
-    THUSTR_10,
-    THUSTR_11,
-    THUSTR_12,
-    THUSTR_13,
-    THUSTR_14,
-    THUSTR_15,
-    THUSTR_16,
-    THUSTR_17,
-    THUSTR_18,
-    THUSTR_19,
-    THUSTR_20,
-    THUSTR_21,
-    THUSTR_22,
-    THUSTR_23,
-    THUSTR_24,
-    THUSTR_25,
-    THUSTR_26,
-    THUSTR_27,
-    THUSTR_28,
-    THUSTR_29,
-    THUSTR_30,
-    THUSTR_31,
+    HUSTR_1, HUSTR_2, HUSTR_3, HUSTR_4, HUSTR_5, HUSTR_6, HUSTR_7, HUSTR_8, HUSTR_9, HUSTR_10,
+    HUSTR_11, HUSTR_12, HUSTR_13, HUSTR_14, HUSTR_15, HUSTR_16, HUSTR_17, HUSTR_18, HUSTR_19,
+    HUSTR_20, HUSTR_21, HUSTR_22, HUSTR_23, HUSTR_24, HUSTR_25, HUSTR_26, HUSTR_27, HUSTR_28,
+    HUSTR_29, HUSTR_30, HUSTR_31, HUSTR_32, PHUSTR_1, PHUSTR_2, PHUSTR_3, PHUSTR_4, PHUSTR_5,
+    PHUSTR_6, PHUSTR_7, PHUSTR_8, PHUSTR_9, PHUSTR_10, PHUSTR_11, PHUSTR_12, PHUSTR_13, PHUSTR_14,
+    PHUSTR_15, PHUSTR_16, PHUSTR_17, PHUSTR_18, PHUSTR_19, PHUSTR_20, PHUSTR_21, PHUSTR_22,
+    PHUSTR_23, PHUSTR_24, PHUSTR_25, PHUSTR_26, PHUSTR_27, PHUSTR_28, PHUSTR_29, PHUSTR_30,
+    PHUSTR_31, PHUSTR_32, THUSTR_1, THUSTR_2, THUSTR_3, THUSTR_4, THUSTR_5, THUSTR_6, THUSTR_7,
+    THUSTR_8, THUSTR_9, THUSTR_10, THUSTR_11, THUSTR_12, THUSTR_13, THUSTR_14, THUSTR_15,
+    THUSTR_16, THUSTR_17, THUSTR_18, THUSTR_19, THUSTR_20, THUSTR_21, THUSTR_22, THUSTR_23,
+    THUSTR_24, THUSTR_25, THUSTR_26, THUSTR_27, THUSTR_28, THUSTR_29, THUSTR_30, THUSTR_31,
     THUSTR_32,
 ];
 pub unsafe fn HU_Init() {
@@ -499,8 +364,7 @@ pub unsafe fn HU_Start() {
     if headsupactive {
         HU_Stop();
     }
-    plr = (&raw mut players as *mut player_t).offset(consoleplayer as isize)
-        as *mut player_t;
+    plr = (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t;
     message_on = false;
     message_dontfuckwithme = false;
     message_nottobefuckedwith = false;
@@ -517,44 +381,34 @@ pub unsafe fn HU_Start() {
     HUlib_initTextLine(
         &raw mut w_title,
         HU_TITLEX,
-        167 as i32
-            - (*hu_font[0 as i32 as usize]).height as i32,
+        167 as i32 - (*hu_font[0 as i32 as usize]).height as i32,
         &raw mut hu_font as *mut *mut patch_t,
         HU_FONTSTART,
     );
-    match if gamemission as u32
-        == pack_chex as i32 as u32
-    {
+    match if gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
-    } else if gamemission as u32
-        == pack_hacx as i32 as u32
-    {
+    } else if gamemission as u32 == pack_hacx as i32 as u32 {
         doom2 as i32 as u32
     } else {
         gamemission as u32
     } {
         0 => {
-            s = mapnames[((gameepisode - 1 as i32)
-                * 9 as i32 + gamemap - 1 as i32) as usize];
+            s = mapnames[((gameepisode - 1 as i32) * 9 as i32 + gamemap - 1 as i32) as usize];
         }
         1 => {
             s = mapnames_commercial[(gamemap - 1 as i32) as usize];
         }
         3 => {
-            s = mapnames_commercial[(gamemap - 1 as i32
-                + 32 as i32) as usize];
+            s = mapnames_commercial[(gamemap - 1 as i32 + 32 as i32) as usize];
         }
         2 => {
-            s = mapnames_commercial[(gamemap - 1 as i32
-                + 64 as i32) as usize];
+            s = mapnames_commercial[(gamemap - 1 as i32 + 64 as i32) as usize];
         }
         _ => {
             s = "Unknown level";
         }
     }
-    if gameversion as u32
-        == exe_chex as i32 as u32
-    {
+    if gameversion as u32 == exe_chex as i32 as u32 {
         s = mapnames[(gamemap - 1 as i32) as usize];
     }
     for b in s.bytes() {
@@ -563,10 +417,7 @@ pub unsafe fn HU_Start() {
     HUlib_initIText(
         &raw mut w_chat,
         HU_INPUTX,
-        HU_MSGY
-            + HU_MSGHEIGHT
-                * ((*hu_font[0 as i32 as usize]).height
-                    as i32 + 1 as i32),
+        HU_MSGY + HU_MSGHEIGHT * ((*hu_font[0 as i32 as usize]).height as i32 + 1 as i32),
         &raw mut hu_font as *mut *mut patch_t,
         HU_FONTSTART,
         &raw mut chat_on,
@@ -574,8 +425,7 @@ pub unsafe fn HU_Start() {
     i = 0 as i32;
     while i < MAXPLAYERS {
         HUlib_initIText(
-            (&raw mut w_inputbuffer as *mut hu_itext_t).offset(i as isize)
-                as *mut hu_itext_t,
+            (&raw mut w_inputbuffer as *mut hu_itext_t).offset(i as isize) as *mut hu_itext_t,
             0 as i32,
             0 as i32,
             ::core::ptr::null_mut::<*mut patch_t>(),
@@ -602,12 +452,10 @@ pub unsafe fn HU_Ticker() {
     let mut i: i32 = 0;
     let mut rc: i32 = 0;
     let mut c: ::core::ffi::c_char = 0;
-    if message_counter != 0
-        && {
-            message_counter -= 1;
-            message_counter == 0
-        }
-    {
+    if message_counter != 0 && {
+        message_counter -= 1;
+        message_counter == 0
+    } {
         message_on = false;
         message_nottobefuckedwith = false;
     }
@@ -631,26 +479,22 @@ pub unsafe fn HU_Ticker() {
         i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
-                if i != consoleplayer
-                    && {
-                        c = players[i as usize].cmd.chatchar as ::core::ffi::c_char;
-                        c as i32 != 0
-                    }
-                {
+                if i != consoleplayer && {
+                    c = players[i as usize].cmd.chatchar as ::core::ffi::c_char;
+                    c as i32 != 0
+                } {
                     if c as i32 <= HU_BROADCAST {
                         chat_dest[i as usize] = c;
                     } else {
                         rc = HUlib_keyInIText(
-                            (&raw mut w_inputbuffer as *mut hu_itext_t)
-                                .offset(i as isize) as *mut hu_itext_t,
+                            (&raw mut w_inputbuffer as *mut hu_itext_t).offset(i as isize)
+                                as *mut hu_itext_t,
                             c as u8,
                         ) as i32;
                         if rc != 0 && c as i32 == KEY_ENTER {
                             if !w_inputbuffer[i as usize].l.l.is_empty()
-                                && (chat_dest[i as usize] as i32
-                                    == consoleplayer + 1 as i32
-                                    || chat_dest[i as usize] as i32
-                                        == HU_BROADCAST)
+                                && (chat_dest[i as usize] as i32 == consoleplayer + 1 as i32
+                                    || chat_dest[i as usize] as i32 == HU_BROADCAST)
                             {
                                 HUlib_addMessageToSText(
                                     &raw mut w_message,
@@ -660,23 +504,23 @@ pub unsafe fn HU_Ticker() {
                                 message_nottobefuckedwith = true;
                                 message_on = true;
                                 message_counter = HU_MSGTIMEOUT;
-                                if gamemode as u32
-                                    == commercial as i32 as u32
-                                {
-                                    S_StartSound(unsafe { &mut game_state().sounds }, 
+                                if gamemode as u32 == commercial as i32 as u32 {
+                                    S_StartSound(
+                                        unsafe { &mut game_state().sounds },
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                         sfx_radio as i32,
                                     );
                                 } else {
-                                    S_StartSound(unsafe { &mut game_state().sounds }, 
+                                    S_StartSound(
+                                        unsafe { &mut game_state().sounds },
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                         sfx_tink as i32,
                                     );
                                 }
                             }
                             HUlib_resetIText(
-                                (&raw mut w_inputbuffer as *mut hu_itext_t)
-                                    .offset(i as isize) as *mut hu_itext_t,
+                                (&raw mut w_inputbuffer as *mut hu_itext_t).offset(i as isize)
+                                    as *mut hu_itext_t,
                             );
                         }
                     }
@@ -710,11 +554,9 @@ pub unsafe fn HU_dequeueChatChar() -> ::core::ffi::c_char {
     }
     return c;
 }
-pub unsafe fn HU_Responder(mut ev: *mut event_t) -> bool {
+pub unsafe fn HU_Responder(mut ev: &event_t) -> bool {
     static mut lastmessage: [::core::ffi::c_char; 81] = [0; 81];
-    let mut macromessage: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+    let mut macromessage: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut eatkey: bool = false;
     static mut altdown: bool = false;
     let mut c: u8 = 0;
@@ -724,20 +566,16 @@ pub unsafe fn HU_Responder(mut ev: *mut event_t) -> bool {
     numplayers = 0 as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        numplayers = (numplayers as boolean).wrapping_add(playeringame[i as usize])
-            as i32 as i32;
+        numplayers = (numplayers as boolean).wrapping_add(playeringame[i as usize]) as i32 as i32;
         i += 1;
     }
     if (*ev).data1 == KEY_RSHIFT {
-        return false
+        return false;
     } else if (*ev).data1 == KEY_RALT || (*ev).data1 == KEY_LALT {
-        altdown = (*ev).type_0 as u32
-            == ev_keydown as i32 as u32;
+        altdown = (*ev).type_0 as u32 == ev_keydown as i32 as u32;
         return false;
     }
-    if (*ev).type_0 as u32
-        != ev_keydown as i32 as u32
-    {
+    if (*ev).type_0 as u32 != ev_keydown as i32 as u32 {
         return false;
     }
     if !chat_on {
@@ -758,27 +596,30 @@ pub unsafe fn HU_Responder(mut ev: *mut event_t) -> bool {
                         chat_on = true;
                         eatkey = chat_on;
                         HUlib_resetIText(&raw mut w_chat);
-                        HU_queueChatChar(
-                            (i + 1 as i32) as ::core::ffi::c_char,
-                        );
+                        HU_queueChatChar((i + 1 as i32) as ::core::ffi::c_char);
                         break;
                     } else if i == consoleplayer {
                         num_nobrainers += 1;
                         if num_nobrainers < 3 as i32 {
                             (*plr).message = b"You mumble to yourself\0" as *const u8
-                                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+                                as *const ::core::ffi::c_char
+                                as *mut ::core::ffi::c_char;
                         } else if num_nobrainers < 6 as i32 {
                             (*plr).message = b"Who's there?\0" as *const u8
-                                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+                                as *const ::core::ffi::c_char
+                                as *mut ::core::ffi::c_char;
                         } else if num_nobrainers < 9 as i32 {
                             (*plr).message = b"You scare yourself\0" as *const u8
-                                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+                                as *const ::core::ffi::c_char
+                                as *mut ::core::ffi::c_char;
                         } else if num_nobrainers < 32 as i32 {
                             (*plr).message = b"You start to rave\0" as *const u8
-                                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+                                as *const ::core::ffi::c_char
+                                as *mut ::core::ffi::c_char;
                         } else {
                             (*plr).message = b"You've lost it...\0" as *const u8
-                                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+                                as *const ::core::ffi::c_char
+                                as *mut ::core::ffi::c_char;
                         }
                     }
                 }

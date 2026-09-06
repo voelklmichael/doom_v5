@@ -1,11 +1,54 @@
-use crate::src::p_mobj::{state_t, mobjinfo_t, StateAction};
-use crate::src::p_mobj::{MF_COUNTITEM, MF_COUNTKILL, MF_DROPOFF, MF_FLOAT, MF_MISSILE, MF_NOBLOCKMAP, MF_NOBLOOD, MF_NOCLIP, MF_NOGRAVITY, MF_NOSECTOR, MF_NOTDMATCH, MF_PICKUP, MF_SHADOW, MF_SHOOTABLE, MF_SOLID, MF_SPAWNCEILING, MF_SPECIAL};
-use crate::src::sounds::{sfx_None, sfx_barexp, sfx_bgact, sfx_bgdth1, sfx_bgsit1, sfx_bosdth, sfx_bospit, sfx_bospn, sfx_brsdth, sfx_brssit, sfx_bspact, sfx_bspdth, sfx_bspsit, sfx_cacdth, sfx_cacsit, sfx_cybdth, sfx_cybsit, sfx_dmact, sfx_dmpain, sfx_firsht, sfx_firxpl, sfx_keendt, sfx_keenpn, sfx_kntdth, sfx_kntsit, sfx_mandth, sfx_mansit, sfx_mnpain, sfx_pedth, sfx_pepain, sfx_pesit, sfx_pistol, sfx_plasma, sfx_pldeth, sfx_plpain, sfx_podth1, sfx_podth2, sfx_popain, sfx_posact, sfx_posit1, sfx_posit2, sfx_rlaunc, sfx_rxplod, sfx_sgtatk, sfx_sgtdth, sfx_sgtsit, sfx_shotgn, sfx_skeact, sfx_skeatk, sfx_skedth, sfx_skesit, sfx_sklatk, sfx_spidth, sfx_spisit, sfx_ssdth, sfx_sssit, sfx_vilact, sfx_vildth, sfx_vilsit, sfx_vipain};
-use crate::src::p_mobj::{SPR_AMMO, SPR_APBX, SPR_APLS, SPR_ARM1, SPR_ARM2, SPR_BAL1, SPR_BAL2, SPR_BAL7, SPR_BAR1, SPR_BBRN, SPR_BEXP, SPR_BFE1, SPR_BFE2, SPR_BFGF, SPR_BFGG, SPR_BFS1, SPR_BFUG, SPR_BKEY, SPR_BLUD, SPR_BON1, SPR_BON2, SPR_BOS2, SPR_BOSF, SPR_BOSS, SPR_BPAK, SPR_BROK, SPR_BRS1, SPR_BSKU, SPR_BSPI, SPR_CAND, SPR_CBRA, SPR_CELL, SPR_CELP, SPR_CEYE, SPR_CHGF, SPR_CHGG, SPR_CLIP, SPR_COL1, SPR_COL2, SPR_COL3, SPR_COL4, SPR_COL5, SPR_COL6, SPR_COLU, SPR_CPOS, SPR_CSAW, SPR_CYBR, SPR_ELEC, SPR_FATB, SPR_FATT, SPR_FBXP, SPR_FCAN, SPR_FIRE, SPR_FSKU, SPR_GOR1, SPR_GOR2, SPR_GOR3, SPR_GOR4, SPR_GOR5, SPR_HDB1, SPR_HDB2, SPR_HDB3, SPR_HDB4, SPR_HDB5, SPR_HDB6, SPR_HEAD, SPR_IFOG, SPR_KEEN, SPR_LAUN, SPR_MANF, SPR_MEDI, SPR_MEGA, SPR_MGUN, SPR_MISF, SPR_MISG, SPR_MISL, SPR_PAIN, SPR_PINS, SPR_PINV, SPR_PISF, SPR_PISG, SPR_PLAS, SPR_PLAY, SPR_PLSE, SPR_PLSF, SPR_PLSG, SPR_PLSS, SPR_PMAP, SPR_POB1, SPR_POB2, SPR_POL1, SPR_POL2, SPR_POL3, SPR_POL4, SPR_POL5, SPR_POL6, SPR_POSS, SPR_PSTR, SPR_PUFF, SPR_PUNG, SPR_PVIS, SPR_RKEY, SPR_ROCK, SPR_RSKU, SPR_SARG, SPR_SAWG, SPR_SBOX, SPR_SGN2, SPR_SHEL, SPR_SHOT, SPR_SHT2, SPR_SHTF, SPR_SHTG, SPR_SKEL, SPR_SKUL, SPR_SMBT, SPR_SMGT, SPR_SMIT, SPR_SMRT, SPR_SMT2, SPR_SOUL, SPR_SPID, SPR_SPOS, SPR_SSWV, SPR_STIM, SPR_SUIT, SPR_TBLU, SPR_TFOG, SPR_TGRN, SPR_TLMP, SPR_TLP2, SPR_TRE1, SPR_TRE2, SPR_TRED, SPR_TROO, SPR_VILE, SPR_YKEY, SPR_YSKU};
-use crate::src::p_mobj::statenum_t;
-use crate::src::p_enemy::{A_BabyMetal, A_BossDeath, A_BrainAwake, A_BrainDie, A_BrainExplode, A_BrainPain, A_BrainScream, A_BrainSpit, A_BruisAttack, A_BspiAttack, A_CPosAttack, A_CPosRefire, A_Chase, A_CloseShotgun2, A_CyberAttack, A_Explode, A_FaceTarget, A_Fall, A_FatAttack1, A_FatAttack2, A_FatAttack3, A_FatRaise, A_Fire, A_FireCrackle, A_HeadAttack, A_Hoof, A_KeenDie, A_LoadShotgun2, A_Look, A_Metal, A_OpenShotgun2, A_Pain, A_PainAttack, A_PainDie, A_PlayerScream, A_PosAttack, A_SPosAttack, A_SargAttack, A_Scream, A_SkelFist, A_SkelMissile, A_SkelWhoosh, A_SkullAttack, A_SpawnFly, A_SpawnSound, A_SpidRefire, A_StartFire, A_Tracer, A_TroopAttack, A_VileAttack, A_VileChase, A_VileStart, A_VileTarget, A_XScream};
-use crate::src::p_pspr::{A_BFGSpray, A_BFGsound, A_CheckReload, A_FireBFG, A_FireCGun, A_FireMissile, A_FirePistol, A_FirePlasma, A_FireShotgun, A_FireShotgun2, A_GunFlash, A_Light0, A_Light1, A_Light2, A_Lower, A_Punch, A_Raise, A_ReFire, A_Saw, A_WeaponReady};
 use crate::src::m_fixed::FRACUNIT;
+use crate::src::p_enemy::{
+    A_BabyMetal, A_BossDeath, A_BrainAwake, A_BrainDie, A_BrainExplode, A_BrainPain, A_BrainScream,
+    A_BrainSpit, A_BruisAttack, A_BspiAttack, A_CPosAttack, A_CPosRefire, A_Chase, A_CloseShotgun2,
+    A_CyberAttack, A_Explode, A_FaceTarget, A_Fall, A_FatAttack1, A_FatAttack2, A_FatAttack3,
+    A_FatRaise, A_Fire, A_FireCrackle, A_HeadAttack, A_Hoof, A_KeenDie, A_LoadShotgun2, A_Look,
+    A_Metal, A_OpenShotgun2, A_Pain, A_PainAttack, A_PainDie, A_PlayerScream, A_PosAttack,
+    A_SPosAttack, A_SargAttack, A_Scream, A_SkelFist, A_SkelMissile, A_SkelWhoosh, A_SkullAttack,
+    A_SpawnFly, A_SpawnSound, A_SpidRefire, A_StartFire, A_Tracer, A_TroopAttack, A_VileAttack,
+    A_VileChase, A_VileStart, A_VileTarget, A_XScream,
+};
+use crate::src::p_mobj::statenum_t;
+use crate::src::p_mobj::{mobjinfo_t, state_t, StateAction};
+use crate::src::p_mobj::{
+    MF_COUNTITEM, MF_COUNTKILL, MF_DROPOFF, MF_FLOAT, MF_MISSILE, MF_NOBLOCKMAP, MF_NOBLOOD,
+    MF_NOCLIP, MF_NOGRAVITY, MF_NOSECTOR, MF_NOTDMATCH, MF_PICKUP, MF_SHADOW, MF_SHOOTABLE,
+    MF_SOLID, MF_SPAWNCEILING, MF_SPECIAL,
+};
+use crate::src::p_mobj::{
+    SPR_AMMO, SPR_APBX, SPR_APLS, SPR_ARM1, SPR_ARM2, SPR_BAL1, SPR_BAL2, SPR_BAL7, SPR_BAR1,
+    SPR_BBRN, SPR_BEXP, SPR_BFE1, SPR_BFE2, SPR_BFGF, SPR_BFGG, SPR_BFS1, SPR_BFUG, SPR_BKEY,
+    SPR_BLUD, SPR_BON1, SPR_BON2, SPR_BOS2, SPR_BOSF, SPR_BOSS, SPR_BPAK, SPR_BROK, SPR_BRS1,
+    SPR_BSKU, SPR_BSPI, SPR_CAND, SPR_CBRA, SPR_CELL, SPR_CELP, SPR_CEYE, SPR_CHGF, SPR_CHGG,
+    SPR_CLIP, SPR_COL1, SPR_COL2, SPR_COL3, SPR_COL4, SPR_COL5, SPR_COL6, SPR_COLU, SPR_CPOS,
+    SPR_CSAW, SPR_CYBR, SPR_ELEC, SPR_FATB, SPR_FATT, SPR_FBXP, SPR_FCAN, SPR_FIRE, SPR_FSKU,
+    SPR_GOR1, SPR_GOR2, SPR_GOR3, SPR_GOR4, SPR_GOR5, SPR_HDB1, SPR_HDB2, SPR_HDB3, SPR_HDB4,
+    SPR_HDB5, SPR_HDB6, SPR_HEAD, SPR_IFOG, SPR_KEEN, SPR_LAUN, SPR_MANF, SPR_MEDI, SPR_MEGA,
+    SPR_MGUN, SPR_MISF, SPR_MISG, SPR_MISL, SPR_PAIN, SPR_PINS, SPR_PINV, SPR_PISF, SPR_PISG,
+    SPR_PLAS, SPR_PLAY, SPR_PLSE, SPR_PLSF, SPR_PLSG, SPR_PLSS, SPR_PMAP, SPR_POB1, SPR_POB2,
+    SPR_POL1, SPR_POL2, SPR_POL3, SPR_POL4, SPR_POL5, SPR_POL6, SPR_POSS, SPR_PSTR, SPR_PUFF,
+    SPR_PUNG, SPR_PVIS, SPR_RKEY, SPR_ROCK, SPR_RSKU, SPR_SARG, SPR_SAWG, SPR_SBOX, SPR_SGN2,
+    SPR_SHEL, SPR_SHOT, SPR_SHT2, SPR_SHTF, SPR_SHTG, SPR_SKEL, SPR_SKUL, SPR_SMBT, SPR_SMGT,
+    SPR_SMIT, SPR_SMRT, SPR_SMT2, SPR_SOUL, SPR_SPID, SPR_SPOS, SPR_SSWV, SPR_STIM, SPR_SUIT,
+    SPR_TBLU, SPR_TFOG, SPR_TGRN, SPR_TLMP, SPR_TLP2, SPR_TRE1, SPR_TRE2, SPR_TRED, SPR_TROO,
+    SPR_VILE, SPR_YKEY, SPR_YSKU,
+};
+use crate::src::p_pspr::{
+    A_BFGSpray, A_BFGsound, A_CheckReload, A_FireBFG, A_FireCGun, A_FireMissile, A_FirePistol,
+    A_FirePlasma, A_FireShotgun, A_FireShotgun2, A_GunFlash, A_Light0, A_Light1, A_Light2, A_Lower,
+    A_Punch, A_Raise, A_ReFire, A_Saw, A_WeaponReady,
+};
+use crate::src::sounds::{
+    sfx_None, sfx_barexp, sfx_bgact, sfx_bgdth1, sfx_bgsit1, sfx_bosdth, sfx_bospit, sfx_bospn,
+    sfx_brsdth, sfx_brssit, sfx_bspact, sfx_bspdth, sfx_bspsit, sfx_cacdth, sfx_cacsit, sfx_cybdth,
+    sfx_cybsit, sfx_dmact, sfx_dmpain, sfx_firsht, sfx_firxpl, sfx_keendt, sfx_keenpn, sfx_kntdth,
+    sfx_kntsit, sfx_mandth, sfx_mansit, sfx_mnpain, sfx_pedth, sfx_pepain, sfx_pesit, sfx_pistol,
+    sfx_plasma, sfx_pldeth, sfx_plpain, sfx_podth1, sfx_podth2, sfx_popain, sfx_posact, sfx_posit1,
+    sfx_posit2, sfx_rlaunc, sfx_rxplod, sfx_sgtatk, sfx_sgtdth, sfx_sgtsit, sfx_shotgn, sfx_skeact,
+    sfx_skeatk, sfx_skedth, sfx_skesit, sfx_sklatk, sfx_spidth, sfx_spisit, sfx_ssdth, sfx_sssit,
+    sfx_vilact, sfx_vildth, sfx_vilsit, sfx_vipain,
+};
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -9845,8 +9888,10 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_DROPOFF as i32 | MF_PICKUP as i32
+        flags: MF_SOLID as i32
+            | MF_SHOOTABLE as i32
+            | MF_DROPOFF as i32
+            | MF_PICKUP as i32
             | MF_NOTDMATCH as i32,
         raisestate: S_NULL as i32,
     },
@@ -9872,8 +9917,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_posact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_POSS_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -9898,8 +9942,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_posact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_SPOS_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -9924,8 +9967,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 500 as i32,
         damage: 0 as i32,
         activesound: sfx_vilact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -9975,8 +10017,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 500 as i32,
         damage: 0 as i32,
         activesound: sfx_skeact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_SKEL_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10001,8 +10042,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 10 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10052,8 +10092,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 1000 as i32,
         damage: 0 as i32,
         activesound: sfx_posact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_FATT_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10078,8 +10117,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 8 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10104,8 +10142,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_posact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_CPOS_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10130,8 +10167,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_bgact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_TROO_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10156,8 +10192,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 400 as i32,
         damage: 0 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_SARG_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10182,8 +10217,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 400 as i32,
         damage: 0 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_SHADOW as i32 | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_SHADOW as i32 | MF_COUNTKILL as i32,
         raisestate: S_SARG_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10208,8 +10242,10 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 400 as i32,
         damage: 0 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_FLOAT as i32 | MF_NOGRAVITY as i32
+        flags: MF_SOLID as i32
+            | MF_SHOOTABLE as i32
+            | MF_FLOAT as i32
+            | MF_NOGRAVITY as i32
             | MF_COUNTKILL as i32,
         raisestate: S_HEAD_RAISE1 as i32,
     },
@@ -10235,8 +10271,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 1000 as i32,
         damage: 0 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_BOSS_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10261,8 +10296,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 8 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10287,8 +10321,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 1000 as i32,
         damage: 0 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_BOS2_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10313,8 +10346,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 50 as i32,
         damage: 3 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_FLOAT as i32 | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_FLOAT as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10339,8 +10371,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 1000 as i32,
         damage: 0 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10365,8 +10396,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 600 as i32,
         damage: 0 as i32,
         activesound: sfx_bspact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_BSPI_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10391,8 +10421,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 1000 as i32,
         damage: 0 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10417,8 +10446,10 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 400 as i32,
         damage: 0 as i32,
         activesound: sfx_dmact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_FLOAT as i32 | MF_NOGRAVITY as i32
+        flags: MF_SOLID as i32
+            | MF_SHOOTABLE as i32
+            | MF_FLOAT as i32
+            | MF_NOGRAVITY as i32
             | MF_COUNTKILL as i32,
         raisestate: S_PAIN_RAISE1 as i32,
     },
@@ -10444,8 +10475,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_posact as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_COUNTKILL as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_COUNTKILL as i32,
         raisestate: S_SSWV_RAISE1 as i32,
     },
     mobjinfo_t {
@@ -10470,8 +10500,10 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 10000000 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32 | MF_SHOOTABLE as i32
+        flags: MF_SOLID as i32
+            | MF_SPAWNCEILING as i32
+            | MF_NOGRAVITY as i32
+            | MF_SHOOTABLE as i32
             | MF_COUNTKILL as i32,
         raisestate: S_NULL as i32,
     },
@@ -10572,8 +10604,10 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 3 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32
+        flags: MF_NOBLOCKMAP as i32
+            | MF_MISSILE as i32
+            | MF_DROPOFF as i32
+            | MF_NOGRAVITY as i32
             | MF_NOCLIP as i32,
         raisestate: S_NULL as i32,
     },
@@ -10624,8 +10658,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32
-            | MF_NOBLOOD as i32,
+        flags: MF_SOLID as i32 | MF_SHOOTABLE as i32 | MF_NOBLOOD as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10650,8 +10683,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 3 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10676,8 +10708,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 5 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10702,8 +10733,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 20 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10728,8 +10758,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 5 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10754,8 +10783,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 100 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -10780,8 +10808,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 5 as i32,
         activesound: sfx_None as i32,
-        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32
-            | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
+        flags: MF_NOBLOCKMAP as i32 | MF_MISSILE as i32 | MF_DROPOFF as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12406,8 +12433,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12432,8 +12458,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12458,8 +12483,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12484,8 +12508,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12510,8 +12533,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12536,8 +12558,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12562,8 +12583,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12588,8 +12608,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12614,8 +12633,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -12640,8 +12658,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -13091,8 +13108,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -13117,8 +13133,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -13143,8 +13158,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -13169,8 +13183,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -13195,8 +13208,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {
@@ -13221,8 +13233,7 @@ pub static mut mobjinfo: [mobjinfo_t; 137] = [
         mass: 100 as i32,
         damage: 0 as i32,
         activesound: sfx_None as i32,
-        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32
-            | MF_NOGRAVITY as i32,
+        flags: MF_SOLID as i32 | MF_SPAWNCEILING as i32 | MF_NOGRAVITY as i32,
         raisestate: S_NULL as i32,
     },
     mobjinfo_t {

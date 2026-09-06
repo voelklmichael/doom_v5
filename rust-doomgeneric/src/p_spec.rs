@@ -1,83 +1,94 @@
-use crate::src::r_defs::{side_t};
-use crate::src::p_mobj::{thinker_t, sector_t, degenmobj_t, line_t};
-use crate::src::d_player::{player_t};
-use crate::src::p_mobj::{mobj_t};
-use crate::src::i_system::I_Error;
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
-use crate::src::w_wad::{wad_name8_to_string, W_CheckNumForName};
-use crate::src::r_data::R_CheckTextureNumForName;
-use crate::src::p_lights::P_SpawnFireFlicker;
-use crate::src::p_lights::P_SpawnLightFlash;
-use crate::src::p_lights::P_SpawnStrobeFlash;
-use crate::src::p_lights::EV_StartLightStrobing;
-use crate::src::p_lights::EV_TurnTagLightsOff;
-use crate::src::p_lights::P_SpawnGlowingLight;
-use crate::src::p_switch::PSwitchState;
-use crate::src::p_switch::P_ChangeSwitchTexture;
-use crate::src::p_plats::PPlatsState;
-use crate::src::p_plats::EV_StopPlat;
-use crate::src::p_doors::P_SpawnDoorCloseIn30;
-use crate::src::p_doors::P_SpawnDoorRaiseIn5Mins;
-use crate::src::p_ceilng::EV_CeilingCrushStop;
-use crate::src::p_telept::EV_Teleport;
-use crate::src::r_data::numflats;
-use crate::src::g_game::G_SecretExitLevel;
-use crate::src::g_game::totalsecret;
-use crate::src::p_ceilng::EV_DoCeiling;
-use crate::src::p_ceilng::PCeilngState;
-use crate::src::p_floor::EV_BuildStairs;
-use crate::src::p_lights::EV_LightTurnOn;
-use crate::src::p_plats::EV_DoPlat;
-use crate::src::r_data::flattranslation;
-use crate::src::r_data::texturetranslation;
-use crate::src::g_game::G_ExitLevel;
-use crate::src::g_game::timelimit;
-use crate::src::m_misc::M_StrToInt;
-use crate::src::p_doors::EV_DoDoor;
-use crate::src::p_floor::EV_DoFloor;
-use crate::src::p_setup::numlines;
-use crate::src::p_inter::P_DamageMobj;
-use crate::src::p_setup::lines;
-use crate::src::p_setup::numsectors;
-use crate::src::p_setup::sides;
-use crate::src::p_tick::P_AddThinker;
-use crate::src::g_game::deathmatch;
-use crate::src::m_random::P_Random;
-use crate::src::p_setup::sectors;
-use crate::src::p_tick::leveltime;
-use crate::src::s_sound::S_StartSound;
-use crate::src::r_data::R_FlatNumForName;
-use crate::src::r_data::R_TextureNumForName;
-use crate::src::z_zone::Z_Malloc;
-use crate::src::z_zone::PU_LEVSPEC;
-use crate::src::sounds::sfx_swtchn;
+use crate::src::d_player::player_t;
 use crate::src::d_player::pw_ironfeet;
 use crate::src::d_player::CF_GODMODE;
-use libc::memset;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::timelimit;
+use crate::src::g_game::totalsecret;
+use crate::src::g_game::G_ExitLevel;
+use crate::src::g_game::G_SecretExitLevel;
+use crate::src::i_system::I_Error;
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::p_mobj::ThinkerFn;
-use crate::src::p_plats::{blazeDWUS, downWaitUpStay, perpetualRaise, plattype_e, raiseToNearestAndChange};
-use crate::src::p_plats::plat_e;
-use crate::src::p_doors::{vld_blazeClose, vld_blazeOpen, vld_blazeRaise, vld_close, vld_close30ThenOpen, vld_normal, vld_open};
-use crate::src::p_floor::{donutRaise, floor_e, lowerAndChange, lowerFloor, lowerFloorToLowest, raiseFloor, raiseFloor24, raiseFloor24AndChange, raiseFloorCrush, raiseFloorToNearest, raiseFloorTurbo, raiseToTexture, turboLower};
-use crate::src::p_floor::{build8, turbo16};
-use crate::src::p_ceilng::{ceiling_e, crushAndRaise, fastCrushAndRaise, lowerAndCrush, raiseToHighest, silentCrushAndRaise};
-use crate::src::p_switch::bwhere_e;
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_fixed::fixed_t;
+use crate::src::m_misc::M_StrToInt;
+use crate::src::m_random::P_Random;
+use crate::src::p_ceilng::EV_CeilingCrushStop;
+use crate::src::p_ceilng::EV_DoCeiling;
+use crate::src::p_ceilng::PCeilngState;
+use crate::src::p_ceilng::{
+    ceiling_e, crushAndRaise, fastCrushAndRaise, lowerAndCrush, raiseToHighest, silentCrushAndRaise,
+};
+use crate::src::p_doors::EV_DoDoor;
+use crate::src::p_doors::P_SpawnDoorCloseIn30;
+use crate::src::p_doors::P_SpawnDoorRaiseIn5Mins;
+use crate::src::p_doors::{
+    vld_blazeClose, vld_blazeOpen, vld_blazeRaise, vld_close, vld_close30ThenOpen, vld_normal,
+    vld_open,
+};
+use crate::src::p_floor::EV_BuildStairs;
+use crate::src::p_floor::EV_DoFloor;
+use crate::src::p_floor::{build8, turbo16};
+use crate::src::p_floor::{
+    donutRaise, floor_e, lowerAndChange, lowerFloor, lowerFloorToLowest, raiseFloor, raiseFloor24,
+    raiseFloor24AndChange, raiseFloorCrush, raiseFloorToNearest, raiseFloorTurbo, raiseToTexture,
+    turboLower,
+};
+use crate::src::p_inter::P_DamageMobj;
+use crate::src::p_lights::EV_LightTurnOn;
+use crate::src::p_lights::EV_StartLightStrobing;
+use crate::src::p_lights::EV_TurnTagLightsOff;
+use crate::src::p_lights::P_SpawnFireFlicker;
+use crate::src::p_lights::P_SpawnGlowingLight;
+use crate::src::p_lights::P_SpawnLightFlash;
+use crate::src::p_lights::P_SpawnStrobeFlash;
+use crate::src::p_mobj::mobj_t;
+use crate::src::p_mobj::ThinkerFn;
+use crate::src::p_mobj::{degenmobj_t, line_t, sector_t, thinker_t};
+use crate::src::p_plats::plat_e;
+use crate::src::p_plats::EV_DoPlat;
+use crate::src::p_plats::EV_StopPlat;
+use crate::src::p_plats::PPlatsState;
+use crate::src::p_plats::{
+    blazeDWUS, downWaitUpStay, perpetualRaise, plattype_e, raiseToNearestAndChange,
+};
+use crate::src::p_setup::lines;
+use crate::src::p_setup::numlines;
+use crate::src::p_setup::numsectors;
+use crate::src::p_setup::sectors;
+use crate::src::p_setup::sides;
+use crate::src::p_switch::bwhere_e;
+use crate::src::p_switch::PSwitchState;
+use crate::src::p_switch::P_ChangeSwitchTexture;
+use crate::src::p_telept::EV_Teleport;
+use crate::src::p_tick::leveltime;
+use crate::src::p_tick::P_AddThinker;
+use crate::src::r_data::flattranslation;
+use crate::src::r_data::numflats;
+use crate::src::r_data::texturetranslation;
+use crate::src::r_data::R_CheckTextureNumForName;
+use crate::src::r_data::R_FlatNumForName;
+use crate::src::r_data::R_TextureNumForName;
+use crate::src::r_defs::side_t;
+use crate::src::s_sound::S_StartSound;
+use crate::src::sounds::sfx_swtchn;
 use crate::src::stdint_types::size_t;
+use crate::src::w_wad::{wad_name8_to_string, W_CheckNumForName};
+use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::PU_LEVSPEC;
+use libc::memset;
 
-use crate::src::p_floor::T_MoveFloor;
-use crate::src::doomdef::true_0;
 use crate::src::doomdef::false_0;
+use crate::src::doomdef::true_0;
 use crate::src::doomdef::TICRATE;
+use crate::src::game_state::game_state;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
+use crate::src::p_ceilng::MAXCEILINGS;
+use crate::src::p_floor::T_MoveFloor;
 use crate::src::p_floor::FLOORSPEED;
 use crate::src::p_lights::SLOWDARK;
 use crate::src::p_plats::MAXPLATS;
-use crate::src::p_ceilng::MAXCEILINGS;
 use crate::src::p_switch::MAXBUTTONS;
-use crate::src::game_state::game_state;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {
@@ -154,278 +165,154 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
     [
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"NUKAGE3\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"NUKAGE1\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"NUKAGE3\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"NUKAGE1\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FWATER4\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FWATER1\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FWATER4\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FWATER1\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SWATER4\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SWATER1\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SWATER4\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SWATER1\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"LAVA4\0\0\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"LAVA1\0\0\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"LAVA4\0\0\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"LAVA1\0\0\0\0",
+            ),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"BLOOD3\0\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"BLOOD1\0\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"BLOOD3\0\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"BLOOD1\0\0\0",
+            ),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"RROCK08\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"RROCK05\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"RROCK08\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"RROCK05\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SLIME04\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SLIME01\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SLIME04\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SLIME01\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SLIME08\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SLIME05\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SLIME08\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SLIME05\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SLIME12\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SLIME09\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SLIME12\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SLIME09\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"BLODGR4\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"BLODGR1\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"BLODGR4\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"BLODGR1\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SLADRIP3\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SLADRIP1\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SLADRIP3\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SLADRIP1\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"BLODRIP4\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"BLODRIP1\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"BLODRIP4\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"BLODRIP1\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FIREWALL\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FIREWALA\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FIREWALL\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FIREWALA\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"GSTFONT3\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"GSTFONT1\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"GSTFONT3\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"GSTFONT1\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FIRELAVA\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FIRELAV3\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FIRELAVA\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FIRELAV3\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FIREMAG3\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FIREMAG1\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FIREMAG3\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FIREMAG1\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FIREBLU2\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"FIREBLU1\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FIREBLU2\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"FIREBLU1\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"ROCKRED3\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"ROCKRED1\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"ROCKRED3\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"ROCKRED1\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"BFALL4\0\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"BFALL1\0\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"BFALL4\0\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"BFALL1\0\0\0",
+            ),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SFALL4\0\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"SFALL1\0\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SFALL4\0\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"SFALL1\0\0\0",
+            ),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"WFALL4\0\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"WFALL1\0\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"WFALL4\0\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"WFALL1\0\0\0",
+            ),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"DBRAIN4\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"DBRAIN1\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"DBRAIN4\0\0"),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"DBRAIN1\0\0"),
             speed: 8 as i32,
         },
         animdef_t {
             istexture: -(1 as i32),
-            endname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"\0\0\0\0\0\0\0\0\0"),
-            startname: ::core::mem::transmute::<
-                [u8; 9],
-                [::core::ffi::c_char; 9],
-            >(*b"\0\0\0\0\0\0\0\0\0"),
+            endname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"\0\0\0\0\0\0\0\0\0",
+            ),
+            startname: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(
+                *b"\0\0\0\0\0\0\0\0\0",
+            ),
             speed: 0 as i32,
         },
     ]
@@ -447,16 +334,13 @@ pub unsafe fn P_InitPicAnims() {
     let mut current_block_13: u64;
     i = 0 as i32;
     while animdefs[i as usize].istexture != -(1 as i32) {
-        let mut startname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-            ::core::ffi::c_char,
-        >();
-        let mut endname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-            ::core::ffi::c_char,
-        >();
-        startname = &raw mut (*(&raw mut animdefs as *mut animdef_t).offset(i as isize))
-            .startname as *mut ::core::ffi::c_char;
-        endname = &raw mut (*(&raw mut animdefs as *mut animdef_t).offset(i as isize))
-            .endname as *mut ::core::ffi::c_char;
+        let mut startname: *mut ::core::ffi::c_char =
+            ::core::ptr::null_mut::<::core::ffi::c_char>();
+        let mut endname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+        startname = &raw mut (*(&raw mut animdefs as *mut animdef_t).offset(i as isize)).startname
+            as *mut ::core::ffi::c_char;
+        endname = &raw mut (*(&raw mut animdefs as *mut animdef_t).offset(i as isize)).endname
+            as *mut ::core::ffi::c_char;
         if animdefs[i as usize].istexture != 0 {
             if R_CheckTextureNumForName(startname) == -(1 as i32) {
                 current_block_13 = 12237857397564741460;
@@ -465,10 +349,7 @@ pub unsafe fn P_InitPicAnims() {
                 (*lastanim).basepic = R_TextureNumForName(startname);
                 current_block_13 = 11650488183268122163;
             }
-        } else if W_CheckNumForName(
-            &wad_name8_to_string(startname),
-        ) == -(1 as i32)
-        {
+        } else if W_CheckNumForName(&wad_name8_to_string(startname)) == -(1 as i32) {
             current_block_13 = 12237857397564741460;
         } else {
             (*lastanim).picnum = R_FlatNumForName(endname);
@@ -478,8 +359,7 @@ pub unsafe fn P_InitPicAnims() {
         match current_block_13 {
             11650488183268122163 => {
                 (*lastanim).istexture = animdefs[i as usize].istexture != 0;
-                (*lastanim).numpics = (*lastanim).picnum - (*lastanim).basepic
-                    + 1 as i32;
+                (*lastanim).numpics = (*lastanim).picnum - (*lastanim).basepic + 1 as i32;
                 if (*lastanim).numpics < 2 as i32 {
                     I_Error(&format!(
                         "P_InitPicAnims: bad cycle from {} to {}",
@@ -495,43 +375,32 @@ pub unsafe fn P_InitPicAnims() {
         i += 1;
     }
 }
-pub unsafe fn getSide(
-    mut currentSector: i32,
-    mut line: i32,
-    mut side: i32,
-) -> *mut side_t {
-    return sides
-        .offset(
-            *(&raw mut (**(*sectors.offset(currentSector as isize))
-                .lines
-                .offset(line as isize))
-                .sidenum as *mut i16)
-                .offset(side as isize) as isize,
-        ) as *mut side_t;
+pub unsafe fn getSide(mut currentSector: i32, mut line: i32, mut side: i32) -> *mut side_t {
+    return sides.offset(
+        *(&raw mut (**(*sectors.offset(currentSector as isize))
+            .lines
+            .offset(line as isize))
+        .sidenum as *mut i16)
+            .offset(side as isize) as isize,
+    ) as *mut side_t;
 }
-pub unsafe fn getSector(
-    mut currentSector: i32,
-    mut line: i32,
-    mut side: i32,
-) -> *mut sector_t {
-    return (*sides
-        .offset(
-            (**(*sectors.offset(currentSector as isize)).lines.offset(line as isize))
-                .sidenum[side as usize] as isize,
-        ))
-        .sector;
+pub unsafe fn getSector(mut currentSector: i32, mut line: i32, mut side: i32) -> *mut sector_t {
+    return (*sides.offset(
+        (**(*sectors.offset(currentSector as isize))
+            .lines
+            .offset(line as isize))
+        .sidenum[side as usize] as isize,
+    ))
+    .sector;
 }
-pub unsafe fn twoSided(
-    mut sector: i32,
-    mut line: i32,
-) -> i32 {
-    return (**(*sectors.offset(sector as isize)).lines.offset(line as isize)).flags
-        as i32 & ML_TWOSIDED;
+pub unsafe fn twoSided(mut sector: i32, mut line: i32) -> i32 {
+    return (**(*sectors.offset(sector as isize))
+        .lines
+        .offset(line as isize))
+    .flags as i32
+        & ML_TWOSIDED;
 }
-pub unsafe fn getNextSector(
-    mut line: *mut line_t,
-    mut sec: *mut sector_t,
-) -> *mut sector_t {
+pub unsafe fn getNextSector(mut line: *mut line_t, mut sec: *mut sector_t) -> *mut sector_t {
     if (*line).flags as i32 & ML_TWOSIDED == 0 {
         return ::core::ptr::null_mut::<sector_t>();
     }
@@ -540,9 +409,7 @@ pub unsafe fn getNextSector(
     }
     return (*line).frontsector;
 }
-pub unsafe fn P_FindLowestFloorSurrounding(
-    mut sec: *mut sector_t,
-) -> fixed_t {
+pub unsafe fn P_FindLowestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -560,9 +427,7 @@ pub unsafe fn P_FindLowestFloorSurrounding(
     }
     return floor;
 }
-pub unsafe fn P_FindHighestFloorSurrounding(
-    mut sec: *mut sector_t,
-) -> fixed_t {
+pub unsafe fn P_FindHighestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -581,10 +446,7 @@ pub unsafe fn P_FindHighestFloorSurrounding(
     return floor;
 }
 pub const MAX_ADJOINING_SECTORS: i32 = 20;
-pub unsafe fn P_FindNextHighestFloor(
-    mut sec: *mut sector_t,
-    mut currentheight: i32,
-) -> fixed_t {
+pub unsafe fn P_FindNextHighestFloor(mut sec: *mut sector_t, mut currentheight: i32) -> fixed_t {
     let mut i: i32 = 0;
     let mut h: i32 = 0;
     let mut min: i32 = 0;
@@ -624,9 +486,7 @@ pub unsafe fn P_FindNextHighestFloor(
     }
     return min as fixed_t;
 }
-pub unsafe fn P_FindLowestCeilingSurrounding(
-    mut sec: *mut sector_t,
-) -> fixed_t {
+pub unsafe fn P_FindLowestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -644,9 +504,7 @@ pub unsafe fn P_FindLowestCeilingSurrounding(
     }
     return height;
 }
-pub unsafe fn P_FindHighestCeilingSurrounding(
-    mut sec: *mut sector_t,
-) -> fixed_t {
+pub unsafe fn P_FindHighestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -664,26 +522,18 @@ pub unsafe fn P_FindHighestCeilingSurrounding(
     }
     return height;
 }
-pub unsafe fn P_FindSectorFromLineTag(
-    mut line: *mut line_t,
-    mut start: i32,
-) -> i32 {
+pub unsafe fn P_FindSectorFromLineTag(mut line: *mut line_t, mut start: i32) -> i32 {
     let mut i: i32 = 0;
     i = start + 1 as i32;
     while i < numsectors {
-        if (*sectors.offset(i as isize)).tag as i32
-            == (*line).tag as i32
-        {
+        if (*sectors.offset(i as isize)).tag as i32 == (*line).tag as i32 {
             return i;
         }
         i += 1;
     }
     return -(1 as i32);
 }
-pub unsafe fn P_FindMinSurroundingLight(
-    mut sector: *mut sector_t,
-    mut max: i32,
-) -> i32 {
+pub unsafe fn P_FindMinSurroundingLight(mut sector: *mut sector_t, mut max: i32) -> i32 {
     let mut i: i32 = 0;
     let mut min: i32 = 0;
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
@@ -702,11 +552,7 @@ pub unsafe fn P_FindMinSurroundingLight(
     }
     return min;
 }
-pub unsafe fn P_CrossSpecialLine(
-    mut linenum: i32,
-    mut side: i32,
-    mut thing: *mut mobj_t,
-) {
+pub unsafe fn P_CrossSpecialLine(mut linenum: i32, mut side: i32, mut thing: *mut mobj_t) {
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut ok: i32 = 0;
     line = lines.offset(linenum as isize) as *mut line_t;
@@ -744,7 +590,11 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         6 => {
-            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, fastCrushAndRaise);
+            EV_DoCeiling(
+                unsafe { &mut game_state().p_ceilng },
+                line,
+                fastCrushAndRaise,
+            );
             (*line).special = 0 as i16;
         }
         8 => {
@@ -752,7 +602,12 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         10 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, downWaitUpStay, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                downWaitUpStay,
+                0 as i32,
+            );
             (*line).special = 0 as i16;
         }
         12 => {
@@ -776,7 +631,12 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         22 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseToNearestAndChange,
+                0 as i32,
+            );
             (*line).special = 0 as i16;
         }
         25 => {
@@ -820,7 +680,12 @@ pub unsafe fn P_CrossSpecialLine(
             G_ExitLevel();
         }
         53 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, perpetualRaise, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                perpetualRaise,
+                0 as i32,
+            );
             (*line).special = 0 as i16;
         }
         54 => {
@@ -868,7 +733,12 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         121 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, blazeDWUS, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                blazeDWUS,
+                0 as i32,
+            );
             (*line).special = 0 as i16;
         }
         124 => {
@@ -885,7 +755,11 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         141 => {
-            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, silentCrushAndRaise);
+            EV_DoCeiling(
+                unsafe { &mut game_state().p_ceilng },
+                line,
+                silentCrushAndRaise,
+            );
             (*line).special = 0 as i16;
         }
         72 => {
@@ -904,7 +778,11 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoDoor(line, vld_close30ThenOpen);
         }
         77 => {
-            EV_DoCeiling(unsafe { &mut game_state().p_ceilng }, line, fastCrushAndRaise);
+            EV_DoCeiling(
+                unsafe { &mut game_state().p_ceilng },
+                line,
+                fastCrushAndRaise,
+            );
         }
         79 => {
             EV_LightTurnOn(line, 35 as i32);
@@ -928,10 +806,20 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoDoor(line, vld_open);
         }
         87 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, perpetualRaise, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                perpetualRaise,
+                0 as i32,
+            );
         }
         88 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, downWaitUpStay, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                downWaitUpStay,
+                0 as i32,
+            );
         }
         89 => {
             EV_StopPlat(unsafe { &mut game_state().p_plats }, line);
@@ -952,7 +840,12 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoFloor(line, raiseFloorCrush);
         }
         95 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseToNearestAndChange,
+                0 as i32,
+            );
         }
         96 => {
             EV_DoFloor(line, raiseToTexture);
@@ -973,7 +866,12 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoDoor(line, vld_blazeClose);
         }
         120 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, blazeDWUS, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                blazeDWUS,
+                0 as i32,
+            );
         }
         126 => {
             if (*thing).player.is_null() {
@@ -989,10 +887,7 @@ pub unsafe fn P_CrossSpecialLine(
         _ => {}
     };
 }
-pub unsafe fn P_ShootSpecialLine(
-    mut thing: *mut mobj_t,
-    mut line: *mut line_t,
-) {
+pub unsafe fn P_ShootSpecialLine(mut thing: *mut mobj_t, mut line: *mut line_t) {
     let mut ok: i32 = 0;
     if (*thing).player.is_null() {
         ok = 0 as i32;
@@ -1016,7 +911,12 @@ pub unsafe fn P_ShootSpecialLine(
             P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 1 as i32);
         }
         47 => {
-            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32);
+            EV_DoPlat(
+                unsafe { &mut game_state().p_plats },
+                line,
+                raiseToNearestAndChange,
+                0 as i32,
+            );
             P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 0 as i32);
         }
         _ => {}
@@ -1127,9 +1027,8 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
         line = linespeciallist[i as usize];
         match (*line).special as i32 {
             48 => {
-                let ref mut fresh0 = (*sides
-                    .offset((*line).sidenum[0 as i32 as usize] as isize))
-                    .textureoffset;
+                let ref mut fresh0 =
+                    (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).textureoffset;
                 *fresh0 += FRACUNIT;
             }
             _ => {}
@@ -1143,42 +1042,37 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
             if state.buttonlist[i as usize].btimer == 0 {
                 match state.buttonlist[i as usize].where_0 as u32 {
                     0 => {
-                        (*sides
-                            .offset(
-                                (*state.buttonlist[i as usize].line)
-                                    .sidenum[0 as i32 as usize] as isize,
-                            ))
-                            .toptexture = state.buttonlist[i as usize].btexture
-                            as i16;
+                        (*sides.offset(
+                            (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
+                                as isize,
+                        ))
+                        .toptexture = state.buttonlist[i as usize].btexture as i16;
                     }
                     1 => {
-                        (*sides
-                            .offset(
-                                (*state.buttonlist[i as usize].line)
-                                    .sidenum[0 as i32 as usize] as isize,
-                            ))
-                            .midtexture = state.buttonlist[i as usize].btexture
-                            as i16;
+                        (*sides.offset(
+                            (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
+                                as isize,
+                        ))
+                        .midtexture = state.buttonlist[i as usize].btexture as i16;
                     }
                     2 => {
-                        (*sides
-                            .offset(
-                                (*state.buttonlist[i as usize].line)
-                                    .sidenum[0 as i32 as usize] as isize,
-                            ))
-                            .bottomtexture = state.buttonlist[i as usize].btexture
-                            as i16;
+                        (*sides.offset(
+                            (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
+                                as isize,
+                        ))
+                        .bottomtexture = state.buttonlist[i as usize].btexture as i16;
                     }
                     _ => {}
                 }
-                S_StartSound(unsafe { &mut game_state().sounds }, 
+                S_StartSound(
+                    unsafe { &mut game_state().sounds },
                     &raw mut (*(&raw mut state.buttonlist as *mut button_t).offset(i as isize))
                         .soundorg as *mut ::core::ffi::c_void,
                     sfx_swtchn as i32,
                 );
                 memset(
-                    (&raw mut state.buttonlist as *mut button_t).offset(i as isize)
-                        as *mut button_t as *mut ::core::ffi::c_void,
+                    (&raw mut state.buttonlist as *mut button_t).offset(i as isize) as *mut button_t
+                        as *mut ::core::ffi::c_void,
                     0 as i32,
                     ::core::mem::size_of::<button_t>() as size_t,
                 );
@@ -1206,13 +1100,11 @@ unsafe fn DonutOverrun(
         p = M_CheckParmWithArgs("-donut", 2 as i32);
         if p > 0 as i32 {
             M_StrToInt(
-                myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
+                myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
                 &raw mut tmp_s3_floorheight,
             );
             M_StrToInt(
-                myargv[(p + 2 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
+                myargv[(p + 2 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
                 &raw mut tmp_s3_floorpic,
             );
             if tmp_s3_floorpic >= numflats {
@@ -1252,10 +1144,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
             continue;
         }
         rtn = 1 as i32;
-        s2 = getNextSector(
-            *(*s1).lines.offset(0 as i32 as isize) as *mut line_t,
-            s1,
-        );
+        s2 = getNextSector(*(*s1).lines.offset(0 as i32 as isize) as *mut line_t, s1);
         if s2.is_null() {
             fprintf(
                 stderr,
@@ -1276,12 +1165,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
                             b"EV_DoDonut: WARNING: emulating buffer overrun due to NULL back sector. Unexpected behavior may occur in Vanilla Doom.\n\0"
                                 as *const u8 as *const ::core::ffi::c_char,
                         );
-                        DonutOverrun(
-                            &raw mut s3_floorheight,
-                            &raw mut s3_floorpic,
-                            line,
-                            s1,
-                        );
+                        DonutOverrun(&raw mut s3_floorheight, &raw mut s3_floorpic, line, s1);
                     } else {
                         s3_floorheight = (*s3).floorheight;
                         s3_floorpic = (*s3).floorpic;
@@ -1326,9 +1210,13 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
 #[no_mangle]
 pub static mut numlinespecials: i16 = 0;
 #[no_mangle]
-pub static mut linespeciallist: [*mut line_t; 64] = [::core::ptr::null::<line_t>()
-    as *mut line_t; 64];
-pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState, plats_state: &mut PPlatsState, ceilng_state: &mut PCeilngState) {
+pub static mut linespeciallist: [*mut line_t; 64] =
+    [::core::ptr::null::<line_t>() as *mut line_t; 64];
+pub unsafe fn P_SpawnSpecials(
+    state: &mut PSwitchState,
+    plats_state: &mut PPlatsState,
+    ceilng_state: &mut PCeilngState,
+) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: i32 = 0;
     if timelimit > 0 as i32 && deathmatch != 0 {
@@ -1390,8 +1278,7 @@ pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState, plats_state: &mut PPlats
                 if numlinespecials as i32 >= MAXLINEANIMS {
                     I_Error("Too many scrolling wall linedefs! (Vanilla limit is 64)");
                 }
-                linespeciallist[numlinespecials as usize] = lines.offset(i as isize)
-                    as *mut line_t;
+                linespeciallist[numlinespecials as usize] = lines.offset(i as isize) as *mut line_t;
                 numlinespecials += 1;
             }
             _ => {}

@@ -1,9 +1,6 @@
 pub const DIR_SEPARATOR: char = '/';
 pub static mut myargv: Vec<::std::ffi::CString> = Vec::new();
-pub unsafe fn M_CheckParmWithArgs(
-    check: &str,
-    mut num_args: i32,
-) -> i32 {
+pub unsafe fn M_CheckParmWithArgs(check: &str, mut num_args: i32) -> i32 {
     let mut i: i32 = 1 as i32;
     while i < myargv.len() as i32 - num_args {
         if myargv[i as usize]

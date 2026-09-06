@@ -14,11 +14,7 @@ pub unsafe fn M_ClearBox(mut box_0: *mut fixed_t) {
     *fresh1 = INT_MAX as fixed_t;
     *box_0.offset(BOXBOTTOM as i32 as isize) = *fresh1;
 }
-pub unsafe fn M_AddToBox(
-    mut box_0: *mut fixed_t,
-    mut x: fixed_t,
-    mut y: fixed_t,
-) {
+pub unsafe fn M_AddToBox(mut box_0: *mut fixed_t, mut x: fixed_t, mut y: fixed_t) {
     if x < *box_0.offset(BOXLEFT as i32 as isize) {
         *box_0.offset(BOXLEFT as i32 as isize) = x;
     } else if x > *box_0.offset(BOXRIGHT as i32 as isize) {

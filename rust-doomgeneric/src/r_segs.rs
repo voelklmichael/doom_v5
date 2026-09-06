@@ -1,69 +1,69 @@
-use crate::src::r_data::column_t;
-use crate::src::r_defs::drawseg_t;
 use crate::src::i_system::I_Error;
-use crate::src::r_main::R_PointToDist;
-use crate::src::r_main::R_ScaleFromGlobalAngle;
-use crate::src::r_bsp::curline;
-use crate::src::r_bsp::sidedef;
-use crate::src::r_bsp::linedef;
-use crate::src::r_bsp::frontsector;
-use crate::src::r_bsp::backsector;
-use crate::src::r_plane::lastopening;
-use crate::src::r_plane::floorclip;
-use crate::src::r_plane::ceilingclip;
-use crate::src::r_plane::R_CheckPlane;
-use crate::src::r_things::negonearray;
-use crate::src::r_things::mfloorclip;
-use crate::src::r_things::mceilingclip;
-use crate::src::r_things::spryscale;
-use crate::src::r_things::sprtopscreen;
-use crate::src::r_things::R_DrawMaskedColumn;
-use crate::src::r_data::R_GetColumn;
-use crate::src::r_data::textureheight;
-use crate::src::r_data::texturetranslation;
-use crate::src::r_main::centeryfrac;
-use crate::src::r_main::xtoviewangle;
-use crate::src::r_main::scalelight;
-use crate::src::r_plane::floorplane;
-use crate::src::r_plane::ceilingplane;
-use crate::src::r_things::screenheightarray;
-use crate::src::r_bsp::drawsegs;
-use crate::src::r_bsp::ds_p;
-use crate::src::r_draw::dc_colormap;
-use crate::src::r_draw::dc_x;
-use crate::src::r_draw::dc_yl;
-use crate::src::r_draw::dc_yh;
-use crate::src::r_draw::dc_iscale;
-use crate::src::r_draw::dc_texturemid;
-use crate::src::r_draw::dc_source;
-use crate::src::r_main::fixedcolormap;
-use crate::src::r_main::viewangle;
-use crate::src::r_main::extralight;
-use crate::src::r_main::colfunc;
-use crate::src::tables::finetangent;
-use crate::src::r_main::viewz;
-use crate::src::r_draw::viewwidth;
-use crate::src::r_draw::viewheight;
-use crate::src::r_sky::skyflatnum;
-use crate::src::tables::finesine;
-use crate::src::m_fixed::FixedMul;
-use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
-use crate::src::r_defs::lighttable_t;
-use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
-use libc::memcpy;
-use crate::src::tables::ANGLETOFINESHIFT;
-use crate::src::tables::ANG180;
-use crate::src::tables::ANG90;
+use crate::src::m_fixed::FixedMul;
+use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::m_fixed::INT_MIN;
 use crate::src::p_spec::ML_MAPPED;
-use crate::src::r_main::MAXLIGHTSCALE;
+use crate::src::r_bsp::backsector;
+use crate::src::r_bsp::curline;
+use crate::src::r_bsp::drawsegs;
+use crate::src::r_bsp::ds_p;
+use crate::src::r_bsp::frontsector;
+use crate::src::r_bsp::linedef;
+use crate::src::r_bsp::sidedef;
+use crate::src::r_data::column_t;
+use crate::src::r_data::textureheight;
+use crate::src::r_data::texturetranslation;
+use crate::src::r_data::R_GetColumn;
+use crate::src::r_defs::drawseg_t;
+use crate::src::r_defs::lighttable_t;
+use crate::src::r_draw::dc_colormap;
+use crate::src::r_draw::dc_iscale;
+use crate::src::r_draw::dc_source;
+use crate::src::r_draw::dc_texturemid;
+use crate::src::r_draw::dc_x;
+use crate::src::r_draw::dc_yh;
+use crate::src::r_draw::dc_yl;
+use crate::src::r_draw::viewheight;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_main::centeryfrac;
+use crate::src::r_main::colfunc;
+use crate::src::r_main::extralight;
+use crate::src::r_main::fixedcolormap;
+use crate::src::r_main::scalelight;
+use crate::src::r_main::viewangle;
+use crate::src::r_main::viewz;
+use crate::src::r_main::xtoviewangle;
+use crate::src::r_main::R_PointToDist;
+use crate::src::r_main::R_ScaleFromGlobalAngle;
+use crate::src::r_main::LIGHTLEVELS;
 use crate::src::r_main::LIGHTSCALESHIFT;
 use crate::src::r_main::LIGHTSEGSHIFT;
-use crate::src::r_main::LIGHTLEVELS;
-use crate::src::m_fixed::FRACBITS;
+use crate::src::r_main::MAXLIGHTSCALE;
+use crate::src::r_plane::ceilingclip;
+use crate::src::r_plane::ceilingplane;
+use crate::src::r_plane::floorclip;
+use crate::src::r_plane::floorplane;
+use crate::src::r_plane::lastopening;
+use crate::src::r_plane::R_CheckPlane;
+use crate::src::r_sky::skyflatnum;
+use crate::src::r_things::mceilingclip;
+use crate::src::r_things::mfloorclip;
+use crate::src::r_things::negonearray;
+use crate::src::r_things::screenheightarray;
+use crate::src::r_things::sprtopscreen;
+use crate::src::r_things::spryscale;
+use crate::src::r_things::R_DrawMaskedColumn;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
+use crate::src::tables::angle_t;
+use crate::src::tables::finesine;
+use crate::src::tables::finetangent;
+use crate::src::tables::ANG180;
+use crate::src::tables::ANG90;
+use crate::src::tables::ANGLETOFINESHIFT;
+use libc::memcpy;
 
 pub const SHRT_MAX: i32 = __SHRT_MAX__;
 pub const ML_DONTPEGTOP: i32 = 8;
@@ -131,18 +131,11 @@ pub static mut topstep: fixed_t = 0;
 pub static mut bottomfrac: fixed_t = 0;
 #[no_mangle]
 pub static mut bottomstep: fixed_t = 0;
-pub static mut walllights: *mut *mut lighttable_t = ::core::ptr::null::<
-    *mut lighttable_t,
->() as *mut *mut lighttable_t;
+pub static mut walllights: *mut *mut lighttable_t =
+    ::core::ptr::null::<*mut lighttable_t>() as *mut *mut lighttable_t;
 #[no_mangle]
-pub static mut maskedtexturecol: *mut i16 = ::core::ptr::null::<
-    i16,
->() as *mut i16;
-pub unsafe fn R_RenderMaskedSegRange(
-    mut ds: *mut drawseg_t,
-    mut x1: i32,
-    mut x2: i32,
-) {
+pub static mut maskedtexturecol: *mut i16 = ::core::ptr::null::<i16>() as *mut i16;
+pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2: i32) {
     let mut index: u32 = 0;
     let mut col: *mut column_t = ::core::ptr::null_mut::<column_t>();
     let mut lightnum: i32 = 0;
@@ -151,8 +144,7 @@ pub unsafe fn R_RenderMaskedSegRange(
     frontsector = (*curline).frontsector;
     backsector = (*curline).backsector;
     texnum = *texturetranslation.offset((*(*curline).sidedef).midtexture as isize);
-    lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT)
-        + extralight;
+    lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + extralight;
     if (*(*curline).v1).y == (*(*curline).v2).y {
         lightnum -= 1;
     } else if (*(*curline).v1).x == (*(*curline).v2).x {
@@ -199,18 +191,13 @@ pub unsafe fn R_RenderMaskedSegRange(
             if fixedcolormap.is_null() {
                 index = (spryscale >> LIGHTSCALESHIFT) as u32;
                 if index >= MAXLIGHTSCALE as u32 {
-                    index = (MAXLIGHTSCALE - 1 as i32)
-                        as u32;
+                    index = (MAXLIGHTSCALE - 1 as i32) as u32;
                 }
                 dc_colormap = *walllights.offset(index as isize);
             }
             sprtopscreen = centeryfrac - FixedMul(dc_texturemid, spryscale);
-            dc_iscale = (0xffffffff as u32)
-                .wrapping_div(spryscale as u32) as fixed_t;
-            col = R_GetColumn(
-                    texnum,
-                    *maskedtexturecol.offset(dc_x as isize) as i32,
-                )
+            dc_iscale = (0xffffffff as u32).wrapping_div(spryscale as u32) as fixed_t;
+            col = R_GetColumn(texnum, *maskedtexturecol.offset(dc_x as isize) as i32)
                 .offset(-(3 as i32 as isize)) as *mut column_t;
             R_DrawMaskedColumn(col);
             *maskedtexturecol.offset(dc_x as isize) = SHRT_MAX as i16;
@@ -231,21 +218,15 @@ pub unsafe fn R_RenderSegLoop() {
     let mut top: i32 = 0;
     let mut bottom: i32 = 0;
     while rw_x < rw_stopx {
-        yl = topfrac as i32 + HEIGHTUNIT - 1 as i32
-            >> HEIGHTBITS;
-        if yl
-            < ceilingclip[rw_x as usize] as i32 + 1 as i32
-        {
-            yl = ceilingclip[rw_x as usize] as i32
-                + 1 as i32;
+        yl = topfrac as i32 + HEIGHTUNIT - 1 as i32 >> HEIGHTBITS;
+        if yl < ceilingclip[rw_x as usize] as i32 + 1 as i32 {
+            yl = ceilingclip[rw_x as usize] as i32 + 1 as i32;
         }
         if markceiling {
-            top = ceilingclip[rw_x as usize] as i32
-                + 1 as i32;
+            top = ceilingclip[rw_x as usize] as i32 + 1 as i32;
             bottom = yl - 1 as i32;
             if bottom >= floorclip[rw_x as usize] as i32 {
-                bottom = floorclip[rw_x as usize] as i32
-                    - 1 as i32;
+                bottom = floorclip[rw_x as usize] as i32 - 1 as i32;
             }
             if top <= bottom {
                 (*ceilingplane).top[rw_x as usize] = top as byte;
@@ -254,16 +235,13 @@ pub unsafe fn R_RenderSegLoop() {
         }
         yh = (bottomfrac >> HEIGHTBITS) as i32;
         if yh >= floorclip[rw_x as usize] as i32 {
-            yh = floorclip[rw_x as usize] as i32
-                - 1 as i32;
+            yh = floorclip[rw_x as usize] as i32 - 1 as i32;
         }
         if markfloor {
             top = yh + 1 as i32;
-            bottom = floorclip[rw_x as usize] as i32
-                - 1 as i32;
+            bottom = floorclip[rw_x as usize] as i32 - 1 as i32;
             if top <= ceilingclip[rw_x as usize] as i32 {
-                top = ceilingclip[rw_x as usize] as i32
-                    + 1 as i32;
+                top = ceilingclip[rw_x as usize] as i32 + 1 as i32;
             }
             if top <= bottom {
                 (*floorplane).top[rw_x as usize] = top as byte;
@@ -271,10 +249,8 @@ pub unsafe fn R_RenderSegLoop() {
             }
         }
         if segtextured {
-            angle = rw_centerangle.wrapping_add(xtoviewangle[rw_x as usize])
-                >> ANGLETOFINESHIFT;
-            texturecolumn = rw_offset
-                - FixedMul(finetangent[angle as usize], rw_distance);
+            angle = rw_centerangle.wrapping_add(xtoviewangle[rw_x as usize]) >> ANGLETOFINESHIFT;
+            texturecolumn = rw_offset - FixedMul(finetangent[angle as usize], rw_distance);
             texturecolumn >>= FRACBITS;
             index = (rw_scale >> LIGHTSCALESHIFT) as u32;
             if index >= MAXLIGHTSCALE as u32 {
@@ -282,8 +258,7 @@ pub unsafe fn R_RenderSegLoop() {
             }
             dc_colormap = *walllights.offset(index as isize);
             dc_x = rw_x;
-            dc_iscale = (0xffffffff as u32)
-                .wrapping_div(rw_scale as u32) as fixed_t;
+            dc_iscale = (0xffffffff as u32).wrapping_div(rw_scale as u32) as fixed_t;
         } else {
             texturecolumn = 0 as i32 as fixed_t;
         }
@@ -294,63 +269,48 @@ pub unsafe fn R_RenderSegLoop() {
             dc_source = R_GetColumn(midtexture, texturecolumn as i32);
             colfunc.expect("non-null function pointer")();
             ceilingclip[rw_x as usize] = viewheight as i16;
-            floorclip[rw_x as usize] = -(1 as i32)
-                as i16;
+            floorclip[rw_x as usize] = -(1 as i32) as i16;
         } else {
             if toptexture != 0 {
                 mid = (pixhigh >> HEIGHTBITS) as i32;
                 pixhigh += pixhighstep;
                 if mid >= floorclip[rw_x as usize] as i32 {
-                    mid = floorclip[rw_x as usize] as i32
-                        - 1 as i32;
+                    mid = floorclip[rw_x as usize] as i32 - 1 as i32;
                 }
                 if mid >= yl {
                     dc_yl = yl;
                     dc_yh = mid;
                     dc_texturemid = rw_toptexturemid;
-                    dc_source = R_GetColumn(
-                        toptexture,
-                        texturecolumn as i32,
-                    );
+                    dc_source = R_GetColumn(toptexture, texturecolumn as i32);
                     colfunc.expect("non-null function pointer")();
                     ceilingclip[rw_x as usize] = mid as i16;
                 } else {
-                    ceilingclip[rw_x as usize] = (yl - 1 as i32)
-                        as i16;
+                    ceilingclip[rw_x as usize] = (yl - 1 as i32) as i16;
                 }
             } else if markceiling {
-                ceilingclip[rw_x as usize] = (yl - 1 as i32)
-                    as i16;
+                ceilingclip[rw_x as usize] = (yl - 1 as i32) as i16;
             }
             if bottomtexture != 0 {
-                mid = pixlow as i32 + HEIGHTUNIT - 1 as i32
-                    >> HEIGHTBITS;
+                mid = pixlow as i32 + HEIGHTUNIT - 1 as i32 >> HEIGHTBITS;
                 pixlow += pixlowstep;
                 if mid <= ceilingclip[rw_x as usize] as i32 {
-                    mid = ceilingclip[rw_x as usize] as i32
-                        + 1 as i32;
+                    mid = ceilingclip[rw_x as usize] as i32 + 1 as i32;
                 }
                 if mid <= yh {
                     dc_yl = mid;
                     dc_yh = yh;
                     dc_texturemid = rw_bottomtexturemid;
-                    dc_source = R_GetColumn(
-                        bottomtexture,
-                        texturecolumn as i32,
-                    );
+                    dc_source = R_GetColumn(bottomtexture, texturecolumn as i32);
                     colfunc.expect("non-null function pointer")();
                     floorclip[rw_x as usize] = mid as i16;
                 } else {
-                    floorclip[rw_x as usize] = (yh + 1 as i32)
-                        as i16;
+                    floorclip[rw_x as usize] = (yh + 1 as i32) as i16;
                 }
             } else if markfloor {
-                floorclip[rw_x as usize] = (yh + 1 as i32)
-                    as i16;
+                floorclip[rw_x as usize] = (yh + 1 as i32) as i16;
             }
             if maskedtexture {
-                *maskedtexturecol.offset(rw_x as isize) = texturecolumn
-                    as i16;
+                *maskedtexturecol.offset(rw_x as isize) = texturecolumn as i16;
             }
         }
         rw_scale += rw_scalestep;
@@ -359,19 +319,14 @@ pub unsafe fn R_RenderSegLoop() {
         rw_x += 1;
     }
 }
-pub unsafe fn R_StoreWallRange(
-    mut start: i32,
-    mut stop: i32,
-) {
+pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
     let mut hyp: fixed_t = 0;
     let mut sineval: fixed_t = 0;
     let mut distangle: angle_t = 0;
     let mut offsetangle: angle_t = 0;
     let mut vtop: fixed_t = 0;
     let mut lightnum: i32 = 0;
-    if ds_p
-        == (&raw mut drawsegs as *mut drawseg_t).offset(MAXDRAWSEGS as isize)
-            as *mut drawseg_t
+    if ds_p == (&raw mut drawsegs as *mut drawseg_t).offset(MAXDRAWSEGS as isize) as *mut drawseg_t
     {
         return;
     }
@@ -380,12 +335,9 @@ pub unsafe fn R_StoreWallRange(
     }
     sidedef = (*curline).sidedef;
     linedef = (*curline).linedef;
-    (*linedef).flags = ((*linedef).flags as i32 | ML_MAPPED)
-        as i16;
+    (*linedef).flags = ((*linedef).flags as i32 | ML_MAPPED) as i16;
     rw_normalangle = (*curline).angle.wrapping_add(ANG90 as angle_t);
-    offsetangle = (
-        rw_normalangle.wrapping_sub(rw_angle1 as angle_t) as i32
-    ).abs() as angle_t;
+    offsetangle = (rw_normalangle.wrapping_sub(rw_angle1 as angle_t) as i32).abs() as angle_t;
     if offsetangle > ANG90 as angle_t {
         offsetangle = ANG90 as angle_t;
     }
@@ -398,16 +350,12 @@ pub unsafe fn R_StoreWallRange(
     (*ds_p).x2 = stop;
     (*ds_p).curline = curline;
     rw_stopx = stop + 1 as i32;
-    rw_scale = R_ScaleFromGlobalAngle(
-        viewangle.wrapping_add(xtoviewangle[start as usize]),
-    );
+    rw_scale = R_ScaleFromGlobalAngle(viewangle.wrapping_add(xtoviewangle[start as usize]));
     (*ds_p).scale1 = rw_scale;
     if stop > start {
-        (*ds_p).scale2 = R_ScaleFromGlobalAngle(
-            viewangle.wrapping_add(xtoviewangle[stop as usize]),
-        );
-        rw_scalestep = (((*ds_p).scale2 as i32
-            - rw_scale as i32) / (stop - start)) as fixed_t;
+        (*ds_p).scale2 =
+            R_ScaleFromGlobalAngle(viewangle.wrapping_add(xtoviewangle[stop as usize]));
+        rw_scalestep = (((*ds_p).scale2 as i32 - rw_scale as i32) / (stop - start)) as fixed_t;
         (*ds_p).scalestep = rw_scalestep;
     } else {
         (*ds_p).scale2 = (*ds_p).scale1;
@@ -424,8 +372,8 @@ pub unsafe fn R_StoreWallRange(
         markceiling = true;
         markfloor = markceiling;
         if (*linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
-            vtop = (*frontsector).floorheight
-                + *textureheight.offset((*sidedef).midtexture as isize);
+            vtop =
+                (*frontsector).floorheight + *textureheight.offset((*sidedef).midtexture as isize);
             rw_midtexturemid = vtop - viewz;
         } else {
             rw_midtexturemid = worldtop as fixed_t;
@@ -472,20 +420,16 @@ pub unsafe fn R_StoreWallRange(
             worldtop = worldhigh;
         }
         if worldlow != worldbottom
-            || (*backsector).floorpic as i32
-                != (*frontsector).floorpic as i32
-            || (*backsector).lightlevel as i32
-                != (*frontsector).lightlevel as i32
+            || (*backsector).floorpic as i32 != (*frontsector).floorpic as i32
+            || (*backsector).lightlevel as i32 != (*frontsector).lightlevel as i32
         {
             markfloor = true;
         } else {
             markfloor = false;
         }
         if worldhigh != worldtop
-            || (*backsector).ceilingpic as i32
-                != (*frontsector).ceilingpic as i32
-            || (*backsector).lightlevel as i32
-                != (*frontsector).lightlevel as i32
+            || (*backsector).ceilingpic as i32 != (*frontsector).ceilingpic as i32
+            || (*backsector).lightlevel as i32 != (*frontsector).lightlevel as i32
         {
             markceiling = true;
         } else {
@@ -508,8 +452,7 @@ pub unsafe fn R_StoreWallRange(
             }
         }
         if worldlow > worldbottom {
-            bottomtexture = *texturetranslation
-                .offset((*sidedef).bottomtexture as isize);
+            bottomtexture = *texturetranslation.offset((*sidedef).bottomtexture as isize);
             if (*linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
                 rw_bottomtexturemid = worldtop as fixed_t;
             } else {
@@ -544,89 +487,71 @@ pub unsafe fn R_StoreWallRange(
             .wrapping_add(viewangle)
             .wrapping_sub(rw_normalangle);
         if fixedcolormap.is_null() {
-            lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT)
-                + extralight;
+            lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + extralight;
             if (*(*curline).v1).y == (*(*curline).v2).y {
                 lightnum -= 1;
             } else if (*(*curline).v1).x == (*(*curline).v2).x {
                 lightnum += 1;
             }
             if lightnum < 0 as i32 {
-                walllights = &raw mut *(&raw mut scalelight
-                    as *mut [*mut lighttable_t; 48])
-                    .offset(0 as i32 as isize) as *mut *mut lighttable_t;
+                walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
+                    .offset(0 as i32 as isize)
+                    as *mut *mut lighttable_t;
             } else if lightnum >= LIGHTLEVELS {
-                walllights = &raw mut *(&raw mut scalelight
-                    as *mut [*mut lighttable_t; 48])
+                walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
                     .offset((LIGHTLEVELS - 1 as i32) as isize)
                     as *mut *mut lighttable_t;
             } else {
-                walllights = &raw mut *(&raw mut scalelight
-                    as *mut [*mut lighttable_t; 48])
-                    .offset(lightnum as isize) as *mut *mut lighttable_t;
+                walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
+                    .offset(lightnum as isize)
+                    as *mut *mut lighttable_t;
             }
         }
     }
     if (*frontsector).floorheight >= viewz {
         markfloor = false;
     }
-    if (*frontsector).ceilingheight <= viewz
-        && (*frontsector).ceilingpic as i32 != skyflatnum
-    {
+    if (*frontsector).ceilingheight <= viewz && (*frontsector).ceilingpic as i32 != skyflatnum {
         markceiling = false;
     }
     worldtop >>= 4 as i32;
     worldbottom >>= 4 as i32;
     topstep = -FixedMul(rw_scalestep, worldtop as fixed_t);
-    topfrac = (centeryfrac >> 4 as i32)
-        - FixedMul(worldtop as fixed_t, rw_scale);
+    topfrac = (centeryfrac >> 4 as i32) - FixedMul(worldtop as fixed_t, rw_scale);
     bottomstep = -FixedMul(rw_scalestep, worldbottom as fixed_t);
-    bottomfrac = (centeryfrac >> 4 as i32)
-        - FixedMul(worldbottom as fixed_t, rw_scale);
+    bottomfrac = (centeryfrac >> 4 as i32) - FixedMul(worldbottom as fixed_t, rw_scale);
     if !backsector.is_null() {
         worldhigh >>= 4 as i32;
         worldlow >>= 4 as i32;
         if worldhigh < worldtop {
-            pixhigh = (centeryfrac >> 4 as i32)
-                - FixedMul(worldhigh as fixed_t, rw_scale);
+            pixhigh = (centeryfrac >> 4 as i32) - FixedMul(worldhigh as fixed_t, rw_scale);
             pixhighstep = -FixedMul(rw_scalestep, worldhigh as fixed_t);
         }
         if worldlow > worldbottom {
-            pixlow = (centeryfrac >> 4 as i32)
-                - FixedMul(worldlow as fixed_t, rw_scale);
+            pixlow = (centeryfrac >> 4 as i32) - FixedMul(worldlow as fixed_t, rw_scale);
             pixlowstep = -FixedMul(rw_scalestep, worldlow as fixed_t);
         }
     }
     if markceiling {
-        ceilingplane = R_CheckPlane(
-            ceilingplane,
-            rw_x,
-            rw_stopx - 1 as i32,
-        );
+        ceilingplane = R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1 as i32);
     }
     if markfloor {
         floorplane = R_CheckPlane(floorplane, rw_x, rw_stopx - 1 as i32);
     }
     R_RenderSegLoop();
-    if ((*ds_p).silhouette & SIL_TOP != 0 || maskedtexture)
-        && (*ds_p).sprtopclip.is_null()
-    {
+    if ((*ds_p).silhouette & SIL_TOP != 0 || maskedtexture) && (*ds_p).sprtopclip.is_null() {
         memcpy(
             lastopening as *mut ::core::ffi::c_void,
-            (&raw mut ceilingclip as *mut i16).offset(start as isize)
-                as *const ::core::ffi::c_void,
+            (&raw mut ceilingclip as *mut i16).offset(start as isize) as *const ::core::ffi::c_void,
             (2 as i32 * (rw_stopx - start)) as size_t,
         );
         (*ds_p).sprtopclip = lastopening.offset(-(start as isize));
         lastopening = lastopening.offset((rw_stopx - start) as isize);
     }
-    if ((*ds_p).silhouette & SIL_BOTTOM != 0 || maskedtexture)
-        && (*ds_p).sprbottomclip.is_null()
-    {
+    if ((*ds_p).silhouette & SIL_BOTTOM != 0 || maskedtexture) && (*ds_p).sprbottomclip.is_null() {
         memcpy(
             lastopening as *mut ::core::ffi::c_void,
-            (&raw mut floorclip as *mut i16).offset(start as isize)
-                as *const ::core::ffi::c_void,
+            (&raw mut floorclip as *mut i16).offset(start as isize) as *const ::core::ffi::c_void,
             (2 as i32 * (rw_stopx - start)) as size_t,
         );
         (*ds_p).sprbottomclip = lastopening.offset(-(start as isize));

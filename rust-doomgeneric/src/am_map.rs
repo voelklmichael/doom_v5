@@ -1,70 +1,70 @@
-use crate::src::hu_lib::patch_t;
-use crate::src::m_cheat::cheatseq_t;
 use crate::src::d_event::event_t;
-use crate::src::d_player::{player_t};
-use crate::src::p_mobj::{mobj_t};
-use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_ReleaseLumpName};
-use crate::src::p_setup::numvertexes;
-use crate::src::p_setup::vertexes;
-use crate::src::m_controls::key_map_north;
-use crate::src::m_controls::key_map_south;
+use crate::src::d_event::{ev_keydown, ev_keyup};
+use crate::src::d_player::player_t;
+use crate::src::d_player::{pw_allmap, pw_invisibility};
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::g_game::consoleplayer;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::gameepisode;
+use crate::src::g_game::gamemap;
+use crate::src::g_game::netgame;
+use crate::src::g_game::playeringame;
+use crate::src::g_game::players;
+use crate::src::g_game::singledemo;
+use crate::src::g_game::viewactive;
+use crate::src::hu_lib::patch_t;
+use crate::src::i_system::{fprintf, stderr};
+use crate::src::i_video::I_VideoBuffer;
+use crate::src::m_cheat::cheatseq_t;
+use crate::src::m_cheat::cht_CheckCheat;
+use crate::src::m_controls::key_map_clearmark;
 use crate::src::m_controls::key_map_east;
-use crate::src::m_controls::key_map_west;
-use crate::src::m_controls::key_map_zoomin;
-use crate::src::m_controls::key_map_zoomout;
-use crate::src::m_controls::key_map_toggle;
-use crate::src::m_controls::key_map_maxzoom;
 use crate::src::m_controls::key_map_follow;
 use crate::src::m_controls::key_map_grid;
 use crate::src::m_controls::key_map_mark;
-use crate::src::m_controls::key_map_clearmark;
-use crate::src::g_game::singledemo;
-use crate::src::m_cheat::cht_CheckCheat;
-use crate::src::st_stuff::ST_Responder;
-use crate::src::g_game::viewactive;
-use crate::src::p_setup::numlines;
+use crate::src::m_controls::key_map_maxzoom;
+use crate::src::m_controls::key_map_north;
+use crate::src::m_controls::key_map_south;
+use crate::src::m_controls::key_map_toggle;
+use crate::src::m_controls::key_map_west;
+use crate::src::m_controls::key_map_zoomin;
+use crate::src::m_controls::key_map_zoomout;
+use crate::src::m_fixed::fixed_t;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::m_fixed::FixedMul;
+use crate::src::m_fixed::FRACBITS;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::m_fixed::INT_MAX;
+use crate::src::m_misc::M_snprintf;
+use crate::src::p_maputl::MAPBLOCKUNITS;
+use crate::src::p_mobj::mobj_t;
 use crate::src::p_setup::bmaporgx;
 use crate::src::p_setup::bmaporgy;
-use crate::src::v_video::V_MarkRect;
-use crate::src::i_video::I_VideoBuffer;
 use crate::src::p_setup::lines;
-use crate::src::g_game::gameepisode;
-use crate::src::g_game::gamemap;
+use crate::src::p_setup::numlines;
 use crate::src::p_setup::numsectors;
-use crate::src::m_fixed::FixedDiv;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::playeringame;
-use crate::src::m_misc::M_snprintf;
-use crate::src::g_game::netgame;
-use crate::src::g_game::consoleplayer;
+use crate::src::p_setup::numvertexes;
 use crate::src::p_setup::sectors;
-use crate::src::tables::finecosine;
-use crate::src::tables::finesine;
-use crate::src::m_fixed::FixedMul;
-use crate::src::g_game::players;
-use crate::src::v_video::V_DrawPatch;
-use crate::src::z_zone::PU_STATIC;
-use crate::src::d_player::{pw_allmap, pw_invisibility};
-use libc::memset;
-use libc::snprintf;
-use crate::src::i_system::{fprintf, stderr};
-use crate::src::d_event::{ev_keydown, ev_keyup};
-use crate::src::tables::angle_t;
-use crate::src::m_fixed::fixed_t;
+use crate::src::p_setup::vertexes;
+use crate::src::p_spec::ML_MAPPED;
+use crate::src::p_spec::ML_SECRET;
+use crate::src::st_stuff::ST_Responder;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use crate::src::doomdef::true_0;
-use crate::src::doomdef::false_0;
-use crate::src::doomdef::MAXPLAYERS;
-use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomdef::SCREENHEIGHT;
-use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::angle_t;
+use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
 use crate::src::tables::ANGLETOFINESHIFT;
-use crate::src::m_fixed::INT_MAX;
-use crate::src::p_spec::ML_SECRET;
-use crate::src::p_spec::ML_MAPPED;
-use crate::src::p_maputl::MAPBLOCKUNITS;
-use crate::src::m_fixed::FRACBITS;
+use crate::src::v_video::V_DrawPatch;
+use crate::src::v_video::V_MarkRect;
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_ReleaseLumpName};
+use crate::src::z_zone::PU_STATIC;
+use libc::memset;
+use libc::snprintf;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -102,27 +102,19 @@ pub struct islope_t {
     pub islp: fixed_t,
 }
 pub const ML_DONTDRAW: i32 = 128;
-pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
-    + (('m' as i32) << 16 as i32);
-pub const AM_MSGENTERED: i32 = AM_MSGHEADER
-    | ('e' as i32) << 8 as i32;
-pub const AM_MSGEXITED: i32 = AM_MSGHEADER
-    | ('x' as i32) << 8 as i32;
-pub const REDS: i32 = 256
-    - 5 as i32 * 16 as i32;
+pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32) + (('m' as i32) << 16 as i32);
+pub const AM_MSGENTERED: i32 = AM_MSGHEADER | ('e' as i32) << 8 as i32;
+pub const AM_MSGEXITED: i32 = AM_MSGHEADER | ('x' as i32) << 8 as i32;
+pub const REDS: i32 = 256 - 5 as i32 * 16 as i32;
 pub const REDRANGE: i32 = 16;
-pub const GREENS: i32 = 7
-    * 16 as i32;
+pub const GREENS: i32 = 7 * 16 as i32;
 pub const GREENRANGE: i32 = 16;
 pub const GRAYS: i32 = 6 * 16 as i32;
 pub const GRAYSRANGE: i32 = 16;
-pub const BROWNS: i32 = 4
-    * 16 as i32;
-pub const YELLOWS: i32 = 256
-    - 32 as i32 + 7 as i32;
+pub const BROWNS: i32 = 4 * 16 as i32;
+pub const YELLOWS: i32 = 256 - 32 as i32 + 7 as i32;
 pub const BLACK: i32 = 0;
-pub const WHITE: i32 = 256
-    - 47 as i32;
+pub const WHITE: i32 = 256 - 47 as i32;
 pub const BACKGROUND: i32 = BLACK;
 pub const WALLCOLORS: i32 = REDS;
 pub const WALLRANGE: i32 = REDRANGE;
@@ -135,15 +127,11 @@ pub const SECRETWALLCOLORS: i32 = WALLCOLORS;
 pub const GRIDCOLORS: i32 = GRAYS + GRAYSRANGE / 2 as i32;
 pub const XHAIRCOLORS: i32 = GRAYS;
 pub const AM_NUMMARKPOINTS: i32 = 10;
-pub const INITSCALEMTOF: f64 = 0.2f64
-    * FRACUNIT as f64;
-pub const M_ZOOMIN: i32 = (1.02f64 * FRACUNIT as f64)
-    as i32;
-pub const M_ZOOMOUT: i32 = (FRACUNIT as f64 / 1.02f64)
-    as i32;
+pub const INITSCALEMTOF: f64 = 0.2f64 * FRACUNIT as f64;
+pub const M_ZOOMIN: i32 = (1.02f64 * FRACUNIT as f64) as i32;
+pub const M_ZOOMOUT: i32 = (FRACUNIT as f64 / 1.02f64) as i32;
 pub const LINE_NEVERSEE: i32 = ML_DONTDRAW;
-pub const R_0: i32 = 8 * 16 as i32
-    * FRACUNIT / 7 as i32;
+pub const R_0: i32 = 8 * 16 as i32 * FRACUNIT / 7 as i32;
 #[no_mangle]
 pub static mut player_arrow: [mline_t; 7] = [
     mline_t {
@@ -217,8 +205,7 @@ pub static mut player_arrow: [mline_t; 7] = [
         },
     },
 ];
-pub const R_1: i32 = 8 * 16 as i32
-    * FRACUNIT / 7 as i32;
+pub const R_1: i32 = 8 * 16 as i32 * FRACUNIT / 7 as i32;
 #[no_mangle]
 pub static mut cheat_player_arrow: [mline_t; 16] = [
     mline_t {
@@ -490,8 +477,7 @@ static mut f_oldloc: mpoint_t = mpoint_t { x: 0, y: 0 };
 static mut scale_mtof: fixed_t = INITSCALEMTOF as fixed_t;
 static mut scale_ftom: fixed_t = 0;
 static mut plr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t;
-static mut marknums: [*mut patch_t; 10] = [::core::ptr::null::<patch_t>()
-    as *mut patch_t; 10];
+static mut marknums: [*mut patch_t; 10] = [::core::ptr::null::<patch_t>() as *mut patch_t; 10];
 static mut markpoints: [mpoint_t; 10] = [mpoint_t { x: 0, y: 0 }; 10];
 static mut markpointnum: i32 = 0;
 static mut followplayer: i32 = 1;
@@ -511,14 +497,12 @@ pub unsafe fn AM_getIslope(mut ml: *mut mline_t, mut is: *mut islope_t) {
     dy = ((*ml).a.y - (*ml).b.y) as i32;
     dx = ((*ml).b.x - (*ml).a.x) as i32;
     if dy == 0 {
-        (*is).islp = (if dx < 0 as i32 { -INT_MAX } else { INT_MAX })
-            as fixed_t;
+        (*is).islp = (if dx < 0 as i32 { -INT_MAX } else { INT_MAX }) as fixed_t;
     } else {
         (*is).islp = FixedDiv(dx as fixed_t, dy as fixed_t);
     }
     if dx == 0 {
-        (*is).slp = (if dy < 0 as i32 { -INT_MAX } else { INT_MAX })
-            as fixed_t;
+        (*is).slp = (if dy < 0 as i32 { -INT_MAX } else { INT_MAX }) as fixed_t;
     } else {
         (*is).slp = FixedDiv(dy as fixed_t, dx as fixed_t);
     };
@@ -546,10 +530,8 @@ pub unsafe fn AM_restoreScaleAndLoc() {
         m_x = old_m_x;
         m_y = old_m_y;
     } else {
-        m_x = ((*(*plr).mo).x as i32
-            - m_w as i32 / 2 as i32) as fixed_t;
-        m_y = ((*(*plr).mo).y as i32
-            - m_h as i32 / 2 as i32) as fixed_t;
+        m_x = ((*(*plr).mo).x as i32 - m_w as i32 / 2 as i32) as fixed_t;
+        m_y = ((*(*plr).mo).y as i32 - m_h as i32 / 2 as i32) as fixed_t;
     }
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
@@ -557,10 +539,8 @@ pub unsafe fn AM_restoreScaleAndLoc() {
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
 pub unsafe fn AM_addMark() {
-    markpoints[markpointnum as usize].x = (m_x as i32
-        + m_w as i32 / 2 as i32) as fixed_t;
-    markpoints[markpointnum as usize].y = (m_y as i32
-        + m_h as i32 / 2 as i32) as fixed_t;
+    markpoints[markpointnum as usize].x = (m_x as i32 + m_w as i32 / 2 as i32) as fixed_t;
+    markpoints[markpointnum as usize].y = (m_y as i32 + m_h as i32 / 2 as i32) as fixed_t;
     markpointnum = (markpointnum + 1 as i32) % AM_NUMMARKPOINTS;
 }
 pub unsafe fn AM_findMinMaxBoundaries() {
@@ -604,27 +584,15 @@ pub unsafe fn AM_changeWindowLoc() {
     }
     m_x += m_paninc.x;
     m_y += m_paninc.y;
-    if m_x as i32 + m_w as i32 / 2 as i32
-        > max_x
-    {
-        m_x = (max_x as i32
-            - m_w as i32 / 2 as i32) as fixed_t;
-    } else if (m_x as i32
-        + m_w as i32 / 2 as i32) < min_x
-    {
-        m_x = (min_x as i32
-            - m_w as i32 / 2 as i32) as fixed_t;
+    if m_x as i32 + m_w as i32 / 2 as i32 > max_x {
+        m_x = (max_x as i32 - m_w as i32 / 2 as i32) as fixed_t;
+    } else if (m_x as i32 + m_w as i32 / 2 as i32) < min_x {
+        m_x = (min_x as i32 - m_w as i32 / 2 as i32) as fixed_t;
     }
-    if m_y as i32 + m_h as i32 / 2 as i32
-        > max_y
-    {
-        m_y = (max_y as i32
-            - m_h as i32 / 2 as i32) as fixed_t;
-    } else if (m_y as i32
-        + m_h as i32 / 2 as i32) < min_y
-    {
-        m_y = (min_y as i32
-            - m_h as i32 / 2 as i32) as fixed_t;
+    if m_y as i32 + m_h as i32 / 2 as i32 > max_y {
+        m_y = (max_y as i32 - m_h as i32 / 2 as i32) as fixed_t;
+    } else if (m_y as i32 + m_h as i32 / 2 as i32) < min_y {
+        m_y = (min_y as i32 - m_h as i32 / 2 as i32) as fixed_t;
     }
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
@@ -650,32 +618,27 @@ pub unsafe fn AM_initVariables() {
     m_w = FixedMul((f_w as fixed_t) << 16 as i32, scale_ftom);
     m_h = FixedMul((f_h as fixed_t) << 16 as i32, scale_ftom);
     if playeringame[consoleplayer as usize] != 0 {
-        plr = (&raw mut players as *mut player_t).offset(consoleplayer as isize)
-            as *mut player_t;
+        plr = (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t;
     } else {
-        plr = (&raw mut players as *mut player_t)
-            .offset(0 as i32 as isize) as *mut player_t;
+        plr = (&raw mut players as *mut player_t).offset(0 as i32 as isize) as *mut player_t;
         pnum = 0 as i32;
         while pnum < MAXPLAYERS {
             if playeringame[pnum as usize] != 0 {
-                plr = (&raw mut players as *mut player_t).offset(pnum as isize)
-                    as *mut player_t;
+                plr = (&raw mut players as *mut player_t).offset(pnum as isize) as *mut player_t;
                 break;
             } else {
                 pnum += 1;
             }
         }
     }
-    m_x = ((*(*plr).mo).x as i32
-        - m_w as i32 / 2 as i32) as fixed_t;
-    m_y = ((*(*plr).mo).y as i32
-        - m_h as i32 / 2 as i32) as fixed_t;
+    m_x = ((*(*plr).mo).x as i32 - m_w as i32 / 2 as i32) as fixed_t;
+    m_y = ((*(*plr).mo).y as i32 - m_h as i32 / 2 as i32) as fixed_t;
     AM_changeWindowLoc();
     old_m_x = m_x;
     old_m_y = m_y;
     old_m_w = m_w;
     old_m_h = m_h;
-    ST_Responder(&raw mut st_notify);
+    ST_Responder(&st_notify);
 }
 pub unsafe fn AM_loadPics() {
     let mut i: i32 = 0;
@@ -706,7 +669,9 @@ pub unsafe fn AM_unloadPics() {
             b"AMMNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
             i,
         );
-        W_ReleaseLumpName(&wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char));
+        W_ReleaseLumpName(&wad_name8_to_string(
+            &raw mut namebuf as *mut ::core::ffi::c_char,
+        ));
         i += 1;
     }
 }
@@ -727,10 +692,7 @@ pub unsafe fn AM_LevelInit() {
     f_h = finit_height;
     AM_clearMarks();
     AM_findMinMaxBoundaries();
-    scale_mtof = FixedDiv(
-        min_scale_mtof,
-        (0.7f64 * FRACUNIT as f64) as fixed_t,
-    );
+    scale_mtof = FixedDiv(min_scale_mtof, (0.7f64 * FRACUNIT as f64) as fixed_t);
     if scale_mtof > max_scale_mtof {
         scale_mtof = min_scale_mtof;
     }
@@ -746,7 +708,7 @@ pub unsafe fn AM_Stop() {
     };
     AM_unloadPics();
     automapactive = false;
-    ST_Responder(&raw mut st_notify);
+    ST_Responder(&st_notify);
     stopped = true;
 }
 pub unsafe fn AM_Start() {
@@ -774,59 +736,42 @@ pub unsafe fn AM_maxOutWindowScale() {
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
     AM_activateNewScale();
 }
-pub unsafe fn AM_Responder(mut ev: *mut event_t) -> bool {
+pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
     let mut rc: i32 = 0;
     static mut bigstate: i32 = 0;
     static mut buffer: [::core::ffi::c_char; 20] = [0; 20];
     let mut key: i32 = 0;
     rc = false_0;
     if !automapactive {
-        if (*ev).type_0 as u32
-            == ev_keydown as i32 as u32
-            && (*ev).data1 == key_map_toggle
-        {
+        if (*ev).type_0 as u32 == ev_keydown as i32 as u32 && (*ev).data1 == key_map_toggle {
             AM_Start();
             viewactive = false;
             rc = true_0;
         }
-    } else if (*ev).type_0 as u32
-        == ev_keydown as i32 as u32
-    {
+    } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
         rc = true_0;
         key = (*ev).data1;
         if key == key_map_east {
             if followplayer == 0 {
-                m_paninc.x = FixedMul(
-                    (4 as fixed_t) << 16 as i32,
-                    scale_ftom,
-                );
+                m_paninc.x = FixedMul((4 as fixed_t) << 16 as i32, scale_ftom);
             } else {
                 rc = false_0;
             }
         } else if key == key_map_west {
             if followplayer == 0 {
-                m_paninc.x = -FixedMul(
-                    (4 as fixed_t) << 16 as i32,
-                    scale_ftom,
-                );
+                m_paninc.x = -FixedMul((4 as fixed_t) << 16 as i32, scale_ftom);
             } else {
                 rc = false_0;
             }
         } else if key == key_map_north {
             if followplayer == 0 {
-                m_paninc.y = FixedMul(
-                    (4 as fixed_t) << 16 as i32,
-                    scale_ftom,
-                );
+                m_paninc.y = FixedMul((4 as fixed_t) << 16 as i32, scale_ftom);
             } else {
                 rc = false_0;
             }
         } else if key == key_map_south {
             if followplayer == 0 {
-                m_paninc.y = -FixedMul(
-                    (4 as fixed_t) << 16 as i32,
-                    scale_ftom,
-                );
+                m_paninc.y = -FixedMul((4 as fixed_t) << 16 as i32, scale_ftom);
             } else {
                 rc = false_0;
             }
@@ -852,11 +797,11 @@ pub unsafe fn AM_Responder(mut ev: *mut event_t) -> bool {
             followplayer = (followplayer == 0) as i32;
             f_oldloc.x = INT_MAX as fixed_t;
             if followplayer != 0 {
-                (*plr).message = b"Follow Mode ON\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+                (*plr).message = b"Follow Mode ON\0" as *const u8 as *const ::core::ffi::c_char
+                    as *mut ::core::ffi::c_char;
             } else {
-                (*plr).message = b"Follow Mode OFF\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+                (*plr).message = b"Follow Mode OFF\0" as *const u8 as *const ::core::ffi::c_char
+                    as *mut ::core::ffi::c_char;
             }
         } else if key == key_map_grid {
             grid = (grid == 0) as i32;
@@ -879,21 +824,18 @@ pub unsafe fn AM_Responder(mut ev: *mut event_t) -> bool {
             AM_addMark();
         } else if key == key_map_clearmark {
             AM_clearMarks();
-            (*plr).message = b"All Marks Cleared\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            (*plr).message = b"All Marks Cleared\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char;
         } else {
             rc = false_0;
         }
         if deathmatch == 0
-            && cht_CheckCheat(&raw mut cheat_amap, (*ev).data2 as ::core::ffi::c_char)
-                != 0
+            && cht_CheckCheat(&raw mut cheat_amap, (*ev).data2 as ::core::ffi::c_char) != 0
         {
             rc = false_0;
             cheating = (cheating + 1 as i32) % 3 as i32;
         }
-    } else if (*ev).type_0 as u32
-        == ev_keyup as i32 as u32
-    {
+    } else if (*ev).type_0 as u32 == ev_keyup as i32 as u32 {
         rc = false_0;
         key = (*ev).data1;
         if key == key_map_east {
@@ -933,17 +875,15 @@ pub unsafe fn AM_changeWindowScale() {
 pub unsafe fn AM_doFollowPlayer() {
     if f_oldloc.x != (*(*plr).mo).x || f_oldloc.y != (*(*plr).mo).y {
         m_x = (FixedMul(
-            (FixedMul((*(*plr).mo).x, scale_mtof) >> 16 as i32)
-                << 16 as i32,
+            (FixedMul((*(*plr).mo).x, scale_mtof) >> 16 as i32) << 16 as i32,
             scale_ftom,
-        ) as i32 - m_w as i32 / 2 as i32)
-            as fixed_t;
+        ) as i32
+            - m_w as i32 / 2 as i32) as fixed_t;
         m_y = (FixedMul(
-            (FixedMul((*(*plr).mo).y, scale_mtof) >> 16 as i32)
-                << 16 as i32,
+            (FixedMul((*(*plr).mo).y, scale_mtof) >> 16 as i32) << 16 as i32,
             scale_ftom,
-        ) as i32 - m_h as i32 / 2 as i32)
-            as fixed_t;
+        ) as i32
+            - m_h as i32 / 2 as i32) as fixed_t;
         m_x2 = m_x + m_w;
         m_y2 = m_y + m_h;
         f_oldloc.x = (*(*plr).mo).x;
@@ -953,14 +893,7 @@ pub unsafe fn AM_doFollowPlayer() {
 pub unsafe fn AM_updateLightLev() {
     static mut nexttic: i32 = 0;
     static mut litelevels: [i32; 8] = [
-        0 as i32,
-        4 as i32,
-        7 as i32,
-        10 as i32,
-        12 as i32,
-        14 as i32,
-        15 as i32,
-        15 as i32,
+        0 as i32, 4 as i32, 7 as i32, 10 as i32, 12 as i32, 14 as i32, 15 as i32, 15 as i32,
     ];
     static mut litelevelscnt: i32 = 0;
     if amclock > nexttic {
@@ -994,10 +927,7 @@ pub unsafe fn AM_Ticker() {
 pub unsafe fn AM_clearFB(mut color: i32) {
     memset(fb as *mut ::core::ffi::c_void, color, (f_w * f_h) as size_t);
 }
-pub unsafe fn AM_clipMline(
-    mut ml: *mut mline_t,
-    mut fl: *mut fline_t,
-) -> bool {
+pub unsafe fn AM_clipMline(mut ml: *mut mline_t, mut fl: *mut fline_t) -> bool {
     let mut outcode1: i32 = 0 as i32;
     let mut outcode2: i32 = 0 as i32;
     let mut outside: i32 = 0;
@@ -1030,19 +960,13 @@ pub unsafe fn AM_clipMline(
     if outcode1 & outcode2 != 0 {
         return false;
     }
-    (*fl).a.x = (f_x as fixed_t
-        + (FixedMul((*ml).a.x - m_x, scale_mtof) >> 16 as i32))
-        as i32;
+    (*fl).a.x = (f_x as fixed_t + (FixedMul((*ml).a.x - m_x, scale_mtof) >> 16 as i32)) as i32;
     (*fl).a.y = (f_y as fixed_t
-        + (f_h as fixed_t
-            - (FixedMul((*ml).a.y - m_y, scale_mtof) >> 16 as i32)))
+        + (f_h as fixed_t - (FixedMul((*ml).a.y - m_y, scale_mtof) >> 16 as i32)))
         as i32;
-    (*fl).b.x = (f_x as fixed_t
-        + (FixedMul((*ml).b.x - m_x, scale_mtof) >> 16 as i32))
-        as i32;
+    (*fl).b.x = (f_x as fixed_t + (FixedMul((*ml).b.x - m_x, scale_mtof) >> 16 as i32)) as i32;
     (*fl).b.y = (f_y as fixed_t
-        + (f_h as fixed_t
-            - (FixedMul((*ml).b.y - m_y, scale_mtof) >> 16 as i32)))
+        + (f_h as fixed_t - (FixedMul((*ml).b.y - m_y, scale_mtof) >> 16 as i32)))
         as i32;
     outcode1 = 0 as i32;
     if (*fl).a.y < 0 as i32 {
@@ -1132,10 +1056,7 @@ pub unsafe fn AM_clipMline(
     }
     return true;
 }
-pub unsafe fn AM_drawFline(
-    mut fl: *mut fline_t,
-    mut color: i32,
-) {
+pub unsafe fn AM_drawFline(mut fl: *mut fline_t, mut color: i32) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut dx: i32 = 0;
@@ -1146,10 +1067,14 @@ pub unsafe fn AM_drawFline(
     let mut ay: i32 = 0;
     let mut d: i32 = 0;
     static mut fuck: i32 = 0;
-    if (*fl).a.x < 0 as i32 || (*fl).a.x >= f_w
-        || (*fl).a.y < 0 as i32 || (*fl).a.y >= f_h
-        || (*fl).b.x < 0 as i32 || (*fl).b.x >= f_w
-        || (*fl).b.y < 0 as i32 || (*fl).b.y >= f_h
+    if (*fl).a.x < 0 as i32
+        || (*fl).a.x >= f_w
+        || (*fl).a.y < 0 as i32
+        || (*fl).a.y >= f_h
+        || (*fl).b.x < 0 as i32
+        || (*fl).b.x >= f_w
+        || (*fl).b.y < 0 as i32
+        || (*fl).b.y >= f_h
     {
         let fresh0 = fuck;
         fuck = fuck + 1;
@@ -1162,18 +1087,10 @@ pub unsafe fn AM_drawFline(
     }
     dx = (*fl).b.x - (*fl).a.x;
     ax = 2 as i32 * (if dx < 0 as i32 { -dx } else { dx });
-    sx = if dx < 0 as i32 {
-        -(1 as i32)
-    } else {
-        1 as i32
-    };
+    sx = if dx < 0 as i32 { -(1 as i32) } else { 1 as i32 };
     dy = (*fl).b.y - (*fl).a.y;
     ay = 2 as i32 * (if dy < 0 as i32 { -dy } else { dy });
-    sy = if dy < 0 as i32 {
-        -(1 as i32)
-    } else {
-        1 as i32
-    };
+    sy = if dy < 0 as i32 { -(1 as i32) } else { 1 as i32 };
     x = (*fl).a.x;
     y = (*fl).a.y;
     if ax > ay {
@@ -1206,10 +1123,7 @@ pub unsafe fn AM_drawFline(
         }
     };
 }
-pub unsafe fn AM_drawMline(
-    mut ml: *mut mline_t,
-    mut color: i32,
-) {
+pub unsafe fn AM_drawMline(mut ml: *mut mline_t, mut color: i32) {
     static mut fl: fline_t = fline_t {
         a: fpoint_t { x: 0, y: 0 },
         b: fpoint_t { x: 0, y: 0 },
@@ -1228,13 +1142,9 @@ pub unsafe fn AM_drawGrid(mut color: i32) {
         b: mpoint_t { x: 0, y: 0 },
     };
     start = m_x;
-    if (start as i32 - bmaporgx as i32)
-        % (MAPBLOCKUNITS << FRACBITS) != 0
-    {
-        start
-            += (MAPBLOCKUNITS << FRACBITS)
-                - (start as i32 - bmaporgx as i32)
-                    % (MAPBLOCKUNITS << FRACBITS);
+    if (start as i32 - bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
+        start += (MAPBLOCKUNITS << FRACBITS)
+            - (start as i32 - bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS);
     }
     end = m_x + m_w;
     ml.a.y = m_y;
@@ -1247,13 +1157,9 @@ pub unsafe fn AM_drawGrid(mut color: i32) {
         x += MAPBLOCKUNITS << FRACBITS;
     }
     start = m_y;
-    if (start as i32 - bmaporgy as i32)
-        % (MAPBLOCKUNITS << FRACBITS) != 0
-    {
-        start
-            += (MAPBLOCKUNITS << FRACBITS)
-                - (start as i32 - bmaporgy as i32)
-                    % (MAPBLOCKUNITS << FRACBITS);
+    if (start as i32 - bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
+        start += (MAPBLOCKUNITS << FRACBITS)
+            - (start as i32 - bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS);
     }
     end = m_y + m_h;
     ml.a.x = m_x;
@@ -1278,24 +1184,13 @@ pub unsafe fn AM_drawWalls() {
         l.a.y = (*(*lines.offset(i as isize)).v1).y;
         l.b.x = (*(*lines.offset(i as isize)).v2).x;
         l.b.y = (*(*lines.offset(i as isize)).v2).y;
-        if cheating != 0
-            || (*lines.offset(i as isize)).flags as i32 & ML_MAPPED != 0
-        {
-            if !((*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE
-                != 0 && cheating == 0)
-            {
+        if cheating != 0 || (*lines.offset(i as isize)).flags as i32 & ML_MAPPED != 0 {
+            if !((*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE != 0 && cheating == 0) {
                 if (*lines.offset(i as isize)).backsector.is_null() {
                     AM_drawMline(&raw mut l, WALLCOLORS + lightlev);
-                } else if (*lines.offset(i as isize)).special as i32
-                    == 39 as i32
-                {
-                    AM_drawMline(
-                        &raw mut l,
-                        WALLCOLORS + WALLRANGE / 2 as i32,
-                    );
-                } else if (*lines.offset(i as isize)).flags as i32
-                    & ML_SECRET != 0
-                {
+                } else if (*lines.offset(i as isize)).special as i32 == 39 as i32 {
+                    AM_drawMline(&raw mut l, WALLCOLORS + WALLRANGE / 2 as i32);
+                } else if (*lines.offset(i as isize)).flags as i32 & ML_SECRET != 0 {
                     if cheating != 0 {
                         AM_drawMline(&raw mut l, SECRETWALLCOLORS + lightlev);
                     } else {
@@ -1314,20 +1209,14 @@ pub unsafe fn AM_drawWalls() {
                 }
             }
         } else if (*plr).powers[pw_allmap as i32 as usize] != 0 {
-            if (*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE
-                == 0
-            {
+            if (*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE == 0 {
                 AM_drawMline(&raw mut l, GRAYS + 3 as i32);
             }
         }
         i += 1;
     }
 }
-pub unsafe fn AM_rotate(
-    mut x: *mut fixed_t,
-    mut y: *mut fixed_t,
-    mut a: angle_t,
-) {
+pub unsafe fn AM_rotate(mut x: *mut fixed_t, mut y: *mut fixed_t, mut a: angle_t) {
     let mut tmpx: fixed_t = 0;
     tmpx = FixedMul(*x, finecosine[(a >> ANGLETOFINESHIFT) as isize])
         - FixedMul(*y, finesine[(a >> ANGLETOFINESHIFT) as usize]);
@@ -1438,10 +1327,7 @@ pub unsafe fn AM_drawPlayers() {
         i += 1;
     }
 }
-pub unsafe fn AM_drawThings(
-    mut colors: i32,
-    mut colorrange: i32,
-) {
+pub unsafe fn AM_drawThings(mut colors: i32, mut colorrange: i32) {
     let mut i: i32 = 0;
     let mut t: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     i = 0 as i32;
@@ -1476,12 +1362,12 @@ pub unsafe fn AM_drawMarks() {
             w = 5 as i32;
             h = 6 as i32;
             fx = (f_x as fixed_t
-                + (FixedMul(markpoints[i as usize].x - m_x, scale_mtof)
-                    >> 16 as i32)) as i32;
+                + (FixedMul(markpoints[i as usize].x - m_x, scale_mtof) >> 16 as i32))
+                as i32;
             fy = (f_y as fixed_t
                 + (f_h as fixed_t
-                    - (FixedMul(markpoints[i as usize].y - m_y, scale_mtof)
-                        >> 16 as i32))) as i32;
+                    - (FixedMul(markpoints[i as usize].y - m_y, scale_mtof) >> 16 as i32)))
+                as i32;
             if fx >= f_x && fx <= f_w - w && fy >= f_y && fy <= f_h - h {
                 V_DrawPatch(fx, fy, marknums[i as usize]);
             }
@@ -1490,10 +1376,7 @@ pub unsafe fn AM_drawMarks() {
     }
 }
 pub unsafe fn AM_drawCrosshair(mut color: i32) {
-    *fb
-        .offset(
-            (f_w * (f_h + 1 as i32) / 2 as i32) as isize,
-        ) = color as byte;
+    *fb.offset((f_w * (f_h + 1 as i32) / 2 as i32) as isize) = color as byte;
 }
 pub unsafe fn AM_Drawer() {
     if !automapactive {
@@ -1514,19 +1397,15 @@ pub unsafe fn AM_Drawer() {
 }
 unsafe extern "C" fn run_static_initializers() {
     cheat_amap = cheatseq_t {
-        sequence: ::core::mem::transmute::<
-            [u8; 25],
-            [::core::ffi::c_char; 25],
-        >(*b"iddt\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
+        sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
+            *b"iddt\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+        ),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 5]>() as size_t)
             .wrapping_sub(1 as size_t),
         parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
         param_chars_read: 0 as i32,
-        parameter_buf: ::core::mem::transmute::<
-            [u8; 5],
-            [::core::ffi::c_char; 5],
-        >(*b"\0\0\0\0\0"),
+        parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
 }
 #[used]

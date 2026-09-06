@@ -1,27 +1,23 @@
-use crate::src::p_mobj::{thinker_t, sector_t, line_t};
-use crate::src::p_mobj::{mobj_t};
-use crate::src::p_map::P_TeleportMove;
-use crate::src::p_tick::thinkercap;
-use crate::src::p_mobj::P_SpawnMobj;
-use crate::src::p_setup::numsectors;
+use crate::src::d_mode::exe_final;
 use crate::src::doomstat::gameversion;
+use crate::src::game_state::game_state;
+use crate::src::m_fixed::fixed_t;
+use crate::src::p_map::P_TeleportMove;
+use crate::src::p_mobj::mobj_t;
+use crate::src::p_mobj::P_SpawnMobj;
+use crate::src::p_mobj::ThinkerFn;
+use crate::src::p_mobj::MF_MISSILE;
+use crate::src::p_mobj::{line_t, sector_t, thinker_t};
+use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG};
+use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sectors;
+use crate::src::p_tick::thinkercap;
+use crate::src::s_sound::S_StartSound;
+use crate::src::sounds::sfx_telept;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
-use crate::src::s_sound::S_StartSound;
-use crate::src::p_mobj::MF_MISSILE;
-use crate::src::sounds::sfx_telept;
-use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG};
-use crate::src::p_mobj::ThinkerFn;
-use crate::src::d_mode::exe_final;
-use crate::src::m_fixed::fixed_t;
 use crate::src::tables::ANGLETOFINESHIFT;
-use crate::src::game_state::game_state;
-pub unsafe fn EV_Teleport(
-    mut line: *mut line_t,
-    mut side: i32,
-    mut thing: *mut mobj_t,
-) -> i32 {
+pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut mobj_t) -> i32 {
     let mut i: i32 = 0;
     let mut tag: i32 = 0;
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
@@ -45,33 +41,27 @@ pub unsafe fn EV_Teleport(
             thinker = thinkercap.next as *mut thinker_t;
             thinker = thinkercap.next as *mut thinker_t;
             while thinker != &raw mut thinkercap {
-                if matches!((*thinker).function, ThinkerFn::Mobj(_))
-                {
+                if matches!((*thinker).function, ThinkerFn::Mobj(_)) {
                     m = thinker as *mut mobj_t;
-                    if !((*m).type_0 as u32
-                        != MT_TELEPORTMAN as i32 as u32)
-                    {
+                    if !((*m).type_0 as u32 != MT_TELEPORTMAN as i32 as u32) {
                         sector = (*(*m).subsector).sector;
-                        if !(sector.offset_from(sectors) as i64
-                            != i as i64)
-                        {
+                        if !(sector.offset_from(sectors) as i64 != i as i64) {
                             oldx = (*thing).x;
                             oldy = (*thing).y;
                             oldz = (*thing).z;
                             if !P_TeleportMove(thing, (*m).x, (*m).y) {
                                 return 0 as i32;
                             }
-                            if gameversion as u32
-                                != exe_final as i32 as u32
-                            {
+                            if gameversion as u32 != exe_final as i32 as u32 {
                                 (*thing).z = (*thing).floorz;
                             }
                             if !(*thing).player.is_null() {
-                                (*(*thing).player).viewz = (*thing).z
-                                    + (*(*thing).player).viewheight;
+                                (*(*thing).player).viewz =
+                                    (*thing).z + (*(*thing).player).viewheight;
                             }
                             fog = P_SpawnMobj(oldx, oldy, oldz, MT_TFOG);
-                            S_StartSound(unsafe { &mut game_state().sounds }, 
+                            S_StartSound(
+                                unsafe { &mut game_state().sounds },
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );
@@ -82,7 +72,8 @@ pub unsafe fn EV_Teleport(
                                 (*thing).z,
                                 MT_TFOG,
                             );
-                            S_StartSound(unsafe { &mut game_state().sounds }, 
+                            S_StartSound(
+                                unsafe { &mut game_state().sounds },
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );
