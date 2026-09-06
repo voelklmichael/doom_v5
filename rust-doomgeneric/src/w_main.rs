@@ -12,12 +12,12 @@ pub type boolean = u32;
 pub type byte = uint8_t;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
-pub unsafe fn W_ParseCommandLine() -> boolean {
-    let mut modifiedgame: boolean = false_0 as boolean;
+pub unsafe fn W_ParseCommandLine() -> bool {
+    let mut modifiedgame: bool = false;
     let mut p: i32 = 0;
     p = M_CheckParmWithArgs("-file", 1 as i32);
     if p != 0 {
-        modifiedgame = true_0 as boolean;
+        modifiedgame = true;
         loop {
             p += 1;
             if !(p != myargv.len() as i32

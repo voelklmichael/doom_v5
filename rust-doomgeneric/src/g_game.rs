@@ -2394,7 +2394,7 @@ unsafe extern "C" fn SetMouseButtons(mut buttons_mask: u32) {
         i += 1;
     }
 }
-pub unsafe fn G_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn G_Responder(mut ev: *mut event_t) -> bool {
     if gamestate as u32
         == GS_LEVEL as i32 as u32
         && (*ev).type_0 as u32
@@ -2412,7 +2412,7 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> boolean {
                 break;
             }
         }
-        return true_0 as boolean;
+        return true;
     }
     if gameaction as u32
         == ga_nothing as i32 as u32 && !singledemo
@@ -2430,28 +2430,28 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> boolean {
                 && (*ev).data1 != 0
         {
             M_StartControlPanel();
-            return true_0 as boolean;
+            return true;
         }
-        return false_0 as boolean;
+        return false;
     }
     if gamestate as u32
         == GS_LEVEL as i32 as u32
     {
-        if HU_Responder(ev) != 0 {
-            return true_0 as boolean;
+        if HU_Responder(ev) {
+            return true;
         }
         if ST_Responder(ev) != 0 {
-            return true_0 as boolean;
+            return true;
         }
-        if AM_Responder(ev) != 0 {
-            return true_0 as boolean;
+        if AM_Responder(ev) {
+            return true;
         }
     }
     if gamestate as u32
         == GS_FINALE as i32 as u32
     {
-        if F_Responder(ev) != 0 {
-            return true_0 as boolean;
+        if F_Responder(ev) {
+            return true;
         }
     }
     if testcontrols
@@ -2478,13 +2478,13 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> boolean {
             } else if (*ev).data1 < NUMKEYS {
                 gamekeydown[(*ev).data1 as usize] = true_0 as boolean;
             }
-            return true_0 as boolean;
+            return true;
         }
         1 => {
             if (*ev).data1 < NUMKEYS {
                 gamekeydown[(*ev).data1 as usize] = false_0 as boolean;
             }
-            return false_0 as boolean;
+            return false;
         }
         2 => {
             SetMouseButtons((*ev).data1 as u32);
@@ -2492,18 +2492,18 @@ pub unsafe fn G_Responder(mut ev: *mut event_t) -> boolean {
                 / 10 as i32;
             mousey = (*ev).data3 * (mouseSensitivity + 5 as i32)
                 / 10 as i32;
-            return true_0 as boolean;
+            return true;
         }
         3 => {
             SetJoyButtons((*ev).data1 as u32);
             joyxmove = (*ev).data2;
             joyymove = (*ev).data3;
             joystrafemove = (*ev).data4;
-            return true_0 as boolean;
+            return true;
         }
         _ => {}
     }
-    return false_0 as boolean;
+    return false;
 }
 pub unsafe fn G_Ticker() {
     let mut i: i32 = 0;
@@ -3209,7 +3209,7 @@ pub unsafe extern "C" fn G_DoLoadGame() {
         return;
     }
     savegame_error = false;
-    if P_ReadSaveGameHeader() == 0 {
+    if !P_ReadSaveGameHeader() {
         fclose(save_stream);
         return;
     }
@@ -3220,7 +3220,7 @@ pub unsafe extern "C" fn G_DoLoadGame() {
     P_UnArchiveWorld();
     P_UnArchiveThinkers();
     P_UnArchiveSpecials();
-    if P_ReadSaveGameEOF() == 0 {
+    if !P_ReadSaveGameEOF() {
         I_Error("Bad savegame");
     }
     fclose(save_stream);

@@ -3199,7 +3199,7 @@ unsafe extern "C" fn IsNullKey(mut key: i32) -> bool {
     return key == KEY_PAUSE || key == KEY_CAPSLOCK || key == KEY_SCRLCK
         || key == KEY_NUMLOCK;
 }
-pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
     let mut ch: i32 = 0;
     let mut key: i32 = 0;
     let mut i: i32 = 0;
@@ -3217,9 +3217,9 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
                 && ((*ev).data1 == key_menu_activate || (*ev).data1 == key_menu_quit)
         {
             I_Quit();
-            return true_0 as boolean;
+            return true;
         }
-        return false_0 as boolean;
+        return false;
     }
     if (*ev).type_0 as u32
         == ev_quit as i32 as u32
@@ -3233,7 +3233,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
             S_StartSound(NULL, sfx_swtchn as i32);
             M_QuitDOOM(0 as i32);
         }
-        return true_0 as boolean;
+        return true;
     }
     ch = 0 as i32;
     key = -(1 as i32);
@@ -3313,7 +3313,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
         ch = (*ev).data2;
     }
     if key == -(1 as i32) {
-        return false_0 as boolean;
+        return false;
     }
     if saveStringEnter != 0 {
         match key {
@@ -3375,14 +3375,14 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
                 }
             }
         }
-        return true_0 as boolean;
+        return true;
     }
     if messageToPrint != 0 {
         if messageNeedsInput {
             if key != ' ' as i32 && key != KEY_ESCAPE && key != key_menu_confirm
                 && key != key_menu_abort
             {
-                return false_0 as boolean;
+                return false;
             }
         }
         menuactive = messageLastMenuActive != 0;
@@ -3392,29 +3392,29 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
         }
         menuactive = false;
         S_StartSound(NULL, sfx_swtchx as i32);
-        return true_0 as boolean;
+        return true;
     }
     if devparm && key == key_menu_help
         || key != 0 as i32 && key == key_menu_screenshot
     {
         G_ScreenShot();
-        return true_0 as boolean;
+        return true;
     }
     if !menuactive {
         if key == key_menu_decscreen {
             if automapactive || chat_on {
-                return false_0 as boolean;
+                return false;
             }
             M_SizeDisplay(0 as i32);
             S_StartSound(NULL, sfx_stnmov as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_incscreen {
             if automapactive || chat_on {
-                return false_0 as boolean;
+                return false;
             }
             M_SizeDisplay(1 as i32);
             S_StartSound(NULL, sfx_stnmov as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_help {
             M_StartControlPanel();
             if gamemode as u32
@@ -3426,47 +3426,47 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
             }
             itemOn = 0 as i16;
             S_StartSound(NULL, sfx_swtchn as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_save {
             M_StartControlPanel();
             S_StartSound(NULL, sfx_swtchn as i32);
             M_SaveGame(0 as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_load {
             M_StartControlPanel();
             S_StartSound(NULL, sfx_swtchn as i32);
             M_LoadGame(0 as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_volume {
             M_StartControlPanel();
             currentMenu = &raw mut SoundDef;
             itemOn = sfx_vol as i32 as i16;
             S_StartSound(NULL, sfx_swtchn as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_detail {
             M_ChangeDetail(0 as i32);
             S_StartSound(NULL, sfx_swtchn as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_qsave {
             S_StartSound(NULL, sfx_swtchn as i32);
             M_QuickSave();
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_endgame {
             S_StartSound(NULL, sfx_swtchn as i32);
             M_EndGame(0 as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_messages {
             M_ChangeMessages(0 as i32);
             S_StartSound(NULL, sfx_swtchn as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_qload {
             S_StartSound(NULL, sfx_swtchn as i32);
             M_QuickLoad();
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_quit {
             S_StartSound(NULL, sfx_swtchn as i32);
             M_QuitDOOM(0 as i32);
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_gamma {
             usegamma += 1;
             if usegamma > 4 as i32 {
@@ -3479,16 +3479,16 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
                     PU_CACHE as i32,
                 ) as *mut byte,
             );
-            return true_0 as boolean;
+            return true;
         }
     }
     if !menuactive {
         if key == key_menu_activate {
             M_StartControlPanel();
             S_StartSound(NULL, sfx_swtchn as i32);
-            return true_0 as boolean;
+            return true;
         }
-        return false_0 as boolean;
+        return false;
     }
     if key == key_menu_down {
         loop {
@@ -3506,7 +3506,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
                 break;
             }
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_up {
         loop {
             if itemOn == 0 {
@@ -3522,7 +3522,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
                 break;
             }
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_left {
         if (*(*currentMenu).menuitems.offset(itemOn as isize)).routine.is_some()
             && (*(*currentMenu).menuitems.offset(itemOn as isize)).status
@@ -3533,7 +3533,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
                 .routine
                 .expect("non-null function pointer")(0 as i32);
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_right {
         if (*(*currentMenu).menuitems.offset(itemOn as isize)).routine.is_some()
             && (*(*currentMenu).menuitems.offset(itemOn as isize)).status
@@ -3544,7 +3544,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
                 .routine
                 .expect("non-null function pointer")(1 as i32);
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_forward {
         if (*(*currentMenu).menuitems.offset(itemOn as isize)).routine.is_some()
             && (*(*currentMenu).menuitems.offset(itemOn as isize)).status
@@ -3565,12 +3565,12 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
                 S_StartSound(NULL, sfx_pistol as i32);
             }
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_activate {
         (*currentMenu).lastOn = itemOn;
         M_ClearMenus();
         S_StartSound(NULL, sfx_swtchx as i32);
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_back {
         (*currentMenu).lastOn = itemOn;
         if !(*currentMenu).prevMenu.is_null() {
@@ -3578,7 +3578,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
             itemOn = (*currentMenu).lastOn;
             S_StartSound(NULL, sfx_swtchn as i32);
         }
-        return true_0 as boolean;
+        return true;
     } else if ch != 0 as i32 || IsNullKey(key) {
         i = itemOn as i32 + 1 as i32;
         while i < (*currentMenu).numitems as i32 {
@@ -3587,7 +3587,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
             {
                 itemOn = i as i16;
                 S_StartSound(NULL, sfx_pstop as i32);
-                return true_0 as boolean;
+                return true;
             }
             i += 1;
         }
@@ -3598,12 +3598,12 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> boolean {
             {
                 itemOn = i as i16;
                 S_StartSound(NULL, sfx_pstop as i32);
-                return true_0 as boolean;
+                return true;
             }
             i += 1;
         }
     }
-    return false_0 as boolean;
+    return false;
 }
 pub unsafe fn M_StartControlPanel() {
     if menuactive {

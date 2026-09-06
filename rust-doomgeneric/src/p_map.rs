@@ -1794,11 +1794,11 @@ pub unsafe fn P_CheckPosition(
     while bx <= xh {
         by = yl;
         while by <= yh {
-            if P_BlockLinesIterator(
+            if !P_BlockLinesIterator(
                 bx,
                 by,
                 Some(PIT_CheckLine as unsafe extern "C" fn(*mut line_t) -> boolean),
-            ) == 0
+            )
             {
                 return false_0 as boolean;
             }

@@ -141,9 +141,9 @@ pub unsafe extern "C" fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: boo
         V_DrawPatch(x - 8 as i32, (*n).y, sttminus);
     }
 }
-pub unsafe fn STlib_updateNum(mut n: *mut st_number_t, mut refresh: boolean) {
+pub unsafe fn STlib_updateNum(mut n: *mut st_number_t, mut refresh: bool) {
     if *(*n).on {
-        STlib_drawNum(n, refresh != 0);
+        STlib_drawNum(n, refresh);
     }
 }
 pub unsafe fn STlib_initPercent(
@@ -165,7 +165,7 @@ pub unsafe fn STlib_updatePercent(
     if refresh != 0 && *(*per).n.on {
         V_DrawPatch((*per).n.x, (*per).n.y, (*per).p);
     }
-    STlib_updateNum(&raw mut (*per).n, refresh as boolean);
+    STlib_updateNum(&raw mut (*per).n, refresh != 0);
 }
 pub unsafe fn STlib_initMultIcon(
     mut i: *mut st_multicon_t,
@@ -184,13 +184,13 @@ pub unsafe fn STlib_initMultIcon(
 }
 pub unsafe fn STlib_updateMultIcon(
     mut mi: *mut st_multicon_t,
-    mut refresh: boolean,
+    mut refresh: bool,
 ) {
     let mut w: i32 = 0;
     let mut h: i32 = 0;
     let mut x: i32 = 0;
     let mut y: i32 = 0;
-    if *(*mi).on && ((*mi).oldinum != *(*mi).inum || refresh != 0)
+    if *(*mi).on && ((*mi).oldinum != *(*mi).inum || refresh)
         && *(*mi).inum != -(1 as i32)
     {
         if (*mi).oldinum != -(1 as i32) {
@@ -228,13 +228,13 @@ pub unsafe fn STlib_initBinIcon(
 }
 pub unsafe fn STlib_updateBinIcon(
     mut bi: *mut st_binicon_t,
-    mut refresh: boolean,
+    mut refresh: bool,
 ) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut w: i32 = 0;
     let mut h: i32 = 0;
-    if *(*bi).on && ((*bi).oldval != *(*bi).val || refresh != 0) {
+    if *(*bi).on && ((*bi).oldval != *(*bi).val || refresh) {
         x = (*bi).x - (*(*bi).p).leftoffset as i32;
         y = (*bi).y - (*(*bi).p).topoffset as i32;
         w = (*(*bi).p).width as i32;

@@ -2145,12 +2145,12 @@ pub unsafe fn HU_dequeueChatChar() -> ::core::ffi::c_char {
     }
     return c;
 }
-pub unsafe fn HU_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn HU_Responder(mut ev: *mut event_t) -> bool {
     static mut lastmessage: [::core::ffi::c_char; 81] = [0; 81];
     let mut macromessage: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    let mut eatkey: boolean = false_0 as boolean;
+    let mut eatkey: bool = false;
     static mut altdown: bool = false;
     let mut c: u8 = 0;
     let mut i: i32 = 0;
@@ -2164,25 +2164,25 @@ pub unsafe fn HU_Responder(mut ev: *mut event_t) -> boolean {
         i += 1;
     }
     if (*ev).data1 == KEY_RSHIFT {
-        return false_0 as boolean
+        return false
     } else if (*ev).data1 == KEY_RALT || (*ev).data1 == KEY_LALT {
         altdown = (*ev).type_0 as u32
             == ev_keydown as i32 as u32;
-        return false_0 as boolean;
+        return false;
     }
     if (*ev).type_0 as u32
         != ev_keydown as i32 as u32
     {
-        return false_0 as boolean;
+        return false;
     }
     if !chat_on {
         if (*ev).data1 == key_message_refresh {
             message_on = true;
             message_counter = HU_MSGTIMEOUT;
-            eatkey = true_0 as boolean;
+            eatkey = true;
         } else if netgame && (*ev).data2 == key_multi_msg {
             chat_on = true;
-            eatkey = chat_on as boolean;
+            eatkey = chat_on;
             HUlib_resetIText(&raw mut w_chat);
             HU_queueChatChar(HU_BROADCAST as ::core::ffi::c_char);
         } else if netgame && numplayers > 2 as i32 {
@@ -2191,7 +2191,7 @@ pub unsafe fn HU_Responder(mut ev: *mut event_t) -> boolean {
                 if (*ev).data2 == key_multi_msgplayer[i as usize] {
                     if playeringame[i as usize] != 0 && i != consoleplayer {
                         chat_on = true;
-                        eatkey = chat_on as boolean;
+                        eatkey = chat_on;
                         HUlib_resetIText(&raw mut w_chat);
                         HU_queueChatChar(
                             (i + 1 as i32) as ::core::ffi::c_char,
@@ -2223,7 +2223,7 @@ pub unsafe fn HU_Responder(mut ev: *mut event_t) -> boolean {
     } else if altdown {
         c = ((*ev).data1 - '0' as i32) as u8;
         if c as i32 > 9 as i32 {
-            return false_0 as boolean;
+            return false;
         }
         macromessage = chat_macros[c as usize];
         HU_queueChatChar(KEY_ENTER as ::core::ffi::c_char);
@@ -2240,11 +2240,11 @@ pub unsafe fn HU_Responder(mut ev: *mut event_t) -> boolean {
             ::core::mem::size_of::<[::core::ffi::c_char; 81]>() as size_t,
         );
         (*plr).message = &raw mut lastmessage as *mut ::core::ffi::c_char;
-        eatkey = true_0 as boolean;
+        eatkey = true;
     } else {
         c = (*ev).data2 as u8;
-        eatkey = HUlib_keyInIText(&raw mut w_chat, c);
-        if eatkey != 0 {
+        eatkey = HUlib_keyInIText(&raw mut w_chat, c) != 0;
+        if eatkey {
             HU_queueChatChar(c as ::core::ffi::c_char);
         }
         if c as i32 == KEY_ENTER {

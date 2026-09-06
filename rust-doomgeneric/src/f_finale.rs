@@ -1872,13 +1872,13 @@ pub unsafe fn F_StartFinale() {
     finalestage = F_STAGE_TEXT;
     finalecount = 0 as u32;
 }
-pub unsafe fn F_Responder(mut event: *mut event_t) -> boolean {
+pub unsafe fn F_Responder(mut event: *mut event_t) -> bool {
     if finalestage as u32
         == F_STAGE_CAST as i32 as u32
     {
-        return F_CastResponder(event) as i32 as boolean;
+        return F_CastResponder(event);
     }
-    return false_0 as boolean;
+    return false;
 }
 pub unsafe fn F_Ticker() {
     let mut i: size_t = 0;

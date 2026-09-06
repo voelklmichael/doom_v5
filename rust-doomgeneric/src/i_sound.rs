@@ -139,7 +139,7 @@ unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: bool) {
     }
 }
 unsafe extern "C" fn InitMusicModule() {}
-pub unsafe fn I_InitSound(mut use_sfx_prefix: boolean) {
+pub unsafe fn I_InitSound(mut use_sfx_prefix: bool) {
     let mut nosound: boolean = 0;
     let mut nosfx: boolean = 0;
     let mut nomusic: boolean = 0;
@@ -154,7 +154,7 @@ pub unsafe fn I_InitSound(mut use_sfx_prefix: boolean) {
             && (snd_musicdevice == SNDDEVICE_GENMIDI as i32
                 || snd_musicdevice == SNDDEVICE_GUS as i32);
         if nosfx == 0 {
-            InitSfxModule(use_sfx_prefix != 0);
+            InitSfxModule(use_sfx_prefix);
         }
         if nomusic == 0 {
             InitMusicModule();
@@ -233,13 +233,13 @@ pub unsafe fn I_StopSound(mut channel: i32) {
         (*sound_module).StopSound.expect("non-null function pointer")(channel);
     }
 }
-pub unsafe fn I_SoundIsPlaying(mut channel: i32) -> boolean {
+pub unsafe fn I_SoundIsPlaying(mut channel: i32) -> bool {
     if !sound_module.is_null() {
         return (*sound_module)
             .SoundIsPlaying
-            .expect("non-null function pointer")(channel)
+            .expect("non-null function pointer")(channel) != 0
     } else {
-        return false_0 as boolean
+        return false
     };
 }
 pub unsafe fn I_PrecacheSounds(
@@ -292,10 +292,10 @@ pub unsafe fn I_UnRegisterSong(mut handle: *mut ::core::ffi::c_void) {
 }
 pub unsafe fn I_PlaySong(
     mut handle: *mut ::core::ffi::c_void,
-    mut looping: boolean,
+    mut looping: bool,
 ) {
     if !music_module.is_null() {
-        (*music_module).PlaySong.expect("non-null function pointer")(handle, looping);
+        (*music_module).PlaySong.expect("non-null function pointer")(handle, looping as i32 as boolean);
     }
 }
 pub unsafe fn I_StopSong() {
@@ -303,11 +303,11 @@ pub unsafe fn I_StopSong() {
         (*music_module).StopSong.expect("non-null function pointer")();
     }
 }
-pub unsafe fn I_MusicIsPlaying() -> boolean {
+pub unsafe fn I_MusicIsPlaying() -> bool {
     if !music_module.is_null() {
-        return (*music_module).MusicIsPlaying.expect("non-null function pointer")()
+        return (*music_module).MusicIsPlaying.expect("non-null function pointer")() != 0
     } else {
-        return false_0 as boolean
+        return false
     };
 }
 pub unsafe fn I_BindSoundVariables() {

@@ -1593,7 +1593,7 @@ unsafe extern "C" fn S_StopChannel(mut cnum: i32) {
     let mut c: *mut channel_t = ::core::ptr::null_mut::<channel_t>();
     c = channels.offset(cnum as isize) as *mut channel_t;
     if !(*c).sfxinfo.is_null() {
-        if I_SoundIsPlaying((*c).handle) != 0 {
+        if I_SoundIsPlaying((*c).handle) {
             I_StopSound((*c).handle);
         }
         i = 0 as i32;
@@ -1828,7 +1828,7 @@ pub unsafe fn S_UpdateSounds(mut listener: *mut mobj_t) {
         c = channels.offset(cnum as isize) as *mut channel_t;
         sfx = (*c).sfxinfo;
         if !(*c).sfxinfo.is_null() {
-            if I_SoundIsPlaying((*c).handle) != 0 {
+            if I_SoundIsPlaying((*c).handle) {
                 volume = snd_SfxVolume;
                 sep = NORM_SEP;
                 if !(*sfx).link.is_null() {
@@ -1929,12 +1929,12 @@ pub unsafe fn S_ChangeMusic(
         W_LumpLength((*music).lumpnum as u32),
     );
     (*music).handle = handle;
-    I_PlaySong(handle, looping as boolean);
+    I_PlaySong(handle, looping != 0);
     mus_playing = music;
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_MusicPlaying() -> bool {
-    return I_MusicIsPlaying() != 0;
+    return I_MusicIsPlaying();
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_StopMusic() {

@@ -2140,7 +2140,7 @@ pub unsafe fn P_WriteSaveGameHeader(
     );
     saveg_write8((leveltime & 0xff as i32) as byte);
 }
-pub unsafe fn P_ReadSaveGameHeader() -> boolean {
+pub unsafe fn P_ReadSaveGameHeader() -> bool {
     let mut i: i32 = 0;
     let mut a: byte = 0;
     let mut b: byte = 0;
@@ -2173,7 +2173,7 @@ pub unsafe fn P_ReadSaveGameHeader() -> boolean {
         &raw mut vcheck as *mut ::core::ffi::c_char,
     ) != 0 as i32
     {
-        return false_0 as boolean;
+        return false;
     }
     gameskill = saveg_read8() as skill_t;
     gameepisode = saveg_read8() as i32;
@@ -2189,12 +2189,12 @@ pub unsafe fn P_ReadSaveGameHeader() -> boolean {
     leveltime = ((a as i32) << 16 as i32)
         + ((b as i32) << 8 as i32)
         + c as i32;
-    return true_0 as boolean;
+    return true;
 }
-pub unsafe fn P_ReadSaveGameEOF() -> boolean {
+pub unsafe fn P_ReadSaveGameEOF() -> bool {
     let mut value: i32 = 0;
     value = saveg_read8() as i32;
-    return (value == SAVEGAME_EOF) as i32 as boolean;
+    return value == SAVEGAME_EOF;
 }
 pub unsafe fn P_WriteSaveGameEOF() {
     saveg_write8(SAVEGAME_EOF as byte);

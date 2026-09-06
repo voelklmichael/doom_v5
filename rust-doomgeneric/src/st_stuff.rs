@@ -2380,43 +2380,43 @@ pub unsafe extern "C" fn ST_drawWidgets(mut refresh: bool) {
     let mut i: i32 = 0;
     st_armson = st_statusbaron && deathmatch == 0;
     st_fragson = deathmatch != 0 && st_statusbaron;
-    STlib_updateNum(&raw mut w_ready, refresh as i32 as boolean);
+    STlib_updateNum(&raw mut w_ready, refresh);
     i = 0 as i32;
     while i < 4 as i32 {
         STlib_updateNum(
             (&raw mut w_ammo as *mut st_number_t).offset(i as isize) as *mut st_number_t,
-            refresh as i32 as boolean,
+            refresh,
         );
         STlib_updateNum(
             (&raw mut w_maxammo as *mut st_number_t).offset(i as isize)
                 as *mut st_number_t,
-            refresh as i32 as boolean,
+            refresh,
         );
         i += 1;
     }
     STlib_updatePercent(&raw mut w_health, refresh as i32);
     STlib_updatePercent(&raw mut w_armor, refresh as i32);
-    STlib_updateBinIcon(&raw mut w_armsbg, refresh as i32 as boolean);
+    STlib_updateBinIcon(&raw mut w_armsbg, refresh);
     i = 0 as i32;
     while i < 6 as i32 {
         STlib_updateMultIcon(
             (&raw mut w_arms as *mut st_multicon_t).offset(i as isize)
                 as *mut st_multicon_t,
-            refresh as i32 as boolean,
+            refresh,
         );
         i += 1;
     }
-    STlib_updateMultIcon(&raw mut w_faces, refresh as i32 as boolean);
+    STlib_updateMultIcon(&raw mut w_faces, refresh);
     i = 0 as i32;
     while i < 3 as i32 {
         STlib_updateMultIcon(
             (&raw mut w_keyboxes as *mut st_multicon_t).offset(i as isize)
                 as *mut st_multicon_t,
-            refresh as i32 as boolean,
+            refresh,
         );
         i += 1;
     }
-    STlib_updateNum(&raw mut w_frags, refresh as i32 as boolean);
+    STlib_updateNum(&raw mut w_frags, refresh);
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_doRefresh() {
@@ -2428,9 +2428,9 @@ pub unsafe extern "C" fn ST_doRefresh() {
 pub unsafe extern "C" fn ST_diffDraw() {
     ST_drawWidgets(false);
 }
-pub unsafe fn ST_Drawer(mut fullscreen: boolean, mut refresh: boolean) {
-    st_statusbaron = fullscreen == 0 || automapactive;
-    st_firsttime = st_firsttime || refresh != 0;
+pub unsafe fn ST_Drawer(mut fullscreen: bool, mut refresh: bool) {
+    st_statusbaron = !fullscreen || automapactive;
+    st_firsttime = st_firsttime || refresh;
     ST_doPaletteStuff();
     if st_firsttime {
         ST_doRefresh();
