@@ -192,6 +192,7 @@ pub unsafe fn EV_DoCeiling(
         }
         rtn = 1 as i32;
         ceiling = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             ::core::mem::size_of::<ceiling_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),

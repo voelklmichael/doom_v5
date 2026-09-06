@@ -240,6 +240,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
         }
         rtn = 1 as i32;
         door = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             ::core::mem::size_of::<vldoor_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -420,6 +421,7 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
         }
     }
     door = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<vldoor_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -456,6 +458,7 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
 pub unsafe fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
     door = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<vldoor_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -473,6 +476,7 @@ pub unsafe fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
 pub unsafe fn P_SpawnDoorRaiseIn5Mins(mut sec: *mut sector_t, mut secnum: i32) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
     door = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<vldoor_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),

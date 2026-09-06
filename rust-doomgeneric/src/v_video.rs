@@ -2,6 +2,7 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::i_video::mouse_acceleration;
@@ -560,6 +561,7 @@ pub unsafe fn WritePCXfile(
     let mut pcx: *mut pcx_t = ::core::ptr::null_mut::<pcx_t>();
     let mut pack: *mut byte = ::core::ptr::null_mut::<byte>();
     pcx = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         width * height * 2 as i32 + 1000 as i32,
         PU_STATIC as i32,
         NULL,
@@ -622,7 +624,10 @@ pub unsafe fn WritePCXfile(
     }
     length = pack.offset_from(pcx as *mut byte) as i64 as i32;
     M_WriteFile(filename, pcx as *mut ::core::ffi::c_void, length);
-    Z_Free(pcx as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        pcx as *mut ::core::ffi::c_void,
+    );
 }
 pub unsafe fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;

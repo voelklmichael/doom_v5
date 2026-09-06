@@ -81,6 +81,7 @@ pub unsafe fn S_Init(state: &mut SoundsState, mut sfxVolume_0: i32, mut musicVol
     S_SetSfxVolume(sfxVolume_0);
     S_SetMusicVolume(musicVolume_0);
     channels = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (snd_channels as usize).wrapping_mul(::core::mem::size_of::<channel_t>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),

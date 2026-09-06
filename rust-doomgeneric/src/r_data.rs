@@ -1,5 +1,6 @@
 use crate::src::doomdef::NULL;
 use crate::src::g_game::demoplayback;
+use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_ConsoleStdout;
 use crate::src::i_system::I_Error;
@@ -169,6 +170,7 @@ pub unsafe fn R_GenerateComposite(mut texnum: i32) {
     let mut colofs: *mut u16 = ::core::ptr::null_mut::<u16>();
     texture = *textures.offset(texnum as isize);
     block = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         *texturecompositesize.offset(texnum as isize),
         PU_STATIC as i32,
         texturecomposite.offset(texnum as isize) as *mut *mut byte as *mut ::core::ffi::c_void,
@@ -233,6 +235,7 @@ pub unsafe fn R_GenerateLookup(mut texnum: i32) {
     collump = *texturecolumnlump.offset(texnum as isize);
     colofs = *texturecolumnofs.offset(texnum as isize);
     patchcount = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (*texture).width as i32,
         PU_STATIC as i32,
         &raw mut patchcount as *mut ::core::ffi::c_void,
@@ -291,7 +294,10 @@ pub unsafe fn R_GenerateLookup(mut texnum: i32) {
         }
         x += 1;
     }
-    Z_Free(patchcount as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        patchcount as *mut ::core::ffi::c_void,
+    );
 }
 pub unsafe fn R_GetColumn(mut tex: i32, mut col: i32) -> *mut byte {
     let mut lump: i32 = 0;
@@ -312,6 +318,7 @@ unsafe fn GenerateTextureHashTable() {
     let mut i: i32 = 0;
     let mut key: i32 = 0;
     textures_hashtable = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (::core::mem::size_of::<*mut texture_t>() as usize).wrapping_mul(numtextures as usize)
             as i32,
         PU_STATIC as i32,
@@ -369,6 +376,7 @@ pub unsafe fn R_InitTextures() {
     nummappatches = *(names as *mut i32);
     name_p = names.offset(4 as i32 as isize);
     patchlookup = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (nummappatches as usize).wrapping_mul(::core::mem::size_of::<i32>() as usize) as i32,
         PU_STATIC as i32,
         NULL,
@@ -402,37 +410,44 @@ pub unsafe fn R_InitTextures() {
     }
     numtextures = numtextures1 + numtextures2;
     textures = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<*mut texture_t>() as usize)
             as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut texture_t;
     texturecolumnlump = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<*mut i16>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut i16;
     texturecolumnofs = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<*mut u16>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut u16;
     texturecomposite = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<*mut byte>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut byte;
     texturecompositesize = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<i32>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut i32;
     texturewidthmask = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<i32>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut i32;
     textureheight = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numtextures as usize).wrapping_mul(::core::mem::size_of::<fixed_t>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -472,6 +487,7 @@ pub unsafe fn R_InitTextures() {
         mtexture = (maptex as *mut byte).offset(offset as isize) as *mut maptexture_t;
         let ref mut fresh0 = *textures.offset(i as isize);
         *fresh0 = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             (::core::mem::size_of::<texture_t>() as usize).wrapping_add(
                 (::core::mem::size_of::<texpatch_t>() as usize)
                     .wrapping_mul(((*mtexture).patchcount as i32 - 1 as i32) as usize),
@@ -509,12 +525,14 @@ pub unsafe fn R_InitTextures() {
         }
         let ref mut fresh1 = *texturecolumnlump.offset(i as isize);
         *fresh1 = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             ((*texture).width as usize).wrapping_mul(::core::mem::size_of::<i16>() as usize) as i32,
             PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut i16;
         let ref mut fresh2 = *texturecolumnofs.offset(i as isize);
         *fresh2 = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             ((*texture).width as usize).wrapping_mul(::core::mem::size_of::<u16>() as usize) as i32,
             PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -529,7 +547,10 @@ pub unsafe fn R_InitTextures() {
         i += 1;
         directory = directory.offset(1);
     }
-    Z_Free(patchlookup as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        patchlookup as *mut ::core::ffi::c_void,
+    );
     W_ReleaseLumpName("TEXTURE1");
     if !maptex2.is_null() {
         W_ReleaseLumpName("TEXTURE2");
@@ -540,6 +561,7 @@ pub unsafe fn R_InitTextures() {
         i += 1;
     }
     texturetranslation = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ((numtextures + 1 as i32) as usize).wrapping_mul(::core::mem::size_of::<i32>() as usize)
             as i32,
         PU_STATIC as i32,
@@ -558,6 +580,7 @@ pub unsafe fn R_InitFlats() {
     lastflat = W_GetNumForName("F_END") - 1 as i32;
     numflats = lastflat - firstflat + 1 as i32;
     flattranslation = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ((numflats + 1 as i32) as usize).wrapping_mul(::core::mem::size_of::<i32>() as usize)
             as i32,
         PU_STATIC as i32,
@@ -576,16 +599,19 @@ pub unsafe fn R_InitSpriteLumps() {
     lastspritelump = W_GetNumForName("S_END") - 1 as i32;
     numspritelumps = lastspritelump - firstspritelump + 1 as i32;
     spritewidth = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numspritelumps as usize).wrapping_mul(::core::mem::size_of::<fixed_t>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
     spriteoffset = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numspritelumps as usize).wrapping_mul(::core::mem::size_of::<fixed_t>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
     spritetopoffset = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numspritelumps as usize).wrapping_mul(::core::mem::size_of::<fixed_t>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -688,7 +714,12 @@ pub unsafe fn R_PrecacheLevel() {
     if demoplayback {
         return;
     }
-    flatpresent = Z_Malloc(numflats, PU_STATIC as i32, NULL) as *mut ::core::ffi::c_char;
+    flatpresent = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
+        numflats,
+        PU_STATIC as i32,
+        NULL,
+    ) as *mut ::core::ffi::c_char;
     memset(
         flatpresent as *mut ::core::ffi::c_void,
         0 as i32,
@@ -712,8 +743,16 @@ pub unsafe fn R_PrecacheLevel() {
         }
         i += 1;
     }
-    Z_Free(flatpresent as *mut ::core::ffi::c_void);
-    texturepresent = Z_Malloc(numtextures, PU_STATIC as i32, NULL) as *mut ::core::ffi::c_char;
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        flatpresent as *mut ::core::ffi::c_void,
+    );
+    texturepresent = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
+        numtextures,
+        PU_STATIC as i32,
+        NULL,
+    ) as *mut ::core::ffi::c_char;
     memset(
         texturepresent as *mut ::core::ffi::c_void,
         0 as i32,
@@ -745,8 +784,16 @@ pub unsafe fn R_PrecacheLevel() {
         }
         i += 1;
     }
-    Z_Free(texturepresent as *mut ::core::ffi::c_void);
-    spritepresent = Z_Malloc(numsprites, PU_STATIC as i32, NULL) as *mut ::core::ffi::c_char;
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        texturepresent as *mut ::core::ffi::c_void,
+    );
+    spritepresent = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
+        numsprites,
+        PU_STATIC as i32,
+        NULL,
+    ) as *mut ::core::ffi::c_char;
     memset(
         spritepresent as *mut ::core::ffi::c_void,
         0 as i32,
@@ -781,5 +828,8 @@ pub unsafe fn R_PrecacheLevel() {
         }
         i += 1;
     }
-    Z_Free(spritepresent as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        spritepresent as *mut ::core::ffi::c_void,
+    );
 }

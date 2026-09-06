@@ -1171,6 +1171,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
                         s3_floorpic = (*s3).floorpic;
                     }
                     floor = Z_Malloc(
+                        unsafe { &mut game_state().z_zone },
                         ::core::mem::size_of::<floormove_t>() as i32,
                         PU_LEVSPEC as i32,
                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -1187,6 +1188,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
                     (*floor).newspecial = 0 as i32;
                     (*floor).floordestheight = s3_floorheight;
                     floor = Z_Malloc(
+                        unsafe { &mut game_state().z_zone },
                         ::core::mem::size_of::<floormove_t>() as i32,
                         PU_LEVSPEC as i32,
                         ::core::ptr::null_mut::<::core::ffi::c_void>(),

@@ -72,6 +72,7 @@ pub unsafe fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
     let mut flick: *mut fireflicker_t = ::core::ptr::null_mut::<fireflicker_t>();
     (*sector).special = 0 as i16;
     flick = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<fireflicker_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -102,6 +103,7 @@ pub unsafe fn P_SpawnLightFlash(mut sector: *mut sector_t) {
     let mut flash: *mut lightflash_t = ::core::ptr::null_mut::<lightflash_t>();
     (*sector).special = 0 as i16;
     flash = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<lightflash_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -132,6 +134,7 @@ pub unsafe fn T_StrobeFlash(mut flash: *mut strobe_t) {
 pub unsafe fn P_SpawnStrobeFlash(mut sector: *mut sector_t, mut fastOrSlow: i32, mut inSync: i32) {
     let mut flash: *mut strobe_t = ::core::ptr::null_mut::<strobe_t>();
     flash = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<strobe_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -249,6 +252,7 @@ pub unsafe fn T_Glow(mut g: *mut glow_t) {
 pub unsafe fn P_SpawnGlowingLight(mut sector: *mut sector_t) {
     let mut g: *mut glow_t = ::core::ptr::null_mut::<glow_t>();
     g = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<glow_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),

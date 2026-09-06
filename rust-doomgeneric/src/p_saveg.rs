@@ -921,7 +921,10 @@ pub unsafe fn P_UnArchiveThinkers() {
                 currentthinker as *mut mobj_t,
             );
         } else {
-            Z_Free(currentthinker as *mut ::core::ffi::c_void);
+            Z_Free(
+                unsafe { &mut game_state().z_zone },
+                currentthinker as *mut ::core::ffi::c_void,
+            );
         }
         currentthinker = next;
     }
@@ -933,6 +936,7 @@ pub unsafe fn P_UnArchiveThinkers() {
             1 => {
                 saveg_read_pad();
                 mobj = Z_Malloc(
+                    unsafe { &mut game_state().z_zone },
                     ::core::mem::size_of::<mobj_t>() as i32,
                     PU_LEVEL as i32,
                     NULL,
@@ -1034,6 +1038,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
             0 => {
                 saveg_read_pad();
                 ceiling = Z_Malloc(
+                    unsafe { &mut game_state().z_zone },
                     ::core::mem::size_of::<ceiling_t>() as i32,
                     PU_LEVEL as i32,
                     NULL,
@@ -1049,6 +1054,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
             1 => {
                 saveg_read_pad();
                 door = Z_Malloc(
+                    unsafe { &mut game_state().z_zone },
                     ::core::mem::size_of::<vldoor_t>() as i32,
                     PU_LEVEL as i32,
                     NULL,
@@ -1061,6 +1067,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
             2 => {
                 saveg_read_pad();
                 floor = Z_Malloc(
+                    unsafe { &mut game_state().z_zone },
                     ::core::mem::size_of::<floormove_t>() as i32,
                     PU_LEVEL as i32,
                     NULL,
@@ -1073,6 +1080,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
             3 => {
                 saveg_read_pad();
                 plat = Z_Malloc(
+                    unsafe { &mut game_state().z_zone },
                     ::core::mem::size_of::<plat_t>() as i32,
                     PU_LEVEL as i32,
                     NULL,
@@ -1088,6 +1096,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
             4 => {
                 saveg_read_pad();
                 flash = Z_Malloc(
+                    unsafe { &mut game_state().z_zone },
                     ::core::mem::size_of::<lightflash_t>() as i32,
                     PU_LEVEL as i32,
                     NULL,
@@ -1099,6 +1108,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
             5 => {
                 saveg_read_pad();
                 strobe = Z_Malloc(
+                    unsafe { &mut game_state().z_zone },
                     ::core::mem::size_of::<strobe_t>() as i32,
                     PU_LEVEL as i32,
                     NULL,
@@ -1110,6 +1120,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
             6 => {
                 saveg_read_pad();
                 glow = Z_Malloc(
+                    unsafe { &mut game_state().z_zone },
                     ::core::mem::size_of::<glow_t>() as i32,
                     PU_LEVEL as i32,
                     NULL,

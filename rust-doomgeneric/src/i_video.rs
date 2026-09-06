@@ -255,11 +255,19 @@ pub unsafe fn I_InitGraphics() {
             fb_scaling,
         );
     }
-    I_VideoBuffer = Z_Malloc(SCREENWIDTH * SCREENHEIGHT, PU_STATIC as i32, NULL) as *mut byte;
+    I_VideoBuffer = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
+        SCREENWIDTH * SCREENHEIGHT,
+        PU_STATIC as i32,
+        NULL,
+    ) as *mut byte;
     screenvisible = true;
 }
 pub unsafe fn I_ShutdownGraphics() {
-    Z_Free(I_VideoBuffer as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        I_VideoBuffer as *mut ::core::ffi::c_void,
+    );
 }
 pub unsafe fn I_StartTic() {
     I_GetEvent(unsafe { &mut game_state().i_input });

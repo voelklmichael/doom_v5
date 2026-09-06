@@ -1,6 +1,7 @@
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::game_state::game_state;
 use crate::src::i_system::fflush;
 use crate::src::i_system::FILE;
 use crate::src::m_argv::M_CheckParm;
@@ -477,7 +478,12 @@ unsafe fn GenerateStretchTable(mut palette: *mut byte, mut pct: i32) -> *mut byt
     let mut b: i32 = 0;
     let mut col1: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut col2: *mut byte = ::core::ptr::null_mut::<byte>();
-    result = Z_Malloc(256 as i32 * 256 as i32, PU_STATIC as i32, NULL) as *mut byte;
+    result = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
+        256 as i32 * 256 as i32,
+        PU_STATIC as i32,
+        NULL,
+    ) as *mut byte;
     x = 0 as i32;
     while x < 256 as i32 {
         y = 0 as i32;
@@ -530,8 +536,14 @@ unsafe fn I_InitSquashTable(mut palette: *mut byte) {
 }
 pub unsafe fn I_ResetScaleTables(mut palette: *mut byte) {
     if !stretch_tables[0 as i32 as usize].is_null() {
-        Z_Free(stretch_tables[0 as i32 as usize] as *mut ::core::ffi::c_void);
-        Z_Free(stretch_tables[1 as i32 as usize] as *mut ::core::ffi::c_void);
+        Z_Free(
+            unsafe { &mut game_state().z_zone },
+            stretch_tables[0 as i32 as usize] as *mut ::core::ffi::c_void,
+        );
+        Z_Free(
+            unsafe { &mut game_state().z_zone },
+            stretch_tables[1 as i32 as usize] as *mut ::core::ffi::c_void,
+        );
         printf(
             b"I_ResetScaleTables: Regenerating lookup tables..\n\0" as *const u8
                 as *const ::core::ffi::c_char,
@@ -540,7 +552,10 @@ pub unsafe fn I_ResetScaleTables(mut palette: *mut byte) {
         stretch_tables[1 as i32 as usize] = GenerateStretchTable(palette, 40 as i32);
     }
     if !half_stretch_table.is_null() {
-        Z_Free(half_stretch_table as *mut ::core::ffi::c_void);
+        Z_Free(
+            unsafe { &mut game_state().z_zone },
+            half_stretch_table as *mut ::core::ffi::c_void,
+        );
         printf(
             b"I_ResetScaleTables: Regenerating lookup table..\n\0" as *const u8
                 as *const ::core::ffi::c_char,

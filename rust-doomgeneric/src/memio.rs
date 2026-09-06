@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
@@ -27,6 +28,7 @@ pub unsafe fn mem_fopen_read(
 ) -> *mut MEMFILE {
     let mut file: *mut MEMFILE = ::core::ptr::null_mut::<MEMFILE>();
     file = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<MEMFILE>() as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -67,12 +69,14 @@ pub unsafe fn mem_fread(
 pub unsafe fn mem_fopen_write() -> *mut MEMFILE {
     let mut file: *mut MEMFILE = ::core::ptr::null_mut::<MEMFILE>();
     file = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<MEMFILE>() as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut MEMFILE;
     (*file).alloced = 1024 as size_t;
     (*file).buf = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (*file).alloced as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -96,6 +100,7 @@ pub unsafe fn mem_fwrite(
     while bytes > (*stream).alloced.wrapping_sub((*stream).position as size_t) {
         let mut newbuf: *mut u8 = ::core::ptr::null_mut::<u8>();
         newbuf = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             (*stream).alloced.wrapping_mul(2 as size_t) as i32,
             PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -105,7 +110,10 @@ pub unsafe fn mem_fwrite(
             (*stream).buf as *const ::core::ffi::c_void,
             (*stream).alloced,
         );
-        Z_Free((*stream).buf as *mut ::core::ffi::c_void);
+        Z_Free(
+            unsafe { &mut game_state().z_zone },
+            (*stream).buf as *mut ::core::ffi::c_void,
+        );
         (*stream).buf = newbuf;
         (*stream).alloced = (*stream).alloced.wrapping_mul(2 as size_t);
     }
@@ -130,9 +138,15 @@ pub unsafe fn mem_get_buf(
 }
 pub unsafe fn mem_fclose(mut stream: *mut MEMFILE) {
     if (*stream).mode as u32 == MODE_WRITE as i32 as u32 {
-        Z_Free((*stream).buf as *mut ::core::ffi::c_void);
+        Z_Free(
+            unsafe { &mut game_state().z_zone },
+            (*stream).buf as *mut ::core::ffi::c_void,
+        );
     }
-    Z_Free(stream as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        stream as *mut ::core::ffi::c_void,
+    );
 }
 pub unsafe fn mem_ftell(mut stream: *mut MEMFILE) -> i64 {
     return (*stream).position as i64;

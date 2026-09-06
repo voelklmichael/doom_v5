@@ -157,6 +157,7 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
     ) != 0
     {
         fileinfo = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             ::core::mem::size_of::<filelump_t>() as i32,
             PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -198,6 +199,7 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
         length = (header.numlumps as usize)
             .wrapping_mul(::core::mem::size_of::<filelump_t>() as usize) as i32;
         fileinfo = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             length,
             PU_STATIC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -229,9 +231,15 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
         filerover = filerover.offset(1);
         i = i.wrapping_add(1);
     }
-    Z_Free(fileinfo as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        fileinfo as *mut ::core::ffi::c_void,
+    );
     if !lumphash.is_null() {
-        Z_Free(lumphash as *mut ::core::ffi::c_void);
+        Z_Free(
+            unsafe { &mut game_state().z_zone },
+            lumphash as *mut ::core::ffi::c_void,
+        );
         lumphash = ::core::ptr::null_mut::<*mut lumpinfo_t>();
     }
     return wad_file;
@@ -341,6 +349,7 @@ pub unsafe fn W_CacheLumpNum(mut lumpnum: i32, mut tag: i32) -> *mut ::core::ffi
         );
     } else {
         (*lump).cache = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             W_LumpLength(lumpnum as u32),
             tag,
             &raw mut (*lump).cache as *mut ::core::ffi::c_void,
@@ -374,10 +383,14 @@ pub unsafe fn W_ReleaseLumpName(name: &str) {
 pub unsafe fn W_GenerateHashTable() {
     let mut i: u32 = 0;
     if !lumphash.is_null() {
-        Z_Free(lumphash as *mut ::core::ffi::c_void);
+        Z_Free(
+            unsafe { &mut game_state().z_zone },
+            lumphash as *mut ::core::ffi::c_void,
+        );
     }
     if numlumps > 0 as u32 {
         lumphash = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             (::core::mem::size_of::<*mut lumpinfo_t>() as usize).wrapping_mul(numlumps as usize)
                 as i32,
             PU_STATIC as i32,
