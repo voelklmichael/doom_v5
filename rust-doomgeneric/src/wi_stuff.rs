@@ -20,6 +20,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use crate::src::sounds::{sfx_barexp, sfx_pistol, sfx_pldeth, sfx_sgcock, sfx_slop};
 use crate::src::sounds::{mus_dm2int, mus_inter};
+use crate::src::d_ticcmd::{BT_ATTACK, BT_USE};
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -41,18 +42,6 @@ pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-pub type C2RustUnnamed_0 = u32;
-pub const BTS_SAVESHIFT: C2RustUnnamed_0 = 2;
-pub const BTS_SAVEMASK: C2RustUnnamed_0 = 28;
-pub const BTS_SAVEGAME: C2RustUnnamed_0 = 2;
-pub const BTS_PAUSE: C2RustUnnamed_0 = 1;
-pub const BT_WEAPONSHIFT: C2RustUnnamed_0 = 3;
-pub const BT_WEAPONMASK: C2RustUnnamed_0 = 56;
-pub const BT_CHANGE: C2RustUnnamed_0 = 4;
-pub const BT_SPECIALMASK: C2RustUnnamed_0 = 3;
-pub const BT_SPECIAL: C2RustUnnamed_0 = 128;
-pub const BT_USE: C2RustUnnamed_0 = 2;
-pub const BT_ATTACK: C2RustUnnamed_0 = 1;
 pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
