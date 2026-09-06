@@ -5,7 +5,6 @@ use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomstat::modifiedgame;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
@@ -231,7 +230,7 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
                 frame = (*lumpinfo.offset(l as isize)).name[4 as i32 as usize] as i32 - 'A' as i32;
                 rotation =
                     (*lumpinfo.offset(l as isize)).name[5 as i32 as usize] as i32 - '0' as i32;
-                if modifiedgame {
+                if unsafe { game_state() }.doomstat.modifiedgame {
                     patched = W_GetNumForName(&wad_name8_to_string(
                         &raw const (*lumpinfo.offset(l as isize)).name
                             as *const ::core::ffi::c_char,

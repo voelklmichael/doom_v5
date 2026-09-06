@@ -12,9 +12,6 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomstat::gamemission;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
 use crate::src::g_game::gameaction;
 use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
@@ -321,13 +318,13 @@ pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
     gamestate = GS_FINALE;
     viewactive = false;
     automapactive = false;
-    if (if gamemission as u32 == pack_chex as i32 as u32 {
+    if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if gamemission as u32 == pack_hacx as i32 as u32 {
+        (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
-            gamemission as u32
+            unsafe { game_state() }.doomstat.gamemission as u32
         })
     }) == doom as i32 as u32
     {
@@ -350,27 +347,27 @@ pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
     {
         let mut screen: *mut textscreen_t = (&raw mut state.textscreens as *mut textscreen_t)
             .offset(i as isize) as *mut textscreen_t;
-        if gameversion as u32 == exe_chex as i32 as u32
+        if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32
             && (*screen).mission as u32 == doom as i32 as u32
         {
             (*screen).level = 5 as i32;
         }
-        if (if gamemission as u32 == pack_chex as i32 as u32 {
+        if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
             doom as i32 as u32
         } else {
-            (if gamemission as u32 == pack_hacx as i32 as u32 {
+            (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                 doom2 as i32 as u32
             } else {
-                gamemission as u32
+                unsafe { game_state() }.doomstat.gamemission as u32
             })
         }) == (*screen).mission as u32
-            && ((if gamemission as u32 == pack_chex as i32 as u32 {
+            && ((if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
                 doom as i32 as u32
             } else {
-                (if gamemission as u32 == pack_hacx as i32 as u32 {
+                (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                     doom2 as i32 as u32
                 } else {
-                    gamemission as u32
+                    unsafe { game_state() }.doomstat.gamemission as u32
                 })
             }) != doom as i32 as u32
                 || gameepisode == (*screen).episode)
@@ -394,7 +391,9 @@ pub unsafe fn F_Responder(state: &mut FFinaleState, mut event: &event_t) -> bool
 }
 pub unsafe fn F_Ticker(state: &mut FFinaleState) {
     let mut i: size_t = 0;
-    if gamemode as u32 == commercial as i32 as u32 && state.finalecount > 50 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+        && state.finalecount > 50 as u32
+    {
         i = 0 as size_t;
         while i < MAXPLAYERS as size_t {
             if players[i as usize].cmd.buttons != 0 {
@@ -415,7 +414,7 @@ pub unsafe fn F_Ticker(state: &mut FFinaleState) {
         F_CastTicker(state);
         return;
     }
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         return;
     }
     if state.finalestage as u32 == F_STAGE_TEXT as i32 as u32
@@ -996,7 +995,7 @@ unsafe fn F_ArtScreenDrawer(state: &mut FFinaleState) {
     } else {
         match gameepisode {
             1 => {
-                if gamemode as u32 == retail as i32 as u32 {
+                if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
                     lumpname = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 } else {

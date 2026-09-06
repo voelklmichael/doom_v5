@@ -9,9 +9,6 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::TICRATE;
-use crate::src::doomstat::gamemission;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
@@ -385,12 +382,12 @@ pub unsafe fn HU_Start() {
         &raw mut hu_font as *mut *mut patch_t,
         HU_FONTSTART,
     );
-    match if gamemission as u32 == pack_chex as i32 as u32 {
+    match if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
-    } else if gamemission as u32 == pack_hacx as i32 as u32 {
+    } else if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
         doom2 as i32 as u32
     } else {
-        gamemission as u32
+        unsafe { game_state() }.doomstat.gamemission as u32
     } {
         0 => {
             s = mapnames[((gameepisode - 1 as i32) * 9 as i32 + gamemap - 1 as i32) as usize];
@@ -408,7 +405,7 @@ pub unsafe fn HU_Start() {
             s = "Unknown level";
         }
     }
-    if gameversion as u32 == exe_chex as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32 {
         s = mapnames[(gamemap - 1 as i32) as usize];
     }
     for b in s.bytes() {
@@ -504,7 +501,9 @@ pub unsafe fn HU_Ticker() {
                                 message_nottobefuckedwith = true;
                                 message_on = true;
                                 message_counter = HU_MSGTIMEOUT;
-                                if gamemode as u32 == commercial as i32 as u32 {
+                                if unsafe { game_state() }.doomstat.gamemode as u32
+                                    == commercial as i32 as u32
+                                {
                                     S_StartSound(
                                         unsafe { &mut game_state().sounds },
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),

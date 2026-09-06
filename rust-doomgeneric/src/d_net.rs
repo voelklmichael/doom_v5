@@ -16,9 +16,6 @@ use crate::src::d_mode::skill_t;
 use crate::src::d_player::player_t;
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::doomdef::boolean;
-use crate::src::doomstat::gamemission;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::demoplayback;
@@ -134,7 +131,7 @@ unsafe fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
     (*settings).map = startmap;
     (*settings).skill = startskill as i32;
     (*settings).loadgame = startloadgame;
-    (*settings).gameversion = gameversion as i32;
+    (*settings).gameversion = unsafe { game_state() }.doomstat.gameversion as i32;
     (*settings).nomonsters = nomonsters as i32;
     (*settings).fast_monsters = fastparm as i32;
     (*settings).respawn_monsters = respawnparm as i32;
@@ -153,8 +150,8 @@ unsafe fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
         viewangleoffset = ANG270 as i32;
         (*connect_data).drone = true_0;
     }
-    (*connect_data).gamemode = gamemode as i32;
-    (*connect_data).gamemission = gamemission as i32;
+    (*connect_data).gamemode = unsafe { game_state() }.doomstat.gamemode as i32;
+    (*connect_data).gamemission = unsafe { game_state() }.doomstat.gamemission as i32;
     (*connect_data).lowres_turn =
         (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
     W_Checksum(

@@ -9,7 +9,6 @@ use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
-use crate::src::doomstat::gamemode;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::netgame;
 use crate::src::g_game::playeringame;
@@ -800,7 +799,9 @@ pub unsafe fn WI_Responder(mut ev: *mut event_t) -> bool {
 }
 pub unsafe fn WI_drawLF() {
     let mut y: i32 = WI_TITLEY;
-    if gamemode as u32 != commercial as i32 as u32 || (*wbs).last < NUMCMAPS {
+    if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32
+        || (*wbs).last < NUMCMAPS
+    {
         V_DrawPatch(
             unsafe { &mut game_state().v_video },
             (SCREENWIDTH - (**lnames.offset((*wbs).last as isize)).width as i32) / 2 as i32,
@@ -891,7 +892,7 @@ pub unsafe fn WI_drawOnLnode(mut n: i32, mut c: *mut *mut patch_t) {
 pub unsafe fn WI_initAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         return;
     }
     if (*wbs).epsd > 2 as i32 {
@@ -919,7 +920,7 @@ pub unsafe fn WI_initAnimatedBack() {
 pub unsafe fn WI_updateAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         return;
     }
     if (*wbs).epsd > 2 as i32 {
@@ -969,7 +970,7 @@ pub unsafe fn WI_updateAnimatedBack() {
 pub unsafe fn WI_drawAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         return;
     }
     if (*wbs).epsd > 2 as i32 {
@@ -1110,7 +1111,7 @@ pub unsafe fn WI_drawShowNextLoc() {
     let mut last: i32 = 0;
     WI_slamBackground();
     WI_drawAnimatedBack();
-    if gamemode as u32 != commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32 {
         if (*wbs).epsd > 2 as i32 {
             WI_drawEL();
             return;
@@ -1132,7 +1133,9 @@ pub unsafe fn WI_drawShowNextLoc() {
             WI_drawOnLnode((*wbs).next, &raw mut yah as *mut *mut patch_t);
         }
     }
-    if gamemode as u32 != commercial as i32 as u32 || (*wbs).next != 30 as i32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32
+        || (*wbs).next != 30 as i32
+    {
         WI_drawEL();
     }
 }
@@ -1266,7 +1269,7 @@ pub unsafe fn WI_updateDeathmatchStats() {
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_slop as i32,
             );
-            if gamemode as u32 == commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
@@ -1548,7 +1551,7 @@ pub unsafe fn WI_updateNetgameStats() {
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_sgcock as i32,
             );
-            if gamemode as u32 == commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
@@ -1772,7 +1775,7 @@ pub unsafe fn WI_updateStats() {
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_sgcock as i32,
             );
-            if gamemode as u32 == commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
@@ -1873,7 +1876,7 @@ pub unsafe fn WI_checkForAccelerate() {
 pub unsafe fn WI_Ticker() {
     bcnt += 1;
     if bcnt == 1 as i32 {
-        if gamemode as u32 == commercial as i32 as u32 {
+        if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
             S_ChangeMusic(
                 unsafe { &mut game_state().sounds },
                 mus_dm2int as i32,
@@ -1912,7 +1915,7 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
     let mut j: i32 = 0;
     let mut name: [::core::ffi::c_char; 9] = [0; 9];
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         i = 0 as i32;
         while i < NUMCMAPS {
             snprintf(
@@ -2102,13 +2105,15 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
         );
         i += 1;
     }
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
             b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char,
             ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
         );
-    } else if gamemode as u32 == retail as i32 as u32 && (*wbs).epsd == 3 as i32 {
+    } else if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32
+        && (*wbs).epsd == 3 as i32
+    {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
             b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char,
@@ -2131,7 +2136,7 @@ unsafe fn WI_loadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut
     *variable = W_CacheLumpName(&wad_name8_to_string(name), PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn WI_loadData() {
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         NUMCMAPS = 32 as i32;
         lnames = Z_Malloc(
             unsafe { &mut game_state().z_zone },
@@ -2195,7 +2200,7 @@ pub unsafe fn WI_initVariables(mut wbstartstruct: *mut wbstartstruct_t) {
     if (*wbs).maxsecret == 0 {
         (*wbs).maxsecret = 1 as i32;
     }
-    if gamemode as u32 != retail as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 != retail as i32 as u32 {
         if (*wbs).epsd > 2 as i32 {
             (*wbs).epsd -= 3 as i32;
         }

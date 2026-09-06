@@ -2,7 +2,6 @@ use crate::src::d_mode::commercial;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomstat::gamemode;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
@@ -448,7 +447,7 @@ pub unsafe fn R_FillBackScreen() {
             NULL,
         ) as *mut byte;
     }
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         name = name2;
     } else {
         name = name1;

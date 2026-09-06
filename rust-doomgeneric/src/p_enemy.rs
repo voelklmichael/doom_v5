@@ -5,8 +5,6 @@ use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_easy, sk_nightmare};
 use crate::src::d_player::player_t;
 use crate::src::doomdef::boolean;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
 use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
 use crate::src::g_game::gameskill;
@@ -1338,7 +1336,7 @@ pub unsafe fn A_Explode(mut thingy: *mut mobj_t) {
     P_RadiusAttack(thingy, (*thingy).target as *mut mobj_t, 128 as i32);
 }
 unsafe fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
-    if (gameversion as u32) < exe_ultimate as i32 as u32 {
+    if (unsafe { game_state() }.doomstat.gameversion as u32) < exe_ultimate as i32 as u32 {
         if gamemap != 8 as i32 {
             return false;
         }
@@ -1387,7 +1385,7 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
         specialdata: ::core::ptr::null_mut::<::core::ffi::c_void>(),
     };
     let mut i: i32 = 0;
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         if gamemap != 7 as i32 {
             return;
         }
@@ -1420,7 +1418,7 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
         }
         th = (*th).next as *mut thinker_t;
     }
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         if gamemap == 7 as i32 {
             if (*mo).type_0 as u32 == MT_FATSO as i32 as u32 {
                 junk.tag = 666 as i16;
@@ -1651,7 +1649,9 @@ pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
 }
 pub unsafe fn A_PlayerScream(mut mo: *mut mobj_t) {
     let mut sound: i32 = sfx_pldeth as i32;
-    if gamemode as u32 == commercial as i32 as u32 && (*mo).health < -(50 as i32) {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+        && (*mo).health < -(50 as i32)
+    {
         sound = sfx_pdiehi as i32;
     }
     S_StartSound(

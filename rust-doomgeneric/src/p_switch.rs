@@ -1,5 +1,4 @@
 use crate::src::d_mode::{commercial, registered, retail};
-use crate::src::doomstat::gamemode;
 use crate::src::g_game::G_ExitLevel;
 use crate::src::g_game::G_SecretExitLevel;
 use crate::src::game_state::game_state;
@@ -286,9 +285,11 @@ pub unsafe fn P_InitSwitchList(state: &mut PSwitchState) {
     let mut index: i32 = 0;
     let mut episode: i32 = 0;
     episode = 1 as i32;
-    if gamemode as u32 == registered as i32 as u32 || gamemode as u32 == retail as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32
+        || unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32
+    {
         episode = 2 as i32;
-    } else if gamemode as u32 == commercial as i32 as u32 {
+    } else if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         episode = 3 as i32;
     }
     index = 0 as i32;

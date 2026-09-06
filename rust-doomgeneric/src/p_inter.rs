@@ -15,8 +15,6 @@ use crate::src::d_player::{
     wp_shotgun, wp_supershotgun,
 };
 use crate::src::doomdef::NULL;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::gameskill;
@@ -317,7 +315,7 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
             sound = sfx_getpow as i32;
         }
         74 => {
-            if gamemode as u32 != commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32 {
                 return;
             }
             (*player).health = deh_megasphere_health;
@@ -688,7 +686,7 @@ pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
     if (*target).tics < 1 as i32 {
         (*target).tics = 1 as i32;
     }
-    if gameversion as u32 == exe_chex as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32 {
         return;
     }
     match (*target).type_0 as u32 {
