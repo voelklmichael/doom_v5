@@ -1,5 +1,5 @@
 use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, side_t, visplane_t};
-use crate::src::p_mobj::{sector_t, line_t, subsector_t, actionf_t};
+use crate::src::p_mobj::{sector_t, line_t, subsector_t};
 use crate::src::i_system::I_Error;
 use crate::src::r_main::clipangle;
 use crate::src::r_main::viewangletox;
@@ -24,6 +24,7 @@ use crate::src::r_plane::R_FindPlane;
 use crate::src::r_main::R_PointToAngle;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
 
 
 pub type __uint8_t = u8;
@@ -44,13 +45,6 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

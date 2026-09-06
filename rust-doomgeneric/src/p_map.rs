@@ -1,5 +1,5 @@
 use crate::src::p_maputl::{intercept_t};
-use crate::src::p_mobj::{sector_t, ST_VERTICAL, ST_HORIZONTAL, line_t, subsector_t, actionf_t};
+use crate::src::p_mobj::{sector_t, ST_VERTICAL, ST_HORIZONTAL, line_t, subsector_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::i_system::I_Error;
@@ -53,6 +53,7 @@ use crate::src::p_mobj::{MF_DROPOFF, MF_DROPPED, MF_FLOAT, MF_MISSILE, MF_NOBLOO
 use crate::src::sounds::sfx_noway;
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::p_mobj::{MT_BLOOD, MT_BRUISER, MT_CYBORG, MT_KNIGHT, MT_PLAYER, MT_SPIDER, mobjtype_t};
+use crate::src::p_mobj::statenum_t;
 
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -73,13 +74,6 @@ pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

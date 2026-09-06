@@ -1,4 +1,4 @@
-use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
+use crate::src::p_mobj::{thinker_t, sector_t, line_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::p_map::P_TeleportMove;
 use crate::src::p_tick::thinkercap;
@@ -12,6 +12,8 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::MF_MISSILE;
 use crate::src::sounds::sfx_telept;
 use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG, mobjtype_t};
+use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::d_mode::exe_final;
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
 }
@@ -19,21 +21,6 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameVersion_t = u32;
-pub const exe_strife_1_31: GameVersion_t = 13;
-pub const exe_strife_1_2: GameVersion_t = 12;
-pub const exe_hexen_1_1: GameVersion_t = 11;
-pub const exe_heretic_1_3: GameVersion_t = 10;
-pub const exe_chex: GameVersion_t = 9;
-pub const exe_final2: GameVersion_t = 8;
-pub const exe_final: GameVersion_t = 7;
-pub const exe_ultimate: GameVersion_t = 6;
-pub const exe_hacx: GameVersion_t = 5;
-pub const exe_doom_1_9: GameVersion_t = 4;
-pub const exe_doom_1_8: GameVersion_t = 3;
-pub const exe_doom_1_7: GameVersion_t = 2;
-pub const exe_doom_1_666: GameVersion_t = 1;
-pub const exe_doom_1_2: GameVersion_t = 0;
 pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
@@ -48,13 +35,6 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

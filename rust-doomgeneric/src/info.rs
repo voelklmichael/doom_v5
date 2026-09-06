@@ -2,6 +2,7 @@ use crate::src::p_mobj::{state_t, mobjinfo_t, actionf_t};
 use crate::src::p_mobj::{MF_COUNTITEM, MF_COUNTKILL, MF_DROPOFF, MF_FLOAT, MF_MISSILE, MF_NOBLOCKMAP, MF_NOBLOOD, MF_NOCLIP, MF_NOGRAVITY, MF_NOSECTOR, MF_NOTDMATCH, MF_PICKUP, MF_SHADOW, MF_SHOOTABLE, MF_SOLID, MF_SPAWNCEILING, MF_SPECIAL};
 use crate::src::sounds::{sfx_None, sfx_barexp, sfx_bgact, sfx_bgdth1, sfx_bgsit1, sfx_bosdth, sfx_bospit, sfx_bospn, sfx_brsdth, sfx_brssit, sfx_bspact, sfx_bspdth, sfx_bspsit, sfx_cacdth, sfx_cacsit, sfx_cybdth, sfx_cybsit, sfx_dmact, sfx_dmpain, sfx_firsht, sfx_firxpl, sfx_keendt, sfx_keenpn, sfx_kntdth, sfx_kntsit, sfx_mandth, sfx_mansit, sfx_mnpain, sfx_pedth, sfx_pepain, sfx_pesit, sfx_pistol, sfx_plasma, sfx_pldeth, sfx_plpain, sfx_podth1, sfx_podth2, sfx_popain, sfx_posact, sfx_posit1, sfx_posit2, sfx_rlaunc, sfx_rxplod, sfx_sgtatk, sfx_sgtdth, sfx_sgtsit, sfx_shotgn, sfx_skeact, sfx_skeatk, sfx_skedth, sfx_skesit, sfx_sklatk, sfx_spidth, sfx_spisit, sfx_ssdth, sfx_sssit, sfx_vilact, sfx_vildth, sfx_vilsit, sfx_vipain};
 use crate::src::p_mobj::{SPR_AMMO, SPR_APBX, SPR_APLS, SPR_ARM1, SPR_ARM2, SPR_BAL1, SPR_BAL2, SPR_BAL7, SPR_BAR1, SPR_BBRN, SPR_BEXP, SPR_BFE1, SPR_BFE2, SPR_BFGF, SPR_BFGG, SPR_BFS1, SPR_BFUG, SPR_BKEY, SPR_BLUD, SPR_BON1, SPR_BON2, SPR_BOS2, SPR_BOSF, SPR_BOSS, SPR_BPAK, SPR_BROK, SPR_BRS1, SPR_BSKU, SPR_BSPI, SPR_CAND, SPR_CBRA, SPR_CELL, SPR_CELP, SPR_CEYE, SPR_CHGF, SPR_CHGG, SPR_CLIP, SPR_COL1, SPR_COL2, SPR_COL3, SPR_COL4, SPR_COL5, SPR_COL6, SPR_COLU, SPR_CPOS, SPR_CSAW, SPR_CYBR, SPR_ELEC, SPR_FATB, SPR_FATT, SPR_FBXP, SPR_FCAN, SPR_FIRE, SPR_FSKU, SPR_GOR1, SPR_GOR2, SPR_GOR3, SPR_GOR4, SPR_GOR5, SPR_HDB1, SPR_HDB2, SPR_HDB3, SPR_HDB4, SPR_HDB5, SPR_HDB6, SPR_HEAD, SPR_IFOG, SPR_KEEN, SPR_LAUN, SPR_MANF, SPR_MEDI, SPR_MEGA, SPR_MGUN, SPR_MISF, SPR_MISG, SPR_MISL, SPR_PAIN, SPR_PINS, SPR_PINV, SPR_PISF, SPR_PISG, SPR_PLAS, SPR_PLAY, SPR_PLSE, SPR_PLSF, SPR_PLSG, SPR_PLSS, SPR_PMAP, SPR_POB1, SPR_POB2, SPR_POL1, SPR_POL2, SPR_POL3, SPR_POL4, SPR_POL5, SPR_POL6, SPR_POSS, SPR_PSTR, SPR_PUFF, SPR_PUNG, SPR_PVIS, SPR_RKEY, SPR_ROCK, SPR_RSKU, SPR_SARG, SPR_SAWG, SPR_SBOX, SPR_SGN2, SPR_SHEL, SPR_SHOT, SPR_SHT2, SPR_SHTF, SPR_SHTG, SPR_SKEL, SPR_SKUL, SPR_SMBT, SPR_SMGT, SPR_SMIT, SPR_SMRT, SPR_SMT2, SPR_SOUL, SPR_SPID, SPR_SPOS, SPR_SSWV, SPR_STIM, SPR_SUIT, SPR_TBLU, SPR_TFOG, SPR_TGRN, SPR_TLMP, SPR_TLP2, SPR_TRE1, SPR_TRE2, SPR_TRED, SPR_TROO, SPR_VILE, SPR_YKEY, SPR_YSKU};
+use crate::src::p_mobj::statenum_t;
 extern "C" {
     fn A_Light0();
     fn A_WeaponReady();
@@ -78,12 +79,6 @@ extern "C" {
     fn A_SpawnFly();
     fn A_BrainExplode();
 }
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

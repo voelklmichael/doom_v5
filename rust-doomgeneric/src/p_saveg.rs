@@ -44,6 +44,8 @@ use libc::{malloc, snprintf};
 use crate::src::i_system::{fprintf, fread, ftell, fwrite, stderr};
 use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::d_mode::skill_t;
 
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -63,13 +65,6 @@ pub type boolean = u32;
 pub type byte = uint8_t;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type skill_t = i32;
-pub const sk_nightmare: skill_t = 4;
-pub const sk_hard: skill_t = 3;
-pub const sk_medium: skill_t = 2;
-pub const sk_easy: skill_t = 1;
-pub const sk_baby: skill_t = 0;
-pub const sk_noitems: skill_t = -1;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;
@@ -97,13 +92,6 @@ pub const am_misl: C2RustUnnamed_1 = 3;
 pub const am_cell: C2RustUnnamed_1 = 2;
 pub const am_shell: C2RustUnnamed_1 = 1;
 pub const am_clip: C2RustUnnamed_1 = 0;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

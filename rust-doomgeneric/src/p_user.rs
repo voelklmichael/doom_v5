@@ -1,4 +1,4 @@
-use crate::src::p_mobj::{state_t, actionf_t};
+use crate::src::p_mobj::state_t;
 use crate::src::d_player::{player_t, PST_LIVE, PST_DEAD, PST_REBORN};
 use crate::src::d_ticcmd::{ticcmd_t};
 use crate::src::p_pspr::P_MovePsprites;
@@ -17,18 +17,14 @@ use crate::src::d_ticcmd::{BT_CHANGE, BT_SPECIAL, BT_USE, BT_WEAPONMASK, BT_WEAP
 use crate::src::d_player::{pw_infrared, pw_invisibility, pw_invulnerability, pw_ironfeet, pw_strength};
 use crate::src::d_player::{CF_NOCLIP, CF_NOMOMENTUM};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
+use crate::src::d_mode::{commercial, shareware};
 
 
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMode_t = u32;
-pub const indetermined: GameMode_t = 4;
-pub const retail: GameMode_t = 3;
-pub const commercial: GameMode_t = 2;
-pub const registered: GameMode_t = 1;
-pub const shareware: GameMode_t = 0;
 pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
@@ -43,13 +39,6 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

@@ -1,6 +1,6 @@
 use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{floormove_t};
-use crate::src::p_mobj::{sector_t, line_t, actionf_t};
+use crate::src::p_mobj::{sector_t, line_t};
 use crate::src::p_map::P_ChangeSector;
 use crate::src::p_spec::twoSided;
 use crate::src::p_spec::getSector;
@@ -20,6 +20,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_pstop, sfx_stnmov};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::{actionf_p1, statenum_t};
 
 
 pub type __uint8_t = u8;
@@ -40,13 +41,6 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

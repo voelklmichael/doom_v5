@@ -1,5 +1,5 @@
 use crate::src::r_defs::{node_t, seg_t};
-use crate::src::p_mobj::{subsector_t, actionf_t};
+use crate::src::p_mobj::subsector_t;
 use crate::src::d_player::{player_t};
 use crate::src::tables::SlopeDiv;
 use crate::src::r_segs::walllights;
@@ -40,6 +40,7 @@ use crate::src::r_plane::R_DrawPlanes;
 use crate::src::r_things::R_DrawMasked;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
 use libc::printf;
 
 extern "C" {
@@ -70,13 +71,6 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
