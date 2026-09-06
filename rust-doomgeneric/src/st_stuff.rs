@@ -522,7 +522,7 @@ pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
                         (*plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
                             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(musnum, 1 as i32);
+                        S_ChangeMusic(unsafe { &mut game_state().sounds }, musnum, 1 as i32);
                     }
                 } else {
                     musnum = mus_e1m1 as i32
@@ -538,7 +538,7 @@ pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
                         (*plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
                             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(musnum, 1 as i32);
+                        S_ChangeMusic(unsafe { &mut game_state().sounds }, musnum, 1 as i32);
                     }
                 }
             } else if (if gamemission as u32

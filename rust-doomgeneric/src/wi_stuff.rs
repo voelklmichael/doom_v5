@@ -31,6 +31,7 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::TICRATE;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::game_state::game_state;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -1897,9 +1898,9 @@ pub unsafe fn WI_Ticker() {
         if gamemode as u32
             == commercial as i32 as u32
         {
-            S_ChangeMusic(mus_dm2int as i32, true_0);
+            S_ChangeMusic(unsafe { &mut game_state().sounds }, mus_dm2int as i32, true_0);
         } else {
-            S_ChangeMusic(mus_inter as i32, true_0);
+            S_ChangeMusic(unsafe { &mut game_state().sounds }, mus_inter as i32, true_0);
         }
     }
     WI_checkForAccelerate();
