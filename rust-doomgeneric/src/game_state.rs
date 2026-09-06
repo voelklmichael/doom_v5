@@ -40,6 +40,7 @@ use crate::src::statdump::StatDumpState;
 use crate::src::v_video::VVideoState;
 use crate::src::w_checksum::WChecksumState;
 use crate::src::w_file::WFileState;
+use crate::src::w_wad::WWadState;
 use crate::src::z_zone::ZZoneState;
 
 pub struct GameState {
@@ -72,6 +73,7 @@ pub struct GameState {
     pub v_video: VVideoState,
     pub w_checksum: WChecksumState,
     pub w_file: WFileState,
+    pub w_wad: WWadState,
     pub z_zone: ZZoneState,
 }
 
@@ -107,6 +109,7 @@ impl GameState {
             v_video: VVideoState::new(),
             w_checksum: WChecksumState::new(),
             w_file: WFileState::new(),
+            w_wad: WWadState::new(),
             z_zone: ZZoneState::new(),
         }
     }

@@ -71,7 +71,6 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::tables::angle_t;
 use crate::src::tables::ANG45;
-use crate::src::w_wad::lumpinfo;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
 use crate::src::z_zone::Z_Malloc;
@@ -222,28 +221,37 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
         l = start + 1 as i32;
         while l < end {
             if strncasecmp(
-                &raw mut (*lumpinfo.offset(l as isize)).name as *mut ::core::ffi::c_char,
+                &raw mut (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                    as *mut ::core::ffi::c_char,
                 spritename,
                 4 as size_t,
             ) == 0
             {
-                frame = (*lumpinfo.offset(l as isize)).name[4 as i32 as usize] as i32 - 'A' as i32;
-                rotation =
-                    (*lumpinfo.offset(l as isize)).name[5 as i32 as usize] as i32 - '0' as i32;
+                frame = (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                    [4 as i32 as usize] as i32
+                    - 'A' as i32;
+                rotation = (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                    [5 as i32 as usize] as i32
+                    - '0' as i32;
                 if unsafe { game_state() }.doomstat.modifiedgame {
                     patched = W_GetNumForName(&wad_name8_to_string(
-                        &raw const (*lumpinfo.offset(l as isize)).name
+                        &raw const (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
                             as *const ::core::ffi::c_char,
                     ));
                 } else {
                     patched = l;
                 }
                 R_InstallSpriteLump(patched, frame as u32, rotation as u32, false);
-                if (*lumpinfo.offset(l as isize)).name[6 as i32 as usize] != 0 {
-                    frame =
-                        (*lumpinfo.offset(l as isize)).name[6 as i32 as usize] as i32 - 'A' as i32;
-                    rotation =
-                        (*lumpinfo.offset(l as isize)).name[7 as i32 as usize] as i32 - '0' as i32;
+                if (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                    [6 as i32 as usize]
+                    != 0
+                {
+                    frame = (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                        [6 as i32 as usize] as i32
+                        - 'A' as i32;
+                    rotation = (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                        [7 as i32 as usize] as i32
+                        - '0' as i32;
                     R_InstallSpriteLump(l, frame as u32, rotation as u32, true);
                 }
             }
