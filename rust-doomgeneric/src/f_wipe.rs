@@ -52,8 +52,7 @@ pub unsafe extern "C" fn wipe_shittyColMajorXform(
     );
     Z_Free(dest as *mut ::core::ffi::c_void);
 }
-#[no_mangle]
-pub unsafe extern "C" fn wipe_initColorXForm(
+pub unsafe fn wipe_initColorXForm(
     mut width: i32,
     mut height: i32,
     mut ticks: i32,
@@ -65,8 +64,7 @@ pub unsafe extern "C" fn wipe_initColorXForm(
     );
     return 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn wipe_doColorXForm(
+pub unsafe fn wipe_doColorXForm(
     mut width: i32,
     mut height: i32,
     mut ticks: i32,
@@ -103,8 +101,7 @@ pub unsafe extern "C" fn wipe_doColorXForm(
     }
     return (!changed) as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn wipe_exitColorXForm(
+pub unsafe fn wipe_exitColorXForm(
     mut width: i32,
     mut height: i32,
     mut ticks: i32,
@@ -113,8 +110,7 @@ pub unsafe extern "C" fn wipe_exitColorXForm(
 }
 static mut y: *mut i32 = ::core::ptr::null::<i32>()
     as *mut i32;
-#[no_mangle]
-pub unsafe extern "C" fn wipe_initMelt(
+pub unsafe fn wipe_initMelt(
     mut width: i32,
     mut height: i32,
     mut ticks: i32,
@@ -158,8 +154,7 @@ pub unsafe extern "C" fn wipe_initMelt(
     }
     return 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn wipe_doMelt(
+pub unsafe fn wipe_doMelt(
     mut width: i32,
     mut height: i32,
     mut ticks: i32,
@@ -234,8 +229,7 @@ pub unsafe extern "C" fn wipe_doMelt(
     }
     return done as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn wipe_exitMelt(
+pub unsafe fn wipe_exitMelt(
     mut width: i32,
     mut height: i32,
     mut ticks: i32,
@@ -284,7 +278,7 @@ pub unsafe fn wipe_ScreenWipe(
 ) -> i32 {
     let mut rc: i32 = 0;
     static mut wipes: [Option<
-        unsafe extern "C" fn(
+        unsafe fn(
             i32,
             i32,
             i32,
@@ -293,7 +287,7 @@ pub unsafe fn wipe_ScreenWipe(
         [
             Some(
                 wipe_initColorXForm
-                    as unsafe extern "C" fn(
+                    as unsafe fn(
                         i32,
                         i32,
                         i32,
@@ -301,7 +295,7 @@ pub unsafe fn wipe_ScreenWipe(
             ),
             Some(
                 wipe_doColorXForm
-                    as unsafe extern "C" fn(
+                    as unsafe fn(
                         i32,
                         i32,
                         i32,
@@ -309,7 +303,7 @@ pub unsafe fn wipe_ScreenWipe(
             ),
             Some(
                 wipe_exitColorXForm
-                    as unsafe extern "C" fn(
+                    as unsafe fn(
                         i32,
                         i32,
                         i32,
@@ -317,7 +311,7 @@ pub unsafe fn wipe_ScreenWipe(
             ),
             Some(
                 wipe_initMelt
-                    as unsafe extern "C" fn(
+                    as unsafe fn(
                         i32,
                         i32,
                         i32,
@@ -325,7 +319,7 @@ pub unsafe fn wipe_ScreenWipe(
             ),
             Some(
                 wipe_doMelt
-                    as unsafe extern "C" fn(
+                    as unsafe fn(
                         i32,
                         i32,
                         i32,
@@ -333,7 +327,7 @@ pub unsafe fn wipe_ScreenWipe(
             ),
             Some(
                 wipe_exitMelt
-                    as unsafe extern "C" fn(
+                    as unsafe fn(
                         i32,
                         i32,
                         i32,
