@@ -28,6 +28,8 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::m_fixed::fixed_t;
+use crate::src::r_defs::lighttable_t;
 use libc::{memcpy, memset};
 use libc::strncasecmp;
 use libc::printf;
@@ -40,8 +42,6 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1018,7 +1018,6 @@ pub struct post_t {
     pub length: byte,
 }
 pub type column_t = post_t;
-pub type lighttable_t = byte;
 pub type texture_t = texture_s;
 #[derive(Copy, Clone)]
 #[repr(C)]

@@ -1,4 +1,7 @@
-use crate::src::p_mobj::{fixed_t, angle_t, vertex_t, sector_t, line_t, byte};
+use crate::src::p_mobj::{vertex_t, sector_t, line_t, byte};
+use crate::src::m_fixed::fixed_t;
+use crate::src::tables::angle_t;
+pub type lighttable_t = byte;
 
 pub type boolean = u32;
 

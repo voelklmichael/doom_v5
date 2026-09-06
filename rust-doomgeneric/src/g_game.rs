@@ -158,6 +158,7 @@ use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse};
 use crate::src::d_event::{GS_DEMOSCREEN, GS_FINALE, GS_INTERMISSION, GS_LEVEL, gamestate_t};
 use crate::src::d_event::{ga_completed, ga_loadgame, ga_loadlevel, ga_newgame, ga_nothing, ga_playdemo, ga_savegame, ga_screenshot, ga_victory, ga_worlddone, gameaction_t};
 use crate::src::d_player::{weapontype_t, wp_bfg, wp_chaingun, wp_chainsaw, wp_fist, wp_missile, wp_nochange, wp_pistol, wp_plasma, wp_shotgun, wp_supershotgun};
+use crate::src::m_fixed::fixed_t;
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -178,8 +179,6 @@ pub const am_misl: C2RustUnnamed = 3;
 pub const am_cell: C2RustUnnamed = 2;
 pub const am_shell: C2RustUnnamed = 1;
 pub const am_clip: C2RustUnnamed = 0;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

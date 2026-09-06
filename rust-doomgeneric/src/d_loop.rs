@@ -7,6 +7,8 @@ use crate::src::i_timer::I_Sleep;
 use crate::src::i_system::I_AtExit;
 use crate::src::i_timer::I_GetTime;
 use crate::src::d_ticcmd::BT_SPECIAL;
+use crate::src::m_fixed::fixed_t;
+use crate::src::sha1::sha1_digest_t;
 use libc::{memcpy, memset};
 use libc::printf;
 
@@ -16,7 +18,6 @@ pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
 pub use crate::src::d_ticcmd::ticcmd_t;
-pub type sha1_digest_t = [byte; 20];
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct net_connect_data_t {
@@ -71,8 +72,6 @@ pub struct ticcmd_set_t {
     pub cmds: [ticcmd_t; 8],
     pub ingame: [boolean; 8],
 }
-pub type fixed_t = i32;
-pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<

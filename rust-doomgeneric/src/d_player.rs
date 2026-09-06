@@ -1,5 +1,6 @@
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::p_mobj::{mobj_t, pspdef_t};
+use crate::src::m_fixed::fixed_t;
 pub type ammotype_t = u32;
 pub const am_noammo: ammotype_t = 5;
 pub const NUMAMMO: ammotype_t = 4;
@@ -24,7 +25,6 @@ pub const pw_invisibility: C2RustUnnamed = 2;
 pub const pw_strength: C2RustUnnamed = 1;
 pub const pw_invulnerability: C2RustUnnamed = 0;
 
-pub type fixed_t = i32;
 pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;

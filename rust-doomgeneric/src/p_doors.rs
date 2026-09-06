@@ -16,6 +16,8 @@ use crate::src::sounds::{sfx_bdcls, sfx_bdopn, sfx_dorcls, sfx_doropn, sfx_oof};
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_floor::{crushed, ok, pastdest, result_e};
+use crate::src::m_fixed::fixed_t;
 extern "C" {
     fn T_PlatRaise(plat: *mut plat_t);
 }
@@ -32,8 +34,6 @@ pub const it_blueskull: C2RustUnnamed_0 = 3;
 pub const it_redcard: C2RustUnnamed_0 = 2;
 pub const it_yellowcard: C2RustUnnamed_0 = 1;
 pub const it_bluecard: C2RustUnnamed_0 = 0;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1003,17 +1003,6 @@ pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub type plat_e = u32;
-pub const in_stasis: plat_e = 3;
-pub const waiting: plat_e = 2;
-pub const down: plat_e = 1;
-pub const up: plat_e = 0;
-pub type plattype_e = u32;
-pub const blazeDWUS: plattype_e = 4;
-pub const raiseToNearestAndChange: plattype_e = 3;
-pub const raiseAndChange: plattype_e = 2;
-pub const downWaitUpStay: plattype_e = 1;
-pub const perpetualRaise: plattype_e = 0;
 pub type vldoor_e = u32;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
@@ -1035,10 +1024,6 @@ pub struct vldoor_t {
     pub topwait: i32,
     pub topcountdown: i32,
 }
-pub const pastdest: result_e = 2;
-pub type result_e = u32;
-pub const crushed: result_e = 1;
-pub const ok: result_e = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

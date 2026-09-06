@@ -35,6 +35,7 @@ use crate::src::d_mode::exe_chex;
 use crate::src::d_mode::{sk_baby, sk_nightmare};
 use crate::src::d_player::{weapontype_t, wp_bfg, wp_chaingun, wp_chainsaw, wp_fist, wp_missile, wp_pistol, wp_plasma, wp_shotgun, wp_supershotgun};
 use crate::src::d_player::{NUMAMMO, am_cell, am_clip, am_misl, am_noammo, am_shell, ammotype_t};
+use crate::src::m_fixed::fixed_t;
 
 
 pub type __uint8_t = u8;
@@ -54,8 +55,6 @@ pub const IRONTICS: C2RustUnnamed_0 = 2100;
 pub const INFRATICS: C2RustUnnamed_0 = 4200;
 pub const INVISTICS: C2RustUnnamed_0 = 2100;
 pub const INVULNTICS: C2RustUnnamed_0 = 1050;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
