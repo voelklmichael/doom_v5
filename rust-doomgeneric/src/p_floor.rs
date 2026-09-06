@@ -20,7 +20,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_pstop, sfx_stnmov};
 use crate::src::p_mobj::mobjtype_t;
-use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_mobj::{ThinkerFn, statenum_t};
 use crate::src::m_fixed::fixed_t;
 
 
@@ -1206,10 +1206,7 @@ pub unsafe fn EV_DoFloor(
         ) as *mut floormove_t;
         P_AddThinker(&raw mut (*floor).thinker);
         (*sec).specialdata = floor as *mut ::core::ffi::c_void;
-        (*floor).thinker.function.acp1 = ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(*mut floormove_t) -> ()>,
-            actionf_p1,
-        >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
+        (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
         (*floor).type_0 = floortype;
         (*floor).crush = false;
         let mut current_block_84: u64;
@@ -1426,10 +1423,7 @@ pub unsafe fn EV_BuildStairs(
         ) as *mut floormove_t;
         P_AddThinker(&raw mut (*floor).thinker);
         (*sec).specialdata = floor as *mut ::core::ffi::c_void;
-        (*floor).thinker.function.acp1 = ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(*mut floormove_t) -> ()>,
-            actionf_p1,
-        >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
+        (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
         (*floor).direction = 1 as i32;
         (*floor).sector = sec;
         match type_0 as u32 {
@@ -1473,14 +1467,7 @@ pub unsafe fn EV_BuildStairs(
                                 ) as *mut floormove_t;
                                 P_AddThinker(&raw mut (*floor).thinker);
                                 (*sec).specialdata = floor as *mut ::core::ffi::c_void;
-                                (*floor).thinker.function.acp1 = ::core::mem::transmute::<
-                                    Option<unsafe extern "C" fn(*mut floormove_t) -> ()>,
-                                    actionf_p1,
-                                >(
-                                    Some(
-                                        T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> (),
-                                    ),
-                                );
+                                (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                                 (*floor).direction = 1 as i32;
                                 (*floor).sector = sec;
                                 (*floor).speed = speed;

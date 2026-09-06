@@ -17,7 +17,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_pstart, sfx_pstop, sfx_stnmov};
 use crate::src::p_mobj::mobjtype_t;
-use crate::src::p_mobj::{actionf_p1, actionf_v, statenum_t};
+use crate::src::p_mobj::{ThinkerFn, statenum_t};
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::m_fixed::fixed_t;
 
@@ -1142,10 +1142,7 @@ pub unsafe fn EV_DoPlat(
         (*plat).type_0 = type_0;
         (*plat).sector = sec;
         (*(*plat).sector).specialdata = plat as *mut ::core::ffi::c_void;
-        (*plat).thinker.function.acp1 = ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(*mut plat_t) -> ()>,
-            actionf_p1,
-        >(Some(T_PlatRaise as unsafe extern "C" fn(*mut plat_t) -> ()));
+        (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
         (*plat).crush = false;
         (*plat).tag = (*line).tag as i32;
         match type_0 as u32 {
@@ -1243,10 +1240,7 @@ pub unsafe extern "C" fn P_ActivateInStasis(mut tag: i32) {
                 == in_stasis as i32 as u32
         {
             (*activeplats[i as usize]).status = (*activeplats[i as usize]).oldstatus;
-            (*activeplats[i as usize]).thinker.function.acp1 = ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut plat_t) -> ()>,
-                actionf_p1,
-            >(Some(T_PlatRaise as unsafe extern "C" fn(*mut plat_t) -> ()));
+            (*activeplats[i as usize]).thinker.function = ThinkerFn::Plat(T_PlatRaise);
         }
         i += 1;
     }
@@ -1262,10 +1256,7 @@ pub unsafe fn EV_StopPlat(mut line: *mut line_t) {
         {
             (*activeplats[j as usize]).oldstatus = (*activeplats[j as usize]).status;
             (*activeplats[j as usize]).status = in_stasis;
-            (*activeplats[j as usize]).thinker.function.acv = ::core::mem::transmute::<
-                *mut ::core::ffi::c_void,
-                actionf_v,
-            >(NULL);
+            (*activeplats[j as usize]).thinker.function = ThinkerFn::Paused;
         }
         j += 1;
     }

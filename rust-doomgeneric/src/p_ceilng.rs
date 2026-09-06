@@ -12,7 +12,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_pstop, sfx_stnmov};
 use crate::src::p_mobj::mobjtype_t;
-use crate::src::p_mobj::{actionf_p1, actionf_v, statenum_t};
+use crate::src::p_mobj::{ThinkerFn, statenum_t};
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::m_fixed::fixed_t;
 
@@ -1170,10 +1170,7 @@ pub unsafe fn EV_DoCeiling(
         ) as *mut ceiling_t;
         P_AddThinker(&raw mut (*ceiling).thinker);
         (*sec).specialdata = ceiling as *mut ::core::ffi::c_void;
-        (*ceiling).thinker.function.acp1 = ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(*mut ceiling_t) -> ()>,
-            actionf_p1,
-        >(Some(T_MoveCeiling as unsafe extern "C" fn(*mut ceiling_t) -> ()));
+        (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
         (*ceiling).sector = sec;
         (*ceiling).crush = false;
         let mut current_block_26: u64;
@@ -1265,10 +1262,7 @@ pub unsafe extern "C" fn P_ActivateInStasisCeiling(mut line: *mut line_t) {
         {
             (*activeceilings[i as usize]).direction = (*activeceilings[i as usize])
                 .olddirection;
-            (*activeceilings[i as usize]).thinker.function.acp1 = ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut ceiling_t) -> ()>,
-                actionf_p1,
-            >(Some(T_MoveCeiling as unsafe extern "C" fn(*mut ceiling_t) -> ()));
+            (*activeceilings[i as usize]).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
         }
         i += 1;
     }
@@ -1287,10 +1281,7 @@ pub unsafe fn EV_CeilingCrushStop(
         {
             (*activeceilings[i as usize]).olddirection = (*activeceilings[i as usize])
                 .direction;
-            (*activeceilings[i as usize]).thinker.function.acv = ::core::mem::transmute::<
-                *mut ::core::ffi::c_void,
-                actionf_v,
-            >(NULL);
+            (*activeceilings[i as usize]).thinker.function = ThinkerFn::Paused;
             (*activeceilings[i as usize]).direction = 0 as i32;
             rtn = 1 as i32;
         }

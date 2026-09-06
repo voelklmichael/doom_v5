@@ -1,5 +1,5 @@
 use crate::src::d_items::weaponinfo;
-use crate::src::p_mobj::state_t;
+use crate::src::p_mobj::{state_t, StateAction};
 use crate::src::d_player::{player_t, PST_DEAD};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::p_mobj::P_SpawnPlayerMissile;
@@ -1041,16 +1041,8 @@ pub unsafe extern "C" fn P_SetPsprite(
                 (*psp).sx = ((*state).misc1 << FRACBITS) as fixed_t;
                 (*psp).sy = ((*state).misc2 << FRACBITS) as fixed_t;
             }
-            if (*state).action.acp2.is_some() {
-                (*state)
-                    .action
-                    .acp2
-                    .expect(
-                        "non-null function pointer",
-                    )(
-                    player as *mut ::core::ffi::c_void,
-                    psp as *mut ::core::ffi::c_void,
-                );
+            if let StateAction::Weapon(f) = (*state).action {
+                f(player, psp);
                 if (*psp).state.is_null() {
                     break;
                 }

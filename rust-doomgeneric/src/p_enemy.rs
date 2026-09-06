@@ -55,7 +55,7 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::{MF_AMBUSH, MF_CORPSE, MF_FLOAT, MF_INFLOAT, MF_JUSTATTACKED, MF_JUSTHIT, MF_SHADOW, MF_SHOOTABLE, MF_SKULLFLY, MF_SOLID};
 use crate::src::sounds::{sfx_barexp, sfx_bgdth1, sfx_bgsit1, sfx_boscub, sfx_bosdth, sfx_bospit, sfx_bospn, sfx_bossit, sfx_bspwlk, sfx_claw, sfx_dbcls, sfx_dbload, sfx_dbopn, sfx_flame, sfx_flamst, sfx_hoof, sfx_manatk, sfx_metal, sfx_pdiehi, sfx_pistol, sfx_pldeth, sfx_podth1, sfx_posit1, sfx_shotgn, sfx_skepch, sfx_skeswg, sfx_slop, sfx_telept, sfx_vilatk};
 use crate::src::p_mobj::{MT_ARACHPLAZ, MT_BABY, MT_BOSSTARGET, MT_BRUISER, MT_BRUISERSHOT, MT_CYBORG, MT_FATSHOT, MT_FATSO, MT_FIRE, MT_HEAD, MT_HEADSHOT, MT_KNIGHT, MT_PAIN, MT_PLAYER, MT_ROCKET, MT_SERGEANT, MT_SHADOWS, MT_SKULL, MT_SMOKE, MT_SPAWNFIRE, MT_SPAWNSHOT, MT_SPIDER, MT_TRACER, MT_TROOP, MT_TROOPSHOT, MT_UNDEAD, MT_VILE, mobjtype_t};
-use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_mobj::{ThinkerFn, statenum_t};
 use crate::src::d_mode::commercial;
 use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_easy, sk_nightmare};
@@ -65,10 +65,7 @@ use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::doomdef::boolean;
 
-extern "C" {
-    fn P_MobjThinker(mobj: *mut mobj_t);
-    fn A_ReFire(player: *mut player_t, psp: *mut pspdef_t);
-}
+use crate::src::p_pspr::A_ReFire;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1508,11 +1505,7 @@ pub unsafe extern "C" fn A_KeenDie(mut mo: *mut mobj_t) {
     A_Fall(mo);
     th = thinkercap.next as *mut thinker_t;
     while th != &raw mut thinkercap {
-        if !((*th).function.acp1
-            != ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                actionf_p1,
-            >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ())))
+        if matches!((*th).function, ThinkerFn::Mobj(_))
         {
             mo2 = th as *mut mobj_t;
             if mo2 != mo
@@ -2242,11 +2235,7 @@ pub unsafe extern "C" fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: ang
     count = 0 as i32;
     currentthinker = thinkercap.next as *mut thinker_t;
     while currentthinker != &raw mut thinkercap {
-        if (*currentthinker).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                actionf_p1,
-            >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ()))
+        if matches!((*currentthinker).function, ThinkerFn::Mobj(_))
             && (*(currentthinker as *mut mobj_t)).type_0 as u32
                 == MT_SKULL as i32 as u32
         {
@@ -2431,11 +2420,7 @@ pub unsafe extern "C" fn A_BossDeath(mut mo: *mut mobj_t) {
     }
     th = thinkercap.next as *mut thinker_t;
     while th != &raw mut thinkercap {
-        if !((*th).function.acp1
-            != ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                actionf_p1,
-            >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ())))
+        if matches!((*th).function, ThinkerFn::Mobj(_))
         {
             mo2 = th as *mut mobj_t;
             if mo2 != mo
@@ -2556,11 +2541,7 @@ pub unsafe extern "C" fn A_BrainAwake(mut mo: *mut mobj_t) {
     thinker = thinkercap.next as *mut thinker_t;
     thinker = thinkercap.next as *mut thinker_t;
     while thinker != &raw mut thinkercap {
-        if !((*thinker).function.acp1
-            != ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                actionf_p1,
-            >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ())))
+        if matches!((*thinker).function, ThinkerFn::Mobj(_))
         {
             m = thinker as *mut mobj_t;
             if (*m).type_0 as u32

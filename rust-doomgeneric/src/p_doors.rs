@@ -15,12 +15,9 @@ use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_bdcls, sfx_bdopn, sfx_dorcls, sfx_doropn, sfx_oof};
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::p_mobj::mobjtype_t;
-use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_mobj::{ThinkerFn, statenum_t};
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::m_fixed::fixed_t;
-extern "C" {
-    fn T_PlatRaise(plat: *mut plat_t);
-}
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;
@@ -1240,10 +1237,7 @@ pub unsafe fn EV_DoDoor(
         ) as *mut vldoor_t;
         P_AddThinker(&raw mut (*door).thinker);
         (*sec).specialdata = door as *mut ::core::ffi::c_void;
-        (*door).thinker.function.acp1 = ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
-            actionf_p1,
-        >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()));
+        (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
         (*door).sector = sec;
         (*door).type_0 = type_0;
         (*door).topwait = VDOORWAIT;
@@ -1371,23 +1365,9 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
                     if (*thing).player.is_null() {
                         return;
                     }
-                    if (*door).thinker.function.acp1
-                        == ::core::mem::transmute::<
-                            Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
-                            actionf_p1,
-                        >(
-                            Some(
-                                T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> (),
-                            ),
-                        )
-                    {
+                    if matches!((*door).thinker.function, ThinkerFn::Door(_)) {
                         (*door).direction = -(1 as i32);
-                    } else if (*door).thinker.function.acp1
-                        == ::core::mem::transmute::<
-                            Option<unsafe extern "C" fn(*mut plat_t) -> ()>,
-                            actionf_p1,
-                        >(Some(T_PlatRaise as unsafe extern "C" fn(*mut plat_t) -> ()))
-                    {
+                    } else if matches!((*door).thinker.function, ThinkerFn::Plat(_)) {
                         let mut plat: *mut plat_t = ::core::ptr::null_mut::<plat_t>();
                         plat = door as *mut plat_t;
                         (*plat).wait = -(1 as i32);
@@ -1432,10 +1412,7 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
     ) as *mut vldoor_t;
     P_AddThinker(&raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
-    (*door).thinker.function.acp1 = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
-        actionf_p1,
-    >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()));
+    (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
     (*door).sector = sec;
     (*door).direction = 1 as i32;
     (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
@@ -1474,10 +1451,7 @@ pub unsafe fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
     P_AddThinker(&raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
     (*sec).special = 0 as i16;
-    (*door).thinker.function.acp1 = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
-        actionf_p1,
-    >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()));
+    (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
     (*door).sector = sec;
     (*door).direction = 0 as i32;
     (*door).type_0 = vld_normal;
@@ -1497,10 +1471,7 @@ pub unsafe fn P_SpawnDoorRaiseIn5Mins(
     P_AddThinker(&raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
     (*sec).special = 0 as i16;
-    (*door).thinker.function.acp1 = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
-        actionf_p1,
-    >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()));
+    (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
     (*door).sector = sec;
     (*door).direction = 2 as i32;
     (*door).type_0 = vld_raiseIn5Mins;
