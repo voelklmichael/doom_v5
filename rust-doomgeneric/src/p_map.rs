@@ -40,6 +40,7 @@ use crate::src::p_setup::lines;
 use crate::src::r_main::validcount;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::r_sky::skyflatnum;
+use crate::src::g_game::gamemap;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -56,7 +57,6 @@ extern "C" {
     static mut finecosine: *const fixed_t;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut gamemap: i32;
     static mut leveltime: i32;
 }
 pub type size_t = usize;

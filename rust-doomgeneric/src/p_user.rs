@@ -4,12 +4,12 @@ use crate::src::d_ticcmd::{ticcmd_t};
 use crate::src::p_pspr::P_MovePsprites;
 use crate::src::p_map::P_UseLines;
 use crate::src::p_mobj::P_SetMobjState;
+use crate::src::info::states;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut states: [state_t; 967];
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn P_PlayerInSpecialSector(player: *mut player_t);
     static mut gamemode: GameMode_t;

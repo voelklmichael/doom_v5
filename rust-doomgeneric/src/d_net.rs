@@ -24,6 +24,7 @@ use crate::src::d_main::nomonsters;
 use crate::src::d_main::fastparm;
 use crate::src::g_game::timelimit;
 use crate::src::g_game::demoplayback;
+use crate::src::doomstat::gamemission;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -37,7 +38,6 @@ extern "C" {
     fn G_CheckDemoStatus() -> boolean;
     fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
     static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
     static mut deathmatch: i32;

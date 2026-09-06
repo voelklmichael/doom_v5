@@ -1475,7 +1475,6 @@ pub static mut sprnames: [*mut ::core::ffi::c_char; 139] = [
     b"TLP2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
 ];
-#[no_mangle]
 pub static mut states: [state_t; 967] = unsafe {
     [
         state_t {

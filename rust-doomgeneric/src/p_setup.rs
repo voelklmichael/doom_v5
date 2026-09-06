@@ -1454,7 +1454,6 @@ pub static mut vertexes: *mut vertex_t = ::core::ptr::null::<vertex_t>()
 #[no_mangle]
 pub static mut numsegs: i32 = 0;
 pub static mut segs: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
-#[no_mangle]
 pub static mut numsectors: i32 = 0;
 #[no_mangle]
 pub static mut sectors: *mut sector_t = ::core::ptr::null::<sector_t>() as *mut sector_t;
@@ -1466,7 +1465,6 @@ pub static mut nodes: *mut node_t = ::core::ptr::null::<node_t>() as *mut node_t
 pub static mut numlines: i32 = 0;
 pub static mut lines: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
 pub static mut numsides: i32 = 0;
-#[no_mangle]
 pub static mut sides: *mut side_t = ::core::ptr::null::<side_t>() as *mut side_t;
 static mut totallines: i32 = 0;
 pub static mut bmapwidth: i32 = 0;
