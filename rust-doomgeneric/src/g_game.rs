@@ -1,7 +1,7 @@
 use crate::src::i_system::FILE;
 use crate::src::d_event::event_t;
 use crate::src::wi_stuff::{wbplayerstruct_t, wbstartstruct_t};
-use crate::src::p_mobj::{mapthing_t, state_t, mobjinfo_t, subsector_t, actionf_t};
+use crate::src::p_mobj::{mapthing_t, state_t, subsector_t, actionf_t};
 use crate::src::d_player::{player_s, player_t, PST_LIVE, PST_DEAD, PST_REBORN};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::d_ticcmd::{ticcmd_t};
@@ -115,6 +115,8 @@ use crate::src::r_sky::skytexture;
 use crate::src::tables::finetangent;
 use crate::src::d_loop::gametic;
 use crate::src::r_main::R_PointInSubsector;
+use crate::src::info::mobjinfo;
+use crate::src::p_mobj::P_RemoveMobj;
 
 extern "C" {
     fn memcpy(
@@ -146,7 +148,6 @@ extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut states: [state_t; 967];
-    static mut mobjinfo: [mobjinfo_t; 137];
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
@@ -182,7 +183,6 @@ extern "C" {
         z: fixed_t,
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
-    fn P_RemoveMobj(th: *mut mobj_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;
@@ -1719,7 +1719,6 @@ pub const SAVEGAMESIZE: i32 = 0x2c000 as i32;
 pub static mut oldgamestate: gamestate_t = GS_LEVEL;
 pub static mut gameaction: gameaction_t = ga_nothing;
 pub static mut gamestate: gamestate_t = GS_LEVEL;
-#[no_mangle]
 pub static mut gameskill: skill_t = sk_baby;
 pub static mut respawnmonsters: bool = false;
 #[no_mangle]
@@ -1817,7 +1816,6 @@ pub static mut demorecording: bool = false;
 #[no_mangle]
 pub static mut longtics: bool = false;
 pub static mut lowres_turn: bool = false;
-#[no_mangle]
 pub static mut demoplayback: bool = false;
 #[no_mangle]
 pub static mut netdemo: bool = false;

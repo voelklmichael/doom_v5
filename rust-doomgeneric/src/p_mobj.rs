@@ -23,6 +23,9 @@ use crate::src::p_maputl::P_UnsetThingPosition;
 use crate::src::p_setup::playerstarts;
 use crate::src::p_maputl::P_SetThingPosition;
 use crate::src::r_main::R_PointInSubsector;
+use crate::src::g_game::gameskill;
+use crate::src::info::mobjinfo;
+use crate::src::p_tick::P_RemoveThinker;
 
 extern "C" {
     fn Z_Malloc(
@@ -45,13 +48,10 @@ extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut states: [state_t; 967];
-    static mut mobjinfo: [mobjinfo_t; 137];
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn P_AddThinker(thinker: *mut thinker_t);
-    fn P_RemoveThinker(thinker: *mut thinker_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gameversion: GameVersion_t;
-    static mut gameskill: skill_t;
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut consoleplayer: i32;
@@ -1717,8 +1717,7 @@ pub const ONCEILINGZ: i32 = INT_MAX;
 pub const ITEMQUESIZE: i32 = 128 as i32;
 #[no_mangle]
 pub static mut test: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn P_SetMobjState(
+pub unsafe fn P_SetMobjState(
     mut mobj: *mut mobj_t,
     mut state: statenum_t,
 ) -> boolean {
@@ -2128,8 +2127,7 @@ pub static mut itemrespawnque: [mapthing_t; 128] = [mapthing_t {
 pub static mut itemrespawntime: [i32; 128] = [0; 128];
 pub static mut iquehead: i32 = 0;
 pub static mut iquetail: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn P_RemoveMobj(mut mobj: *mut mobj_t) {
+pub unsafe fn P_RemoveMobj(mut mobj: *mut mobj_t) {
     if (*mobj).flags & MF_SPECIAL as i32 != 0
         && (*mobj).flags & MF_DROPPED as i32 == 0
         && (*mobj).type_0 as u32

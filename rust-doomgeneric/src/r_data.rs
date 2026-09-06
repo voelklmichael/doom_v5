@@ -16,6 +16,7 @@ use crate::src::z_zone::Z_ChangeTag2;
 use crate::src::r_sky::skytexture;
 use crate::src::p_tick::thinkercap;
 use crate::src::w_wad::lumpinfo;
+use crate::src::g_game::demoplayback;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -54,7 +55,6 @@ extern "C" {
     static mut sectors: *mut sector_t;
     static mut sides: *mut side_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
-    static mut demoplayback: bool;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

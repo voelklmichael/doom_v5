@@ -10,13 +10,13 @@ use crate::src::p_setup::playerstarts;
 use crate::src::p_setup::bmaporgx;
 use crate::src::p_setup::bmaporgy;
 use crate::src::r_main::R_PointInSubsector;
+use crate::src::p_setup::lines;
+use crate::src::r_main::validcount;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut lines: *mut line_t;
-    static mut validcount: i32;
 }
 pub type __uint8_t = u8;
 pub type fixed_t = i32;

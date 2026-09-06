@@ -25,6 +25,7 @@ use crate::src::i_video::I_SetPalette;
 use crate::src::m_random::M_Random;
 use crate::src::s_sound::S_ChangeMusic;
 use crate::src::v_video::V_RestoreBuffer;
+use crate::src::g_game::gameskill;
 
 extern "C" {
     fn snprintf(
@@ -63,7 +64,6 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut gameskill: skill_t;
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut automapactive: bool;

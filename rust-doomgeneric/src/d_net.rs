@@ -23,6 +23,7 @@ use crate::src::r_main::viewangleoffset;
 use crate::src::d_main::nomonsters;
 use crate::src::d_main::fastparm;
 use crate::src::g_game::timelimit;
+use crate::src::g_game::demoplayback;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -41,7 +42,6 @@ extern "C" {
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut consoleplayer: i32;
-    static mut demoplayback: bool;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
 }

@@ -6,6 +6,7 @@ use crate::src::v_video::V_UseBuffer;
 use crate::src::v_video::V_RestoreBuffer;
 use crate::src::r_data::colormaps;
 use crate::src::v_video::V_MarkRect;
+use crate::src::i_video::I_VideoBuffer;
 
 extern "C" {
     fn memcpy(
@@ -19,7 +20,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    static mut I_VideoBuffer: *mut byte;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     static mut gamemode: GameMode_t;
 }

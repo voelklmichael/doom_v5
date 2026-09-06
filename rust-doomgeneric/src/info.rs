@@ -10427,7 +10427,6 @@ pub static mut states: [state_t; 967] = unsafe {
         },
     ]
 };
-#[no_mangle]
 pub static mut mobjinfo: [mobjinfo_t; 137] = [
     mobjinfo_t {
         doomednum: -(1 as i32),

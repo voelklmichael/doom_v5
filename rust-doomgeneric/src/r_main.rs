@@ -1343,7 +1343,6 @@ pub const SCREENWIDTH: i32 = 320 as i32;
 pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const FIELDOFVIEW: i32 = 2048 as i32;
 pub static mut viewangleoffset: i32 = 0;
-#[no_mangle]
 pub static mut validcount: i32 = 1 as i32;
 pub static mut fixedcolormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;

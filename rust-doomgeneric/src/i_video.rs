@@ -122,7 +122,6 @@ static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
 pub static mut fb_scaling: i32 = 1 as i32;
 pub static mut usemouse: i32 = 0 as i32;
 static mut colors: [color; 256] = [color { b_g_r_a: [0; 4] }; 256];
-#[no_mangle]
 pub static mut I_VideoBuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 pub static mut screensaver_mode: bool = false;
 pub static mut screenvisible: bool = false;

@@ -6,6 +6,9 @@ use crate::src::i_system::I_Error;
 use crate::src::i_system::I_Tactile;
 use crate::src::p_pspr::P_DropWeapon;
 use crate::src::am_map::AM_Stop;
+use crate::src::g_game::gameskill;
+use crate::src::p_mobj::P_SetMobjState;
+use crate::src::p_mobj::P_RemoveMobj;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
@@ -14,7 +17,6 @@ extern "C" {
     static mut states: [state_t; 967];
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
-    static mut gameskill: skill_t;
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut automapactive: bool;
@@ -28,8 +30,6 @@ extern "C" {
         z: fixed_t,
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
-    fn P_RemoveMobj(th: *mut mobj_t);
-    fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type __uint8_t = u8;

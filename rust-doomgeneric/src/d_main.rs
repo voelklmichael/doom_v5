@@ -118,6 +118,7 @@ use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::v_video::V_RestoreBuffer;
 use crate::src::d_loop::gametic;
 use crate::src::w_wad::lumpinfo;
+use crate::src::g_game::demoplayback;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -158,7 +159,6 @@ extern "C" {
     static mut deathmatch: i32;
     static mut automapactive: bool;
     static mut consoleplayer: i32;
-    static mut demoplayback: bool;
     static mut players: [player_t; 4];
     fn Z_Init();
     fn Z_Malloc(

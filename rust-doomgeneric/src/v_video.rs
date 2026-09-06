@@ -8,6 +8,7 @@ use crate::src::m_misc::M_FileExists;
 use crate::src::i_video::usemouse;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_misc::M_WriteFile;
+use crate::src::i_video::I_VideoBuffer;
 
 extern "C" {
     fn memcpy(
@@ -26,7 +27,6 @@ extern "C" {
         g: i32,
         b: i32,
     ) -> i32;
-    static mut I_VideoBuffer: *mut byte;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,

@@ -15,6 +15,8 @@ use crate::src::g_game::gamestate;
 use crate::src::g_game::viewactive;
 use crate::src::s_sound::S_ChangeMusic;
 use crate::src::v_video::V_MarkRect;
+use crate::src::i_video::I_VideoBuffer;
+use crate::src::info::mobjinfo;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -41,7 +43,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     static mut states: [state_t; 967];
-    static mut mobjinfo: [mobjinfo_t; 137];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
@@ -50,7 +51,6 @@ extern "C" {
     static mut gamemap: i32;
     static mut automapactive: bool;
     static mut players: [player_t; 4];
-    static mut I_VideoBuffer: *mut byte;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
