@@ -1222,8 +1222,7 @@ pub static mut wadfile: [::core::ffi::c_char; 1024] = [0; 1024];
 pub static mut mapdir: [::core::ffi::c_char; 1024] = [0; 1024];
 #[no_mangle]
 pub static mut show_endoom: i32 = 1 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn D_ProcessEvents() {
+pub unsafe fn D_ProcessEvents() {
     let mut ev: *mut event_t = ::core::ptr::null_mut::<event_t>();
     if storedemo {
         return;
@@ -1484,8 +1483,7 @@ pub unsafe extern "C" fn D_BindVariables() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_GrabMouseCallback() -> boolean {
+pub unsafe fn D_GrabMouseCallback() -> boolean {
     if drone {
         return false_0 as boolean;
     }
@@ -1526,7 +1524,7 @@ pub unsafe extern "C" fn D_DoomLoop() {
     I_SetWindowTitle(gamedescription);
     I_GraphicsCheckCommandLine();
     I_SetGrabMouseCallback(
-        Some(D_GrabMouseCallback as unsafe extern "C" fn() -> boolean),
+        Some(D_GrabMouseCallback as unsafe fn() -> boolean),
     );
     I_InitGraphics();
     I_EnableLoadingDisk();

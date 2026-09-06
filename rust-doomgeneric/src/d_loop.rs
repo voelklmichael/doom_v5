@@ -57,12 +57,12 @@ pub type netgame_startup_callback_t = Option<
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct loop_interface_t {
-    pub ProcessEvents: Option<unsafe extern "C" fn() -> ()>,
+    pub ProcessEvents: Option<unsafe fn() -> ()>,
     pub BuildTiccmd: Option<
-        unsafe extern "C" fn(*mut ticcmd_t, i32) -> (),
+        unsafe fn(*mut ticcmd_t, i32) -> (),
     >,
-    pub RunTic: Option<unsafe extern "C" fn(*mut ticcmd_t, *mut boolean) -> ()>,
-    pub RunMenu: Option<unsafe extern "C" fn() -> ()>,
+    pub RunTic: Option<unsafe fn(*mut ticcmd_t, *mut boolean) -> ()>,
+    pub RunMenu: Option<unsafe fn() -> ()>,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]

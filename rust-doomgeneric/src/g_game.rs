@@ -1496,8 +1496,7 @@ unsafe extern "C" fn G_NextWeapon(
     }
     return weapon_order_table[i as usize].weapon_num as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_BuildTiccmd(
+pub unsafe fn G_BuildTiccmd(
     mut cmd: *mut ticcmd_t,
     mut maketic: i32,
 ) {
