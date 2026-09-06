@@ -862,7 +862,7 @@ pub unsafe fn A_SkelMissile(mut actor: *mut mobj_t) {
     (*mo).tracer = (*actor).target;
 }
 #[no_mangle]
-pub static mut TRACEANGLE: i32 = 0xc000000 as i32;
+pub static mut TRACEANGLE: i32 = 0xc000000;
 pub unsafe fn A_Tracer(mut actor: *mut mobj_t) {
     let mut exact: angle_t = 0;
     let mut dist: fixed_t = 0;
@@ -1507,7 +1507,7 @@ pub static mut braintargets: [*mut mobj_t; 32] = [::core::ptr::null::<mobj_t>()
 #[no_mangle]
 pub static mut numbraintargets: i32 = 0;
 #[no_mangle]
-pub static mut braintargeton: i32 = 0 as i32;
+pub static mut braintargeton: i32 = 0;
 pub unsafe fn A_BrainAwake(mut mo: *mut mobj_t) {
     let mut thinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
@@ -1576,7 +1576,7 @@ pub unsafe fn A_BrainDie(mut mo: *mut mobj_t) {
 pub unsafe fn A_BrainSpit(mut mo: *mut mobj_t) {
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    static mut easy: i32 = 0 as i32;
+    static mut easy: i32 = 0;
     easy ^= 1 as i32;
     if gameskill as i32 <= sk_easy as i32 && easy == 0 {
         return;

@@ -688,8 +688,8 @@ pub unsafe fn HU_Ticker() {
 }
 pub const QUEUESIZE: i32 = 128;
 static mut chatchars: [::core::ffi::c_char; 128] = [0; 128];
-static mut head: i32 = 0 as i32;
-static mut tail: i32 = 0 as i32;
+static mut head: i32 = 0;
+static mut tail: i32 = 0;
 pub unsafe fn HU_queueChatChar(mut c: ::core::ffi::c_char) {
     if head + 1 as i32 & QUEUESIZE - 1 as i32 == tail {
         (*plr).message = b"[Message unsent]\0" as *const u8 as *const ::core::ffi::c_char
@@ -719,7 +719,7 @@ pub unsafe fn HU_Responder(mut ev: *mut event_t) -> bool {
     let mut c: u8 = 0;
     let mut i: i32 = 0;
     let mut numplayers: i32 = 0;
-    static mut num_nobrainers: i32 = 0 as i32;
+    static mut num_nobrainers: i32 = 0;
     numplayers = 0 as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {

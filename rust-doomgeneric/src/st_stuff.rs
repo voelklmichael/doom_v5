@@ -167,7 +167,7 @@ static mut plyr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_
 static mut st_firsttime: bool = false;
 static mut lu_palette: i32 = 0;
 static mut st_clock: u32 = 0;
-static mut st_msgcounter: i32 = 0 as i32;
+static mut st_msgcounter: i32 = 0;
 static mut st_chatstate: st_chatstateenum_t = StartChatState;
 static mut st_gamestate: st_stateenum_t = AutomapState;
 static mut st_statusbaron: bool = false;
@@ -294,10 +294,10 @@ static mut w_maxammo: [st_number_t; 4] = [st_number_t {
     data: 0,
 }; 4];
 static mut st_fragscount: i32 = 0;
-static mut st_oldhealth: i32 = -(1 as i32);
+static mut st_oldhealth: i32 = -1;
 static mut oldweaponsowned: [bool; 9] = [false; 9];
-static mut st_facecount: i32 = 0 as i32;
-static mut st_faceindex: i32 = 0 as i32;
+static mut st_facecount: i32 = 0;
+static mut st_faceindex: i32 = 0;
 static mut keyboxes: [i32; 3] = [0; 3];
 static mut st_randomnumber: i32 = 0;
 #[no_mangle]
@@ -710,7 +710,7 @@ pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
 pub unsafe fn ST_calcPainOffset() -> i32 {
     let mut health: i32 = 0;
     static mut lastcalc: i32 = 0;
-    static mut oldhealth: i32 = -(1 as i32);
+    static mut oldhealth: i32 = -1;
     health = if (*plyr).health > 100 as i32 {
         100 as i32
     } else {
@@ -728,8 +728,8 @@ pub unsafe fn ST_updateFaceWidget() {
     let mut i: i32 = 0;
     let mut badguyangle: angle_t = 0;
     let mut diffang: angle_t = 0;
-    static mut lastattackdown: i32 = -(1 as i32);
-    static mut priority: i32 = 0 as i32;
+    static mut lastattackdown: i32 = -1;
+    static mut priority: i32 = 0;
     let mut doevilgrin: bool = false;
     if priority < 10 as i32 {
         if (*plyr).health == 0 {
@@ -837,7 +837,7 @@ pub unsafe fn ST_updateFaceWidget() {
     st_facecount -= 1;
 }
 pub unsafe fn ST_updateWidgets() {
-    static mut largeammo: i32 = 1994 as i32;
+    static mut largeammo: i32 = 1994;
     let mut i: i32 = 0;
     if weaponinfo[(*plyr).readyweapon as usize].ammo as u32
         == am_noammo as i32 as u32
@@ -895,7 +895,7 @@ pub unsafe fn ST_Ticker() {
     ST_updateWidgets();
     st_oldhealth = (*plyr).health;
 }
-static mut st_palette: i32 = 0 as i32;
+static mut st_palette: i32 = 0;
 pub unsafe fn ST_doPaletteStuff() {
     let mut palette: i32 = 0;
     let mut pal: *mut byte = ::core::ptr::null_mut::<byte>();

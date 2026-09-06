@@ -235,7 +235,7 @@ pub static mut wadfile: [::core::ffi::c_char; 1024] = [0; 1024];
 #[no_mangle]
 pub static mut mapdir: [::core::ffi::c_char; 1024] = [0; 1024];
 #[no_mangle]
-pub static mut show_endoom: i32 = 1 as i32;
+pub static mut show_endoom: i32 = 1;
 pub unsafe fn D_ProcessEvents() {
     let mut ev: *mut event_t = ::core::ptr::null_mut::<event_t>();
     if storedemo {
@@ -258,7 +258,7 @@ pub unsafe fn D_Display() {
     static mut menuactivestate: bool = false;
     static mut inhelpscreensstate: bool = false;
     static mut fullscreen: bool = false;
-    static mut oldgamestate: gamestate_t = 4294967295 as gamestate_t;
+    static mut oldgamestate: gamestate_t = 4294967295;
     static mut borderdrawcount: i32 = 0;
     let mut nowtime: i32 = 0;
     let mut tics: i32 = 0;

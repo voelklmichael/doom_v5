@@ -72,12 +72,12 @@ pub struct music_module_t {
     pub Poll: Option<unsafe extern "C" fn() -> ()>,
 }
 #[no_mangle]
-pub static mut snd_samplerate: i32 = 44100 as i32;
+pub static mut snd_samplerate: i32 = 44100;
 #[no_mangle]
-pub static mut snd_cachesize: i32 = 64 as i32
-    * 1024 as i32 * 1024 as i32;
+pub static mut snd_cachesize: i32 = 64
+    * 1024 * 1024;
 #[no_mangle]
-pub static mut snd_maxslicetime_ms: i32 = 28 as i32;
+pub static mut snd_maxslicetime_ms: i32 = 28;
 #[no_mangle]
 pub static mut snd_musiccmd: *mut ::core::ffi::c_char = b"\0" as *const u8
     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -88,10 +88,10 @@ static mut music_module: *mut music_module_t = ::core::ptr::null::<music_module_
 pub static mut snd_musicdevice: i32 = SNDDEVICE_SB as i32;
 #[no_mangle]
 pub static mut snd_sfxdevice: i32 = SNDDEVICE_SB as i32;
-static mut snd_sbport: i32 = 0 as i32;
-static mut snd_sbirq: i32 = 0 as i32;
-static mut snd_sbdma: i32 = 0 as i32;
-static mut snd_mport: i32 = 0 as i32;
+static mut snd_sbport: i32 = 0;
+static mut snd_sbirq: i32 = 0;
+static mut snd_sbdma: i32 = 0;
+static mut snd_mport: i32 = 0;
 static mut sound_modules: [*mut sound_module_t; 1] = [
     ::core::ptr::null::<sound_module_t>() as *mut sound_module_t,
 ];

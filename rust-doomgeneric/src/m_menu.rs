@@ -171,10 +171,10 @@ pub const GAMMALVL4: &str = "Gamma correction level 4\0";
 pub const EMPTYSTRING: &str = "empty slot\0";
 pub const NUM_QUITMESSAGES: i32 = 8;
 pub const SAVESTRINGSIZE: i32 = 24;
-pub static mut mouseSensitivity: i32 = 5 as i32;
-pub static mut showMessages: i32 = 1 as i32;
-pub static mut detailLevel: i32 = 0 as i32;
-pub static mut screenblocks: i32 = 10 as i32;
+pub static mut mouseSensitivity: i32 = 5;
+pub static mut showMessages: i32 = 1;
+pub static mut detailLevel: i32 = 0;
+pub static mut screenblocks: i32 = 10;
 #[no_mangle]
 pub static mut screenSize: i32 = 0;
 #[no_mangle]
@@ -1721,12 +1721,12 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
     let mut ch: i32 = 0;
     let mut key: i32 = 0;
     let mut i: i32 = 0;
-    static mut joywait: i32 = 0 as i32;
-    static mut mousewait: i32 = 0 as i32;
-    static mut mousey: i32 = 0 as i32;
-    static mut lasty: i32 = 0 as i32;
-    static mut mousex: i32 = 0 as i32;
-    static mut lastx: i32 = 0 as i32;
+    static mut joywait: i32 = 0;
+    static mut mousewait: i32 = 0;
+    static mut mousey: i32 = 0;
+    static mut lasty: i32 = 0;
+    static mut mousex: i32 = 0;
+    static mut lastx: i32 = 0;
     if testcontrols {
         if (*ev).type_0 as u32
             == ev_quit as i32 as u32

@@ -256,9 +256,9 @@ static mut rndtable: [u8; 256] = [
     236 as i32 as u8,
     249 as i32 as u8,
 ];
-pub static mut rndindex: i32 = 0 as i32;
+pub static mut rndindex: i32 = 0;
 #[no_mangle]
-pub static mut prndindex: i32 = 0 as i32;
+pub static mut prndindex: i32 = 0;
 pub unsafe fn P_Random() -> i32 {
     prndindex = prndindex + 1 as i32 & 0xff as i32;
     return rndtable[prndindex as usize] as i32;

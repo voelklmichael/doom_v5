@@ -96,7 +96,7 @@ static mut recvtic: i32 = 0;
 pub static mut gametic: i32 = 0;
 pub static mut singletics: bool = false;
 static mut localplayer: i32 = 0;
-static mut skiptics: i32 = 0 as i32;
+static mut skiptics: i32 = 0;
 pub static mut ticdup: i32 = 0;
 #[no_mangle]
 pub static mut offsetms: fixed_t = 0;

@@ -879,14 +879,14 @@ pub const XK_space: u32 = 32;
 pub const XA_STRING: Atom = 31 as i32 as Atom;
 pub const XA_WM_NAME: Atom = 39 as i32 as Atom;
 static mut s_Display: *mut Display = ::core::ptr::null::<Display>() as *mut Display;
-static mut s_Window: Window = 0 as Window;
-static mut s_Screen: i32 = 0 as i32;
+static mut s_Window: Window = 0;
+static mut s_Screen: i32 = 0;
 static mut s_Gc: GC = ::core::ptr::null::<_XGC>() as *mut _XGC;
 static mut s_Image: *mut XImage = ::core::ptr::null::<XImage>() as *mut XImage;
 pub const KEYQUEUE_SIZE: i32 = 16;
 static mut s_KeyQueue: [u16; 16] = [0; 16];
-static mut s_KeyQueueWriteIndex: u32 = 0 as u32;
-static mut s_KeyQueueReadIndex: u32 = 0 as u32;
+static mut s_KeyQueueWriteIndex: u32 = 0;
+static mut s_KeyQueueReadIndex: u32 = 0;
 unsafe extern "C" fn convertToDoomKey(
     mut key: u32,
 ) -> u8 {
