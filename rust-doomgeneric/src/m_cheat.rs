@@ -1,12 +1,6 @@
-extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-}
-pub type size_t = usize;
+use crate::src::stdint_types::size_t;
+use libc::memcpy;
+use libc::strlen;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cheatseq_t {

@@ -1,3 +1,10 @@
+pub type skill_t = i32;
+pub const sk_nightmare: skill_t = 4;
+pub const sk_hard: skill_t = 3;
+pub const sk_medium: skill_t = 2;
+pub const sk_easy: skill_t = 1;
+pub const sk_baby: skill_t = 0;
+pub const sk_noitems: skill_t = -1;
 pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;

@@ -12,66 +12,19 @@ use crate::src::z_zone::Z_ChangeUser;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use libc::{memcpy, memset};
+use libc::{strcasecmp, strlen, strncasecmp, strncmp, strncpy, toupper};
+use libc::{free, printf};
+use crate::src::m_misc::__ctype_toupper_loc;
+use crate::src::d_mode::indetermined;
+use crate::src::d_mode::{GameMission_t, doom, heretic, hexen, strife};
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::__int32_t;
+use crate::src::stdint_types::size_t;
 
 extern "C" {
-    fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: i32) -> i32;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
-    fn free(__ptr: *mut ::core::ffi::c_void);
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn strncpy(
-        __dest: *mut ::core::ffi::c_char,
-        __src: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_char;
-    fn strncmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> i32;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn strcasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn strncasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> i32;
 }
-pub type __uint8_t = u8;
-pub type __int32_t = i32;
-pub type size_t = usize;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
-pub type GameMission_t = u32;
-pub const none: GameMission_t = 9;
-pub const strife: GameMission_t = 8;
-pub const hexen: GameMission_t = 7;
-pub const heretic: GameMission_t = 6;
-pub const pack_hacx: GameMission_t = 5;
-pub const pack_chex: GameMission_t = 4;
-pub const pack_plut: GameMission_t = 3;
-pub const pack_tnt: GameMission_t = 2;
-pub const doom2: GameMission_t = 1;
-pub const doom: GameMission_t = 0;
-pub type GameMode_t = u32;
-pub const indetermined: GameMode_t = 4;
-pub const retail: GameMode_t = 3;
-pub const commercial: GameMode_t = 2;
-pub const registered: GameMode_t = 1;
-pub const shareware: GameMode_t = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lumpinfo_s {

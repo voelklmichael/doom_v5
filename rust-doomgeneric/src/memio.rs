@@ -1,15 +1,9 @@
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-}
-pub type size_t = usize;
+use crate::src::stdint_types::size_t;
+use libc::memcpy;
+use libc::printf;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _MEMFILE {

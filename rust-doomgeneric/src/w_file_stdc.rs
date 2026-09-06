@@ -4,29 +4,10 @@ use crate::src::m_misc::M_FileLength;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
+use crate::src::i_system::{fclose, fopen, fread, fseek};
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 
-extern "C" {
-    fn fclose(__stream: *mut FILE) -> i32;
-    fn fopen(
-        __filename: *const ::core::ffi::c_char,
-        __modes: *const ::core::ffi::c_char,
-    ) -> *mut FILE;
-    fn fread(
-        __ptr: *mut ::core::ffi::c_void,
-        __size: size_t,
-        __n: size_t,
-        __stream: *mut FILE,
-    ) -> u64;
-    fn fseek(
-        __stream: *mut FILE,
-        __off: i64,
-        __whence: i32,
-    ) -> i32;
-}
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct stdc_wad_file_t {

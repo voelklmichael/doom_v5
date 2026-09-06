@@ -1,4 +1,4 @@
-pub type fixed_t = i32;
+use crate::src::m_fixed::fixed_t;
 pub type C2RustUnnamed = u32;
 pub const BOXRIGHT: C2RustUnnamed = 3;
 pub const BOXLEFT: C2RustUnnamed = 2;

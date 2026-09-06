@@ -2,8 +2,8 @@ use crate::src::m_argv::M_CheckParm;
 use crate::src::m_config::M_BindVariable;
 use crate::src::i_video::screensaver_mode;
 
-pub type boolean = u32;
 use crate::src::sounds::sfxinfo_t;
+use crate::src::doomdef::boolean;
 pub type snddevice_t = u32;
 pub const SNDDEVICE_CD: snddevice_t = 10;
 pub const SNDDEVICE_AWE32: snddevice_t = 9;

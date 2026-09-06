@@ -1,49 +1,56 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::m_misc::M_snprintf;
+use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
+use libc::{atoi, strcasecmp, strlen};
+use libc::{exit, free, malloc, printf, puts};
 
 extern "C" {
     pub type FILE;
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
-    fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn free(__ptr: *mut ::core::ffi::c_void);
-    fn exit(__status: i32) -> !;
     fn system(__command: *const ::core::ffi::c_char) -> i32;
-    static mut stderr: *mut FILE;
-    fn fflush(__stream: *mut FILE) -> i32;
-    fn fprintf(
+    pub static mut stderr: *mut FILE;
+    pub fn fflush(__stream: *mut FILE) -> i32;
+    pub fn fprintf(
         __stream: *mut FILE,
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn vfprintf(
+    pub fn vfprintf(
         __s: *mut FILE,
         __format: *const ::core::ffi::c_char,
         __arg: ::core::ffi::VaList,
     ) -> i32;
-    fn putchar(__c: i32) -> i32;
-    fn puts(__s: *const ::core::ffi::c_char) -> i32;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
+    pub fn fopen(
+        __filename: *const ::core::ffi::c_char,
+        __modes: *const ::core::ffi::c_char,
+    ) -> *mut FILE;
+    pub fn fclose(__stream: *mut FILE) -> i32;
+    pub fn fread(
+        __ptr: *mut ::core::ffi::c_void,
+        __size: size_t,
         __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
+        __stream: *mut FILE,
+    ) -> u64;
+    pub fn fwrite(
+        __ptr: *const ::core::ffi::c_void,
+        __size: size_t,
+        __n: size_t,
+        __s: *mut FILE,
+    ) -> u64;
+    pub fn fseek(
+        __stream: *mut FILE,
+        __off: i64,
+        __whence: i32,
+    ) -> i32;
+    pub fn ftell(__stream: *mut FILE) -> i64;
+    fn putchar(__c: i32) -> i32;
     fn strchr(
         __s: *const ::core::ffi::c_char,
         __c: i32,
     ) -> *mut ::core::ffi::c_char;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn strcasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
 pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
 pub type atexit_listentry_t = atexit_listentry_s;
 #[derive(Copy, Clone)]

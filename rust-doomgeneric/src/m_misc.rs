@@ -2,85 +2,29 @@ use crate::src::i_system::FILE;
 use crate::src::i_system::I_Error;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
+use libc::memset;
+use libc::{strlen, strncmp, strncpy, toupper};
+use libc::{malloc, printf, sscanf};
+use crate::src::i_system::{fclose, fopen, fread, fseek, ftell, fwrite};
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::__int32_t;
+use crate::src::stdint_types::size_t;
 extern "C" {
-    fn fclose(__stream: *mut FILE) -> i32;
-    fn fopen(
-        __filename: *const ::core::ffi::c_char,
-        __modes: *const ::core::ffi::c_char,
-    ) -> *mut FILE;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         __arg: ::core::ffi::VaList,
     ) -> i32;
-    fn sscanf(
-        __s: *const ::core::ffi::c_char,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-    fn fread(
-        __ptr: *mut ::core::ffi::c_void,
-        __size: size_t,
-        __n: size_t,
-        __stream: *mut FILE,
-    ) -> u64;
-    fn fwrite(
-        __ptr: *const ::core::ffi::c_void,
-        __size: size_t,
-        __n: size_t,
-        __s: *mut FILE,
-    ) -> u64;
-    fn fseek(
-        __stream: *mut FILE,
-        __off: i64,
-        __whence: i32,
-    ) -> i32;
-    fn ftell(__stream: *mut FILE) -> i64;
-    fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn strncpy(
-        __dest: *mut ::core::ffi::c_char,
-        __src: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_char;
-    fn strcmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn strncmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> i32;
-    fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
     fn strstr(
         __haystack: *const ::core::ffi::c_char,
         __needle: *const ::core::ffi::c_char,
     ) -> *mut ::core::ffi::c_char;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn strncasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> i32;
-    fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: i32) -> i32;
+    pub fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn __errno_location() -> *mut i32;
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type __int32_t = i32;
 pub type __mode_t = u32;
-pub type uint8_t = __uint8_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
 pub const SEEK_SET: i32 = 0 as i32;
 pub const SEEK_END: i32 = 2 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<

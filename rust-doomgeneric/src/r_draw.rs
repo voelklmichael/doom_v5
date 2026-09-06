@@ -12,26 +12,13 @@ use crate::src::v_video::V_DrawPatch;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use crate::src::d_mode::commercial;
+use crate::src::m_fixed::fixed_t;
+use crate::src::r_defs::lighttable_t;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
+use libc::memcpy;
 
-extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-}
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
-pub type GameMode_t = u32;
-pub const indetermined: GameMode_t = 4;
-pub const retail: GameMode_t = 3;
-pub const commercial: GameMode_t = 2;
-pub const registered: GameMode_t = 1;
-pub const shareware: GameMode_t = 0;
-pub type fixed_t = i32;
-pub type lighttable_t = byte;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

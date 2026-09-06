@@ -2,23 +2,13 @@ use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_misc::M_MakeDirectory;
 use crate::src::m_misc::M_StringJoin;
+use crate::src::stdint_types::size_t;
+use libc::{strcmp, strdup};
+use libc::{malloc, printf, sscanf};
 
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn sscanf(
-        __s: *const ::core::ffi::c_char,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
-    fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn strcmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
 }
-pub type size_t = usize;
 pub type default_type_t = u32;
 pub const DEFAULT_KEY: default_type_t = 4;
 pub const DEFAULT_FLOAT: default_type_t = 3;

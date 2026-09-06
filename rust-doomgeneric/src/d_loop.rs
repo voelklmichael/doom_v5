@@ -6,39 +6,16 @@ use crate::src::dummy::drone;
 use crate::src::i_timer::I_Sleep;
 use crate::src::i_system::I_AtExit;
 use crate::src::i_timer::I_GetTime;
+use crate::src::d_ticcmd::BT_SPECIAL;
+use crate::src::m_fixed::fixed_t;
+use crate::src::sha1::sha1_digest_t;
+use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
+use libc::{memcpy, memset};
+use libc::printf;
 
-extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-}
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
-pub type C2RustUnnamed = u32;
-pub const BTS_SAVESHIFT: C2RustUnnamed = 2;
-pub const BTS_SAVEMASK: C2RustUnnamed = 28;
-pub const BTS_SAVEGAME: C2RustUnnamed = 2;
-pub const BTS_PAUSE: C2RustUnnamed = 1;
-pub const BT_WEAPONSHIFT: C2RustUnnamed = 3;
-pub const BT_WEAPONMASK: C2RustUnnamed = 56;
-pub const BT_CHANGE: C2RustUnnamed = 4;
-pub const BT_SPECIALMASK: C2RustUnnamed = 3;
-pub const BT_SPECIAL: C2RustUnnamed = 128;
-pub const BT_USE: C2RustUnnamed = 2;
-pub const BT_ATTACK: C2RustUnnamed = 1;
 pub use crate::src::d_ticcmd::ticcmd_t;
-pub type sha1_digest_t = [byte; 20];
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct net_connect_data_t {
@@ -93,8 +70,6 @@ pub struct ticcmd_set_t {
     pub cmds: [ticcmd_t; 8],
     pub ingame: [boolean; 8],
 }
-pub type fixed_t = i32;
-pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<

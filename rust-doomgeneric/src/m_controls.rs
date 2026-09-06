@@ -1,7 +1,7 @@
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_snprintf;
+use crate::src::stdint_types::size_t;
 
-pub type size_t = usize;
 pub const KEY_RIGHTARROW: i32 = 0xae as i32;
 pub const KEY_LEFTARROW: i32 = 0xac as i32;
 pub const KEY_UPARROW: i32 = 0xad as i32;

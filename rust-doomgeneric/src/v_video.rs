@@ -14,26 +14,15 @@ use crate::src::i_video::I_GetPaletteIndex;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use crate::src::m_fixed::fixed_t;
+use crate::src::doomdef::boolean;
+use crate::src::stdint_types::{byte, uint8_t};
+use crate::src::stdint_types::size_t;
+use libc::{memcpy, memset};
 
 extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn fabs(__x: f64) -> f64;
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type boolean = u32;
-pub type byte = uint8_t;
-pub type fixed_t = i32;
 pub type vpatchclipfunc_t = Option<
     unsafe extern "C" fn(*mut patch_t, i32, i32) -> boolean,
 >;

@@ -1,7 +1,5 @@
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
-pub type fixed_t = i32;
+use crate::src::m_fixed::fixed_t;
+use crate::src::stdint_types::byte;
 pub type angle_t = u32;
 pub const FINEANGLES: i32 = 8192;
 pub const SLOPERANGE: i32 = 2048;
