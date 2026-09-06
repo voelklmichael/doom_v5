@@ -19,6 +19,14 @@ use crate::src::p_mobj::P_SpawnPuff;
 use crate::src::p_mobj::P_SubstNullMobj;
 use crate::src::p_sight::P_CheckSight;
 use crate::src::p_switch::P_UseSpecialLine;
+use crate::src::d_main::fastparm;
+use crate::src::g_game::G_ExitLevel;
+use crate::src::p_doors::EV_DoDoor;
+use crate::src::p_floor::EV_DoFloor;
+use crate::src::p_map::P_CheckPosition;
+use crate::src::p_map::P_AimLineAttack;
+use crate::src::p_maputl::P_AproxDistance;
+use crate::src::p_maputl::P_UnsetThingPosition;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -40,11 +48,7 @@ extern "C" {
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn P_MobjThinker(mobj: *mut mobj_t);
-    fn P_AproxDistance(dx: fixed_t, dy: fixed_t) -> fixed_t;
-    fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
-    fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
     fn P_DamageMobj(
@@ -53,12 +57,8 @@ extern "C" {
         source: *mut mobj_t,
         damage: i32,
     );
-    fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
-    fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    fn G_ExitLevel();
     static mut gametic: i32;
-    static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;

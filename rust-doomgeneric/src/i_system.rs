@@ -1,4 +1,5 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
+use crate::src::m_misc::M_StrToInt;
 
 extern "C" {
     pub type FILE;
@@ -36,10 +37,6 @@ extern "C" {
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
     ) -> i32;
-    fn M_StrToInt(
-        str: *const ::core::ffi::c_char,
-        result: *mut i32,
-    ) -> boolean;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
@@ -71,8 +68,7 @@ pub const MIN_RAM: i32 = 6 as i32;
 static mut exit_funcs: *mut atexit_listentry_t = ::core::ptr::null::<
     atexit_listentry_t,
 >() as *mut atexit_listentry_t;
-#[no_mangle]
-pub unsafe extern "C" fn I_AtExit(mut func: atexit_func_t, mut run_on_error: boolean) {
+pub unsafe fn I_AtExit(mut func: atexit_func_t, mut run_on_error: boolean) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
         atexit_listentry_t,
     >();

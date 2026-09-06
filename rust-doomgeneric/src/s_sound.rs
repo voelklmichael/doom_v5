@@ -21,11 +21,11 @@ use crate::src::i_sound::I_MusicIsPlaying;
 use crate::src::i_sound::snd_musicdevice;
 use crate::src::sounds::S_sfx;
 use crate::src::sounds::S_music;
+use crate::src::i_system::I_AtExit;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn I_UpdateSound();
-    fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut gamemode: GameMode_t;
@@ -1901,8 +1901,7 @@ pub unsafe fn S_SetSfxVolume(mut volume: i32) {
 pub unsafe fn S_StartMusic(mut m_id: i32) {
     S_ChangeMusic(m_id, false_0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_ChangeMusic(
+pub unsafe fn S_ChangeMusic(
     mut musicnum: i32,
     mut looping: i32,
 ) {

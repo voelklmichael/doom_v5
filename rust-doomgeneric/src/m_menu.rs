@@ -50,6 +50,10 @@ use crate::src::hu_stuff::hu_font;
 use crate::src::i_system::I_Quit;
 use crate::src::s_sound::sfxVolume;
 use crate::src::s_sound::musicVolume;
+use crate::src::g_game::gamestate;
+use crate::src::i_video::I_SetPalette;
+use crate::src::p_saveg::P_SaveGameFile;
+use crate::src::v_video::V_DrawPatchDirect;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -83,18 +87,11 @@ extern "C" {
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn I_GetTime() -> i32;
-    fn I_SetPalette(palette: *mut byte);
     fn M_StringCopy(
         dest: *mut ::core::ffi::c_char,
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    fn V_DrawPatchDirect(
-        x: i32,
-        y: i32,
-        patch: *mut patch_t,
-    );
-    fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gametic: i32;
     static mut gamemode: GameMode_t;
@@ -104,7 +101,6 @@ extern "C" {
     static mut automapactive: bool;
     static mut consoleplayer: i32;
     static mut demoplayback: bool;
-    static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
 }
 pub type size_t = usize;

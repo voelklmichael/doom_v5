@@ -264,8 +264,7 @@ pub unsafe extern "C" fn P_Random() -> i32 {
     prndindex = prndindex + 1 as i32 & 0xff as i32;
     return rndtable[prndindex as usize] as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_Random() -> i32 {
+pub unsafe fn M_Random() -> i32 {
     rndindex = rndindex + 1 as i32 & 0xff as i32;
     return rndtable[rndindex as usize] as i32;
 }

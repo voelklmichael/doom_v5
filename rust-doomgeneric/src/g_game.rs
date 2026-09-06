@@ -106,6 +106,13 @@ use crate::src::r_draw::R_FillBackScreen;
 use crate::src::r_main::R_ExecuteSetViewSize;
 use crate::src::r_main::setsizeneeded;
 use crate::src::st_stuff::ST_Responder;
+use crate::src::d_main::nomonsters;
+use crate::src::d_main::fastparm;
+use crate::src::p_map::P_CheckPosition;
+use crate::src::p_saveg::P_SaveGameFile;
+use crate::src::p_setup::playerstarts;
+use crate::src::r_sky::skytexture;
+use crate::src::tables::finetangent;
 
 extern "C" {
     fn memcpy(
@@ -137,17 +144,13 @@ extern "C" {
     static mut gametic: i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static finetangent: [fixed_t; 4096];
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
-    static mut nomonsters: bool;
-    static mut fastparm: bool;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut automapactive: bool;
     static mut leveltime: i32;
-    static mut playerstarts: [mapthing_t; 4];
     static mut skyflatnum: i32;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
     fn Z_Malloc(
@@ -169,7 +172,6 @@ extern "C" {
         ...
     ) -> i32;
     fn P_Random() -> i32;
-    fn P_SaveGameFile(slot: i32) -> *mut ::core::ffi::c_char;
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
@@ -181,9 +183,7 @@ extern "C" {
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
     fn P_RemoveMobj(th: *mut mobj_t);
-    fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut skytexture: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1718,7 +1718,6 @@ pub const SAVEGAMESIZE: i32 = 0x2c000 as i32;
 #[no_mangle]
 pub static mut oldgamestate: gamestate_t = GS_LEVEL;
 pub static mut gameaction: gameaction_t = ga_nothing;
-#[no_mangle]
 pub static mut gamestate: gamestate_t = GS_LEVEL;
 #[no_mangle]
 pub static mut gameskill: skill_t = sk_baby;
@@ -1727,7 +1726,6 @@ pub static mut respawnmonsters: bool = false;
 pub static mut gameepisode: i32 = 0;
 #[no_mangle]
 pub static mut gamemap: i32 = 0;
-#[no_mangle]
 pub static mut timelimit: i32 = 0;
 pub static mut paused: bool = false;
 #[no_mangle]
@@ -1740,7 +1738,6 @@ pub static mut timingdemo: bool = false;
 pub static mut nodrawers: bool = false;
 #[no_mangle]
 pub static mut starttime: i32 = 0;
-#[no_mangle]
 pub static mut viewactive: bool = false;
 #[no_mangle]
 pub static mut deathmatch: i32 = 0;
@@ -3019,8 +3016,7 @@ pub static mut cpars: [i32; 32] = [
 ];
 #[no_mangle]
 pub static mut secretexit: bool = false;
-#[no_mangle]
-pub unsafe extern "C" fn G_ExitLevel() {
+pub unsafe fn G_ExitLevel() {
     secretexit = false;
     gameaction = ga_completed;
 }

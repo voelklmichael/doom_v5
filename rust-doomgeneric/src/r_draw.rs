@@ -3,6 +3,7 @@ use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 use crate::src::r_main::centery;
 use crate::src::v_video::V_UseBuffer;
+use crate::src::v_video::V_RestoreBuffer;
 
 extern "C" {
     fn memcpy(
@@ -25,7 +26,6 @@ extern "C" {
         width: i32,
         height: i32,
     );
-    fn V_RestoreBuffer();
     static mut gamemode: GameMode_t;
 }
 pub type size_t = usize;
@@ -74,20 +74,13 @@ pub static mut columnofs: [i32; 1120] = [0; 1120];
 #[no_mangle]
 pub static mut translations: [[byte; 256]; 3] = [[0; 256]; 3];
 static mut background_buffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
 pub static mut dc_colormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
-#[no_mangle]
 pub static mut dc_x: i32 = 0;
-#[no_mangle]
 pub static mut dc_yl: i32 = 0;
-#[no_mangle]
 pub static mut dc_yh: i32 = 0;
-#[no_mangle]
 pub static mut dc_iscale: fixed_t = 0;
-#[no_mangle]
 pub static mut dc_texturemid: fixed_t = 0;
-#[no_mangle]
 pub static mut dc_source: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut dccount: i32 = 0;

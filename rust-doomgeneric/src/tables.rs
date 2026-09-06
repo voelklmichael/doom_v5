@@ -22,7 +22,6 @@ pub unsafe fn SlopeDiv(
         }
     };
 }
-#[no_mangle]
 pub static mut finetangent: [i32; 4096] = [
     -(170910304 as i32),
     -(56965752 as i32),

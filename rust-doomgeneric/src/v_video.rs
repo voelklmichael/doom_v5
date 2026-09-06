@@ -289,8 +289,7 @@ pub unsafe extern "C" fn V_DrawPatchFlipped(
         desttop = desttop.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawPatchDirect(
+pub unsafe fn V_DrawPatchDirect(
     mut x: i32,
     mut y: i32,
     mut patch: *mut patch_t,
@@ -690,8 +689,7 @@ pub unsafe extern "C" fn V_Init() {}
 pub unsafe fn V_UseBuffer(mut buffer: *mut byte) {
     dest_screen = buffer;
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_RestoreBuffer() {
+pub unsafe fn V_RestoreBuffer() {
     dest_screen = I_VideoBuffer;
 }
 #[no_mangle]

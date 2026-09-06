@@ -1,6 +1,7 @@
 use crate::src::p_spec::{ceiling_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::p_spec::P_FindHighestCeilingSurrounding;
+use crate::src::p_floor::T_MovePlane;
 
 extern "C" {
     fn Z_Malloc(
@@ -15,14 +16,6 @@ extern "C" {
         line: *mut line_t,
         start: i32,
     ) -> i32;
-    fn T_MovePlane(
-        sector: *mut sector_t,
-        speed: fixed_t,
-        dest: fixed_t,
-        crush: boolean,
-        floorOrCeiling: i32,
-        direction: i32,
-    ) -> result_e;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut leveltime: i32;
 }

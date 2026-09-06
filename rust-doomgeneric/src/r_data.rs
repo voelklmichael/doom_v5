@@ -14,6 +14,7 @@ use crate::src::r_things::numsprites;
 use crate::src::p_setup::numsides;
 use crate::src::r_things::sprites;
 use crate::src::z_zone::Z_ChangeTag2;
+use crate::src::r_sky::skytexture;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -55,7 +56,6 @@ extern "C" {
     static mut thinkercap: thinker_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
     static mut demoplayback: bool;
-    static mut skytexture: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

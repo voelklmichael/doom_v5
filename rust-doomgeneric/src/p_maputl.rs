@@ -6,12 +6,12 @@ use crate::src::p_setup::bmapwidth;
 use crate::src::p_setup::bmapheight;
 use crate::src::p_setup::blocklinks;
 use crate::src::p_pspr::bulletslope;
+use crate::src::p_setup::playerstarts;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut playerstarts: [mapthing_t; 4];
     static mut lines: *mut line_t;
     static mut validcount: i32;
     fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
@@ -1369,8 +1369,7 @@ pub const MAXINTERCEPTS_ORIGINAL: i32 = 128 as i32;
 pub const PT_ADDLINES: i32 = 1 as i32;
 pub const PT_ADDTHINGS: i32 = 2 as i32;
 pub const PT_EARLYOUT: i32 = 4 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn P_AproxDistance(mut dx: fixed_t, mut dy: fixed_t) -> fixed_t {
+pub unsafe fn P_AproxDistance(mut dx: fixed_t, mut dy: fixed_t) -> fixed_t {
     dx = abs(dx as i32) as fixed_t;
     dy = abs(dy as i32) as fixed_t;
     if dx < dy {
@@ -1567,8 +1566,7 @@ pub unsafe fn P_LineOpening(mut linedef: *mut line_t) {
     }
     openrange = opentop - openbottom;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
+pub unsafe fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
     let mut blockx: i32 = 0;
     let mut blocky: i32 = 0;
     if (*thing).flags & MF_NOSECTOR as i32 == 0 {

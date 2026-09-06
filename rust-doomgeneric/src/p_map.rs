@@ -26,6 +26,9 @@ use crate::src::p_mobj::P_SpawnPuff;
 use crate::src::p_mobj::P_SubstNullMobj;
 use crate::src::p_sight::P_CheckSight;
 use crate::src::p_switch::P_UseSpecialLine;
+use crate::src::m_misc::M_StrToInt;
+use crate::src::p_maputl::P_AproxDistance;
+use crate::src::p_maputl::P_UnsetThingPosition;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -38,10 +41,6 @@ extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     fn P_Random() -> i32;
-    fn M_StrToInt(
-        str: *const ::core::ffi::c_char,
-        result: *mut i32,
-    ) -> boolean;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut lines: *mut line_t;
@@ -56,8 +55,6 @@ extern "C" {
     ) -> *mut mobj_t;
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    fn P_AproxDistance(dx: fixed_t, dy: fixed_t) -> fixed_t;
-    fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
     static mut bmaporgx: fixed_t;
     static mut bmaporgy: fixed_t;
@@ -1740,8 +1737,7 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
     return ((*thing).flags & MF_SOLID as i32 == 0) as i32
         as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CheckPosition(
+pub unsafe fn P_CheckPosition(
     mut thing: *mut mobj_t,
     mut x: fixed_t,
     mut y: fixed_t,
@@ -2271,8 +2267,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
         return false_0 as boolean;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_AimLineAttack(
+pub unsafe fn P_AimLineAttack(
     mut t1: *mut mobj_t,
     mut angle: angle_t,
     mut distance: fixed_t,

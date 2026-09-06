@@ -11,6 +11,9 @@ use crate::src::hu_stuff::hu_font;
 use crate::src::r_data::firstspritelump;
 use crate::src::r_things::sprites;
 use crate::src::s_sound::S_StartMusic;
+use crate::src::g_game::gamestate;
+use crate::src::g_game::viewactive;
+use crate::src::s_sound::S_ChangeMusic;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -45,15 +48,12 @@ extern "C" {
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    fn S_ChangeMusic(music_id: i32, looping: i32);
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut automapactive: bool;
-    static mut viewactive: bool;
-    static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
     static mut I_VideoBuffer: *mut byte;
 }

@@ -1448,8 +1448,7 @@ pub const FRACBITS: i32 = 16 as i32;
 pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const ML_TWOSIDED: i32 = 4 as i32;
 pub const FLOORSPEED: i32 = FRACUNIT;
-#[no_mangle]
-pub unsafe extern "C" fn T_MovePlane(
+pub unsafe fn T_MovePlane(
     mut sector: *mut sector_t,
     mut speed: fixed_t,
     mut dest: fixed_t,
@@ -1606,8 +1605,7 @@ pub unsafe extern "C" fn T_MoveFloor(mut floor: *mut floormove_t) {
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoFloor(
+pub unsafe fn EV_DoFloor(
     mut line: *mut line_t,
     mut floortype: floor_e,
 ) -> i32 {

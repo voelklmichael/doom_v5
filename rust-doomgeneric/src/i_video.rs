@@ -397,8 +397,7 @@ pub unsafe fn I_ReadScreen(mut scr: *mut byte) {
         (SCREENWIDTH * SCREENHEIGHT) as size_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_SetPalette(mut palette: *mut byte) {
+pub unsafe fn I_SetPalette(mut palette: *mut byte) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < 256 as i32 {

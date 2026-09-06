@@ -185,8 +185,7 @@ pub unsafe fn M_TempFile(
         as *mut ::core::ffi::c_char;
     return M_StringJoin(tempdir, DIR_SEPARATOR_S.as_ptr(), s, NULL);
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StrToInt(
+pub unsafe fn M_StrToInt(
     mut str: *const ::core::ffi::c_char,
     mut result: *mut i32,
 ) -> boolean {

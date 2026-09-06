@@ -1,5 +1,6 @@
 
 use crate::src::i_video::I_ReadScreen;
+use crate::src::m_random::M_Random;
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -26,7 +27,6 @@ extern "C" {
         width: i32,
         height: i32,
     );
-    fn M_Random() -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

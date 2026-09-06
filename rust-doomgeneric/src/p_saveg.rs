@@ -13,6 +13,7 @@ use crate::src::d_main::savegamedir;
 use crate::src::g_game::G_VanillaVersionCode;
 use crate::src::p_ceilng::activeceilings;
 use crate::src::p_tick::P_InitThinkers;
+use crate::src::p_setup::numlines;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -61,7 +62,6 @@ extern "C" {
     static mut mobjinfo: [mobjinfo_t; 137];
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut numlines: i32;
     static mut lines: *mut line_t;
     static mut sides: *mut side_t;
     static mut thinkercap: thinker_t;
@@ -1490,8 +1490,7 @@ pub unsafe fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char {
     }
     return filename;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SaveGameFile(
+pub unsafe fn P_SaveGameFile(
     mut slot: i32,
 ) -> *mut ::core::ffi::c_char {
     static mut filename: *mut ::core::ffi::c_char = ::core::ptr::null::<
