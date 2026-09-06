@@ -837,18 +837,18 @@ pub struct timezone {
     pub tz_minuteswest: i32,
     pub tz_dsttime: i32,
 }
-pub const KEY_RIGHTARROW: i32 = 0xae as i32;
-pub const KEY_LEFTARROW: i32 = 0xac as i32;
-pub const KEY_UPARROW: i32 = 0xad as i32;
-pub const KEY_DOWNARROW: i32 = 0xaf as i32;
-pub const KEY_USE: i32 = 0xa2 as i32;
-pub const KEY_FIRE: i32 = 0xa3 as i32;
-pub const KEY_ESCAPE: i32 = 27 as i32;
+pub const KEY_RIGHTARROW: i32 = 0xae;
+pub const KEY_LEFTARROW: i32 = 0xac;
+pub const KEY_UPARROW: i32 = 0xad;
+pub const KEY_DOWNARROW: i32 = 0xaf;
+pub const KEY_USE: i32 = 0xa2;
+pub const KEY_FIRE: i32 = 0xa3;
+pub const KEY_ESCAPE: i32 = 27;
 pub const KEY_ENTER: i32 = 13;
-pub const KEY_RSHIFT: i32 = 0x80 as i32
+pub const KEY_RSHIFT: i32 = 0x80
     + 0x36 as i32;
-pub const DOOMGENERIC_RESX: i32 = 640 as i32;
-pub const DOOMGENERIC_RESY: i32 = 400 as i32;
+pub const DOOMGENERIC_RESX: i32 = 640;
+pub const DOOMGENERIC_RESY: i32 = 400;
 pub const KeyPressMask: i64 = (1 as i64)
     << 0 as i32;
 pub const KeyReleaseMask: i64 = (1 as i64)
@@ -857,25 +857,25 @@ pub const ExposureMask: i64 = (1 as i64)
     << 15 as i32;
 pub const StructureNotifyMask: i64 = (1 as i64)
     << 17 as i32;
-pub const KeyPress: i32 = 2 as i32;
-pub const KeyRelease: i32 = 3 as i32;
-pub const MapNotify: i32 = 19 as i32;
-pub const PropModeReplace: i32 = 0 as i32;
-pub const ZPixmap: i32 = 2 as i32;
+pub const KeyPress: i32 = 2;
+pub const KeyRelease: i32 = 3;
+pub const MapNotify: i32 = 19;
+pub const PropModeReplace: i32 = 0;
+pub const ZPixmap: i32 = 2;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const XK_Return: u32 = 65293 as u32;
-pub const XK_Escape: u32 = 65307 as u32;
-pub const XK_Left: u32 = 65361 as u32;
-pub const XK_Up: u32 = 65362 as u32;
-pub const XK_Right: u32 = 65363 as u32;
-pub const XK_Down: u32 = 65364 as u32;
-pub const XK_Shift_L: u32 = 65505 as u32;
-pub const XK_Shift_R: u32 = 65506 as u32;
-pub const XK_Control_L: u32 = 65507 as u32;
-pub const XK_Control_R: u32 = 65508 as u32;
-pub const XK_space: u32 = 32 as u32;
+pub const XK_Return: u32 = 65293;
+pub const XK_Escape: u32 = 65307;
+pub const XK_Left: u32 = 65361;
+pub const XK_Up: u32 = 65362;
+pub const XK_Right: u32 = 65363;
+pub const XK_Down: u32 = 65364;
+pub const XK_Shift_L: u32 = 65505;
+pub const XK_Shift_R: u32 = 65506;
+pub const XK_Control_L: u32 = 65507;
+pub const XK_Control_R: u32 = 65508;
+pub const XK_space: u32 = 32;
 pub const XA_STRING: Atom = 31 as i32 as Atom;
 pub const XA_WM_NAME: Atom = 39 as i32 as Atom;
 static mut s_Display: *mut Display = ::core::ptr::null::<Display>() as *mut Display;
@@ -883,7 +883,7 @@ static mut s_Window: Window = 0 as Window;
 static mut s_Screen: i32 = 0 as i32;
 static mut s_Gc: GC = ::core::ptr::null::<_XGC>() as *mut _XGC;
 static mut s_Image: *mut XImage = ::core::ptr::null::<XImage>() as *mut XImage;
-pub const KEYQUEUE_SIZE: i32 = 16 as i32;
+pub const KEYQUEUE_SIZE: i32 = 16;
 static mut s_KeyQueue: [u16; 16] = [0; 16];
 static mut s_KeyQueueWriteIndex: u32 = 0 as u32;
 static mut s_KeyQueueReadIndex: u32 = 0 as u32;

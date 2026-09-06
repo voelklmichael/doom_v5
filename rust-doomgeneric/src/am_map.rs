@@ -101,27 +101,27 @@ pub struct islope_t {
     pub slp: fixed_t,
     pub islp: fixed_t,
 }
-pub const ML_DONTDRAW: i32 = 128 as i32;
+pub const ML_DONTDRAW: i32 = 128;
 pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
     + (('m' as i32) << 16 as i32);
 pub const AM_MSGENTERED: i32 = AM_MSGHEADER
     | ('e' as i32) << 8 as i32;
 pub const AM_MSGEXITED: i32 = AM_MSGHEADER
     | ('x' as i32) << 8 as i32;
-pub const REDS: i32 = 256 as i32
+pub const REDS: i32 = 256
     - 5 as i32 * 16 as i32;
-pub const REDRANGE: i32 = 16 as i32;
-pub const GREENS: i32 = 7 as i32
+pub const REDRANGE: i32 = 16;
+pub const GREENS: i32 = 7
     * 16 as i32;
-pub const GREENRANGE: i32 = 16 as i32;
-pub const GRAYS: i32 = 6 as i32 * 16 as i32;
-pub const GRAYSRANGE: i32 = 16 as i32;
-pub const BROWNS: i32 = 4 as i32
+pub const GREENRANGE: i32 = 16;
+pub const GRAYS: i32 = 6 * 16 as i32;
+pub const GRAYSRANGE: i32 = 16;
+pub const BROWNS: i32 = 4
     * 16 as i32;
-pub const YELLOWS: i32 = 256 as i32
+pub const YELLOWS: i32 = 256
     - 32 as i32 + 7 as i32;
-pub const BLACK: i32 = 0 as i32;
-pub const WHITE: i32 = 256 as i32
+pub const BLACK: i32 = 0;
+pub const WHITE: i32 = 256
     - 47 as i32;
 pub const BACKGROUND: i32 = BLACK;
 pub const WALLCOLORS: i32 = REDS;
@@ -134,7 +134,7 @@ pub const THINGRANGE: i32 = GREENRANGE;
 pub const SECRETWALLCOLORS: i32 = WALLCOLORS;
 pub const GRIDCOLORS: i32 = GRAYS + GRAYSRANGE / 2 as i32;
 pub const XHAIRCOLORS: i32 = GRAYS;
-pub const AM_NUMMARKPOINTS: i32 = 10 as i32;
+pub const AM_NUMMARKPOINTS: i32 = 10;
 pub const INITSCALEMTOF: f64 = 0.2f64
     * FRACUNIT as f64;
 pub const M_ZOOMIN: i32 = (1.02f64 * FRACUNIT as f64)
@@ -142,7 +142,7 @@ pub const M_ZOOMIN: i32 = (1.02f64 * FRACUNIT as f64)
 pub const M_ZOOMOUT: i32 = (FRACUNIT as f64 / 1.02f64)
     as i32;
 pub const LINE_NEVERSEE: i32 = ML_DONTDRAW;
-pub const R_0: i32 = 8 as i32 * 16 as i32
+pub const R_0: i32 = 8 * 16 as i32
     * FRACUNIT / 7 as i32;
 #[no_mangle]
 pub static mut player_arrow: [mline_t; 7] = [
@@ -217,7 +217,7 @@ pub static mut player_arrow: [mline_t; 7] = [
         },
     },
 ];
-pub const R_1: i32 = 8 as i32 * 16 as i32
+pub const R_1: i32 = 8 * 16 as i32
     * FRACUNIT / 7 as i32;
 #[no_mangle]
 pub static mut cheat_player_arrow: [mline_t; 16] = [

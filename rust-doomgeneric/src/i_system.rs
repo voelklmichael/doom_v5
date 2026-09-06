@@ -60,8 +60,8 @@ pub struct atexit_listentry_s {
     pub run_on_error: boolean,
     pub next: *mut atexit_listentry_t,
 }
-pub const DEFAULT_RAM: i32 = 6 as i32;
-pub const MIN_RAM: i32 = 6 as i32;
+pub const DEFAULT_RAM: i32 = 6;
+pub const MIN_RAM: i32 = 6;
 static mut exit_funcs: *mut atexit_listentry_t = ::core::ptr::null::<
     atexit_listentry_t,
 >() as *mut atexit_listentry_t;
@@ -280,7 +280,7 @@ pub unsafe fn I_Error(message: &str) {
     }
     exit(-(1 as i32));
 }
-pub const DOS_MEM_DUMP_SIZE: i32 = 10 as i32;
+pub const DOS_MEM_DUMP_SIZE: i32 = 10;
 static mut mem_dump_dos622: [u8; 10] = [
     0x57 as i32 as u8,
     0x92 as i32 as u8,
@@ -410,4 +410,4 @@ pub unsafe fn I_GetMemoryValue(
     }
     return false;
 }
-pub const SEEK_SET: i32 = 0 as i32;
+pub const SEEK_SET: i32 = 0;

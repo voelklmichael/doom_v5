@@ -69,13 +69,13 @@ use crate::src::p_maputl::PT_ADDTHINGS;
 use crate::src::p_maputl::MAPBLOCKSHIFT;
 use crate::src::m_fixed::FRACBITS;
 
-pub const DEH_DEFAULT_SPECIES_INFIGHTING: i32 = 0 as i32;
+pub const DEH_DEFAULT_SPECIES_INFIGHTING: i32 = 0;
 pub const deh_species_infighting: i32 = DEH_DEFAULT_SPECIES_INFIGHTING;
-pub const ML_BLOCKING: i32 = 1 as i32;
-pub const ML_BLOCKMONSTERS: i32 = 2 as i32;
-pub const USERANGE: i32 = 64 as i32 * FRACUNIT;
-pub const MAXSPECIALCROSS_ORIGINAL: i32 = 8 as i32;
-pub const DEFAULT_SPECHIT_MAGIC: i32 = 0x1c09c98 as i32;
+pub const ML_BLOCKING: i32 = 1;
+pub const ML_BLOCKMONSTERS: i32 = 2;
+pub const USERANGE: i32 = 64 * FRACUNIT;
+pub const MAXSPECIALCROSS_ORIGINAL: i32 = 8;
+pub const DEFAULT_SPECHIT_MAGIC: i32 = 0x1c09c98;
 #[no_mangle]
 pub static mut tmbbox: [fixed_t; 4] = [0; 4];
 #[no_mangle]

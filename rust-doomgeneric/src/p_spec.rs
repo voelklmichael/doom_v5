@@ -147,8 +147,8 @@ pub struct floormove_t {
     pub floordestheight: fixed_t,
     pub speed: fixed_t,
 }
-pub const ML_TWOSIDED: i32 = 4 as i32;
-pub const FASTDARK: i32 = 15 as i32;
+pub const ML_TWOSIDED: i32 = 4;
+pub const FASTDARK: i32 = 15;
 #[no_mangle]
 pub static mut animdefs: [animdef_t; 23] = unsafe {
     [
@@ -440,7 +440,7 @@ pub static mut anims: [anim_t; 32] = [anim_t {
 }; 32];
 #[no_mangle]
 pub static mut lastanim: *mut anim_t = ::core::ptr::null::<anim_t>() as *mut anim_t;
-pub const MAXLINEANIMS: i32 = 64 as i32;
+pub const MAXLINEANIMS: i32 = 64;
 pub unsafe fn P_InitPicAnims() {
     let mut i: i32 = 0;
     lastanim = &raw mut anims as *mut anim_t;
@@ -580,7 +580,7 @@ pub unsafe fn P_FindHighestFloorSurrounding(
     }
     return floor;
 }
-pub const MAX_ADJOINING_SECTORS: i32 = 20 as i32;
+pub const MAX_ADJOINING_SECTORS: i32 = 20;
 pub unsafe fn P_FindNextHighestFloor(
     mut sec: *mut sector_t,
     mut currentheight: i32,
@@ -1187,8 +1187,8 @@ pub unsafe fn P_UpdateSpecials() {
         i += 1;
     }
 }
-pub const DONUT_FLOORHEIGHT_DEFAULT: i32 = 0 as i32;
-pub const DONUT_FLOORPIC_DEFAULT: i32 = 0x16 as i32;
+pub const DONUT_FLOORHEIGHT_DEFAULT: i32 = 0;
+pub const DONUT_FLOORPIC_DEFAULT: i32 = 0x16;
 unsafe extern "C" fn DonutOverrun(
     mut s3_floorheight: *mut fixed_t,
     mut s3_floorpic: *mut i16,
@@ -1419,5 +1419,5 @@ pub unsafe fn P_SpawnSpecials() {
         i += 1;
     }
 }
-pub const ML_SECRET: i32 = 32 as i32;
-pub const ML_MAPPED: i32 = 256 as i32;
+pub const ML_SECRET: i32 = 32;
+pub const ML_MAPPED: i32 = 256;

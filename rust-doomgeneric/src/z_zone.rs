@@ -34,7 +34,7 @@ pub struct memblock_s {
     pub prev: *mut memblock_s,
 }
 pub const MEM_ALIGN: usize = ::core::mem::size_of::<*mut ::core::ffi::c_void>();
-pub const ZONEID: i32 = 0x1d4a11 as i32;
+pub const ZONEID: i32 = 0x1d4a11;
 #[no_mangle]
 pub static mut mainzone: *mut memzone_t = ::core::ptr::null::<memzone_t>()
     as *mut memzone_t;
@@ -112,7 +112,7 @@ pub unsafe fn Z_Free(mut ptr: *mut ::core::ffi::c_void) {
         }
     }
 }
-pub const MINFRAGMENT: i32 = 64 as i32;
+pub const MINFRAGMENT: i32 = 64;
 pub unsafe fn Z_Malloc(
     mut size: i32,
     mut tag: i32,

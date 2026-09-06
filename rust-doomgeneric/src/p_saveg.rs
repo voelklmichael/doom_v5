@@ -83,8 +83,8 @@ pub const tc_door: C2RustUnnamed_5 = 1;
 pub const tc_ceiling: C2RustUnnamed_5 = 0;
 pub type C2RustUnnamed_4 = u32;
 pub type C2RustUnnamed_5 = u32;
-pub const SAVEGAME_EOF: i32 = 0x1d as i32;
-pub const VERSIONSIZE: i32 = 16 as i32;
+pub const SAVEGAME_EOF: i32 = 0x1d;
+pub const VERSIONSIZE: i32 = 16;
 pub static mut save_stream: *mut FILE = ::core::ptr::null::<FILE>() as *mut FILE;
 #[no_mangle]
 pub static mut savegamelength: i32 = 0;

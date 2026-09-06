@@ -23,7 +23,7 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::m_fixed::FRACBITS;
 
-pub const SBARHEIGHT: i32 = 32 as i32;
+pub const SBARHEIGHT: i32 = 32;
 #[no_mangle]
 pub static mut viewimage: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 pub static mut viewwidth: i32 = 0;
@@ -126,8 +126,8 @@ pub unsafe fn R_DrawColumnLow() {
         }
     };
 }
-pub const FUZZTABLE: i32 = 50 as i32;
-pub const FUZZOFF: i32 = 320 as i32;
+pub const FUZZTABLE: i32 = 50;
+pub const FUZZOFF: i32 = 320;
 #[no_mangle]
 pub static mut fuzzoffset: [i32; 50] = [
     FUZZOFF,

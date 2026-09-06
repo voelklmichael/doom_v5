@@ -58,11 +58,11 @@ pub struct channel_t {
     pub origin: *mut mobj_t,
     pub handle: i32,
 }
-pub const S_CLIPPING_DIST: i32 = 1200 as i32 * FRACUNIT;
-pub const S_CLOSE_DIST: i32 = 200 as i32 * FRACUNIT;
+pub const S_CLIPPING_DIST: i32 = 1200 * FRACUNIT;
+pub const S_CLOSE_DIST: i32 = 200 * FRACUNIT;
 pub const S_ATTENUATOR: i32 = S_CLIPPING_DIST - S_CLOSE_DIST >> FRACBITS;
-pub const S_STEREO_SWING: i32 = 96 as i32 * FRACUNIT;
-pub const NORM_SEP: i32 = 128 as i32;
+pub const S_STEREO_SWING: i32 = 96 * FRACUNIT;
+pub const NORM_SEP: i32 = 128;
 static mut channels: *mut channel_t = ::core::ptr::null::<channel_t>() as *mut channel_t;
 pub static mut sfxVolume: i32 = 8 as i32;
 pub static mut musicVolume: i32 = 8 as i32;

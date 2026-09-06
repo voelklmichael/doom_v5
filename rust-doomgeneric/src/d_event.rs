@@ -29,7 +29,7 @@ pub struct event_t {
     pub data3: i32,
     pub data4: i32,
 }
-pub const MAXEVENTS: i32 = 64 as i32;
+pub const MAXEVENTS: i32 = 64;
 static mut events: [event_t; 64] = [event_t {
     type_0: ev_keydown,
     data1: 0,

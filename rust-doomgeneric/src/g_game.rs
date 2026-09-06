@@ -187,12 +187,12 @@ pub struct C2RustUnnamed_5 {
     pub weapon: weapontype_t,
     pub weapon_num: weapontype_t,
 }
-pub const DEH_DEFAULT_INITIAL_HEALTH: i32 = 100 as i32;
-pub const DEH_DEFAULT_INITIAL_BULLETS: i32 = 50 as i32;
+pub const DEH_DEFAULT_INITIAL_HEALTH: i32 = 100;
+pub const DEH_DEFAULT_INITIAL_BULLETS: i32 = 50;
 pub const deh_initial_health: i32 = DEH_DEFAULT_INITIAL_HEALTH;
 pub const deh_initial_bullets: i32 = DEH_DEFAULT_INITIAL_BULLETS;
-pub const DOOM_191_VERSION: i32 = 111 as i32;
-pub const SAVEGAMESIZE: i32 = 0x2c000 as i32;
+pub const DOOM_191_VERSION: i32 = 111;
+pub const SAVEGAMESIZE: i32 = 0x2c000;
 #[no_mangle]
 pub static mut oldgamestate: gamestate_t = GS_LEVEL;
 pub static mut gameaction: gameaction_t = ga_nothing;
@@ -323,7 +323,7 @@ pub static mut wminfo: wbstartstruct_t = wbstartstruct_t {
 };
 #[no_mangle]
 pub static mut consistancy: [[byte; 128]; 4] = [[0; 128]; 4];
-pub const TURBOTHRESHOLD: i32 = 0x32 as i32;
+pub const TURBOTHRESHOLD: i32 = 0x32;
 pub static mut forwardmove: [fixed_t; 2] = [
     0x19 as i32,
     0x32 as i32,
@@ -389,9 +389,9 @@ static mut weapon_order_table: [C2RustUnnamed_5; 9] = [
         weapon_num: wp_bfg,
     },
 ];
-pub const SLOWTURNTICS: i32 = 6 as i32;
-pub const NUMKEYS: i32 = 256 as i32;
-pub const MAX_JOY_BUTTONS: i32 = 20 as i32;
+pub const SLOWTURNTICS: i32 = 6;
+pub const NUMKEYS: i32 = 256;
+pub const MAX_JOY_BUTTONS: i32 = 20;
 static mut gamekeydown: [boolean; 256] = [0; 256];
 static mut turnheld: i32 = 0;
 static mut mousearray: [boolean; 9] = [0; 9];
@@ -413,7 +413,7 @@ static mut joyarray: [boolean; 21] = [0; 21];
 static mut joybuttons: *mut boolean = ::core::ptr::null::<boolean>() as *mut boolean;
 static mut savegameslot: i32 = 0;
 static mut savedescription: [::core::ffi::c_char; 32] = [0; 32];
-pub const BODYQUESIZE: i32 = 32 as i32;
+pub const BODYQUESIZE: i32 = 32;
 #[no_mangle]
 pub static mut bodyque: [*mut mobj_t; 32] = [::core::ptr::null::<mobj_t>()
     as *mut mobj_t; 32];
@@ -1959,7 +1959,7 @@ pub unsafe fn G_InitNew(
     skytexture = R_TextureNumForName(skytexturename);
     G_DoLoadLevel();
 }
-pub const DEMOMARKER: i32 = 0x80 as i32;
+pub const DEMOMARKER: i32 = 0x80;
 pub unsafe fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
     if *demo_p as i32 == DEMOMARKER {
         G_CheckDemoStatus();
@@ -2336,7 +2336,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
     }
     return false_0 as boolean;
 }
-pub const MAX_MOUSE_BUTTONS: i32 = 8 as i32;
+pub const MAX_MOUSE_BUTTONS: i32 = 8;
 unsafe extern "C" fn run_static_initializers() {
     joybuttons = (&raw mut joyarray as *mut boolean)
         .offset(1 as i32 as isize) as *mut boolean;

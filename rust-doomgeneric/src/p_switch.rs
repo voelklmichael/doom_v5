@@ -38,9 +38,9 @@ pub struct switchlist_t {
     pub name2: [::core::ffi::c_char; 9],
     pub episode: i16,
 }
-pub const MAXSWITCHES: i32 = 50 as i32;
-pub const MAXBUTTONS: i32 = 16 as i32;
-pub const BUTTONTIME: i32 = 35 as i32;
+pub const MAXSWITCHES: i32 = 50;
+pub const MAXBUTTONS: i32 = 16;
+pub const BUTTONTIME: i32 = 35;
 #[no_mangle]
 pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
     [

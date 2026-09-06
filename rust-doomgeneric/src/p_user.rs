@@ -32,9 +32,9 @@ use crate::src::tables::FINEMASK;
 use crate::src::tables::FINEANGLES;
 
 
-pub const VIEWHEIGHT: i32 = 41 as i32 * FRACUNIT;
-pub const INVERSECOLORMAP: i32 = 32 as i32;
-pub const MAXBOB: i32 = 0x100000 as i32;
+pub const VIEWHEIGHT: i32 = 41 * FRACUNIT;
+pub const INVERSECOLORMAP: i32 = 32;
+pub const MAXBOB: i32 = 0x100000;
 #[no_mangle]
 pub static mut onground: bool = false;
 pub unsafe fn P_Thrust(

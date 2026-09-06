@@ -570,13 +570,13 @@ pub struct degenmobj_t {
 }
 pub type line_t = line_s;
 pub type subsector_t = subsector_s;
-pub const MTF_AMBUSH: i32 = 8 as i32;
+pub const MTF_AMBUSH: i32 = 8;
 pub const FLOATSPEED: i32 = FRACUNIT * 4 as i32;
 pub const GRAVITY: i32 = FRACUNIT;
-pub const MAXMOVE: i32 = 30 as i32 * FRACUNIT;
+pub const MAXMOVE: i32 = 30 * FRACUNIT;
 pub const ONFLOORZ: i32 = INT_MIN;
 pub const ONCEILINGZ: i32 = INT_MAX;
-pub const ITEMQUESIZE: i32 = 128 as i32;
+pub const ITEMQUESIZE: i32 = 128;
 #[no_mangle]
 pub static mut test: i32 = 0;
 pub unsafe fn P_SetMobjState(
@@ -621,8 +621,8 @@ pub unsafe fn P_ExplodeMissile(mut mo: *mut mobj_t) {
         S_StartSound(mo as *mut ::core::ffi::c_void, (*(*mo).info).deathsound);
     }
 }
-pub const STOPSPEED: i32 = 0x1000 as i32;
-pub const FRICTION: i32 = 0xe800 as i32;
+pub const STOPSPEED: i32 = 0x1000;
+pub const FRICTION: i32 = 0xe800;
 pub unsafe fn P_XYMovement(mut mo: *mut mobj_t) {
     let mut ptryx: fixed_t = 0;
     let mut ptryy: fixed_t = 0;

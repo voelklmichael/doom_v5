@@ -36,7 +36,7 @@ pub struct cliprange_t {
     pub first: i32,
     pub last: i32,
 }
-pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
+pub const NF_SUBSECTOR: i32 = 0x8000;
 pub static mut curline: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
 pub static mut sidedef: *mut side_t = ::core::ptr::null::<side_t>() as *mut side_t;
 pub static mut linedef: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;

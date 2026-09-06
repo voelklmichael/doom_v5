@@ -759,8 +759,8 @@ pub unsafe fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
         ) as *mut byte,
     );
 }
-pub const MOUSE_SPEED_BOX_WIDTH: i32 = 120 as i32;
-pub const MOUSE_SPEED_BOX_HEIGHT: i32 = 9 as i32;
+pub const MOUSE_SPEED_BOX_WIDTH: i32 = 120;
+pub const MOUSE_SPEED_BOX_HEIGHT: i32 = 9;
 pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
     let mut bgcolor: i32 = 0;
     let mut bordercolor: i32 = 0;

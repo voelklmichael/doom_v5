@@ -114,8 +114,8 @@ pub const CC_HERO: &str = "OUR HERO";
 pub static mut finalestage: finalestage_t = F_STAGE_TEXT;
 #[no_mangle]
 pub static mut finalecount: u32 = 0;
-pub const TEXTSPEED: i32 = 3 as i32;
-pub const TEXTWAIT: i32 = 250 as i32;
+pub const TEXTSPEED: i32 = 3;
+pub const TEXTWAIT: i32 = 250;
 static mut textscreens: [textscreen_t; 22] = [
     textscreen_t {
         mission: doom,

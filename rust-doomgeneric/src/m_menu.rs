@@ -162,7 +162,7 @@ pub const load4: C2RustUnnamed_8 = 3;
 pub const load3: C2RustUnnamed_8 = 2;
 pub const load2: C2RustUnnamed_8 = 1;
 pub const load1: C2RustUnnamed_8 = 0;
-pub const KEY_NUMLOCK: i32 = 0x80 as i32
+pub const KEY_NUMLOCK: i32 = 0x80
     + 0x45 as i32;
 pub const GAMMALVL0: &str = "Gamma correction OFF\0";
 pub const GAMMALVL1: &str = "Gamma correction level 1\0";
@@ -170,8 +170,8 @@ pub const GAMMALVL2: &str = "Gamma correction level 2\0";
 pub const GAMMALVL3: &str = "Gamma correction level 3\0";
 pub const GAMMALVL4: &str = "Gamma correction level 4\0";
 pub const EMPTYSTRING: &str = "empty slot\0";
-pub const NUM_QUITMESSAGES: i32 = 8 as i32;
-pub const SAVESTRINGSIZE: i32 = 24 as i32;
+pub const NUM_QUITMESSAGES: i32 = 8;
+pub const SAVESTRINGSIZE: i32 = 24;
 pub static mut mouseSensitivity: i32 = 5 as i32;
 pub static mut showMessages: i32 = 1 as i32;
 pub static mut detailLevel: i32 = 0 as i32;
@@ -205,7 +205,7 @@ pub static mut saveOldString: String = String::new();
 pub static mut inhelpscreens: bool = false;
 pub static mut menuactive: bool = false;
 pub const SKULLXOFF: i32 = -(32 as i32);
-pub const LINEHEIGHT: i32 = 16 as i32;
+pub const LINEHEIGHT: i32 = 16;
 pub static mut savegamestrings: [String; 10] = [
     String::new(),
     String::new(),

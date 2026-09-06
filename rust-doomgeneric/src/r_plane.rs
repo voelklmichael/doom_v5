@@ -65,12 +65,12 @@ use crate::src::r_main::LIGHTLEVELS;
 pub type planefunction_t = Option<
     unsafe extern "C" fn(i32, i32) -> (),
 >;
-pub const ANGLETOSKYSHIFT: i32 = 22 as i32;
+pub const ANGLETOSKYSHIFT: i32 = 22;
 #[no_mangle]
 pub static mut floorfunc: planefunction_t = None;
 #[no_mangle]
 pub static mut ceilingfunc: planefunction_t = None;
-pub const MAXVISPLANES: i32 = 128 as i32;
+pub const MAXVISPLANES: i32 = 128;
 #[no_mangle]
 pub static mut visplanes: [visplane_t; 128] = [visplane_t {
     height: 0,

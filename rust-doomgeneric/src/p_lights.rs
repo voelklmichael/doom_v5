@@ -51,9 +51,9 @@ pub struct glow_t {
     pub maxlight: i32,
     pub direction: i32,
 }
-pub const GLOWSPEED: i32 = 8 as i32;
-pub const STROBEBRIGHT: i32 = 5 as i32;
-pub const SLOWDARK: i32 = 35 as i32;
+pub const GLOWSPEED: i32 = 8;
+pub const STROBEBRIGHT: i32 = 5;
+pub const SLOWDARK: i32 = 35;
 pub unsafe fn T_FireFlicker(mut flick: *mut fireflicker_t) {
     let mut amount: i32 = 0;
     (*flick).count -= 1;
