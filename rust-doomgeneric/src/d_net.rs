@@ -50,7 +50,18 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::tables::ANG90;
 use crate::src::tables::ANG270;
 use crate::src::game_state::game_state;
-pub static mut netcmds: *mut ticcmd_t = ::core::ptr::null::<ticcmd_t>() as *mut ticcmd_t;
+pub struct DNetState {
+    pub netcmds: *mut ticcmd_t,
+}
+
+impl DNetState {
+    pub const fn new() -> Self {
+        DNetState {
+            netcmds: ::core::ptr::null::<ticcmd_t>() as *mut ticcmd_t,
+        }
+    }
+}
+
 unsafe fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
     let mut player_num: u32 = 0;
@@ -84,11 +95,12 @@ unsafe fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
         }
         i = i.wrapping_add(1);
     }
-    netcmds = cmds;
+    let gs = game_state();
+    gs.d_net.netcmds = cmds;
     if advancedemo {
         D_DoAdvanceDemo();
     }
-    G_Ticker(unsafe { &mut game_state().m_random });
+    G_Ticker(&mut gs.m_random, &mut gs.d_net);
 }
 static mut doom_loop_interface: loop_interface_t = unsafe {
     loop_interface_t {
