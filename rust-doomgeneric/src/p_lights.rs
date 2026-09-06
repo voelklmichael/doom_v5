@@ -9,7 +9,7 @@ use crate::src::p_setup::sectors;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::p_mobj::mobjtype_t;
-use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_mobj::{ThinkerFn, statenum_t};
 
 
 pub const NUMSTATES: statenum_t = 967;
@@ -1049,10 +1049,7 @@ pub unsafe fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fireflicker_t;
     P_AddThinker(&raw mut (*flick).thinker);
-    (*flick).thinker.function.acp1 = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut fireflicker_t) -> ()>,
-        actionf_p1,
-    >(Some(T_FireFlicker as unsafe extern "C" fn(*mut fireflicker_t) -> ()));
+    (*flick).thinker.function = ThinkerFn::FireFlicker(T_FireFlicker);
     (*flick).sector = sector;
     (*flick).maxlight = (*sector).lightlevel as i32;
     (*flick).minlight = P_FindMinSurroundingLight(
@@ -1084,10 +1081,7 @@ pub unsafe fn P_SpawnLightFlash(mut sector: *mut sector_t) {
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut lightflash_t;
     P_AddThinker(&raw mut (*flash).thinker);
-    (*flash).thinker.function.acp1 = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut lightflash_t) -> ()>,
-        actionf_p1,
-    >(Some(T_LightFlash as unsafe extern "C" fn(*mut lightflash_t) -> ()));
+    (*flash).thinker.function = ThinkerFn::LightFlash(T_LightFlash);
     (*flash).sector = sector;
     (*flash).maxlight = (*sector).lightlevel as i32;
     (*flash).minlight = P_FindMinSurroundingLight(
@@ -1127,10 +1121,7 @@ pub unsafe fn P_SpawnStrobeFlash(
     (*flash).sector = sector;
     (*flash).darktime = fastOrSlow;
     (*flash).brighttime = STROBEBRIGHT;
-    (*flash).thinker.function.acp1 = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut strobe_t) -> ()>,
-        actionf_p1,
-    >(Some(T_StrobeFlash as unsafe extern "C" fn(*mut strobe_t) -> ()));
+    (*flash).thinker.function = ThinkerFn::Strobe(T_StrobeFlash);
     (*flash).maxlight = (*sector).lightlevel as i32;
     (*flash).minlight = P_FindMinSurroundingLight(
         sector,
@@ -1262,10 +1253,7 @@ pub unsafe fn P_SpawnGlowingLight(mut sector: *mut sector_t) {
         (*sector).lightlevel as i32,
     );
     (*g).maxlight = (*sector).lightlevel as i32;
-    (*g).thinker.function.acp1 = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut glow_t) -> ()>,
-        actionf_p1,
-    >(Some(T_Glow as unsafe extern "C" fn(*mut glow_t) -> ()));
+    (*g).thinker.function = ThinkerFn::Glow(T_Glow);
     (*g).direction = -(1 as i32);
     (*sector).special = 0 as i16;
 }

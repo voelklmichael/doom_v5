@@ -3,7 +3,7 @@ use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{plat_t, ceiling_t, floormove_t};
 use crate::src::p_lights::{lightflash_t, strobe_t, glow_t};
 use crate::src::p_doors::{vldoor_t};
-use crate::src::p_mobj::{thinker_s, thinker_t, mapthing_t, state_t, mobjinfo_t, subsector_s, sector_t, line_t, actionf_t};
+use crate::src::p_mobj::{thinker_s, thinker_t, mapthing_t, state_t, mobjinfo_t, subsector_s, sector_t, line_t, ThinkerFn};
 use crate::src::d_player::{player_s, player_t, playerstate_t};
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::d_ticcmd::{ticcmd_t};
@@ -44,7 +44,7 @@ use libc::{malloc, snprintf};
 use crate::src::i_system::{fprintf, fread, ftell, fwrite, stderr};
 use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::mobjtype_t;
-use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_mobj::statenum_t;
 use crate::src::d_mode::skill_t;
 use crate::src::d_player::{NUMWEAPONS, weapontype_t};
 use crate::src::p_plats::plattype_e;
@@ -58,16 +58,12 @@ use crate::src::doomdef::boolean;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 
-extern "C" {
-    fn P_MobjThinker(mobj: *mut mobj_t);
-    fn T_LightFlash(flash: *mut lightflash_t);
-    fn T_StrobeFlash(flash: *mut strobe_t);
-    fn T_Glow(g: *mut glow_t);
-    fn T_PlatRaise(plat: *mut plat_t);
-    fn T_VerticalDoor(door: *mut vldoor_t);
-    fn T_MoveCeiling(ceiling: *mut ceiling_t);
-    fn T_MoveFloor(floor: *mut floormove_t);
-}
+use crate::src::p_mobj::P_MobjThinker;
+use crate::src::p_lights::{T_LightFlash, T_StrobeFlash, T_Glow};
+use crate::src::p_plats::T_PlatRaise;
+use crate::src::p_doors::T_VerticalDoor;
+use crate::src::p_ceilng::T_MoveCeiling;
+use crate::src::p_floor::T_MoveFloor;
 pub type intptr_t = isize;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
@@ -1237,16 +1233,17 @@ unsafe extern "C" fn saveg_write_mapthing_t(mut str: *mut mapthing_t) {
     saveg_write16((*str).type_0);
     saveg_write16((*str).options);
 }
-unsafe extern "C" fn saveg_read_actionf_t(mut str: *mut actionf_t) {
-    (*str).acp1 = ::core::mem::transmute::<
-        *mut ::core::ffi::c_void,
-        actionf_p1,
-    >(saveg_readp());
+unsafe extern "C" fn saveg_read_actionf_t(mut str: *mut ThinkerFn) {
+    let word = saveg_readp();
+    *str = if word.is_null() { ThinkerFn::Paused } else { ThinkerFn::Unresolved };
 }
-unsafe extern "C" fn saveg_write_actionf_t(mut str: *mut actionf_t) {
-    saveg_writep(
-        ::core::mem::transmute::<actionf_p1, *mut ::core::ffi::c_void>((*str).acp1),
-    );
+unsafe extern "C" fn saveg_write_actionf_t(mut str: *mut ThinkerFn) {
+    let word: *mut ::core::ffi::c_void = if matches!(*str, ThinkerFn::Paused) {
+        ::core::ptr::null_mut()
+    } else {
+        str as *mut ::core::ffi::c_void
+    };
+    saveg_writep(word);
 }
 unsafe extern "C" fn saveg_read_thinker_t(mut str: *mut thinker_t) {
     (*str).prev = saveg_readp() as *mut thinker_s;
@@ -1944,11 +1941,7 @@ pub unsafe fn P_ArchiveThinkers() {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     th = thinkercap.next as *mut thinker_t;
     while th != &raw mut thinkercap {
-        if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                actionf_p1,
-            >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ()))
+        if matches!((*th).function, ThinkerFn::Mobj(_))
         {
             saveg_write8(tc_mobj as i32 as byte);
             saveg_write_pad();
@@ -1966,11 +1959,7 @@ pub unsafe fn P_UnArchiveThinkers() {
     currentthinker = thinkercap.next as *mut thinker_t;
     while currentthinker != &raw mut thinkercap {
         next = (*currentthinker).next as *mut thinker_t;
-        if (*currentthinker).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                actionf_p1,
-            >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ()))
+        if matches!((*currentthinker).function, ThinkerFn::Mobj(_))
         {
             P_RemoveMobj(currentthinker as *mut mobj_t);
         } else {
@@ -1998,10 +1987,7 @@ pub unsafe fn P_UnArchiveThinkers() {
                     .offset((*mobj).type_0 as isize) as *mut mobjinfo_t;
                 (*mobj).floorz = (*(*(*mobj).subsector).sector).floorheight;
                 (*mobj).ceilingz = (*(*(*mobj).subsector).sector).ceilingheight;
-                (*mobj).thinker.function.acp1 = ::core::mem::transmute::<
-                    Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                    actionf_p1,
-                >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ()));
+                (*mobj).thinker.function = ThinkerFn::Mobj(P_MobjThinker);
                 P_AddThinker(&raw mut (*mobj).thinker);
             }
             _ => {
@@ -2020,82 +2006,57 @@ pub unsafe fn P_ArchiveSpecials() {
     let mut i: i32 = 0;
     th = thinkercap.next as *mut thinker_t;
     while th != &raw mut thinkercap {
-        if (*th).function.acv.is_none() {
-            i = 0 as i32;
-            while i < MAXCEILINGS {
-                if activeceilings[i as usize] == th as *mut ceiling_t {
-                    break;
+        match (*th).function {
+            ThinkerFn::Paused => {
+                i = 0 as i32;
+                while i < MAXCEILINGS {
+                    if activeceilings[i as usize] == th as *mut ceiling_t {
+                        break;
+                    }
+                    i += 1;
                 }
-                i += 1;
+                if i < MAXCEILINGS {
+                    saveg_write8(tc_ceiling as i32 as byte);
+                    saveg_write_pad();
+                    saveg_write_ceiling_t(th as *mut ceiling_t);
+                }
             }
-            if i < MAXCEILINGS {
+            ThinkerFn::Ceiling(_) => {
                 saveg_write8(tc_ceiling as i32 as byte);
                 saveg_write_pad();
                 saveg_write_ceiling_t(th as *mut ceiling_t);
             }
-        } else if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut ceiling_t) -> ()>,
-                actionf_p1,
-            >(Some(T_MoveCeiling as unsafe extern "C" fn(*mut ceiling_t) -> ()))
-        {
-            saveg_write8(tc_ceiling as i32 as byte);
-            saveg_write_pad();
-            saveg_write_ceiling_t(th as *mut ceiling_t);
-        } else if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
-                actionf_p1,
-            >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()))
-        {
-            saveg_write8(tc_door as i32 as byte);
-            saveg_write_pad();
-            saveg_write_vldoor_t(th as *mut vldoor_t);
-        } else if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut floormove_t) -> ()>,
-                actionf_p1,
-            >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()))
-        {
-            saveg_write8(tc_floor as i32 as byte);
-            saveg_write_pad();
-            saveg_write_floormove_t(th as *mut floormove_t);
-        } else if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut plat_t) -> ()>,
-                actionf_p1,
-            >(Some(T_PlatRaise as unsafe extern "C" fn(*mut plat_t) -> ()))
-        {
-            saveg_write8(tc_plat as i32 as byte);
-            saveg_write_pad();
-            saveg_write_plat_t(th as *mut plat_t);
-        } else if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut lightflash_t) -> ()>,
-                actionf_p1,
-            >(Some(T_LightFlash as unsafe extern "C" fn(*mut lightflash_t) -> ()))
-        {
-            saveg_write8(tc_flash as i32 as byte);
-            saveg_write_pad();
-            saveg_write_lightflash_t(th as *mut lightflash_t);
-        } else if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut strobe_t) -> ()>,
-                actionf_p1,
-            >(Some(T_StrobeFlash as unsafe extern "C" fn(*mut strobe_t) -> ()))
-        {
-            saveg_write8(tc_strobe as i32 as byte);
-            saveg_write_pad();
-            saveg_write_strobe_t(th as *mut strobe_t);
-        } else if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut glow_t) -> ()>,
-                actionf_p1,
-            >(Some(T_Glow as unsafe extern "C" fn(*mut glow_t) -> ()))
-        {
-            saveg_write8(tc_glow as i32 as byte);
-            saveg_write_pad();
-            saveg_write_glow_t(th as *mut glow_t);
+            ThinkerFn::Door(_) => {
+                saveg_write8(tc_door as i32 as byte);
+                saveg_write_pad();
+                saveg_write_vldoor_t(th as *mut vldoor_t);
+            }
+            ThinkerFn::Floor(_) => {
+                saveg_write8(tc_floor as i32 as byte);
+                saveg_write_pad();
+                saveg_write_floormove_t(th as *mut floormove_t);
+            }
+            ThinkerFn::Plat(_) => {
+                saveg_write8(tc_plat as i32 as byte);
+                saveg_write_pad();
+                saveg_write_plat_t(th as *mut plat_t);
+            }
+            ThinkerFn::LightFlash(_) => {
+                saveg_write8(tc_flash as i32 as byte);
+                saveg_write_pad();
+                saveg_write_lightflash_t(th as *mut lightflash_t);
+            }
+            ThinkerFn::Strobe(_) => {
+                saveg_write8(tc_strobe as i32 as byte);
+                saveg_write_pad();
+                saveg_write_strobe_t(th as *mut strobe_t);
+            }
+            ThinkerFn::Glow(_) => {
+                saveg_write8(tc_glow as i32 as byte);
+                saveg_write_pad();
+                saveg_write_glow_t(th as *mut glow_t);
+            }
+            _ => {}
         }
         th = (*th).next as *mut thinker_t;
     }
@@ -2123,11 +2084,8 @@ pub unsafe fn P_UnArchiveSpecials() {
                 ) as *mut ceiling_t;
                 saveg_read_ceiling_t(ceiling);
                 (*(*ceiling).sector).specialdata = ceiling as *mut ::core::ffi::c_void;
-                if (*ceiling).thinker.function.acp1.is_some() {
-                    (*ceiling).thinker.function.acp1 = ::core::mem::transmute::<
-                        Option<unsafe extern "C" fn(*mut ceiling_t) -> ()>,
-                        actionf_p1,
-                    >(Some(T_MoveCeiling as unsafe extern "C" fn(*mut ceiling_t) -> ()));
+                if matches!((*ceiling).thinker.function, ThinkerFn::Unresolved) {
+                    (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
                 }
                 P_AddThinker(&raw mut (*ceiling).thinker);
                 P_AddActiveCeiling(ceiling);
@@ -2141,10 +2099,7 @@ pub unsafe fn P_UnArchiveSpecials() {
                 ) as *mut vldoor_t;
                 saveg_read_vldoor_t(door);
                 (*(*door).sector).specialdata = door as *mut ::core::ffi::c_void;
-                (*door).thinker.function.acp1 = ::core::mem::transmute::<
-                    Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
-                    actionf_p1,
-                >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()));
+                (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
                 P_AddThinker(&raw mut (*door).thinker);
             }
             2 => {
@@ -2156,10 +2111,7 @@ pub unsafe fn P_UnArchiveSpecials() {
                 ) as *mut floormove_t;
                 saveg_read_floormove_t(floor);
                 (*(*floor).sector).specialdata = floor as *mut ::core::ffi::c_void;
-                (*floor).thinker.function.acp1 = ::core::mem::transmute::<
-                    Option<unsafe extern "C" fn(*mut floormove_t) -> ()>,
-                    actionf_p1,
-                >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
+                (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                 P_AddThinker(&raw mut (*floor).thinker);
             }
             3 => {
@@ -2171,11 +2123,8 @@ pub unsafe fn P_UnArchiveSpecials() {
                 ) as *mut plat_t;
                 saveg_read_plat_t(plat);
                 (*(*plat).sector).specialdata = plat as *mut ::core::ffi::c_void;
-                if (*plat).thinker.function.acp1.is_some() {
-                    (*plat).thinker.function.acp1 = ::core::mem::transmute::<
-                        Option<unsafe extern "C" fn(*mut plat_t) -> ()>,
-                        actionf_p1,
-                    >(Some(T_PlatRaise as unsafe extern "C" fn(*mut plat_t) -> ()));
+                if matches!((*plat).thinker.function, ThinkerFn::Unresolved) {
+                    (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
                 }
                 P_AddThinker(&raw mut (*plat).thinker);
                 P_AddActivePlat(plat);
@@ -2188,10 +2137,7 @@ pub unsafe fn P_UnArchiveSpecials() {
                     NULL,
                 ) as *mut lightflash_t;
                 saveg_read_lightflash_t(flash);
-                (*flash).thinker.function.acp1 = ::core::mem::transmute::<
-                    Option<unsafe extern "C" fn(*mut lightflash_t) -> ()>,
-                    actionf_p1,
-                >(Some(T_LightFlash as unsafe extern "C" fn(*mut lightflash_t) -> ()));
+                (*flash).thinker.function = ThinkerFn::LightFlash(T_LightFlash);
                 P_AddThinker(&raw mut (*flash).thinker);
             }
             5 => {
@@ -2202,10 +2148,7 @@ pub unsafe fn P_UnArchiveSpecials() {
                     NULL,
                 ) as *mut strobe_t;
                 saveg_read_strobe_t(strobe);
-                (*strobe).thinker.function.acp1 = ::core::mem::transmute::<
-                    Option<unsafe extern "C" fn(*mut strobe_t) -> ()>,
-                    actionf_p1,
-                >(Some(T_StrobeFlash as unsafe extern "C" fn(*mut strobe_t) -> ()));
+                (*strobe).thinker.function = ThinkerFn::Strobe(T_StrobeFlash);
                 P_AddThinker(&raw mut (*strobe).thinker);
             }
             6 => {
@@ -2216,10 +2159,7 @@ pub unsafe fn P_UnArchiveSpecials() {
                     NULL,
                 ) as *mut glow_t;
                 saveg_read_glow_t(glow);
-                (*glow).thinker.function.acp1 = ::core::mem::transmute::<
-                    Option<unsafe extern "C" fn(*mut glow_t) -> ()>,
-                    actionf_p1,
-                >(Some(T_Glow as unsafe extern "C" fn(*mut glow_t) -> ()));
+                (*glow).thinker.function = ThinkerFn::Glow(T_Glow);
                 P_AddThinker(&raw mut (*glow).thinker);
             }
             _ => {

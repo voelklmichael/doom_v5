@@ -51,6 +51,9 @@ use crate::src::d_mode::{sk_baby, sk_nightmare};
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::stdint_types::size_t;
+use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
+use crate::src::p_doors::vldoor_t;
+use crate::src::p_lights::{fireflicker_t, lightflash_t, strobe_t, glow_t};
 use libc::{memcpy, memset};
 
 pub use crate::src::d_ticcmd::ticcmd_t;
@@ -62,25 +65,33 @@ pub const it_blueskull: C2RustUnnamed_0 = 3;
 pub const it_redcard: C2RustUnnamed_0 = 2;
 pub const it_yellowcard: C2RustUnnamed_0 = 1;
 pub const it_bluecard: C2RustUnnamed_0 = 0;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
+pub enum StateAction {
+    None,
+    Mobj(unsafe extern "C" fn(*mut mobj_t)),
+    Weapon(unsafe extern "C" fn(*mut player_t, *mut pspdef_t)),
 }
-pub type think_t = actionf_t;
+#[derive(Copy, Clone)]
+pub enum ThinkerFn {
+    Paused,
+    Removed,
+    Unresolved,
+    Mobj(unsafe extern "C" fn(*mut mobj_t)),
+    Ceiling(unsafe extern "C" fn(*mut ceiling_t)),
+    Door(unsafe extern "C" fn(*mut vldoor_t)),
+    Floor(unsafe extern "C" fn(*mut floormove_t)),
+    Plat(unsafe extern "C" fn(*mut plat_t)),
+    FireFlicker(unsafe extern "C" fn(*mut fireflicker_t)),
+    LightFlash(unsafe extern "C" fn(*mut lightflash_t)),
+    Strobe(unsafe extern "C" fn(*mut strobe_t)),
+    Glow(unsafe extern "C" fn(*mut glow_t)),
+}
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct thinker_s {
     pub prev: *mut thinker_s,
     pub next: *mut thinker_s,
-    pub function: think_t,
+    pub function: ThinkerFn,
 }
 pub type thinker_t = thinker_s;
 #[derive(Copy, Clone)]
@@ -1207,7 +1218,7 @@ pub struct state_t {
     pub sprite: spritenum_t,
     pub frame: i32,
     pub tics: i32,
-    pub action: actionf_t,
+    pub action: StateAction,
     pub nextstate: statenum_t,
     pub misc1: i32,
     pub misc2: i32,
@@ -1562,11 +1573,8 @@ pub unsafe fn P_SetMobjState(
         (*mobj).tics = (*st).tics;
         (*mobj).sprite = (*st).sprite;
         (*mobj).frame = (*st).frame;
-        if (*st).action.acp1.is_some() {
-            (*st)
-                .action
-                .acp1
-                .expect("non-null function pointer")(mobj as *mut ::core::ffi::c_void);
+        if let StateAction::Mobj(f) = (*st).action {
+            f(mobj);
         }
         state = (*st).nextstate;
         if !((*mobj).tics == 0) {
@@ -1837,23 +1845,13 @@ pub unsafe extern "C" fn P_MobjThinker(mut mobj: *mut mobj_t) {
         || (*mobj).flags & MF_SKULLFLY as i32 != 0
     {
         P_XYMovement(mobj);
-        if (*mobj).thinker.function.acv
-            == ::core::mem::transmute::<
-                ::libc::intptr_t,
-                actionf_v,
-            >(-(1 as i32) as ::libc::intptr_t)
-        {
+        if matches!((*mobj).thinker.function, ThinkerFn::Removed) {
             return;
         }
     }
     if (*mobj).z != (*mobj).floorz || (*mobj).momz != 0 {
         P_ZMovement(mobj);
-        if (*mobj).thinker.function.acv
-            == ::core::mem::transmute::<
-                ::libc::intptr_t,
-                actionf_v,
-            >(-(1 as i32) as ::libc::intptr_t)
-        {
+        if matches!((*mobj).thinker.function, ThinkerFn::Removed) {
             return;
         }
     }
@@ -1934,10 +1932,7 @@ pub unsafe fn P_SpawnMobj(
     } else {
         (*mobj).z = z;
     }
-    (*mobj).thinker.function.acp1 = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-        actionf_p1,
-    >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ()));
+    (*mobj).thinker.function = ThinkerFn::Mobj(P_MobjThinker);
     P_AddThinker(&raw mut (*mobj).thinker);
     return mobj;
 }
@@ -2229,7 +2224,7 @@ pub unsafe fn P_SubstNullMobj(mut mobj: *mut mobj_t) -> *mut mobj_t {
             thinker: thinker_s {
                 prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
                 next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-                function: actionf_t { acv: None },
+                function: ThinkerFn::Paused,
             },
             x: 0,
             y: 0,

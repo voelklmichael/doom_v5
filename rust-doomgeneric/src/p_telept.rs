@@ -12,12 +12,9 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::MF_MISSILE;
 use crate::src::sounds::sfx_telept;
 use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG, mobjtype_t};
-use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_mobj::{ThinkerFn, statenum_t};
 use crate::src::d_mode::exe_final;
 use crate::src::m_fixed::fixed_t;
-extern "C" {
-    fn P_MobjThinker(mobj: *mut mobj_t);
-}
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1016,11 +1013,7 @@ pub unsafe fn EV_Teleport(
             thinker = thinkercap.next as *mut thinker_t;
             thinker = thinkercap.next as *mut thinker_t;
             while thinker != &raw mut thinkercap {
-                if !((*thinker).function.acp1
-                    != ::core::mem::transmute::<
-                        Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                        actionf_p1,
-                    >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ())))
+                if matches!((*thinker).function, ThinkerFn::Mobj(_))
                 {
                     m = thinker as *mut mobj_t;
                     if !((*m).type_0 as u32

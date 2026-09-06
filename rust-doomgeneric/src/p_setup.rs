@@ -1,5 +1,5 @@
 use crate::src::r_defs::{node_t, seg_t, side_t};
-use crate::src::p_mobj::{thinker_s, mapthing_t, sector_t, line_s, ST_NEGATIVE, ST_POSITIVE, ST_VERTICAL, ST_HORIZONTAL, vertex_t, degenmobj_t, line_t, subsector_t, actionf_t};
+use crate::src::p_mobj::{thinker_s, mapthing_t, sector_t, line_s, ST_NEGATIVE, ST_POSITIVE, ST_VERTICAL, ST_HORIZONTAL, vertex_t, degenmobj_t, line_t, subsector_t, ThinkerFn};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::m_argv::M_CheckParm;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
@@ -1194,7 +1194,7 @@ pub unsafe extern "C" fn GetSectorAtNullAddress() -> *mut sector_t {
             thinker: thinker_s {
                 prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
                 next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-                function: actionf_t { acv: None },
+                function: ThinkerFn::Paused,
             },
             x: 0,
             y: 0,

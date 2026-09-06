@@ -27,7 +27,7 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::p_mobj::mobjtype_t;
-use crate::src::p_mobj::{actionf_p1, statenum_t};
+use crate::src::p_mobj::{ThinkerFn, statenum_t};
 use crate::src::m_fixed::fixed_t;
 use crate::src::r_defs::lighttable_t;
 use crate::src::stdint_types::byte;
@@ -36,9 +36,6 @@ use libc::{memcpy, memset};
 use libc::strncasecmp;
 use libc::printf;
 
-extern "C" {
-    fn P_MobjThinker(mobj: *mut mobj_t);
-}
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1871,11 +1868,7 @@ pub unsafe fn R_PrecacheLevel() {
     );
     th = thinkercap.next as *mut thinker_t;
     while th != &raw mut thinkercap {
-        if (*th).function.acp1
-            == ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(*mut mobj_t) -> ()>,
-                actionf_p1,
-            >(Some(P_MobjThinker as unsafe extern "C" fn(*mut mobj_t) -> ()))
+        if matches!((*th).function, ThinkerFn::Mobj(_))
         {
             *spritepresent.offset((*(th as *mut mobj_t)).sprite as isize) = 1
                 as ::core::ffi::c_char;
