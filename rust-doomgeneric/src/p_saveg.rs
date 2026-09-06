@@ -73,6 +73,29 @@ use crate::src::p_inter::NUMCARDS;
 use crate::src::p_lights::{T_Glow, T_LightFlash, T_StrobeFlash};
 use crate::src::p_mobj::P_MobjThinker;
 use crate::src::p_plats::T_PlatRaise;
+
+pub struct PSavegState {
+    pub save_stream: *mut FILE,
+    pub savegame_error: bool,
+    pub temp_savegame_filename: *mut ::core::ffi::c_char,
+    pub savegame_file_filename: *mut ::core::ffi::c_char,
+    pub savegame_file_filename_size: size_t,
+}
+
+impl PSavegState {
+    pub const fn new() -> Self {
+        PSavegState {
+            save_stream: ::core::ptr::null::<FILE>() as *mut FILE,
+            savegame_error: false,
+            temp_savegame_filename: ::core::ptr::null::<::core::ffi::c_char>()
+                as *mut ::core::ffi::c_char,
+            savegame_file_filename: ::core::ptr::null::<::core::ffi::c_char>()
+                as *mut ::core::ffi::c_char,
+            savegame_file_filename_size: 0,
+        }
+    }
+}
+
 pub type intptr_t = isize;
 pub const tc_end: C2RustUnnamed_4 = 0;
 pub const tc_mobj: C2RustUnnamed_4 = 1;
@@ -88,30 +111,26 @@ pub type C2RustUnnamed_4 = u32;
 pub type C2RustUnnamed_5 = u32;
 pub const SAVEGAME_EOF: i32 = 0x1d;
 pub const VERSIONSIZE: i32 = 16;
-pub static mut save_stream: *mut FILE = ::core::ptr::null::<FILE>() as *mut FILE;
 #[no_mangle]
-pub static mut savegamelength: i32 = 0;
-pub static mut savegame_error: bool = false;
+pub static savegamelength: i32 = 0;
 pub unsafe fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char {
-    static mut filename: *mut ::core::ffi::c_char =
-        ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char;
-    if filename.is_null() {
-        filename = M_StringJoin(
+    let state = unsafe { game_state() };
+    if state.p_saveg.temp_savegame_filename.is_null() {
+        state.p_saveg.temp_savegame_filename = M_StringJoin(
             savegamedir,
             b"temp.dsg\0" as *const u8 as *const ::core::ffi::c_char,
             NULL,
         );
     }
-    return filename;
+    return state.p_saveg.temp_savegame_filename;
 }
 pub unsafe fn P_SaveGameFile(mut slot: i32) -> *mut ::core::ffi::c_char {
-    static mut filename: *mut ::core::ffi::c_char =
-        ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char;
-    static mut filename_size: size_t = 0;
+    let state = unsafe { game_state() };
     let mut basename: [::core::ffi::c_char; 32] = [0; 32];
-    if filename.is_null() {
-        filename_size = strlen(savegamedir).wrapping_add(32 as size_t);
-        filename = malloc(filename_size) as *mut ::core::ffi::c_char;
+    if state.p_saveg.savegame_file_filename.is_null() {
+        state.p_saveg.savegame_file_filename_size = strlen(savegamedir).wrapping_add(32 as size_t);
+        state.p_saveg.savegame_file_filename =
+            malloc(state.p_saveg.savegame_file_filename_size) as *mut ::core::ffi::c_char;
     }
     snprintf(
         &raw mut basename as *mut ::core::ffi::c_char,
@@ -120,13 +139,13 @@ pub unsafe fn P_SaveGameFile(mut slot: i32) -> *mut ::core::ffi::c_char {
         slot,
     );
     M_snprintf(
-        filename,
-        filename_size,
+        state.p_saveg.savegame_file_filename,
+        state.p_saveg.savegame_file_filename_size,
         b"%s%s\0" as *const u8 as *const ::core::ffi::c_char,
         savegamedir,
         &raw mut basename as *mut ::core::ffi::c_char,
     );
-    return filename;
+    return state.p_saveg.savegame_file_filename;
 }
 unsafe fn saveg_read8() -> byte {
     let mut result: byte = 0;
@@ -134,16 +153,16 @@ unsafe fn saveg_read8() -> byte {
         &raw mut result as *mut ::core::ffi::c_void,
         1 as size_t,
         1 as size_t,
-        save_stream,
+        unsafe { game_state() }.p_saveg.save_stream,
     ) < 1 as u64
     {
-        if !savegame_error {
+        if !unsafe { game_state() }.p_saveg.savegame_error {
             fprintf(
                 stderr,
                 b"saveg_read8: Unexpected end of file while reading save game\n\0" as *const u8
                     as *const ::core::ffi::c_char,
             );
-            savegame_error = true;
+            unsafe { game_state() }.p_saveg.savegame_error = true;
         }
     }
     return result;
@@ -153,16 +172,16 @@ unsafe fn saveg_write8(mut value: byte) {
         &raw mut value as *const ::core::ffi::c_void,
         1 as size_t,
         1 as size_t,
-        save_stream,
+        unsafe { game_state() }.p_saveg.save_stream,
     ) < 1 as u64
     {
-        if !savegame_error {
+        if !unsafe { game_state() }.p_saveg.savegame_error {
             fprintf(
                 stderr,
                 b"saveg_write8: Error while writing save game\n\0" as *const u8
                     as *const ::core::ffi::c_char,
             );
-            savegame_error = true;
+            unsafe { game_state() }.p_saveg.savegame_error = true;
         }
     }
 }
@@ -194,7 +213,7 @@ unsafe fn saveg_read_pad() {
     let mut pos: u64 = 0;
     let mut padding: i32 = 0;
     let mut i: i32 = 0;
-    pos = ftell(save_stream) as u64;
+    pos = ftell(unsafe { game_state() }.p_saveg.save_stream) as u64;
     padding = ((4 as u64).wrapping_sub(pos & 3 as u64) & 3 as u64) as i32;
     i = 0 as i32;
     while i < padding {
@@ -206,7 +225,7 @@ unsafe fn saveg_write_pad() {
     let mut pos: u64 = 0;
     let mut padding: i32 = 0;
     let mut i: i32 = 0;
-    pos = ftell(save_stream) as u64;
+    pos = ftell(unsafe { game_state() }.p_saveg.save_stream) as u64;
     padding = ((4 as u64).wrapping_sub(pos & 3 as u64) & 3 as u64) as i32;
     i = 0 as i32;
     while i < padding {
@@ -960,7 +979,7 @@ pub unsafe fn P_UnArchiveThinkers() {
     }
 }
 #[no_mangle]
-pub static mut specials_e: C2RustUnnamed_5 = tc_ceiling;
+pub static specials_e: C2RustUnnamed_5 = tc_ceiling;
 pub unsafe fn P_ArchiveSpecials(state: &mut PCeilngState) {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut i: i32 = 0;

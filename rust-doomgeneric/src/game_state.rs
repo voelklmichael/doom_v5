@@ -22,6 +22,7 @@ use crate::src::i_input::IInputState;
 use crate::src::i_joystick::IJoystickState;
 use crate::src::i_scale::IScaleState;
 use crate::src::i_sound::ISoundState;
+use crate::src::i_system::ISystemState;
 use crate::src::i_timer::ITimerState;
 use crate::src::m_argv::MArgvState;
 use crate::src::m_config::MConfigState;
@@ -34,6 +35,7 @@ use crate::src::p_maputl::PMaputlState;
 use crate::src::p_mobj::PMobjState;
 use crate::src::p_plats::PPlatsState;
 use crate::src::p_pspr::PPsprState;
+use crate::src::p_saveg::PSavegState;
 use crate::src::p_sight::PSightState;
 use crate::src::p_spec::PSpecState;
 use crate::src::p_switch::PSwitchState;
@@ -62,6 +64,7 @@ pub struct GameState {
     pub i_joystick: IJoystickState,
     pub i_scale: IScaleState,
     pub i_sound: ISoundState,
+    pub i_system: ISystemState,
     pub i_timer: ITimerState,
     pub m_argv: MArgvState,
     pub m_config: MConfigState,
@@ -74,6 +77,7 @@ pub struct GameState {
     pub p_mobj: PMobjState,
     pub p_plats: PPlatsState,
     pub p_pspr: PPsprState,
+    pub p_saveg: PSavegState,
     pub p_sight: PSightState,
     pub p_spec: PSpecState,
     pub p_switch: PSwitchState,
@@ -104,6 +108,7 @@ impl GameState {
             i_joystick: IJoystickState::new(),
             i_scale: IScaleState::new(),
             i_sound: ISoundState::new(),
+            i_system: ISystemState::new(),
             i_timer: ITimerState::new(),
             m_argv: MArgvState::new(),
             m_config: MConfigState::new(),
@@ -116,6 +121,7 @@ impl GameState {
             p_mobj: PMobjState::new(),
             p_plats: PPlatsState::new(),
             p_pspr: PPsprState::new(),
+            p_saveg: PSavegState::new(),
             p_sight: PSightState::new(),
             p_spec: PSpecState::new(),
             p_switch: PSwitchState::new(),
