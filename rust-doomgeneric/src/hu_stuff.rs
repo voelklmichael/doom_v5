@@ -36,13 +36,11 @@ use libc::snprintf;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::TICRATE;
+use crate::src::m_controls::KEY_RSHIFT;
+use crate::src::m_controls::KEY_RALT;
+use crate::src::m_controls::KEY_ENTER;
+use crate::src::m_controls::KEY_ESCAPE;
 
-pub const KEY_ESCAPE: i32 = 27 as i32;
-pub const KEY_ENTER: i32 = 13;
-pub const KEY_RSHIFT: i32 = 0x80 as i32
-    + 0x36 as i32;
-pub const KEY_RALT: i32 = 0x80 as i32
-    + 0x38 as i32;
 pub const KEY_LALT: i32 = KEY_RALT;
 pub const HU_FONTSTART: i32 = '!' as i32;
 pub const HU_FONTEND: i32 = '_' as i32;

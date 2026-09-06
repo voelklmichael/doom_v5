@@ -13,6 +13,8 @@ use crate::src::stdint_types::__int32_t;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::m_controls::KEY_BACKSPACE;
+use crate::src::m_controls::KEY_ENTER;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct patch_t {
@@ -46,8 +48,6 @@ pub struct hu_itext_t {
     pub on: *mut bool,
     pub laston: bool,
 }
-pub const KEY_ENTER: i32 = 13;
-pub const KEY_BACKSPACE: i32 = 0x7f;
 pub const HU_MAXLINELENGTH: i32 = 80 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_init() {}

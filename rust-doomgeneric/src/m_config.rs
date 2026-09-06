@@ -6,6 +6,33 @@ use crate::src::stdint_types::size_t;
 use libc::{strcmp, strdup};
 use libc::{malloc, printf, sscanf};
 use crate::src::doomdef::NULL;
+use crate::src::m_controls::KEY_RIGHTARROW;
+use crate::src::m_controls::KEY_LEFTARROW;
+use crate::src::m_controls::KEY_UPARROW;
+use crate::src::m_controls::KEY_DOWNARROW;
+use crate::src::m_controls::KEY_F1;
+use crate::src::m_controls::KEY_F2;
+use crate::src::m_controls::KEY_F3;
+use crate::src::m_controls::KEY_F4;
+use crate::src::m_controls::KEY_F5;
+use crate::src::m_controls::KEY_F6;
+use crate::src::m_controls::KEY_F7;
+use crate::src::m_controls::KEY_F8;
+use crate::src::m_controls::KEY_F9;
+use crate::src::m_controls::KEY_F10;
+use crate::src::m_controls::KEY_F11;
+use crate::src::m_controls::KEY_F12;
+use crate::src::m_controls::KEY_BACKSPACE;
+use crate::src::m_controls::KEY_PAUSE;
+use crate::src::m_controls::KEY_MINUS;
+use crate::src::m_controls::KEY_RSHIFT;
+use crate::src::m_controls::KEY_RALT;
+use crate::src::m_controls::KEY_HOME;
+use crate::src::m_controls::KEY_END;
+use crate::src::m_controls::KEY_PGUP;
+use crate::src::m_controls::KEY_PGDN;
+use crate::src::m_controls::KEY_INS;
+use crate::src::m_controls::KEY_DEL;
 
 extern "C" {
     fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
@@ -36,61 +63,14 @@ pub struct default_collection_t {
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
 };
-pub const KEY_RIGHTARROW: i32 = 0xae as i32;
-pub const KEY_LEFTARROW: i32 = 0xac as i32;
-pub const KEY_UPARROW: i32 = 0xad as i32;
-pub const KEY_DOWNARROW: i32 = 0xaf as i32;
-pub const KEY_F1: i32 = 0x80 as i32
-    + 0x3b as i32;
-pub const KEY_F2: i32 = 0x80 as i32
-    + 0x3c as i32;
-pub const KEY_F3: i32 = 0x80 as i32
-    + 0x3d as i32;
-pub const KEY_F4: i32 = 0x80 as i32
-    + 0x3e as i32;
-pub const KEY_F5: i32 = 0x80 as i32
-    + 0x3f as i32;
-pub const KEY_F6: i32 = 0x80 as i32
-    + 0x40 as i32;
-pub const KEY_F7: i32 = 0x80 as i32
-    + 0x41 as i32;
-pub const KEY_F8: i32 = 0x80 as i32
-    + 0x42 as i32;
-pub const KEY_F9: i32 = 0x80 as i32
-    + 0x43 as i32;
-pub const KEY_F10: i32 = 0x80 as i32
-    + 0x44 as i32;
-pub const KEY_F11: i32 = 0x80 as i32
-    + 0x57 as i32;
-pub const KEY_F12: i32 = 0x80 as i32
-    + 0x58 as i32;
-pub const KEY_BACKSPACE: i32 = 0x7f;
-pub const KEY_PAUSE: i32 = 0xff as i32;
-pub const KEY_MINUS: i32 = 0x2d as i32;
-pub const KEY_RSHIFT: i32 = 0x80 as i32
-    + 0x36 as i32;
 pub const KEY_RCTRL: i32 = 0x80 as i32
     + 0x1d as i32;
-pub const KEY_RALT: i32 = 0x80 as i32
-    + 0x38 as i32;
 pub const KEY_CAPSLOCK: i32 = 0x80 as i32
     + 0x3a as i32;
 pub const KEY_SCRLCK: i32 = 0x80 as i32
     + 0x46 as i32;
 pub const KEY_PRTSCR: i32 = 0x80 as i32
     + 0x59 as i32;
-pub const KEY_HOME: i32 = 0x80 as i32
-    + 0x47 as i32;
-pub const KEY_END: i32 = 0x80 as i32
-    + 0x4f as i32;
-pub const KEY_PGUP: i32 = 0x80 as i32
-    + 0x49 as i32;
-pub const KEY_PGDN: i32 = 0x80 as i32
-    + 0x51 as i32;
-pub const KEY_INS: i32 = 0x80 as i32
-    + 0x52 as i32;
-pub const KEY_DEL: i32 = 0x80 as i32
-    + 0x53 as i32;
 pub const KEYP_5: i32 = '5' as i32;
 pub const KEYP_PLUS: i32 = '+' as i32;
 pub const KEYP_MULTIPLY: i32 = '*' as i32;
