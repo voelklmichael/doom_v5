@@ -14,17 +14,13 @@ use crate::src::p_setup::lines;
 use crate::src::r_main::validcount;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::m_fixed::FixedMul;
+use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 
 extern "C" {
     fn abs(__x: i32) -> i32;
 }
 pub type __uint8_t = u8;
 pub type fixed_t = i32;
-pub type C2RustUnnamed = u32;
-pub const BOXRIGHT: C2RustUnnamed = 3;
-pub const BOXLEFT: C2RustUnnamed = 2;
-pub const BOXBOTTOM: C2RustUnnamed = 1;
-pub const BOXTOP: C2RustUnnamed = 0;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
