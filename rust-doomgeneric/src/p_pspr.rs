@@ -11,7 +11,6 @@ use crate::src::d_player::{
 use crate::src::d_ticcmd::BT_ATTACK;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
-use crate::src::doomstat::gamemode;
 use crate::src::game_state::game_state;
 use crate::src::info::states;
 use crate::src::info::{S_CHAIN1, S_NULL, S_PLAY, S_PLAY_ATK1, S_PLAY_ATK2, S_SAW};
@@ -140,12 +139,12 @@ pub unsafe fn P_CheckAmmo(mut player: *mut player_t) -> bool {
     loop {
         if (*player).weaponowned[wp_plasma as i32 as usize]
             && (*player).ammo[am_cell as i32 as usize] != 0
-            && gamemode as u32 != shareware as i32 as u32
+            && unsafe { game_state() }.doomstat.gamemode as u32 != shareware as i32 as u32
         {
             (*player).pendingweapon = wp_plasma;
         } else if (*player).weaponowned[wp_supershotgun as i32 as usize]
             && (*player).ammo[am_shell as i32 as usize] > 2 as i32
-            && gamemode as u32 == commercial as i32 as u32
+            && unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
         {
             (*player).pendingweapon = wp_supershotgun;
         } else if (*player).weaponowned[wp_chaingun as i32 as usize]
@@ -166,7 +165,7 @@ pub unsafe fn P_CheckAmmo(mut player: *mut player_t) -> bool {
             (*player).pendingweapon = wp_missile;
         } else if (*player).weaponowned[wp_bfg as i32 as usize]
             && (*player).ammo[am_cell as i32 as usize] > 40 as i32
-            && gamemode as u32 != shareware as i32 as u32
+            && unsafe { game_state() }.doomstat.gamemode as u32 != shareware as i32 as u32
         {
             (*player).pendingweapon = wp_bfg;
         } else {

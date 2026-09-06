@@ -1,4 +1,3 @@
-use crate::src::doomstat::gamemode;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
@@ -137,7 +136,7 @@ pub unsafe fn S_Start(state: &mut SoundsState) {
         cnum += 1;
     }
     mus_paused = false;
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         mnum = mus_runnin as i32 + gamemap - 1 as i32;
     } else {
         let mut spmus: [i32; 9] = [

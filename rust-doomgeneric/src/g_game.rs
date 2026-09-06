@@ -42,9 +42,6 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
-use crate::src::doomstat::gamemission;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
 use crate::src::f_finale::F_Responder;
 use crate::src::f_finale::F_StartFinale;
 use crate::src::f_finale::F_Ticker;
@@ -431,21 +428,21 @@ pub unsafe fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
 }
 unsafe fn WeaponSelectable(mut weapon: weapontype_t) -> bool {
     if weapon as u32 == wp_supershotgun as u32
-        && (if gamemission as u32 == pack_chex as u32 {
+        && (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as u32 {
             doom as u32
         } else {
-            (if gamemission as u32 == pack_hacx as u32 {
+            (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as u32 {
                 doom2 as u32
             } else {
-                gamemission as u32
+                unsafe { game_state() }.doomstat.gamemission as u32
             })
         }) == doom as u32
     {
         return false;
     }
     if (weapon as u32 == wp_plasma as u32 || weapon as u32 == wp_bfg as u32)
-        && gamemission as u32 == doom as u32
-        && gamemode as u32 == shareware as u32
+        && unsafe { game_state() }.doomstat.gamemission as u32 == doom as u32
+        && unsafe { game_state() }.doomstat.gamemode as u32 == shareware as u32
     {
         return false;
     }
@@ -714,8 +711,9 @@ pub unsafe fn G_DoLoadLevel() {
     skyflatnum = R_FlatNumForName(
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     );
-    if gamemode as u32 == commercial as u32
-        && (gameversion as u32 == exe_final2 as u32 || gameversion as u32 == exe_chex as u32)
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32
+        && (unsafe { game_state() }.doomstat.gameversion as u32 == exe_final2 as u32
+            || unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as u32)
     {
         let mut skytexturename: *mut ::core::ffi::c_char =
             ::core::ptr::null_mut::<::core::ffi::c_char>();
@@ -1313,7 +1311,9 @@ pub unsafe fn G_ExitLevel() {
     gameaction = ga_completed;
 }
 pub unsafe fn G_SecretExitLevel() {
-    if gamemode as u32 == commercial as u32 && W_CheckNumForName("map31") < 0 as i32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32
+        && W_CheckNumForName("map31") < 0 as i32
+    {
         secretexit = false;
     } else {
         secretexit = true;
@@ -1333,8 +1333,8 @@ pub unsafe fn G_DoCompleted() {
     if automapactive {
         AM_Stop();
     }
-    if gamemode as u32 != commercial as u32 {
-        if gameversion as u32 == exe_chex as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32 {
+        if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as u32 {
             if gamemap == 5 as i32 {
                 gameaction = ga_victory;
                 return;
@@ -1356,11 +1356,13 @@ pub unsafe fn G_DoCompleted() {
             }
         }
     }
-    if gamemap == 8 as i32 && gamemode as u32 != commercial as u32 {
+    if gamemap == 8 as i32 && unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32
+    {
         gameaction = ga_victory;
         return;
     }
-    if gamemap == 9 as i32 && gamemode as u32 != commercial as u32 {
+    if gamemap == 9 as i32 && unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32
+    {
         i = 0 as i32;
         while i < MAXPLAYERS {
             players[i as usize].didsecret = true;
@@ -1370,7 +1372,7 @@ pub unsafe fn G_DoCompleted() {
     wminfo.didsecret = players[consoleplayer as usize].didsecret;
     wminfo.epsd = gameepisode - 1 as i32;
     wminfo.last = gamemap - 1 as i32;
-    if gamemode as u32 == commercial as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32 {
         if secretexit {
             match gamemap {
                 15 => {
@@ -1416,7 +1418,7 @@ pub unsafe fn G_DoCompleted() {
     wminfo.maxitems = totalitems;
     wminfo.maxsecret = totalsecret;
     wminfo.maxfrags = 0 as i32;
-    if gamemode as u32 == commercial as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32 {
         wminfo.partime = TICRATE * cpars[(gamemap - 1 as i32) as usize];
     } else if gameepisode < 4 as i32 {
         wminfo.partime = TICRATE * pars[gameepisode as usize][gamemap as usize];
@@ -1451,7 +1453,7 @@ pub unsafe fn G_WorldDone() {
     if secretexit {
         players[consoleplayer as usize].didsecret = true;
     }
-    if gamemode as u32 == commercial as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32 {
         let mut current_block_3: u64;
         match gamemap {
             15 | 31 => {
@@ -1636,7 +1638,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     if skill as i32 > sk_nightmare as i32 {
         skill = sk_nightmare;
     }
-    if gameversion as u32 >= exe_ultimate as u32 {
+    if unsafe { game_state() }.doomstat.gameversion as u32 >= exe_ultimate as u32 {
         if episode == 0 as i32 {
             episode = 4 as i32;
         }
@@ -1648,13 +1650,13 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
             episode = 3 as i32;
         }
     }
-    if episode > 1 as i32 && gamemode as u32 == shareware as u32 {
+    if episode > 1 as i32 && unsafe { game_state() }.doomstat.gamemode as u32 == shareware as u32 {
         episode = 1 as i32;
     }
     if map < 1 as i32 {
         map = 1 as i32;
     }
-    if map > 9 as i32 && gamemode as u32 != commercial as u32 {
+    if map > 9 as i32 && unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32 {
         map = 9 as i32;
     }
     M_ClearRandom(unsafe { &mut game_state().m_random });
@@ -1696,7 +1698,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     gamemap = map;
     gameskill = skill;
     viewactive = true;
-    if gamemode as u32 == commercial as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32 {
         if gamemap < 12 as i32 {
             skytexturename =
                 b"SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -1858,7 +1860,7 @@ pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     demorecording = true;
 }
 pub unsafe fn G_VanillaVersionCode() -> i32 {
-    match gameversion as u32 {
+    match unsafe { game_state() }.doomstat.gameversion as u32 {
         0 => {
             I_Error("Doom 1.2 does not have a version code!");
         }

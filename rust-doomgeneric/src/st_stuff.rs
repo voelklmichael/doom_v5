@@ -17,9 +17,6 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
-use crate::src::doomstat::gamemission;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::gameskill;
@@ -482,8 +479,9 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                 (*plyr).message = b"Music Change\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
                 cht_GetParam(&raw mut cheat_mus, &raw mut buf as *mut ::core::ffi::c_char);
-                if gamemode as u32 == commercial as i32 as u32
-                    || (gameversion as u32) < exe_ultimate as i32 as u32
+                if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+                    || (unsafe { game_state() }.doomstat.gameversion as u32)
+                        < exe_ultimate as i32 as u32
                 {
                     musnum = mus_runnin as i32
                         + (buf[0 as i32 as usize] as i32 - '0' as i32) * 10 as i32
@@ -517,23 +515,29 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                         S_ChangeMusic(unsafe { &mut game_state().sounds }, musnum, 1 as i32);
                     }
                 }
-            } else if (if gamemission as u32 == pack_chex as i32 as u32 {
+            } else if (if unsafe { game_state() }.doomstat.gamemission as u32
+                == pack_chex as i32 as u32
+            {
                 doom as i32 as u32
             } else {
-                (if gamemission as u32 == pack_hacx as i32 as u32 {
+                (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                     doom2 as i32 as u32
                 } else {
-                    gamemission as u32
+                    unsafe { game_state() }.doomstat.gamemission as u32
                 })
             }) == doom as i32 as u32
                 && cht_CheckCheat(&raw mut cheat_noclip, (*ev).data2 as ::core::ffi::c_char) != 0
-                || (if gamemission as u32 == pack_chex as i32 as u32 {
+                || (if unsafe { game_state() }.doomstat.gamemission as u32
+                    == pack_chex as i32 as u32
+                {
                     doom as i32 as u32
                 } else {
-                    (if gamemission as u32 == pack_hacx as i32 as u32 {
+                    (if unsafe { game_state() }.doomstat.gamemission as u32
+                        == pack_hacx as i32 as u32
+                    {
                         doom2 as i32 as u32
                     } else {
-                        gamemission as u32
+                        unsafe { game_state() }.doomstat.gamemission as u32
                     })
                 }) != doom as i32 as u32
                     && cht_CheckCheat(
@@ -613,7 +617,7 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                 &raw mut cheat_clev,
                 &raw mut buf_1 as *mut ::core::ffi::c_char,
             );
-            if gamemode as u32 == commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 epsd = 1 as i32;
                 map = (buf_1[0 as i32 as usize] as i32 - '0' as i32) * 10 as i32
                     + buf_1[1 as i32 as usize] as i32
@@ -622,7 +626,7 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                 epsd = buf_1[0 as i32 as usize] as i32 - '0' as i32;
                 map = buf_1[1 as i32 as usize] as i32 - '0' as i32;
             }
-            if gameversion as u32 == exe_chex as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32 {
                 epsd = 1 as i32;
             }
             if epsd < 1 as i32 {
@@ -631,16 +635,24 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
             if map < 1 as i32 {
                 return false;
             }
-            if gamemode as u32 == retail as i32 as u32 && (epsd > 4 as i32 || map > 9 as i32) {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32
+                && (epsd > 4 as i32 || map > 9 as i32)
+            {
                 return false;
             }
-            if gamemode as u32 == registered as i32 as u32 && (epsd > 3 as i32 || map > 9 as i32) {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32
+                && (epsd > 3 as i32 || map > 9 as i32)
+            {
                 return false;
             }
-            if gamemode as u32 == shareware as i32 as u32 && (epsd > 1 as i32 || map > 9 as i32) {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == shareware as i32 as u32
+                && (epsd > 1 as i32 || map > 9 as i32)
+            {
                 return false;
             }
-            if gamemode as u32 == commercial as i32 as u32 && (epsd > 1 as i32 || map > 40 as i32) {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+                && (epsd > 1 as i32 || map > 40 as i32)
+            {
                 return false;
             }
             (*plyr).message = b"Changing Level...\0" as *const u8 as *const ::core::ffi::c_char
@@ -862,7 +874,7 @@ pub unsafe fn ST_doPaletteStuff() {
     } else {
         palette = 0 as i32;
     }
-    if gameversion as u32 == exe_chex as i32 as u32
+    if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32
         && palette >= STARTREDPALS
         && palette < STARTREDPALS + NUMREDPALS
     {

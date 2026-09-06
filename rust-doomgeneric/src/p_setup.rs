@@ -2,7 +2,6 @@ use crate::src::d_mode::commercial;
 use crate::src::d_mode::skill_t;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
-use crate::src::doomstat::gamemode;
 use crate::src::g_game::bodyqueslot;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::deathmatch;
@@ -437,7 +436,7 @@ pub unsafe fn P_LoadThings(mut lump: i32) {
     i = 0 as i32;
     while i < numthings {
         spawn = true;
-        if gamemode as u32 != commercial as i32 as u32 {
+        if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32 {
             let mut current_block_5: u64;
             match (*mt).type_0 as i32 {
                 64 => {
@@ -881,7 +880,7 @@ pub unsafe fn P_SetupLevel(
         PU_PURGELEVEL as i32 - 1 as i32,
     );
     P_InitThinkers();
-    if gamemode as u32 == commercial as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         if map < 10 as i32 {
             snprintf(
                 &raw mut lumpname as *mut ::core::ffi::c_char,

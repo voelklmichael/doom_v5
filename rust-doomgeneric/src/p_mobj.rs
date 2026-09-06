@@ -5,7 +5,6 @@ use crate::src::d_player::CF_NOMOMENTUM;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
-use crate::src::doomstat::gameversion;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::gameskill;
@@ -749,8 +748,9 @@ pub unsafe fn P_ZMovement(mut mo: *mut mobj_t) {
         }
     }
     if (*mo).z <= (*mo).floorz {
-        let mut correct_lost_soul_bounce: i32 =
-            (gameversion as u32 >= exe_ultimate as i32 as u32) as i32;
+        let mut correct_lost_soul_bounce: i32 = (unsafe { game_state() }.doomstat.gameversion
+            as u32
+            >= exe_ultimate as i32 as u32) as i32;
         if correct_lost_soul_bounce != 0 && (*mo).flags & MF_SKULLFLY as i32 != 0 {
             (*mo).momz = -(*mo).momz;
         }

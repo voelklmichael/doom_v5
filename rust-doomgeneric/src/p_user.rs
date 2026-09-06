@@ -11,7 +11,7 @@ use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::d_ticcmd::{BT_CHANGE, BT_SPECIAL, BT_USE, BT_WEAPONMASK, BT_WEAPONSHIFT};
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
-use crate::src::doomstat::gamemode;
+use crate::src::game_state::game_state;
 use crate::src::info::states;
 use crate::src::info::{S_PLAY, S_PLAY_RUN1};
 use crate::src::m_fixed::fixed_t;
@@ -204,7 +204,7 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
         {
             newweapon = wp_chainsaw;
         }
-        if gamemode as u32 == commercial as i32 as u32
+        if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
             && newweapon as u32 == wp_shotgun as i32 as u32
             && (*player).weaponowned[wp_supershotgun as i32 as usize]
             && (*player).readyweapon as u32 != wp_supershotgun as i32 as u32
@@ -216,7 +216,7 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
         {
             if newweapon as u32 != wp_plasma as i32 as u32
                 && newweapon as u32 != wp_bfg as i32 as u32
-                || gamemode as u32 != shareware as i32 as u32
+                || unsafe { game_state() }.doomstat.gamemode as u32 != shareware as i32 as u32
             {
                 (*player).pendingweapon = newweapon;
             }

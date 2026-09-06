@@ -1,5 +1,4 @@
 use crate::src::d_mode::exe_final;
-use crate::src::doomstat::gameversion;
 use crate::src::game_state::game_state;
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_map::P_TeleportMove;
@@ -52,7 +51,9 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
                             if !P_TeleportMove(thing, (*m).x, (*m).y) {
                                 return 0 as i32;
                             }
-                            if gameversion as u32 != exe_final as i32 as u32 {
+                            if unsafe { game_state() }.doomstat.gameversion as u32
+                                != exe_final as i32 as u32
+                            {
                                 (*thing).z = (*thing).floorz;
                             }
                             if !(*thing).player.is_null() {

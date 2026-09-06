@@ -29,11 +29,6 @@ use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
-use crate::src::doomstat::gamedescription;
-use crate::src::doomstat::gamemission;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
-use crate::src::doomstat::modifiedgame;
 use crate::src::dummy::drone;
 use crate::src::f_finale::F_Drawer;
 use crate::src::f_wipe::wipe_EndScreen;
@@ -488,7 +483,7 @@ pub unsafe fn D_DoomLoop() {
     }
     main_loop_started = true;
     TryRunTics();
-    I_SetWindowTitle(gamedescription);
+    I_SetWindowTitle(unsafe { game_state() }.doomstat.gamedescription);
     I_SetGrabMouseCallback(Some(D_GrabMouseCallback as unsafe fn() -> boolean));
     I_InitGraphics();
     V_RestoreBuffer(unsafe { &mut game_state().v_video });
@@ -529,8 +524,8 @@ pub unsafe fn D_DoAdvanceDemo() {
     usergame = false;
     paused = false;
     gameaction = ga_nothing;
-    if gameversion as u32 == exe_ultimate as i32 as u32
-        || gameversion as u32 == exe_final as i32 as u32
+    if unsafe { game_state() }.doomstat.gameversion as u32 == exe_ultimate as i32 as u32
+        || unsafe { game_state() }.doomstat.gameversion as u32 == exe_final as i32 as u32
     {
         demosequence = (demosequence + 1 as i32) % 7 as i32;
     } else {
@@ -538,7 +533,7 @@ pub unsafe fn D_DoAdvanceDemo() {
     }
     match demosequence {
         0 => {
-            if gamemode as u32 == commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 pagetic = TICRATE * 11 as i32;
             } else {
                 pagetic = 170 as i32;
@@ -546,7 +541,7 @@ pub unsafe fn D_DoAdvanceDemo() {
             gamestate = GS_DEMOSCREEN;
             pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-            if gamemode as u32 == commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
             } else {
                 S_StartMusic(unsafe { &mut game_state().sounds }, mus_intro as i32);
@@ -570,14 +565,14 @@ pub unsafe fn D_DoAdvanceDemo() {
         }
         4 => {
             gamestate = GS_DEMOSCREEN;
-            if gamemode as u32 == commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 pagetic = TICRATE * 11 as i32;
                 pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
                 S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
             } else {
                 pagetic = 200 as i32;
-                if gamemode as u32 == retail as i32 as u32 {
+                if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
                     pagename = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 } else {
@@ -701,7 +696,8 @@ unsafe fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_char) {
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_3>() as usize)
     {
         if strcasecmp(pack_name, packs[i as usize].name) == 0 {
-            gamemission = packs[i as usize].mission as GameMission_t;
+            unsafe { game_state() }.doomstat.gamemission =
+                packs[i as usize].mission as GameMission_t;
             return;
         }
         i += 1;
@@ -724,7 +720,7 @@ unsafe fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_char) {
     ));
 }
 pub unsafe fn D_IdentifyVersion() {
-    if gamemission as u32 == none as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemission as u32 == none as i32 as u32 {
         let mut i: u32 = 0;
         i = 0 as u32;
         while i < numlumps {
@@ -734,7 +730,7 @@ pub unsafe fn D_IdentifyVersion() {
                 8 as size_t,
             ) == 0
             {
-                gamemission = doom2;
+                unsafe { game_state() }.doomstat.gamemission = doom2;
                 break;
             } else if strncasecmp(
                 &raw mut (*lumpinfo.offset(i as isize)).name as *mut ::core::ffi::c_char,
@@ -742,36 +738,36 @@ pub unsafe fn D_IdentifyVersion() {
                 8 as size_t,
             ) == 0
             {
-                gamemission = doom;
+                unsafe { game_state() }.doomstat.gamemission = doom;
                 break;
             } else {
                 i = i.wrapping_add(1);
             }
         }
-        if gamemission as u32 == none as i32 as u32 {
+        if unsafe { game_state() }.doomstat.gamemission as u32 == none as i32 as u32 {
             I_Error("Unknown or invalid IWAD file.");
         }
     }
-    if (if gamemission as u32 == pack_chex as i32 as u32 {
+    if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if gamemission as u32 == pack_hacx as i32 as u32 {
+        (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
-            gamemission as u32
+            unsafe { game_state() }.doomstat.gamemission as u32
         })
     }) == doom as i32 as u32
     {
         if W_CheckNumForName("E4M1") > 0 as i32 {
-            gamemode = retail;
+            unsafe { game_state() }.doomstat.gamemode = retail;
         } else if W_CheckNumForName("E3M1") > 0 as i32 {
-            gamemode = registered;
+            unsafe { game_state() }.doomstat.gamemode = registered;
         } else {
-            gamemode = shareware;
+            unsafe { game_state() }.doomstat.gamemode = shareware;
         }
     } else {
         let mut p: i32 = 0;
-        gamemode = commercial;
+        unsafe { game_state() }.doomstat.gamemode = commercial;
         p = M_CheckParmWithArgs("-pack", 1 as i32);
         if p > 0 as i32 {
             SetMissionForPackName(
@@ -783,89 +779,89 @@ pub unsafe fn D_IdentifyVersion() {
 pub unsafe fn D_SetGameDescription() {
     let mut is_freedoom: bool = W_CheckNumForName("FREEDOOM") >= 0 as i32;
     let mut is_freedm: bool = W_CheckNumForName("FREEDM") >= 0 as i32;
-    gamedescription =
+    unsafe { game_state() }.doomstat.gamedescription =
         b"Unknown\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    if (if gamemission as u32 == pack_chex as i32 as u32 {
+    if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if gamemission as u32 == pack_hacx as i32 as u32 {
+        (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
-            gamemission as u32
+            unsafe { game_state() }.doomstat.gamemission as u32
         })
     }) == doom as i32 as u32
     {
         if is_freedoom {
-            gamedescription = GetGameName(
+            unsafe { game_state() }.doomstat.gamedescription = GetGameName(
                 b"Freedoom: Phase 1\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
-        } else if gamemode as u32 == retail as i32 as u32 {
-            gamedescription = GetGameName(
+        } else if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
+            unsafe { game_state() }.doomstat.gamedescription = GetGameName(
                 b"The Ultimate DOOM\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
-        } else if gamemode as u32 == registered as i32 as u32 {
-            gamedescription = GetGameName(
+        } else if unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32 {
+            unsafe { game_state() }.doomstat.gamedescription = GetGameName(
                 b"DOOM Registered\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
-        } else if gamemode as u32 == shareware as i32 as u32 {
-            gamedescription = GetGameName(
+        } else if unsafe { game_state() }.doomstat.gamemode as u32 == shareware as i32 as u32 {
+            unsafe { game_state() }.doomstat.gamedescription = GetGameName(
                 b"DOOM Shareware\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
         }
     } else if is_freedoom {
         if is_freedm {
-            gamedescription = GetGameName(
+            unsafe { game_state() }.doomstat.gamedescription = GetGameName(
                 b"FreeDM\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         } else {
-            gamedescription = GetGameName(
+            unsafe { game_state() }.doomstat.gamedescription = GetGameName(
                 b"Freedoom: Phase 2\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
         }
-    } else if (if gamemission as u32 == pack_chex as i32 as u32 {
+    } else if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if gamemission as u32 == pack_hacx as i32 as u32 {
+        (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
-            gamemission as u32
+            unsafe { game_state() }.doomstat.gamemission as u32
         })
     }) == doom2 as i32 as u32
     {
-        gamedescription = GetGameName(
+        unsafe { game_state() }.doomstat.gamedescription = GetGameName(
             b"DOOM 2: Hell on Earth\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
-    } else if (if gamemission as u32 == pack_chex as i32 as u32 {
+    } else if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if gamemission as u32 == pack_hacx as i32 as u32 {
+        (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
-            gamemission as u32
+            unsafe { game_state() }.doomstat.gamemission as u32
         })
     }) == pack_plut as i32 as u32
     {
-        gamedescription = GetGameName(
+        unsafe { game_state() }.doomstat.gamedescription = GetGameName(
             b"DOOM 2: Plutonia Experiment\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
-    } else if (if gamemission as u32 == pack_chex as i32 as u32 {
+    } else if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if gamemission as u32 == pack_hacx as i32 as u32 {
+        (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
-            gamemission as u32
+            unsafe { game_state() }.doomstat.gamemission as u32
         })
     }) == pack_tnt as i32 as u32
     {
-        gamedescription = GetGameName(
+        unsafe { game_state() }.doomstat.gamedescription = GetGameName(
             b"DOOM 2: TNT - Evilution\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
@@ -979,7 +975,7 @@ unsafe fn InitGameVersion() {
                 gameversions[i as usize].cmdline,
             ) == 0
             {
-                gameversion = gameversions[i as usize].version;
+                unsafe { game_state() }.doomstat.gameversion = gameversions[i as usize].version;
                 break;
             } else {
                 i += 1;
@@ -1001,40 +997,43 @@ unsafe fn InitGameVersion() {
                 myargv[(p + 1 as i32) as usize].to_str().unwrap(),
             ));
         }
-    } else if gamemission as u32 == pack_chex as i32 as u32 {
-        gameversion = exe_chex;
-    } else if gamemission as u32 == pack_hacx as i32 as u32 {
-        gameversion = exe_hacx;
-    } else if gamemode as u32 == shareware as i32 as u32
-        || gamemode as u32 == registered as i32 as u32
+    } else if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
+        unsafe { game_state() }.doomstat.gameversion = exe_chex;
+    } else if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+        unsafe { game_state() }.doomstat.gameversion = exe_hacx;
+    } else if unsafe { game_state() }.doomstat.gamemode as u32 == shareware as i32 as u32
+        || unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32
     {
-        gameversion = exe_doom_1_9;
-    } else if gamemode as u32 == retail as i32 as u32 {
-        gameversion = exe_ultimate;
-    } else if gamemode as u32 == commercial as i32 as u32 {
-        if gamemission as u32 == doom2 as i32 as u32 {
-            gameversion = exe_doom_1_9;
+        unsafe { game_state() }.doomstat.gameversion = exe_doom_1_9;
+    } else if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
+        unsafe { game_state() }.doomstat.gameversion = exe_ultimate;
+    } else if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+        if unsafe { game_state() }.doomstat.gamemission as u32 == doom2 as i32 as u32 {
+            unsafe { game_state() }.doomstat.gameversion = exe_doom_1_9;
         } else {
-            gameversion = exe_final;
+            unsafe { game_state() }.doomstat.gameversion = exe_final;
         }
     }
-    if (gameversion as u32) < exe_ultimate as i32 as u32 && gamemode as u32 == retail as i32 as u32
+    if (unsafe { game_state() }.doomstat.gameversion as u32) < exe_ultimate as i32 as u32
+        && unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32
     {
-        gamemode = registered;
+        unsafe { game_state() }.doomstat.gamemode = registered;
     }
-    if (gameversion as u32) < exe_final as i32 as u32
-        && gamemode as u32 == commercial as i32 as u32
-        && (gamemission as u32 == pack_tnt as i32 as u32
-            || gamemission as u32 == pack_plut as i32 as u32)
+    if (unsafe { game_state() }.doomstat.gameversion as u32) < exe_final as i32 as u32
+        && unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+        && (unsafe { game_state() }.doomstat.gamemission as u32 == pack_tnt as i32 as u32
+            || unsafe { game_state() }.doomstat.gamemission as u32 == pack_plut as i32 as u32)
     {
-        gamemission = doom2;
+        unsafe { game_state() }.doomstat.gamemission = doom2;
     }
 }
 pub unsafe fn PrintGameVersion() {
     let mut i: i32 = 0;
     i = 0 as i32;
     while !gameversions[i as usize].description.is_null() {
-        if gameversions[i as usize].version as u32 == gameversion as u32 {
+        if gameversions[i as usize].version as u32
+            == unsafe { game_state() }.doomstat.gameversion as u32
+        {
             printf(
                 b"Emulating the behavior of the '%s' executable.\n\0" as *const u8
                     as *const ::core::ffi::c_char,
@@ -1124,14 +1123,14 @@ pub unsafe fn D_DoomMain() {
             | (1 as i32) << pack_plut as i32
             | (1 as i32) << pack_chex as i32
             | (1 as i32) << pack_hacx as i32,
-        &raw mut gamemission,
+        &raw mut unsafe { game_state() }.doomstat.gamemission,
     );
     if iwadfile.is_null() {
         I_Error(
             "Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n",
         );
     }
-    modifiedgame = false;
+    unsafe { game_state() }.doomstat.modifiedgame = false;
     printf(b"W_Init: Init WADfiles.\n\0" as *const u8 as *const ::core::ffi::c_char);
     D_AddFile(iwadfile);
     W_CheckCorrectIWAD(doom);
@@ -1144,7 +1143,7 @@ pub unsafe fn D_DoomMain() {
         );
         bfgedition = true;
     }
-    modifiedgame = W_ParseCommandLine();
+    unsafe { game_state() }.doomstat.modifiedgame = W_ParseCommandLine();
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p == 0 {
         p = M_CheckParmWithArgs("-timedemo", 1 as i32);
@@ -1193,9 +1192,9 @@ pub unsafe fn D_DoomMain() {
     D_SetGameDescription();
     savegamedir = M_GetSaveGameDir(
         unsafe { &mut game_state().m_config },
-        D_SaveGameIWADName(gamemission),
+        D_SaveGameIWADName(unsafe { game_state() }.doomstat.gamemission),
     );
-    if modifiedgame {
+    if unsafe { game_state() }.doomstat.modifiedgame {
         let mut name: [[::core::ffi::c_char; 8]; 23] = [
             ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m1\0\0\0\0"),
             ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m2\0\0\0\0"),
@@ -1222,10 +1221,10 @@ pub unsafe fn D_DoomMain() {
             ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"spida1d1"),
         ];
         let mut i: i32 = 0;
-        if gamemode as u32 == shareware as i32 as u32 {
+        if unsafe { game_state() }.doomstat.gamemode as u32 == shareware as i32 as u32 {
             I_Error("\nYou cannot -file with the shareware version. Register!");
         }
-        if gamemode as u32 == registered as i32 as u32 {
+        if unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32 {
             i = 0 as i32;
             while i < 23 as i32 {
                 if W_CheckNumForName(&wad_name8_to_string(
@@ -1246,7 +1245,7 @@ pub unsafe fn D_DoomMain() {
                 as *const u8 as *const ::core::ffi::c_char,
         );
     }
-    I_PrintStartupBanner(gamedescription);
+    I_PrintStartupBanner(unsafe { game_state() }.doomstat.gamedescription);
     PrintDehackedBanners();
     if W_CheckNumForName("FREEDOOM") >= 0 as i32 && W_CheckNumForName("FREEDM") < 0 as i32 {
         printf(
@@ -1295,7 +1294,7 @@ pub unsafe fn D_DoomMain() {
     }
     p = M_CheckParmWithArgs("-warp", 1 as i32);
     if p != 0 {
-        if gamemode as u32 == commercial as i32 as u32 {
+        if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
             startmap = atoi(myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
         } else {
             startepisode = myargv[(p + 1 as i32) as usize]
@@ -1352,7 +1351,9 @@ pub unsafe fn D_DoomMain() {
     HU_Init();
     printf(b"ST_Init: Init status bar.\n\0" as *const u8 as *const ::core::ffi::c_char);
     ST_Init();
-    if gamemode as u32 == commercial as i32 as u32 && W_CheckNumForName("map01") < 0 as i32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+        && W_CheckNumForName("map01") < 0 as i32
+    {
         storedemo = true;
     }
     if M_CheckParmWithArgs("-statdump", 1 as i32) != 0 {

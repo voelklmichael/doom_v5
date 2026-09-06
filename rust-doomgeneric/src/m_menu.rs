@@ -18,9 +18,6 @@ use crate::src::d_mode::{exe_chex, exe_doom_1_9, exe_ultimate};
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomstat::gamemission;
-use crate::src::doomstat::gamemode;
-use crate::src::doomstat::gameversion;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::demoplayback;
 use crate::src::g_game::gamestate;
@@ -939,9 +936,9 @@ pub unsafe extern "C" fn M_DrawReadThis1() {
     let mut skullx: i32 = 330 as i32;
     let mut skully: i32 = 175 as i32;
     inhelpscreens = true;
-    match gameversion as u32 {
+    match unsafe { game_state() }.doomstat.gameversion as u32 {
         1 | 2 | 3 | 4 | 5 => {
-            if gamemode as u32 == commercial as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 lumpname = b"HELP\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
                 skullx = 330 as i32;
@@ -1078,7 +1075,9 @@ pub unsafe extern "C" fn M_NewGame(mut choice: i32) {
         );
         return;
     }
-    if gamemode as u32 == commercial as i32 as u32 || gameversion as u32 == exe_chex as i32 as u32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+        || unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32
+    {
         M_SetupNextMenu(&raw mut NewDef);
     } else {
         M_SetupNextMenu(&raw mut EpiDef);
@@ -1121,7 +1120,7 @@ pub unsafe extern "C" fn M_ChooseSkill(mut choice: i32) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_Episode(mut choice: i32) {
-    if gamemode as u32 == shareware as i32 as u32 && choice != 0 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == shareware as i32 as u32 && choice != 0 {
         M_StartMessage(
             "this is the shareware version of doom.\n\nyou need to order the entire trilogy.\n\npress a key.",
             NULL,
@@ -1130,7 +1129,9 @@ pub unsafe extern "C" fn M_Episode(mut choice: i32) {
         M_SetupNextMenu(&raw mut ReadDef1);
         return;
     }
-    if gamemode as u32 == registered as i32 as u32 && choice > 2 as i32 {
+    if unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32
+        && choice > 2 as i32
+    {
         fprintf(
             stderr,
             b"M_Episode: 4th episode requires UltimateDOOM\n\0" as *const u8
@@ -1229,8 +1230,8 @@ pub unsafe extern "C" fn M_ReadThis(mut choice: i32) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ReadThis2(mut choice: i32) {
-    if gameversion as u32 <= exe_doom_1_9 as i32 as u32
-        && gamemode as u32 != commercial as i32 as u32
+    if unsafe { game_state() }.doomstat.gameversion as u32 <= exe_doom_1_9 as i32 as u32
+        && unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32
     {
         choice = 0 as i32;
         M_SetupNextMenu(&raw mut ReadDef2);
@@ -1271,7 +1272,7 @@ pub unsafe extern "C" fn M_QuitResponse(mut key: i32) {
         return;
     }
     if !netgame {
-        if gamemode as u32 == commercial as i32 as u32 {
+        if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
             S_StartSound(
                 unsafe { &mut game_state().sounds },
                 NULL,
@@ -1288,20 +1289,21 @@ pub unsafe extern "C" fn M_QuitResponse(mut key: i32) {
     I_Quit();
 }
 unsafe fn M_SelectEndMessage() -> &'static str {
-    let endmsg: &'static [&'static str; 8] = if (if gamemission as u32 == pack_chex as i32 as u32 {
-        doom as i32 as u32
-    } else {
-        (if gamemission as u32 == pack_hacx as i32 as u32 {
-            doom2 as i32 as u32
+    let endmsg: &'static [&'static str; 8] =
+        if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
+            doom as i32 as u32
         } else {
-            gamemission as u32
-        })
-    }) == doom as i32 as u32
-    {
-        &doom1_endmsg
-    } else {
-        &doom2_endmsg
-    };
+            (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+                doom2 as i32 as u32
+            } else {
+                unsafe { game_state() }.doomstat.gamemission as u32
+            })
+        }) == doom as i32 as u32
+        {
+            &doom1_endmsg
+        } else {
+            &doom2_endmsg
+        };
     endmsg[(gametic % NUM_QUITMESSAGES) as usize]
 }
 #[no_mangle]
@@ -1698,7 +1700,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             return true;
         } else if key == key_menu_help {
             M_StartControlPanel();
-            if gamemode as u32 == retail as i32 as u32 {
+            if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
                 currentMenu = &raw mut ReadDef2;
             } else {
                 currentMenu = &raw mut ReadDef1;
@@ -1953,7 +1955,7 @@ pub unsafe fn M_Init() {
     messageString = String::new();
     messageLastMenuActive = menuactive as i32;
     quickSaveSlot = -(1 as i32);
-    match gamemode as u32 {
+    match unsafe { game_state() }.doomstat.gamemode as u32 {
         2 => {
             MainMenu[readthis as i32 as usize] = MainMenu[quitdoom as i32 as usize];
             MainDef.numitems -= 1;
@@ -1963,7 +1965,7 @@ pub unsafe fn M_Init() {
         0 => {}
         1 | 3 | _ => {}
     }
-    if (gameversion as u32) < exe_ultimate as i32 as u32 {
+    if (unsafe { game_state() }.doomstat.gameversion as u32) < exe_ultimate as i32 as u32 {
         EpiDef.numitems -= 1;
     }
 }

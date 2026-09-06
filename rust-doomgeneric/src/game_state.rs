@@ -13,6 +13,7 @@ use std::sync::OnceLock;
 use crate::src::d_event::DEventState;
 use crate::src::d_iwad::DIwadState;
 use crate::src::d_net::DNetState;
+use crate::src::doomstat::DoomstatState;
 use crate::src::f_finale::FFinaleState;
 use crate::src::i_cdmus::ICdMusState;
 use crate::src::i_input::IInputState;
@@ -41,6 +42,7 @@ pub struct GameState {
     pub d_event: DEventState,
     pub d_iwad: DIwadState,
     pub d_net: DNetState,
+    pub doomstat: DoomstatState,
     pub f_finale: FFinaleState,
     pub i_cdmus: ICdMusState,
     pub i_input: IInputState,
@@ -71,6 +73,7 @@ impl GameState {
             d_event: DEventState::new(),
             d_iwad: DIwadState::new(),
             d_net: DNetState::new(),
+            doomstat: DoomstatState::new(),
             f_finale: FFinaleState::new(),
             i_cdmus: ICdMusState::new(),
             i_input: IInputState::new(),
