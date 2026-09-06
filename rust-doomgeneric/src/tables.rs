@@ -14362,7 +14362,13 @@ pub static finesine: [i32; 10240] = [
     65535,
     65535,
 ];
-pub static mut finecosine: *const fixed_t = ::core::ptr::null::<fixed_t>();
+pub struct FineCosine;
+impl FineCosine {
+    pub fn offset(&self, idx: isize) -> &'static fixed_t {
+        &finesine[(FINEANGLES / 4) as usize + idx as usize]
+    }
+}
+pub static finecosine: FineCosine = FineCosine;
 pub static tantoangle: [angle_t; 2049] = [
     0,
     333772,
@@ -17706,12 +17712,3 @@ pub static gammatable: [[byte; 256]; 5] = [
         255,
     ],
 ];
-unsafe extern "C" fn run_static_initializers() {
-    finecosine = (&raw const finesine as *const i32)
-        .offset((FINEANGLES / 4) as isize) as *const fixed_t;
-}
-#[used]
-#[cfg_attr(target_os = "linux", link_section = ".init_array")]
-#[cfg_attr(target_os = "windows", link_section = ".CRT$XIB")]
-#[cfg_attr(target_os = "macos", link_section = "__DATA,__mod_init_func")]
-static INIT_ARRAY: [unsafe extern "C" fn(); 1] = [run_static_initializers];
