@@ -56,7 +56,6 @@ use crate::src::p_mobj::{MF_AMBUSH, MF_CORPSE, MF_FLOAT, MF_INFLOAT, MF_JUSTATTA
 use crate::src::sounds::{sfx_barexp, sfx_bgdth1, sfx_bgsit1, sfx_boscub, sfx_bosdth, sfx_bospit, sfx_bospn, sfx_bossit, sfx_bspwlk, sfx_claw, sfx_dbcls, sfx_dbload, sfx_dbopn, sfx_flame, sfx_flamst, sfx_hoof, sfx_manatk, sfx_metal, sfx_pdiehi, sfx_pistol, sfx_pldeth, sfx_podth1, sfx_posit1, sfx_shotgn, sfx_skepch, sfx_skeswg, sfx_slop, sfx_telept, sfx_vilatk};
 
 extern "C" {
-    fn abs(__x: i32) -> i32;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn A_ReFire(player: *mut player_t, psp: *mut pspdef_t);
 }
@@ -1695,7 +1694,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
         }
     }
     if P_Random() > 200 as i32
-        || abs(deltay as i32) > abs(deltax as i32)
+        || (deltay as i32).abs() > (deltax as i32).abs()
     {
         tdir = d[1 as i32 as usize] as i32;
         d[1 as i32 as usize] = d[2 as i32 as usize];
@@ -2318,8 +2317,8 @@ pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
     }
     maxdist = (*(*thing).info).radius
         + mobjinfo[MT_VILE as i32 as usize].radius;
-    if abs((*thing).x as i32 - viletryx as i32) > maxdist
-        || abs((*thing).y as i32 - viletryy as i32)
+    if ((*thing).x as i32 - viletryx as i32).abs() > maxdist
+        || ((*thing).y as i32 - viletryy as i32).abs()
             > maxdist
     {
         return true_0 as boolean;

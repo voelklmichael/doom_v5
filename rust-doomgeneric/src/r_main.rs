@@ -42,7 +42,6 @@ use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use libc::printf;
 
 extern "C" {
-    fn abs(__x: i32) -> i32;
     fn R_DrawColumn();
     fn R_DrawColumnLow();
     fn R_DrawFuzzColumn();
@@ -1589,8 +1588,8 @@ pub unsafe fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
     let mut temp: fixed_t = 0;
     let mut dist: fixed_t = 0;
     let mut frac: fixed_t = 0;
-    dx = abs(x as i32 - viewx as i32) as fixed_t;
-    dy = abs(y as i32 - viewy as i32) as fixed_t;
+    dx = (x as i32 - viewx as i32).abs() as fixed_t;
+    dy = (y as i32 - viewy as i32).abs() as fixed_t;
     if dy > dx {
         temp = dx;
         dx = dy;
@@ -1791,7 +1790,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
     while i < viewheight {
         dy = (((i - viewheight / 2 as i32) << FRACBITS)
             + FRACUNIT / 2 as i32) as fixed_t;
-        dy = abs(dy as i32) as fixed_t;
+        dy = (dy as i32).abs() as fixed_t;
         yslope[i as usize] = FixedDiv(
             ((viewwidth as fixed_t) << detailshift) / 2 as fixed_t * FRACUNIT,
             dy,
@@ -1800,10 +1799,10 @@ pub unsafe fn R_ExecuteSetViewSize() {
     }
     i = 0 as i32;
     while i < viewwidth {
-        cosadj = abs(
+        cosadj = (
             finecosine[(xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize]
-                as i32,
-        ) as fixed_t;
+                as i32
+        ).abs() as fixed_t;
         distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
         i += 1;
     }

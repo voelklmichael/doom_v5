@@ -17,9 +17,6 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::p_mobj::{MF_NOBLOCKMAP, MF_NOSECTOR};
 
-extern "C" {
-    fn abs(__x: i32) -> i32;
-}
 pub type __uint8_t = u8;
 pub type fixed_t = i32;
 pub type uint8_t = __uint8_t;
@@ -1338,8 +1335,8 @@ pub const PT_ADDLINES: i32 = 1 as i32;
 pub const PT_ADDTHINGS: i32 = 2 as i32;
 pub const PT_EARLYOUT: i32 = 4 as i32;
 pub unsafe fn P_AproxDistance(mut dx: fixed_t, mut dy: fixed_t) -> fixed_t {
-    dx = abs(dx as i32) as fixed_t;
-    dy = abs(dy as i32) as fixed_t;
+    dx = (dx as i32).abs() as fixed_t;
+    dy = (dy as i32).abs() as fixed_t;
     if dx < dy {
         return dx + dy - (dx >> 1 as i32);
     }
@@ -2040,7 +2037,7 @@ pub unsafe fn P_PathTraverse(
                 & FRACUNIT - 1 as i32)) as fixed_t;
         ystep = FixedDiv(
             y2 - y1,
-            abs(x2 as i32 - x1 as i32) as fixed_t,
+            (x2 as i32 - x1 as i32).abs() as fixed_t,
         );
     } else if xt2 < xt1 {
         mapxstep = -(1 as i32);
@@ -2048,7 +2045,7 @@ pub unsafe fn P_PathTraverse(
             & FRACUNIT - 1 as i32) as fixed_t;
         ystep = FixedDiv(
             y2 - y1,
-            abs(x2 as i32 - x1 as i32) as fixed_t,
+            (x2 as i32 - x1 as i32).abs() as fixed_t,
         );
     } else {
         mapxstep = 0 as i32;
@@ -2063,7 +2060,7 @@ pub unsafe fn P_PathTraverse(
                 & FRACUNIT - 1 as i32)) as fixed_t;
         xstep = FixedDiv(
             x2 - x1,
-            abs(y2 as i32 - y1 as i32) as fixed_t,
+            (y2 as i32 - y1 as i32).abs() as fixed_t,
         );
     } else if yt2 < yt1 {
         mapystep = -(1 as i32);
@@ -2071,7 +2068,7 @@ pub unsafe fn P_PathTraverse(
             & FRACUNIT - 1 as i32) as fixed_t;
         xstep = FixedDiv(
             x2 - x1,
-            abs(y2 as i32 - y1 as i32) as fixed_t,
+            (y2 as i32 - y1 as i32).abs() as fixed_t,
         );
     } else {
         mapystep = 0 as i32;
