@@ -20,6 +20,7 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::size_t;
 use crate::src::doomdef::NULL;
+use crate::src::game_state::game_state;
 
 extern "C" {
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
@@ -152,7 +153,7 @@ pub unsafe fn W_AddFile(
     let mut fileinfo: *mut filelump_t = ::core::ptr::null_mut::<filelump_t>();
     let mut filerover: *mut filelump_t = ::core::ptr::null_mut::<filelump_t>();
     let mut newnumlumps: i32 = 0;
-    wad_file = W_OpenFile(filename);
+    wad_file = W_OpenFile(unsafe { &mut game_state().w_file }, filename);
     if wad_file.is_null() {
         printf(
             b" couldn't open %s\n\0" as *const u8 as *const ::core::ffi::c_char,

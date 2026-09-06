@@ -173,6 +173,7 @@ use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG45;
 use crate::src::d_loop::BACKUPTICS;
 use crate::src::m_fixed::FRACBITS;
+use crate::src::game_state::game_state;
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -2266,7 +2267,7 @@ pub unsafe fn G_DoPlayDemo() {
     precache = false;
     G_InitNew(skill, episode, map);
     precache = true;
-    starttime = I_GetTime();
+    starttime = I_GetTime(unsafe { &mut game_state().i_timer });
     usergame = false;
     demoplayback = true;
 }
@@ -2283,7 +2284,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
     if timingdemo {
         let mut fps: f32 = 0.;
         let mut realtics: i32 = 0;
-        endtime = I_GetTime();
+        endtime = I_GetTime(unsafe { &mut game_state().i_timer });
         realtics = endtime - starttime;
         fps = gametic as f32 * TICRATE as f32
             / realtics as f32;

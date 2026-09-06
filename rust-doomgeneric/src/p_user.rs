@@ -35,8 +35,16 @@ use crate::src::tables::FINEANGLES;
 pub const VIEWHEIGHT: i32 = 41 * FRACUNIT;
 pub const INVERSECOLORMAP: i32 = 32;
 pub const MAXBOB: i32 = 0x100000;
-#[no_mangle]
-pub static mut onground: bool = false;
+pub struct PUserState {
+    onground: bool,
+}
+
+impl PUserState {
+    pub const fn new() -> Self {
+        PUserState { onground: false }
+    }
+}
+
 pub unsafe fn P_Thrust(
     mut player: *mut player_t,
     mut angle: angle_t,
@@ -46,7 +54,7 @@ pub unsafe fn P_Thrust(
     (*(*player).mo).momx += FixedMul(move_0, finecosine[angle as isize]);
     (*(*player).mo).momy += FixedMul(move_0, finesine[angle as usize]);
 }
-pub unsafe fn P_CalcHeight(mut player: *mut player_t) {
+pub unsafe fn P_CalcHeight(state: &mut PUserState, mut player: *mut player_t) {
     let mut angle: i32 = 0;
     let mut bob: fixed_t = 0;
     (*player).bob = FixedMul((*(*player).mo).momx, (*(*player).mo).momx)
@@ -55,7 +63,7 @@ pub unsafe fn P_CalcHeight(mut player: *mut player_t) {
     if (*player).bob > MAXBOB {
         (*player).bob = MAXBOB as fixed_t;
     }
-    if (*player).cheats & CF_NOMOMENTUM as i32 != 0 || !onground {
+    if (*player).cheats & CF_NOMOMENTUM as i32 != 0 || !state.onground {
         (*player).viewz = ((*(*player).mo).z as i32 + VIEWHEIGHT)
             as fixed_t;
         if (*player).viewz
@@ -100,7 +108,7 @@ pub unsafe fn P_CalcHeight(mut player: *mut player_t) {
             - 4 as i32 * FRACUNIT) as fixed_t;
     }
 }
-pub unsafe fn P_MovePlayer(mut player: *mut player_t) {
+pub unsafe fn P_MovePlayer(state: &mut PUserState, mut player: *mut player_t) {
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     cmd = &raw mut (*player).cmd;
     (*(*player).mo).angle = (*(*player).mo)
@@ -109,15 +117,15 @@ pub unsafe fn P_MovePlayer(mut player: *mut player_t) {
             (((*cmd).angleturn as i32) << 16 as i32)
                 as angle_t,
         );
-    onground = (*(*player).mo).z <= (*(*player).mo).floorz;
-    if (*cmd).forwardmove as i32 != 0 && onground {
+    state.onground = (*(*player).mo).z <= (*(*player).mo).floorz;
+    if (*cmd).forwardmove as i32 != 0 && state.onground {
         P_Thrust(
             player,
             (*(*player).mo).angle,
             (*cmd).forwardmove as fixed_t * 2048 as fixed_t,
         );
     }
-    if (*cmd).sidemove as i32 != 0 && onground {
+    if (*cmd).sidemove as i32 != 0 && state.onground {
         P_Thrust(
             player,
             (*(*player).mo).angle.wrapping_sub(ANG90 as angle_t),
@@ -134,7 +142,7 @@ pub unsafe fn P_MovePlayer(mut player: *mut player_t) {
     }
 }
 pub const ANG5: i32 = ANG90 / 18 as i32;
-pub unsafe fn P_DeathThink(mut player: *mut player_t) {
+pub unsafe fn P_DeathThink(state: &mut PUserState, mut player: *mut player_t) {
     let mut angle: angle_t = 0;
     let mut delta: angle_t = 0;
     P_MovePsprites(player);
@@ -145,8 +153,8 @@ pub unsafe fn P_DeathThink(mut player: *mut player_t) {
         (*player).viewheight = (6 as i32 * FRACUNIT) as fixed_t;
     }
     (*player).deltaviewheight = 0 as i32 as fixed_t;
-    onground = (*(*player).mo).z <= (*(*player).mo).floorz;
-    P_CalcHeight(player);
+    state.onground = (*(*player).mo).z <= (*(*player).mo).floorz;
+    P_CalcHeight(state, player);
     if !(*player).attacker.is_null() && (*player).attacker != (*player).mo {
         angle = R_PointToAngle2(
             (*(*player).mo).x,
@@ -172,7 +180,7 @@ pub unsafe fn P_DeathThink(mut player: *mut player_t) {
         (*player).playerstate = PST_REBORN;
     }
 }
-pub unsafe fn P_PlayerThink(mut player: *mut player_t) {
+pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     let mut newweapon: weapontype_t = wp_fist;
     if (*player).cheats & CF_NOCLIP as i32 != 0 {
@@ -191,15 +199,15 @@ pub unsafe fn P_PlayerThink(mut player: *mut player_t) {
     if (*player).playerstate as u32
         == PST_DEAD as i32 as u32
     {
-        P_DeathThink(player);
+        P_DeathThink(state, player);
         return;
     }
     if (*(*player).mo).reactiontime != 0 {
         (*(*player).mo).reactiontime -= 1;
     } else {
-        P_MovePlayer(player);
+        P_MovePlayer(state, player);
     }
-    P_CalcHeight(player);
+    P_CalcHeight(state, player);
     if (*(*(*(*player).mo).subsector).sector).special != 0 {
         P_PlayerInSpecialSector(player);
     }
