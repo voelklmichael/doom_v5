@@ -1402,7 +1402,7 @@ pub struct plat_t {
     pub count: i32,
     pub status: plat_e,
     pub oldstatus: plat_e,
-    pub crush: boolean,
+    pub crush: bool,
     pub tag: i32,
     pub type_0: plattype_e,
 }
@@ -1426,7 +1426,7 @@ pub struct ceiling_t {
     pub bottomheight: fixed_t,
     pub topheight: fixed_t,
     pub speed: fixed_t,
-    pub crush: boolean,
+    pub crush: bool,
     pub direction: i32,
     pub tag: i32,
     pub olddirection: i32,
@@ -1470,7 +1470,7 @@ pub const build8: stair_e = 0;
 pub struct floormove_t {
     pub thinker: thinker_t,
     pub type_0: floor_e,
-    pub crush: boolean,
+    pub crush: bool,
     pub sector: *mut sector_t,
     pub direction: i32,
     pub newspecial: i32,
@@ -2753,7 +2753,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
                         actionf_p1,
                     >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
                     (*floor).type_0 = donutRaise;
-                    (*floor).crush = false_0 as boolean;
+                    (*floor).crush = false;
                     (*floor).direction = 1 as i32;
                     (*floor).sector = s2;
                     (*floor).speed = (FLOORSPEED / 2 as i32) as fixed_t;
@@ -2772,7 +2772,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
                         actionf_p1,
                     >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
                     (*floor).type_0 = lowerFloor;
-                    (*floor).crush = false_0 as boolean;
+                    (*floor).crush = false;
                     (*floor).direction = -(1 as i32);
                     (*floor).sector = s1;
                     (*floor).speed = (FLOORSPEED / 2 as i32) as fixed_t;

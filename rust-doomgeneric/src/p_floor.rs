@@ -1444,11 +1444,11 @@ pub unsafe fn T_MovePlane(
     mut sector: *mut sector_t,
     mut speed: fixed_t,
     mut dest: fixed_t,
-    mut crush: boolean,
+    mut crush: bool,
     mut floorOrCeiling: i32,
     mut direction: i32,
 ) -> result_e {
-    let mut flag: boolean = 0;
+    let mut flag: bool;
     let mut lastpos: fixed_t = 0;
     match floorOrCeiling {
         0 => {
@@ -1458,7 +1458,7 @@ pub unsafe fn T_MovePlane(
                         lastpos = (*sector).floorheight;
                         (*sector).floorheight = dest;
                         flag = P_ChangeSector(sector, crush);
-                        if flag == true_0 as boolean {
+                        if flag {
                             (*sector).floorheight = lastpos;
                             P_ChangeSector(sector, crush);
                         }
@@ -1467,7 +1467,7 @@ pub unsafe fn T_MovePlane(
                         lastpos = (*sector).floorheight;
                         (*sector).floorheight -= speed;
                         flag = P_ChangeSector(sector, crush);
-                        if flag == true_0 as boolean {
+                        if flag {
                             (*sector).floorheight = lastpos;
                             P_ChangeSector(sector, crush);
                             return crushed;
@@ -1479,7 +1479,7 @@ pub unsafe fn T_MovePlane(
                         lastpos = (*sector).floorheight;
                         (*sector).floorheight = dest;
                         flag = P_ChangeSector(sector, crush);
-                        if flag == true_0 as boolean {
+                        if flag {
                             (*sector).floorheight = lastpos;
                             P_ChangeSector(sector, crush);
                         }
@@ -1488,8 +1488,8 @@ pub unsafe fn T_MovePlane(
                         lastpos = (*sector).floorheight;
                         (*sector).floorheight += speed;
                         flag = P_ChangeSector(sector, crush);
-                        if flag == true_0 as boolean {
-                            if crush == true_0 as boolean {
+                        if flag {
+                            if crush {
                                 return crushed;
                             }
                             (*sector).floorheight = lastpos;
@@ -1508,7 +1508,7 @@ pub unsafe fn T_MovePlane(
                         lastpos = (*sector).ceilingheight;
                         (*sector).ceilingheight = dest;
                         flag = P_ChangeSector(sector, crush);
-                        if flag == true_0 as boolean {
+                        if flag {
                             (*sector).ceilingheight = lastpos;
                             P_ChangeSector(sector, crush);
                         }
@@ -1517,8 +1517,8 @@ pub unsafe fn T_MovePlane(
                         lastpos = (*sector).ceilingheight;
                         (*sector).ceilingheight -= speed;
                         flag = P_ChangeSector(sector, crush);
-                        if flag == true_0 as boolean {
-                            if crush == true_0 as boolean {
+                        if flag {
+                            if crush {
                                 return crushed;
                             }
                             (*sector).ceilingheight = lastpos;
@@ -1532,7 +1532,7 @@ pub unsafe fn T_MovePlane(
                         lastpos = (*sector).ceilingheight;
                         (*sector).ceilingheight = dest;
                         flag = P_ChangeSector(sector, crush);
-                        if flag == true_0 as boolean {
+                        if flag {
                             (*sector).ceilingheight = lastpos;
                             P_ChangeSector(sector, crush);
                         }
@@ -1630,7 +1630,7 @@ pub unsafe fn EV_DoFloor(
             actionf_p1,
         >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
         (*floor).type_0 = floortype;
-        (*floor).crush = false_0 as boolean;
+        (*floor).crush = false;
         let mut current_block_84: u64;
         match floortype as u32 {
             0 => {
@@ -1658,7 +1658,7 @@ pub unsafe fn EV_DoFloor(
                 current_block_84 = 15514718523126015390;
             }
             9 => {
-                (*floor).crush = true_0 as boolean;
+                (*floor).crush = true;
                 current_block_84 = 7690836263840410806;
             }
             3 => {

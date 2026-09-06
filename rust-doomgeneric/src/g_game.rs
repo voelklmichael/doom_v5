@@ -2775,7 +2775,7 @@ pub unsafe extern "C" fn G_CheckSpot(
     }
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
-    if P_CheckPosition(players[playernum as usize].mo, x, y) == 0 {
+    if !P_CheckPosition(players[playernum as usize].mo, x, y) {
         return false;
     }
     if bodyqueslot >= BODYQUESIZE {

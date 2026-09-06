@@ -1435,7 +1435,7 @@ pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 (*ceiling).sector,
                 (*ceiling).speed,
                 (*ceiling).topheight,
-                false_0 as boolean,
+                false,
                 1 as i32,
                 (*ceiling).direction,
             );
@@ -1597,11 +1597,11 @@ pub unsafe fn EV_DoCeiling(
             actionf_p1,
         >(Some(T_MoveCeiling as unsafe extern "C" fn(*mut ceiling_t) -> ()));
         (*ceiling).sector = sec;
-        (*ceiling).crush = false_0 as boolean;
+        (*ceiling).crush = false;
         let mut current_block_26: u64;
         match type_0 as u32 {
             4 => {
-                (*ceiling).crush = true_0 as boolean;
+                (*ceiling).crush = true;
                 (*ceiling).topheight = (*sec).ceilingheight;
                 (*ceiling).bottomheight = ((*sec).floorheight as i32
                     + 8 as i32 * FRACUNIT) as fixed_t;
@@ -1610,7 +1610,7 @@ pub unsafe fn EV_DoCeiling(
                 current_block_26 = 7056779235015430508;
             }
             5 | 3 => {
-                (*ceiling).crush = true_0 as boolean;
+                (*ceiling).crush = true;
                 (*ceiling).topheight = (*sec).ceilingheight;
                 current_block_26 = 6994972524166957283;
             }

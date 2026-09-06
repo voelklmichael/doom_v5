@@ -184,15 +184,15 @@ pub unsafe fn M_TempFile(
 pub unsafe fn M_StrToInt(
     mut str: *const ::core::ffi::c_char,
     mut result: *mut i32,
-) -> boolean {
-    return (sscanf(str, b" 0x%x\0" as *const u8 as *const ::core::ffi::c_char, result)
+) -> bool {
+    return sscanf(str, b" 0x%x\0" as *const u8 as *const ::core::ffi::c_char, result)
         == 1 as i32
         || sscanf(str, b" 0X%x\0" as *const u8 as *const ::core::ffi::c_char, result)
             == 1 as i32
         || sscanf(str, b" 0%o\0" as *const u8 as *const ::core::ffi::c_char, result)
             == 1 as i32
         || sscanf(str, b" %d\0" as *const u8 as *const ::core::ffi::c_char, result)
-            == 1 as i32) as i32 as boolean;
+            == 1 as i32;
 }
 pub unsafe fn M_ExtractFileBase(
     mut path: *mut ::core::ffi::c_char,

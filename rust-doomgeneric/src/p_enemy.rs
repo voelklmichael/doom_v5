@@ -2466,7 +2466,7 @@ pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
     (*corpsehit).momy = 0 as i32 as fixed_t;
     (*corpsehit).momx = (*corpsehit).momy;
     (*corpsehit).height <<= 2 as i32;
-    check = P_CheckPosition(corpsehit, (*corpsehit).x, (*corpsehit).y);
+    check = P_CheckPosition(corpsehit, (*corpsehit).x, (*corpsehit).y) as i32 as boolean;
     (*corpsehit).height >>= 2 as i32;
     if check == 0 {
         return true_0 as boolean;

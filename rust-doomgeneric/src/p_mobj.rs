@@ -1971,7 +1971,7 @@ pub unsafe extern "C" fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
     let mut mthing: *mut mapthing_t = ::core::ptr::null_mut::<mapthing_t>();
     x = (((*mobj).spawnpoint.x as i32) << FRACBITS) as fixed_t;
     y = (((*mobj).spawnpoint.y as i32) << FRACBITS) as fixed_t;
-    if P_CheckPosition(mobj, x, y) == 0 {
+    if !P_CheckPosition(mobj, x, y) {
         return;
     }
     mo = P_SpawnMobj(
