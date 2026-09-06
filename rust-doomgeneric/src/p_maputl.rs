@@ -2,6 +2,7 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::NULL;
+use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
@@ -24,6 +25,176 @@ use crate::src::p_setup::lines;
 use crate::src::p_setup::playerstarts;
 use crate::src::r_main::validcount;
 use crate::src::r_main::R_PointInSubsector;
+
+pub struct PMaputlState {
+    pub intercepts_overrun: [intercepts_overrun_t; 23],
+    pub opentop: fixed_t,
+    pub openbottom: fixed_t,
+    pub openrange: fixed_t,
+    pub lowfloor: fixed_t,
+    pub intercepts: [intercept_t; 189],
+    pub intercept_p: *mut intercept_t,
+    pub trace: divline_t,
+    pub earlyout: bool,
+    pub ptflags: i32,
+}
+
+impl PMaputlState {
+    pub fn new() -> Self {
+        PMaputlState {
+            opentop: 0,
+            openbottom: 0,
+            openrange: 0,
+            lowfloor: 0,
+            intercepts: [intercept_t {
+                frac: 0,
+                isaline: false,
+                d: C2RustUnnamed_1 {
+                    thing: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
+                },
+            }; 189],
+            intercept_p: ::core::ptr::null::<intercept_t>() as *mut intercept_t,
+            trace: divline_t {
+                x: 0,
+                y: 0,
+                dx: 0,
+                dy: 0,
+            },
+            earlyout: false,
+            ptflags: 0,
+            intercepts_overrun: unsafe {
+                [
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 120 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 8 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 40 as i32,
+                        addr: &raw const playerstarts as *mut [mapthing_t; 4]
+                            as *mut ::core::ffi::c_void,
+                        int16_array: true,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: &raw const bmapwidth as *mut i32 as *mut ::core::ffi::c_void,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: &raw const bmaporgx as *mut fixed_t as *mut ::core::ffi::c_void,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: &raw const bmaporgy as *mut fixed_t as *mut ::core::ffi::c_void,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 4 as i32,
+                        addr: &raw const bmapheight as *mut i32 as *mut ::core::ffi::c_void,
+                        int16_array: false,
+                    },
+                    intercepts_overrun_t {
+                        len: 0 as i32,
+                        addr: NULL,
+                        int16_array: false,
+                    },
+                ]
+            },
+        }
+    }
+}
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -202,32 +373,29 @@ pub unsafe fn P_InterceptVector(mut v2: *mut divline_t, mut v1: *mut divline_t) 
     frac = FixedDiv(num, den);
     return frac;
 }
-pub static mut opentop: fixed_t = 0;
-pub static mut openbottom: fixed_t = 0;
-pub static mut openrange: fixed_t = 0;
-pub static mut lowfloor: fixed_t = 0;
 pub unsafe fn P_LineOpening(mut linedef: *mut line_t) {
     let mut front: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut back: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     if (*linedef).sidenum[1 as i32 as usize] as i32 == -(1 as i32) {
-        openrange = 0 as i32 as fixed_t;
+        unsafe { game_state() }.p_maputl.openrange = 0 as i32 as fixed_t;
         return;
     }
     front = (*linedef).frontsector;
     back = (*linedef).backsector;
     if (*front).ceilingheight < (*back).ceilingheight {
-        opentop = (*front).ceilingheight;
+        unsafe { game_state() }.p_maputl.opentop = (*front).ceilingheight;
     } else {
-        opentop = (*back).ceilingheight;
+        unsafe { game_state() }.p_maputl.opentop = (*back).ceilingheight;
     }
     if (*front).floorheight > (*back).floorheight {
-        openbottom = (*front).floorheight;
-        lowfloor = (*back).floorheight;
+        unsafe { game_state() }.p_maputl.openbottom = (*front).floorheight;
+        unsafe { game_state() }.p_maputl.lowfloor = (*back).floorheight;
     } else {
-        openbottom = (*back).floorheight;
-        lowfloor = (*front).floorheight;
+        unsafe { game_state() }.p_maputl.openbottom = (*back).floorheight;
+        unsafe { game_state() }.p_maputl.lowfloor = (*front).floorheight;
     }
-    openrange = opentop - openbottom;
+    unsafe { game_state() }.p_maputl.openrange =
+        unsafe { game_state() }.p_maputl.opentop - unsafe { game_state() }.p_maputl.openbottom;
 }
 pub unsafe fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
     let mut blockx: i32 = 0;
@@ -338,27 +506,6 @@ pub unsafe fn P_BlockThingsIterator(
     return true;
 }
 #[no_mangle]
-pub static mut intercepts: [intercept_t; 189] = [intercept_t {
-    frac: 0,
-    isaline: false,
-    d: C2RustUnnamed_1 {
-        thing: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
-    },
-}; 189];
-#[no_mangle]
-pub static mut intercept_p: *mut intercept_t =
-    ::core::ptr::null::<intercept_t>() as *mut intercept_t;
-pub static mut trace: divline_t = divline_t {
-    x: 0,
-    y: 0,
-    dx: 0,
-    dy: 0,
-};
-#[no_mangle]
-pub static mut earlyout: bool = false;
-#[no_mangle]
-pub static mut ptflags: i32 = 0;
-#[no_mangle]
 pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
     let mut s1: i32 = 0;
     let mut s2: i32 = 0;
@@ -369,36 +516,57 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
         dx: 0,
         dy: 0,
     };
-    if trace.dx > FRACUNIT * 16 as i32
-        || trace.dy > FRACUNIT * 16 as i32
-        || trace.dx < -FRACUNIT * 16 as i32
-        || trace.dy < -FRACUNIT * 16 as i32
+    if unsafe { game_state() }.p_maputl.trace.dx > FRACUNIT * 16 as i32
+        || unsafe { game_state() }.p_maputl.trace.dy > FRACUNIT * 16 as i32
+        || unsafe { game_state() }.p_maputl.trace.dx < -FRACUNIT * 16 as i32
+        || unsafe { game_state() }.p_maputl.trace.dy < -FRACUNIT * 16 as i32
     {
-        s1 = P_PointOnDivlineSide((*(*ld).v1).x, (*(*ld).v1).y, &raw mut trace);
-        s2 = P_PointOnDivlineSide((*(*ld).v2).x, (*(*ld).v2).y, &raw mut trace);
+        s1 = P_PointOnDivlineSide(
+            (*(*ld).v1).x,
+            (*(*ld).v1).y,
+            &raw mut unsafe { game_state() }.p_maputl.trace,
+        );
+        s2 = P_PointOnDivlineSide(
+            (*(*ld).v2).x,
+            (*(*ld).v2).y,
+            &raw mut unsafe { game_state() }.p_maputl.trace,
+        );
     } else {
-        s1 = P_PointOnLineSide(trace.x, trace.y, ld);
-        s2 = P_PointOnLineSide(trace.x + trace.dx, trace.y + trace.dy, ld);
+        s1 = P_PointOnLineSide(
+            unsafe { game_state() }.p_maputl.trace.x,
+            unsafe { game_state() }.p_maputl.trace.y,
+            ld,
+        );
+        s2 = P_PointOnLineSide(
+            unsafe { game_state() }.p_maputl.trace.x + unsafe { game_state() }.p_maputl.trace.dx,
+            unsafe { game_state() }.p_maputl.trace.y + unsafe { game_state() }.p_maputl.trace.dy,
+            ld,
+        );
     }
     if s1 == s2 {
         return true_0 as boolean;
     }
     P_MakeDivline(ld, &raw mut dl);
-    frac = P_InterceptVector(&raw mut trace, &raw mut dl);
+    frac = P_InterceptVector(&raw mut unsafe { game_state() }.p_maputl.trace, &raw mut dl);
     if frac < 0 as i32 {
         return true_0 as boolean;
     }
-    if earlyout && frac < FRACUNIT && (*ld).backsector.is_null() {
+    if unsafe { game_state() }.p_maputl.earlyout && frac < FRACUNIT && (*ld).backsector.is_null() {
         return false_0 as boolean;
     }
-    (*intercept_p).frac = frac;
-    (*intercept_p).isaline = true;
-    (*intercept_p).d.line = ld;
+    (*unsafe { game_state() }.p_maputl.intercept_p).frac = frac;
+    (*unsafe { game_state() }.p_maputl.intercept_p).isaline = true;
+    (*unsafe { game_state() }.p_maputl.intercept_p).d.line = ld;
     InterceptsOverrun(
-        intercept_p.offset_from(&raw mut intercepts as *mut intercept_t) as i64 as i32,
-        intercept_p,
+        unsafe { game_state() }
+            .p_maputl
+            .intercept_p
+            .offset_from(&raw mut unsafe { game_state() }.p_maputl.intercepts as *mut intercept_t)
+            as i64 as i32,
+        unsafe { game_state() }.p_maputl.intercept_p,
     );
-    intercept_p = intercept_p.offset(1);
+    unsafe { game_state() }.p_maputl.intercept_p =
+        unsafe { game_state() }.p_maputl.intercept_p.offset(1);
     return true_0 as boolean;
 }
 #[no_mangle]
@@ -417,7 +585,9 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
         dy: 0,
     };
     let mut frac: fixed_t = 0;
-    tracepositive = trace.dx ^ trace.dy > 0 as i32;
+    tracepositive = unsafe { game_state() }.p_maputl.trace.dx
+        ^ unsafe { game_state() }.p_maputl.trace.dy
+        > 0 as i32;
     if tracepositive {
         x1 = (*thing).x - (*thing).radius;
         y1 = (*thing).y + (*thing).radius;
@@ -429,8 +599,8 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
         x2 = (*thing).x + (*thing).radius;
         y2 = (*thing).y + (*thing).radius;
     }
-    s1 = P_PointOnDivlineSide(x1, y1, &raw mut trace);
-    s2 = P_PointOnDivlineSide(x2, y2, &raw mut trace);
+    s1 = P_PointOnDivlineSide(x1, y1, &raw mut unsafe { game_state() }.p_maputl.trace);
+    s2 = P_PointOnDivlineSide(x2, y2, &raw mut unsafe { game_state() }.p_maputl.trace);
     if s1 == s2 {
         return true_0 as boolean;
     }
@@ -438,18 +608,23 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
     dl.y = y1;
     dl.dx = x2 - x1;
     dl.dy = y2 - y1;
-    frac = P_InterceptVector(&raw mut trace, &raw mut dl);
+    frac = P_InterceptVector(&raw mut unsafe { game_state() }.p_maputl.trace, &raw mut dl);
     if frac < 0 as i32 {
         return true_0 as boolean;
     }
-    (*intercept_p).frac = frac;
-    (*intercept_p).isaline = false;
-    (*intercept_p).d.thing = thing;
+    (*unsafe { game_state() }.p_maputl.intercept_p).frac = frac;
+    (*unsafe { game_state() }.p_maputl.intercept_p).isaline = false;
+    (*unsafe { game_state() }.p_maputl.intercept_p).d.thing = thing;
     InterceptsOverrun(
-        intercept_p.offset_from(&raw mut intercepts as *mut intercept_t) as i64 as i32,
-        intercept_p,
+        unsafe { game_state() }
+            .p_maputl
+            .intercept_p
+            .offset_from(&raw mut unsafe { game_state() }.p_maputl.intercepts as *mut intercept_t)
+            as i64 as i32,
+        unsafe { game_state() }.p_maputl.intercept_p,
     );
-    intercept_p = intercept_p.offset(1);
+    unsafe { game_state() }.p_maputl.intercept_p =
+        unsafe { game_state() }.p_maputl.intercept_p.offset(1);
     return true_0 as boolean;
 }
 pub unsafe fn P_TraverseIntercepts(mut func: traverser_t, mut maxfrac: fixed_t) -> bool {
@@ -457,7 +632,11 @@ pub unsafe fn P_TraverseIntercepts(mut func: traverser_t, mut maxfrac: fixed_t) 
     let mut dist: fixed_t = 0;
     let mut scan: *mut intercept_t = ::core::ptr::null_mut::<intercept_t>();
     let mut in_0: *mut intercept_t = ::core::ptr::null_mut::<intercept_t>();
-    count = intercept_p.offset_from(&raw mut intercepts as *mut intercept_t) as i64 as i32;
+    count = unsafe { game_state() }
+        .p_maputl
+        .intercept_p
+        .offset_from(&raw mut unsafe { game_state() }.p_maputl.intercepts as *mut intercept_t)
+        as i64 as i32;
     in_0 = ::core::ptr::null_mut::<intercept_t>();
     loop {
         let fresh0 = count;
@@ -466,8 +645,8 @@ pub unsafe fn P_TraverseIntercepts(mut func: traverser_t, mut maxfrac: fixed_t) 
             break;
         }
         dist = INT_MAX as fixed_t;
-        scan = &raw mut intercepts as *mut intercept_t;
-        while scan < intercept_p {
+        scan = &raw mut unsafe { game_state() }.p_maputl.intercepts as *mut intercept_t;
+        while scan < unsafe { game_state() }.p_maputl.intercept_p {
             if (*scan).frac < dist {
                 dist = (*scan).frac;
                 in_0 = scan;
@@ -484,134 +663,21 @@ pub unsafe fn P_TraverseIntercepts(mut func: traverser_t, mut maxfrac: fixed_t) 
     }
     return true;
 }
-static mut intercepts_overrun: [intercepts_overrun_t; 23] = unsafe {
-    [
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: &raw const lowfloor as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: &raw const openbottom as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: &raw const opentop as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: &raw const openrange as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 120 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 8 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            // Patched once, after GameState reaches its final 'static address,
-            // by fixup_intercepts_overrun() -- see game_state()'s call site.
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 40 as i32,
-            addr: &raw const playerstarts as *mut [mapthing_t; 4] as *mut ::core::ffi::c_void,
-            int16_array: true,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: &raw const bmapwidth as *mut i32 as *mut ::core::ffi::c_void,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: &raw const bmaporgx as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: &raw const bmaporgy as *mut fixed_t as *mut ::core::ffi::c_void,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 4 as i32,
-            addr: &raw const bmapheight as *mut i32 as *mut ::core::ffi::c_void,
-            int16_array: false,
-        },
-        intercepts_overrun_t {
-            len: 0 as i32,
-            addr: NULL,
-            int16_array: false,
-        },
-    ]
-};
 // Must run only after `gs` is at its final, permanently-stable 'static
 // address (see game_state()) -- this table's `bulletslope` entry records
 // an address for the vanilla-intercepts-overrun memory-corruption
 // emulation to write through later; that address must be bulletslope's
 // real final location, not a temporary one that could move.
 pub unsafe fn fixup_intercepts_overrun(gs: &mut GameState) {
-    intercepts_overrun[10].addr =
+    gs.p_maputl.intercepts_overrun[3].addr =
+        &raw mut gs.p_maputl.lowfloor as *mut fixed_t as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[4].addr =
+        &raw mut gs.p_maputl.openbottom as *mut fixed_t as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[5].addr =
+        &raw mut gs.p_maputl.opentop as *mut fixed_t as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[6].addr =
+        &raw mut gs.p_maputl.openrange as *mut fixed_t as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[10].addr =
         &raw mut gs.p_pspr.bulletslope as *mut fixed_t as *mut ::core::ffi::c_void;
 }
 unsafe fn InterceptsMemoryOverrun(mut location: i32, mut value: i32) {
@@ -621,11 +687,11 @@ unsafe fn InterceptsMemoryOverrun(mut location: i32, mut value: i32) {
     let mut addr: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<::core::ffi::c_void>();
     i = 0 as i32;
     offset = 0 as i32;
-    while intercepts_overrun[i as usize].len != 0 as i32 {
-        if offset + intercepts_overrun[i as usize].len > location {
-            addr = intercepts_overrun[i as usize].addr;
+    while unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].len != 0 as i32 {
+        if offset + unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].len > location {
+            addr = unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].addr;
             if !addr.is_null() {
-                if intercepts_overrun[i as usize].int16_array {
+                if unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].int16_array {
                     index = (location - offset) / 2 as i32;
                     *(addr as *mut i16).offset(index as isize) = (value & 0xffff as i32) as i16;
                     *(addr as *mut i16).offset((index + 1 as i32) as isize) =
@@ -637,7 +703,7 @@ unsafe fn InterceptsMemoryOverrun(mut location: i32, mut value: i32) {
             }
             break;
         } else {
-            offset += intercepts_overrun[i as usize].len;
+            offset += unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].len;
             i += 1;
         }
     }
@@ -674,19 +740,20 @@ pub unsafe fn P_PathTraverse(
     let mut mapxstep: i32 = 0;
     let mut mapystep: i32 = 0;
     let mut count: i32 = 0;
-    earlyout = (flags & PT_EARLYOUT) != 0;
+    unsafe { game_state() }.p_maputl.earlyout = (flags & PT_EARLYOUT) != 0;
     validcount += 1;
-    intercept_p = &raw mut intercepts as *mut intercept_t;
+    unsafe { game_state() }.p_maputl.intercept_p =
+        &raw mut unsafe { game_state() }.p_maputl.intercepts as *mut intercept_t;
     if x1 as i32 - bmaporgx as i32 & MAPBLOCKSIZE - 1 as i32 == 0 as i32 {
         x1 += FRACUNIT;
     }
     if y1 as i32 - bmaporgy as i32 & MAPBLOCKSIZE - 1 as i32 == 0 as i32 {
         y1 += FRACUNIT;
     }
-    trace.x = x1;
-    trace.y = y1;
-    trace.dx = x2 - x1;
-    trace.dy = y2 - y1;
+    unsafe { game_state() }.p_maputl.trace.x = x1;
+    unsafe { game_state() }.p_maputl.trace.y = y1;
+    unsafe { game_state() }.p_maputl.trace.dx = x2 - x1;
+    unsafe { game_state() }.p_maputl.trace.dy = y2 - y1;
     x1 -= bmaporgx;
     y1 -= bmaporgy;
     xt1 = x1 >> MAPBLOCKSHIFT;

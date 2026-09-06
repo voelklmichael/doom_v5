@@ -18,7 +18,7 @@ pub struct weaponinfo_t {
     pub flashstate: i32,
 }
 #[no_mangle]
-pub static mut weaponinfo: [weaponinfo_t; 9] = [
+pub static weaponinfo: [weaponinfo_t; 9] = [
     weaponinfo_t {
         ammo: am_noammo,
         upstate: S_PUNCHUP as i32,
