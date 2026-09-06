@@ -44,13 +44,15 @@ use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use libc::memset;
 use libc::snprintf;
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::commercial;
 use crate::src::d_mode::skill_t;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::m_fixed::FRACUNIT;
 
 pub type C2RustUnnamed_1 = u32;
 pub const ML_BLOCKMAP: C2RustUnnamed_1 = 10;
@@ -127,10 +129,7 @@ pub struct mapnode_t {
     pub bbox: [[i16; 4]; 2],
     pub children: [u16; 2],
 }
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const ML_TWOSIDED: i32 = 4 as i32;
 pub static mut numvertexes: i32 = 0;
 pub static mut vertexes: *mut vertex_t = ::core::ptr::null::<vertex_t>()
@@ -1027,8 +1026,3 @@ pub unsafe fn P_Init() {
     R_InitSprites(&raw mut sprnames as *mut *mut ::core::ffi::c_char);
 }
 pub const MAPBLOCKSHIFT: i32 = FRACBITS + 7 as i32;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();

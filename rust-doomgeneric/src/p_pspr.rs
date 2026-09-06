@@ -24,7 +24,7 @@ use crate::src::sounds::{sfx_bfg, sfx_dshtgn, sfx_pistol, sfx_punch, sfx_sawful,
 use crate::src::d_ticcmd::BT_ATTACK;
 use crate::src::d_player::pw_strength;
 use crate::src::d_player::{NUMPSPRITES, ps_flash, ps_weapon};
-use crate::src::p_mobj::{MT_BFG, MT_EXTRABFG, MT_PLASMA, MT_ROCKET, mobjtype_t};
+use crate::src::p_mobj::{MT_BFG, MT_EXTRABFG, MT_PLASMA, MT_ROCKET};
 use crate::src::p_mobj::statenum_t;
 use crate::src::d_mode::{commercial, shareware};
 use crate::src::d_player::{wp_bfg, wp_chaingun, wp_chainsaw, wp_fist, wp_missile, wp_nochange, wp_pistol, wp_plasma, wp_shotgun, wp_supershotgun};
@@ -32,22 +32,18 @@ use crate::src::d_player::{NUMAMMO, am_cell, am_clip, am_misl, am_noammo, am_she
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::info::{S_CHAIN1, S_NULL, S_PLAY, S_PLAY_ATK1, S_PLAY_ATK2, S_SAW};
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANG180;
+use crate::src::tables::ANG90;
+use crate::src::tables::FINEMASK;
 
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const DEH_DEFAULT_BFG_CELLS_PER_SHOT: i32 = 40 as i32;
 pub const deh_bfg_cells_per_shot: i32 = DEH_DEFAULT_BFG_CELLS_PER_SHOT;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const FINEANGLES: i32 = 8192;
-pub const FINEMASK: i32 = FINEANGLES - 1 as i32;
-pub const ANG90: i32 = 0x40000000 as i32;
-pub const ANG180: u32 = 0x80000000 as u32;
 pub const MELEERANGE: i32 = 64 as i32 * FRACUNIT;
 pub const MISSILERANGE: i32 = 32 as i32
     * 64 as i32 * FRACUNIT;

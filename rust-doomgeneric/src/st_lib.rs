@@ -5,6 +5,7 @@ use crate::src::st_stuff::st_backing_screen;
 use crate::src::v_video::V_CopyRect;
 use crate::src::v_video::V_DrawPatch;
 use crate::src::z_zone::PU_STATIC;
+use crate::src::doomdef::SCREENHEIGHT;
 
 
 #[derive(Copy, Clone)]
@@ -47,10 +48,8 @@ pub struct st_binicon_t {
     pub p: *mut patch_t,
     pub data: i32,
 }
-pub const false_0: i32 = 0 as i32;
 pub const ST_HEIGHT: i32 = 32 as i32;
 pub const ST_Y: i32 = SCREENHEIGHT - ST_HEIGHT;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 #[no_mangle]
 pub static mut sttminus: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 pub unsafe fn STlib_init() {

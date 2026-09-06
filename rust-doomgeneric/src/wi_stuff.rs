@@ -20,13 +20,18 @@ use crate::src::z_zone::PU_STATIC;
 use crate::src::sounds::{sfx_barexp, sfx_pistol, sfx_pldeth, sfx_sgcock, sfx_slop};
 use crate::src::sounds::{mus_dm2int, mus_inter};
 use crate::src::d_ticcmd::{BT_ATTACK, BT_USE};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::{commercial, retail};
 use crate::src::stdint_types::size_t;
 use libc::{printf, snprintf};
 use crate::src::st_stuff::load_callback_t;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::TICRATE;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct wbplayerstruct_t {
@@ -82,15 +87,6 @@ pub type animenum_t = u32;
 pub const ANIM_LEVEL: animenum_t = 2;
 pub const ANIM_RANDOM: animenum_t = 1;
 pub const ANIM_ALWAYS: animenum_t = 0;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const TICRATE: i32 = 35 as i32;
-pub const MAXPLAYERS: i32 = 4 as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const NUMMAPS: i32 = 9 as i32;
 pub const WI_TITLEY: i32 = 2 as i32;
 pub const WI_SPACINGY: i32 = 33 as i32;

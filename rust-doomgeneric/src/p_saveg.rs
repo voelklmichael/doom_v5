@@ -65,8 +65,9 @@ use crate::src::p_ceilng::T_MoveCeiling;
 use crate::src::p_floor::T_MoveFloor;
 use crate::src::p_inter::NUMCARDS;
 use crate::src::d_player::NUMAMMO;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::MAXPLAYERS;
 pub type intptr_t = isize;
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const tc_end: C2RustUnnamed_4 = 0;
 pub const tc_mobj: C2RustUnnamed_4 = 1;
 pub const tc_endspecials: C2RustUnnamed_5 = 7;
@@ -79,13 +80,7 @@ pub const tc_door: C2RustUnnamed_5 = 1;
 pub const tc_ceiling: C2RustUnnamed_5 = 0;
 pub type C2RustUnnamed_4 = u32;
 pub type C2RustUnnamed_5 = u32;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const MAXCEILINGS: i32 = 30 as i32;
 pub const SAVESTRINGSIZE: i32 = 24 as i32;
 pub const SAVEGAME_EOF: i32 = 0x1d as i32;

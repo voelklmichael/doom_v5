@@ -57,6 +57,14 @@ use crate::src::p_lights::{fireflicker_t, lightflash_t, strobe_t, glow_t};
 use libc::{memcpy, memset};
 use crate::src::info::{S_BLOOD2, S_BLOOD3, S_NULL, S_PLAY, S_PLAY_RUN1, S_PUFF3};
 use crate::src::p_inter::NUMCARDS;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::TICRATE;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::ANG45;
+use crate::src::m_fixed::INT_MAX;
+use crate::src::m_fixed::INT_MIN;
 
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
@@ -559,18 +567,8 @@ pub struct degenmobj_t {
 }
 pub type line_t = line_s;
 pub type subsector_t = subsector_s;
-pub const INT_MAX: i32 = i32::MAX;
-pub const INT_MIN: i32 = i32::MIN;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const TICRATE: i32 = 35 as i32;
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const MTF_AMBUSH: i32 = 8 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-pub const ANG45: i32 = 0x20000000 as i32;
 pub const FLOATSPEED: i32 = FRACUNIT * 4 as i32;
 pub const VIEWHEIGHT: i32 = 41 as i32 * FRACUNIT;
 pub const GRAVITY: i32 = FRACUNIT;
@@ -1398,5 +1396,3 @@ pub unsafe fn P_SpawnPlayerMissile(
     (*th).momz = FixedMul((*(*th).info).speed as fixed_t, slope);
     P_CheckMissileSpawn(th);
 }
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;

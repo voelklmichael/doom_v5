@@ -21,6 +21,7 @@ use crate::src::d_mode::{GameMission_t, doom, heretic, hexen, strife};
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::size_t;
+use crate::src::doomdef::NULL;
 
 extern "C" {
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
@@ -55,9 +56,6 @@ pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
     pub lumpname: &'static str,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] = unsafe {
     ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"doomgeneric\0")
 };

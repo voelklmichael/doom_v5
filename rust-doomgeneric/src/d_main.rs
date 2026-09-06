@@ -146,7 +146,6 @@ use crate::src::v_video::V_DrawPatch;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::sounds::{mus_dm2ttl, mus_intro};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::{commercial, registered, retail, shareware};
 use crate::src::d_mode::{GameVersion_t, exe_chex, exe_doom_1_2, exe_doom_1_666, exe_doom_1_7, exe_doom_1_8, exe_doom_1_9, exe_final, exe_final2, exe_hacx, exe_ultimate};
 use crate::src::d_mode::{GameMission_t, doom, doom2, none, pack_chex, pack_hacx, pack_plut, pack_tnt};
@@ -159,6 +158,12 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::{atoi, strcasecmp, strcmp, strlen, strncasecmp};
 use libc::{exit, printf, snprintf};
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::TICRATE;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -184,7 +189,6 @@ pub const _ISdigit: C2RustUnnamed = 2048;
 pub const _ISalpha: C2RustUnnamed = 1024;
 pub const _ISlower: C2RustUnnamed = 512;
 pub const _ISupper: C2RustUnnamed = 256;
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub type C2RustUnnamed_2 = u32;
 pub const wipe_NUMWIPES: C2RustUnnamed_2 = 2;
 pub const wipe_Melt: C2RustUnnamed_2 = 1;
@@ -202,16 +206,9 @@ pub struct C2RustUnnamed_4 {
     pub cmdline: *mut ::core::ffi::c_char,
     pub version: GameVersion_t,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const PACKAGE_STRING: [::core::ffi::c_char; 17] = unsafe {
     ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"Doom Generic 0.1\0")
 };
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const TICRATE: i32 = 35 as i32;
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const D_DEVSTR: [::core::ffi::c_char; 22] = unsafe {
     ::core::mem::transmute::<
         [u8; 22],
@@ -222,8 +219,6 @@ pub const HUSTR_KEYGREEN: i32 = 'g' as i32;
 pub const HUSTR_KEYINDIGO: i32 = 'i' as i32;
 pub const HUSTR_KEYBROWN: i32 = 'b' as i32;
 pub const HUSTR_KEYRED: i32 = 'r' as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 pub static mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;

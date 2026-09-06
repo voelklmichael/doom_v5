@@ -55,7 +55,6 @@ use crate::src::d_player::pw_ironfeet;
 use crate::src::d_player::CF_GODMODE;
 use libc::memset;
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_plats::{blazeDWUS, downWaitUpStay, perpetualRaise, plattype_e, raiseToNearestAndChange};
 use crate::src::p_plats::plat_e;
@@ -69,7 +68,11 @@ use crate::src::doomdef::boolean;
 use crate::src::stdint_types::size_t;
 
 use crate::src::p_floor::T_MoveFloor;
-pub const NUMMOBJTYPES: mobjtype_t = 137;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::TICRATE;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::m_fixed::INT_MAX;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {
@@ -139,16 +142,8 @@ pub struct floormove_t {
     pub floordestheight: fixed_t,
     pub speed: fixed_t,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const INT_MAX: i32 = i32::MAX;
-pub const TICRATE: i32 = 35 as i32;
 pub const ML_TWOSIDED: i32 = 4 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const FASTDARK: i32 = 15 as i32;
 pub const SLOWDARK: i32 = 35 as i32;
 pub const MAXBUTTONS: i32 = 16 as i32;

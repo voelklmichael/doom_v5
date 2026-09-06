@@ -37,6 +37,11 @@ use crate::src::d_player::{weapontype_t, wp_bfg, wp_chaingun, wp_chainsaw, wp_fi
 use crate::src::d_player::{NUMAMMO, am_cell, am_clip, am_misl, am_noammo, am_shell, ammotype_t};
 use crate::src::m_fixed::fixed_t;
 use crate::src::info::{S_NULL};
+use crate::src::doomdef::NULL;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::ANG180;
+use crate::src::m_fixed::INT_MIN;
 
 
 pub type card_t = u32;
@@ -52,10 +57,6 @@ pub const IRONTICS: C2RustUnnamed_0 = 2100;
 pub const INFRATICS: C2RustUnnamed_0 = 4200;
 pub const INVISTICS: C2RustUnnamed_0 = 2100;
 pub const INVULNTICS: C2RustUnnamed_0 = 1050;
-pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const INT_MIN: i32 = i32::MIN;
 pub const DEH_DEFAULT_MAX_HEALTH: i32 = 200 as i32;
 pub const DEH_DEFAULT_MAX_ARMOR: i32 = 200 as i32;
 pub const DEH_DEFAULT_GREEN_ARMOR_CLASS: i32 = 1 as i32;
@@ -71,9 +72,6 @@ pub const deh_max_soulsphere: i32 = DEH_DEFAULT_MAX_SOULSPHERE;
 pub const deh_soulsphere_health: i32 = DEH_DEFAULT_SOULSPHERE_HEALTH;
 pub const deh_megasphere_health: i32 = DEH_DEFAULT_MEGASPHERE_HEALTH;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-pub const ANG180: u32 = 0x80000000 as u32;
 pub const MAXHEALTH: i32 = 100 as i32;
 pub const BASETHRESHOLD: i32 = 100 as i32;
 pub const ONFLOORZ: i32 = INT_MIN;
@@ -886,6 +884,3 @@ pub unsafe fn P_DamageMobj(
         }
     }
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();

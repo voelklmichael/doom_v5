@@ -8,11 +8,9 @@ use crate::src::m_random::P_Random;
 use crate::src::p_setup::sectors;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::ThinkerFn;
 
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct fireflicker_t {

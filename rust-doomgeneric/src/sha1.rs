@@ -17,9 +17,6 @@ pub struct sha1_context_s {
 }
 pub type sha1_context_t = sha1_context_s;
 pub type sha1_digest_t = [byte; 20];
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 #[no_mangle]
 pub unsafe extern "C" fn SHA1_Init(mut hd: *mut sha1_context_t) {
     (*hd).h0 = 0x67452301 as uint32_t;

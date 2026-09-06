@@ -44,7 +44,11 @@ use libc::memcpy;
 use libc::toupper;
 use libc::snprintf;
 use crate::src::info::{S_NULL, S_PLAY_ATK1};
-pub const NUMMOBJTYPES: mobjtype_t = 137;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
 pub type finalestage_t = u32;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;
@@ -64,12 +68,6 @@ pub struct castinfo_t {
     pub name: Option<&'static str>,
     pub type_0: mobjtype_t,
 }
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const E1TEXT: &str = "Once you beat the big badasses and\nclean out the moon base you're supposed\nto win, aren't you? Aren't you? Where's\nyour fat reward and ticket home? What\nthe hell is this? It's not supposed to\nend this way!\n\nIt stinks like rotten meat, but looks\nlike the lost Deimos base.  Looks like\nyou're stuck on The Shores of Hell.\nThe only way out is through.\n\nTo continue the DOOM experience, play\nThe Shores of Hell and its amazing\nsequel, Inferno!\n";
 pub const E2TEXT: &str = "You've done it! The hideous cyber-\ndemon lord that ruled the lost Deimos\nmoon base has been slain and you\nare triumphant! But ... where are\nyou? You clamber to the edge of the\nmoon and look down to see the awful\ntruth.\n\nDeimos floats above Hell itself!\nYou've never heard of anyone escaping\nfrom Hell, but you'll make the bastards\nsorry they ever heard of you! Quickly,\nyou rappel down to  the surface of\nHell.\n\nNow, it's on to the final chapter of\nDOOM! -- Inferno.";
 pub const E3TEXT: &str = "The loathsome spiderdemon that\nmasterminded the invasion of the moon\nbases and caused so much death has had\nits ass kicked for all time.\n\nA hidden doorway opens and you enter.\nYou've proven too tough for Hell to\ncontain, and now Hell at last plays\nfair -- for you emerge from the door\nto see the green fields of Earth!\nHome at last.\n\nYou wonder what's been happening on\nEarth while you were battling evil\nunleashed. It's good that no Hell-\nspawn could have come through that\ndoor with you ...";
@@ -110,8 +108,6 @@ pub const CC_SPIDER: &str = "THE SPIDER MASTERMIND";
 pub const CC_CYBER: &str = "THE CYBERDEMON";
 pub const CC_HERO: &str = "OUR HERO";
 pub const FF_FRAMEMASK: i32 = 0x7fff as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 #[no_mangle]
 pub static mut finalestage: finalestage_t = F_STAGE_TEXT;
 #[no_mangle]

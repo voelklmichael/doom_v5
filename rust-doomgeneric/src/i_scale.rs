@@ -8,6 +8,10 @@ use libc::{printf, puts};
 use crate::src::i_system::fflush;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::m_fixed::INT_MAX;
 extern "C" {
     static mut stdout: *mut FILE;
 }
@@ -27,12 +31,6 @@ pub struct screen_mode_t {
     >,
     pub poor_quality: bool,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const INT_MAX: i32 = i32::MAX;
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const SCREENWIDTH_4_3: i32 = 256 as i32;
 pub const SCREENHEIGHT_4_3: i32 = 240 as i32;
 static mut src_buffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;

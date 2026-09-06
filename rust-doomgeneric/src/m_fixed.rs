@@ -13,3 +13,4 @@ pub fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t {
         return result as fixed_t;
     };
 }
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;

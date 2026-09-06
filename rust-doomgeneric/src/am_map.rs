@@ -48,14 +48,20 @@ use crate::src::d_player::{pw_allmap, pw_invisibility};
 use libc::memset;
 use libc::snprintf;
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_event::{ev_keydown, ev_keyup};
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::m_fixed::INT_MAX;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct mpoint_t {
@@ -91,16 +97,10 @@ pub struct islope_t {
     pub slp: fixed_t,
     pub islp: fixed_t,
 }
-pub const INT_MAX: i32 = i32::MAX;
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
 pub const ML_SECRET: i32 = 32 as i32;
 pub const ML_DONTDRAW: i32 = 128 as i32;
 pub const ML_MAPPED: i32 = 256 as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const MAPBLOCKUNITS: i32 = 128 as i32;
 pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
     + (('m' as i32) << 16 as i32);
@@ -1542,8 +1542,6 @@ pub unsafe fn AM_Drawer() {
     AM_drawMarks();
     V_MarkRect(f_x, f_y, f_w, f_h);
 }
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 unsafe extern "C" fn run_static_initializers() {
     cheat_amap = cheatseq_t {
         sequence: ::core::mem::transmute::<

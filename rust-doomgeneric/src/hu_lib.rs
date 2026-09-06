@@ -10,6 +10,9 @@ use libc::toupper;
 use crate::src::m_misc::__ctype_toupper_loc;
 use crate::src::doomdef::boolean;
 use crate::src::stdint_types::__int32_t;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::SCREENWIDTH;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct patch_t {
@@ -43,11 +46,8 @@ pub struct hu_itext_t {
     pub on: *mut bool,
     pub laston: bool,
 }
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const KEY_ENTER: i32 = 13;
 pub const KEY_BACKSPACE: i32 = 0x7f;
-pub const SCREENWIDTH: i32 = 320 as i32;
 pub const HU_MAXLINELENGTH: i32 = 80 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_init() {}

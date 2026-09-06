@@ -5,6 +5,7 @@ use crate::src::m_misc::M_StringJoin;
 use crate::src::stdint_types::size_t;
 use libc::{strcmp, strdup};
 use libc::{malloc, printf, sscanf};
+use crate::src::doomdef::NULL;
 
 extern "C" {
     fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
@@ -32,9 +33,6 @@ pub struct default_collection_t {
     pub numdefaults: i32,
     pub filename: *mut ::core::ffi::c_char,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
 };

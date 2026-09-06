@@ -33,9 +33,6 @@ pub struct memblock_s {
     pub next: *mut memblock_s,
     pub prev: *mut memblock_s,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const MEM_ALIGN: usize = ::core::mem::size_of::<*mut ::core::ffi::c_void>();
 pub const ZONEID: i32 = 0x1d4a11 as i32;
 #[no_mangle]

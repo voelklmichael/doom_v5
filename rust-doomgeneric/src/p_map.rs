@@ -52,25 +52,21 @@ use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::p_mobj::{MF_DROPOFF, MF_DROPPED, MF_FLOAT, MF_MISSILE, MF_NOBLOOD, MF_NOCLIP, MF_PICKUP, MF_SHOOTABLE, MF_SKULLFLY, MF_SOLID, MF_SPECIAL, MF_TELEPORT};
 use crate::src::sounds::sfx_noway;
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::p_mobj::{MT_BLOOD, MT_BRUISER, MT_CYBORG, MT_KNIGHT, MT_PLAYER, MT_SPIDER, mobjtype_t};
+use crate::src::p_mobj::{MT_BLOOD, MT_BRUISER, MT_CYBORG, MT_KNIGHT, MT_PLAYER, MT_SPIDER};
 use crate::src::p_mobj::statenum_t;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::doomdef::boolean;
 use crate::src::info::{S_GIBS};
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::ANG180;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const DEH_DEFAULT_SPECIES_INFIGHTING: i32 = 0 as i32;
 pub const deh_species_infighting: i32 = DEH_DEFAULT_SPECIES_INFIGHTING;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-pub const ANG180: u32 = 0x80000000 as u32;
 pub const ML_BLOCKING: i32 = 1 as i32;
 pub const ML_BLOCKMONSTERS: i32 = 2 as i32;
 pub const ML_TWOSIDED: i32 = 4 as i32;

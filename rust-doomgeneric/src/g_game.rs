@@ -148,7 +148,7 @@ use libc::{memcpy, memset};
 use libc::{atoi, strlen};
 use libc::printf;
 use crate::src::i_system::{fclose, fopen, ftell};
-use crate::src::p_mobj::{MT_BRUISERSHOT, MT_HEADSHOT, MT_TFOG, MT_TROOPSHOT, mobjtype_t};
+use crate::src::p_mobj::{MT_BRUISERSHOT, MT_HEADSHOT, MT_TFOG, MT_TROOPSHOT};
 use crate::src::d_mode::{commercial, shareware};
 use crate::src::d_mode::{exe_chex, exe_final2, exe_ultimate};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
@@ -163,6 +163,14 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::info::{S_SARG_PAIN2, S_SARG_RUN1};
 use crate::src::d_player::{NUMAMMO, am_clip};
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::TICRATE;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::ANG45;
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -171,7 +179,6 @@ extern "C" {
         __new: *const ::core::ffi::c_char,
     ) -> i32;
 }
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct C2RustUnnamed_5 {
@@ -182,14 +189,9 @@ pub const DEH_DEFAULT_INITIAL_HEALTH: i32 = 100 as i32;
 pub const DEH_DEFAULT_INITIAL_BULLETS: i32 = 50 as i32;
 pub const deh_initial_health: i32 = DEH_DEFAULT_INITIAL_HEALTH;
 pub const deh_initial_bullets: i32 = DEH_DEFAULT_INITIAL_BULLETS;
-pub const TICRATE: i32 = 35 as i32;
 pub const DOOM_191_VERSION: i32 = 111 as i32;
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const BACKUPTICS: i32 = 128 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-pub const ANG45: i32 = 0x20000000 as i32;
 pub const SAVEGAMESIZE: i32 = 0x2c000 as i32;
 #[no_mangle]
 pub static mut oldgamestate: gamestate_t = GS_LEVEL;
@@ -2349,11 +2351,6 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
     return false_0 as boolean;
 }
 pub const MAX_MOUSE_BUTTONS: i32 = 8 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 unsafe extern "C" fn run_static_initializers() {
     joybuttons = (&raw mut joyarray as *mut boolean)
         .offset(1 as i32 as isize) as *mut boolean;
