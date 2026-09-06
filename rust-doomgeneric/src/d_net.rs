@@ -36,6 +36,8 @@ use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::statenum_t;
 use crate::src::d_mode::skill_t;
 use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use libc::printf;
 
 extern "C" {
@@ -44,10 +46,6 @@ extern "C" {
     fn G_CheckDemoStatus() -> boolean;
     fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub type netgame_startup_callback_t = Option<
     unsafe extern "C" fn(i32, i32) -> boolean,
 >;

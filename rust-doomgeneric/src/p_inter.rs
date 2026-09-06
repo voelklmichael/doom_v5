@@ -38,9 +38,6 @@ use crate::src::d_player::{NUMAMMO, am_cell, am_clip, am_misl, am_noammo, am_she
 use crate::src::m_fixed::fixed_t;
 
 
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub type card_t = u32;
 pub const NUMCARDS: card_t = 6;
 pub const it_redskull: card_t = 5;

@@ -6,13 +6,11 @@ use crate::src::z_zone::PU_STATIC;
 use libc::{memcpy, memset};
 use libc::{printf, puts};
 use crate::src::i_system::fflush;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 extern "C" {
     static mut stdout: *mut FILE;
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct screen_mode_t {

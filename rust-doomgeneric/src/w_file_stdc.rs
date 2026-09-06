@@ -5,11 +5,9 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use crate::src::i_system::{fclose, fopen, fread, fseek};
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct stdc_wad_file_t {

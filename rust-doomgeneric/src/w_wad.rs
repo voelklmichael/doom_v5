@@ -18,15 +18,13 @@ use libc::{free, printf};
 use crate::src::m_misc::__ctype_toupper_loc;
 use crate::src::d_mode::indetermined;
 use crate::src::d_mode::{GameMission_t, doom, heretic, hexen, strife};
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::__int32_t;
+use crate::src::stdint_types::size_t;
 
 extern "C" {
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
 }
-pub type __uint8_t = u8;
-pub type __int32_t = i32;
-pub type size_t = usize;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lumpinfo_s {

@@ -1,10 +1,8 @@
 use crate::src::m_argv::M_CheckParm;
 use crate::src::w_file_stdc::stdc_wad_file;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _wad_file_s {

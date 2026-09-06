@@ -32,12 +32,10 @@ use crate::src::d_mode::exe_chex;
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
 use crate::src::d_event::ev_keydown;
 use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use libc::snprintf;
 
-pub type __uint8_t = u8;
-pub type size_t = usize;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

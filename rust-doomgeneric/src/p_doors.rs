@@ -21,10 +21,6 @@ use crate::src::m_fixed::fixed_t;
 extern "C" {
     fn T_PlatRaise(plat: *mut plat_t);
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;

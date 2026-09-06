@@ -50,12 +50,9 @@ use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_baby, sk_nightmare};
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
+use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
 
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub use crate::src::d_ticcmd::ticcmd_t;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;

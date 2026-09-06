@@ -55,6 +55,8 @@ use crate::src::p_ceilng::ceiling_e;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -66,11 +68,7 @@ extern "C" {
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
 pub type intptr_t = isize;
-pub type byte = uint8_t;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;

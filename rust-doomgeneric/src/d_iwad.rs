@@ -4,7 +4,6 @@ use crate::src::m_misc::M_FileExists;
 use crate::src::d_mode::{GameMode_t, commercial, indetermined, retail, shareware};
 use crate::src::d_mode::{GameMission_t, doom, doom2, heretic, hexen, none, pack_chex, pack_hacx, pack_plut, pack_tnt, strife};
 use libc::printf;
-pub type size_t = usize;
 #[derive(Copy, Clone)]
 pub struct iwad_t {
     pub name: &'static str,

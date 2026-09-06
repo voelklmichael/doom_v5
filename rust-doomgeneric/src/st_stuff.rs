@@ -55,12 +55,10 @@ use crate::src::d_player::{NUMWEAPONS, wp_chainsaw};
 use crate::src::d_player::{NUMAMMO, am_noammo};
 use crate::src::tables::angle_t;
 use crate::src::doomdef::boolean;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
 use libc::snprintf;
 
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
-pub type byte = uint8_t;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;

@@ -1,6 +1,6 @@
+use crate::src::stdint_types::size_t;
 use libc::memcpy;
 use libc::strlen;
-pub type size_t = usize;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cheatseq_t {
