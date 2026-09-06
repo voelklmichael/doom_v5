@@ -265,8 +265,7 @@ pub unsafe fn D_ProcessEvents() {
     };
 }
 pub static mut wipegamestate: gamestate_t = GS_DEMOSCREEN;
-#[no_mangle]
-pub unsafe extern "C" fn D_Display() {
+pub unsafe fn D_Display() {
     static mut viewactivestate: bool = false;
     static mut menuactivestate: bool = false;
     static mut inhelpscreensstate: bool = false;
@@ -444,8 +443,7 @@ pub unsafe extern "C" fn D_Display() {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_BindVariables() {
+pub unsafe fn D_BindVariables() {
     let mut i: i32 = 0;
     M_ApplyPlatformDefaults();
     I_BindVideoVariables();
@@ -529,8 +527,7 @@ pub unsafe extern "C" fn doomgeneric_Tick() {
         D_Display();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_DoomLoop() {
+pub unsafe fn D_DoomLoop() {
     if bfgedition
         && (demorecording
             || gameaction as u32
@@ -576,8 +573,7 @@ pub unsafe fn D_PageTicker() {
         D_AdvanceDemo();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_PageDrawer() {
+pub unsafe fn D_PageDrawer() {
     V_DrawPatch(
         0 as i32,
         0 as i32,
@@ -816,8 +812,7 @@ unsafe extern "C" fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_ch
         ::std::ffi::CStr::from_ptr(pack_name).to_str().unwrap(),
     ));
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_IdentifyVersion() {
+pub unsafe fn D_IdentifyVersion() {
     if gamemission as u32
         == none as i32 as u32
     {
@@ -887,8 +882,7 @@ pub unsafe extern "C" fn D_IdentifyVersion() {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_SetGameDescription() {
+pub unsafe fn D_SetGameDescription() {
     let mut is_freedoom: bool = W_CheckNumForName("FREEDOOM",
     ) >= 0 as i32;
     let mut is_freedm: bool = W_CheckNumForName("FREEDM",
@@ -1017,8 +1011,7 @@ static copyright_banners: [&str; 3] = [
     "===========================================================================\n                 Commercial product - do not distribute!\n         Please report software piracy to the SPA: 1-800-388-PIR8\n===========================================================================\n",
     "===========================================================================\n                                Shareware!\n===========================================================================\n",
 ];
-#[no_mangle]
-pub unsafe extern "C" fn PrintDehackedBanners() {
+pub unsafe fn PrintDehackedBanners() {
     let mut i: size_t = 0;
     i = 0 as size_t;
     while i < copyright_banners.len() as size_t {
@@ -1193,8 +1186,7 @@ unsafe extern "C" fn InitGameVersion() {
         gamemission = doom2;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn PrintGameVersion() {
+pub unsafe fn PrintGameVersion() {
     let mut i: i32 = 0;
     i = 0 as i32;
     while !gameversions[i as usize].description.is_null() {

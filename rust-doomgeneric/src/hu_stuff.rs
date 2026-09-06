@@ -489,8 +489,7 @@ pub unsafe fn HU_Init() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Stop() {
+pub unsafe fn HU_Stop() {
     headsupactive = false;
 }
 pub unsafe fn HU_Start() {
@@ -691,8 +690,7 @@ pub const QUEUESIZE: i32 = 128 as i32;
 static mut chatchars: [::core::ffi::c_char; 128] = [0; 128];
 static mut head: i32 = 0 as i32;
 static mut tail: i32 = 0 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn HU_queueChatChar(mut c: ::core::ffi::c_char) {
+pub unsafe fn HU_queueChatChar(mut c: ::core::ffi::c_char) {
     if head + 1 as i32 & QUEUESIZE - 1 as i32 == tail {
         (*plr).message = b"[Message unsent]\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char;

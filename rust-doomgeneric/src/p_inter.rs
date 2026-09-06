@@ -87,8 +87,7 @@ pub static mut clipammo: [i32; 4] = [
     20 as i32,
     1 as i32,
 ];
-#[no_mangle]
-pub unsafe extern "C" fn P_GiveAmmo(
+pub unsafe fn P_GiveAmmo(
     mut player: *mut player_t,
     mut ammo: ammotype_t,
     mut num: i32,
@@ -174,8 +173,7 @@ pub unsafe extern "C" fn P_GiveAmmo(
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_GiveWeapon(
+pub unsafe fn P_GiveWeapon(
     mut player: *mut player_t,
     mut weapon: weapontype_t,
     mut dropped: bool,
@@ -238,8 +236,7 @@ pub unsafe extern "C" fn P_GiveWeapon(
     }
     return gaveweapon || gaveammo;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_GiveBody(
+pub unsafe fn P_GiveBody(
     mut player: *mut player_t,
     mut num: i32,
 ) -> bool {
@@ -253,8 +250,7 @@ pub unsafe extern "C" fn P_GiveBody(
     (*(*player).mo).health = (*player).health;
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_GiveArmor(
+pub unsafe fn P_GiveArmor(
     mut player: *mut player_t,
     mut armortype: i32,
 ) -> bool {
@@ -267,8 +263,7 @@ pub unsafe extern "C" fn P_GiveArmor(
     (*player).armorpoints = hits;
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_GiveCard(mut player: *mut player_t, mut card: card_t) {
+pub unsafe fn P_GiveCard(mut player: *mut player_t, mut card: card_t) {
     if (*player).cards[card as usize] {
         return;
     }
@@ -679,8 +674,7 @@ pub unsafe fn P_TouchSpecialThing(
         S_StartSound(NULL, sound);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
+pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
     let mut item: mobjtype_t = MT_PLAYER;
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     (*target).flags

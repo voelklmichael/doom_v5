@@ -255,8 +255,7 @@ pub unsafe fn EV_DoPlat(
     }
     return rtn;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ActivateInStasis(mut tag: i32) {
+pub unsafe fn P_ActivateInStasis(mut tag: i32) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLATS {
@@ -298,8 +297,7 @@ pub unsafe fn P_AddActivePlat(mut plat: *mut plat_t) {
     }
     I_Error("P_AddActivePlat: no more plats!");
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_RemoveActivePlat(mut plat: *mut plat_t) {
+pub unsafe fn P_RemoveActivePlat(mut plat: *mut plat_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLATS {

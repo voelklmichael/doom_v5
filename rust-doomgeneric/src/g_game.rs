@@ -420,8 +420,7 @@ pub static mut bodyque: [*mut mobj_t; 32] = [::core::ptr::null::<mobj_t>()
 pub static mut bodyqueslot: i32 = 0;
 pub static mut vanilla_savegame_limit: i32 = 1 as i32;
 pub static mut vanilla_demo_limit: i32 = 1 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
+pub unsafe fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
     let mut i: size_t = 0;
     let mut sum: i32 = 0 as i32;
     i = 0 as size_t;
@@ -766,8 +765,7 @@ pub unsafe fn G_BuildTiccmd(
             - (*cmd).angleturn as i32) as i16;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DoLoadLevel() {
+pub unsafe fn G_DoLoadLevel() {
     let mut i: i32 = 0;
     skyflatnum = R_FlatNumForName(
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char
@@ -1173,12 +1171,10 @@ pub unsafe fn G_Ticker() {
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_InitPlayer(mut player: i32) {
+pub unsafe fn G_InitPlayer(mut player: i32) {
     G_PlayerReborn(player);
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_PlayerFinishLevel(mut player: i32) {
+pub unsafe fn G_PlayerFinishLevel(mut player: i32) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     p = (&raw mut players as *mut player_t).offset(player as isize) as *mut player_t;
     memset(
@@ -1243,8 +1239,7 @@ pub unsafe fn G_PlayerReborn(mut player: i32) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_CheckSpot(
+pub unsafe fn G_CheckSpot(
     mut playernum: i32,
     mut mthing: *mut mapthing_t,
 ) -> bool {
@@ -1354,8 +1349,7 @@ pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
             as *mut mapthing_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DoReborn(mut playernum: i32) {
+pub unsafe fn G_DoReborn(mut playernum: i32) {
     let mut i: i32 = 0;
     if !netgame {
         gameaction = ga_loadlevel;
@@ -1499,8 +1493,7 @@ pub unsafe fn G_SecretExitLevel() {
     }
     gameaction = ga_completed;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DoCompleted() {
+pub unsafe fn G_DoCompleted() {
     let mut i: i32 = 0;
     gameaction = ga_nothing;
     i = 0 as i32;
@@ -1673,8 +1666,7 @@ pub unsafe fn G_WorldDone() {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DoWorldDone() {
+pub unsafe fn G_DoWorldDone() {
     gamestate = GS_LEVEL;
     gamemap = wminfo.next + 1 as i32;
     G_DoLoadLevel();
@@ -1691,8 +1683,7 @@ pub unsafe fn G_LoadGame(mut name: *mut ::core::ffi::c_char) {
     );
     gameaction = ga_loadgame;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DoLoadGame() {
+pub unsafe fn G_DoLoadGame() {
     let mut savedleveltime: i32 = 0;
     gameaction = ga_nothing;
     save_stream = fopen(
@@ -1735,8 +1726,7 @@ pub unsafe fn G_SaveGame(
     );
     sendsave = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DoSaveGame() {
+pub unsafe fn G_DoSaveGame() {
     let mut savegame_file: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
@@ -1818,8 +1808,7 @@ pub unsafe fn G_DeferedInitNew(
     d_map = map;
     gameaction = ga_newgame;
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DoNewGame() {
+pub unsafe fn G_DoNewGame() {
     demoplayback = false;
     netdemo = false;
     netgame = false;
@@ -1971,8 +1960,7 @@ pub unsafe fn G_InitNew(
     G_DoLoadLevel();
 }
 pub const DEMOMARKER: i32 = 0x80 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
+pub unsafe fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
     if *demo_p as i32 == DEMOMARKER {
         G_CheckDemoStatus();
         return;
@@ -2027,8 +2015,7 @@ unsafe extern "C" fn IncreaseDemoBuffer() {
     demo_p = new_demop;
     demoend = demobuffer.offset(new_length as isize);
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_WriteDemoTiccmd(mut cmd: *mut ticcmd_t) {
+pub unsafe fn G_WriteDemoTiccmd(mut cmd: *mut ticcmd_t) {
     let mut demo_start: *mut byte = ::core::ptr::null_mut::<byte>();
     if gamekeydown[key_demo_quit as usize] != 0 {
         G_CheckDemoStatus();
@@ -2209,8 +2196,7 @@ unsafe extern "C" fn DemoVersionDescription(
         return &raw mut resultbuf as *mut ::core::ffi::c_char;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn G_DoPlayDemo() {
+pub unsafe fn G_DoPlayDemo() {
     let mut skill: skill_t = sk_baby;
     let mut i: i32 = 0;
     let mut episode: i32 = 0;

@@ -179,8 +179,7 @@ pub static mut playerstarts: [mapthing_t; 4] = [mapthing_t {
     type_0: 0,
     options: 0,
 }; 4];
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadVertexes(mut lump: i32) {
+pub unsafe fn P_LoadVertexes(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut ml: *mut mapvertex_t = ::core::ptr::null_mut::<mapvertex_t>();
@@ -207,8 +206,7 @@ pub unsafe extern "C" fn P_LoadVertexes(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-#[no_mangle]
-pub unsafe extern "C" fn GetSectorAtNullAddress() -> *mut sector_t {
+pub unsafe fn GetSectorAtNullAddress() -> *mut sector_t {
     static mut null_sector_is_initialized: bool = false;
     static mut null_sector: sector_t = sector_t {
         floorheight: 0,
@@ -258,8 +256,7 @@ pub unsafe extern "C" fn GetSectorAtNullAddress() -> *mut sector_t {
     }
     return &raw mut null_sector;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadSegs(mut lump: i32) {
+pub unsafe fn P_LoadSegs(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut ml: *mut mapseg_t = ::core::ptr::null_mut::<mapseg_t>();
@@ -320,8 +317,7 @@ pub unsafe extern "C" fn P_LoadSegs(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadSubsectors(mut lump: i32) {
+pub unsafe fn P_LoadSubsectors(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut ms: *mut mapsubsector_t = ::core::ptr::null_mut::<mapsubsector_t>();
@@ -355,8 +351,7 @@ pub unsafe extern "C" fn P_LoadSubsectors(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadSectors(mut lump: i32) {
+pub unsafe fn P_LoadSectors(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut ms: *mut mapsector_t = ::core::ptr::null_mut::<mapsector_t>();
@@ -400,8 +395,7 @@ pub unsafe extern "C" fn P_LoadSectors(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadNodes(mut lump: i32) {
+pub unsafe fn P_LoadNodes(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut j: i32 = 0;
@@ -444,8 +438,7 @@ pub unsafe extern "C" fn P_LoadNodes(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadThings(mut lump: i32) {
+pub unsafe fn P_LoadThings(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut mt: *mut mapthing_t = ::core::ptr::null_mut::<mapthing_t>();
@@ -565,8 +558,7 @@ pub unsafe extern "C" fn P_LoadThings(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadLineDefs(mut lump: i32) {
+pub unsafe fn P_LoadLineDefs(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut mld: *mut maplinedef_t = ::core::ptr::null_mut::<maplinedef_t>();
@@ -652,8 +644,7 @@ pub unsafe extern "C" fn P_LoadLineDefs(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadSideDefs(mut lump: i32) {
+pub unsafe fn P_LoadSideDefs(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut msd: *mut mapsidedef_t = ::core::ptr::null_mut::<mapsidedef_t>();
@@ -697,8 +688,7 @@ pub unsafe extern "C" fn P_LoadSideDefs(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LoadBlockMap(mut lump: i32) {
+pub unsafe fn P_LoadBlockMap(mut lump: i32) {
     let mut i: i32 = 0;
     let mut count: i32 = 0;
     let mut lumplen: i32 = 0;
@@ -735,8 +725,7 @@ pub unsafe extern "C" fn P_LoadBlockMap(mut lump: i32) {
         count as size_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_GroupLines() {
+pub unsafe fn P_GroupLines() {
     let mut linebuffer: *mut *mut line_t = ::core::ptr::null_mut::<*mut line_t>();
     let mut i: i32 = 0;
     let mut j: i32 = 0;

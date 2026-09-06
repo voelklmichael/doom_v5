@@ -77,8 +77,7 @@ pub unsafe fn M_WriteFile(
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_ReadFile(
+pub unsafe fn M_ReadFile(
     mut name: *mut ::core::ffi::c_char,
     mut buffer: *mut *mut byte,
 ) -> i32 {
@@ -202,8 +201,7 @@ pub fn M_StrCaseStr<'a>(haystack: &'a str, needle: &str) -> Option<&'a str> {
 pub fn M_StringDuplicate(orig: &str) -> String {
     orig.to_string()
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringReplace(
+pub unsafe fn M_StringReplace(
     mut haystack: *const ::core::ffi::c_char,
     mut needle: *const ::core::ffi::c_char,
     mut replacement: *const ::core::ffi::c_char,
@@ -269,8 +267,7 @@ pub unsafe fn M_StringCopy(
     len = strlen(dest);
     return *src.offset(len as isize) as i32 == '\0' as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringConcat(
+pub unsafe fn M_StringConcat(
     mut dest: *mut ::core::ffi::c_char,
     mut src: *const ::core::ffi::c_char,
     mut dest_size: size_t,

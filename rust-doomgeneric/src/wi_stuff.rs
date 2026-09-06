@@ -788,16 +788,13 @@ static mut bp: [*mut patch_t; 4] = [::core::ptr::null::<patch_t>() as *mut patch
 static mut lnames: *mut *mut patch_t = ::core::ptr::null::<*mut patch_t>()
     as *mut *mut patch_t;
 static mut background: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
-#[no_mangle]
-pub unsafe extern "C" fn WI_slamBackground() {
+pub unsafe fn WI_slamBackground() {
     V_DrawPatch(0 as i32, 0 as i32, background);
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_Responder(mut ev: *mut event_t) -> bool {
+pub unsafe fn WI_Responder(mut ev: *mut event_t) -> bool {
     return false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawLF() {
+pub unsafe fn WI_drawLF() {
     let mut y: i32 = WI_TITLEY;
     if gamemode as u32
         != commercial as i32 as u32
@@ -842,8 +839,7 @@ pub unsafe extern "C" fn WI_drawLF() {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawEL() {
+pub unsafe fn WI_drawEL() {
     let mut y: i32 = WI_TITLEY;
     V_DrawPatch(
         (SCREENWIDTH - (*entering).width as i32)
@@ -863,8 +859,7 @@ pub unsafe extern "C" fn WI_drawEL() {
         *lnames.offset((*wbs).next as isize),
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawOnLnode(
+pub unsafe fn WI_drawOnLnode(
     mut n: i32,
     mut c: *mut *mut patch_t,
 ) {
@@ -909,8 +904,7 @@ pub unsafe extern "C" fn WI_drawOnLnode(
         );
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_initAnimatedBack() {
+pub unsafe fn WI_initAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
     if gamemode as u32
@@ -943,8 +937,7 @@ pub unsafe extern "C" fn WI_initAnimatedBack() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_updateAnimatedBack() {
+pub unsafe fn WI_updateAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
     if gamemode as u32
@@ -994,8 +987,7 @@ pub unsafe extern "C" fn WI_updateAnimatedBack() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawAnimatedBack() {
+pub unsafe fn WI_drawAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
     if gamemode as u32
@@ -1016,8 +1008,7 @@ pub unsafe extern "C" fn WI_drawAnimatedBack() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawNum(
+pub unsafe fn WI_drawNum(
     mut x: i32,
     mut y: i32,
     mut n: i32,
@@ -1062,8 +1053,7 @@ pub unsafe extern "C" fn WI_drawNum(
     }
     return x;
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawPercent(
+pub unsafe fn WI_drawPercent(
     mut x: i32,
     mut y: i32,
     mut p_0: i32,
@@ -1074,8 +1064,7 @@ pub unsafe extern "C" fn WI_drawPercent(
     V_DrawPatch(x, y, percent);
     WI_drawNum(x, y, p_0, -(1 as i32));
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawTime(
+pub unsafe fn WI_drawTime(
     mut x: i32,
     mut y: i32,
     mut t: i32,
@@ -1104,8 +1093,7 @@ pub unsafe extern "C" fn WI_drawTime(
     };
 }
 pub unsafe fn WI_End() {
-    #[export_name = "WI_unloadData"]
-    pub unsafe extern "C" fn WI_unloadData_0() {
+    pub unsafe fn WI_unloadData_0() {
         WI_loadUnloadData(
             Some(
                 WI_unloadCallback
@@ -1115,14 +1103,12 @@ pub unsafe fn WI_End() {
     }
     WI_unloadData_0();
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_initNoState() {
+pub unsafe fn WI_initNoState() {
     state = NoState;
     acceleratestage = 0 as i32;
     cnt = 10 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_updateNoState() {
+pub unsafe fn WI_updateNoState() {
     WI_updateAnimatedBack();
     cnt -= 1;
     if cnt == 0 {
@@ -1130,15 +1116,13 @@ pub unsafe extern "C" fn WI_updateNoState() {
     }
 }
 static mut snl_pointeron: bool = false;
-#[no_mangle]
-pub unsafe extern "C" fn WI_initShowNextLoc() {
+pub unsafe fn WI_initShowNextLoc() {
     state = ShowNextLoc;
     acceleratestage = 0 as i32;
     cnt = SHOWNEXTLOCDELAY * TICRATE;
     WI_initAnimatedBack();
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_updateShowNextLoc() {
+pub unsafe fn WI_updateShowNextLoc() {
     WI_updateAnimatedBack();
     cnt -= 1;
     if cnt == 0 || acceleratestage != 0 {
@@ -1147,8 +1131,7 @@ pub unsafe extern "C" fn WI_updateShowNextLoc() {
         snl_pointeron = (cnt & 31 as i32) < 20 as i32;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawShowNextLoc() {
+pub unsafe fn WI_drawShowNextLoc() {
     let mut i: i32 = 0;
     let mut last: i32 = 0;
     WI_slamBackground();
@@ -1184,13 +1167,11 @@ pub unsafe extern "C" fn WI_drawShowNextLoc() {
         WI_drawEL();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawNoState() {
+pub unsafe fn WI_drawNoState() {
     snl_pointeron = true;
     WI_drawShowNextLoc();
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_fragSum(
+pub unsafe fn WI_fragSum(
     mut playernum: i32,
 ) -> i32 {
     let mut i: i32 = 0;
@@ -1208,8 +1189,7 @@ pub unsafe extern "C" fn WI_fragSum(
 static mut dm_state: i32 = 0;
 static mut dm_frags: [[i32; 4]; 4] = [[0; 4]; 4];
 static mut dm_totals: [i32; 4] = [0; 4];
-#[no_mangle]
-pub unsafe extern "C" fn WI_initDeathmatchStats() {
+pub unsafe fn WI_initDeathmatchStats() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     state = StatCount;
@@ -1232,8 +1212,7 @@ pub unsafe extern "C" fn WI_initDeathmatchStats() {
     }
     WI_initAnimatedBack();
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_updateDeathmatchStats() {
+pub unsafe fn WI_updateDeathmatchStats() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut stillticking: bool = false;
@@ -1336,8 +1315,7 @@ pub unsafe extern "C" fn WI_updateDeathmatchStats() {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawDeathmatchStats() {
+pub unsafe fn WI_drawDeathmatchStats() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut x: i32 = 0;
@@ -1426,8 +1404,7 @@ pub unsafe extern "C" fn WI_drawDeathmatchStats() {
 static mut cnt_frags: [i32; 4] = [0; 4];
 static mut dofrags: i32 = 0;
 static mut ng_state: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn WI_initNetgameStats() {
+pub unsafe fn WI_initNetgameStats() {
     let mut i: i32 = 0;
     state = StatCount;
     acceleratestage = 0 as i32;
@@ -1447,8 +1424,7 @@ pub unsafe extern "C" fn WI_initNetgameStats() {
     dofrags = (dofrags != 0) as i32;
     WI_initAnimatedBack();
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_updateNetgameStats() {
+pub unsafe fn WI_updateNetgameStats() {
     let mut i: i32 = 0;
     let mut fsum: i32 = 0;
     let mut stillticking: bool = false;
@@ -1621,8 +1597,7 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawNetgameStats() {
+pub unsafe fn WI_drawNetgameStats() {
     let mut i: i32 = 0;
     let mut x: i32 = 0;
     let mut y: i32 = 0;
@@ -1715,8 +1690,7 @@ pub unsafe extern "C" fn WI_drawNetgameStats() {
     }
 }
 static mut sp_state: i32 = 0;
-#[no_mangle]
-pub unsafe extern "C" fn WI_initStats() {
+pub unsafe fn WI_initStats() {
     state = StatCount;
     acceleratestage = 0 as i32;
     sp_state = 1 as i32;
@@ -1730,8 +1704,7 @@ pub unsafe extern "C" fn WI_initStats() {
     cnt_pause = TICRATE;
     WI_initAnimatedBack();
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_updateStats() {
+pub unsafe fn WI_updateStats() {
     WI_updateAnimatedBack();
     if acceleratestage != 0 && sp_state != 10 as i32 {
         acceleratestage = 0 as i32;
@@ -1853,8 +1826,7 @@ pub unsafe extern "C" fn WI_updateStats() {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_drawStats() {
+pub unsafe fn WI_drawStats() {
     let mut lh: i32 = 0;
     lh = 3 as i32
         * (*num[0 as i32 as usize]).height as i32
@@ -1887,8 +1859,7 @@ pub unsafe extern "C" fn WI_drawStats() {
         WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_checkForAccelerate() {
+pub unsafe fn WI_checkForAccelerate() {
     let mut i: i32 = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     i = 0 as i32;
@@ -2297,8 +2268,7 @@ unsafe fn WI_loadCallback(
         PU_STATIC as i32,
     ) as *mut patch_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_loadData() {
+pub unsafe fn WI_loadData() {
     if gamemode as u32
         == commercial as i32 as u32
     {
@@ -2357,8 +2327,7 @@ pub unsafe fn WI_Drawer() {
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn WI_initVariables(mut wbstartstruct: *mut wbstartstruct_t) {
+pub unsafe fn WI_initVariables(mut wbstartstruct: *mut wbstartstruct_t) {
     wbs = wbstartstruct;
     acceleratestage = 0 as i32;
     bcnt = 0 as i32;

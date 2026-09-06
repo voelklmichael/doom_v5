@@ -17,8 +17,7 @@ static mut go: bool = false;
 static mut wipe_scr_start: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr_end: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
-pub unsafe extern "C" fn wipe_shittyColMajorXform(
+pub unsafe fn wipe_shittyColMajorXform(
     mut array: *mut i16,
     mut width: i32,
     mut height: i32,

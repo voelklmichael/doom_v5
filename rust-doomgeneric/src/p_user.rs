@@ -37,8 +37,7 @@ pub const INVERSECOLORMAP: i32 = 32 as i32;
 pub const MAXBOB: i32 = 0x100000 as i32;
 #[no_mangle]
 pub static mut onground: bool = false;
-#[no_mangle]
-pub unsafe extern "C" fn P_Thrust(
+pub unsafe fn P_Thrust(
     mut player: *mut player_t,
     mut angle: angle_t,
     mut move_0: fixed_t,
@@ -47,8 +46,7 @@ pub unsafe extern "C" fn P_Thrust(
     (*(*player).mo).momx += FixedMul(move_0, finecosine[angle as isize]);
     (*(*player).mo).momy += FixedMul(move_0, finesine[angle as usize]);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CalcHeight(mut player: *mut player_t) {
+pub unsafe fn P_CalcHeight(mut player: *mut player_t) {
     let mut angle: i32 = 0;
     let mut bob: fixed_t = 0;
     (*player).bob = FixedMul((*(*player).mo).momx, (*(*player).mo).momx)
@@ -102,8 +100,7 @@ pub unsafe extern "C" fn P_CalcHeight(mut player: *mut player_t) {
             - 4 as i32 * FRACUNIT) as fixed_t;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_MovePlayer(mut player: *mut player_t) {
+pub unsafe fn P_MovePlayer(mut player: *mut player_t) {
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     cmd = &raw mut (*player).cmd;
     (*(*player).mo).angle = (*(*player).mo)
@@ -137,8 +134,7 @@ pub unsafe extern "C" fn P_MovePlayer(mut player: *mut player_t) {
     }
 }
 pub const ANG5: i32 = ANG90 / 18 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn P_DeathThink(mut player: *mut player_t) {
+pub unsafe fn P_DeathThink(mut player: *mut player_t) {
     let mut angle: angle_t = 0;
     let mut delta: angle_t = 0;
     P_MovePsprites(player);

@@ -115,8 +115,7 @@ pub static mut diags: [dirtype_t; 4] = [
 ];
 #[no_mangle]
 pub static mut soundtarget: *mut mobj_t = ::core::ptr::null::<mobj_t>() as *mut mobj_t;
-#[no_mangle]
-pub unsafe extern "C" fn P_RecursiveSound(
+pub unsafe fn P_RecursiveSound(
     mut sec: *mut sector_t,
     mut soundblocks: i32,
 ) {
@@ -173,8 +172,7 @@ pub unsafe fn P_NoiseAlert(
     validcount += 1;
     P_RecursiveSound((*(*emmiter).subsector).sector, 0 as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> bool {
+pub unsafe fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> bool {
     let mut pl: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut dist: fixed_t = 0;
     if (*actor).target.is_null() {
@@ -190,8 +188,7 @@ pub unsafe extern "C" fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> bool {
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CheckMissileRange(mut actor: *mut mobj_t) -> bool {
+pub unsafe fn P_CheckMissileRange(mut actor: *mut mobj_t) -> bool {
     let mut dist: fixed_t = 0;
     if !P_CheckSight(actor, (*actor).target as *mut mobj_t) {
         return false;
@@ -271,8 +268,7 @@ pub static mut yspeed: [fixed_t; 8] = [
     -FRACUNIT,
     -(47000 as i32),
 ];
-#[no_mangle]
-pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> bool {
+pub unsafe fn P_Move(mut actor: *mut mobj_t) -> bool {
     let mut tryx: fixed_t = 0;
     let mut tryy: fixed_t = 0;
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
@@ -324,16 +320,14 @@ pub unsafe extern "C" fn P_Move(mut actor: *mut mobj_t) -> bool {
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_TryWalk(mut actor: *mut mobj_t) -> bool {
+pub unsafe fn P_TryWalk(mut actor: *mut mobj_t) -> bool {
     if !P_Move(actor) {
         return false;
     }
     (*actor).movecount = P_Random() & 15 as i32;
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
+pub unsafe fn P_NewChaseDir(mut actor: *mut mobj_t) {
     let mut deltax: fixed_t = 0;
     let mut deltay: fixed_t = 0;
     let mut d: [dirtype_t; 3] = [DI_EAST; 3];
@@ -449,8 +443,7 @@ pub unsafe extern "C" fn P_NewChaseDir(mut actor: *mut mobj_t) {
     }
     (*actor).movedir = DI_NODIR as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_LookForPlayers(
+pub unsafe fn P_LookForPlayers(
     mut actor: *mut mobj_t,
     mut allaround: bool,
 ) -> bool {

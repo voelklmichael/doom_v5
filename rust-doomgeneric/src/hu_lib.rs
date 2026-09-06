@@ -49,10 +49,8 @@ pub struct hu_itext_t {
     pub laston: bool,
 }
 pub const HU_MAXLINELENGTH: i32 = 80 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_init() {}
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_clearTextLine(mut t: *mut hu_textline_t) {
+pub unsafe fn HUlib_init() {}
+pub unsafe fn HUlib_clearTextLine(mut t: *mut hu_textline_t) {
     (*t).l.clear();
     (*t).needsupdate = true_0;
 }
@@ -83,8 +81,7 @@ pub unsafe extern "C" fn HUlib_addCharToTextLine(
         return true_0 as boolean;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_delCharFromTextLine(
+pub unsafe fn HUlib_delCharFromTextLine(
     mut t: *mut hu_textline_t,
 ) -> bool {
     if (*t).l.is_empty() {
@@ -197,8 +194,7 @@ pub unsafe extern "C" fn HUlib_initSText(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_addLineToSText(mut s: *mut hu_stext_t) {
+pub unsafe fn HUlib_addLineToSText(mut s: *mut hu_stext_t) {
     let mut i: i32 = 0;
     (*s).cl += 1;
     if (*s).cl == (*s).h {
@@ -289,14 +285,12 @@ pub unsafe extern "C" fn HUlib_initIText(
     (*it).laston = true;
     HUlib_initTextLine(&raw mut (*it).l, x, y, font, startchar);
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_delCharFromIText(mut it: *mut hu_itext_t) {
+pub unsafe fn HUlib_delCharFromIText(mut it: *mut hu_itext_t) {
     if (*it).l.l.len() as i32 != (*it).lm {
         HUlib_delCharFromTextLine(&raw mut (*it).l);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_eraseLineFromIText(mut it: *mut hu_itext_t) {
+pub unsafe fn HUlib_eraseLineFromIText(mut it: *mut hu_itext_t) {
     while (*it).lm != (*it).l.l.len() as i32 {
         HUlib_delCharFromTextLine(&raw mut (*it).l);
     }

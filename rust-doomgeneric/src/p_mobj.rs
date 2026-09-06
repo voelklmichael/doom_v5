@@ -607,8 +607,7 @@ pub unsafe fn P_SetMobjState(
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ExplodeMissile(mut mo: *mut mobj_t) {
+pub unsafe fn P_ExplodeMissile(mut mo: *mut mobj_t) {
     (*mo).momz = 0 as i32 as fixed_t;
     (*mo).momy = (*mo).momz;
     (*mo).momx = (*mo).momy;
@@ -624,8 +623,7 @@ pub unsafe extern "C" fn P_ExplodeMissile(mut mo: *mut mobj_t) {
 }
 pub const STOPSPEED: i32 = 0x1000 as i32;
 pub const FRICTION: i32 = 0xe800 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn P_XYMovement(mut mo: *mut mobj_t) {
+pub unsafe fn P_XYMovement(mut mo: *mut mobj_t) {
     let mut ptryx: fixed_t = 0;
     let mut ptryy: fixed_t = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
@@ -737,8 +735,7 @@ pub unsafe extern "C" fn P_XYMovement(mut mo: *mut mobj_t) {
         (*mo).momy = FixedMul((*mo).momy, FRICTION);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ZMovement(mut mo: *mut mobj_t) {
+pub unsafe fn P_ZMovement(mut mo: *mut mobj_t) {
     let mut dist: fixed_t = 0;
     let mut delta: fixed_t = 0;
     if !(*mo).player.is_null() && (*mo).z < (*mo).floorz {
@@ -824,8 +821,7 @@ pub unsafe extern "C" fn P_ZMovement(mut mo: *mut mobj_t) {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
+pub unsafe fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
@@ -1228,8 +1224,7 @@ pub unsafe fn P_SpawnBlood(
         P_SetMobjState(th, S_BLOOD3);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CheckMissileSpawn(mut th: *mut mobj_t) {
+pub unsafe fn P_CheckMissileSpawn(mut th: *mut mobj_t) {
     (*th).tics -= P_Random() & 3 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;

@@ -54,8 +54,7 @@ pub unsafe fn W_OpenFile(
     }
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_CloseFile(mut wad: *mut wad_file_t) {
+pub unsafe fn W_CloseFile(mut wad: *mut wad_file_t) {
     (*(*wad).file_class).CloseFile.expect("non-null function pointer")(wad);
 }
 pub unsafe fn W_Read(

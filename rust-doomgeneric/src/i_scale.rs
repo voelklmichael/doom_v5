@@ -41,8 +41,7 @@ static mut stretch_tables: [*mut byte; 2] = [
     ::core::ptr::null::<byte>() as *mut byte,
 ];
 static mut half_stretch_table: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
-pub unsafe extern "C" fn I_InitScale(
+pub unsafe fn I_InitScale(
     mut _src_buffer: *mut byte,
     mut _dest_buffer: *mut byte,
     mut _dest_pitch: i32,
@@ -622,8 +621,7 @@ unsafe fn I_InitSquashTable(mut palette: *mut byte) {
     half_stretch_table = GenerateStretchTable(palette, 50 as i32);
     puts(b"\0" as *const u8 as *const ::core::ffi::c_char);
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ResetScaleTables(mut palette: *mut byte) {
+pub unsafe fn I_ResetScaleTables(mut palette: *mut byte) {
     if !stretch_tables[0 as i32 as usize].is_null() {
         Z_Free(
             stretch_tables[0 as i32 as usize] as *mut ::core::ffi::c_void,

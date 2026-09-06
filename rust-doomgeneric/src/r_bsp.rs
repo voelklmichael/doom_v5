@@ -69,8 +69,7 @@ pub static mut newend: *mut cliprange_t = ::core::ptr::null::<cliprange_t>()
     as *mut cliprange_t;
 #[no_mangle]
 pub static mut solidsegs: [cliprange_t; 32] = [cliprange_t { first: 0, last: 0 }; 32];
-#[no_mangle]
-pub unsafe extern "C" fn R_ClipSolidWallSegment(
+pub unsafe fn R_ClipSolidWallSegment(
     mut first: i32,
     mut last: i32,
 ) {
@@ -143,8 +142,7 @@ pub unsafe extern "C" fn R_ClipSolidWallSegment(
     }
     newend = start.offset(1 as i32 as isize);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_ClipPassWallSegment(
+pub unsafe fn R_ClipPassWallSegment(
     mut first: i32,
     mut last: i32,
 ) {
@@ -188,8 +186,7 @@ pub unsafe fn R_ClearClipSegs() {
     newend = (&raw mut solidsegs as *mut cliprange_t)
         .offset(2 as i32 as isize);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_AddLine(mut line: *mut seg_t) {
+pub unsafe fn R_AddLine(mut line: *mut seg_t) {
     let mut x1: i32 = 0;
     let mut x2: i32 = 0;
     let mut angle1: angle_t = 0;
@@ -315,8 +312,7 @@ pub static mut checkcoord: [[i32; 4]; 12] = [
     ],
     [0; 4],
 ];
-#[no_mangle]
-pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
+pub unsafe fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
     let mut boxx: i32 = 0;
     let mut boxy: i32 = 0;
     let mut boxpos: i32 = 0;
@@ -396,8 +392,7 @@ pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_Subsector(mut num: i32) {
+pub unsafe fn R_Subsector(mut num: i32) {
     let mut count: i32 = 0;
     let mut line: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut sub: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();

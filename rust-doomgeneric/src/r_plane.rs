@@ -124,8 +124,7 @@ pub static mut cachedxstep: [fixed_t; 200] = [0; 200];
 #[no_mangle]
 pub static mut cachedystep: [fixed_t; 200] = [0; 200];
 pub unsafe fn R_InitPlanes() {}
-#[no_mangle]
-pub unsafe extern "C" fn R_MapPlane(
+pub unsafe fn R_MapPlane(
     mut y: i32,
     mut x1: i32,
     mut x2: i32,
@@ -279,8 +278,7 @@ pub unsafe fn R_CheckPlane(
     );
     return pl;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_MakeSpans(
+pub unsafe fn R_MakeSpans(
     mut x: i32,
     mut t1: i32,
     mut b1: i32,

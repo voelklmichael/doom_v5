@@ -251,8 +251,7 @@ pub unsafe fn W_AddFile(
     }
     return wad_file;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_NumLumps() -> i32 {
+pub unsafe fn W_NumLumps() -> i32 {
     return numlumps as i32;
 }
 /// Reads up to 8 bytes at `ptr` as a WAD lump name and converts it to an

@@ -221,8 +221,7 @@ pub unsafe fn R_RenderMaskedSegRange(
 }
 pub const HEIGHTBITS: i32 = 12 as i32;
 pub const HEIGHTUNIT: i32 = (1 as i32) << HEIGHTBITS;
-#[no_mangle]
-pub unsafe extern "C" fn R_RenderSegLoop() {
+pub unsafe fn R_RenderSegLoop() {
     let mut angle: angle_t = 0;
     let mut index: u32 = 0;
     let mut yl: i32 = 0;
