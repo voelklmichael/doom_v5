@@ -892,7 +892,7 @@ pub unsafe fn ST_updateWidgets() {
 }
 pub unsafe fn ST_Ticker() {
     st_clock = st_clock.wrapping_add(1);
-    st_randomnumber = M_Random();
+    st_randomnumber = M_Random(unsafe { &mut game_state().m_random });
     ST_updateWidgets();
     st_oldhealth = (*plyr).health;
 }

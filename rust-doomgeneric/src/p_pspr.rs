@@ -323,14 +323,14 @@ pub unsafe fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
     let mut slope: i32 = 0;
-    damage = (P_Random() % 10 as i32 + 1 as i32)
+    damage = (P_Random(unsafe { &mut game_state().m_random }) % 10 as i32 + 1 as i32)
         << 1 as i32;
     if (*player).powers[pw_strength as i32 as usize] != 0 {
         damage *= 10 as i32;
     }
     angle = (*(*player).mo).angle;
     angle = angle
-        .wrapping_add((P_Random() - P_Random() << 18 as i32) as angle_t);
+        .wrapping_add((P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 18 as i32) as angle_t);
     slope = P_AimLineAttack((*player).mo, angle, MELEERANGE) as i32;
     P_LineAttack((*player).mo, angle, MELEERANGE, slope as fixed_t, damage);
     if !linetarget.is_null() {
@@ -351,10 +351,10 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut damage: i32 = 0;
     let mut slope: i32 = 0;
     damage = 2 as i32
-        * (P_Random() % 10 as i32 + 1 as i32);
+        * (P_Random(unsafe { &mut game_state().m_random }) % 10 as i32 + 1 as i32);
     angle = (*(*player).mo).angle;
     angle = angle
-        .wrapping_add((P_Random() - P_Random() << 18 as i32) as angle_t);
+        .wrapping_add((P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 18 as i32) as angle_t);
     slope = P_AimLineAttack((*player).mo, angle, MELEERANGE + 1 as fixed_t)
         as i32;
     P_LineAttack(
@@ -447,7 +447,7 @@ pub unsafe fn A_FirePlasma(
         player,
         ps_flash as i32,
         (weaponinfo[(*player).readyweapon as usize].flashstate
-            + (P_Random() & 1 as i32)) as statenum_t,
+            + (P_Random(unsafe { &mut game_state().m_random }) & 1 as i32)) as statenum_t,
     );
     P_SpawnPlayerMissile((*player).mo, MT_PLASMA);
 }
@@ -479,12 +479,12 @@ pub unsafe fn P_GunShot(mut mo: *mut mobj_t, mut accurate: bool) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
     damage = 5 as i32
-        * (P_Random() % 3 as i32 + 1 as i32);
+        * (P_Random(unsafe { &mut game_state().m_random }) % 3 as i32 + 1 as i32);
     angle = (*mo).angle;
     if !accurate {
         angle = angle
             .wrapping_add(
-                (P_Random() - P_Random() << 18 as i32) as angle_t,
+                (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 18 as i32) as angle_t,
             );
     }
     P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
@@ -564,18 +564,18 @@ pub unsafe fn A_FireShotgun2(
     i = 0 as i32;
     while i < 20 as i32 {
         damage = 5 as i32
-            * (P_Random() % 3 as i32 + 1 as i32);
+            * (P_Random(unsafe { &mut game_state().m_random }) % 3 as i32 + 1 as i32);
         angle = (*(*player).mo).angle;
         angle = angle
             .wrapping_add(
-                (P_Random() - P_Random() << 19 as i32) as angle_t,
+                (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 19 as i32) as angle_t,
             );
         P_LineAttack(
             (*player).mo,
             angle,
             MISSILERANGE,
             bulletslope
-                + ((P_Random() as fixed_t - P_Random() as fixed_t)
+                + ((P_Random(unsafe { &mut game_state().m_random }) as fixed_t - P_Random(unsafe { &mut game_state().m_random }) as fixed_t)
                     << 5 as i32),
             damage,
         );
@@ -646,7 +646,7 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
             j = 0 as i32;
             while j < 15 as i32 {
                 damage
-                    += (P_Random() & 7 as i32) + 1 as i32;
+                    += (P_Random(unsafe { &mut game_state().m_random }) & 7 as i32) + 1 as i32;
                 j += 1;
             }
             P_DamageMobj(

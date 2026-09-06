@@ -613,7 +613,7 @@ pub unsafe fn P_ExplodeMissile(mut mo: *mut mobj_t) {
     (*mo).momy = (*mo).momz;
     (*mo).momx = (*mo).momy;
     P_SetMobjState(mo, mobjinfo[(*mo).type_0 as usize].deathstate as statenum_t);
-    (*mo).tics -= P_Random() & 3 as i32;
+    (*mo).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*mo).tics < 1 as i32 {
         (*mo).tics = 1 as i32;
     }
@@ -896,7 +896,7 @@ pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
         if leveltime & 31 as i32 != 0 {
             return;
         }
-        if P_Random() > 4 as i32 {
+        if P_Random(unsafe { &mut game_state().m_random }) > 4 as i32 {
             return;
         }
         P_NightmareRespawn(mobj);
@@ -934,7 +934,7 @@ pub unsafe fn P_SpawnMobj(
     if gameskill as i32 != sk_nightmare as i32 {
         (*mobj).reactiontime = (*info).reactiontime;
     }
-    (*mobj).lastlook = P_Random() % MAXPLAYERS;
+    (*mobj).lastlook = P_Random(unsafe { &mut game_state().m_random }) % MAXPLAYERS;
     st = (&raw mut states as *mut state_t).offset((*info).spawnstate as isize)
         as *mut state_t;
     (*mobj).state = st;
@@ -1178,7 +1178,7 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     mobj = P_SpawnMobj(x, y, z, i as mobjtype_t);
     (*mobj).spawnpoint = *mthing;
     if (*mobj).tics > 0 as i32 {
-        (*mobj).tics = 1 as i32 + P_Random() % (*mobj).tics;
+        (*mobj).tics = 1 as i32 + P_Random(unsafe { &mut game_state().m_random }) % (*mobj).tics;
     }
     if (*mobj).flags & MF_COUNTKILL as i32 != 0 {
         totalkills += 1;
@@ -1194,10 +1194,10 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
 }
 pub unsafe fn P_SpawnPuff(mut x: fixed_t, mut y: fixed_t, mut z: fixed_t) {
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    z += P_Random() - P_Random() << 10 as i32;
+    z += P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 10 as i32;
     th = P_SpawnMobj(x, y, z, MT_PUFF);
     (*th).momz = FRACUNIT as fixed_t;
-    (*th).tics -= P_Random() & 3 as i32;
+    (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
@@ -1212,10 +1212,10 @@ pub unsafe fn P_SpawnBlood(
     mut damage: i32,
 ) {
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    z += P_Random() - P_Random() << 10 as i32;
+    z += P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 10 as i32;
     th = P_SpawnMobj(x, y, z, MT_BLOOD);
     (*th).momz = (FRACUNIT * 2 as i32) as fixed_t;
-    (*th).tics -= P_Random() & 3 as i32;
+    (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
@@ -1226,7 +1226,7 @@ pub unsafe fn P_SpawnBlood(
     }
 }
 pub unsafe fn P_CheckMissileSpawn(mut th: *mut mobj_t) {
-    (*th).tics -= P_Random() & 3 as i32;
+    (*th).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*th).tics < 1 as i32 {
         (*th).tics = 1 as i32;
     }
@@ -1316,7 +1316,7 @@ pub unsafe fn P_SpawnMissile(
     if (*dest).flags & MF_SHADOW as i32 != 0 {
         an = an
             .wrapping_add(
-                (P_Random() - P_Random() << 20 as i32) as angle_t,
+                (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 20 as i32) as angle_t,
             );
     }
     (*th).angle = an;
