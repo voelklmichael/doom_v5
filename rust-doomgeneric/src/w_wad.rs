@@ -59,7 +59,7 @@ pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] = unsafe {
 };
 pub static mut lumpinfo: *mut lumpinfo_t = ::core::ptr::null::<lumpinfo_t>()
     as *mut lumpinfo_t;
-pub static mut numlumps: u32 = 0 as u32;
+pub static mut numlumps: u32 = 0;
 static mut lumphash: *mut *mut lumpinfo_t = ::core::ptr::null::<*mut lumpinfo_t>()
     as *mut *mut lumpinfo_t;
 pub unsafe fn W_LumpNameHash(

@@ -1194,7 +1194,7 @@ unsafe fn DonutOverrun(
     mut line: *mut line_t,
     mut pillar_sector: *mut sector_t,
 ) {
-    static mut first: i32 = 1 as i32;
+    static mut first: i32 = 1;
     static mut tmp_s3_floorheight: i32 = 0;
     static mut tmp_s3_floorpic: i32 = 0;
     if first != 0 {

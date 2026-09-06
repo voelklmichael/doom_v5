@@ -108,7 +108,7 @@ pub unsafe fn P_SaveGameFile(
     static mut filename: *mut ::core::ffi::c_char = ::core::ptr::null::<
         ::core::ffi::c_char,
     >() as *mut ::core::ffi::c_char;
-    static mut filename_size: size_t = 0 as size_t;
+    static mut filename_size: size_t = 0;
     let mut basename: [::core::ffi::c_char; 32] = [0; 32];
     if filename.is_null() {
         filename_size = strlen(savegamedir).wrapping_add(32 as size_t);

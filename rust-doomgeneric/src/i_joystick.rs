@@ -3,14 +3,14 @@ use crate::src::m_misc::M_snprintf;
 use crate::src::stdint_types::size_t;
 
 pub const NUM_VIRTUAL_BUTTONS: i32 = 10;
-static mut usejoystick: i32 = 0 as i32;
-static mut joystick_index: i32 = -(1 as i32);
-static mut joystick_x_axis: i32 = 0 as i32;
-static mut joystick_x_invert: i32 = 0 as i32;
-static mut joystick_y_axis: i32 = 1 as i32;
-static mut joystick_y_invert: i32 = 0 as i32;
-static mut joystick_strafe_axis: i32 = -(1 as i32);
-static mut joystick_strafe_invert: i32 = 0 as i32;
+static mut usejoystick: i32 = 0;
+static mut joystick_index: i32 = -1;
+static mut joystick_x_axis: i32 = 0;
+static mut joystick_x_invert: i32 = 0;
+static mut joystick_y_axis: i32 = 1;
+static mut joystick_y_invert: i32 = 0;
+static mut joystick_strafe_axis: i32 = -1;
+static mut joystick_strafe_invert: i32 = 0;
 static mut joystick_physical_buttons: [i32; 10] = [
     0 as i32,
     1 as i32,

@@ -63,13 +63,13 @@ pub const S_ATTENUATOR: i32 = S_CLIPPING_DIST - S_CLOSE_DIST >> FRACBITS;
 pub const S_STEREO_SWING: i32 = 96 * FRACUNIT;
 pub const NORM_SEP: i32 = 128;
 static mut channels: *mut channel_t = ::core::ptr::null::<channel_t>() as *mut channel_t;
-pub static mut sfxVolume: i32 = 8 as i32;
-pub static mut musicVolume: i32 = 8 as i32;
+pub static mut sfxVolume: i32 = 8;
+pub static mut musicVolume: i32 = 8;
 static mut snd_SfxVolume: i32 = 0;
 static mut mus_paused: bool = false;
 static mut mus_playing: *mut musicinfo_t = ::core::ptr::null::<musicinfo_t>()
     as *mut musicinfo_t;
-pub static mut snd_channels: i32 = 8 as i32;
+pub static mut snd_channels: i32 = 8;
 pub unsafe fn S_Init(
     mut sfxVolume_0: i32,
     mut musicVolume_0: i32,

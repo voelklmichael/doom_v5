@@ -88,15 +88,15 @@ static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
     },
 };
 #[no_mangle]
-pub static mut fb_scaling: i32 = 1 as i32;
-pub static mut usemouse: i32 = 0 as i32;
+pub static mut fb_scaling: i32 = 1;
+pub static mut usemouse: i32 = 0;
 static mut colors: [color; 256] = [color { b_g_r_a: [0; 4] }; 256];
 pub static mut I_VideoBuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 pub static mut screensaver_mode: bool = false;
 pub static mut screenvisible: bool = false;
 pub static mut mouse_acceleration: f32 = 2.0f32;
-pub static mut mouse_threshold: i32 = 10 as i32;
-pub static mut usegamma: i32 = 0 as i32;
+pub static mut mouse_threshold: i32 = 10;
+pub static mut usegamma: i32 = 0;
 static mut rgb565_palette: [uint16_t; 256] = [0; 256];
 pub unsafe fn cmap_to_rgb565(
     mut out: *mut uint16_t,

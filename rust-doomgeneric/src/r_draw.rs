@@ -182,7 +182,7 @@ pub static mut fuzzoffset: [i32; 50] = [
     FUZZOFF,
 ];
 #[no_mangle]
-pub static mut fuzzpos: i32 = 0 as i32;
+pub static mut fuzzpos: i32 = 0;
 pub unsafe fn R_DrawFuzzColumn() {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();

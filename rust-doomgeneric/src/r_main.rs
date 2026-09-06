@@ -60,7 +60,7 @@ pub const SLOPEBITS: i32 = 11;
 pub const DBITS: i32 = FRACBITS - SLOPEBITS;
 pub const FIELDOFVIEW: i32 = 2048;
 pub static mut viewangleoffset: i32 = 0;
-pub static mut validcount: i32 = 1 as i32;
+pub static mut validcount: i32 = 1;
 pub static mut fixedcolormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
 #[no_mangle]
