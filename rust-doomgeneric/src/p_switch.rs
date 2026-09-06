@@ -46,8 +46,7 @@ pub struct switchlist_t {
 pub const MAXSWITCHES: i32 = 50;
 pub const MAXBUTTONS: i32 = 16;
 pub const BUTTONTIME: i32 = 35;
-#[no_mangle]
-pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
+pub static alphSwitchList: [switchlist_t; 41] = unsafe {
     [
         switchlist_t {
             name1: ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"SW1BRCOM\0"),
@@ -304,13 +303,13 @@ pub unsafe fn P_InitSwitchList(state: &mut PSwitchState) {
                 let fresh0 = index;
                 index = index + 1;
                 state.switchlist[fresh0 as usize] = R_TextureNumForName(
-                    &raw mut (*(&raw mut alphSwitchList as *mut switchlist_t).offset(i as isize))
+                    &raw mut (*(&raw const alphSwitchList as *mut switchlist_t).offset(i as isize))
                         .name1 as *mut ::core::ffi::c_char,
                 );
                 let fresh1 = index;
                 index = index + 1;
                 state.switchlist[fresh1 as usize] = R_TextureNumForName(
-                    &raw mut (*(&raw mut alphSwitchList as *mut switchlist_t).offset(i as isize))
+                    &raw mut (*(&raw const alphSwitchList as *mut switchlist_t).offset(i as isize))
                         .name2 as *mut ::core::ffi::c_char,
                 );
             }
