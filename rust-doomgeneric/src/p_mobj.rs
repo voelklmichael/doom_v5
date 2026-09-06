@@ -65,6 +65,7 @@ use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG45;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::m_fixed::INT_MIN;
+use crate::src::p_user::VIEWHEIGHT;
 
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
@@ -570,7 +571,6 @@ pub type subsector_t = subsector_s;
 pub const MTF_AMBUSH: i32 = 8 as i32;
 pub const FRACBITS: i32 = 16 as i32;
 pub const FLOATSPEED: i32 = FRACUNIT * 4 as i32;
-pub const VIEWHEIGHT: i32 = 41 as i32 * FRACUNIT;
 pub const GRAVITY: i32 = FRACUNIT;
 pub const MAXMOVE: i32 = 30 as i32 * FRACUNIT;
 pub const MELEERANGE: i32 = 64 as i32 * FRACUNIT;

@@ -71,6 +71,12 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::tables::ANG45;
 use crate::src::m_fixed::INT_MAX;
+use crate::src::r_segs::SIL_BOTTOM;
+use crate::src::r_segs::SIL_TOP;
+use crate::src::r_main::MAXLIGHTSCALE;
+use crate::src::r_main::LIGHTSCALESHIFT;
+use crate::src::r_main::LIGHTSEGSHIFT;
+use crate::src::r_main::LIGHTLEVELS;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -93,14 +99,8 @@ pub struct vissprite_s {
 }
 pub type vissprite_t = vissprite_s;
 pub const FRACBITS: i32 = 16 as i32;
-pub const SIL_BOTTOM: i32 = 1 as i32;
-pub const SIL_TOP: i32 = 2 as i32;
 pub const FF_FULLBRIGHT: i32 = 0x8000 as i32;
 pub const FF_FRAMEMASK: i32 = 0x7fff as i32;
-pub const LIGHTLEVELS: i32 = 16 as i32;
-pub const LIGHTSEGSHIFT: i32 = 4 as i32;
-pub const MAXLIGHTSCALE: i32 = 48 as i32;
-pub const LIGHTSCALESHIFT: i32 = 12 as i32;
 pub const MAXVISSPRITES: i32 = 128 as i32;
 pub const MINZ: i32 = FRACUNIT * 4 as i32;
 pub const BASEYCENTER: i32 = 100 as i32;

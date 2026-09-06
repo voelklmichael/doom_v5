@@ -73,6 +73,11 @@ use crate::src::doomdef::false_0;
 use crate::src::doomdef::TICRATE;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
+use crate::src::p_floor::FLOORSPEED;
+use crate::src::p_lights::SLOWDARK;
+use crate::src::p_plats::MAXPLATS;
+use crate::src::p_ceilng::MAXCEILINGS;
+use crate::src::p_switch::MAXBUTTONS;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {
@@ -145,11 +150,6 @@ pub struct floormove_t {
 pub const ML_TWOSIDED: i32 = 4 as i32;
 pub const FRACBITS: i32 = 16 as i32;
 pub const FASTDARK: i32 = 15 as i32;
-pub const SLOWDARK: i32 = 35 as i32;
-pub const MAXBUTTONS: i32 = 16 as i32;
-pub const MAXPLATS: i32 = 30 as i32;
-pub const MAXCEILINGS: i32 = 30 as i32;
-pub const FLOORSPEED: i32 = FRACUNIT;
 #[no_mangle]
 pub static mut animdefs: [animdef_t; 23] = unsafe {
     [
@@ -1420,3 +1420,5 @@ pub unsafe fn P_SpawnSpecials() {
         i += 1;
     }
 }
+pub const ML_SECRET: i32 = 32 as i32;
+pub const ML_MAPPED: i32 = 256 as i32;

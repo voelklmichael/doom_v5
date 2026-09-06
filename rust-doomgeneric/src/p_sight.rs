@@ -15,11 +15,11 @@ use crate::src::p_setup::sectors;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_maputl::divline_t;
+use crate::src::p_spec::ML_TWOSIDED;
+use crate::src::r_bsp::NF_SUBSECTOR;
 
 
 pub const FRACBITS: i32 = 16 as i32;
-pub const ML_TWOSIDED: i32 = 4 as i32;
-pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
 #[no_mangle]
 pub static mut sightzstart: fixed_t = 0;
 pub static mut topslope: fixed_t = 0;

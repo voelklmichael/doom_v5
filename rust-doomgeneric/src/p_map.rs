@@ -63,17 +63,17 @@ use crate::src::doomdef::false_0;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG180;
+use crate::src::p_spec::ML_TWOSIDED;
+use crate::src::p_maputl::PT_ADDLINES;
+use crate::src::p_maputl::PT_ADDTHINGS;
+use crate::src::p_maputl::MAPBLOCKSHIFT;
 
 pub const DEH_DEFAULT_SPECIES_INFIGHTING: i32 = 0 as i32;
 pub const deh_species_infighting: i32 = DEH_DEFAULT_SPECIES_INFIGHTING;
 pub const FRACBITS: i32 = 16 as i32;
 pub const ML_BLOCKING: i32 = 1 as i32;
 pub const ML_BLOCKMONSTERS: i32 = 2 as i32;
-pub const ML_TWOSIDED: i32 = 4 as i32;
-pub const MAPBLOCKSHIFT: i32 = FRACBITS + 7 as i32;
 pub const USERANGE: i32 = 64 as i32 * FRACUNIT;
-pub const PT_ADDLINES: i32 = 1 as i32;
-pub const PT_ADDTHINGS: i32 = 2 as i32;
 pub const MAXSPECIALCROSS_ORIGINAL: i32 = 8 as i32;
 pub const DEFAULT_SPECHIT_MAGIC: i32 = 0x1c09c98 as i32;
 #[no_mangle]

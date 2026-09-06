@@ -63,6 +63,7 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::tables::ANG180;
 use crate::src::tables::ANG45;
+use crate::src::am_map::{AM_MSGHEADER, AM_MSGENTERED, AM_MSGEXITED};
 
 pub type st_stateenum_t = u32;
 pub const FirstPersonState: st_stateenum_t = 1;
@@ -87,10 +88,6 @@ pub const deh_idkfa_armor_class: i32 = DEH_DEFAULT_IDKFA_ARMOR_CLASS;
 pub const ST_HEIGHT: i32 = 32 as i32;
 pub const ST_WIDTH: i32 = SCREENWIDTH;
 pub const ST_Y: i32 = SCREENHEIGHT - ST_HEIGHT;
-pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
-    + (('m' as i32) << 16 as i32);
-pub const AM_MSGENTERED: i32 = 1634559232;
-pub const AM_MSGEXITED: i32 = 1634564096;
 pub const STARTREDPALS: i32 = 1 as i32;
 pub const STARTBONUSPALS: i32 = 9 as i32;
 pub const NUMREDPALS: i32 = 8 as i32;

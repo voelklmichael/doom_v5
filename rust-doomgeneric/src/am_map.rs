@@ -61,6 +61,9 @@ use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::m_fixed::INT_MAX;
+use crate::src::p_spec::ML_SECRET;
+use crate::src::p_spec::ML_MAPPED;
+use crate::src::p_maputl::MAPBLOCKUNITS;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -98,10 +101,7 @@ pub struct islope_t {
     pub islp: fixed_t,
 }
 pub const FRACBITS: i32 = 16 as i32;
-pub const ML_SECRET: i32 = 32 as i32;
 pub const ML_DONTDRAW: i32 = 128 as i32;
-pub const ML_MAPPED: i32 = 256 as i32;
-pub const MAPBLOCKUNITS: i32 = 128 as i32;
 pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
     + (('m' as i32) << 16 as i32);
 pub const AM_MSGENTERED: i32 = AM_MSGHEADER

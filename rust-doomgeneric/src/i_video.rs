@@ -18,6 +18,8 @@ use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::m_fixed::INT_MAX;
+use crate::src::doomgeneric::DOOMGENERIC_RESX;
+use crate::src::doomgeneric::DOOMGENERIC_RESY;
 
 extern "C" {
     static mut DG_ScreenBuffer: *mut pixel_t;
@@ -62,8 +64,6 @@ pub struct col_t {
     pub g: byte,
     pub b: byte,
 }
-pub const DOOMGENERIC_RESX: i32 = 640 as i32;
-pub const DOOMGENERIC_RESY: i32 = 400 as i32;
 static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
     xres: 0,
     yres: 0,
