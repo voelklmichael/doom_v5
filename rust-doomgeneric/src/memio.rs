@@ -1,3 +1,4 @@
+use crate::src::z_zone::Z_Free;
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn memcpy(
@@ -10,7 +11,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
 }
 pub type size_t = usize;
 #[derive(Copy, Clone)]

@@ -9,6 +9,7 @@ use crate::src::w_file::W_OpenFile;
 use crate::src::z_zone::Z_ChangeTag2;
 use crate::src::w_file::W_Read;
 use crate::src::z_zone::Z_ChangeUser;
+use crate::src::z_zone::Z_Free;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -51,7 +52,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
 }
 pub type __uint8_t = u8;
 pub type __int32_t = i32;

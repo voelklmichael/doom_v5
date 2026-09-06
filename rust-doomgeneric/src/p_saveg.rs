@@ -33,6 +33,7 @@ use crate::src::p_tick::leveltime;
 use crate::src::g_game::players;
 use crate::src::p_plats::P_AddActivePlat;
 use crate::src::m_misc::M_StringJoin;
+use crate::src::z_zone::Z_Free;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -66,7 +67,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
     fn memset(
         __s: *mut ::core::ffi::c_void,
         __c: i32,

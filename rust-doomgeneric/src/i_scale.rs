@@ -1,5 +1,6 @@
 use crate::src::i_system::FILE;
 use crate::src::m_argv::M_CheckParm;
+use crate::src::z_zone::Z_Free;
 extern "C" {
     static mut stdout: *mut FILE;
     fn fflush(__stream: *mut FILE) -> i32;
@@ -20,7 +21,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

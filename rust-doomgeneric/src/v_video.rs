@@ -11,6 +11,7 @@ use crate::src::m_misc::M_WriteFile;
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_misc::M_snprintf;
 use crate::src::i_video::I_GetPaletteIndex;
+use crate::src::z_zone::Z_Free;
 
 extern "C" {
     fn memcpy(
@@ -29,7 +30,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn Z_Free(ptr: *mut ::core::ffi::c_void);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
