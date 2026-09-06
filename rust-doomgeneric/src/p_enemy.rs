@@ -79,6 +79,7 @@ use crate::src::tables::ANG270;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_mobj::FLOATSPEED;
 use crate::src::p_maputl::MAPBLOCKSHIFT;
+use crate::src::game_state::game_state;
 pub type dirtype_t = u32;
 pub const NUMDIRS: dirtype_t = 9;
 pub const DI_NODIR: dirtype_t = 8;
@@ -307,7 +308,7 @@ pub unsafe fn P_Move(mut actor: *mut mobj_t) -> bool {
                 break;
             }
             ld = spechit[numspechit as usize];
-            if P_UseSpecialLine(actor, ld, 0 as i32) {
+            if P_UseSpecialLine(unsafe { &mut game_state().p_switch }, actor, ld, 0 as i32) {
                 good = true;
             }
         }

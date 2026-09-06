@@ -68,6 +68,7 @@ use crate::src::p_maputl::PT_ADDLINES;
 use crate::src::p_maputl::PT_ADDTHINGS;
 use crate::src::p_maputl::MAPBLOCKSHIFT;
 use crate::src::m_fixed::FRACBITS;
+use crate::src::game_state::game_state;
 
 pub const DEH_DEFAULT_SPECIES_INFIGHTING: i32 = 0;
 pub const deh_species_infighting: i32 = DEH_DEFAULT_SPECIES_INFIGHTING;
@@ -918,7 +919,7 @@ pub unsafe extern "C" fn PTR_UseTraverse(mut in_0: *mut intercept_t) -> boolean 
     {
         side = 1 as i32;
     }
-    P_UseSpecialLine(usething, (*in_0).d.line, side);
+    P_UseSpecialLine(unsafe { &mut game_state().p_switch }, usething, (*in_0).d.line, side);
     return false_0 as boolean;
 }
 pub unsafe fn P_UseLines(mut player: *mut player_t) {

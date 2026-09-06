@@ -497,18 +497,29 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
         },
     ]
 };
-#[no_mangle]
-pub static mut switchlist: [i32; 100] = [0; 100];
-#[no_mangle]
-pub static mut numswitches: i32 = 0;
-pub static mut buttonlist: [button_t; 16] = [button_t {
-    line: ::core::ptr::null::<line_t>() as *mut line_t,
-    where_0: top,
-    btexture: 0,
-    btimer: 0,
-    soundorg: ::core::ptr::null::<degenmobj_t>() as *mut degenmobj_t,
-}; 16];
-pub unsafe fn P_InitSwitchList() {
+pub struct PSwitchState {
+    pub switchlist: [i32; 100],
+    pub numswitches: i32,
+    pub buttonlist: [button_t; 16],
+}
+
+impl PSwitchState {
+    pub const fn new() -> Self {
+        PSwitchState {
+            switchlist: [0; 100],
+            numswitches: 0,
+            buttonlist: [button_t {
+                line: ::core::ptr::null::<line_t>() as *mut line_t,
+                where_0: top,
+                btexture: 0,
+                btimer: 0,
+                soundorg: ::core::ptr::null::<degenmobj_t>() as *mut degenmobj_t,
+            }; 16],
+        }
+    }
+}
+
+pub unsafe fn P_InitSwitchList(state: &mut PSwitchState) {
     let mut i: i32 = 0;
     let mut index: i32 = 0;
     let mut episode: i32 = 0;
@@ -528,21 +539,21 @@ pub unsafe fn P_InitSwitchList() {
     i = 0 as i32;
     while i < MAXSWITCHES {
         if alphSwitchList[i as usize].episode == 0 {
-            numswitches = index / 2 as i32;
-            switchlist[index as usize] = -(1 as i32);
+            state.numswitches = index / 2 as i32;
+            state.switchlist[index as usize] = -(1 as i32);
             break;
         } else {
             if alphSwitchList[i as usize].episode as i32 <= episode {
                 let fresh0 = index;
                 index = index + 1;
-                switchlist[fresh0 as usize] = R_TextureNumForName(
+                state.switchlist[fresh0 as usize] = R_TextureNumForName(
                     &raw mut (*(&raw mut alphSwitchList as *mut switchlist_t)
                         .offset(i as isize))
                         .name1 as *mut ::core::ffi::c_char,
                 );
                 let fresh1 = index;
                 index = index + 1;
-                switchlist[fresh1 as usize] = R_TextureNumForName(
+                state.switchlist[fresh1 as usize] = R_TextureNumForName(
                     &raw mut (*(&raw mut alphSwitchList as *mut switchlist_t)
                         .offset(i as isize))
                         .name2 as *mut ::core::ffi::c_char,
@@ -553,6 +564,7 @@ pub unsafe fn P_InitSwitchList() {
     }
 }
 pub unsafe fn P_StartButton(
+    state: &mut PSwitchState,
     mut line: *mut line_t,
     mut w: bwhere_e,
     mut texture: i32,
@@ -561,19 +573,19 @@ pub unsafe fn P_StartButton(
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXBUTTONS {
-        if buttonlist[i as usize].btimer != 0 && buttonlist[i as usize].line == line {
+        if state.buttonlist[i as usize].btimer != 0 && state.buttonlist[i as usize].line == line {
             return;
         }
         i += 1;
     }
     i = 0 as i32;
     while i < MAXBUTTONS {
-        if buttonlist[i as usize].btimer == 0 {
-            buttonlist[i as usize].line = line;
-            buttonlist[i as usize].where_0 = w;
-            buttonlist[i as usize].btexture = texture;
-            buttonlist[i as usize].btimer = time;
-            buttonlist[i as usize].soundorg = &raw mut (*(*line).frontsector).soundorg;
+        if state.buttonlist[i as usize].btimer == 0 {
+            state.buttonlist[i as usize].line = line;
+            state.buttonlist[i as usize].where_0 = w;
+            state.buttonlist[i as usize].btexture = texture;
+            state.buttonlist[i as usize].btimer = time;
+            state.buttonlist[i as usize].soundorg = &raw mut (*(*line).frontsector).soundorg;
             return;
         }
         i += 1;
@@ -581,6 +593,7 @@ pub unsafe fn P_StartButton(
     I_Error("P_StartButton: no button slots left!");
 }
 pub unsafe fn P_ChangeSwitchTexture(
+    state: &mut PSwitchState,
     mut line: *mut line_t,
     mut useAgain: i32,
 ) {
@@ -603,44 +616,44 @@ pub unsafe fn P_ChangeSwitchTexture(
         sound = sfx_swtchx as i32;
     }
     i = 0 as i32;
-    while i < numswitches * 2 as i32 {
-        if switchlist[i as usize] == texTop {
+    while i < state.numswitches * 2 as i32 {
+        if state.switchlist[i as usize] == texTop {
             S_StartSound(
-                (*(&raw mut buttonlist as *mut button_t)).soundorg
+                (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
             );
             (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-                .toptexture = switchlist[(i ^ 1 as i32) as usize]
+                .toptexture = state.switchlist[(i ^ 1 as i32) as usize]
                 as i16;
             if useAgain != 0 {
-                P_StartButton(line, top, switchlist[i as usize], BUTTONTIME);
+                P_StartButton(state, line, top, state.switchlist[i as usize], BUTTONTIME);
             }
             return;
-        } else if switchlist[i as usize] == texMid {
+        } else if state.switchlist[i as usize] == texMid {
             S_StartSound(
-                (*(&raw mut buttonlist as *mut button_t)).soundorg
+                (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
             );
             (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-                .midtexture = switchlist[(i ^ 1 as i32) as usize]
+                .midtexture = state.switchlist[(i ^ 1 as i32) as usize]
                 as i16;
             if useAgain != 0 {
-                P_StartButton(line, middle, switchlist[i as usize], BUTTONTIME);
+                P_StartButton(state, line, middle, state.switchlist[i as usize], BUTTONTIME);
             }
             return;
-        } else if switchlist[i as usize] == texBot {
+        } else if state.switchlist[i as usize] == texBot {
             S_StartSound(
-                (*(&raw mut buttonlist as *mut button_t)).soundorg
+                (*(&raw mut state.buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
             );
             (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
-                .bottomtexture = switchlist[(i ^ 1 as i32) as usize]
+                .bottomtexture = state.switchlist[(i ^ 1 as i32) as usize]
                 as i16;
             if useAgain != 0 {
-                P_StartButton(line, bottom, switchlist[i as usize], BUTTONTIME);
+                P_StartButton(state, line, bottom, state.switchlist[i as usize], BUTTONTIME);
             }
             return;
         }
@@ -648,6 +661,7 @@ pub unsafe fn P_ChangeSwitchTexture(
     }
 }
 pub unsafe fn P_UseSpecialLine(
+    state: &mut PSwitchState,
     mut thing: *mut mobj_t,
     mut line: *mut line_t,
     mut side: i32,
@@ -723,149 +737,149 @@ pub unsafe fn P_UseSpecialLine(
         }
         7 => {
             if EV_BuildStairs(line, build8) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         9 => {
             if EV_DoDonut(line) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         11 => {
-            P_ChangeSwitchTexture(line, 0 as i32);
+            P_ChangeSwitchTexture(state, line, 0 as i32);
             G_ExitLevel();
             current_block_108 = 16981061190961355901;
         }
         14 => {
             if EV_DoPlat(line, raiseAndChange, 32 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         15 => {
             if EV_DoPlat(line, raiseAndChange, 24 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         18 => {
             if EV_DoFloor(line, raiseFloorToNearest) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         20 => {
             if EV_DoPlat(line, raiseToNearestAndChange, 0 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         21 => {
             if EV_DoPlat(line, downWaitUpStay, 0 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         23 => {
             if EV_DoFloor(line, lowerFloorToLowest) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         29 => {
             if EV_DoDoor(line, vld_normal) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         41 => {
             if EV_DoCeiling(line, lowerToFloor) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         71 => {
             if EV_DoFloor(line, turboLower) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         49 => {
             if EV_DoCeiling(line, crushAndRaise) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         50 => {
             if EV_DoDoor(line, vld_close) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         51 => {
-            P_ChangeSwitchTexture(line, 0 as i32);
+            P_ChangeSwitchTexture(state, line, 0 as i32);
             G_SecretExitLevel();
             current_block_108 = 16981061190961355901;
         }
         55 => {
             if EV_DoFloor(line, raiseFloorCrush) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         101 => {
             if EV_DoFloor(line, raiseFloor) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         102 => {
             if EV_DoFloor(line, lowerFloor) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         103 => {
             if EV_DoDoor(line, vld_open) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         111 => {
             if EV_DoDoor(line, vld_blazeRaise) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         112 => {
             if EV_DoDoor(line, vld_blazeOpen) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         113 => {
             if EV_DoDoor(line, vld_blazeClose) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         122 => {
             if EV_DoPlat(line, blazeDWUS, 0 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         127 => {
             if EV_BuildStairs(line, turbo16) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         131 => {
             if EV_DoFloor(line, raiseFloorTurbo) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
@@ -877,121 +891,121 @@ pub unsafe fn P_UseSpecialLine(
         }
         140 => {
             if EV_DoFloor(line, raiseFloor512) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         42 => {
             if EV_DoDoor(line, vld_close) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         43 => {
             if EV_DoCeiling(line, lowerToFloor) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         45 => {
             if EV_DoFloor(line, lowerFloor) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         60 => {
             if EV_DoFloor(line, lowerFloorToLowest) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         61 => {
             if EV_DoDoor(line, vld_open) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         62 => {
             if EV_DoPlat(line, downWaitUpStay, 1 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         63 => {
             if EV_DoDoor(line, vld_normal) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         64 => {
             if EV_DoFloor(line, raiseFloor) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         66 => {
             if EV_DoPlat(line, raiseAndChange, 24 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         67 => {
             if EV_DoPlat(line, raiseAndChange, 32 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         65 => {
             if EV_DoFloor(line, raiseFloorCrush) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         68 => {
             if EV_DoPlat(line, raiseToNearestAndChange, 0 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         69 => {
             if EV_DoFloor(line, raiseFloorToNearest) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         70 => {
             if EV_DoFloor(line, turboLower) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         114 => {
             if EV_DoDoor(line, vld_blazeRaise) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         115 => {
             if EV_DoDoor(line, vld_blazeOpen) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         116 => {
             if EV_DoDoor(line, vld_blazeClose) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         123 => {
             if EV_DoPlat(line, blazeDWUS, 0 as i32) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         132 => {
             if EV_DoFloor(line, raiseFloorTurbo) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
@@ -1003,12 +1017,12 @@ pub unsafe fn P_UseSpecialLine(
         }
         138 => {
             EV_LightTurnOn(line, 255 as i32);
-            P_ChangeSwitchTexture(line, 1 as i32);
+            P_ChangeSwitchTexture(state, line, 1 as i32);
             current_block_108 = 16981061190961355901;
         }
         139 => {
             EV_LightTurnOn(line, 35 as i32);
-            P_ChangeSwitchTexture(line, 1 as i32);
+            P_ChangeSwitchTexture(state, line, 1 as i32);
             current_block_108 = 16981061190961355901;
         }
         _ => {
@@ -1021,13 +1035,13 @@ pub unsafe fn P_UseSpecialLine(
         }
         6707790765423050264 => {
             if EV_DoLockedDoor(line, vld_blazeOpen, thing) != 0 {
-                P_ChangeSwitchTexture(line, 0 as i32);
+                P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         16848555411549253182 => {
             if EV_DoLockedDoor(line, vld_blazeOpen, thing) != 0 {
-                P_ChangeSwitchTexture(line, 1 as i32);
+                P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }

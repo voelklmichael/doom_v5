@@ -56,6 +56,7 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_maputl::MAPBLOCKSHIFT;
 use crate::src::m_fixed::FRACBITS;
+use crate::src::game_state::game_state;
 
 pub type C2RustUnnamed_1 = u32;
 pub const ML_BLOCKMAP: C2RustUnnamed_1 = 10;
@@ -1005,13 +1006,13 @@ pub unsafe fn P_SetupLevel(
     }
     iquetail = 0 as i32;
     iquehead = iquetail;
-    P_SpawnSpecials();
+    P_SpawnSpecials(unsafe { &mut game_state().p_switch });
     if precache {
         R_PrecacheLevel();
     }
 }
 pub unsafe fn P_Init() {
-    P_InitSwitchList();
+    P_InitSwitchList(unsafe { &mut game_state().p_switch });
     P_InitPicAnims();
     R_InitSprites(&raw mut sprnames as *mut *mut ::core::ffi::c_char);
 }
