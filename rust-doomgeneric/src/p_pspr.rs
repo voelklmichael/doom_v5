@@ -21,6 +21,7 @@ use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::MF_JUSTATTACKED;
 use crate::src::sounds::{sfx_bfg, sfx_dshtgn, sfx_pistol, sfx_punch, sfx_sawful, sfx_sawhit, sfx_sawidl, sfx_sawup, sfx_shotgn};
+use crate::src::d_ticcmd::BT_ATTACK;
 
 
 pub type __uint8_t = u8;
@@ -60,18 +61,6 @@ pub const pw_ironfeet: C2RustUnnamed = 3;
 pub const pw_invisibility: C2RustUnnamed = 2;
 pub const pw_strength: C2RustUnnamed = 1;
 pub const pw_invulnerability: C2RustUnnamed = 0;
-pub type C2RustUnnamed_0 = u32;
-pub const BTS_SAVESHIFT: C2RustUnnamed_0 = 2;
-pub const BTS_SAVEMASK: C2RustUnnamed_0 = 28;
-pub const BTS_SAVEGAME: C2RustUnnamed_0 = 2;
-pub const BTS_PAUSE: C2RustUnnamed_0 = 1;
-pub const BT_WEAPONSHIFT: C2RustUnnamed_0 = 3;
-pub const BT_WEAPONMASK: C2RustUnnamed_0 = 56;
-pub const BT_CHANGE: C2RustUnnamed_0 = 4;
-pub const BT_SPECIALMASK: C2RustUnnamed_0 = 3;
-pub const BT_SPECIAL: C2RustUnnamed_0 = 128;
-pub const BT_USE: C2RustUnnamed_0 = 2;
-pub const BT_ATTACK: C2RustUnnamed_0 = 1;
 pub type fixed_t = i32;
 pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
