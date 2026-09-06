@@ -24,11 +24,6 @@ extern "C" {
     ) -> i32;
     fn putchar(__c: i32) -> i32;
     fn puts(__s: *const ::core::ffi::c_char) -> i32;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn strchr(
         __s: *const ::core::ffi::c_char,
         __c: i32,

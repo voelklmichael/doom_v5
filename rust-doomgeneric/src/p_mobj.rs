@@ -46,19 +46,8 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVEL;
 use crate::src::sounds::{sfx_itmbk, sfx_oof, sfx_telept};
 use crate::src::d_player::CF_NOMOMENTUM;
+use libc::{memcpy, memset};
 
-extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

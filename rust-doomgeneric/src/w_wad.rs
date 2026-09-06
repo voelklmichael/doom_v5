@@ -12,6 +12,7 @@ use crate::src::z_zone::Z_ChangeUser;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use libc::{memcpy, memset};
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -19,16 +20,6 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
     fn free(__ptr: *mut ::core::ffi::c_void);
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn strncpy(
         __dest: *mut ::core::ffi::c_char,
         __src: *const ::core::ffi::c_char,

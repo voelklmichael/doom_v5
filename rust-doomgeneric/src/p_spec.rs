@@ -54,6 +54,7 @@ use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::sfx_swtchn;
 use crate::src::d_player::pw_ironfeet;
 use crate::src::d_player::CF_GODMODE;
+use libc::memset;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -62,11 +63,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn T_MoveFloor(floor: *mut floormove_t);
 }
 pub type size_t = usize;

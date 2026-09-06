@@ -42,6 +42,7 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_LEVEL, PU_PURGELEVEL, PU_STATIC};
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
+use libc::memset;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -56,11 +57,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;

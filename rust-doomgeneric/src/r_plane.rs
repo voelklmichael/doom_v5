@@ -48,14 +48,10 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::w_wad::W_ReleaseLumpNum;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::PU_STATIC;
+use libc::memset;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

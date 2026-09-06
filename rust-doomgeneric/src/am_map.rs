@@ -47,6 +47,7 @@ use crate::src::g_game::players;
 use crate::src::v_video::V_DrawPatch;
 use crate::src::z_zone::PU_STATIC;
 use crate::src::d_player::{pw_allmap, pw_invisibility};
+use libc::memset;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -61,11 +62,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

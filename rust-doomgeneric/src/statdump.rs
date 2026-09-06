@@ -1,12 +1,6 @@
 use crate::src::wi_stuff::{wbplayerstruct_t, wbstartstruct_t};
 use crate::src::m_argv::M_ParmExists;
-extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-}
+use libc::memcpy;
 pub type size_t = usize;
 pub type boolean = u32;
 pub const MAX_CAPTURES: i32 = 32 as i32;
