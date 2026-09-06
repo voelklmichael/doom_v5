@@ -17,6 +17,7 @@ use crate::src::f_finale::FFinaleState;
 use crate::src::i_cdmus::ICdMusState;
 use crate::src::i_input::IInputState;
 use crate::src::i_joystick::IJoystickState;
+use crate::src::i_sound::ISoundState;
 use crate::src::i_timer::ITimerState;
 use crate::src::m_config::MConfigState;
 use crate::src::m_random::MRandomState;
@@ -42,6 +43,7 @@ pub struct GameState {
     pub i_cdmus: ICdMusState,
     pub i_input: IInputState,
     pub i_joystick: IJoystickState,
+    pub i_sound: ISoundState,
     pub i_timer: ITimerState,
     pub m_config: MConfigState,
     pub m_random: MRandomState,
@@ -69,6 +71,7 @@ impl GameState {
             i_cdmus: ICdMusState::new(),
             i_input: IInputState::new(),
             i_joystick: IJoystickState::new(),
+            i_sound: ISoundState::new(),
             i_timer: ITimerState::new(),
             m_config: MConfigState::new(),
             m_random: MRandomState::new(),
