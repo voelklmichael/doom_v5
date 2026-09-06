@@ -1465,7 +1465,7 @@ pub unsafe extern "C" fn R_InstallSpriteLump(
     mut lump: i32,
     mut frame: u32,
     mut rotation: u32,
-    mut flipped: boolean,
+    mut flipped: bool,
 ) {
     let mut r: i32 = 0;
     if frame >= 29 as u32 || rotation > 8 as u32 {
@@ -1589,7 +1589,7 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
                     patched,
                     frame as u32,
                     rotation as u32,
-                    false_0 as boolean,
+                    false,
                 );
                 if (*lumpinfo.offset(l as isize)).name[6 as i32 as usize]
                     != 0
@@ -1604,7 +1604,7 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
                         l,
                         frame as u32,
                         rotation as u32,
-                        true_0 as boolean,
+                        true,
                     );
                 }
             }

@@ -1595,7 +1595,7 @@ pub static mut checkcoord: [[i32; 4]; 12] = [
     [0; 4],
 ];
 #[no_mangle]
-pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
+pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
     let mut boxx: i32 = 0;
     let mut boxy: i32 = 0;
     let mut boxpos: i32 = 0;
@@ -1626,7 +1626,7 @@ pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
     }
     boxpos = (boxy << 2 as i32) + boxx;
     if boxpos == 5 as i32 {
-        return true_0 as boolean;
+        return true;
     }
     x1 = *bspcoord
         .offset(checkcoord[boxpos as usize][0 as i32 as usize] as isize);
@@ -1640,13 +1640,13 @@ pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
     angle2 = R_PointToAngle(x2, y2).wrapping_sub(viewangle);
     span = angle1.wrapping_sub(angle2);
     if span >= ANG180 {
-        return true_0 as boolean;
+        return true;
     }
     tspan = angle1.wrapping_add(clipangle);
     if tspan > (2 as angle_t).wrapping_mul(clipangle) {
         tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(clipangle));
         if tspan >= span {
-            return false_0 as boolean;
+            return false;
         }
         angle1 = clipangle;
     }
@@ -1654,7 +1654,7 @@ pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
     if tspan > (2 as angle_t).wrapping_mul(clipangle) {
         tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(clipangle));
         if tspan >= span {
-            return false_0 as boolean;
+            return false;
         }
         angle2 = clipangle.wrapping_neg();
     }
@@ -1663,7 +1663,7 @@ pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
     sx1 = viewangletox[angle1 as usize];
     sx2 = viewangletox[angle2 as usize];
     if sx1 == sx2 {
-        return false_0 as boolean;
+        return false;
     }
     sx2 -= 1;
     start = &raw mut solidsegs as *mut cliprange_t;
@@ -1671,9 +1671,9 @@ pub unsafe extern "C" fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> boolean {
         start = start.offset(1);
     }
     if sx1 >= (*start).first && sx2 <= (*start).last {
-        return false_0 as boolean;
+        return false;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_Subsector(mut num: i32) {
@@ -1736,7 +1736,7 @@ pub unsafe fn R_RenderBSPNode(mut bspnum: i32) {
     if R_CheckBBox(
         &raw mut *(&raw mut (*bsp).bbox as *mut [fixed_t; 4])
             .offset((side ^ 1 as i32) as isize) as *mut fixed_t,
-    ) != 0
+    )
     {
         R_RenderBSPNode(
             (*bsp).children[(side ^ 1 as i32) as usize]

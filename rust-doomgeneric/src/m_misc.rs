@@ -344,7 +344,7 @@ pub unsafe extern "C" fn M_StringConcat(
     mut dest: *mut ::core::ffi::c_char,
     mut src: *const ::core::ffi::c_char,
     mut dest_size: size_t,
-) -> boolean {
+) -> bool {
     let mut offset: size_t = 0;
     offset = strlen(dest);
     if offset > dest_size {
@@ -354,7 +354,7 @@ pub unsafe extern "C" fn M_StringConcat(
         dest.offset(offset as isize),
         src,
         dest_size.wrapping_sub(offset),
-    );
+    ) != 0;
 }
 pub fn M_StringStartsWith(s: &str, prefix: &str) -> bool {
     s.len() > prefix.len() && s.starts_with(prefix)

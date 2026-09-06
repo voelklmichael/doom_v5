@@ -88,13 +88,13 @@ pub unsafe extern "C" fn HUlib_addCharToTextLine(
 #[no_mangle]
 pub unsafe extern "C" fn HUlib_delCharFromTextLine(
     mut t: *mut hu_textline_t,
-) -> boolean {
+) -> bool {
     if (*t).l.is_empty() {
-        return false_0 as boolean
+        return false
     } else {
         (*t).l.pop();
         (*t).needsupdate = 4 as i32;
-        return true_0 as boolean;
+        return true;
     };
 }
 #[no_mangle]

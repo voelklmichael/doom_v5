@@ -103,20 +103,20 @@ unsafe extern "C" fn SndDeviceInList(
     mut device: snddevice_t,
     mut list: *mut snddevice_t,
     mut len: i32,
-) -> boolean {
+) -> bool {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < len {
         if device as u32
             == *list.offset(i as isize) as u32
         {
-            return true_0 as boolean;
+            return true;
         }
         i += 1;
     }
-    return false_0 as boolean;
+    return false;
 }
-unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: boolean) {
+unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: bool) {
     let mut i: i32 = 0;
     sound_module = ::core::ptr::null_mut::<sound_module_t>();
     i = 0 as i32;
@@ -125,11 +125,11 @@ unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: boolean) {
             snd_sfxdevice as snddevice_t,
             (*sound_modules[i as usize]).sound_devices,
             (*sound_modules[i as usize]).num_sound_devices,
-        ) != 0
+        )
         {
             if (*sound_modules[i as usize])
                 .Init
-                .expect("non-null function pointer")(use_sfx_prefix) != 0
+                .expect("non-null function pointer")(use_sfx_prefix as i32 as boolean) != 0
             {
                 sound_module = sound_modules[i as usize];
                 return;
@@ -154,7 +154,7 @@ pub unsafe fn I_InitSound(mut use_sfx_prefix: boolean) {
             && (snd_musicdevice == SNDDEVICE_GENMIDI as i32
                 || snd_musicdevice == SNDDEVICE_GUS as i32);
         if nosfx == 0 {
-            InitSfxModule(use_sfx_prefix);
+            InitSfxModule(use_sfx_prefix != 0);
         }
         if nomusic == 0 {
             InitMusicModule();

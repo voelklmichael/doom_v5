@@ -143,7 +143,7 @@ unsafe extern "C" fn GetAdjustedTime() -> i32 {
     }
     return time_ms * TICRATE / 1000 as i32;
 }
-unsafe extern "C" fn BuildNewTic() -> boolean {
+unsafe extern "C" fn BuildNewTic() -> bool {
     let mut gameticdiv: i32 = 0;
     let mut cmd: ticcmd_t = ticcmd_t {
         forwardmove: 0,
@@ -168,17 +168,17 @@ unsafe extern "C" fn BuildNewTic() -> boolean {
         fn(),
     >((*loop_interface).RunMenu.expect("non-null function pointer"))();
     if drone {
-        return false_0 as boolean;
+        return false;
     }
     if new_sync {
         if !net_client_connected && maketic - gameticdiv > 2 as i32 {
-            return false_0 as boolean;
+            return false;
         }
         if maketic - gameticdiv > 8 as i32 {
-            return false_0 as boolean;
+            return false;
         }
     } else if maketic - gameticdiv >= 5 as i32 {
-        return false_0 as boolean
+        return false
     }
     memset(
         &raw mut cmd as *mut ::core::ffi::c_void,
@@ -192,7 +192,7 @@ unsafe extern "C" fn BuildNewTic() -> boolean {
     ticdata[(maketic % BACKUPTICS) as usize].ingame[localplayer as usize] = true_0
         as boolean;
     maketic += 1;
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub static mut lasttime: i32 = 0;
@@ -215,7 +215,7 @@ pub unsafe fn NetUpdate() {
     }
     i = 0 as i32;
     while i < newtics {
-        if BuildNewTic() == 0 {
+        if !BuildNewTic() {
             break;
         }
         i += 1;
@@ -315,19 +315,18 @@ unsafe extern "C" fn OldNetSync() {
         }
     }
 }
-unsafe extern "C" fn PlayersInGame() -> boolean {
-    let mut result: boolean = false_0 as boolean;
+unsafe extern "C" fn PlayersInGame() -> bool {
+    let mut result: bool = false;
     let mut i: u32 = 0;
     if net_client_connected {
         i = 0 as u32;
         while i < NET_MAXPLAYERS as u32 {
-            result = (result != 0 || local_playeringame[i as usize] != 0)
-                as i32 as boolean;
+            result = result || local_playeringame[i as usize] != 0;
             i = i.wrapping_add(1);
         }
     }
     if !drone {
-        result = true_0 as boolean;
+        result = true;
     }
     return result;
 }
@@ -393,7 +392,7 @@ pub unsafe fn TryRunTics() {
     if counts < 1 as i32 {
         counts = 1 as i32;
     }
-    while PlayersInGame() == 0 || lowtic < gametic / ticdup + counts {
+    while !PlayersInGame() || lowtic < gametic / ticdup + counts {
         NetUpdate();
         lowtic = GetLowTic();
         if lowtic < gametic / ticdup {
@@ -411,7 +410,7 @@ pub unsafe fn TryRunTics() {
             break;
         }
         let mut set: *mut ticcmd_set_t = ::core::ptr::null_mut::<ticcmd_set_t>();
-        if PlayersInGame() == 0 {
+        if !PlayersInGame() {
             return;
         }
         set = (&raw mut ticdata as *mut ticcmd_set_t)

@@ -2288,8 +2288,8 @@ pub unsafe extern "C" fn WI_slamBackground() {
     V_DrawPatch(0 as i32, 0 as i32, background);
 }
 #[no_mangle]
-pub unsafe extern "C" fn WI_Responder(mut ev: *mut event_t) -> boolean {
-    return false_0 as boolean;
+pub unsafe extern "C" fn WI_Responder(mut ev: *mut event_t) -> bool {
+    return false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn WI_drawLF() {

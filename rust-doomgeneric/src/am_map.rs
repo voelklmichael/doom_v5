@@ -2323,7 +2323,7 @@ pub unsafe extern "C" fn AM_clearFB(mut color: i32) {
 pub unsafe extern "C" fn AM_clipMline(
     mut ml: *mut mline_t,
     mut fl: *mut fline_t,
-) -> boolean {
+) -> bool {
     let mut outcode1: i32 = 0 as i32;
     let mut outcode2: i32 = 0 as i32;
     let mut outside: i32 = 0;
@@ -2341,7 +2341,7 @@ pub unsafe extern "C" fn AM_clipMline(
         outcode2 = BOTTOM as i32;
     }
     if outcode1 & outcode2 != 0 {
-        return false_0 as boolean;
+        return false;
     }
     if (*ml).a.x < m_x {
         outcode1 |= LEFT as i32;
@@ -2354,7 +2354,7 @@ pub unsafe extern "C" fn AM_clipMline(
         outcode2 |= RIGHT as i32;
     }
     if outcode1 & outcode2 != 0 {
-        return false_0 as boolean;
+        return false;
     }
     (*fl).a.x = (f_x as fixed_t
         + (FixedMul((*ml).a.x - m_x, scale_mtof) >> 16 as i32))
@@ -2393,7 +2393,7 @@ pub unsafe extern "C" fn AM_clipMline(
         outcode2 |= RIGHT as i32;
     }
     if outcode1 & outcode2 != 0 {
-        return false_0 as boolean;
+        return false;
     }
     while outcode1 | outcode2 != 0 {
         if outcode1 != 0 {
@@ -2453,10 +2453,10 @@ pub unsafe extern "C" fn AM_clipMline(
             }
         }
         if outcode1 & outcode2 != 0 {
-            return false_0 as boolean;
+            return false;
         }
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_drawFline(
@@ -2542,7 +2542,7 @@ pub unsafe extern "C" fn AM_drawMline(
         a: fpoint_t { x: 0, y: 0 },
         b: fpoint_t { x: 0, y: 0 },
     };
-    if AM_clipMline(ml, &raw mut fl) != 0 {
+    if AM_clipMline(ml, &raw mut fl) {
         AM_drawFline(&raw mut fl, color);
     }
 }

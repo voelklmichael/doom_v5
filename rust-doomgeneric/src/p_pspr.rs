@@ -1568,7 +1568,7 @@ pub unsafe extern "C" fn P_BringUpWeapon(mut player: *mut player_t) {
     P_SetPsprite(player, ps_weapon as i32, newstate);
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_CheckAmmo(mut player: *mut player_t) -> boolean {
+pub unsafe extern "C" fn P_CheckAmmo(mut player: *mut player_t) -> bool {
     let mut ammo: ammotype_t = am_clip;
     let mut count: i32 = 0;
     ammo = weaponinfo[(*player).readyweapon as usize].ammo;
@@ -1587,7 +1587,7 @@ pub unsafe extern "C" fn P_CheckAmmo(mut player: *mut player_t) -> boolean {
         == am_noammo as i32 as u32
         || (*player).ammo[ammo as usize] >= count
     {
-        return true_0 as boolean;
+        return true;
     }
     loop {
         if (*player).weaponowned[wp_plasma as i32 as usize]
@@ -1641,12 +1641,12 @@ pub unsafe extern "C" fn P_CheckAmmo(mut player: *mut player_t) -> boolean {
         ps_weapon as i32,
         weaponinfo[(*player).readyweapon as usize].downstate as statenum_t,
     );
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_FireWeapon(mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;
-    if P_CheckAmmo(player) == 0 {
+    if !P_CheckAmmo(player) {
         return;
     }
     P_SetMobjState((*player).mo, S_PLAY_ATK1);
@@ -1940,13 +1940,13 @@ pub unsafe extern "C" fn P_BulletSlope(mut mo: *mut mobj_t) {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_GunShot(mut mo: *mut mobj_t, mut accurate: boolean) {
+pub unsafe extern "C" fn P_GunShot(mut mo: *mut mobj_t, mut accurate: bool) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
     damage = 5 as i32
         * (P_Random() % 3 as i32 + 1 as i32);
     angle = (*mo).angle;
-    if accurate == 0 {
+    if !accurate {
         angle = angle
             .wrapping_add(
                 (P_Random() - P_Random() << 18 as i32) as angle_t,
@@ -1975,7 +1975,7 @@ pub unsafe extern "C" fn A_FirePistol(
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
     P_BulletSlope((*player).mo);
-    P_GunShot((*player).mo, ((*player).refire == 0) as i32 as boolean);
+    P_GunShot((*player).mo, (*player).refire == 0);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_FireShotgun(
@@ -2001,7 +2001,7 @@ pub unsafe extern "C" fn A_FireShotgun(
     P_BulletSlope((*player).mo);
     i = 0 as i32;
     while i < 7 as i32 {
-        P_GunShot((*player).mo, false_0 as boolean);
+        P_GunShot((*player).mo, false);
         i += 1;
     }
 }
@@ -2077,7 +2077,7 @@ pub unsafe extern "C" fn A_FireCGun(mut player: *mut player_t, mut psp: *mut psp
             ) as i64 as statenum_t,
     );
     P_BulletSlope((*player).mo);
-    P_GunShot((*player).mo, ((*player).refire == 0) as i32 as boolean);
+    P_GunShot((*player).mo, (*player).refire == 0);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Light0(mut player: *mut player_t, mut psp: *mut pspdef_t) {
