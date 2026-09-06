@@ -32,6 +32,7 @@ use crate::src::p_mobj::PMobjState;
 use crate::src::p_plats::PPlatsState;
 use crate::src::p_pspr::PPsprState;
 use crate::src::p_sight::PSightState;
+use crate::src::p_spec::PSpecState;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_user::PUserState;
 use crate::src::sounds::SoundsState;
@@ -65,6 +66,7 @@ pub struct GameState {
     pub p_plats: PPlatsState,
     pub p_pspr: PPsprState,
     pub p_sight: PSightState,
+    pub p_spec: PSpecState,
     pub p_switch: PSwitchState,
     pub p_user: PUserState,
     pub sounds: SoundsState,
@@ -101,6 +103,7 @@ impl GameState {
             p_plats: PPlatsState::new(),
             p_pspr: PPsprState::new(),
             p_sight: PSightState::new(),
+            p_spec: PSpecState::new(),
             p_switch: PSwitchState::new(),
             p_user: PUserState::new(),
             sounds: SoundsState::new(),
