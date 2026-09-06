@@ -1,4 +1,3 @@
-use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t, actionf_t};
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
@@ -29,12 +28,12 @@ use crate::src::m_misc::M_snprintf;
 use crate::src::g_game::consoleplayer;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
+use crate::src::g_game::players;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn I_UpdateSound();
     static mut gamemode: GameMode_t;
-    static mut players: [player_t; 4];
     fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
         lump: i32,

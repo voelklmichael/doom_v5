@@ -21,10 +21,10 @@ use crate::src::g_game::consoleplayer;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
+use crate::src::g_game::players;
 
 extern "C" {
     static mut gamemode: GameMode_t;
-    static mut players: [player_t; 4];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type __uint8_t = u8;

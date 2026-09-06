@@ -1725,7 +1725,6 @@ pub static mut viewactive: bool = false;
 pub static mut deathmatch: i32 = 0;
 pub static mut netgame: bool = false;
 pub static mut playeringame: [boolean; 4] = [0; 4];
-#[no_mangle]
 pub static mut players: [player_t; 4] = [player_s {
     mo: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
     playerstate: PST_LIVE,

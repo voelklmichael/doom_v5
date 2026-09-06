@@ -10,10 +10,10 @@ use crate::src::g_game::demoplayback;
 use crate::src::g_game::playeringame;
 use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
+use crate::src::g_game::players;
 
 extern "C" {
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    static mut players: [player_t; 4];
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
