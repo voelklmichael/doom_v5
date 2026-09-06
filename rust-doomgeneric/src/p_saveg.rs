@@ -14,6 +14,8 @@ use crate::src::g_game::G_VanillaVersionCode;
 use crate::src::p_ceilng::activeceilings;
 use crate::src::p_tick::P_InitThinkers;
 use crate::src::p_setup::numlines;
+use crate::src::p_maputl::P_SetThingPosition;
+use crate::src::p_tick::thinkercap;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -64,11 +66,9 @@ extern "C" {
     static mut sectors: *mut sector_t;
     static mut lines: *mut line_t;
     static mut sides: *mut side_t;
-    static mut thinkercap: thinker_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_MobjThinker(mobj: *mut mobj_t);
-    fn P_SetThingPosition(thing: *mut mobj_t);
     fn T_LightFlash(flash: *mut lightflash_t);
     fn T_StrobeFlash(flash: *mut strobe_t);
     fn T_Glow(g: *mut glow_t);

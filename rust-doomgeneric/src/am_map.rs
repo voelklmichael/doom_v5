@@ -25,6 +25,9 @@ use crate::src::m_cheat::cht_CheckCheat;
 use crate::src::st_stuff::ST_Responder;
 use crate::src::g_game::viewactive;
 use crate::src::p_setup::numlines;
+use crate::src::p_setup::bmaporgx;
+use crate::src::p_setup::bmaporgy;
+use crate::src::v_video::V_MarkRect;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -52,8 +55,6 @@ extern "C" {
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     static mut lines: *mut line_t;
-    static mut bmaporgx: fixed_t;
-    static mut bmaporgy: fixed_t;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
         buf_len: size_t,
@@ -61,12 +62,6 @@ extern "C" {
         ...
     ) -> i32;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    fn V_MarkRect(
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-    );
     static mut gameepisode: i32;
     static mut gamemap: i32;
     static mut netgame: bool;

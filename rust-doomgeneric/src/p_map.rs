@@ -29,6 +29,11 @@ use crate::src::p_switch::P_UseSpecialLine;
 use crate::src::m_misc::M_StrToInt;
 use crate::src::p_maputl::P_AproxDistance;
 use crate::src::p_maputl::P_UnsetThingPosition;
+use crate::src::p_inter::P_DamageMobj;
+use crate::src::p_maputl::P_SetThingPosition;
+use crate::src::p_setup::bmaporgx;
+use crate::src::p_setup::bmaporgy;
+use crate::src::r_main::R_PointInSubsector;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -46,7 +51,6 @@ extern "C" {
     static mut lines: *mut line_t;
     static mut validcount: i32;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
     fn P_SpawnMobj(
         x: fixed_t,
         y: fixed_t,
@@ -55,15 +59,6 @@ extern "C" {
     ) -> *mut mobj_t;
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    fn P_SetThingPosition(thing: *mut mobj_t);
-    static mut bmaporgx: fixed_t;
-    static mut bmaporgy: fixed_t;
-    fn P_DamageMobj(
-        target: *mut mobj_t,
-        inflictor: *mut mobj_t,
-        source: *mut mobj_t,
-        damage: i32,
-    );
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemap: i32;
     static mut leveltime: i32;

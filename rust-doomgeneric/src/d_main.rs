@@ -1,5 +1,4 @@
 use crate::src::w_file::wad_file_t;
-use crate::src::w_wad::lumpinfo_t;
 use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
 use crate::src::d_player::{player_t, PST_LIVE};
@@ -117,6 +116,8 @@ use crate::src::i_video::I_SetPalette;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::v_video::V_RestoreBuffer;
+use crate::src::d_loop::gametic;
+use crate::src::w_wad::lumpinfo;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -150,7 +151,6 @@ extern "C" {
     ) -> i32;
     fn I_GetTime() -> i32;
     fn TryRunTics();
-    static mut gametic: i32;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
@@ -166,7 +166,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    static mut lumpinfo: *mut lumpinfo_t;
     fn S_Init(sfxVolume_0: i32, musicVolume_0: i32);
     fn V_Init();
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);

@@ -2,6 +2,7 @@ use crate::src::sha1::{sha1_context_s, sha1_context_t, SHA1_Init, SHA1_Final, SH
 use crate::src::w_wad::lumpinfo_t;
 use crate::src::w_file::wad_file_t;
 use crate::src::w_wad::numlumps;
+use crate::src::w_wad::lumpinfo;
 extern "C" {
     fn realloc(
         __ptr: *mut ::core::ffi::c_void,
@@ -12,7 +13,6 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    static mut lumpinfo: *mut lumpinfo_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -29,6 +29,7 @@ use crate::src::tables::tantoangle;
 use crate::src::p_setup::subsectors;
 use crate::src::p_setup::nodes;
 use crate::src::tables::finetangent;
+use crate::src::r_data::colormaps;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -37,7 +38,6 @@ extern "C" {
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
     fn R_DrawPlanes();
@@ -1362,7 +1362,6 @@ pub static mut linecount: i32 = 0;
 pub static mut loopcount: i32 = 0;
 pub static mut viewx: fixed_t = 0;
 pub static mut viewy: fixed_t = 0;
-#[no_mangle]
 pub static mut viewz: fixed_t = 0;
 pub static mut viewangle: angle_t = 0;
 pub static mut viewcos: fixed_t = 0;
@@ -1853,8 +1852,7 @@ pub unsafe extern "C" fn R_Init() {
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     framecount = 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointInSubsector(
+pub unsafe fn R_PointInSubsector(
     mut x: fixed_t,
     mut y: fixed_t,
 ) -> *mut subsector_t {

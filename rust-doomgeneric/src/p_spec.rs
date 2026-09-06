@@ -37,6 +37,7 @@ use crate::src::m_misc::M_StrToInt;
 use crate::src::p_doors::EV_DoDoor;
 use crate::src::p_floor::EV_DoFloor;
 use crate::src::p_setup::numlines;
+use crate::src::p_inter::P_DamageMobj;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -65,12 +66,6 @@ extern "C" {
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn P_AddThinker(thinker: *mut thinker_t);
-    fn P_DamageMobj(
-        target: *mut mobj_t,
-        inflictor: *mut mobj_t,
-        source: *mut mobj_t,
-        damage: i32,
-    );
     fn T_MoveFloor(floor: *mut floormove_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }

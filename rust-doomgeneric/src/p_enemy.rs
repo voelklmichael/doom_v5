@@ -27,6 +27,12 @@ use crate::src::p_map::P_CheckPosition;
 use crate::src::p_map::P_AimLineAttack;
 use crate::src::p_maputl::P_AproxDistance;
 use crate::src::p_maputl::P_UnsetThingPosition;
+use crate::src::d_loop::gametic;
+use crate::src::p_inter::P_DamageMobj;
+use crate::src::p_maputl::P_SetThingPosition;
+use crate::src::p_setup::bmaporgx;
+use crate::src::p_setup::bmaporgy;
+use crate::src::p_tick::thinkercap;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -38,7 +44,6 @@ extern "C" {
     static mut sides: *mut side_t;
     static mut validcount: i32;
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    static mut thinkercap: thinker_t;
     fn P_SpawnMobj(
         x: fixed_t,
         y: fixed_t,
@@ -48,17 +53,7 @@ extern "C" {
     fn P_RemoveMobj(th: *mut mobj_t);
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
     fn P_MobjThinker(mobj: *mut mobj_t);
-    fn P_SetThingPosition(thing: *mut mobj_t);
-    static mut bmaporgx: fixed_t;
-    static mut bmaporgy: fixed_t;
-    fn P_DamageMobj(
-        target: *mut mobj_t,
-        inflictor: *mut mobj_t,
-        source: *mut mobj_t,
-        damage: i32,
-    );
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut gametic: i32;
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;

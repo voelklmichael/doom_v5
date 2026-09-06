@@ -7,6 +7,9 @@ use crate::src::p_setup::bmapheight;
 use crate::src::p_setup::blocklinks;
 use crate::src::p_pspr::bulletslope;
 use crate::src::p_setup::playerstarts;
+use crate::src::p_setup::bmaporgx;
+use crate::src::p_setup::bmaporgy;
+use crate::src::r_main::R_PointInSubsector;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -14,9 +17,6 @@ extern "C" {
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static mut lines: *mut line_t;
     static mut validcount: i32;
-    fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
-    static mut bmaporgx: fixed_t;
-    static mut bmaporgy: fixed_t;
 }
 pub type __uint8_t = u8;
 pub type fixed_t = i32;
@@ -1598,8 +1598,7 @@ pub unsafe fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SetThingPosition(mut thing: *mut mobj_t) {
+pub unsafe fn P_SetThingPosition(mut thing: *mut mobj_t) {
     let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut blockx: i32 = 0;

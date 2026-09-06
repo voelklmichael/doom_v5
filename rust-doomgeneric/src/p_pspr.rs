@@ -7,6 +7,7 @@ use crate::src::p_enemy::P_NoiseAlert;
 use crate::src::p_map::P_LineAttack;
 use crate::src::p_map::linetarget;
 use crate::src::p_map::P_AimLineAttack;
+use crate::src::p_inter::P_DamageMobj;
 
 extern "C" {
     fn P_Random() -> i32;
@@ -22,12 +23,6 @@ extern "C" {
         type_0: mobjtype_t,
     ) -> *mut mobj_t;
     fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    fn P_DamageMobj(
-        target: *mut mobj_t,
-        inflictor: *mut mobj_t,
-        source: *mut mobj_t,
-        damage: i32,
-    );
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
     static mut leveltime: i32;

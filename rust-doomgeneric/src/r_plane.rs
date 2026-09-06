@@ -36,6 +36,8 @@ use crate::src::r_main::viewangle;
 use crate::src::r_main::extralight;
 use crate::src::r_main::colfunc;
 use crate::src::r_sky::skytexture;
+use crate::src::r_data::colormaps;
+use crate::src::r_main::viewz;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -54,10 +56,8 @@ extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut skyflatnum: i32;
-    static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut viewz: fixed_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -21,6 +21,8 @@ use crate::src::p_map::P_AimLineAttack;
 use crate::src::p_maputl::P_AproxDistance;
 use crate::src::p_maputl::P_UnsetThingPosition;
 use crate::src::p_setup::playerstarts;
+use crate::src::p_maputl::P_SetThingPosition;
+use crate::src::r_main::R_PointInSubsector;
 
 extern "C" {
     fn Z_Malloc(
@@ -45,10 +47,8 @@ extern "C" {
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
     fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_SetThingPosition(thing: *mut mobj_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gameversion: GameVersion_t;
     static mut gameskill: skill_t;

@@ -14,6 +14,7 @@ use crate::src::s_sound::S_StartMusic;
 use crate::src::g_game::gamestate;
 use crate::src::g_game::viewactive;
 use crate::src::s_sound::S_ChangeMusic;
+use crate::src::v_video::V_MarkRect;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -28,12 +29,6 @@ extern "C" {
         x: i32,
         y: i32,
         patch: *mut patch_t,
-    );
-    fn V_MarkRect(
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
     );
     fn W_CacheLumpNum(
         lump: i32,

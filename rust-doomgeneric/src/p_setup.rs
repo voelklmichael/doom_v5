@@ -1478,9 +1478,7 @@ pub static mut blockmap: *mut i16 = ::core::ptr::null::<
 pub static mut blockmaplump: *mut i16 = ::core::ptr::null::<
     i16,
 >() as *mut i16;
-#[no_mangle]
 pub static mut bmaporgx: fixed_t = 0;
-#[no_mangle]
 pub static mut bmaporgy: fixed_t = 0;
 pub static mut blocklinks: *mut *mut mobj_t = ::core::ptr::null::<*mut mobj_t>()
     as *mut *mut mobj_t;

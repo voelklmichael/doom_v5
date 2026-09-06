@@ -1,4 +1,3 @@
-use crate::src::w_wad::lumpinfo_t;
 use crate::src::r_defs::{side_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{thinker_t, sector_t, actionf_t};
@@ -15,6 +14,8 @@ use crate::src::p_setup::numsides;
 use crate::src::r_things::sprites;
 use crate::src::z_zone::Z_ChangeTag2;
 use crate::src::r_sky::skytexture;
+use crate::src::p_tick::thinkercap;
+use crate::src::w_wad::lumpinfo;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -29,7 +30,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    static mut lumpinfo: *mut lumpinfo_t;
     fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
         lump: i32,
@@ -53,7 +53,6 @@ extern "C" {
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     static mut sides: *mut side_t;
-    static mut thinkercap: thinker_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
     static mut demoplayback: bool;
 }
@@ -1447,7 +1446,6 @@ pub static mut spriteoffset: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
 pub static mut spritetopoffset: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
-#[no_mangle]
 pub static mut colormaps: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
 #[no_mangle]

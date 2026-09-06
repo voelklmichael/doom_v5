@@ -2211,8 +2211,7 @@ pub unsafe extern "C" fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mo
     mo = P_SpawnMobj((*target).x, (*target).y, ONFLOORZ, item);
     (*mo).flags |= MF_DROPPED as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_DamageMobj(
+pub unsafe fn P_DamageMobj(
     mut target: *mut mobj_t,
     mut inflictor: *mut mobj_t,
     mut source: *mut mobj_t,

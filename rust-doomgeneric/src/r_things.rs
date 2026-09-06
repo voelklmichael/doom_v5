@@ -1,5 +1,4 @@
 use crate::src::r_data::column_t;
-use crate::src::w_wad::lumpinfo_t;
 use crate::src::r_defs::{drawseg_t, spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{sector_t, actionf_t};
@@ -42,6 +41,9 @@ use crate::src::r_main::viewx;
 use crate::src::r_main::viewy;
 use crate::src::r_main::extralight;
 use crate::src::r_main::colfunc;
+use crate::src::r_data::colormaps;
+use crate::src::r_main::viewz;
+use crate::src::w_wad::lumpinfo;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -65,17 +67,14 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    static mut lumpinfo: *mut lumpinfo_t;
     fn W_CacheLumpNum(
         lump: i32,
         tag: i32,
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut viewz: fixed_t;
     static mut validcount: i32;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
 }
