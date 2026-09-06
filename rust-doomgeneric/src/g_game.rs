@@ -154,6 +154,9 @@ use crate::src::d_mode::{commercial, shareware};
 use crate::src::d_mode::{exe_chex, exe_final2, exe_ultimate};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
 use crate::src::d_mode::{sk_baby, sk_nightmare, skill_t};
+use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse};
+use crate::src::d_event::{GS_DEMOSCREEN, GS_FINALE, GS_INTERMISSION, GS_LEVEL, gamestate_t};
+use crate::src::d_event::{ga_completed, ga_loadgame, ga_loadlevel, ga_newgame, ga_nothing, ga_playdemo, ga_savegame, ga_screenshot, ga_victory, ga_worlddone, gameaction_t};
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -167,22 +170,6 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type gamestate_t = u32;
-pub const GS_DEMOSCREEN: gamestate_t = 3;
-pub const GS_FINALE: gamestate_t = 2;
-pub const GS_INTERMISSION: gamestate_t = 1;
-pub const GS_LEVEL: gamestate_t = 0;
-pub type gameaction_t = u32;
-pub const ga_screenshot: gameaction_t = 9;
-pub const ga_worlddone: gameaction_t = 8;
-pub const ga_victory: gameaction_t = 7;
-pub const ga_completed: gameaction_t = 6;
-pub const ga_playdemo: gameaction_t = 5;
-pub const ga_savegame: gameaction_t = 4;
-pub const ga_loadgame: gameaction_t = 3;
-pub const ga_newgame: gameaction_t = 2;
-pub const ga_loadlevel: gameaction_t = 1;
-pub const ga_nothing: gameaction_t = 0;
 pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
@@ -1173,12 +1160,6 @@ pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub type evtype_t = u32;
-pub const ev_quit: evtype_t = 4;
-pub const ev_joystick: evtype_t = 3;
-pub const ev_mouse: evtype_t = 2;
-pub const ev_keyup: evtype_t = 1;
-pub const ev_keydown: evtype_t = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct C2RustUnnamed_5 {

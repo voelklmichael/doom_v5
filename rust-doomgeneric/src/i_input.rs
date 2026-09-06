@@ -1,5 +1,6 @@
 use crate::src::d_event::event_t;
 use crate::src::d_event::D_PostEvent;
+use crate::src::d_event::{ev_keydown, ev_keyup};
 
 extern "C" {
     fn DG_GetKey(
@@ -7,12 +8,6 @@ extern "C" {
         key: *mut u8,
     ) -> i32;
 }
-pub type evtype_t = u32;
-pub const ev_quit: evtype_t = 4;
-pub const ev_joystick: evtype_t = 3;
-pub const ev_mouse: evtype_t = 2;
-pub const ev_keyup: evtype_t = 1;
-pub const ev_keydown: evtype_t = 0;
 pub static mut vanilla_keyboard_mapping: i32 = 1 as i32;
 static mut shiftdown: i32 = 0 as i32;
 static mut shiftxform: [::core::ffi::c_char; 128] = [
