@@ -157,6 +157,7 @@ use crate::src::d_mode::{sk_baby, sk_nightmare, skill_t};
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse};
 use crate::src::d_event::{GS_DEMOSCREEN, GS_FINALE, GS_INTERMISSION, GS_LEVEL, gamestate_t};
 use crate::src::d_event::{ga_completed, ga_loadgame, ga_loadlevel, ga_newgame, ga_nothing, ga_playdemo, ga_savegame, ga_screenshot, ga_victory, ga_worlddone, gameaction_t};
+use crate::src::d_player::{weapontype_t, wp_bfg, wp_chaingun, wp_chainsaw, wp_fist, wp_missile, wp_nochange, wp_pistol, wp_plasma, wp_shotgun, wp_supershotgun};
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -170,18 +171,6 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = u32;
-pub const wp_nochange: weapontype_t = 10;
-pub const NUMWEAPONS: weapontype_t = 9;
-pub const wp_supershotgun: weapontype_t = 8;
-pub const wp_chainsaw: weapontype_t = 7;
-pub const wp_bfg: weapontype_t = 6;
-pub const wp_plasma: weapontype_t = 5;
-pub const wp_missile: weapontype_t = 4;
-pub const wp_chaingun: weapontype_t = 3;
-pub const wp_shotgun: weapontype_t = 2;
-pub const wp_pistol: weapontype_t = 1;
-pub const wp_fist: weapontype_t = 0;
 pub type C2RustUnnamed = u32;
 pub const am_noammo: C2RustUnnamed = 5;
 pub const NUMAMMO: C2RustUnnamed = 4;

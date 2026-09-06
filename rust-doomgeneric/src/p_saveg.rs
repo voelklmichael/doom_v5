@@ -46,6 +46,7 @@ use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::{actionf_p1, statenum_t};
 use crate::src::d_mode::skill_t;
+use crate::src::d_player::{NUMWEAPONS, weapontype_t};
 
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -73,18 +74,6 @@ pub const it_blueskull: C2RustUnnamed_0 = 3;
 pub const it_redcard: C2RustUnnamed_0 = 2;
 pub const it_yellowcard: C2RustUnnamed_0 = 1;
 pub const it_bluecard: C2RustUnnamed_0 = 0;
-pub type weapontype_t = u32;
-pub const wp_nochange: weapontype_t = 10;
-pub const NUMWEAPONS: weapontype_t = 9;
-pub const wp_supershotgun: weapontype_t = 8;
-pub const wp_chainsaw: weapontype_t = 7;
-pub const wp_bfg: weapontype_t = 6;
-pub const wp_plasma: weapontype_t = 5;
-pub const wp_missile: weapontype_t = 4;
-pub const wp_chaingun: weapontype_t = 3;
-pub const wp_shotgun: weapontype_t = 2;
-pub const wp_pistol: weapontype_t = 1;
-pub const wp_fist: weapontype_t = 0;
 pub type C2RustUnnamed_1 = u32;
 pub const am_noammo: C2RustUnnamed_1 = 5;
 pub const NUMAMMO: C2RustUnnamed_1 = 4;

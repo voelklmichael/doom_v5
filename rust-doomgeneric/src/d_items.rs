@@ -1,3 +1,4 @@
+use crate::src::d_player::{am_cell, am_clip, am_misl, am_noammo, am_shell, ammotype_t};
 pub type C2RustUnnamed = u32;
 pub const NUMSTATES: C2RustUnnamed = 967;
 pub const S_TECH2LAMP4: C2RustUnnamed = 966;
@@ -967,13 +968,6 @@ pub const S_PUNCHDOWN: C2RustUnnamed = 3;
 pub const S_PUNCH: C2RustUnnamed = 2;
 pub const S_LIGHTDONE: C2RustUnnamed = 1;
 pub const S_NULL: C2RustUnnamed = 0;
-pub type ammotype_t = u32;
-pub const am_noammo: ammotype_t = 5;
-pub const NUMAMMO: ammotype_t = 4;
-pub const am_misl: ammotype_t = 3;
-pub const am_cell: ammotype_t = 2;
-pub const am_shell: ammotype_t = 1;
-pub const am_clip: ammotype_t = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct weaponinfo_t {
