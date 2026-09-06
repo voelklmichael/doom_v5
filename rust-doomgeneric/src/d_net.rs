@@ -1,5 +1,4 @@
 use crate::src::d_loop::{net_connect_data_t, net_gamesettings_t, loop_interface_t};
-use crate::src::p_mobj::{actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::d_ticcmd::{ticcmd_t};
 use crate::src::m_argv::M_CheckParm;
@@ -34,6 +33,7 @@ use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
 use libc::printf;
 
 extern "C" {
@@ -104,13 +104,6 @@ pub type netgame_startup_callback_t = Option<
 >;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

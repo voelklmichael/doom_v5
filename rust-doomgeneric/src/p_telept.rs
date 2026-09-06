@@ -1,4 +1,4 @@
-use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
+use crate::src::p_mobj::{thinker_t, sector_t, line_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::p_map::P_TeleportMove;
 use crate::src::p_tick::thinkercap;
@@ -12,6 +12,7 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::MF_MISSILE;
 use crate::src::sounds::sfx_telept;
 use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG, mobjtype_t};
+use crate::src::p_mobj::{actionf_p1, statenum_t};
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
 }
@@ -48,13 +49,6 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

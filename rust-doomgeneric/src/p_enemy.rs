@@ -1,4 +1,4 @@
-use crate::src::p_mobj::{thinker_t, mobjinfo_t, sector_t, line_s, ST_HORIZONTAL, vertex_t, line_t, actionf_t};
+use crate::src::p_mobj::{thinker_t, mobjinfo_t, sector_t, line_s, ST_HORIZONTAL, vertex_t, line_t};
 use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::i_system::I_Error;
@@ -55,6 +55,7 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::{MF_AMBUSH, MF_CORPSE, MF_FLOAT, MF_INFLOAT, MF_JUSTATTACKED, MF_JUSTHIT, MF_SHADOW, MF_SHOOTABLE, MF_SKULLFLY, MF_SOLID};
 use crate::src::sounds::{sfx_barexp, sfx_bgdth1, sfx_bgsit1, sfx_boscub, sfx_bosdth, sfx_bospit, sfx_bospn, sfx_bossit, sfx_bspwlk, sfx_claw, sfx_dbcls, sfx_dbload, sfx_dbopn, sfx_flame, sfx_flamst, sfx_hoof, sfx_manatk, sfx_metal, sfx_pdiehi, sfx_pistol, sfx_pldeth, sfx_podth1, sfx_posit1, sfx_shotgn, sfx_skepch, sfx_skeswg, sfx_slop, sfx_telept, sfx_vilatk};
 use crate::src::p_mobj::{MT_ARACHPLAZ, MT_BABY, MT_BOSSTARGET, MT_BRUISER, MT_BRUISERSHOT, MT_CYBORG, MT_FATSHOT, MT_FATSO, MT_FIRE, MT_HEAD, MT_HEADSHOT, MT_KNIGHT, MT_PAIN, MT_PLAYER, MT_ROCKET, MT_SERGEANT, MT_SHADOWS, MT_SKULL, MT_SMOKE, MT_SPAWNFIRE, MT_SPAWNSHOT, MT_SPIDER, MT_TRACER, MT_TROOP, MT_TROOPSHOT, MT_UNDEAD, MT_VILE, mobjtype_t};
+use crate::src::p_mobj::{actionf_p1, statenum_t};
 
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -106,13 +107,6 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

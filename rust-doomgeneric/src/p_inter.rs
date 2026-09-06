@@ -1,5 +1,5 @@
 use crate::src::d_items::weaponinfo;
-use crate::src::p_mobj::{state_t, actionf_t};
+use crate::src::p_mobj::state_t;
 use crate::src::d_player::{player_t, PST_DEAD};
 use crate::src::p_mobj::{mobj_s, mobj_t};
 use crate::src::i_system::I_Error;
@@ -29,6 +29,7 @@ use crate::src::sounds::{sfx_getpow, sfx_itemup, sfx_wpnup};
 use crate::src::d_player::{pw_allmap, pw_infrared, pw_invisibility, pw_invulnerability, pw_ironfeet, pw_strength};
 use crate::src::d_player::CF_GODMODE;
 use crate::src::p_mobj::{MT_CHAINGUN, MT_CLIP, MT_PLAYER, MT_SHOTGUN, MT_SKULL, MT_VILE, mobjtype_t};
+use crate::src::p_mobj::statenum_t;
 
 
 pub type __uint8_t = u8;
@@ -97,13 +98,6 @@ pub const INVISTICS: C2RustUnnamed_0 = 2100;
 pub const INVULNTICS: C2RustUnnamed_0 = 1050;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

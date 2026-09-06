@@ -1,6 +1,5 @@
 use crate::src::d_event::event_t;
 use crate::src::d_player::{player_t};
-use crate::src::p_mobj::{actionf_t};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 use crate::src::hu_lib::{
     hu_itext_t, hu_stext_t, hu_textline_t, patch_t, HUlib_addCharToTextLine,
@@ -27,6 +26,7 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::PU_STATIC;
 use crate::src::sounds::{sfx_radio, sfx_tink};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
 use libc::snprintf;
 
 pub type __uint8_t = u8;
@@ -85,7 +85,6 @@ pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
 pub type fixed_t = i32;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1054,13 +1053,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub type think_t = actionf_t;
 pub type angle_t = u32;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;

@@ -44,6 +44,7 @@ use libc::{malloc, snprintf};
 use crate::src::i_system::{fprintf, fread, ftell, fwrite, stderr};
 use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::{actionf_p1, statenum_t};
 
 extern "C" {
     fn P_MobjThinker(mobj: *mut mobj_t);
@@ -97,13 +98,6 @@ pub const am_misl: C2RustUnnamed_1 = 3;
 pub const am_cell: C2RustUnnamed_1 = 2;
 pub const am_shell: C2RustUnnamed_1 = 1;
 pub const am_clip: C2RustUnnamed_1 = 0;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

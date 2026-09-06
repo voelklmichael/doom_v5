@@ -4,7 +4,6 @@ use crate::src::m_cheat::cheatseq_t;
 use crate::src::d_items::{weaponinfo_t, weaponinfo};
 use crate::src::d_event::event_t;
 use crate::src::d_player::{player_t};
-use crate::src::p_mobj::{actionf_t};
 use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_GetNumForName, W_ReleaseLumpName,
 };
@@ -46,6 +45,7 @@ use crate::src::sounds::{mus_e1m1, mus_runnin};
 use crate::src::d_player::{pw_invulnerability, pw_ironfeet, pw_strength};
 use crate::src::d_player::{CF_GODMODE, CF_NOCLIP};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
 use libc::snprintf;
 
 pub type size_t = usize;
@@ -126,7 +126,6 @@ pub const am_cell: ammotype_t = 2;
 pub const am_shell: ammotype_t = 1;
 pub const am_clip: ammotype_t = 0;
 pub type fixed_t = i32;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1095,13 +1094,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub type think_t = actionf_t;
 pub type angle_t = u32;
 pub type st_stateenum_t = u32;
 pub const FirstPersonState: st_stateenum_t = 1;

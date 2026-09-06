@@ -45,6 +45,7 @@ use libc::memset;
 use libc::snprintf;
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
 
 pub type __uint8_t = u8;
 pub type size_t = usize;
@@ -78,12 +79,6 @@ pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
 pub type C2RustUnnamed_1 = u32;
 pub const ML_BLOCKMAP: C2RustUnnamed_1 = 10;
 pub const ML_REJECT: C2RustUnnamed_1 = 9;
@@ -159,7 +154,6 @@ pub struct mapnode_t {
     pub bbox: [[i16; 4]; 2],
     pub children: [u16; 2],
 }
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

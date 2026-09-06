@@ -1,7 +1,7 @@
 use crate::src::i_system::FILE;
 use crate::src::d_event::event_t;
 use crate::src::wi_stuff::{wbplayerstruct_t, wbstartstruct_t};
-use crate::src::p_mobj::{mapthing_t, state_t, subsector_t, actionf_t};
+use crate::src::p_mobj::{mapthing_t, state_t, subsector_t};
 use crate::src::d_player::{player_s, player_t, PST_LIVE, PST_DEAD, PST_REBORN};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::d_ticcmd::{ticcmd_t};
@@ -149,6 +149,7 @@ use libc::{atoi, strlen};
 use libc::printf;
 use crate::src::i_system::{fclose, fopen, ftell};
 use crate::src::p_mobj::{MT_BRUISERSHOT, MT_HEADSHOT, MT_TFOG, MT_TROOPSHOT, mobjtype_t};
+use crate::src::p_mobj::statenum_t;
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -238,13 +239,6 @@ pub const am_shell: C2RustUnnamed = 1;
 pub const am_clip: C2RustUnnamed = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

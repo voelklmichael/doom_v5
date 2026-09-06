@@ -1,4 +1,4 @@
-use crate::src::p_mobj::{mobj_t, actionf_t};
+use crate::src::p_mobj::mobj_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
 use crate::src::i_sound::I_ShutdownSound;
@@ -46,6 +46,7 @@ use crate::src::z_zone::PU_STATIC;
 use crate::src::sounds::NUMSFX;
 use crate::src::sounds::{NUMMUSIC, mus_None, mus_e1m1, mus_e1m5, mus_e1m9, mus_e2m4, mus_e2m5, mus_e2m6, mus_e2m7, mus_e3m2, mus_e3m3, mus_e3m4, mus_intro, mus_introa, mus_runnin};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
 pub type C2RustUnnamed = u32;
 pub const SNDDEVICE_CD: C2RustUnnamed = 10;
 pub const SNDDEVICE_AWE32: C2RustUnnamed = 9;
@@ -79,13 +80,6 @@ pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

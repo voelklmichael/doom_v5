@@ -1,7 +1,6 @@
 use crate::src::i_system::FILE;
 use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
-use crate::src::p_mobj::{actionf_t};
 use crate::src::i_system::I_Error;
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
@@ -72,6 +71,7 @@ use libc::snprintf;
 use crate::src::m_misc::__ctype_toupper_loc;
 use crate::src::i_system::{fclose, fopen, fprintf, fread, stderr};
 use crate::src::p_mobj::mobjtype_t;
+use crate::src::p_mobj::statenum_t;
 
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -143,13 +143,6 @@ pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
-pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
-pub type actionf_p2 = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
->;
-pub type think_t = actionf_t;
-pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
