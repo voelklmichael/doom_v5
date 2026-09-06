@@ -1,24 +1,15 @@
-extern "C" {
-    fn abs(__x: i32) -> i32;
-}
-pub type __int64_t = i64;
-pub type int64_t = __int64_t;
 pub type fixed_t = i32;
-pub const INT_MAX: i32 = __INT_MAX__;
-pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
+pub const INT_MAX: i32 = i32::MAX;
+pub const INT_MIN: i32 = i32::MIN;
 pub const FRACBITS: i32 = 16 as i32;
-pub unsafe fn FixedMul(mut a: fixed_t, mut b: fixed_t) -> fixed_t {
-    return (a as int64_t * b as int64_t >> FRACBITS) as fixed_t;
+pub fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t {
+    return (a as i64 * b as i64 >> FRACBITS) as fixed_t;
 }
-pub unsafe fn FixedDiv(mut a: fixed_t, mut b: fixed_t) -> fixed_t {
-    if abs(a as i32) >> 14 as i32
-        >= abs(b as i32)
-    {
+pub fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t {
+    if a.abs() >> 14 as i32 >= b.abs() {
         return if a ^ b < 0 as i32 { INT_MIN } else { INT_MAX }
     } else {
-        let mut result: int64_t = 0;
-        result = ((a as int64_t) << 16 as i32) / b as int64_t;
+        let result: i64 = ((a as i64) << 16 as i32) / b as i64;
         return result as fixed_t;
     };
 }
-pub const __INT_MAX__: i32 = 2147483647 as i32;
