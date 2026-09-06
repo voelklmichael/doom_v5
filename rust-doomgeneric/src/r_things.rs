@@ -53,6 +53,7 @@ use crate::src::r_main::R_PointToAngle;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use crate::src::p_mobj::{MF_SHADOW, MF_TRANSLATION, MF_TRANSSHIFT};
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -1353,35 +1354,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_1 = u32;
-pub const MF_TRANSSHIFT: C2RustUnnamed_1 = 26;
-pub const MF_TRANSLATION: C2RustUnnamed_1 = 201326592;
-pub const MF_NOTDMATCH: C2RustUnnamed_1 = 33554432;
-pub const MF_SKULLFLY: C2RustUnnamed_1 = 16777216;
-pub const MF_COUNTITEM: C2RustUnnamed_1 = 8388608;
-pub const MF_COUNTKILL: C2RustUnnamed_1 = 4194304;
-pub const MF_INFLOAT: C2RustUnnamed_1 = 2097152;
-pub const MF_CORPSE: C2RustUnnamed_1 = 1048576;
-pub const MF_NOBLOOD: C2RustUnnamed_1 = 524288;
-pub const MF_SHADOW: C2RustUnnamed_1 = 262144;
-pub const MF_DROPPED: C2RustUnnamed_1 = 131072;
-pub const MF_MISSILE: C2RustUnnamed_1 = 65536;
-pub const MF_TELEPORT: C2RustUnnamed_1 = 32768;
-pub const MF_FLOAT: C2RustUnnamed_1 = 16384;
-pub const MF_SLIDE: C2RustUnnamed_1 = 8192;
-pub const MF_NOCLIP: C2RustUnnamed_1 = 4096;
-pub const MF_PICKUP: C2RustUnnamed_1 = 2048;
-pub const MF_DROPOFF: C2RustUnnamed_1 = 1024;
-pub const MF_NOGRAVITY: C2RustUnnamed_1 = 512;
-pub const MF_SPAWNCEILING: C2RustUnnamed_1 = 256;
-pub const MF_JUSTATTACKED: C2RustUnnamed_1 = 128;
-pub const MF_JUSTHIT: C2RustUnnamed_1 = 64;
-pub const MF_AMBUSH: C2RustUnnamed_1 = 32;
-pub const MF_NOBLOCKMAP: C2RustUnnamed_1 = 16;
-pub const MF_NOSECTOR: C2RustUnnamed_1 = 8;
-pub const MF_SHOOTABLE: C2RustUnnamed_1 = 4;
-pub const MF_SOLID: C2RustUnnamed_1 = 2;
-pub const MF_SPECIAL: C2RustUnnamed_1 = 1;
 pub type lighttable_t = byte;
 #[derive(Copy, Clone)]
 #[repr(C)]
