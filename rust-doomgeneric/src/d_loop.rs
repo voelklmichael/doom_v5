@@ -20,6 +20,60 @@ use crate::src::stdint_types::size_t;
 use libc::printf;
 use libc::{memcpy, memset};
 
+pub struct DLoopState {
+    pub ticdata: [ticcmd_set_t; 128],
+    pub maketic: i32,
+    pub recvtic: i32,
+    pub gametic: i32,
+    pub skiptics: i32,
+    pub ticdup: i32,
+    pub new_sync: bool,
+    pub loop_interface: *mut loop_interface_t,
+    pub local_playeringame: [boolean; 8],
+    pub player_class: i32,
+    pub lasttime: i32,
+    pub frameon: i32,
+    pub frameskip: [i32; 4],
+    pub oldnettics: i32,
+    pub singletics: bool,
+}
+
+impl DLoopState {
+    pub const fn new() -> Self {
+        DLoopState {
+            ticdata: [ticcmd_set_t {
+                cmds: [ticcmd_t {
+                    forwardmove: 0,
+                    sidemove: 0,
+                    angleturn: 0,
+                    chatchar: 0,
+                    buttons: 0,
+                    consistancy: 0,
+                    buttons2: 0,
+                    inventory: 0,
+                    lookfly: 0,
+                    arti: 0,
+                }; 8],
+                ingame: [0; 8],
+            }; 128],
+            maketic: 0,
+            recvtic: 0,
+            gametic: 0,
+            skiptics: 0,
+            ticdup: 0,
+            new_sync: true,
+            loop_interface: ::core::ptr::null::<loop_interface_t>() as *mut loop_interface_t,
+            local_playeringame: [0; 8],
+            player_class: 0,
+            lasttime: 0,
+            frameon: 0,
+            frameskip: [0; 4],
+            oldnettics: 0,
+            singletics: false,
+        }
+    }
+}
+
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -73,39 +127,13 @@ pub struct ticcmd_set_t {
 }
 pub const NET_MAXPLAYERS: i32 = 8;
 pub const BACKUPTICS: i32 = 128;
-static mut ticdata: [ticcmd_set_t; 128] = [ticcmd_set_t {
-    cmds: [ticcmd_t {
-        forwardmove: 0,
-        sidemove: 0,
-        angleturn: 0,
-        chatchar: 0,
-        buttons: 0,
-        consistancy: 0,
-        buttons2: 0,
-        inventory: 0,
-        lookfly: 0,
-        arti: 0,
-    }; 8],
-    ingame: [0; 8],
-}; 128];
-static mut maketic: i32 = 0;
-static mut recvtic: i32 = 0;
-pub static mut gametic: i32 = 0;
-pub static mut singletics: bool = false;
-static mut localplayer: i32 = 0;
-static mut skiptics: i32 = 0;
-pub static mut ticdup: i32 = 0;
+static localplayer: i32 = 0;
 #[no_mangle]
-pub static mut offsetms: fixed_t = 0;
-static mut new_sync: bool = true;
-static mut loop_interface: *mut loop_interface_t =
-    ::core::ptr::null::<loop_interface_t>() as *mut loop_interface_t;
-static mut local_playeringame: [boolean; 8] = [0; 8];
-static mut player_class: i32 = 0;
+pub static offsetms: fixed_t = 0;
 unsafe fn GetAdjustedTime() -> i32 {
     let mut time_ms: i32 = 0;
     time_ms = I_GetTimeMS(unsafe { &mut game_state().i_timer });
-    if new_sync {
+    if unsafe { game_state() }.d_loop.new_sync {
         time_ms += offsetms as i32 / FRACUNIT;
     }
     return time_ms * TICRATE / 1000 as i32;
@@ -124,29 +152,29 @@ unsafe fn BuildNewTic() -> bool {
         lookfly: 0,
         arti: 0,
     };
-    gameticdiv = gametic / ticdup;
+    gameticdiv = unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup;
     I_StartTic();
     ::core::mem::transmute::<_, fn()>(
-        (*loop_interface)
+        (*unsafe { game_state() }.d_loop.loop_interface)
             .ProcessEvents
             .expect("non-null function pointer"),
     )();
     ::core::mem::transmute::<_, fn()>(
-        (*loop_interface)
+        (*unsafe { game_state() }.d_loop.loop_interface)
             .RunMenu
             .expect("non-null function pointer"),
     )();
     if drone {
         return false;
     }
-    if new_sync {
-        if !net_client_connected && maketic - gameticdiv > 2 as i32 {
+    if unsafe { game_state() }.d_loop.new_sync {
+        if !net_client_connected && unsafe { game_state() }.d_loop.maketic - gameticdiv > 2 as i32 {
             return false;
         }
-        if maketic - gameticdiv > 8 as i32 {
+        if unsafe { game_state() }.d_loop.maketic - gameticdiv > 8 as i32 {
             return false;
         }
-    } else if maketic - gameticdiv >= 5 as i32 {
+    } else if unsafe { game_state() }.d_loop.maketic - gameticdiv >= 5 as i32 {
         return false;
     }
     memset(
@@ -154,31 +182,35 @@ unsafe fn BuildNewTic() -> bool {
         0 as i32,
         ::core::mem::size_of::<ticcmd_t>() as size_t,
     );
-    (*loop_interface)
+    (*unsafe { game_state() }.d_loop.loop_interface)
         .BuildTiccmd
-        .expect("non-null function pointer")(&raw mut cmd, maketic);
-    ticdata[(maketic % BACKUPTICS) as usize].cmds[localplayer as usize] = cmd;
-    ticdata[(maketic % BACKUPTICS) as usize].ingame[localplayer as usize] = true_0 as boolean;
-    maketic += 1;
+        .expect("non-null function pointer")(
+        &raw mut cmd, unsafe { game_state() }.d_loop.maketic
+    );
+    unsafe { game_state() }.d_loop.ticdata
+        [(unsafe { game_state() }.d_loop.maketic % BACKUPTICS) as usize]
+        .cmds[localplayer as usize] = cmd;
+    unsafe { game_state() }.d_loop.ticdata
+        [(unsafe { game_state() }.d_loop.maketic % BACKUPTICS) as usize]
+        .ingame[localplayer as usize] = true_0 as boolean;
+    unsafe { game_state() }.d_loop.maketic += 1;
     return true;
 }
-#[no_mangle]
-pub static mut lasttime: i32 = 0;
 pub unsafe fn NetUpdate() {
     let mut nowtime: i32 = 0;
     let mut newtics: i32 = 0;
     let mut i: i32 = 0;
-    if singletics {
+    if unsafe { game_state() }.d_loop.singletics {
         return;
     }
-    nowtime = GetAdjustedTime() / ticdup;
-    newtics = nowtime - lasttime;
-    lasttime = nowtime;
-    if skiptics <= newtics {
-        newtics -= skiptics;
-        skiptics = 0 as i32;
+    nowtime = GetAdjustedTime() / unsafe { game_state() }.d_loop.ticdup;
+    newtics = nowtime - unsafe { game_state() }.d_loop.lasttime;
+    unsafe { game_state() }.d_loop.lasttime = nowtime;
+    if unsafe { game_state() }.d_loop.skiptics <= newtics {
+        newtics -= unsafe { game_state() }.d_loop.skiptics;
+        unsafe { game_state() }.d_loop.skiptics = 0 as i32;
     } else {
-        skiptics -= newtics;
+        unsafe { game_state() }.d_loop.skiptics -= newtics;
         newtics = 0 as i32;
     }
     i = 0 as i32;
@@ -204,16 +236,20 @@ pub unsafe fn D_ReceiveTic(mut ticcmds: *mut ticcmd_t, mut players_mask: *mut bo
     i = 0 as i32;
     while i < NET_MAXPLAYERS {
         if !(!drone && i == localplayer) {
-            ticdata[(recvtic % BACKUPTICS) as usize].cmds[i as usize] = *ticcmds.offset(i as isize);
-            ticdata[(recvtic % BACKUPTICS) as usize].ingame[i as usize] =
-                *players_mask.offset(i as isize);
+            unsafe { game_state() }.d_loop.ticdata
+                [(unsafe { game_state() }.d_loop.recvtic % BACKUPTICS) as usize]
+                .cmds[i as usize] = *ticcmds.offset(i as isize);
+            unsafe { game_state() }.d_loop.ticdata
+                [(unsafe { game_state() }.d_loop.recvtic % BACKUPTICS) as usize]
+                .ingame[i as usize] = *players_mask.offset(i as isize);
         }
         i += 1;
     }
-    recvtic += 1;
+    unsafe { game_state() }.d_loop.recvtic += 1;
 }
 pub unsafe fn D_StartGameLoop() {
-    lasttime = GetAdjustedTime() / ticdup;
+    unsafe { game_state() }.d_loop.lasttime =
+        GetAdjustedTime() / unsafe { game_state() }.d_loop.ticdup;
 }
 pub unsafe fn D_StartNetGame(
     mut settings: *mut net_gamesettings_t,
@@ -221,36 +257,33 @@ pub unsafe fn D_StartNetGame(
 ) {
     (*settings).consoleplayer = 0 as i32;
     (*settings).num_players = 1 as i32;
-    (*settings).player_classes[0 as i32 as usize] = player_class;
+    (*settings).player_classes[0 as i32 as usize] = unsafe { game_state() }.d_loop.player_class;
     (*settings).new_sync = 0 as i32;
     (*settings).extratics = 1 as i32;
     (*settings).ticdup = 1 as i32;
-    ticdup = (*settings).ticdup;
-    new_sync = (*settings).new_sync != 0;
+    unsafe { game_state() }.d_loop.ticdup = (*settings).ticdup;
+    unsafe { game_state() }.d_loop.new_sync = (*settings).new_sync != 0;
 }
 pub unsafe fn D_InitNetGame(mut connect_data: *mut net_connect_data_t) -> bool {
     let mut result: bool = false;
     I_AtExit(Some(D_QuitNetGame as unsafe extern "C" fn() -> ()), true);
-    player_class = (*connect_data).player_class;
+    unsafe { game_state() }.d_loop.player_class = (*connect_data).player_class;
     return result;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_QuitNetGame() {}
 unsafe fn GetLowTic() -> i32 {
     let mut lowtic: i32 = 0;
-    lowtic = maketic;
+    lowtic = unsafe { game_state() }.d_loop.maketic;
     return lowtic;
 }
-static mut frameon: i32 = 0;
-static mut frameskip: [i32; 4] = [0; 4];
-static mut oldnettics: i32 = 0;
 unsafe fn OldNetSync() {
     let mut i: u32 = 0;
     let mut keyplayer: i32 = -(1 as i32);
-    frameon += 1;
+    unsafe { game_state() }.d_loop.frameon += 1;
     i = 0 as u32;
     while i < NET_MAXPLAYERS as u32 {
-        if local_playeringame[i as usize] != 0 {
+        if unsafe { game_state() }.d_loop.local_playeringame[i as usize] != 0 {
             keyplayer = i as i32;
             break;
         } else {
@@ -261,17 +294,20 @@ unsafe fn OldNetSync() {
         return;
     }
     if !(localplayer == keyplayer) {
-        if maketic <= recvtic {
-            lasttime -= 1;
+        if unsafe { game_state() }.d_loop.maketic <= unsafe { game_state() }.d_loop.recvtic {
+            unsafe { game_state() }.d_loop.lasttime -= 1;
         }
-        frameskip[(frameon & 3 as i32) as usize] = (oldnettics > recvtic) as i32;
-        oldnettics = maketic;
-        if frameskip[0 as i32 as usize] != 0
-            && frameskip[1 as i32 as usize] != 0
-            && frameskip[2 as i32 as usize] != 0
-            && frameskip[3 as i32 as usize] != 0
+        unsafe { game_state() }.d_loop.frameskip
+            [(unsafe { game_state() }.d_loop.frameon & 3 as i32) as usize] =
+            (unsafe { game_state() }.d_loop.oldnettics > unsafe { game_state() }.d_loop.recvtic)
+                as i32;
+        unsafe { game_state() }.d_loop.oldnettics = unsafe { game_state() }.d_loop.maketic;
+        if unsafe { game_state() }.d_loop.frameskip[0 as i32 as usize] != 0
+            && unsafe { game_state() }.d_loop.frameskip[1 as i32 as usize] != 0
+            && unsafe { game_state() }.d_loop.frameskip[2 as i32 as usize] != 0
+            && unsafe { game_state() }.d_loop.frameskip[3 as i32 as usize] != 0
         {
-            skiptics = 1 as i32;
+            unsafe { game_state() }.d_loop.skiptics = 1 as i32;
         }
     }
 }
@@ -281,7 +317,7 @@ unsafe fn PlayersInGame() -> bool {
     if net_client_connected {
         i = 0 as u32;
         while i < NET_MAXPLAYERS as u32 {
-            result = result || local_playeringame[i as usize] != 0;
+            result = result || unsafe { game_state() }.d_loop.local_playeringame[i as usize] != 0;
             i = i.wrapping_add(1);
         }
     }
@@ -321,17 +357,19 @@ pub unsafe fn TryRunTics() {
     let mut realtics: i32 = 0;
     let mut availabletics: i32 = 0;
     let mut counts: i32 = 0;
-    entertic = I_GetTime(unsafe { &mut game_state().i_timer }) / ticdup;
+    entertic =
+        I_GetTime(unsafe { &mut game_state().i_timer }) / unsafe { game_state() }.d_loop.ticdup;
     realtics = entertic - oldentertics;
     oldentertics = entertic;
-    if singletics {
+    if unsafe { game_state() }.d_loop.singletics {
         BuildNewTic();
     } else {
         NetUpdate();
     }
     lowtic = GetLowTic();
-    availabletics = lowtic - gametic / ticdup;
-    if new_sync {
+    availabletics =
+        lowtic - unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup;
+    if unsafe { game_state() }.d_loop.new_sync {
         counts = availabletics;
     } else {
         if realtics < availabletics - 1 as i32 {
@@ -351,13 +389,20 @@ pub unsafe fn TryRunTics() {
     if counts < 1 as i32 {
         counts = 1 as i32;
     }
-    while !PlayersInGame() || lowtic < gametic / ticdup + counts {
+    while !PlayersInGame()
+        || lowtic
+            < unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup
+                + counts
+    {
         NetUpdate();
         lowtic = GetLowTic();
-        if lowtic < gametic / ticdup {
+        if lowtic < unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup {
             I_Error("TryRunTics: lowtic < gametic");
         }
-        if I_GetTime(unsafe { &mut game_state().i_timer }) / ticdup - entertic > 0 as i32 {
+        if I_GetTime(unsafe { &mut game_state().i_timer }) / unsafe { game_state() }.d_loop.ticdup
+            - entertic
+            > 0 as i32
+        {
             return;
         }
         I_Sleep(1 as i32);
@@ -372,26 +417,33 @@ pub unsafe fn TryRunTics() {
         if !PlayersInGame() {
             return;
         }
-        set = (&raw mut ticdata as *mut ticcmd_set_t)
-            .offset((gametic / ticdup % BACKUPTICS) as isize) as *mut ticcmd_set_t;
+        set = (&raw mut unsafe { game_state() }.d_loop.ticdata as *mut ticcmd_set_t).offset(
+            (unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup
+                % BACKUPTICS) as isize,
+        ) as *mut ticcmd_set_t;
         if !net_client_connected {
             SinglePlayerClear(set);
         }
         i = 0 as i32;
-        while i < ticdup {
-            if gametic / ticdup > lowtic {
+        while i < unsafe { game_state() }.d_loop.ticdup {
+            if unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup
+                > lowtic
+            {
                 I_Error("gametic>lowtic");
             }
             memcpy(
-                &raw mut local_playeringame as *mut boolean as *mut ::core::ffi::c_void,
+                &raw mut unsafe { game_state() }.d_loop.local_playeringame as *mut boolean
+                    as *mut ::core::ffi::c_void,
                 &raw mut (*set).ingame as *mut boolean as *const ::core::ffi::c_void,
                 ::core::mem::size_of::<[boolean; 8]>() as size_t,
             );
-            (*loop_interface).RunTic.expect("non-null function pointer")(
+            (*unsafe { game_state() }.d_loop.loop_interface)
+                .RunTic
+                .expect("non-null function pointer")(
                 &raw mut (*set).cmds as *mut ticcmd_t,
                 &raw mut (*set).ingame as *mut boolean,
             );
-            gametic += 1;
+            unsafe { game_state() }.d_loop.gametic += 1;
             TicdupSquash(set);
             i += 1;
         }
@@ -399,5 +451,5 @@ pub unsafe fn TryRunTics() {
     }
 }
 pub unsafe fn D_RegisterLoopCallbacks(mut i: *mut loop_interface_t) {
-    loop_interface = i;
+    unsafe { game_state() }.d_loop.loop_interface = i;
 }

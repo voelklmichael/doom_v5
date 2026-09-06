@@ -20,7 +20,6 @@ use crate::src::g_game::players;
 use crate::src::g_game::viewactive;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
-use crate::src::hu_stuff::hu_font;
 use crate::src::hu_stuff::HU_FONTSIZE;
 use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::i_video::I_VideoBuffer;
@@ -491,7 +490,7 @@ pub unsafe fn F_TextWrite(state: &mut FFinaleState) {
             if c < 0 as i32 || c > HU_FONTSIZE {
                 cx += 4 as i32;
             } else {
-                w = (*hu_font[c as usize]).width as i32;
+                w = (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
                 if cx + w > SCREENWIDTH {
                     break;
                 }
@@ -499,7 +498,7 @@ pub unsafe fn F_TextWrite(state: &mut FFinaleState) {
                     unsafe { &mut game_state().v_video },
                     cx,
                     cy,
-                    hu_font[c as usize],
+                    unsafe { game_state() }.hu_stuff.hu_font[c as usize],
                 );
                 cx += w;
             }
@@ -827,7 +826,7 @@ pub unsafe fn F_CastPrint(text: &str) {
         if c < 0 as i32 || c > HU_FONTSIZE {
             width += 4 as i32;
         } else {
-            w = (*hu_font[c as usize]).width as i32;
+            w = (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
             width += w;
         }
     }
@@ -837,12 +836,12 @@ pub unsafe fn F_CastPrint(text: &str) {
         if c < 0 as i32 || c > HU_FONTSIZE {
             cx += 4 as i32;
         } else {
-            w = (*hu_font[c as usize]).width as i32;
+            w = (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
             V_DrawPatch(
                 unsafe { &mut game_state().v_video },
                 cx,
                 180 as i32,
-                hu_font[c as usize],
+                unsafe { game_state() }.hu_stuff.hu_font[c as usize],
             );
             cx += w;
         }

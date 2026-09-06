@@ -531,8 +531,10 @@ pub unsafe fn AM_restoreScaleAndLoc() {
         m_x = old_m_x;
         m_y = old_m_y;
     } else {
-        m_x = ((*(*plr).mo).x as i32 - m_w as i32 / 2 as i32) as fixed_t;
-        m_y = ((*(*plr).mo).y as i32 - m_h as i32 / 2 as i32) as fixed_t;
+        m_x = ((*(*unsafe { game_state() }.hu_stuff.plr).mo).x as i32 - m_w as i32 / 2 as i32)
+            as fixed_t;
+        m_y = ((*(*unsafe { game_state() }.hu_stuff.plr).mo).y as i32 - m_h as i32 / 2 as i32)
+            as fixed_t;
     }
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
@@ -619,21 +621,26 @@ pub unsafe fn AM_initVariables() {
     m_w = FixedMul((f_w as fixed_t) << 16 as i32, scale_ftom);
     m_h = FixedMul((f_h as fixed_t) << 16 as i32, scale_ftom);
     if playeringame[consoleplayer as usize] != 0 {
-        plr = (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t;
+        unsafe { game_state() }.hu_stuff.plr =
+            (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t;
     } else {
-        plr = (&raw mut players as *mut player_t).offset(0 as i32 as isize) as *mut player_t;
+        unsafe { game_state() }.hu_stuff.plr =
+            (&raw mut players as *mut player_t).offset(0 as i32 as isize) as *mut player_t;
         pnum = 0 as i32;
         while pnum < MAXPLAYERS {
             if playeringame[pnum as usize] != 0 {
-                plr = (&raw mut players as *mut player_t).offset(pnum as isize) as *mut player_t;
+                unsafe { game_state() }.hu_stuff.plr =
+                    (&raw mut players as *mut player_t).offset(pnum as isize) as *mut player_t;
                 break;
             } else {
                 pnum += 1;
             }
         }
     }
-    m_x = ((*(*plr).mo).x as i32 - m_w as i32 / 2 as i32) as fixed_t;
-    m_y = ((*(*plr).mo).y as i32 - m_h as i32 / 2 as i32) as fixed_t;
+    m_x =
+        ((*(*unsafe { game_state() }.hu_stuff.plr).mo).x as i32 - m_w as i32 / 2 as i32) as fixed_t;
+    m_y =
+        ((*(*unsafe { game_state() }.hu_stuff.plr).mo).y as i32 - m_h as i32 / 2 as i32) as fixed_t;
     AM_changeWindowLoc();
     old_m_x = m_x;
     old_m_y = m_y;
@@ -798,19 +805,23 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
             followplayer = (followplayer == 0) as i32;
             f_oldloc.x = INT_MAX as fixed_t;
             if followplayer != 0 {
-                (*plr).message = b"Follow Mode ON\0" as *const u8 as *const ::core::ffi::c_char
+                (*unsafe { game_state() }.hu_stuff.plr).message = b"Follow Mode ON\0" as *const u8
+                    as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
             } else {
-                (*plr).message = b"Follow Mode OFF\0" as *const u8 as *const ::core::ffi::c_char
+                (*unsafe { game_state() }.hu_stuff.plr).message = b"Follow Mode OFF\0" as *const u8
+                    as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
             }
         } else if key == key_map_grid {
             grid = (grid == 0) as i32;
             if grid != 0 {
-                (*plr).message = b"Grid ON\0" as *const u8 as *const ::core::ffi::c_char
+                (*unsafe { game_state() }.hu_stuff.plr).message = b"Grid ON\0" as *const u8
+                    as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
             } else {
-                (*plr).message = b"Grid OFF\0" as *const u8 as *const ::core::ffi::c_char
+                (*unsafe { game_state() }.hu_stuff.plr).message = b"Grid OFF\0" as *const u8
+                    as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
             }
         } else if key == key_map_mark {
@@ -821,11 +832,13 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
                 b"Marked Spot\0" as *const u8 as *const ::core::ffi::c_char,
                 markpointnum,
             );
-            (*plr).message = &raw mut buffer as *mut ::core::ffi::c_char;
+            (*unsafe { game_state() }.hu_stuff.plr).message =
+                &raw mut buffer as *mut ::core::ffi::c_char;
             AM_addMark();
         } else if key == key_map_clearmark {
             AM_clearMarks();
-            (*plr).message = b"All Marks Cleared\0" as *const u8 as *const ::core::ffi::c_char
+            (*unsafe { game_state() }.hu_stuff.plr).message = b"All Marks Cleared\0" as *const u8
+                as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
         } else {
             rc = false_0;
@@ -874,21 +887,25 @@ pub unsafe fn AM_changeWindowScale() {
     };
 }
 pub unsafe fn AM_doFollowPlayer() {
-    if f_oldloc.x != (*(*plr).mo).x || f_oldloc.y != (*(*plr).mo).y {
+    if f_oldloc.x != (*(*unsafe { game_state() }.hu_stuff.plr).mo).x
+        || f_oldloc.y != (*(*unsafe { game_state() }.hu_stuff.plr).mo).y
+    {
         m_x = (FixedMul(
-            (FixedMul((*(*plr).mo).x, scale_mtof) >> 16 as i32) << 16 as i32,
+            (FixedMul((*(*unsafe { game_state() }.hu_stuff.plr).mo).x, scale_mtof) >> 16 as i32)
+                << 16 as i32,
             scale_ftom,
         ) as i32
             - m_w as i32 / 2 as i32) as fixed_t;
         m_y = (FixedMul(
-            (FixedMul((*(*plr).mo).y, scale_mtof) >> 16 as i32) << 16 as i32,
+            (FixedMul((*(*unsafe { game_state() }.hu_stuff.plr).mo).y, scale_mtof) >> 16 as i32)
+                << 16 as i32,
             scale_ftom,
         ) as i32
             - m_h as i32 / 2 as i32) as fixed_t;
         m_x2 = m_x + m_w;
         m_y2 = m_y + m_h;
-        f_oldloc.x = (*(*plr).mo).x;
-        f_oldloc.y = (*(*plr).mo).y;
+        f_oldloc.x = (*(*unsafe { game_state() }.hu_stuff.plr).mo).x;
+        f_oldloc.y = (*(*unsafe { game_state() }.hu_stuff.plr).mo).y;
     }
 }
 pub unsafe fn AM_updateLightLev() {
@@ -1209,7 +1226,7 @@ pub unsafe fn AM_drawWalls() {
                     AM_drawMline(&raw mut l, TSWALLCOLORS + lightlev);
                 }
             }
-        } else if (*plr).powers[pw_allmap as i32 as usize] != 0 {
+        } else if (*unsafe { game_state() }.hu_stuff.plr).powers[pw_allmap as i32 as usize] != 0 {
             if (*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE == 0 {
                 AM_drawMline(&raw mut l, GRAYS + 3 as i32);
             }
@@ -1281,10 +1298,10 @@ pub unsafe fn AM_drawPlayers() {
                     .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
                     as i32,
                 0 as fixed_t,
-                (*(*plr).mo).angle,
+                (*(*unsafe { game_state() }.hu_stuff.plr).mo).angle,
                 WHITE,
-                (*(*plr).mo).x,
-                (*(*plr).mo).y,
+                (*(*unsafe { game_state() }.hu_stuff.plr).mo).x,
+                (*(*unsafe { game_state() }.hu_stuff.plr).mo).y,
             );
         } else {
             AM_drawLineCharacter(
@@ -1293,10 +1310,10 @@ pub unsafe fn AM_drawPlayers() {
                     .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
                     as i32,
                 0 as fixed_t,
-                (*(*plr).mo).angle,
+                (*(*unsafe { game_state() }.hu_stuff.plr).mo).angle,
                 WHITE,
-                (*(*plr).mo).x,
-                (*(*plr).mo).y,
+                (*(*unsafe { game_state() }.hu_stuff.plr).mo).x,
+                (*(*unsafe { game_state() }.hu_stuff.plr).mo).y,
             );
         }
         return;
@@ -1305,7 +1322,7 @@ pub unsafe fn AM_drawPlayers() {
     while i < MAXPLAYERS {
         their_color += 1;
         p = (&raw mut players as *mut player_t).offset(i as isize) as *mut player_t;
-        if !(deathmatch != 0 && !singledemo && p != plr) {
+        if !(deathmatch != 0 && !singledemo && p != unsafe { game_state() }.hu_stuff.plr) {
             if !(playeringame[i as usize] == 0) {
                 if (*p).powers[pw_invisibility as i32 as usize] != 0 {
                     color = 246 as i32;
