@@ -14,7 +14,7 @@ use crate::src::p_lights::EV_TurnTagLightsOff;
 use crate::src::p_lights::P_SpawnGlowingLight;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_switch::P_ChangeSwitchTexture;
-use crate::src::p_plats::activeplats;
+use crate::src::p_plats::PPlatsState;
 use crate::src::p_plats::EV_StopPlat;
 use crate::src::p_doors::P_SpawnDoorCloseIn30;
 use crate::src::p_doors::P_SpawnDoorRaiseIn5Mins;
@@ -752,7 +752,7 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         10 => {
-            EV_DoPlat(line, downWaitUpStay, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, downWaitUpStay, 0 as i32);
             (*line).special = 0 as i16;
         }
         12 => {
@@ -776,7 +776,7 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         22 => {
-            EV_DoPlat(line, raiseToNearestAndChange, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32);
             (*line).special = 0 as i16;
         }
         25 => {
@@ -820,11 +820,11 @@ pub unsafe fn P_CrossSpecialLine(
             G_ExitLevel();
         }
         53 => {
-            EV_DoPlat(line, perpetualRaise, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, perpetualRaise, 0 as i32);
             (*line).special = 0 as i16;
         }
         54 => {
-            EV_StopPlat(line);
+            EV_StopPlat(unsafe { &mut game_state().p_plats }, line);
             (*line).special = 0 as i16;
         }
         56 => {
@@ -868,7 +868,7 @@ pub unsafe fn P_CrossSpecialLine(
             (*line).special = 0 as i16;
         }
         121 => {
-            EV_DoPlat(line, blazeDWUS, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, blazeDWUS, 0 as i32);
             (*line).special = 0 as i16;
         }
         124 => {
@@ -928,13 +928,13 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoDoor(line, vld_open);
         }
         87 => {
-            EV_DoPlat(line, perpetualRaise, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, perpetualRaise, 0 as i32);
         }
         88 => {
-            EV_DoPlat(line, downWaitUpStay, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, downWaitUpStay, 0 as i32);
         }
         89 => {
-            EV_StopPlat(line);
+            EV_StopPlat(unsafe { &mut game_state().p_plats }, line);
         }
         90 => {
             EV_DoDoor(line, vld_normal);
@@ -952,7 +952,7 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoFloor(line, raiseFloorCrush);
         }
         95 => {
-            EV_DoPlat(line, raiseToNearestAndChange, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32);
         }
         96 => {
             EV_DoFloor(line, raiseToTexture);
@@ -973,7 +973,7 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoDoor(line, vld_blazeClose);
         }
         120 => {
-            EV_DoPlat(line, blazeDWUS, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, blazeDWUS, 0 as i32);
         }
         126 => {
             if (*thing).player.is_null() {
@@ -1016,7 +1016,7 @@ pub unsafe fn P_ShootSpecialLine(
             P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 1 as i32);
         }
         47 => {
-            EV_DoPlat(line, raiseToNearestAndChange, 0 as i32);
+            EV_DoPlat(unsafe { &mut game_state().p_plats }, line, raiseToNearestAndChange, 0 as i32);
             P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 0 as i32);
         }
         _ => {}
@@ -1328,7 +1328,7 @@ pub static mut numlinespecials: i16 = 0;
 #[no_mangle]
 pub static mut linespeciallist: [*mut line_t; 64] = [::core::ptr::null::<line_t>()
     as *mut line_t; 64];
-pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState) {
+pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState, plats_state: &mut PPlatsState) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: i32 = 0;
     if timelimit > 0 as i32 && deathmatch != 0 {
@@ -1405,7 +1405,7 @@ pub unsafe fn P_SpawnSpecials(state: &mut PSwitchState) {
     }
     i = 0 as i32;
     while i < MAXPLATS {
-        activeplats[i as usize] = ::core::ptr::null_mut::<plat_t>();
+        plats_state.activeplats[i as usize] = ::core::ptr::null_mut::<plat_t>();
         i += 1;
     }
     i = 0 as i32;
