@@ -1,12 +1,6 @@
 use crate::src::m_config::M_BindVariable;
-extern "C" {
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-}
+use crate::src::m_misc::M_snprintf;
+
 pub type size_t = usize;
 pub const NUM_VIRTUAL_BUTTONS: i32 = 10 as i32;
 static mut usejoystick: i32 = 0 as i32;

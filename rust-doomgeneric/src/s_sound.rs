@@ -25,6 +25,7 @@ use crate::src::i_system::I_AtExit;
 use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
 use crate::src::r_main::R_PointToAngle2;
+use crate::src::m_misc::M_snprintf;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -34,12 +35,6 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
         lump: i32,

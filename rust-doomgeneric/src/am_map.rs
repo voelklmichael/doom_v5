@@ -36,6 +36,7 @@ use crate::src::p_setup::numsectors;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::g_game::deathmatch;
 use crate::src::g_game::playeringame;
+use crate::src::m_misc::M_snprintf;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -59,12 +60,6 @@ extern "C" {
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut sectors: *mut sector_t;
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     static mut netgame: bool;
     static mut consoleplayer: i32;

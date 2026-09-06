@@ -124,6 +124,7 @@ use crate::src::doomstat::gamemission;
 use crate::src::am_map::automapactive;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::g_game::deathmatch;
+use crate::src::m_misc::M_snprintf;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -173,12 +174,6 @@ extern "C" {
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     fn M_LoadDefaults();
     fn M_SaveDefaults();
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn M_Init();
     fn I_InitGraphics();
     fn G_CheckDemoStatus() -> boolean;

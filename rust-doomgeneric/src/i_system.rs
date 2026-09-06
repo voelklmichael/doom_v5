@@ -1,5 +1,6 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
 use crate::src::m_misc::M_StrToInt;
+use crate::src::m_misc::M_snprintf;
 
 extern "C" {
     pub type FILE;
@@ -36,12 +37,6 @@ extern "C" {
     fn strcasecmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
     ) -> i32;
 }
 pub type size_t = usize;
