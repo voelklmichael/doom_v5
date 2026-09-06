@@ -68,23 +68,23 @@ pub const it_bluecard: C2RustUnnamed_0 = 0;
 #[derive(Copy, Clone)]
 pub enum StateAction {
     None,
-    Mobj(unsafe extern "C" fn(*mut mobj_t)),
-    Weapon(unsafe extern "C" fn(*mut player_t, *mut pspdef_t)),
+    Mobj(unsafe fn(*mut mobj_t)),
+    Weapon(unsafe fn(*mut player_t, *mut pspdef_t)),
 }
 #[derive(Copy, Clone)]
 pub enum ThinkerFn {
     Paused,
     Removed,
     Unresolved,
-    Mobj(unsafe extern "C" fn(*mut mobj_t)),
-    Ceiling(unsafe extern "C" fn(*mut ceiling_t)),
-    Door(unsafe extern "C" fn(*mut vldoor_t)),
-    Floor(unsafe extern "C" fn(*mut floormove_t)),
-    Plat(unsafe extern "C" fn(*mut plat_t)),
-    FireFlicker(unsafe extern "C" fn(*mut fireflicker_t)),
-    LightFlash(unsafe extern "C" fn(*mut lightflash_t)),
-    Strobe(unsafe extern "C" fn(*mut strobe_t)),
-    Glow(unsafe extern "C" fn(*mut glow_t)),
+    Mobj(unsafe fn(*mut mobj_t)),
+    Ceiling(unsafe fn(*mut ceiling_t)),
+    Door(unsafe fn(*mut vldoor_t)),
+    Floor(unsafe fn(*mut floormove_t)),
+    Plat(unsafe fn(*mut plat_t)),
+    FireFlicker(unsafe fn(*mut fireflicker_t)),
+    LightFlash(unsafe fn(*mut lightflash_t)),
+    Strobe(unsafe fn(*mut strobe_t)),
+    Glow(unsafe fn(*mut glow_t)),
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -1839,8 +1839,7 @@ pub unsafe extern "C" fn P_NightmareRespawn(mut mobj: *mut mobj_t) {
     (*mo).reactiontime = 18 as i32;
     P_RemoveMobj(mobj);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_MobjThinker(mut mobj: *mut mobj_t) {
+pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
     if (*mobj).momx != 0 || (*mobj).momy != 0
         || (*mobj).flags & MF_SKULLFLY as i32 != 0
     {

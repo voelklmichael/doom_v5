@@ -1004,8 +1004,7 @@ pub const CEILSPEED: i32 = FRACUNIT;
 pub const MAXCEILINGS: i32 = 30 as i32;
 pub static mut activeceilings: [*mut ceiling_t; 30] = [::core::ptr::null::<ceiling_t>()
     as *mut ceiling_t; 30];
-#[no_mangle]
-pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
+pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
     let mut res: result_e = ok;
     match (*ceiling).direction {
         1 => {

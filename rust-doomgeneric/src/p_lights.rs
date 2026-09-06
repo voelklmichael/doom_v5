@@ -1024,8 +1024,7 @@ pub struct glow_t {
 pub const GLOWSPEED: i32 = 8 as i32;
 pub const STROBEBRIGHT: i32 = 5 as i32;
 pub const SLOWDARK: i32 = 35 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn T_FireFlicker(mut flick: *mut fireflicker_t) {
+pub unsafe fn T_FireFlicker(mut flick: *mut fireflicker_t) {
     let mut amount: i32 = 0;
     (*flick).count -= 1;
     if (*flick).count != 0 {
@@ -1058,8 +1057,7 @@ pub unsafe fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
     ) + 16 as i32;
     (*flick).count = 4 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn T_LightFlash(mut flash: *mut lightflash_t) {
+pub unsafe fn T_LightFlash(mut flash: *mut lightflash_t) {
     (*flash).count -= 1;
     if (*flash).count != 0 {
         return;
@@ -1092,8 +1090,7 @@ pub unsafe fn P_SpawnLightFlash(mut sector: *mut sector_t) {
     (*flash).mintime = 7 as i32;
     (*flash).count = (P_Random() & (*flash).maxtime) + 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn T_StrobeFlash(mut flash: *mut strobe_t) {
+pub unsafe fn T_StrobeFlash(mut flash: *mut strobe_t) {
     (*flash).count -= 1;
     if (*flash).count != 0 {
         return;
@@ -1215,8 +1212,7 @@ pub unsafe fn EV_LightTurnOn(
         sector = sector.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn T_Glow(mut g: *mut glow_t) {
+pub unsafe fn T_Glow(mut g: *mut glow_t) {
     match (*g).direction {
         -1 => {
             (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as i32

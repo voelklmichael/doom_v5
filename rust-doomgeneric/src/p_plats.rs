@@ -1013,8 +1013,7 @@ pub const PLATSPEED: i32 = FRACUNIT;
 pub const MAXPLATS: i32 = 30 as i32;
 pub static mut activeplats: [*mut plat_t; 30] = [::core::ptr::null::<plat_t>()
     as *mut plat_t; 30];
-#[no_mangle]
-pub unsafe extern "C" fn T_PlatRaise(mut plat: *mut plat_t) {
+pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
     let mut res: result_e = ok;
     match (*plat).status as u32 {
         0 => {

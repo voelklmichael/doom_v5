@@ -1024,8 +1024,7 @@ pub const TICRATE: i32 = 35 as i32;
 pub const FRACBITS: i32 = 16 as i32;
 pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const VDOORWAIT: i32 = 150 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
+pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
     let mut res: result_e = ok;
     match (*door).direction {
         0 => {
