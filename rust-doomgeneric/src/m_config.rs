@@ -66,7 +66,7 @@ pub const KEY_F11: i32 = 0x80 as i32
     + 0x57 as i32;
 pub const KEY_F12: i32 = 0x80 as i32
     + 0x58 as i32;
-pub const KEY_BACKSPACE: i32 = 0x7f as i32;
+pub const KEY_BACKSPACE: i32 = 0x7f;
 pub const KEY_PAUSE: i32 = 0xff as i32;
 pub const KEY_MINUS: i32 = 0x2d as i32;
 pub const KEY_RSHIFT: i32 = 0x80 as i32

@@ -28,6 +28,5 @@ pub unsafe fn M_AddToBox(
         *box_0.offset(BOXTOP as i32 as isize) = y;
     }
 }
-pub const __INT_MAX__: i32 = 2147483647 as i32;
-pub const INT_MAX: i32 = __INT_MAX__;
-pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
+pub const INT_MAX: i32 = i32::MAX;
+pub const INT_MIN: i32 = i32::MIN;

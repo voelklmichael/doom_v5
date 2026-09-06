@@ -59,8 +59,8 @@ pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 pub const SHRT_MAX: i32 = __SHRT_MAX__;
-pub const INT_MAX: i32 = __INT_MAX__;
-pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
+pub const INT_MAX: i32 = i32::MAX;
+pub const INT_MIN: i32 = i32::MIN;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
@@ -651,4 +651,3 @@ pub unsafe fn R_StoreWallRange(
     ds_p = ds_p.offset(1);
 }
 pub const __SHRT_MAX__: i32 = 32767 as i32;
-pub const __INT_MAX__: i32 = 2147483647 as i32;

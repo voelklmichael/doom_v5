@@ -11,7 +11,7 @@ pub const KEY_STRAFE_R: i32 = 0xa1 as i32;
 pub const KEY_USE: i32 = 0xa2 as i32;
 pub const KEY_FIRE: i32 = 0xa3 as i32;
 pub const KEY_ESCAPE: i32 = 27 as i32;
-pub const KEY_ENTER: i32 = 13 as i32;
+pub const KEY_ENTER: i32 = 13;
 pub const KEY_TAB: i32 = 9 as i32;
 pub const KEY_F1: i32 = 0x80 as i32
     + 0x3b as i32;
@@ -37,7 +37,7 @@ pub const KEY_F11: i32 = 0x80 as i32
     + 0x57 as i32;
 pub const KEY_F12: i32 = 0x80 as i32
     + 0x58 as i32;
-pub const KEY_BACKSPACE: i32 = 0x7f as i32;
+pub const KEY_BACKSPACE: i32 = 0x7f;
 pub const KEY_PAUSE: i32 = 0xff as i32;
 pub const KEY_EQUALS: i32 = 0x3d as i32;
 pub const KEY_MINUS: i32 = 0x2d as i32;

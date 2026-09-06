@@ -45,8 +45,8 @@ pub struct hu_itext_t {
 }
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
-pub const KEY_ENTER: i32 = 13 as i32;
-pub const KEY_BACKSPACE: i32 = 0x7f as i32;
+pub const KEY_ENTER: i32 = 13;
+pub const KEY_BACKSPACE: i32 = 0x7f;
 pub const SCREENWIDTH: i32 = 320 as i32;
 pub const HU_MAXLINELENGTH: i32 = 80 as i32;
 #[no_mangle]

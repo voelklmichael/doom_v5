@@ -844,7 +844,7 @@ pub const KEY_DOWNARROW: i32 = 0xaf as i32;
 pub const KEY_USE: i32 = 0xa2 as i32;
 pub const KEY_FIRE: i32 = 0xa3 as i32;
 pub const KEY_ESCAPE: i32 = 27 as i32;
-pub const KEY_ENTER: i32 = 13 as i32;
+pub const KEY_ENTER: i32 = 13;
 pub const KEY_RSHIFT: i32 = 0x80 as i32
     + 0x36 as i32;
 pub const DOOMGENERIC_RESX: i32 = 640 as i32;

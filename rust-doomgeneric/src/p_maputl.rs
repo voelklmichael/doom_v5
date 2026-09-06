@@ -50,7 +50,7 @@ pub struct intercepts_overrun_t {
     pub addr: *mut ::core::ffi::c_void,
     pub int16_array: bool,
 }
-pub const INT_MAX: i32 = __INT_MAX__;
+pub const INT_MAX: i32 = i32::MAX;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
@@ -850,4 +850,3 @@ pub unsafe fn P_PathTraverse(
     }
     return P_TraverseIntercepts(trav as traverser_t, FRACUNIT);
 }
-pub const __INT_MAX__: i32 = 2147483647 as i32;

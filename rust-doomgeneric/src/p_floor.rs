@@ -48,7 +48,7 @@ pub const crushed: result_e = 1;
 pub const ok: result_e = 0;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
-pub const INT_MAX: i32 = __INT_MAX__;
+pub const INT_MAX: i32 = i32::MAX;
 pub const FRACBITS: i32 = 16 as i32;
 pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const ML_TWOSIDED: i32 = 4 as i32;
@@ -518,7 +518,6 @@ pub unsafe fn EV_BuildStairs(
     }
     return rtn;
 }
-pub const __INT_MAX__: i32 = 2147483647 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
