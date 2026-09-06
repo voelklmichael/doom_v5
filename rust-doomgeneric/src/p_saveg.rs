@@ -129,7 +129,7 @@ pub unsafe fn P_SaveGameFile(
     );
     return filename;
 }
-unsafe extern "C" fn saveg_read8() -> byte {
+unsafe fn saveg_read8() -> byte {
     let mut result: byte = 0;
     if fread(
         &raw mut result as *mut ::core::ffi::c_void,
@@ -149,7 +149,7 @@ unsafe extern "C" fn saveg_read8() -> byte {
     }
     return result;
 }
-unsafe extern "C" fn saveg_write8(mut value: byte) {
+unsafe fn saveg_write8(mut value: byte) {
     if fwrite(
         &raw mut value as *const ::core::ffi::c_void,
         1 as size_t,
@@ -167,13 +167,13 @@ unsafe extern "C" fn saveg_write8(mut value: byte) {
         }
     }
 }
-unsafe extern "C" fn saveg_read16() -> i16 {
+unsafe fn saveg_read16() -> i16 {
     let mut result: i32 = 0;
     result = saveg_read8() as i32;
     result |= (saveg_read8() as i32) << 8 as i32;
     return result as i16;
 }
-unsafe extern "C" fn saveg_write16(mut value: i16) {
+unsafe fn saveg_write16(mut value: i16) {
     saveg_write8((value as i32 & 0xff as i32) as byte);
     saveg_write8(
         (value as i32 >> 8 as i32
@@ -188,7 +188,7 @@ unsafe extern "C" fn saveg_read32() -> i32 {
     result |= (saveg_read8() as i32) << 24 as i32;
     return result;
 }
-unsafe extern "C" fn saveg_write32(mut value: i32) {
+unsafe fn saveg_write32(mut value: i32) {
     saveg_write8((value & 0xff as i32) as byte);
     saveg_write8(
         (value >> 8 as i32 & 0xff as i32) as byte,
@@ -200,7 +200,7 @@ unsafe extern "C" fn saveg_write32(mut value: i32) {
         (value >> 24 as i32 & 0xff as i32) as byte,
     );
 }
-unsafe extern "C" fn saveg_read_pad() {
+unsafe fn saveg_read_pad() {
     let mut pos: u64 = 0;
     let mut padding: i32 = 0;
     let mut i: i32 = 0;
@@ -213,7 +213,7 @@ unsafe extern "C" fn saveg_read_pad() {
         i += 1;
     }
 }
-unsafe extern "C" fn saveg_write_pad() {
+unsafe fn saveg_write_pad() {
     let mut pos: u64 = 0;
     let mut padding: i32 = 0;
     let mut i: i32 = 0;
@@ -226,31 +226,31 @@ unsafe extern "C" fn saveg_write_pad() {
         i += 1;
     }
 }
-unsafe extern "C" fn saveg_readp() -> *mut ::core::ffi::c_void {
+unsafe fn saveg_readp() -> *mut ::core::ffi::c_void {
     return saveg_read32() as intptr_t as *mut ::core::ffi::c_void;
 }
-unsafe extern "C" fn saveg_writep(mut p: *mut ::core::ffi::c_void) {
+unsafe fn saveg_writep(mut p: *mut ::core::ffi::c_void) {
     saveg_write32(p as intptr_t as i32);
 }
-unsafe extern "C" fn saveg_read_mapthing_t(mut str: *mut mapthing_t) {
+unsafe fn saveg_read_mapthing_t(mut str: *mut mapthing_t) {
     (*str).x = saveg_read16();
     (*str).y = saveg_read16();
     (*str).angle = saveg_read16();
     (*str).type_0 = saveg_read16();
     (*str).options = saveg_read16();
 }
-unsafe extern "C" fn saveg_write_mapthing_t(mut str: *mut mapthing_t) {
+unsafe fn saveg_write_mapthing_t(mut str: *mut mapthing_t) {
     saveg_write16((*str).x);
     saveg_write16((*str).y);
     saveg_write16((*str).angle);
     saveg_write16((*str).type_0);
     saveg_write16((*str).options);
 }
-unsafe extern "C" fn saveg_read_actionf_t(mut str: *mut ThinkerFn) {
+unsafe fn saveg_read_actionf_t(mut str: *mut ThinkerFn) {
     let word = saveg_readp();
     *str = if word.is_null() { ThinkerFn::Paused } else { ThinkerFn::Unresolved };
 }
-unsafe extern "C" fn saveg_write_actionf_t(mut str: *mut ThinkerFn) {
+unsafe fn saveg_write_actionf_t(mut str: *mut ThinkerFn) {
     let word: *mut ::core::ffi::c_void = if matches!(*str, ThinkerFn::Paused) {
         ::core::ptr::null_mut()
     } else {
@@ -258,17 +258,17 @@ unsafe extern "C" fn saveg_write_actionf_t(mut str: *mut ThinkerFn) {
     };
     saveg_writep(word);
 }
-unsafe extern "C" fn saveg_read_thinker_t(mut str: *mut thinker_t) {
+unsafe fn saveg_read_thinker_t(mut str: *mut thinker_t) {
     (*str).prev = saveg_readp() as *mut thinker_s;
     (*str).next = saveg_readp() as *mut thinker_s;
     saveg_read_actionf_t(&raw mut (*str).function);
 }
-unsafe extern "C" fn saveg_write_thinker_t(mut str: *mut thinker_t) {
+unsafe fn saveg_write_thinker_t(mut str: *mut thinker_t) {
     saveg_writep((*str).prev as *mut ::core::ffi::c_void);
     saveg_writep((*str).next as *mut ::core::ffi::c_void);
     saveg_write_actionf_t(&raw mut (*str).function);
 }
-unsafe extern "C" fn saveg_read_mobj_t(mut str: *mut mobj_t) {
+unsafe fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     let mut pl: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).x = saveg_read32() as fixed_t;
@@ -317,7 +317,7 @@ unsafe extern "C" fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     saveg_read_mapthing_t(&raw mut (*str).spawnpoint);
     (*str).tracer = saveg_readp() as *mut mobj_s;
 }
-unsafe extern "C" fn saveg_write_mobj_t(mut str: *mut mobj_t) {
+unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32((*str).x as i32);
     saveg_write32((*str).y as i32);
@@ -364,7 +364,7 @@ unsafe extern "C" fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     saveg_write_mapthing_t(&raw mut (*str).spawnpoint);
     saveg_writep((*str).tracer as *mut ::core::ffi::c_void);
 }
-unsafe extern "C" fn saveg_read_ticcmd_t(mut str: *mut ticcmd_t) {
+unsafe fn saveg_read_ticcmd_t(mut str: *mut ticcmd_t) {
     (*str).forwardmove = saveg_read8() as i8;
     (*str).sidemove = saveg_read8() as i8;
     (*str).angleturn = saveg_read16();
@@ -372,7 +372,7 @@ unsafe extern "C" fn saveg_read_ticcmd_t(mut str: *mut ticcmd_t) {
     (*str).chatchar = saveg_read8();
     (*str).buttons = saveg_read8();
 }
-unsafe extern "C" fn saveg_write_ticcmd_t(mut str: *mut ticcmd_t) {
+unsafe fn saveg_write_ticcmd_t(mut str: *mut ticcmd_t) {
     saveg_write8((*str).forwardmove as byte);
     saveg_write8((*str).sidemove as byte);
     saveg_write16((*str).angleturn);
@@ -380,7 +380,7 @@ unsafe extern "C" fn saveg_write_ticcmd_t(mut str: *mut ticcmd_t) {
     saveg_write8((*str).chatchar);
     saveg_write8((*str).buttons);
 }
-unsafe extern "C" fn saveg_read_pspdef_t(mut str: *mut pspdef_t) {
+unsafe fn saveg_read_pspdef_t(mut str: *mut pspdef_t) {
     let mut state: i32 = 0;
     state = saveg_read32();
     if state > 0 as i32 {
@@ -393,7 +393,7 @@ unsafe extern "C" fn saveg_read_pspdef_t(mut str: *mut pspdef_t) {
     (*str).sx = saveg_read32() as fixed_t;
     (*str).sy = saveg_read32() as fixed_t;
 }
-unsafe extern "C" fn saveg_write_pspdef_t(mut str: *mut pspdef_t) {
+unsafe fn saveg_write_pspdef_t(mut str: *mut pspdef_t) {
     if !(*str).state.is_null() {
         saveg_write32(
             (*str).state.offset_from(&raw mut states as *mut state_t)
@@ -406,7 +406,7 @@ unsafe extern "C" fn saveg_write_pspdef_t(mut str: *mut pspdef_t) {
     saveg_write32((*str).sx as i32);
     saveg_write32((*str).sy as i32);
 }
-unsafe extern "C" fn saveg_read_player_t(mut str: *mut player_t) {
+unsafe fn saveg_read_player_t(mut str: *mut player_t) {
     let mut i: i32 = 0;
     (*str).mo = saveg_readp() as *mut mobj_t;
     (*str).playerstate = saveg_read32() as playerstate_t;
@@ -475,7 +475,7 @@ unsafe extern "C" fn saveg_read_player_t(mut str: *mut player_t) {
     }
     (*str).didsecret = saveg_read32() != 0;
 }
-unsafe extern "C" fn saveg_write_player_t(mut str: *mut player_t) {
+unsafe fn saveg_write_player_t(mut str: *mut player_t) {
     let mut i: i32 = 0;
     saveg_writep((*str).mo as *mut ::core::ffi::c_void);
     saveg_write32((*str).playerstate as i32);
@@ -544,7 +544,7 @@ unsafe extern "C" fn saveg_write_player_t(mut str: *mut player_t) {
     }
     saveg_write32((*str).didsecret as i32);
 }
-unsafe extern "C" fn saveg_read_ceiling_t(mut str: *mut ceiling_t) {
+unsafe fn saveg_read_ceiling_t(mut str: *mut ceiling_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as ceiling_e;
@@ -558,7 +558,7 @@ unsafe extern "C" fn saveg_read_ceiling_t(mut str: *mut ceiling_t) {
     (*str).tag = saveg_read32();
     (*str).olddirection = saveg_read32();
 }
-unsafe extern "C" fn saveg_write_ceiling_t(mut str: *mut ceiling_t) {
+unsafe fn saveg_write_ceiling_t(mut str: *mut ceiling_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32((*str).type_0 as i32);
     saveg_write32(
@@ -572,7 +572,7 @@ unsafe extern "C" fn saveg_write_ceiling_t(mut str: *mut ceiling_t) {
     saveg_write32((*str).tag);
     saveg_write32((*str).olddirection);
 }
-unsafe extern "C" fn saveg_read_vldoor_t(mut str: *mut vldoor_t) {
+unsafe fn saveg_read_vldoor_t(mut str: *mut vldoor_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as vldoor_e;
@@ -584,7 +584,7 @@ unsafe extern "C" fn saveg_read_vldoor_t(mut str: *mut vldoor_t) {
     (*str).topwait = saveg_read32();
     (*str).topcountdown = saveg_read32();
 }
-unsafe extern "C" fn saveg_write_vldoor_t(mut str: *mut vldoor_t) {
+unsafe fn saveg_write_vldoor_t(mut str: *mut vldoor_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32((*str).type_0 as i32);
     saveg_write32(
@@ -596,7 +596,7 @@ unsafe extern "C" fn saveg_write_vldoor_t(mut str: *mut vldoor_t) {
     saveg_write32((*str).topwait);
     saveg_write32((*str).topcountdown);
 }
-unsafe extern "C" fn saveg_read_floormove_t(mut str: *mut floormove_t) {
+unsafe fn saveg_read_floormove_t(mut str: *mut floormove_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as floor_e;
@@ -609,7 +609,7 @@ unsafe extern "C" fn saveg_read_floormove_t(mut str: *mut floormove_t) {
     (*str).floordestheight = saveg_read32() as fixed_t;
     (*str).speed = saveg_read32() as fixed_t;
 }
-unsafe extern "C" fn saveg_write_floormove_t(mut str: *mut floormove_t) {
+unsafe fn saveg_write_floormove_t(mut str: *mut floormove_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32((*str).type_0 as i32);
     saveg_write32((*str).crush as i32);
@@ -622,7 +622,7 @@ unsafe extern "C" fn saveg_write_floormove_t(mut str: *mut floormove_t) {
     saveg_write32((*str).floordestheight as i32);
     saveg_write32((*str).speed as i32);
 }
-unsafe extern "C" fn saveg_read_plat_t(mut str: *mut plat_t) {
+unsafe fn saveg_read_plat_t(mut str: *mut plat_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
@@ -638,7 +638,7 @@ unsafe extern "C" fn saveg_read_plat_t(mut str: *mut plat_t) {
     (*str).tag = saveg_read32();
     (*str).type_0 = saveg_read32() as plattype_e;
 }
-unsafe extern "C" fn saveg_write_plat_t(mut str: *mut plat_t) {
+unsafe fn saveg_write_plat_t(mut str: *mut plat_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32(
         (*str).sector.offset_from(sectors) as i64 as i32,
@@ -654,7 +654,7 @@ unsafe extern "C" fn saveg_write_plat_t(mut str: *mut plat_t) {
     saveg_write32((*str).tag);
     saveg_write32((*str).type_0 as i32);
 }
-unsafe extern "C" fn saveg_read_lightflash_t(mut str: *mut lightflash_t) {
+unsafe fn saveg_read_lightflash_t(mut str: *mut lightflash_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
@@ -665,7 +665,7 @@ unsafe extern "C" fn saveg_read_lightflash_t(mut str: *mut lightflash_t) {
     (*str).maxtime = saveg_read32();
     (*str).mintime = saveg_read32();
 }
-unsafe extern "C" fn saveg_write_lightflash_t(mut str: *mut lightflash_t) {
+unsafe fn saveg_write_lightflash_t(mut str: *mut lightflash_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32(
         (*str).sector.offset_from(sectors) as i64 as i32,
@@ -676,7 +676,7 @@ unsafe extern "C" fn saveg_write_lightflash_t(mut str: *mut lightflash_t) {
     saveg_write32((*str).maxtime);
     saveg_write32((*str).mintime);
 }
-unsafe extern "C" fn saveg_read_strobe_t(mut str: *mut strobe_t) {
+unsafe fn saveg_read_strobe_t(mut str: *mut strobe_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
@@ -687,7 +687,7 @@ unsafe extern "C" fn saveg_read_strobe_t(mut str: *mut strobe_t) {
     (*str).darktime = saveg_read32();
     (*str).brighttime = saveg_read32();
 }
-unsafe extern "C" fn saveg_write_strobe_t(mut str: *mut strobe_t) {
+unsafe fn saveg_write_strobe_t(mut str: *mut strobe_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32(
         (*str).sector.offset_from(sectors) as i64 as i32,
@@ -698,7 +698,7 @@ unsafe extern "C" fn saveg_write_strobe_t(mut str: *mut strobe_t) {
     saveg_write32((*str).darktime);
     saveg_write32((*str).brighttime);
 }
-unsafe extern "C" fn saveg_read_glow_t(mut str: *mut glow_t) {
+unsafe fn saveg_read_glow_t(mut str: *mut glow_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
@@ -707,7 +707,7 @@ unsafe extern "C" fn saveg_read_glow_t(mut str: *mut glow_t) {
     (*str).maxlight = saveg_read32();
     (*str).direction = saveg_read32();
 }
-unsafe extern "C" fn saveg_write_glow_t(mut str: *mut glow_t) {
+unsafe fn saveg_write_glow_t(mut str: *mut glow_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32(
         (*str).sector.offset_from(sectors) as i64 as i32,

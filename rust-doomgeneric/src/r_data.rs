@@ -354,7 +354,7 @@ pub unsafe fn R_GetColumn(
     }
     return (*texturecomposite.offset(tex as isize)).offset(ofs as isize);
 }
-unsafe extern "C" fn GenerateTextureHashTable() {
+unsafe fn GenerateTextureHashTable() {
     let mut rover: *mut *mut texture_t = ::core::ptr::null_mut::<*mut texture_t>();
     let mut i: i32 = 0;
     let mut key: i32 = 0;

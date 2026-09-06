@@ -50,7 +50,7 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::tables::ANG90;
 use crate::src::tables::ANG270;
 pub static mut netcmds: *mut ticcmd_t = ::core::ptr::null::<ticcmd_t>() as *mut ticcmd_t;
-unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
+unsafe fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
     let mut player_num: u32 = 0;
     player_num = player.offset_from(&raw mut players as *mut player_t)
@@ -100,7 +100,7 @@ static mut doom_loop_interface: loop_interface_t = unsafe {
         RunMenu: Some(M_Ticker as unsafe fn() -> ()),
     }
 };
-unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
+unsafe fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
     let mut i: u32 = 0;
     deathmatch = (*settings).deathmatch;
     startepisode = (*settings).episode;
@@ -126,7 +126,7 @@ unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
         i = i.wrapping_add(1);
     }
 }
-unsafe extern "C" fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
+unsafe fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
     (*settings).deathmatch = deathmatch;
     (*settings).episode = startepisode;
     (*settings).map = startmap;
@@ -140,7 +140,7 @@ unsafe extern "C" fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
     (*settings).lowres_turn = (M_CheckParm("-record") > 0 as i32
         && M_CheckParm("-longtics") == 0 as i32) as i32;
 }
-unsafe extern "C" fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
+unsafe fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
     (*connect_data).max_players = MAXPLAYERS;
     (*connect_data).drone = false_0;
     if M_CheckParm("-left") > 0 as i32 {

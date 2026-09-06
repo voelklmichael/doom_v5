@@ -505,7 +505,7 @@ pub static mut mode_scale_5x: screen_mode_t = unsafe {
         poor_quality: false,
     }
 };
-unsafe extern "C" fn FindNearestColor(
+unsafe fn FindNearestColor(
     mut palette: *mut byte,
     mut r: i32,
     mut g: i32,
@@ -541,7 +541,7 @@ unsafe extern "C" fn FindNearestColor(
     }
     return best;
 }
-unsafe extern "C" fn GenerateStretchTable(
+unsafe fn GenerateStretchTable(
     mut palette: *mut byte,
     mut pct: i32,
 ) -> *mut byte {
@@ -652,7 +652,7 @@ pub unsafe fn I_ResetScaleTables(mut palette: *mut byte) {
     }
 }
 #[inline]
-unsafe extern "C" fn WriteBlendedLine1x(
+unsafe fn WriteBlendedLine1x(
     mut dest: *mut byte,
     mut src1: *mut byte,
     mut src2: *mut byte,
@@ -758,7 +758,7 @@ pub static mut mode_stretch_1x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteLine2x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteLine2x(mut dest: *mut byte, mut src: *mut byte) {
     let mut x: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
@@ -770,7 +770,7 @@ unsafe extern "C" fn WriteLine2x(mut dest: *mut byte, mut src: *mut byte) {
     }
 }
 #[inline]
-unsafe extern "C" fn WriteBlendedLine2x(
+unsafe fn WriteBlendedLine2x(
     mut dest: *mut byte,
     mut src1: *mut byte,
     mut src2: *mut byte,
@@ -883,7 +883,7 @@ pub static mut mode_stretch_2x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteLine3x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteLine3x(mut dest: *mut byte, mut src: *mut byte) {
     let mut x: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
@@ -896,7 +896,7 @@ unsafe extern "C" fn WriteLine3x(mut dest: *mut byte, mut src: *mut byte) {
     }
 }
 #[inline]
-unsafe extern "C" fn WriteBlendedLine3x(
+unsafe fn WriteBlendedLine3x(
     mut dest: *mut byte,
     mut src1: *mut byte,
     mut src2: *mut byte,
@@ -1022,7 +1022,7 @@ pub static mut mode_stretch_3x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteLine4x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteLine4x(mut dest: *mut byte, mut src: *mut byte) {
     let mut x: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
@@ -1036,7 +1036,7 @@ unsafe extern "C" fn WriteLine4x(mut dest: *mut byte, mut src: *mut byte) {
     }
 }
 #[inline]
-unsafe extern "C" fn WriteBlendedLine4x(
+unsafe fn WriteBlendedLine4x(
     mut dest: *mut byte,
     mut src1: *mut byte,
     mut src2: *mut byte,
@@ -1175,7 +1175,7 @@ pub static mut mode_stretch_4x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteLine5x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteLine5x(mut dest: *mut byte, mut src: *mut byte) {
     let mut x: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
@@ -1256,7 +1256,7 @@ pub static mut mode_stretch_5x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteSquashedLine1x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteSquashedLine1x(mut dest: *mut byte, mut src: *mut byte) {
     let mut x: i32 = 0;
     x = 0 as i32;
     while x < SCREENWIDTH {
@@ -1344,7 +1344,7 @@ pub static mut mode_squash_1x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteSquashedLine2x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteSquashedLine2x(mut dest: *mut byte, mut src: *mut byte) {
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut x: i32 = 0;
     let mut c: i32 = 0;
@@ -1479,7 +1479,7 @@ pub static mut mode_squash_2x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteSquashedLine3x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteSquashedLine3x(mut dest: *mut byte, mut src: *mut byte) {
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest3: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut x: i32 = 0;
@@ -1590,7 +1590,7 @@ pub static mut mode_squash_3x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteSquashedLine4x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteSquashedLine4x(mut dest: *mut byte, mut src: *mut byte) {
     let mut x: i32 = 0;
     let mut c: i32 = 0;
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -1874,7 +1874,7 @@ pub static mut mode_squash_4x: screen_mode_t = unsafe {
     }
 };
 #[inline]
-unsafe extern "C" fn WriteSquashedLine5x(mut dest: *mut byte, mut src: *mut byte) {
+unsafe fn WriteSquashedLine5x(mut dest: *mut byte, mut src: *mut byte) {
     let mut x: i32 = 0;
     let mut c: i32 = 0;
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();

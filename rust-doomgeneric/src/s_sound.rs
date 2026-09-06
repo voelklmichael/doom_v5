@@ -108,7 +108,7 @@ pub unsafe extern "C" fn S_Shutdown() {
     I_ShutdownSound();
     I_ShutdownMusic();
 }
-unsafe extern "C" fn S_StopChannel(mut cnum: i32) {
+unsafe fn S_StopChannel(mut cnum: i32) {
     let mut i: i32 = 0;
     let mut c: *mut channel_t = ::core::ptr::null_mut::<channel_t>();
     c = channels.offset(cnum as isize) as *mut channel_t;
@@ -178,7 +178,7 @@ pub unsafe fn S_StopSound(mut origin: *mut mobj_t) {
         }
     }
 }
-unsafe extern "C" fn S_GetChannel(
+unsafe fn S_GetChannel(
     mut origin: *mut mobj_t,
     mut sfxinfo: *mut sfxinfo_t,
 ) -> i32 {
@@ -217,7 +217,7 @@ unsafe extern "C" fn S_GetChannel(
     (*c).origin = origin;
     return cnum;
 }
-unsafe extern "C" fn S_AdjustSoundParams(
+unsafe fn S_AdjustSoundParams(
     mut listener: *mut mobj_t,
     mut source: *mut mobj_t,
     mut vol: *mut i32,

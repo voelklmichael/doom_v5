@@ -101,7 +101,7 @@ pub unsafe fn W_LumpNameHash(
     }
     return result;
 }
-unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: i32) {
+unsafe fn ExtendLumpInfo(mut newnumlumps: i32) {
     let mut newlumpinfo: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     let mut i: u32 = 0;
     newlumpinfo = calloc(

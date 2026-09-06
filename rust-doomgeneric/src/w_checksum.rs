@@ -15,7 +15,7 @@ extern "C" {
 static mut open_wadfiles: *mut *mut wad_file_t = ::core::ptr::null::<*mut wad_file_t>()
     as *mut *mut wad_file_t;
 static mut num_open_wadfiles: i32 = 0 as i32;
-unsafe extern "C" fn GetFileNumber(mut handle: *mut wad_file_t) -> i32 {
+unsafe fn GetFileNumber(mut handle: *mut wad_file_t) -> i32 {
     let mut i: i32 = 0;
     let mut result: i32 = 0;
     i = 0 as i32;
@@ -36,7 +36,7 @@ unsafe extern "C" fn GetFileNumber(mut handle: *mut wad_file_t) -> i32 {
     num_open_wadfiles += 1;
     return result;
 }
-unsafe extern "C" fn ChecksumAddLump(
+unsafe fn ChecksumAddLump(
     mut sha1_context: *mut sha1_context_t,
     mut lump: *mut lumpinfo_t,
 ) {

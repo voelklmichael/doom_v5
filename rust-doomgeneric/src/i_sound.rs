@@ -95,7 +95,7 @@ static mut snd_mport: i32 = 0 as i32;
 static mut sound_modules: [*mut sound_module_t; 1] = [
     ::core::ptr::null::<sound_module_t>() as *mut sound_module_t,
 ];
-unsafe extern "C" fn SndDeviceInList(
+unsafe fn SndDeviceInList(
     mut device: snddevice_t,
     mut list: *mut snddevice_t,
     mut len: i32,
@@ -112,7 +112,7 @@ unsafe extern "C" fn SndDeviceInList(
     }
     return false;
 }
-unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: bool) {
+unsafe fn InitSfxModule(mut use_sfx_prefix: bool) {
     let mut i: i32 = 0;
     sound_module = ::core::ptr::null_mut::<sound_module_t>();
     i = 0 as i32;
@@ -134,7 +134,7 @@ unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: bool) {
         i += 1;
     }
 }
-unsafe extern "C" fn InitMusicModule() {}
+unsafe fn InitMusicModule() {}
 pub unsafe fn I_InitSound(mut use_sfx_prefix: bool) {
     let mut nosound: bool = false;
     let mut nosfx: bool = false;
@@ -180,7 +180,7 @@ pub unsafe fn I_UpdateSound() {
         (*music_module).Poll.expect("non-null function pointer")();
     }
 }
-unsafe extern "C" fn CheckVolumeSeparation(
+unsafe fn CheckVolumeSeparation(
     mut vol: *mut i32,
     mut sep: *mut i32,
 ) {

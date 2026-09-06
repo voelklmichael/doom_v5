@@ -26,7 +26,7 @@ pub unsafe fn SHA1_Init(mut hd: *mut sha1_context_t) {
     (*hd).nblocks = 0 as uint32_t;
     (*hd).count = 0 as i32;
 }
-unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte) {
+unsafe fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte) {
     let mut a: uint32_t = 0;
     let mut b: uint32_t = 0;
     let mut c: uint32_t = 0;

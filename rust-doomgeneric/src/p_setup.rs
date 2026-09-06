@@ -845,7 +845,7 @@ pub unsafe fn P_GroupLines() {
         sector = sector.offset(1);
     }
 }
-unsafe extern "C" fn PadRejectArray(mut array: *mut byte, mut len: u32) {
+unsafe fn PadRejectArray(mut array: *mut byte, mut len: u32) {
     let mut i: u32 = 0;
     let mut byte_num: u32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -896,7 +896,7 @@ unsafe extern "C" fn PadRejectArray(mut array: *mut byte, mut len: u32) {
         );
     }
 }
-unsafe extern "C" fn P_LoadReject(mut lumpnum: i32) {
+unsafe fn P_LoadReject(mut lumpnum: i32) {
     let mut minlength: i32 = 0;
     let mut lumplen: i32 = 0;
     minlength = (numsectors * numsectors + 7 as i32)

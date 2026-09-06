@@ -81,7 +81,7 @@ pub unsafe fn I_Tactile(
     mut off: i32,
     mut total: i32,
 ) {}
-unsafe extern "C" fn AutoAllocMemory(
+unsafe fn AutoAllocMemory(
     mut size: *mut i32,
     mut default_ram: i32,
     mut min_ram: i32,
@@ -173,13 +173,13 @@ pub unsafe fn I_Quit() {
 pub const ZENITY_BINARY: [::core::ffi::c_char; 16] = unsafe {
     ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"/usr/bin/zenity\0")
 };
-unsafe extern "C" fn ZenityAvailable() -> i32 {
+unsafe fn ZenityAvailable() -> i32 {
     return (system(
         b"/usr/bin/zenity --help >/dev/null 2>&1\0" as *const u8
             as *const ::core::ffi::c_char,
     ) == 0 as i32) as i32;
 }
-unsafe extern "C" fn EscapeShellString(
+unsafe fn EscapeShellString(
     mut string: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
@@ -212,7 +212,7 @@ unsafe extern "C" fn EscapeShellString(
     *r = '\0' as i32 as ::core::ffi::c_char;
     return result;
 }
-unsafe extern "C" fn ZenityErrorBox(
+unsafe fn ZenityErrorBox(
     mut message: *mut ::core::ffi::c_char,
 ) -> i32 {
     let mut result: i32 = 0;
