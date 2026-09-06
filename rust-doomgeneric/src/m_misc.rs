@@ -326,8 +326,7 @@ pub unsafe extern "C" fn M_StringReplace(
     *dst = '\0' as i32 as ::core::ffi::c_char;
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringCopy(
+pub unsafe fn M_StringCopy(
     mut dest: *mut ::core::ffi::c_char,
     mut src: *const ::core::ffi::c_char,
     mut dest_size: size_t,

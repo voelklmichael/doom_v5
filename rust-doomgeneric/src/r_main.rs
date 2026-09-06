@@ -32,12 +32,12 @@ use crate::src::tables::finetangent;
 use crate::src::r_data::colormaps;
 use crate::src::r_draw::viewwidth;
 use crate::src::r_draw::viewheight;
+use crate::src::m_fixed::FixedDiv;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     fn R_DrawPlanes();
@@ -1577,8 +1577,7 @@ pub unsafe extern "C" fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointToAngle2(
+pub unsafe fn R_PointToAngle2(
     mut x1: fixed_t,
     mut y1: fixed_t,
     mut x2: fixed_t,

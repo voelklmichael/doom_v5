@@ -25,16 +25,12 @@ use crate::src::d_main::fastparm;
 use crate::src::g_game::timelimit;
 use crate::src::g_game::demoplayback;
 use crate::src::doomstat::gamemission;
+use crate::src::m_misc::M_StringCopy;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn D_ProcessEvents();
     fn M_Ticker();
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
     fn G_CheckDemoStatus() -> boolean;
     fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
     static mut gamemode: GameMode_t;

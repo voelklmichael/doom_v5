@@ -1,9 +1,10 @@
 use crate::src::p_spec::{ceiling_t};
-use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
+use crate::src::p_mobj::{sector_t, line_t, actionf_t};
 use crate::src::p_spec::P_FindHighestCeilingSurrounding;
 use crate::src::p_floor::T_MovePlane;
 use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_tick::P_RemoveThinker;
+use crate::src::p_tick::P_AddThinker;
 
 extern "C" {
     fn Z_Malloc(
@@ -12,7 +13,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     static mut sectors: *mut sector_t;
-    fn P_AddThinker(thinker: *mut thinker_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut leveltime: i32;
 }

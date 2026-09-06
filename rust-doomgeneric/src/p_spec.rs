@@ -41,6 +41,7 @@ use crate::src::p_inter::P_DamageMobj;
 use crate::src::p_setup::lines;
 use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sides;
+use crate::src::p_tick::P_AddThinker;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -65,7 +66,6 @@ extern "C" {
     static mut sectors: *mut sector_t;
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
-    fn P_AddThinker(thinker: *mut thinker_t);
     fn T_MoveFloor(floor: *mut floormove_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }

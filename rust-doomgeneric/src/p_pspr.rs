@@ -11,13 +11,13 @@ use crate::src::p_inter::P_DamageMobj;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::info::states;
+use crate::src::r_main::R_PointToAngle2;
 
 extern "C" {
     fn P_Random() -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
     static mut leveltime: i32;

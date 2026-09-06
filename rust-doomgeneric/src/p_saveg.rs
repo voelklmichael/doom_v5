@@ -25,6 +25,7 @@ use crate::src::g_game::gamemap;
 use crate::src::info::states;
 use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sides;
+use crate::src::p_tick::P_AddThinker;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -70,7 +71,6 @@ extern "C" {
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     static mut sectors: *mut sector_t;
-    fn P_AddThinker(thinker: *mut thinker_t);
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn T_LightFlash(flash: *mut lightflash_t);
     fn T_StrobeFlash(flash: *mut strobe_t);

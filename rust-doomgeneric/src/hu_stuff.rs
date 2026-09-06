@@ -15,6 +15,8 @@ use crate::src::m_menu::showMessages;
 use crate::src::g_game::gameepisode;
 use crate::src::doomstat::gamemission;
 use crate::src::g_game::gamemap;
+use crate::src::am_map::automapactive;
+use crate::src::m_misc::M_StringCopy;
 
 extern "C" {
     fn snprintf(
@@ -23,16 +25,10 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
-    static mut automapactive: bool;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];

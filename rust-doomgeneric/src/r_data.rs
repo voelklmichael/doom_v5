@@ -19,6 +19,7 @@ use crate::src::w_wad::lumpinfo;
 use crate::src::g_game::demoplayback;
 use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sides;
+use crate::src::m_misc::M_StringCopy;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -48,11 +49,6 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
     static mut sectors: *mut sector_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
 }

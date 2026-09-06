@@ -41,6 +41,7 @@ use crate::src::r_main::viewz;
 use crate::src::r_draw::viewwidth;
 use crate::src::r_draw::viewheight;
 use crate::src::r_sky::skyflatnum;
+use crate::src::m_fixed::FixedDiv;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -55,7 +56,6 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
 }

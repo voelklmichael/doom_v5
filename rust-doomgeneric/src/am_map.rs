@@ -33,6 +33,7 @@ use crate::src::p_setup::lines;
 use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
 use crate::src::p_setup::numsectors;
+use crate::src::m_fixed::FixedDiv;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -53,7 +54,6 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut sectors: *mut sector_t;
@@ -1764,7 +1764,6 @@ pub static mut thintriangle_guy: [mline_t; 3] = [
 static mut cheating: i32 = 0 as i32;
 static mut grid: i32 = 0 as i32;
 static mut leveljuststarted: i32 = 1 as i32;
-#[no_mangle]
 pub static mut automapactive: bool = false;
 static mut finit_width: i32 = SCREENWIDTH;
 static mut finit_height: i32 = SCREENHEIGHT - 32 as i32;
