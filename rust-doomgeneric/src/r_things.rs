@@ -21,6 +21,13 @@ use crate::src::r_main::R_PointOnSegSide;
 use crate::src::r_segs::R_RenderMaskedSegRange;
 use crate::src::r_draw::translationtables;
 use crate::src::r_draw::dc_translation;
+use crate::src::doomstat::modifiedgame;
+use crate::src::r_data::firstspritelump;
+use crate::src::r_main::viewangleoffset;
+use crate::src::r_main::centerxfrac;
+use crate::src::r_main::centeryfrac;
+use crate::src::r_main::detailshift;
+use crate::src::r_main::scalelight;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -54,17 +61,12 @@ extern "C" {
     static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut firstspritelump: i32;
     static mut viewx: fixed_t;
     static mut viewy: fixed_t;
     static mut viewz: fixed_t;
-    static mut centerxfrac: fixed_t;
-    static mut centeryfrac: fixed_t;
     static mut validcount: i32;
-    static mut scalelight: [[*mut lighttable_t; 48]; 16];
     static mut extralight: i32;
     static mut fixedcolormap: *mut lighttable_t;
-    static mut detailshift: i32;
     static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
     static mut drawsegs: [drawseg_t; 256];
@@ -76,8 +78,6 @@ extern "C" {
     static mut dc_iscale: fixed_t;
     static mut dc_texturemid: fixed_t;
     static mut dc_source: *mut byte;
-    static mut modifiedgame: bool;
-    static mut viewangleoffset: i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
@@ -1446,16 +1446,13 @@ pub const MAXVISSPRITES: i32 = 128 as i32;
 pub const MINZ: i32 = FRACUNIT * 4 as i32;
 pub const BASEYCENTER: i32 = 100 as i32;
 pub static mut pspritescale: fixed_t = 0;
-#[no_mangle]
 pub static mut pspriteiscale: fixed_t = 0;
 #[no_mangle]
 pub static mut spritelights: *mut *mut lighttable_t = ::core::ptr::null::<
     *mut lighttable_t,
 >() as *mut *mut lighttable_t;
 pub static mut negonearray: [i16; 320] = [0; 320];
-#[no_mangle]
 pub static mut screenheightarray: [i16; 320] = [0; 320];
-#[no_mangle]
 pub static mut sprites: *mut spritedef_t = ::core::ptr::null::<spritedef_t>()
     as *mut spritedef_t;
 pub static mut numsprites: i32 = 0;

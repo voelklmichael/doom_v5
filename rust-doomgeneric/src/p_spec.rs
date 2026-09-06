@@ -22,6 +22,15 @@ use crate::src::p_doors::P_SpawnDoorRaiseIn5Mins;
 use crate::src::p_ceilng::EV_CeilingCrushStop;
 use crate::src::p_telept::EV_Teleport;
 use crate::src::r_data::numflats;
+use crate::src::g_game::G_SecretExitLevel;
+use crate::src::g_game::totalsecret;
+use crate::src::p_ceilng::EV_DoCeiling;
+use crate::src::p_ceilng::activeceilings;
+use crate::src::p_floor::EV_BuildStairs;
+use crate::src::p_lights::EV_LightTurnOn;
+use crate::src::p_plats::EV_DoPlat;
+use crate::src::r_data::flattranslation;
+use crate::src::r_data::texturetranslation;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -37,7 +46,6 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     static mut timelimit: i32;
     static mut deathmatch: i32;
-    static mut totalsecret: i32;
     static mut leveltime: i32;
     fn Z_Malloc(
         size: i32,
@@ -49,8 +57,6 @@ extern "C" {
         result: *mut i32,
     ) -> boolean;
     fn P_Random() -> i32;
-    static mut flattranslation: *mut i32;
-    static mut texturetranslation: *mut i32;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     static mut numlines: i32;
@@ -65,20 +71,10 @@ extern "C" {
         source: *mut mobj_t,
         damage: i32,
     );
-    fn EV_LightTurnOn(line: *mut line_t, bright: i32);
-    fn EV_DoPlat(
-        line: *mut line_t,
-        type_0: plattype_e,
-        amount: i32,
-    ) -> i32;
     fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> i32;
-    static mut activeceilings: [*mut ceiling_t; 30];
-    fn EV_DoCeiling(line: *mut line_t, type_0: ceiling_e) -> i32;
-    fn EV_BuildStairs(line: *mut line_t, type_0: stair_e) -> i32;
     fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> i32;
     fn T_MoveFloor(floor: *mut floormove_t);
     fn G_ExitLevel();
-    fn G_SecretExitLevel();
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;
@@ -2012,8 +2008,7 @@ pub unsafe fn getNextSector(
     }
     return (*line).frontsector;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindLowestFloorSurrounding(
+pub unsafe fn P_FindLowestFloorSurrounding(
     mut sec: *mut sector_t,
 ) -> fixed_t {
     let mut i: i32 = 0;
@@ -2033,8 +2028,7 @@ pub unsafe extern "C" fn P_FindLowestFloorSurrounding(
     }
     return floor;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindHighestFloorSurrounding(
+pub unsafe fn P_FindHighestFloorSurrounding(
     mut sec: *mut sector_t,
 ) -> fixed_t {
     let mut i: i32 = 0;
@@ -2055,8 +2049,7 @@ pub unsafe extern "C" fn P_FindHighestFloorSurrounding(
     return floor;
 }
 pub const MAX_ADJOINING_SECTORS: i32 = 20 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn P_FindNextHighestFloor(
+pub unsafe fn P_FindNextHighestFloor(
     mut sec: *mut sector_t,
     mut currentheight: i32,
 ) -> fixed_t {
@@ -2099,8 +2092,7 @@ pub unsafe extern "C" fn P_FindNextHighestFloor(
     }
     return min as fixed_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindLowestCeilingSurrounding(
+pub unsafe fn P_FindLowestCeilingSurrounding(
     mut sec: *mut sector_t,
 ) -> fixed_t {
     let mut i: i32 = 0;

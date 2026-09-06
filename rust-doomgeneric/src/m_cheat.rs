@@ -19,8 +19,7 @@ pub struct cheatseq_t {
 }
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn cht_CheckCheat(
+pub unsafe fn cht_CheckCheat(
     mut cht: *mut cheatseq_t,
     mut key: ::core::ffi::c_char,
 ) -> i32 {

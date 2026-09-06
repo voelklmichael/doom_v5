@@ -1439,7 +1439,6 @@ pub const FRACBITS: i32 = 16 as i32;
 pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const CEILSPEED: i32 = FRACUNIT;
 pub const MAXCEILINGS: i32 = 30 as i32;
-#[no_mangle]
 pub static mut activeceilings: [*mut ceiling_t; 30] = [::core::ptr::null::<ceiling_t>()
     as *mut ceiling_t; 30];
 #[no_mangle]
@@ -1575,8 +1574,7 @@ pub unsafe extern "C" fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
         0 | _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoCeiling(
+pub unsafe fn EV_DoCeiling(
     mut line: *mut line_t,
     mut type_0: ceiling_e,
 ) -> i32 {

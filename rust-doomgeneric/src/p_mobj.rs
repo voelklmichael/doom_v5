@@ -9,6 +9,12 @@ use crate::src::s_sound::S_StopSound;
 use crate::src::g_game::respawnmonsters;
 use crate::src::g_game::G_PlayerReborn;
 use crate::src::p_map::attackrange;
+use crate::src::g_game::totalkills;
+use crate::src::g_game::totalitems;
+use crate::src::p_map::P_TryMove;
+use crate::src::p_map::linetarget;
+use crate::src::p_setup::deathmatchstarts;
+use crate::src::p_setup::deathmatch_p;
 
 extern "C" {
     fn Z_Malloc(
@@ -40,8 +46,6 @@ extern "C" {
     fn P_UnsetThingPosition(thing: *mut mobj_t);
     fn P_SetThingPosition(thing: *mut mobj_t);
     fn P_CheckPosition(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    fn P_TryMove(thing: *mut mobj_t, x: fixed_t, y: fixed_t) -> boolean;
-    static mut linetarget: *mut mobj_t;
     fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut nomonsters: bool;
@@ -50,13 +54,9 @@ extern "C" {
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut consoleplayer: i32;
-    static mut totalkills: i32;
-    static mut totalitems: i32;
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];
-    static mut deathmatchstarts: [mapthing_t; 10];
-    static mut deathmatch_p: *mut mapthing_t;
     static mut playerstarts: [mapthing_t; 4];
     static mut skyflatnum: i32;
 }
@@ -2355,8 +2355,7 @@ pub unsafe extern "C" fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
         (*mobj).flags |= MF_AMBUSH as i32;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnPuff(mut x: fixed_t, mut y: fixed_t, mut z: fixed_t) {
+pub unsafe fn P_SpawnPuff(mut x: fixed_t, mut y: fixed_t, mut z: fixed_t) {
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     z += P_Random() - P_Random() << 10 as i32;
     th = P_SpawnMobj(x, y, z, MT_PUFF);
@@ -2402,8 +2401,7 @@ pub unsafe extern "C" fn P_CheckMissileSpawn(mut th: *mut mobj_t) {
         P_ExplodeMissile(th);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SubstNullMobj(mut mobj: *mut mobj_t) -> *mut mobj_t {
+pub unsafe fn P_SubstNullMobj(mut mobj: *mut mobj_t) -> *mut mobj_t {
     if mobj.is_null() {
         static mut dummy_mobj: mobj_t = mobj_s {
             thinker: thinker_s {

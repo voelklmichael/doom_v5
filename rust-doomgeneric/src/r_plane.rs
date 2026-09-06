@@ -14,6 +14,12 @@ use crate::src::r_draw::ds_xstep;
 use crate::src::r_draw::ds_ystep;
 use crate::src::r_draw::ds_source;
 use crate::src::r_sky::skytexturemid;
+use crate::src::r_data::R_GetColumn;
+use crate::src::r_data::flattranslation;
+use crate::src::r_main::centerxfrac;
+use crate::src::r_main::detailshift;
+use crate::src::r_main::xtoviewangle;
+use crate::src::r_things::pspriteiscale;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -35,21 +41,15 @@ extern "C" {
     static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut flattranslation: *mut i32;
     static mut viewx: fixed_t;
     static mut viewy: fixed_t;
     static mut viewz: fixed_t;
     static mut viewangle: angle_t;
-    static mut xtoviewangle: [angle_t; 321];
-    fn R_GetColumn(tex: i32, col: i32) -> *mut byte;
-    static mut centerxfrac: fixed_t;
     static mut extralight: i32;
     static mut fixedcolormap: *mut lighttable_t;
-    static mut detailshift: i32;
     static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
     static mut drawsegs: [drawseg_t; 256];
     static mut ds_p: *mut drawseg_t;
-    static mut pspriteiscale: fixed_t;
     static mut dc_colormap: *mut lighttable_t;
     static mut dc_x: i32;
     static mut dc_yl: i32;
@@ -1377,10 +1377,8 @@ pub static mut visplanes: [visplane_t; 128] = [visplane_t {
 #[no_mangle]
 pub static mut lastvisplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
     as *mut visplane_t;
-#[no_mangle]
 pub static mut floorplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
     as *mut visplane_t;
-#[no_mangle]
 pub static mut ceilingplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
     as *mut visplane_t;
 #[no_mangle]

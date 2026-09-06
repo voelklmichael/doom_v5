@@ -18,29 +18,29 @@ use crate::src::r_things::R_ClearSprites;
 use crate::src::r_draw::R_InitBuffer;
 use crate::src::r_draw::R_InitTranslationTables;
 use crate::src::r_sky::R_InitSkyMap;
+use crate::src::d_loop::NetUpdate;
+use crate::src::m_menu::detailLevel;
+use crate::src::m_menu::screenblocks;
+use crate::src::p_setup::numnodes;
+use crate::src::r_draw::scaledviewwidth;
+use crate::src::r_things::pspriteiscale;
+use crate::src::r_things::screenheightarray;
+use crate::src::tables::tantoangle;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn NetUpdate();
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut detailLevel: i32;
-    static mut screenblocks: i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static finetangent: [fixed_t; 4096];
-    static tantoangle: [angle_t; 2049];
     static mut colormaps: *mut lighttable_t;
     static mut viewwidth: i32;
-    static mut scaledviewwidth: i32;
     static mut viewheight: i32;
     static mut subsectors: *mut subsector_t;
-    static mut numnodes: i32;
     static mut nodes: *mut node_t;
     fn R_DrawPlanes();
-    static mut screenheightarray: [i16; 320];
-    static mut pspriteiscale: fixed_t;
     fn R_DrawMasked();
     fn R_DrawColumn();
     fn R_DrawColumnLow();
@@ -1342,7 +1342,6 @@ pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
 pub const SCREENWIDTH: i32 = 320 as i32;
 pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const FIELDOFVIEW: i32 = 2048 as i32;
-#[no_mangle]
 pub static mut viewangleoffset: i32 = 0;
 #[no_mangle]
 pub static mut validcount: i32 = 1 as i32;
@@ -1352,9 +1351,7 @@ pub static mut fixedcolormap: *mut lighttable_t = ::core::ptr::null::<lighttable
 #[no_mangle]
 pub static mut centerx: i32 = 0;
 pub static mut centery: i32 = 0;
-#[no_mangle]
 pub static mut centerxfrac: fixed_t = 0;
-#[no_mangle]
 pub static mut centeryfrac: fixed_t = 0;
 pub static mut projection: fixed_t = 0;
 #[no_mangle]
@@ -1376,13 +1373,10 @@ pub static mut viewcos: fixed_t = 0;
 pub static mut viewsin: fixed_t = 0;
 pub static mut viewplayer: *mut player_t = ::core::ptr::null::<player_t>()
     as *mut player_t;
-#[no_mangle]
 pub static mut detailshift: i32 = 0;
 pub static mut clipangle: angle_t = 0;
 pub static mut viewangletox: [i32; 4096] = [0; 4096];
-#[no_mangle]
 pub static mut xtoviewangle: [angle_t; 321] = [0; 321];
-#[no_mangle]
 pub static mut scalelight: [[*mut lighttable_t; 48]; 16] = [[::core::ptr::null::<
     lighttable_t,
 >() as *mut lighttable_t; 48]; 16];
@@ -1741,7 +1735,6 @@ pub unsafe extern "C" fn R_InitLightTables() {
         i += 1;
     }
 }
-#[no_mangle]
 pub static mut setsizeneeded: bool = false;
 #[no_mangle]
 pub static mut setblocks: i32 = 0;
@@ -1755,8 +1748,7 @@ pub unsafe fn R_SetViewSize(
     setblocks = blocks;
     setdetail = detail;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_ExecuteSetViewSize() {
+pub unsafe fn R_ExecuteSetViewSize() {
     let mut cosadj: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut i: i32 = 0;

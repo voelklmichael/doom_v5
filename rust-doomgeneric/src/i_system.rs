@@ -167,8 +167,7 @@ pub unsafe fn I_PrintStartupBanner(
 pub unsafe fn I_ConsoleStdout() -> boolean {
     return 0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_Quit() {
+pub unsafe fn I_Quit() {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
         atexit_listentry_t,
     >();

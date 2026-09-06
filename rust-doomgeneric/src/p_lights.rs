@@ -1510,8 +1510,7 @@ pub unsafe fn EV_TurnTagLightsOff(mut line: *mut line_t) {
         sector = sector.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_LightTurnOn(
+pub unsafe fn EV_LightTurnOn(
     mut line: *mut line_t,
     mut bright: i32,
 ) {

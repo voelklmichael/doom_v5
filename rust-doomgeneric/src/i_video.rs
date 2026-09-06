@@ -2,6 +2,7 @@ use crate::src::i_system::I_Error;
 use ::c2rust_bitfields;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::i_input::I_GetEvent;
+use crate::src::tables::gammatable;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -25,7 +26,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    static gammatable: [[byte; 256]; 5];
     fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn DG_DrawFrame();
@@ -124,7 +124,6 @@ pub static mut usemouse: i32 = 0 as i32;
 static mut colors: [color; 256] = [color { b_g_r_a: [0; 4] }; 256];
 #[no_mangle]
 pub static mut I_VideoBuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
 pub static mut screensaver_mode: bool = false;
 pub static mut screenvisible: bool = false;
 pub static mut mouse_acceleration: f32 = 2.0f32;

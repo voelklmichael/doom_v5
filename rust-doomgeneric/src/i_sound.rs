@@ -1,8 +1,7 @@
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_config::M_BindVariable;
-extern "C" {
-    static mut screensaver_mode: bool;
-}
+use crate::src::i_video::screensaver_mode;
+
 pub type boolean = u32;
 use crate::src::sounds::sfxinfo_t;
 pub type snddevice_t = u32;

@@ -355,8 +355,7 @@ pub unsafe extern "C" fn Z_CheckHeap() {
         block = (*block).next as *mut memblock_t;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_ChangeTag2(
+pub unsafe fn Z_ChangeTag2(
     mut ptr: *mut ::core::ffi::c_void,
     mut tag: i32,
     mut file: *mut ::core::ffi::c_char,

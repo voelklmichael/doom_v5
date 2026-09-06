@@ -5,6 +5,12 @@ use crate::src::d_event::event_t;
 use crate::src::p_mobj::{state_t, mobjinfo_t, actionf_t};
 use crate::src::d_player::{player_t};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::d_main::wipegamestate;
+use crate::src::g_game::gameaction;
+use crate::src::hu_stuff::hu_font;
+use crate::src::r_data::firstspritelump;
+use crate::src::r_things::sprites;
+use crate::src::s_sound::S_StartMusic;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -39,9 +45,7 @@ extern "C" {
     static mut states: [state_t; 967];
     static mut mobjinfo: [mobjinfo_t; 137];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    fn S_StartMusic(music_id: i32);
     fn S_ChangeMusic(music_id: i32, looping: i32);
-    static mut gameaction: gameaction_t;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
@@ -51,11 +55,7 @@ extern "C" {
     static mut viewactive: bool;
     static mut gamestate: gamestate_t;
     static mut players: [player_t; 4];
-    static mut wipegamestate: gamestate_t;
     static mut I_VideoBuffer: *mut byte;
-    static mut firstspritelump: i32;
-    static mut sprites: *mut spritedef_t;
-    static mut hu_font: [*mut patch_t; 63];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -29,8 +29,7 @@ pub unsafe fn I_GetTimeMS() -> i32 {
     }
     return ticks.wrapping_sub(basetime) as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_Sleep(mut ms: i32) {
+pub unsafe fn I_Sleep(mut ms: i32) {
     DG_SleepMs(ms as uint32_t);
 }
 pub unsafe fn I_WaitVBL(mut count: i32) {}

@@ -4,12 +4,12 @@ use crate::src::d_player::{player_t};
 use crate::src::p_user::P_PlayerThink;
 use crate::src::p_mobj::P_RespawnSpecials;
 use crate::src::p_spec::P_UpdateSpecials;
+use crate::src::g_game::paused;
+use crate::src::m_menu::menuactive;
 
 extern "C" {
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     static mut netgame: bool;
-    static mut menuactive: bool;
-    static mut paused: bool;
     static mut consoleplayer: i32;
     static mut demoplayback: bool;
     static mut players: [player_t; 4];
@@ -1296,8 +1296,7 @@ pub static mut thinkercap: thinker_t = thinker_s {
     next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
     function: actionf_t { acv: None },
 };
-#[no_mangle]
-pub unsafe extern "C" fn P_InitThinkers() {
+pub unsafe fn P_InitThinkers() {
     thinkercap.next = &raw mut thinkercap as *mut thinker_s;
     thinkercap.prev = thinkercap.next;
 }

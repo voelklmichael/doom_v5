@@ -2,6 +2,9 @@ use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{plat_t};
 use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
 use crate::src::i_system::I_Error;
+use crate::src::p_spec::P_FindLowestFloorSurrounding;
+use crate::src::p_spec::P_FindHighestFloorSurrounding;
+use crate::src::p_spec::P_FindNextHighestFloor;
 extern "C" {
     fn Z_Malloc(
         size: i32,
@@ -13,12 +16,6 @@ extern "C" {
     static mut sides: *mut side_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_FindLowestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
-    fn P_FindHighestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
-    fn P_FindNextHighestFloor(
-        sec: *mut sector_t,
-        currentheight: i32,
-    ) -> fixed_t;
     fn P_FindSectorFromLineTag(
         line: *mut line_t,
         start: i32,
@@ -1547,8 +1544,7 @@ pub unsafe extern "C" fn T_PlatRaise(mut plat: *mut plat_t) {
         3 | _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoPlat(
+pub unsafe fn EV_DoPlat(
     mut line: *mut line_t,
     mut type_0: plattype_e,
     mut amount: i32,

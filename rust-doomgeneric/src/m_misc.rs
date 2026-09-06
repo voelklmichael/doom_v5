@@ -131,8 +131,7 @@ pub unsafe fn M_FileLength(mut handle: *mut FILE) -> i64 {
     fseek(handle, savedpos, SEEK_SET);
     return length;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_WriteFile(
+pub unsafe fn M_WriteFile(
     mut name: *mut ::core::ffi::c_char,
     mut source: *mut ::core::ffi::c_void,
     mut length: i32,

@@ -5,6 +5,11 @@ use crate::src::p_map::P_ChangeSector;
 use crate::src::p_spec::twoSided;
 use crate::src::p_spec::getSector;
 use crate::src::p_spec::getSide;
+use crate::src::p_spec::P_FindLowestFloorSurrounding;
+use crate::src::p_spec::P_FindHighestFloorSurrounding;
+use crate::src::p_spec::P_FindNextHighestFloor;
+use crate::src::p_spec::P_FindLowestCeilingSurrounding;
+use crate::src::r_data::textureheight;
 
 extern "C" {
     fn Z_Malloc(
@@ -12,17 +17,9 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    static mut textureheight: *mut fixed_t;
     static mut sectors: *mut sector_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_FindLowestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
-    fn P_FindHighestFloorSurrounding(sec: *mut sector_t) -> fixed_t;
-    fn P_FindNextHighestFloor(
-        sec: *mut sector_t,
-        currentheight: i32,
-    ) -> fixed_t;
-    fn P_FindLowestCeilingSurrounding(sec: *mut sector_t) -> fixed_t;
     fn P_FindSectorFromLineTag(
         line: *mut line_t,
         start: i32,
@@ -1823,8 +1820,7 @@ pub unsafe extern "C" fn EV_DoFloor(
     }
     return rtn;
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_BuildStairs(
+pub unsafe fn EV_BuildStairs(
     mut line: *mut line_t,
     mut type_0: stair_e,
 ) -> i32 {

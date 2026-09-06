@@ -6,6 +6,7 @@ use crate::src::i_video::I_BeginRead;
 use crate::src::i_video::I_EndRead;
 use crate::src::m_misc::M_ExtractFileBase;
 use crate::src::w_file::W_OpenFile;
+use crate::src::z_zone::Z_ChangeTag2;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -49,12 +50,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn Z_ChangeTag2(
-        ptr: *mut ::core::ffi::c_void,
-        tag: i32,
-        file: *mut ::core::ffi::c_char,
-        line: i32,
-    );
     fn Z_ChangeUser(ptr: *mut ::core::ffi::c_void, user: *mut *mut ::core::ffi::c_void);
     fn W_Read(
         wad: *mut wad_file_t,
@@ -134,7 +129,6 @@ pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] = unsafe {
 #[no_mangle]
 pub static mut lumpinfo: *mut lumpinfo_t = ::core::ptr::null::<lumpinfo_t>()
     as *mut lumpinfo_t;
-#[no_mangle]
 pub static mut numlumps: u32 = 0 as u32;
 static mut lumphash: *mut *mut lumpinfo_t = ::core::ptr::null::<*mut lumpinfo_t>()
     as *mut *mut lumpinfo_t;
@@ -212,8 +206,7 @@ unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: i32) {
     lumpinfo = newlumpinfo;
     numlumps = newnumlumps as u32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_AddFile(
+pub unsafe fn W_AddFile(
     mut filename: *mut ::core::ffi::c_char,
 ) -> *mut wad_file_t {
     let mut header: wadinfo_t = wadinfo_t {

@@ -1,5 +1,5 @@
 use crate::src::w_wad::lumpinfo_t;
-use crate::src::r_defs::{side_t, spritedef_t, spriteframe_t};
+use crate::src::r_defs::{side_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::p_mobj::{thinker_t, sector_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
@@ -12,6 +12,8 @@ use crate::src::i_system::I_ConsoleStdout;
 use crate::src::w_wad::W_LumpNameHash;
 use crate::src::r_things::numsprites;
 use crate::src::p_setup::numsides;
+use crate::src::r_things::sprites;
+use crate::src::z_zone::Z_ChangeTag2;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -26,12 +28,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn Z_ChangeTag2(
-        ptr: *mut ::core::ffi::c_void,
-        tag: i32,
-        file: *mut ::core::ffi::c_char,
-        line: i32,
-    );
     static mut lumpinfo: *mut lumpinfo_t;
     fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
@@ -53,7 +49,6 @@ extern "C" {
         src: *const ::core::ffi::c_char,
         dest_size: size_t,
     ) -> boolean;
-    static mut sprites: *mut spritedef_t;
     static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     static mut sides: *mut side_t;
@@ -1406,7 +1401,6 @@ pub static mut firstpatch: i32 = 0;
 pub static mut lastpatch: i32 = 0;
 #[no_mangle]
 pub static mut numpatches: i32 = 0;
-#[no_mangle]
 pub static mut firstspritelump: i32 = 0;
 pub static mut lastspritelump: i32 = 0;
 #[no_mangle]
@@ -1424,7 +1418,6 @@ pub static mut textures_hashtable: *mut *mut texture_t = ::core::ptr::null::<
 pub static mut texturewidthmask: *mut i32 = ::core::ptr::null::<
     i32,
 >() as *mut i32;
-#[no_mangle]
 pub static mut textureheight: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
 #[no_mangle]
@@ -1442,11 +1435,9 @@ pub static mut texturecolumnofs: *mut *mut u16 = ::core::ptr::null::<
 #[no_mangle]
 pub static mut texturecomposite: *mut *mut byte = ::core::ptr::null::<*mut byte>()
     as *mut *mut byte;
-#[no_mangle]
 pub static mut flattranslation: *mut i32 = ::core::ptr::null::<
     i32,
 >() as *mut i32;
-#[no_mangle]
 pub static mut texturetranslation: *mut i32 = ::core::ptr::null::<
     i32,
 >() as *mut i32;
@@ -1655,8 +1646,7 @@ pub unsafe extern "C" fn R_GenerateLookup(mut texnum: i32) {
     }
     Z_Free(patchcount as *mut ::core::ffi::c_void);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_GetColumn(
+pub unsafe fn R_GetColumn(
     mut tex: i32,
     mut col: i32,
 ) -> *mut byte {

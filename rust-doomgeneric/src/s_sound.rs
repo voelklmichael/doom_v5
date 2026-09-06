@@ -1557,9 +1557,7 @@ pub const S_ATTENUATOR: i32 = S_CLIPPING_DIST - S_CLOSE_DIST >> FRACBITS;
 pub const S_STEREO_SWING: i32 = 96 as i32 * FRACUNIT;
 pub const NORM_SEP: i32 = 128 as i32;
 static mut channels: *mut channel_t = ::core::ptr::null::<channel_t>() as *mut channel_t;
-#[no_mangle]
 pub static mut sfxVolume: i32 = 8 as i32;
-#[no_mangle]
 pub static mut musicVolume: i32 = 8 as i32;
 static mut snd_SfxVolume: i32 = 0;
 static mut mus_paused: bool = false;
@@ -1900,8 +1898,7 @@ pub unsafe fn S_SetSfxVolume(mut volume: i32) {
     }
     snd_SfxVolume = volume;
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_StartMusic(mut m_id: i32) {
+pub unsafe fn S_StartMusic(mut m_id: i32) {
     S_ChangeMusic(m_id, false_0);
 }
 #[no_mangle]

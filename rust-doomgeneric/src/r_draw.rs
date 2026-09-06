@@ -2,6 +2,7 @@ use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 use crate::src::r_main::centery;
+use crate::src::v_video::V_UseBuffer;
 
 extern "C" {
     fn memcpy(
@@ -24,7 +25,6 @@ extern "C" {
         width: i32,
         height: i32,
     );
-    fn V_UseBuffer(buffer: *mut byte);
     fn V_RestoreBuffer();
     static mut gamemode: GameMode_t;
 }
@@ -61,13 +61,10 @@ pub const SBARHEIGHT: i32 = 32 as i32;
 pub static mut viewimage: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut viewwidth: i32 = 0;
-#[no_mangle]
 pub static mut scaledviewwidth: i32 = 0;
 #[no_mangle]
 pub static mut viewheight: i32 = 0;
-#[no_mangle]
 pub static mut viewwindowx: i32 = 0;
-#[no_mangle]
 pub static mut viewwindowy: i32 = 0;
 #[no_mangle]
 pub static mut ylookup: [*mut byte; 832] = [::core::ptr::null::<byte>()
@@ -558,8 +555,7 @@ pub unsafe fn R_InitBuffer(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_FillBackScreen() {
+pub unsafe fn R_FillBackScreen() {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut x: i32 = 0;
