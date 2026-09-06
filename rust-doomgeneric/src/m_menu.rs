@@ -1,7 +1,6 @@
 use crate::src::i_system::FILE;
 use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
-use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{actionf_t};
 use crate::src::i_system::I_Error;
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
@@ -62,6 +61,7 @@ use crate::src::m_misc::M_StringCopy;
 use crate::src::doomstat::gameversion;
 use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
+use crate::src::g_game::players;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -97,7 +97,6 @@ extern "C" {
     fn I_GetTime() -> i32;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut players: [player_t; 4];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

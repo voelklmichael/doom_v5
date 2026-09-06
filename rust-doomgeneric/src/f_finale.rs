@@ -3,7 +3,6 @@ use crate::src::r_defs::{spritedef_t, spriteframe_t};
 use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
 use crate::src::p_mobj::{state_t, mobjinfo_t, actionf_t};
-use crate::src::d_player::{player_t};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 use crate::src::d_main::wipegamestate;
 use crate::src::g_game::gameaction;
@@ -23,6 +22,7 @@ use crate::src::g_game::gamemap;
 use crate::src::info::states;
 use crate::src::am_map::automapactive;
 use crate::src::doomstat::gameversion;
+use crate::src::g_game::players;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -50,7 +50,6 @@ extern "C" {
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut players: [player_t; 4];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

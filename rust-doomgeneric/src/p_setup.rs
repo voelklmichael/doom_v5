@@ -1,7 +1,6 @@
 use crate::src::i_system::FILE;
 use crate::src::r_defs::{node_t, seg_t, side_t};
 use crate::src::p_mobj::{thinker_s, mapthing_t, sector_t, line_s, ST_NEGATIVE, ST_POSITIVE, ST_VERTICAL, ST_HORIZONTAL, vertex_t, degenmobj_t, line_t, subsector_t, actionf_t};
-use crate::src::d_player::{player_t};
 use crate::src::p_mobj::{mobj_t};
 use crate::src::m_argv::M_CheckParm;
 use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
@@ -28,6 +27,7 @@ use crate::src::g_game::deathmatch;
 use crate::src::g_game::playeringame;
 use crate::src::g_game::consoleplayer;
 use crate::src::p_tick::leveltime;
+use crate::src::g_game::players;
 
 extern "C" {
     fn Z_Malloc(
@@ -66,7 +66,6 @@ extern "C" {
     fn P_InitPicAnims();
     fn S_Start();
     static mut gamemode: GameMode_t;
-    static mut players: [player_t; 4];
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;

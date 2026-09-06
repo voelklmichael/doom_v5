@@ -31,6 +31,7 @@ use crate::src::g_game::playeringame;
 use crate::src::doomstat::gameversion;
 use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
+use crate::src::g_game::players;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -39,7 +40,6 @@ extern "C" {
     fn G_CheckDemoStatus() -> boolean;
     fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
     static mut gamemode: GameMode_t;
-    static mut players: [player_t; 4];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
