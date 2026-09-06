@@ -22,7 +22,7 @@ pub fn SlopeDiv(
         }
     };
 }
-pub static mut finetangent: [i32; 4096] = [
+pub static finetangent: [i32; 4096] = [
     -170910304,
     -56965752,
     -34178904,
@@ -4120,7 +4120,7 @@ pub static mut finetangent: [i32; 4096] = [
     56965752,
     170910304,
 ];
-pub static mut finesine: [i32; 10240] = [
+pub static finesine: [i32; 10240] = [
     25,
     75,
     125,
@@ -14363,7 +14363,7 @@ pub static mut finesine: [i32; 10240] = [
     65535,
 ];
 pub static mut finecosine: *const fixed_t = ::core::ptr::null::<fixed_t>();
-pub static mut tantoangle: [angle_t; 2049] = [
+pub static tantoangle: [angle_t; 2049] = [
     0,
     333772,
     667544,
@@ -16414,7 +16414,7 @@ pub static mut tantoangle: [angle_t; 2049] = [
     536704000,
     536870912,
 ];
-pub static mut gammatable: [[byte; 256]; 5] = [
+pub static gammatable: [[byte; 256]; 5] = [
     [
         1,
         2,
