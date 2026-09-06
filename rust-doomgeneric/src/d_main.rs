@@ -318,7 +318,7 @@ pub unsafe fn D_Display() {
             WI_Drawer();
         }
         2 => {
-            F_Drawer();
+            F_Drawer(unsafe { &mut game_state().f_finale });
         }
         3 => {
             D_PageDrawer();
@@ -432,7 +432,7 @@ pub unsafe fn D_Display() {
 }
 pub unsafe fn D_BindVariables() {
     let mut i: i32 = 0;
-    I_BindJoystickVariables();
+    I_BindJoystickVariables(unsafe { &mut game_state().i_joystick });
     I_BindSoundVariables();
     M_BindBaseControls();
     M_BindWeaponControls();

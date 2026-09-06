@@ -12,7 +12,9 @@ use std::sync::OnceLock;
 
 use crate::src::d_event::DEventState;
 use crate::src::d_iwad::DIwadState;
+use crate::src::f_finale::FFinaleState;
 use crate::src::i_cdmus::ICdMusState;
+use crate::src::i_joystick::IJoystickState;
 use crate::src::i_timer::ITimerState;
 use crate::src::p_user::PUserState;
 use crate::src::st_lib::StLibState;
@@ -23,7 +25,9 @@ use crate::src::w_file::WFileState;
 pub struct GameState {
     pub d_event: DEventState,
     pub d_iwad: DIwadState,
+    pub f_finale: FFinaleState,
     pub i_cdmus: ICdMusState,
+    pub i_joystick: IJoystickState,
     pub i_timer: ITimerState,
     pub p_user: PUserState,
     pub st_lib: StLibState,
@@ -37,7 +41,9 @@ impl GameState {
         GameState {
             d_event: DEventState::new(),
             d_iwad: DIwadState::new(),
+            f_finale: FFinaleState::new(),
             i_cdmus: ICdMusState::new(),
+            i_joystick: IJoystickState::new(),
             i_timer: ITimerState::new(),
             p_user: PUserState::new(),
             st_lib: StLibState::new(),
