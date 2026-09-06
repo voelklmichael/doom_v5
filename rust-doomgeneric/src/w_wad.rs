@@ -15,9 +15,9 @@ use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{memcpy, memset};
 use libc::{strcasecmp, strlen, strncasecmp, strncmp, strncpy, toupper};
 use libc::{free, printf};
+use crate::src::m_misc::__ctype_toupper_loc;
 
 extern "C" {
-    fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
 }
 pub type __uint8_t = u8;

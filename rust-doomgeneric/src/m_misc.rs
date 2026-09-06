@@ -39,7 +39,7 @@ extern "C" {
         __haystack: *const ::core::ffi::c_char,
         __needle: *const ::core::ffi::c_char,
     ) -> *mut ::core::ffi::c_char;
-    fn __ctype_toupper_loc() -> *mut *const __int32_t;
+    pub fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn __errno_location() -> *mut i32;
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
 }
