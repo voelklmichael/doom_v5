@@ -21,7 +21,9 @@ use crate::src::i_timer::ITimerState;
 use crate::src::m_config::MConfigState;
 use crate::src::m_random::MRandomState;
 use crate::src::p_ceilng::PCeilngState;
+use crate::src::p_maputl::fixup_intercepts_overrun;
 use crate::src::p_plats::PPlatsState;
+use crate::src::p_pspr::PPsprState;
 use crate::src::p_sight::PSightState;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_user::PUserState;
@@ -44,6 +46,7 @@ pub struct GameState {
     pub m_random: MRandomState,
     pub p_ceilng: PCeilngState,
     pub p_plats: PPlatsState,
+    pub p_pspr: PPsprState,
     pub p_sight: PSightState,
     pub p_switch: PSwitchState,
     pub p_user: PUserState,
@@ -69,6 +72,7 @@ impl GameState {
             m_random: MRandomState::new(),
             p_ceilng: PCeilngState::new(),
             p_plats: PPlatsState::new(),
+            p_pspr: PPsprState::new(),
             p_sight: PSightState::new(),
             p_switch: PSwitchState::new(),
             p_user: PUserState::new(),
@@ -93,6 +97,7 @@ pub unsafe fn game_state() -> &'static mut GameState {
         // can only be computed once the value is at its final, permanently-
         // stable 'static address -- i.e. here, not inside any XxxState::new().
         state.sounds.fixup_self_links();
+        fixup_intercepts_overrun(state);
     }
     state
 }

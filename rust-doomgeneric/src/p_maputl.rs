@@ -5,7 +5,7 @@ use crate::src::p_setup::blockmap;
 use crate::src::p_setup::bmapwidth;
 use crate::src::p_setup::bmapheight;
 use crate::src::p_setup::blocklinks;
-use crate::src::p_pspr::bulletslope;
+use crate::src::game_state::GameState;
 use crate::src::p_setup::playerstarts;
 use crate::src::p_setup::bmaporgx;
 use crate::src::p_setup::bmaporgy;
@@ -582,7 +582,9 @@ static mut intercepts_overrun: [intercepts_overrun_t; 23] = unsafe {
         },
         intercepts_overrun_t {
             len: 4 as i32,
-            addr: &raw const bulletslope as *mut fixed_t as *mut ::core::ffi::c_void,
+            // Patched once, after GameState reaches its final 'static address,
+            // by fixup_intercepts_overrun() -- see game_state()'s call site.
+            addr: NULL,
             int16_array: false,
         },
         intercepts_overrun_t {
@@ -650,6 +652,15 @@ static mut intercepts_overrun: [intercepts_overrun_t; 23] = unsafe {
         },
     ]
 };
+// Must run only after `gs` is at its final, permanently-stable 'static
+// address (see game_state()) -- this table's `bulletslope` entry records
+// an address for the vanilla-intercepts-overrun memory-corruption
+// emulation to write through later; that address must be bulletslope's
+// real final location, not a temporary one that could move.
+pub unsafe fn fixup_intercepts_overrun(gs: &mut GameState) {
+    intercepts_overrun[10].addr =
+        &raw mut gs.p_pspr.bulletslope as *mut fixed_t as *mut ::core::ffi::c_void;
+}
 unsafe fn InterceptsMemoryOverrun(
     mut location: i32,
     mut value: i32,
