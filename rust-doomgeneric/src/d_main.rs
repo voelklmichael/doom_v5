@@ -143,6 +143,7 @@ use crate::src::st_stuff::ST_Init;
 use crate::src::v_video::V_Init;
 use crate::src::z_zone::Z_Init;
 use crate::src::i_timer::I_GetTime;
+use crate::src::v_video::V_DrawPatch;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -179,7 +180,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     fn M_SaveDefaults();
     fn G_CheckDemoStatus() -> boolean;
     fn StatDump();

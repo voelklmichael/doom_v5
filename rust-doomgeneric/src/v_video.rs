@@ -132,8 +132,7 @@ pub unsafe fn V_CopyRect(
 pub unsafe extern "C" fn V_SetPatchClipCallback(mut func: vpatchclipfunc_t) {
     patchclip_callback = func;
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawPatch(
+pub unsafe fn V_DrawPatch(
     mut x: i32,
     mut y: i32,
     mut patch: *mut patch_t,

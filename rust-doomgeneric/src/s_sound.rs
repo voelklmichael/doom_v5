@@ -33,13 +33,10 @@ use crate::src::doomstat::gamemode;
 use crate::src::i_sound::I_UpdateSound;
 use crate::src::w_wad::W_LumpLength;
 use crate::src::w_wad::W_ReleaseLumpNum;
+use crate::src::w_wad::W_CacheLumpNum;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn W_CacheLumpNum(
-        lump: i32,
-        tag: i32,
-    ) -> *mut ::core::ffi::c_void;
     fn Z_Malloc(
         size: i32,
         tag: i32,

@@ -22,6 +22,7 @@ use crate::src::p_setup::sides;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::p_setup::sectors;
 use crate::src::w_wad::W_LumpLength;
+use crate::src::w_wad::W_CacheLumpNum;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -36,10 +37,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn W_CacheLumpNum(
-        lump: i32,
-        tag: i32,
-    ) -> *mut ::core::ffi::c_void;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,

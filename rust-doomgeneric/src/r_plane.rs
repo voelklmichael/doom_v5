@@ -46,13 +46,10 @@ use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::w_wad::W_ReleaseLumpNum;
+use crate::src::w_wad::W_CacheLumpNum;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn W_CacheLumpNum(
-        lump: i32,
-        tag: i32,
-    ) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
         __c: i32,
