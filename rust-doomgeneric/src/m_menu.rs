@@ -5,7 +5,7 @@ use crate::src::i_system::I_Error;
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 use crate::src::d_main::D_StartTitle;
-use crate::src::i_input::vanilla_keyboard_mapping;
+
 use crate::src::i_video::usegamma;
 use crate::src::r_main::R_SetViewSize;
 use crate::src::g_game::G_SaveGame;
@@ -1853,7 +1853,7 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
                 }
             }
             _ => {
-                if vanilla_keyboard_mapping != 0 {
+                if game_state().i_input.vanilla_keyboard_mapping != 0 {
                     ch = key;
                 }
                 ch = ({
