@@ -14,18 +14,9 @@ use crate::src::i_video::I_GetPaletteIndex;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use libc::{memcpy, memset};
 
 extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn fabs(__x: f64) -> f64;
 }
 pub type size_t = usize;

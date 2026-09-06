@@ -9,6 +9,7 @@
 #![feature(extern_types, raw_ref_op)]
 #[allow(unused_imports)]
 use ::rust_doomgeneric;
+use libc::memset;
 extern "C" {
     pub type _XDisplay;
     pub type _XGC;
@@ -18,11 +19,6 @@ extern "C" {
     fn doomgeneric_Tick();
     fn __ctype_tolower_loc() -> *mut *const __int32_t;
     fn tolower(__c: i32) -> i32;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn usleep(__useconds: __useconds_t) -> i32;
     fn gettimeofday(

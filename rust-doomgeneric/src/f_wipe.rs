@@ -7,13 +7,7 @@ use crate::src::v_video::V_DrawBlock;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-}
+use libc::memcpy;
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

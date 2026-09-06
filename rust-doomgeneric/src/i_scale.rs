@@ -3,21 +3,12 @@ use crate::src::m_argv::M_CheckParm;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
+use libc::{memcpy, memset};
 extern "C" {
     static mut stdout: *mut FILE;
     fn fflush(__stream: *mut FILE) -> i32;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn puts(__s: *const ::core::ffi::c_char) -> i32;
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

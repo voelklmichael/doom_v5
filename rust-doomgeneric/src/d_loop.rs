@@ -7,18 +7,9 @@ use crate::src::i_timer::I_Sleep;
 use crate::src::i_system::I_AtExit;
 use crate::src::i_timer::I_GetTime;
 use crate::src::d_ticcmd::BT_SPECIAL;
+use libc::{memcpy, memset};
 
 extern "C" {
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
 }
 pub type size_t = usize;

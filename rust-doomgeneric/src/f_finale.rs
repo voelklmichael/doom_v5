@@ -31,6 +31,7 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::{PU_CACHE, PU_LEVEL};
 use crate::src::sounds::{sfx_claw, sfx_dshtgn, sfx_firsht, sfx_pistol, sfx_plasma, sfx_rlaunc, sfx_sgtatk, sfx_shotgn, sfx_skeatk, sfx_skepch, sfx_skeswg, sfx_sklatk, sfx_vilatk};
 use crate::src::sounds::{mus_bunny, mus_evil, mus_read_m, mus_victor};
+use libc::memcpy;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -40,11 +41,6 @@ extern "C" {
     ) -> i32;
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn toupper(__c: i32) -> i32;
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
 }
 pub type size_t = usize;

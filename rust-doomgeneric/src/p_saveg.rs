@@ -38,6 +38,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVEL;
 use crate::src::d_player::NUMPOWERS;
 use crate::src::d_player::NUMPSPRITES;
+use libc::memset;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -66,11 +67,6 @@ extern "C" {
     ) -> u64;
     fn ftell(__stream: *mut FILE) -> i64;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,

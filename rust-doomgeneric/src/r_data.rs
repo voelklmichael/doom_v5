@@ -26,6 +26,7 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use libc::{memcpy, memset};
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -34,16 +35,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
     ) -> i32;
-    fn memcpy(
-        __dest: *mut ::core::ffi::c_void,
-        __src: *const ::core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn memset(
-        __s: *mut ::core::ffi::c_void,
-        __c: i32,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
     fn P_MobjThinker(mobj: *mut mobj_t);
 }
 pub type size_t = usize;
