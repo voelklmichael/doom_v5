@@ -7,6 +7,28 @@ use crate::src::stdint_types::size_t;
 use libc::{atoi, strcasecmp, strlen};
 use libc::{exit, free, malloc, printf, puts};
 
+pub struct ISystemState {
+    pub exit_funcs: *mut atexit_listentry_t,
+    pub already_quitting: bool,
+    pub mem_dump_custom: [u8; 10],
+    pub dos_mem_dump: *const u8,
+    pub zenity_errorboxpath_size: size_t,
+    pub get_memory_value_firsttime: bool,
+}
+
+impl ISystemState {
+    pub fn new() -> Self {
+        ISystemState {
+            exit_funcs: ::core::ptr::null::<atexit_listentry_t>() as *mut atexit_listentry_t,
+            already_quitting: false,
+            mem_dump_custom: [0; 10],
+            dos_mem_dump: &raw const mem_dump_dos622 as *const u8,
+            zenity_errorboxpath_size: 0,
+            get_memory_value_firsttime: true,
+        }
+    }
+}
+
 extern "C" {
     pub type FILE;
     fn system(__command: *const ::core::ffi::c_char) -> i32;
@@ -51,16 +73,14 @@ pub struct atexit_listentry_s {
 }
 pub const DEFAULT_RAM: i32 = 6;
 pub const MIN_RAM: i32 = 6;
-static mut exit_funcs: *mut atexit_listentry_t =
-    ::core::ptr::null::<atexit_listentry_t>() as *mut atexit_listentry_t;
 pub unsafe fn I_AtExit(mut func: atexit_func_t, mut run_on_error: bool) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
     entry =
         malloc(::core::mem::size_of::<atexit_listentry_t>() as size_t) as *mut atexit_listentry_t;
     (*entry).func = func;
     (*entry).run_on_error = run_on_error;
-    (*entry).next = exit_funcs;
-    exit_funcs = entry;
+    (*entry).next = unsafe { game_state() }.i_system.exit_funcs;
+    unsafe { game_state() }.i_system.exit_funcs = entry;
 }
 pub unsafe fn I_Tactile(mut on: i32, mut off: i32, mut total: i32) {}
 unsafe fn AutoAllocMemory(mut size: *mut i32, mut default_ram: i32, mut min_ram: i32) -> *mut byte {
@@ -139,7 +159,7 @@ pub unsafe fn I_ConsoleStdout() -> bool {
 }
 pub unsafe fn I_Quit() {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
-    entry = exit_funcs;
+    entry = unsafe { game_state() }.i_system.exit_funcs;
     while !entry.is_null() {
         (*entry).func.expect("non-null function pointer")();
         entry = (*entry).next;
@@ -189,18 +209,18 @@ unsafe fn ZenityErrorBox(mut message: *mut ::core::ffi::c_char) -> i32 {
     let mut escaped_message: *mut ::core::ffi::c_char =
         ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut errorboxpath: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    static mut errorboxpath_size: size_t = 0;
     if ZenityAvailable() == 0 {
         return 0 as i32;
     }
     escaped_message = EscapeShellString(message);
-    errorboxpath_size = strlen(ZENITY_BINARY.as_ptr())
+    unsafe { game_state() }.i_system.zenity_errorboxpath_size = strlen(ZENITY_BINARY.as_ptr())
         .wrapping_add(strlen(escaped_message))
         .wrapping_add(19 as size_t);
-    errorboxpath = malloc(errorboxpath_size) as *mut ::core::ffi::c_char;
+    errorboxpath = malloc(unsafe { game_state() }.i_system.zenity_errorboxpath_size)
+        as *mut ::core::ffi::c_char;
     M_snprintf(
         errorboxpath,
-        errorboxpath_size,
+        unsafe { game_state() }.i_system.zenity_errorboxpath_size,
         b"%s --error --text=%s\0" as *const u8 as *const ::core::ffi::c_char,
         ZENITY_BINARY.as_ptr(),
         escaped_message,
@@ -210,18 +230,17 @@ unsafe fn ZenityErrorBox(mut message: *mut ::core::ffi::c_char) -> i32 {
     free(escaped_message as *mut ::core::ffi::c_void);
     return result;
 }
-static mut already_quitting: bool = false;
 pub unsafe fn I_Error(message: &str) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
     let mut exit_gui_popup: bool = false;
-    if already_quitting {
+    if unsafe { game_state() }.i_system.already_quitting {
         fprintf(
             stderr,
             b"Warning: recursive call to I_Error detected.\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
     } else {
-        already_quitting = true;
+        unsafe { game_state() }.i_system.already_quitting = true;
     }
     let message_cstring = ::std::ffi::CString::new(message)
         .unwrap_or_else(|_| ::std::ffi::CString::new("(error message contains NUL)").unwrap());
@@ -232,7 +251,7 @@ pub unsafe fn I_Error(message: &str) {
     );
     fprintf(stderr, b"\n\n\0" as *const u8 as *const ::core::ffi::c_char);
     fflush(stderr);
-    entry = exit_funcs;
+    entry = unsafe { game_state() }.i_system.exit_funcs;
     while !entry.is_null() {
         if (*entry).run_on_error {
             (*entry).func.expect("non-null function pointer")();
@@ -246,7 +265,7 @@ pub unsafe fn I_Error(message: &str) {
     exit(-(1 as i32));
 }
 pub const DOS_MEM_DUMP_SIZE: i32 = 10;
-static mut mem_dump_dos622: [u8; 10] = [
+static mem_dump_dos622: [u8; 10] = [
     0x57 as i32 as u8,
     0x92 as i32 as u8,
     0x19 as i32 as u8,
@@ -258,7 +277,7 @@ static mut mem_dump_dos622: [u8; 10] = [
     0x16 as i32 as u8,
     0 as i32 as u8,
 ];
-static mut mem_dump_win98: [u8; 10] = [
+static mem_dump_win98: [u8; 10] = [
     0x9e as i32 as u8,
     0xf as i32 as u8,
     0xc9 as i32 as u8,
@@ -270,7 +289,7 @@ static mut mem_dump_win98: [u8; 10] = [
     0x16 as i32 as u8,
     0 as i32 as u8,
 ];
-static mut mem_dump_dosbox: [u8; 10] = [
+static mem_dump_dosbox: [u8; 10] = [
     0 as i32 as u8,
     0 as i32 as u8,
     0 as i32 as u8,
@@ -282,19 +301,16 @@ static mut mem_dump_dosbox: [u8; 10] = [
     0x7 as i32 as u8,
     0 as i32 as u8,
 ];
-static mut mem_dump_custom: [u8; 10] = [0; 10];
-static mut dos_mem_dump: *const u8 = unsafe { &raw const mem_dump_dos622 as *const u8 };
 pub unsafe fn I_GetMemoryValue(
     mut offset: u32,
     mut value: *mut ::core::ffi::c_void,
     mut size: i32,
 ) -> bool {
-    static mut firsttime: bool = true;
-    if firsttime {
+    if unsafe { game_state() }.i_system.get_memory_value_firsttime {
         let mut p: i32 = 0;
         let mut i: i32 = 0;
         let mut val: i32 = 0;
-        firsttime = false;
+        unsafe { game_state() }.i_system.get_memory_value_firsttime = false;
         i = 0 as i32;
         p = M_CheckParmWithArgs("-setmem", 1 as i32);
         if p > 0 as i32 {
@@ -303,20 +319,23 @@ pub unsafe fn I_GetMemoryValue(
                 b"dos622\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                dos_mem_dump = &raw const mem_dump_dos622 as *const u8;
+                unsafe { game_state() }.i_system.dos_mem_dump =
+                    &raw const mem_dump_dos622 as *const u8;
             }
             if strcasecmp(
                 unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos71\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                dos_mem_dump = &raw const mem_dump_win98 as *const u8;
+                unsafe { game_state() }.i_system.dos_mem_dump =
+                    &raw const mem_dump_win98 as *const u8;
             } else if strcasecmp(
                 unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dosbox\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                dos_mem_dump = &raw const mem_dump_dosbox as *const u8;
+                unsafe { game_state() }.i_system.dos_mem_dump =
+                    &raw const mem_dump_dosbox as *const u8;
             } else {
                 i = 0 as i32;
                 while i < DOS_MEM_DUMP_SIZE {
@@ -336,30 +355,53 @@ pub unsafe fn I_GetMemoryValue(
                     );
                     let fresh0 = i;
                     i = i + 1;
-                    mem_dump_custom[fresh0 as usize] = val as u8;
+                    unsafe { game_state() }.i_system.mem_dump_custom[fresh0 as usize] = val as u8;
                     i += 1;
                 }
-                dos_mem_dump = &raw mut mem_dump_custom as *mut u8;
+                unsafe { game_state() }.i_system.dos_mem_dump =
+                    &raw mut unsafe { game_state() }.i_system.mem_dump_custom as *mut u8;
             }
         }
     }
     match size {
         1 => {
-            *(value as *mut u8) = *dos_mem_dump.offset(offset as isize);
+            *(value as *mut u8) = *unsafe { game_state() }
+                .i_system
+                .dos_mem_dump
+                .offset(offset as isize);
             return true;
         }
         2 => {
-            *(value as *mut u16) = (*dos_mem_dump.offset(offset as isize) as i32
-                | (*dos_mem_dump.offset(offset.wrapping_add(1 as u32) as isize) as i32) << 8 as i32)
-                as u16;
+            *(value as *mut u16) = (*unsafe { game_state() }
+                .i_system
+                .dos_mem_dump
+                .offset(offset as isize) as i32
+                | (*unsafe { game_state() }
+                    .i_system
+                    .dos_mem_dump
+                    .offset(offset.wrapping_add(1 as u32) as isize) as i32)
+                    << 8 as i32) as u16;
             return true;
         }
         4 => {
-            *(value as *mut u32) = (*dos_mem_dump.offset(offset as isize) as i32
-                | (*dos_mem_dump.offset(offset.wrapping_add(1 as u32) as isize) as i32) << 8 as i32
-                | (*dos_mem_dump.offset(offset.wrapping_add(2 as u32) as isize) as i32)
+            *(value as *mut u32) = (*unsafe { game_state() }
+                .i_system
+                .dos_mem_dump
+                .offset(offset as isize) as i32
+                | (*unsafe { game_state() }
+                    .i_system
+                    .dos_mem_dump
+                    .offset(offset.wrapping_add(1 as u32) as isize) as i32)
+                    << 8 as i32
+                | (*unsafe { game_state() }
+                    .i_system
+                    .dos_mem_dump
+                    .offset(offset.wrapping_add(2 as u32) as isize) as i32)
                     << 16 as i32
-                | (*dos_mem_dump.offset(offset.wrapping_add(3 as u32) as isize) as i32)
+                | (*unsafe { game_state() }
+                    .i_system
+                    .dos_mem_dump
+                    .offset(offset.wrapping_add(3 as u32) as isize) as i32)
                     << 24 as i32) as u32;
             return true;
         }

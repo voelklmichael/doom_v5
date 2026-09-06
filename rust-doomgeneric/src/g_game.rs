@@ -118,8 +118,6 @@ use crate::src::p_mobj::MF_SHADOW;
 use crate::src::p_mobj::{mapthing_t, state_t, subsector_t};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::p_mobj::{MT_BRUISERSHOT, MT_HEADSHOT, MT_TFOG, MT_TROOPSHOT};
-use crate::src::p_saveg::save_stream;
-use crate::src::p_saveg::savegame_error;
 use crate::src::p_saveg::P_ArchivePlayers;
 use crate::src::p_saveg::P_ArchiveSpecials;
 use crate::src::p_saveg::P_ArchiveThinkers;
@@ -1498,16 +1496,16 @@ pub unsafe fn G_LoadGame(mut name: *mut ::core::ffi::c_char) {
 pub unsafe fn G_DoLoadGame() {
     let mut savedleveltime: i32 = 0;
     gameaction = ga_nothing;
-    save_stream = fopen(
+    unsafe { game_state() }.p_saveg.save_stream = fopen(
         &raw mut savename as *mut ::core::ffi::c_char,
         b"rb\0" as *const u8 as *const ::core::ffi::c_char,
     ) as *mut FILE;
-    if save_stream.is_null() {
+    if unsafe { game_state() }.p_saveg.save_stream.is_null() {
         return;
     }
-    savegame_error = false;
+    unsafe { game_state() }.p_saveg.savegame_error = false;
     if !P_ReadSaveGameHeader() {
-        fclose(save_stream);
+        fclose(unsafe { game_state() }.p_saveg.save_stream);
         return;
     }
     savedleveltime = leveltime;
@@ -1520,7 +1518,7 @@ pub unsafe fn G_DoLoadGame() {
     if !P_ReadSaveGameEOF() {
         I_Error("Bad savegame");
     }
-    fclose(save_stream);
+    fclose(unsafe { game_state() }.p_saveg.save_stream);
     if setsizeneeded {
         R_ExecuteSetViewSize();
     }
@@ -1545,20 +1543,20 @@ pub unsafe fn G_DoSaveGame() {
     recovery_savegame_file = ::core::ptr::null_mut::<::core::ffi::c_char>();
     temp_savegame_file = P_TempSaveGameFile();
     savegame_file = P_SaveGameFile(savegameslot);
-    save_stream = fopen(
+    unsafe { game_state() }.p_saveg.save_stream = fopen(
         temp_savegame_file,
         b"wb\0" as *const u8 as *const ::core::ffi::c_char,
     ) as *mut FILE;
-    if save_stream.is_null() {
+    if unsafe { game_state() }.p_saveg.save_stream.is_null() {
         recovery_savegame_file = M_TempFile(
             b"recovery.dsg\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
-        save_stream = fopen(
+        unsafe { game_state() }.p_saveg.save_stream = fopen(
             recovery_savegame_file,
             b"wb\0" as *const u8 as *const ::core::ffi::c_char,
         ) as *mut FILE;
-        if save_stream.is_null() {
+        if unsafe { game_state() }.p_saveg.save_stream.is_null() {
             I_Error(&format!(
                 "Failed to open either '{}' or '{}' to write savegame.",
                 ::std::ffi::CStr::from_ptr(temp_savegame_file)
@@ -1570,17 +1568,19 @@ pub unsafe fn G_DoSaveGame() {
             ));
         }
     }
-    savegame_error = false;
+    unsafe { game_state() }.p_saveg.savegame_error = false;
     P_WriteSaveGameHeader(&raw mut savedescription as *mut ::core::ffi::c_char);
     P_ArchivePlayers();
     P_ArchiveWorld();
     P_ArchiveThinkers();
     P_ArchiveSpecials(unsafe { &mut game_state().p_ceilng });
     P_WriteSaveGameEOF();
-    if vanilla_savegame_limit != 0 && ftell(save_stream) > SAVEGAMESIZE as i64 {
+    if vanilla_savegame_limit != 0
+        && ftell(unsafe { game_state() }.p_saveg.save_stream) > SAVEGAMESIZE as i64
+    {
         I_Error("Savegame buffer overrun");
     }
-    fclose(save_stream);
+    fclose(unsafe { game_state() }.p_saveg.save_stream);
     if !recovery_savegame_file.is_null() {
         I_Error(&format!(
             "Failed to open savegame file '{}' for writing.\nBut your game has been saved to '{}' for recovery.",
