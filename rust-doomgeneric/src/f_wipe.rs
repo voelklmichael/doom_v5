@@ -1,6 +1,7 @@
 
 use crate::src::i_video::I_ReadScreen;
 use crate::src::m_random::M_Random;
+use crate::src::v_video::V_MarkRect;
 extern "C" {
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
@@ -20,12 +21,6 @@ extern "C" {
         width: i32,
         height: i32,
         src: *mut byte,
-    );
-    fn V_MarkRect(
-        x: i32,
-        y_0: i32,
-        width: i32,
-        height: i32,
     );
 }
 pub type size_t = usize;

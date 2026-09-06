@@ -54,6 +54,7 @@ use crate::src::g_game::gamestate;
 use crate::src::i_video::I_SetPalette;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::v_video::V_DrawPatchDirect;
+use crate::src::d_loop::gametic;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -93,7 +94,6 @@ extern "C" {
         dest_size: size_t,
     ) -> boolean;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut gametic: i32;
     static mut gamemode: GameMode_t;
     static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;

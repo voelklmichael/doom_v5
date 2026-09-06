@@ -1290,7 +1290,6 @@ pub const MT_PLAYER: mobjtype_t = 0;
 pub const MAXPLAYERS: i32 = 4 as i32;
 #[no_mangle]
 pub static mut leveltime: i32 = 0;
-#[no_mangle]
 pub static mut thinkercap: thinker_t = thinker_s {
     prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
     next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,

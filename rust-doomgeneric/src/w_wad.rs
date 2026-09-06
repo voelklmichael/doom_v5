@@ -126,7 +126,6 @@ pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
 pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] = unsafe {
     ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"doomgeneric\0")
 };
-#[no_mangle]
 pub static mut lumpinfo: *mut lumpinfo_t = ::core::ptr::null::<lumpinfo_t>()
     as *mut lumpinfo_t;
 pub static mut numlumps: u32 = 0 as u32;

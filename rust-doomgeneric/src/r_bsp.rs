@@ -17,10 +17,10 @@ use crate::src::p_setup::nodes;
 use crate::src::r_main::viewx;
 use crate::src::r_main::viewy;
 use crate::src::r_main::viewangle;
+use crate::src::r_main::viewz;
 
 extern "C" {
     static mut viewwidth: i32;
-    static mut viewz: fixed_t;
     fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
     fn R_FindPlane(
         height: fixed_t,

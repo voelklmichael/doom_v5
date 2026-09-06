@@ -122,7 +122,6 @@ static mut ticdata: [ticcmd_set_t; 128] = [ticcmd_set_t {
 }; 128];
 static mut maketic: i32 = 0;
 static mut recvtic: i32 = 0;
-#[no_mangle]
 pub static mut gametic: i32 = 0;
 pub static mut singletics: bool = false;
 static mut localplayer: i32 = 0;

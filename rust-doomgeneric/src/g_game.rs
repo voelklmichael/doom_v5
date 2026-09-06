@@ -113,6 +113,8 @@ use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::p_setup::playerstarts;
 use crate::src::r_sky::skytexture;
 use crate::src::tables::finetangent;
+use crate::src::d_loop::gametic;
+use crate::src::r_main::R_PointInSubsector;
 
 extern "C" {
     fn memcpy(
@@ -141,7 +143,6 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn ftell(__stream: *mut FILE) -> i64;
     fn I_GetTime() -> i32;
-    static mut gametic: i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     static mut states: [state_t; 967];
@@ -175,7 +176,6 @@ extern "C" {
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
-    fn R_PointInSubsector(x: fixed_t, y: fixed_t) -> *mut subsector_t;
     fn P_SpawnMobj(
         x: fixed_t,
         y: fixed_t,

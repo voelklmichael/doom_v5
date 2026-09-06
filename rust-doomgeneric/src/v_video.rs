@@ -90,8 +90,7 @@ static mut dest_screen: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut dirtybox: [i32; 4] = [0; 4];
 static mut patchclip_callback: vpatchclipfunc_t = None;
-#[no_mangle]
-pub unsafe extern "C" fn V_MarkRect(
+pub unsafe fn V_MarkRect(
     mut x: i32,
     mut y: i32,
     mut width: i32,

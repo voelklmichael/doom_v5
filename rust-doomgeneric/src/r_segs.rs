@@ -42,6 +42,7 @@ use crate::src::r_main::viewangle;
 use crate::src::r_main::extralight;
 use crate::src::r_main::colfunc;
 use crate::src::tables::finetangent;
+use crate::src::r_main::viewz;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -55,7 +56,6 @@ extern "C" {
     static mut skyflatnum: i32;
     static mut viewwidth: i32;
     static mut viewheight: i32;
-    static mut viewz: fixed_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

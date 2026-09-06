@@ -4,6 +4,8 @@ use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 use crate::src::r_main::centery;
 use crate::src::v_video::V_UseBuffer;
 use crate::src::v_video::V_RestoreBuffer;
+use crate::src::r_data::colormaps;
+use crate::src::v_video::V_MarkRect;
 
 extern "C" {
     fn memcpy(
@@ -18,14 +20,7 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     static mut I_VideoBuffer: *mut byte;
-    static mut colormaps: *mut lighttable_t;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    fn V_MarkRect(
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-    );
     static mut gamemode: GameMode_t;
 }
 pub type size_t = usize;
