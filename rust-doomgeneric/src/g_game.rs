@@ -350,7 +350,7 @@ static mut weapon_keys: [*mut i32; 8] = unsafe {
         &raw const key_weapon8 as *mut i32,
     ]
 };
-static mut next_weapon: i32 = 0 as i32;
+static mut next_weapon: i32 = 0;
 static mut weapon_order_table: [C2RustUnnamed_5; 9] = [
     C2RustUnnamed_5 {
         weapon: wp_fist,
@@ -418,8 +418,8 @@ pub const BODYQUESIZE: i32 = 32;
 pub static mut bodyque: [*mut mobj_t; 32] = [::core::ptr::null::<mobj_t>()
     as *mut mobj_t; 32];
 pub static mut bodyqueslot: i32 = 0;
-pub static mut vanilla_savegame_limit: i32 = 1 as i32;
-pub static mut vanilla_demo_limit: i32 = 1 as i32;
+pub static mut vanilla_savegame_limit: i32 = 1;
+pub static mut vanilla_demo_limit: i32 = 1;
 pub unsafe fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
     let mut i: size_t = 0;
     let mut sum: i32 = 0 as i32;
@@ -754,7 +754,7 @@ pub unsafe fn G_BuildTiccmd(
             | savegameslot << BTS_SAVESHIFT as i32) as byte;
     }
     if lowres_turn {
-        static mut carry: i16 = 0 as i16;
+        static mut carry: i16 = 0;
         let mut desired_angleturn: i16 = 0;
         desired_angleturn = ((*cmd).angleturn as i32
             + carry as i32) as i16;

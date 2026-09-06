@@ -9,8 +9,8 @@ extern "C" {
         key: *mut u8,
     ) -> i32;
 }
-pub static mut vanilla_keyboard_mapping: i32 = 1 as i32;
-static mut shiftdown: i32 = 0 as i32;
+pub static mut vanilla_keyboard_mapping: i32 = 1;
+static mut shiftdown: i32 = 0;
 static mut shiftxform: [::core::ffi::c_char; 128] = [
     0 as i32 as ::core::ffi::c_char,
     1 as i32 as ::core::ffi::c_char,

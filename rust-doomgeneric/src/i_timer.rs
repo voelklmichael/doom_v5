@@ -4,7 +4,7 @@ extern "C" {
     fn DG_SleepMs(ms: uint32_t);
     fn DG_GetTicksMs() -> uint32_t;
 }
-static mut basetime: uint32_t = 0 as uint32_t;
+static mut basetime: uint32_t = 0;
 pub unsafe fn I_GetTicks() -> i32 {
     return DG_GetTicksMs() as i32;
 }

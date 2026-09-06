@@ -450,12 +450,12 @@ pub static mut thintriangle_guy: [mline_t; 3] = [
         },
     },
 ];
-static mut cheating: i32 = 0 as i32;
-static mut grid: i32 = 0 as i32;
-static mut leveljuststarted: i32 = 1 as i32;
+static mut cheating: i32 = 0;
+static mut grid: i32 = 0;
+static mut leveljuststarted: i32 = 1;
 pub static mut automapactive: bool = false;
 static mut finit_width: i32 = SCREENWIDTH;
-static mut finit_height: i32 = SCREENHEIGHT - 32 as i32;
+static mut finit_height: i32 = SCREENHEIGHT - 32;
 static mut f_x: i32 = 0;
 static mut f_y: i32 = 0;
 static mut f_w: i32 = 0;
@@ -493,8 +493,8 @@ static mut plr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t
 static mut marknums: [*mut patch_t; 10] = [::core::ptr::null::<patch_t>()
     as *mut patch_t; 10];
 static mut markpoints: [mpoint_t; 10] = [mpoint_t { x: 0, y: 0 }; 10];
-static mut markpointnum: i32 = 0 as i32;
-static mut followplayer: i32 = 1 as i32;
+static mut markpointnum: i32 = 0;
+static mut followplayer: i32 = 1;
 #[no_mangle]
 pub static mut cheat_amap: cheatseq_t = cheatseq_t {
     sequence: [0; 25],
@@ -750,8 +750,8 @@ pub unsafe fn AM_Stop() {
     stopped = true;
 }
 pub unsafe fn AM_Start() {
-    static mut lastlevel: i32 = -(1 as i32);
-    static mut lastepisode: i32 = -(1 as i32);
+    static mut lastlevel: i32 = -1;
+    static mut lastepisode: i32 = -1;
     if !stopped {
         AM_Stop();
     }
@@ -776,7 +776,7 @@ pub unsafe fn AM_maxOutWindowScale() {
 }
 pub unsafe fn AM_Responder(mut ev: *mut event_t) -> bool {
     let mut rc: i32 = 0;
-    static mut bigstate: i32 = 0 as i32;
+    static mut bigstate: i32 = 0;
     static mut buffer: [::core::ffi::c_char; 20] = [0; 20];
     let mut key: i32 = 0;
     rc = false_0;
@@ -951,7 +951,7 @@ pub unsafe fn AM_doFollowPlayer() {
     }
 }
 pub unsafe fn AM_updateLightLev() {
-    static mut nexttic: i32 = 0 as i32;
+    static mut nexttic: i32 = 0;
     static mut litelevels: [i32; 8] = [
         0 as i32,
         4 as i32,
@@ -962,7 +962,7 @@ pub unsafe fn AM_updateLightLev() {
         15 as i32,
         15 as i32,
     ];
-    static mut litelevelscnt: i32 = 0 as i32;
+    static mut litelevelscnt: i32 = 0;
     if amclock > nexttic {
         let fresh1 = litelevelscnt;
         litelevelscnt = litelevelscnt + 1;
@@ -1145,7 +1145,7 @@ pub unsafe fn AM_drawFline(
     let mut ax: i32 = 0;
     let mut ay: i32 = 0;
     let mut d: i32 = 0;
-    static mut fuck: i32 = 0 as i32;
+    static mut fuck: i32 = 0;
     if (*fl).a.x < 0 as i32 || (*fl).a.x >= f_w
         || (*fl).a.y < 0 as i32 || (*fl).a.y >= f_h
         || (*fl).b.x < 0 as i32 || (*fl).b.x >= f_w

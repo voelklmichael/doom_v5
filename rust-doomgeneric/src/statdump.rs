@@ -24,7 +24,7 @@ static mut captured_stats: [wbstartstruct_t; 32] = [wbstartstruct_t {
         score: 0,
     }; 4],
 }; 32];
-static mut num_captured_stats: i32 = 0 as i32;
+static mut num_captured_stats: i32 = 0;
 pub unsafe fn StatCopy(mut stats: *mut wbstartstruct_t) {
     if M_ParmExists("-statdump") && num_captured_stats < MAX_CAPTURES {
         memcpy(
