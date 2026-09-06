@@ -48,6 +48,8 @@ use crate::src::sounds::{sfx_itmbk, sfx_oof, sfx_telept};
 use crate::src::d_player::CF_NOMOMENTUM;
 use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_baby, sk_nightmare};
+use crate::src::tables::angle_t;
+use crate::src::m_fixed::fixed_t;
 use libc::{memcpy, memset};
 
 pub type size_t = usize;
@@ -64,8 +66,6 @@ pub const it_blueskull: C2RustUnnamed_0 = 3;
 pub const it_redcard: C2RustUnnamed_0 = 2;
 pub const it_yellowcard: C2RustUnnamed_0 = 1;
 pub const it_bluecard: C2RustUnnamed_0 = 0;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<

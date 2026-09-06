@@ -154,6 +154,7 @@ use crate::src::d_mode::{GameMission_t, doom, doom2, none, pack_chex, pack_hacx,
 use crate::src::d_mode::{sk_baby, sk_medium, skill_t};
 use crate::src::d_event::{GS_DEMOSCREEN, GS_LEVEL, gamestate_t};
 use crate::src::d_event::{ga_loadgame, ga_nothing, ga_playdemo};
+use crate::src::i_system::atexit_func_t;
 use libc::{atoi, strcasecmp, strcmp, strlen, strncasecmp};
 use libc::{exit, printf, snprintf};
 
@@ -186,8 +187,6 @@ pub type size_t = usize;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1161,8 +1160,6 @@ pub type C2RustUnnamed_2 = u32;
 pub const wipe_NUMWIPES: C2RustUnnamed_2 = 2;
 pub const wipe_Melt: C2RustUnnamed_2 = 1;
 pub const wipe_ColorXForm: C2RustUnnamed_2 = 0;
-pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
-pub type grabmouse_callback_t = Option<unsafe extern "C" fn() -> boolean>;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct C2RustUnnamed_3 {

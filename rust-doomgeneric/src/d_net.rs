@@ -48,12 +48,9 @@ pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
-pub type sha1_digest_t = [byte; 20];
 pub type netgame_startup_callback_t = Option<
     unsafe extern "C" fn(i32, i32) -> boolean,
 >;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;

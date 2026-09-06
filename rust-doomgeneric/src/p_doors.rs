@@ -17,6 +17,7 @@ use crate::src::i_system::{fprintf, stderr};
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::{actionf_p1, statenum_t};
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
+use crate::src::m_fixed::fixed_t;
 extern "C" {
     fn T_PlatRaise(plat: *mut plat_t);
 }
@@ -33,8 +34,6 @@ pub const it_blueskull: C2RustUnnamed_0 = 3;
 pub const it_redcard: C2RustUnnamed_0 = 2;
 pub const it_yellowcard: C2RustUnnamed_0 = 1;
 pub const it_bluecard: C2RustUnnamed_0 = 0;
-pub type fixed_t = i32;
-pub type angle_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
