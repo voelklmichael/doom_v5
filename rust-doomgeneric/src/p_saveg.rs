@@ -21,6 +21,10 @@ use crate::src::info::mobjinfo;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_setup::lines;
 use crate::src::g_game::gameepisode;
+use crate::src::g_game::gamemap;
+use crate::src::info::states;
+use crate::src::p_setup::numsectors;
+use crate::src::p_setup::sides;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -65,10 +69,7 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
     ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    static mut states: [state_t; 967];
-    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
-    static mut sides: *mut side_t;
     fn P_AddThinker(thinker: *mut thinker_t);
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn T_LightFlash(flash: *mut lightflash_t);
@@ -79,7 +80,6 @@ extern "C" {
     fn T_VerticalDoor(door: *mut vldoor_t);
     fn T_MoveCeiling(ceiling: *mut ceiling_t);
     fn T_MoveFloor(floor: *mut floormove_t);
-    static mut gamemap: i32;
     static mut leveltime: i32;
     static mut players: [player_t; 4];
     static mut playeringame: [boolean; 4];

@@ -31,6 +31,8 @@ use crate::src::v_video::V_MarkRect;
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::p_setup::lines;
 use crate::src::g_game::gameepisode;
+use crate::src::g_game::gamemap;
+use crate::src::p_setup::numsectors;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -54,7 +56,6 @@ extern "C" {
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,
@@ -63,7 +64,6 @@ extern "C" {
         ...
     ) -> i32;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    static mut gamemap: i32;
     static mut netgame: bool;
     static mut deathmatch: i32;
     static mut consoleplayer: i32;

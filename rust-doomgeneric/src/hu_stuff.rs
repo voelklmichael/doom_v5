@@ -13,6 +13,8 @@ use crate::src::m_controls::key_multi_msg;
 use crate::src::m_controls::key_multi_msgplayer;
 use crate::src::m_menu::showMessages;
 use crate::src::g_game::gameepisode;
+use crate::src::doomstat::gamemission;
+use crate::src::g_game::gamemap;
 
 extern "C" {
     fn snprintf(
@@ -28,9 +30,7 @@ extern "C" {
     ) -> boolean;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut gamemap: i32;
     static mut netgame: bool;
     static mut automapactive: bool;
     static mut consoleplayer: i32;

@@ -1,4 +1,3 @@
-use crate::src::r_defs::{side_t};
 use crate::src::p_spec::{button_t};
 use crate::src::p_mobj::{degenmobj_t, line_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
@@ -12,9 +11,9 @@ use crate::src::p_plats::EV_DoPlat;
 use crate::src::g_game::G_ExitLevel;
 use crate::src::p_doors::EV_DoDoor;
 use crate::src::p_floor::EV_DoFloor;
+use crate::src::p_setup::sides;
 
 extern "C" {
-    static mut sides: *mut side_t;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn EV_DoDonut(line: *mut line_t) -> i32;
     fn EV_VerticalDoor(line: *mut line_t, thing: *mut mobj_t);

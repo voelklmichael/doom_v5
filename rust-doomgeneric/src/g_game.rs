@@ -119,6 +119,8 @@ use crate::src::info::mobjinfo;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::r_sky::skyflatnum;
+use crate::src::doomstat::gamemission;
+use crate::src::info::states;
 
 extern "C" {
     fn memcpy(
@@ -149,9 +151,7 @@ extern "C" {
     fn I_GetTime() -> i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut states: [state_t; 967];
     static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut automapactive: bool;
     static mut leveltime: i32;
@@ -1717,7 +1717,6 @@ pub static mut gamestate: gamestate_t = GS_LEVEL;
 pub static mut gameskill: skill_t = sk_baby;
 pub static mut respawnmonsters: bool = false;
 pub static mut gameepisode: i32 = 0;
-#[no_mangle]
 pub static mut gamemap: i32 = 0;
 pub static mut timelimit: i32 = 0;
 pub static mut paused: bool = false;

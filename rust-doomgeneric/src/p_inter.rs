@@ -10,12 +10,12 @@ use crate::src::g_game::gameskill;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SpawnMobj;
+use crate::src::info::states;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
-    static mut states: [state_t; 967];
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;

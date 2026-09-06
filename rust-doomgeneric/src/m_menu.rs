@@ -56,6 +56,7 @@ use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::d_loop::gametic;
 use crate::src::g_game::demoplayback;
+use crate::src::doomstat::gamemission;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -96,7 +97,6 @@ extern "C" {
     ) -> boolean;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
     static mut automapactive: bool;

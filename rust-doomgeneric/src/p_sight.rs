@@ -9,11 +9,11 @@ use crate::src::p_setup::numnodes;
 use crate::src::p_setup::subsectors;
 use crate::src::p_setup::nodes;
 use crate::src::r_main::validcount;
+use crate::src::p_setup::numsectors;
 
 extern "C" {
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut numsectors: i32;
     static mut sectors: *mut sector_t;
 }
 pub type __uint8_t = u8;

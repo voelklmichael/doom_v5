@@ -18,6 +18,9 @@ use crate::src::v_video::V_MarkRect;
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::info::mobjinfo;
 use crate::src::g_game::gameepisode;
+use crate::src::doomstat::gamemission;
+use crate::src::g_game::gamemap;
+use crate::src::info::states;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
@@ -43,12 +46,9 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    static mut states: [state_t; 967];
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
     static mut gameversion: GameVersion_t;
-    static mut gamemap: i32;
     static mut automapactive: bool;
     static mut players: [player_t; 4];
 }
