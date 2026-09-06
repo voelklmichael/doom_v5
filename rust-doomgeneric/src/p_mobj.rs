@@ -940,6 +940,7 @@ pub struct PMobjState {
     pub itemrespawntime: [i32; 128],
     pub iquehead: i32,
     pub iquetail: i32,
+    pub dummy_mobj: mobj_t,
 }
 
 impl PMobjState {
@@ -956,6 +957,53 @@ impl PMobjState {
             itemrespawntime: [0; 128],
             iquehead: 0,
             iquetail: 0,
+            dummy_mobj: mobj_s {
+                thinker: thinker_s {
+                    prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
+                    next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
+                    function: ThinkerFn::Paused,
+                },
+                x: 0,
+                y: 0,
+                z: 0,
+                snext: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+                sprev: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+                angle: 0,
+                sprite: SPR_TROO,
+                frame: 0,
+                bnext: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+                bprev: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+                subsector: ::core::ptr::null::<subsector_s>() as *mut subsector_s,
+                floorz: 0,
+                ceilingz: 0,
+                radius: 0,
+                height: 0,
+                momx: 0,
+                momy: 0,
+                momz: 0,
+                validcount: 0,
+                type_0: MT_PLAYER,
+                info: ::core::ptr::null::<mobjinfo_t>() as *mut mobjinfo_t,
+                tics: 0,
+                state: ::core::ptr::null::<state_t>() as *mut state_t,
+                flags: 0,
+                health: 0,
+                movedir: 0,
+                movecount: 0,
+                target: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+                reactiontime: 0,
+                threshold: 0,
+                player: ::core::ptr::null::<player_s>() as *mut player_s,
+                lastlook: 0,
+                spawnpoint: mapthing_t {
+                    x: 0,
+                    y: 0,
+                    angle: 0,
+                    type_0: 0,
+                    options: 0,
+                },
+                tracer: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+            },
         }
     }
 }
@@ -1205,60 +1253,13 @@ pub unsafe fn P_CheckMissileSpawn(mut th: *mut mobj_t) {
         P_ExplodeMissile(th);
     }
 }
-pub unsafe fn P_SubstNullMobj(mut mobj: *mut mobj_t) -> *mut mobj_t {
+pub unsafe fn P_SubstNullMobj(state: &mut PMobjState, mut mobj: *mut mobj_t) -> *mut mobj_t {
     if mobj.is_null() {
-        static mut dummy_mobj: mobj_t = mobj_s {
-            thinker: thinker_s {
-                prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-                next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-                function: ThinkerFn::Paused,
-            },
-            x: 0,
-            y: 0,
-            z: 0,
-            snext: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
-            sprev: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
-            angle: 0,
-            sprite: SPR_TROO,
-            frame: 0,
-            bnext: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
-            bprev: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
-            subsector: ::core::ptr::null::<subsector_s>() as *mut subsector_s,
-            floorz: 0,
-            ceilingz: 0,
-            radius: 0,
-            height: 0,
-            momx: 0,
-            momy: 0,
-            momz: 0,
-            validcount: 0,
-            type_0: MT_PLAYER,
-            info: ::core::ptr::null::<mobjinfo_t>() as *mut mobjinfo_t,
-            tics: 0,
-            state: ::core::ptr::null::<state_t>() as *mut state_t,
-            flags: 0,
-            health: 0,
-            movedir: 0,
-            movecount: 0,
-            target: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
-            reactiontime: 0,
-            threshold: 0,
-            player: ::core::ptr::null::<player_s>() as *mut player_s,
-            lastlook: 0,
-            spawnpoint: mapthing_t {
-                x: 0,
-                y: 0,
-                angle: 0,
-                type_0: 0,
-                options: 0,
-            },
-            tracer: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
-        };
-        dummy_mobj.x = 0 as i32 as fixed_t;
-        dummy_mobj.y = 0 as i32 as fixed_t;
-        dummy_mobj.z = 0 as i32 as fixed_t;
-        dummy_mobj.flags = 0 as i32;
-        mobj = &raw mut dummy_mobj;
+        state.dummy_mobj.x = 0 as i32 as fixed_t;
+        state.dummy_mobj.y = 0 as i32 as fixed_t;
+        state.dummy_mobj.z = 0 as i32 as fixed_t;
+        state.dummy_mobj.flags = 0 as i32;
+        mobj = &raw mut state.dummy_mobj;
     }
     return mobj;
 }

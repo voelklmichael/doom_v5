@@ -770,7 +770,7 @@ pub unsafe fn P_AimLineAttack(
 ) -> fixed_t {
     let mut x2: fixed_t = 0;
     let mut y2: fixed_t = 0;
-    t1 = P_SubstNullMobj(t1);
+    t1 = P_SubstNullMobj(unsafe { &mut game_state().p_mobj }, t1);
     angle >>= ANGLETOFINESHIFT;
     shootthing = t1;
     x2 = (*t1).x + (distance >> FRACBITS) * finecosine[angle as isize];

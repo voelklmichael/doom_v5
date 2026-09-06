@@ -1088,7 +1088,10 @@ pub unsafe fn A_Fire(mut actor: *mut mobj_t) {
     if dest.is_null() {
         return;
     }
-    target = P_SubstNullMobj((*actor).target as *mut mobj_t);
+    target = P_SubstNullMobj(
+        unsafe { &mut game_state().p_mobj },
+        (*actor).target as *mut mobj_t,
+    );
     if !P_CheckSight(unsafe { &mut game_state().p_sight }, target, dest) {
         return;
     }
@@ -1161,7 +1164,10 @@ pub unsafe fn A_FatAttack1(mut actor: *mut mobj_t) {
     let mut an: i32 = 0;
     A_FaceTarget(actor);
     (*actor).angle = (*actor).angle.wrapping_add(FATSPREAD as angle_t);
-    target = P_SubstNullMobj((*actor).target as *mut mobj_t);
+    target = P_SubstNullMobj(
+        unsafe { &mut game_state().p_mobj },
+        (*actor).target as *mut mobj_t,
+    );
     P_SpawnMissile(actor, target, MT_FATSHOT);
     mo = P_SpawnMissile(actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_add(FATSPREAD as angle_t);
@@ -1175,7 +1181,10 @@ pub unsafe fn A_FatAttack2(mut actor: *mut mobj_t) {
     let mut an: i32 = 0;
     A_FaceTarget(actor);
     (*actor).angle = (*actor).angle.wrapping_sub(FATSPREAD as angle_t);
-    target = P_SubstNullMobj((*actor).target as *mut mobj_t);
+    target = P_SubstNullMobj(
+        unsafe { &mut game_state().p_mobj },
+        (*actor).target as *mut mobj_t,
+    );
     P_SpawnMissile(actor, target, MT_FATSHOT);
     mo = P_SpawnMissile(actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_sub((FATSPREAD * 2 as i32) as angle_t);
@@ -1188,7 +1197,10 @@ pub unsafe fn A_FatAttack3(mut actor: *mut mobj_t) {
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
     A_FaceTarget(actor);
-    target = P_SubstNullMobj((*actor).target as *mut mobj_t);
+    target = P_SubstNullMobj(
+        unsafe { &mut game_state().p_mobj },
+        (*actor).target as *mut mobj_t,
+    );
     mo = P_SpawnMissile(actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_sub((FATSPREAD / 2 as i32) as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
@@ -1596,7 +1608,10 @@ pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
     if (*mo).reactiontime != 0 {
         return;
     }
-    targ = P_SubstNullMobj((*mo).target as *mut mobj_t);
+    targ = P_SubstNullMobj(
+        unsafe { &mut game_state().p_mobj },
+        (*mo).target as *mut mobj_t,
+    );
     fog = P_SpawnMobj((*targ).x, (*targ).y, (*targ).z, MT_SPAWNFIRE);
     S_StartSound(
         unsafe { &mut game_state().sounds },
