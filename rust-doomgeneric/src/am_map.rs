@@ -505,8 +505,7 @@ pub static mut cheat_amap: cheatseq_t = cheatseq_t {
     parameter_buf: [0; 5],
 };
 static mut stopped: bool = true;
-#[no_mangle]
-pub unsafe extern "C" fn AM_getIslope(mut ml: *mut mline_t, mut is: *mut islope_t) {
+pub unsafe fn AM_getIslope(mut ml: *mut mline_t, mut is: *mut islope_t) {
     let mut dx: i32 = 0;
     let mut dy: i32 = 0;
     dy = ((*ml).a.y - (*ml).b.y) as i32;
@@ -524,8 +523,7 @@ pub unsafe extern "C" fn AM_getIslope(mut ml: *mut mline_t, mut is: *mut islope_
         (*is).slp = FixedDiv(dy as fixed_t, dx as fixed_t);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_activateNewScale() {
+pub unsafe fn AM_activateNewScale() {
     m_x += m_w as i32 / 2 as i32;
     m_y += m_h as i32 / 2 as i32;
     m_w = FixedMul((f_w as fixed_t) << 16 as i32, scale_ftom);
@@ -535,15 +533,13 @@ pub unsafe extern "C" fn AM_activateNewScale() {
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_saveScaleAndLoc() {
+pub unsafe fn AM_saveScaleAndLoc() {
     old_m_x = m_x;
     old_m_y = m_y;
     old_m_w = m_w;
     old_m_h = m_h;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_restoreScaleAndLoc() {
+pub unsafe fn AM_restoreScaleAndLoc() {
     m_w = old_m_w;
     m_h = old_m_h;
     if followplayer == 0 {
@@ -560,16 +556,14 @@ pub unsafe extern "C" fn AM_restoreScaleAndLoc() {
     scale_mtof = FixedDiv((f_w as fixed_t) << FRACBITS, m_w);
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_addMark() {
+pub unsafe fn AM_addMark() {
     markpoints[markpointnum as usize].x = (m_x as i32
         + m_w as i32 / 2 as i32) as fixed_t;
     markpoints[markpointnum as usize].y = (m_y as i32
         + m_h as i32 / 2 as i32) as fixed_t;
     markpointnum = (markpointnum + 1 as i32) % AM_NUMMARKPOINTS;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_findMinMaxBoundaries() {
+pub unsafe fn AM_findMinMaxBoundaries() {
     let mut i: i32 = 0;
     let mut a: fixed_t = 0;
     let mut b: fixed_t = 0;
@@ -603,8 +597,7 @@ pub unsafe extern "C" fn AM_findMinMaxBoundaries() {
         2 as fixed_t * 16 as fixed_t * FRACUNIT,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_changeWindowLoc() {
+pub unsafe fn AM_changeWindowLoc() {
     if m_paninc.x != 0 || m_paninc.y != 0 {
         followplayer = 0 as i32;
         f_oldloc.x = INT_MAX as fixed_t;
@@ -636,8 +629,7 @@ pub unsafe extern "C" fn AM_changeWindowLoc() {
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_initVariables() {
+pub unsafe fn AM_initVariables() {
     let mut pnum: i32 = 0;
     static mut st_notify: event_t = event_t {
         type_0: ev_keyup,
@@ -685,8 +677,7 @@ pub unsafe extern "C" fn AM_initVariables() {
     old_m_h = m_h;
     ST_Responder(&raw mut st_notify);
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_loadPics() {
+pub unsafe fn AM_loadPics() {
     let mut i: i32 = 0;
     let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
     i = 0 as i32;
@@ -704,8 +695,7 @@ pub unsafe extern "C" fn AM_loadPics() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_unloadPics() {
+pub unsafe fn AM_unloadPics() {
     let mut i: i32 = 0;
     let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
     i = 0 as i32;
@@ -720,8 +710,7 @@ pub unsafe extern "C" fn AM_unloadPics() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_clearMarks() {
+pub unsafe fn AM_clearMarks() {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < AM_NUMMARKPOINTS {
@@ -730,8 +719,7 @@ pub unsafe extern "C" fn AM_clearMarks() {
     }
     markpointnum = 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_LevelInit() {
+pub unsafe fn AM_LevelInit() {
     leveljuststarted = 0 as i32;
     f_y = 0 as i32;
     f_x = f_y;
@@ -761,8 +749,7 @@ pub unsafe fn AM_Stop() {
     ST_Responder(&raw mut st_notify);
     stopped = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Start() {
+pub unsafe fn AM_Start() {
     static mut lastlevel: i32 = -(1 as i32);
     static mut lastepisode: i32 = -(1 as i32);
     if !stopped {
@@ -777,14 +764,12 @@ pub unsafe extern "C" fn AM_Start() {
     AM_initVariables();
     AM_loadPics();
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_minOutWindowScale() {
+pub unsafe fn AM_minOutWindowScale() {
     scale_mtof = min_scale_mtof;
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
     AM_activateNewScale();
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_maxOutWindowScale() {
+pub unsafe fn AM_maxOutWindowScale() {
     scale_mtof = max_scale_mtof;
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
     AM_activateNewScale();
@@ -934,8 +919,7 @@ pub unsafe fn AM_Responder(mut ev: *mut event_t) -> bool {
     }
     return rc != 0;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_changeWindowScale() {
+pub unsafe fn AM_changeWindowScale() {
     scale_mtof = FixedMul(scale_mtof, mtof_zoommul);
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
     if scale_mtof < min_scale_mtof {
@@ -946,8 +930,7 @@ pub unsafe extern "C" fn AM_changeWindowScale() {
         AM_activateNewScale();
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_doFollowPlayer() {
+pub unsafe fn AM_doFollowPlayer() {
     if f_oldloc.x != (*(*plr).mo).x || f_oldloc.y != (*(*plr).mo).y {
         m_x = (FixedMul(
             (FixedMul((*(*plr).mo).x, scale_mtof) >> 16 as i32)
@@ -967,8 +950,7 @@ pub unsafe extern "C" fn AM_doFollowPlayer() {
         f_oldloc.y = (*(*plr).mo).y;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_updateLightLev() {
+pub unsafe fn AM_updateLightLev() {
     static mut nexttic: i32 = 0 as i32;
     static mut litelevels: [i32; 8] = [
         0 as i32,
@@ -1009,12 +991,10 @@ pub unsafe fn AM_Ticker() {
         AM_changeWindowLoc();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_clearFB(mut color: i32) {
+pub unsafe fn AM_clearFB(mut color: i32) {
     memset(fb as *mut ::core::ffi::c_void, color, (f_w * f_h) as size_t);
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_clipMline(
+pub unsafe fn AM_clipMline(
     mut ml: *mut mline_t,
     mut fl: *mut fline_t,
 ) -> bool {
@@ -1152,8 +1132,7 @@ pub unsafe extern "C" fn AM_clipMline(
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawFline(
+pub unsafe fn AM_drawFline(
     mut fl: *mut fline_t,
     mut color: i32,
 ) {
@@ -1227,8 +1206,7 @@ pub unsafe extern "C" fn AM_drawFline(
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawMline(
+pub unsafe fn AM_drawMline(
     mut ml: *mut mline_t,
     mut color: i32,
 ) {
@@ -1240,8 +1218,7 @@ pub unsafe extern "C" fn AM_drawMline(
         AM_drawFline(&raw mut fl, color);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawGrid(mut color: i32) {
+pub unsafe fn AM_drawGrid(mut color: i32) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut start: fixed_t = 0;
@@ -1289,8 +1266,7 @@ pub unsafe extern "C" fn AM_drawGrid(mut color: i32) {
         y += MAPBLOCKUNITS << FRACBITS;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawWalls() {
+pub unsafe fn AM_drawWalls() {
     let mut i: i32 = 0;
     static mut l: mline_t = mline_t {
         a: mpoint_t { x: 0, y: 0 },
@@ -1347,8 +1323,7 @@ pub unsafe extern "C" fn AM_drawWalls() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_rotate(
+pub unsafe fn AM_rotate(
     mut x: *mut fixed_t,
     mut y: *mut fixed_t,
     mut a: angle_t,
@@ -1360,8 +1335,7 @@ pub unsafe extern "C" fn AM_rotate(
         + FixedMul(*y, finecosine[(a >> ANGLETOFINESHIFT) as isize]);
     *x = tmpx;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawLineCharacter(
+pub unsafe fn AM_drawLineCharacter(
     mut lineguy: *mut mline_t,
     mut lineguylines: i32,
     mut scale: fixed_t,
@@ -1403,8 +1377,7 @@ pub unsafe extern "C" fn AM_drawLineCharacter(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawPlayers() {
+pub unsafe fn AM_drawPlayers() {
     let mut i: i32 = 0;
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     static mut their_colors: [i32; 4] = [GREENS, GRAYS, BROWNS, REDS];
@@ -1465,8 +1438,7 @@ pub unsafe extern "C" fn AM_drawPlayers() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawThings(
+pub unsafe fn AM_drawThings(
     mut colors: i32,
     mut colorrange: i32,
 ) {
@@ -1492,8 +1464,7 @@ pub unsafe extern "C" fn AM_drawThings(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawMarks() {
+pub unsafe fn AM_drawMarks() {
     let mut i: i32 = 0;
     let mut fx: i32 = 0;
     let mut fy: i32 = 0;
@@ -1518,8 +1489,7 @@ pub unsafe extern "C" fn AM_drawMarks() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_drawCrosshair(mut color: i32) {
+pub unsafe fn AM_drawCrosshair(mut color: i32) {
     *fb
         .offset(
             (f_w * (f_h + 1 as i32) / 2 as i32) as isize,

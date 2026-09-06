@@ -46,8 +46,7 @@ use crate::src::p_enemy::MELEERANGE;
 
 pub const DEH_DEFAULT_BFG_CELLS_PER_SHOT: i32 = 40 as i32;
 pub const deh_bfg_cells_per_shot: i32 = DEH_DEFAULT_BFG_CELLS_PER_SHOT;
-#[no_mangle]
-pub unsafe extern "C" fn P_SetPsprite(
+pub unsafe fn P_SetPsprite(
     mut player: *mut player_t,
     mut position: i32,
     mut stnum: statenum_t,
@@ -86,8 +85,7 @@ pub unsafe extern "C" fn P_SetPsprite(
 pub static mut swingx: fixed_t = 0;
 #[no_mangle]
 pub static mut swingy: fixed_t = 0;
-#[no_mangle]
-pub unsafe extern "C" fn P_CalcSwing(mut player: *mut player_t) {
+pub unsafe fn P_CalcSwing(mut player: *mut player_t) {
     let mut swing: fixed_t = 0;
     let mut angle: i32 = 0;
     swing = (*player).bob;
@@ -97,8 +95,7 @@ pub unsafe extern "C" fn P_CalcSwing(mut player: *mut player_t) {
         + FINEANGLES / 2 as i32 & FINEMASK;
     swingy = -FixedMul(swingx, finesine[angle as usize]);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_BringUpWeapon(mut player: *mut player_t) {
+pub unsafe fn P_BringUpWeapon(mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;
     if (*player).pendingweapon as u32
         == wp_nochange as i32 as u32
@@ -119,8 +116,7 @@ pub unsafe extern "C" fn P_BringUpWeapon(mut player: *mut player_t) {
         as i32 * FRACUNIT) as fixed_t;
     P_SetPsprite(player, ps_weapon as i32, newstate);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CheckAmmo(mut player: *mut player_t) -> bool {
+pub unsafe fn P_CheckAmmo(mut player: *mut player_t) -> bool {
     let mut ammo: ammotype_t = am_clip;
     let mut count: i32 = 0;
     ammo = weaponinfo[(*player).readyweapon as usize].ammo;
@@ -195,8 +191,7 @@ pub unsafe extern "C" fn P_CheckAmmo(mut player: *mut player_t) -> bool {
     );
     return false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FireWeapon(mut player: *mut player_t) {
+pub unsafe fn P_FireWeapon(mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;
     if !P_CheckAmmo(player) {
         return;
@@ -456,8 +451,7 @@ pub unsafe fn A_FirePlasma(
     P_SpawnPlayerMissile((*player).mo, MT_PLASMA);
 }
 pub static mut bulletslope: fixed_t = 0;
-#[no_mangle]
-pub unsafe extern "C" fn P_BulletSlope(mut mo: *mut mobj_t) {
+pub unsafe fn P_BulletSlope(mut mo: *mut mobj_t) {
     let mut an: angle_t = 0;
     an = (*mo).angle;
     bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
@@ -480,8 +474,7 @@ pub unsafe extern "C" fn P_BulletSlope(mut mo: *mut mobj_t) {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_GunShot(mut mo: *mut mobj_t, mut accurate: bool) {
+pub unsafe fn P_GunShot(mut mo: *mut mobj_t, mut accurate: bool) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
     damage = 5 as i32

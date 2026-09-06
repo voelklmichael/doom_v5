@@ -37,8 +37,7 @@ pub static mut t2x: fixed_t = 0;
 pub static mut t2y: fixed_t = 0;
 #[no_mangle]
 pub static mut sightcounts: [i32; 2] = [0; 2];
-#[no_mangle]
-pub unsafe extern "C" fn P_DivlineSide(
+pub unsafe fn P_DivlineSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut node: *mut divline_t,
@@ -77,8 +76,7 @@ pub unsafe extern "C" fn P_DivlineSide(
     }
     return 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_InterceptVector2(
+pub unsafe fn P_InterceptVector2(
     mut v2: *mut divline_t,
     mut v1: *mut divline_t,
 ) -> fixed_t {
@@ -95,8 +93,7 @@ pub unsafe extern "C" fn P_InterceptVector2(
     frac = FixedDiv(num, den);
     return frac;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> bool {
+pub unsafe fn P_CrossSubsector(mut num: i32) -> bool {
     let mut seg: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut s1: i32 = 0;
@@ -188,8 +185,7 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> bool {
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CrossBSPNode(mut bspnum: i32) -> bool {
+pub unsafe fn P_CrossBSPNode(mut bspnum: i32) -> bool {
     let mut bsp: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     if bspnum & NF_SUBSECTOR != 0 {

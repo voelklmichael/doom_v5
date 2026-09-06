@@ -452,12 +452,10 @@ pub unsafe fn S_ChangeMusic(
     I_PlaySong(handle, looping != 0);
     mus_playing = music;
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_MusicPlaying() -> bool {
+pub unsafe fn S_MusicPlaying() -> bool {
     return I_MusicIsPlaying();
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_StopMusic() {
+pub unsafe fn S_StopMusic() {
     if !mus_playing.is_null() {
         if mus_paused {
             I_ResumeSong();

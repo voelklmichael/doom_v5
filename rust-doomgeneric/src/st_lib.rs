@@ -72,8 +72,7 @@ pub unsafe fn STlib_initNum(
     (*n).on = on;
     (*n).p = pl;
 }
-#[no_mangle]
-pub unsafe extern "C" fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: bool) {
+pub unsafe fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: bool) {
     let mut numdigits: i32 = (*n).width;
     let mut num: i32 = *(*n).num;
     let mut w: i32 = (**(*n).p.offset(0 as i32 as isize))

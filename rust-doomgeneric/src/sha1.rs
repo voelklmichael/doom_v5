@@ -1410,8 +1410,7 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     (*hd).h3 = (*hd).h3.wrapping_add(d);
     (*hd).h4 = (*hd).h4.wrapping_add(e);
 }
-#[no_mangle]
-pub unsafe extern "C" fn SHA1_Update(
+pub unsafe fn SHA1_Update(
     mut hd: *mut sha1_context_t,
     mut inbuf: *mut byte,
     mut inlen: size_t,

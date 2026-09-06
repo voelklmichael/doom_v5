@@ -457,8 +457,7 @@ pub unsafe fn P_TryMove(
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ThingHeightClip(mut thing: *mut mobj_t) -> bool {
+pub unsafe fn P_ThingHeightClip(mut thing: *mut mobj_t) -> bool {
     let mut onfloor: bool;
     onfloor = (*thing).z == (*thing).floorz;
     P_CheckPosition(thing, (*thing).x, (*thing).y);
@@ -489,8 +488,7 @@ pub static mut slidemo: *mut mobj_t = ::core::ptr::null::<mobj_t>() as *mut mobj
 pub static mut tmxmove: fixed_t = 0;
 #[no_mangle]
 pub static mut tmymove: fixed_t = 0;
-#[no_mangle]
-pub unsafe extern "C" fn P_HitSlideLine(mut ld: *mut line_t) {
+pub unsafe fn P_HitSlideLine(mut ld: *mut line_t) {
     let mut side: i32 = 0;
     let mut lineangle: angle_t = 0;
     let mut moveangle: angle_t = 0;

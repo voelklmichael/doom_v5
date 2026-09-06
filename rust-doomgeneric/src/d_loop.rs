@@ -198,8 +198,7 @@ unsafe extern "C" fn D_Disconnected() {
     }
     printf(b"Disconnected from server.\n\0" as *const u8 as *const ::core::ffi::c_char);
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_ReceiveTic(
+pub unsafe fn D_ReceiveTic(
     mut ticcmds: *mut ticcmd_t,
     mut players_mask: *mut boolean,
 ) {

@@ -98,8 +98,7 @@ pub static mut mouse_acceleration: f32 = 2.0f32;
 pub static mut mouse_threshold: i32 = 10 as i32;
 pub static mut usegamma: i32 = 0 as i32;
 static mut rgb565_palette: [uint16_t; 256] = [0; 256];
-#[no_mangle]
-pub unsafe extern "C" fn cmap_to_rgb565(
+pub unsafe fn cmap_to_rgb565(
     mut out: *mut uint16_t,
     mut in_0: *mut uint8_t,
     mut in_pixels: i32,
@@ -130,8 +129,7 @@ pub unsafe extern "C" fn cmap_to_rgb565(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn cmap_to_fb(
+pub unsafe fn cmap_to_fb(
     mut out: *mut uint8_t,
     mut in_0: *mut uint8_t,
     mut in_pixels: i32,
@@ -289,8 +287,7 @@ pub unsafe fn I_InitGraphics() {
     }
     I_InitInput_0();
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ShutdownGraphics() {
+pub unsafe fn I_ShutdownGraphics() {
     Z_Free(I_VideoBuffer as *mut ::core::ffi::c_void);
 }
 pub unsafe fn I_StartFrame() {}

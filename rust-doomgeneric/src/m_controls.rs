@@ -278,8 +278,7 @@ pub unsafe fn M_BindBaseControls() {
         &raw mut key_message_refresh as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindHereticControls() {
+pub unsafe fn M_BindHereticControls() {
     M_BindVariable("key_flyup",
         &raw mut key_flyup as *mut ::core::ffi::c_void,
     );
@@ -308,8 +307,7 @@ pub unsafe extern "C" fn M_BindHereticControls() {
         &raw mut key_useartifact as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindHexenControls() {
+pub unsafe fn M_BindHexenControls() {
     M_BindVariable("key_jump",
         &raw mut key_jump as *mut ::core::ffi::c_void,
     );
@@ -344,8 +342,7 @@ pub unsafe extern "C" fn M_BindHexenControls() {
         &raw mut key_arti_invulnerability as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindStrifeControls() {
+pub unsafe fn M_BindStrifeControls() {
     key_message_refresh = '/' as i32;
     key_jump = 'a' as i32;
     key_lookup = KEY_PGUP;

@@ -38,8 +38,7 @@ pub const ZONEID: i32 = 0x1d4a11 as i32;
 #[no_mangle]
 pub static mut mainzone: *mut memzone_t = ::core::ptr::null::<memzone_t>()
     as *mut memzone_t;
-#[no_mangle]
-pub unsafe extern "C" fn Z_ClearZone(mut zone: *mut memzone_t) {
+pub unsafe fn Z_ClearZone(mut zone: *mut memzone_t) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     block = (zone as *mut byte)
         .offset(::core::mem::size_of::<memzone_t>() as usize as isize)
@@ -212,8 +211,7 @@ pub unsafe fn Z_FreeTags(
         block = next;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_DumpHeap(
+pub unsafe fn Z_DumpHeap(
     mut lowtag: i32,
     mut hightag: i32,
 ) {
@@ -268,8 +266,7 @@ pub unsafe extern "C" fn Z_DumpHeap(
         block = (*block).next as *mut memblock_t;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_FileDumpHeap(mut f: *mut FILE) {
+pub unsafe fn Z_FileDumpHeap(mut f: *mut FILE) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     fprintf(
         f,
@@ -379,8 +376,7 @@ pub unsafe fn Z_ChangeUser(
     (*block).user = user;
     *user = ptr;
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_FreeMemory() -> i32 {
+pub unsafe fn Z_FreeMemory() -> i32 {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut free: i32 = 0;
     free = 0 as i32;
@@ -395,7 +391,6 @@ pub unsafe extern "C" fn Z_FreeMemory() -> i32 {
     }
     return free;
 }
-#[no_mangle]
-pub unsafe extern "C" fn Z_ZoneSize() -> u32 {
+pub unsafe fn Z_ZoneSize() -> u32 {
     return (*mainzone).size as u32;
 }

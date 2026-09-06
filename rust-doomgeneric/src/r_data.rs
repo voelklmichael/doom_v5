@@ -141,8 +141,7 @@ pub static mut spritetopoffset: *mut fixed_t = ::core::ptr::null::<fixed_t>()
     as *mut fixed_t;
 pub static mut colormaps: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawColumnInCache(
+pub unsafe fn R_DrawColumnInCache(
     mut patch: *mut column_t,
     mut cache: *mut byte,
     mut originy: i32,
@@ -174,8 +173,7 @@ pub unsafe extern "C" fn R_DrawColumnInCache(
             .offset(4 as i32 as isize) as *mut column_t;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_GenerateComposite(mut texnum: i32) {
+pub unsafe fn R_GenerateComposite(mut texnum: i32) {
     let mut block: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut patch: *mut texpatch_t = ::core::ptr::null_mut::<texpatch_t>();
@@ -248,8 +246,7 @@ pub unsafe extern "C" fn R_GenerateComposite(mut texnum: i32) {
         286 as i32,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_GenerateLookup(mut texnum: i32) {
+pub unsafe fn R_GenerateLookup(mut texnum: i32) {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut patchcount: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut patch: *mut texpatch_t = ::core::ptr::null_mut::<texpatch_t>();
@@ -390,8 +387,7 @@ unsafe extern "C" fn GenerateTextureHashTable() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitTextures() {
+pub unsafe fn R_InitTextures() {
     let mut mtexture: *mut maptexture_t = ::core::ptr::null_mut::<maptexture_t>();
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut mpatch: *mut mappatch_t = ::core::ptr::null_mut::<mappatch_t>();
@@ -660,8 +656,7 @@ pub unsafe extern "C" fn R_InitTextures() {
     }
     GenerateTextureHashTable();
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitFlats() {
+pub unsafe fn R_InitFlats() {
     let mut i: i32 = 0;
     firstflat = W_GetNumForName("F_START",
     ) + 1 as i32;
@@ -681,8 +676,7 @@ pub unsafe extern "C" fn R_InitFlats() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitSpriteLumps() {
+pub unsafe fn R_InitSpriteLumps() {
     let mut i: i32 = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     firstspritelump = W_GetNumForName("S_START",
@@ -727,8 +721,7 @@ pub unsafe extern "C" fn R_InitSpriteLumps() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitColormaps() {
+pub unsafe fn R_InitColormaps() {
     let mut lump: i32 = 0;
     lump = W_GetNumForName("COLORMAP",
     );

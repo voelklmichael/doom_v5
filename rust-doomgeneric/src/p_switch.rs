@@ -552,8 +552,7 @@ pub unsafe fn P_InitSwitchList() {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_StartButton(
+pub unsafe fn P_StartButton(
     mut line: *mut line_t,
     mut w: bwhere_e,
     mut texture: i32,

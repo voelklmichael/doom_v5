@@ -812,8 +812,7 @@ pub static mut SaveDef: menu_t = unsafe {
         lastOn: 0 as i16,
     }
 };
-#[no_mangle]
-pub unsafe extern "C" fn M_ReadSaveStrings() {
+pub unsafe fn M_ReadSaveStrings() {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
     let mut i: i32 = 0;
     let mut name: [::core::ffi::c_char; 256] = [0; 256];
@@ -871,8 +870,7 @@ pub unsafe extern "C" fn M_DrawLoad() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_DrawSaveLoadBorder(
+pub unsafe fn M_DrawSaveLoadBorder(
     mut x: i32,
     mut y: i32,
 ) {
@@ -960,8 +958,7 @@ pub unsafe extern "C" fn M_DrawSave() {
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_DoSave(mut slot: i32) {
+pub unsafe fn M_DoSave(mut slot: i32) {
     let name_cstring = ::std::ffi::CString::new(savegamestrings[slot as usize].as_str())
         .unwrap();
     G_SaveGame(slot, name_cstring.as_ptr() as *mut ::core::ffi::c_char);
@@ -1007,8 +1004,7 @@ pub unsafe extern "C" fn M_QuickSaveResponse(mut key: i32) {
         S_StartSound(NULL, sfx_swtchx as i32);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_QuickSave() {
+pub unsafe fn M_QuickSave() {
     if !usergame {
         S_StartSound(NULL, sfx_oof as i32);
         return;
@@ -1054,8 +1050,7 @@ pub unsafe extern "C" fn M_QuickLoadResponse(mut key: i32) {
         S_StartSound(NULL, sfx_swtchx as i32);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_QuickLoad() {
+pub unsafe fn M_QuickLoad() {
     if netgame {
         M_StartMessage(
             "you can't quickload during a netgame!\n\npress a key.",
@@ -1581,8 +1576,7 @@ pub unsafe extern "C" fn M_SizeDisplay(mut choice: i32) {
     }
     R_SetViewSize(screenblocks, detailLevel);
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_DrawThermo(
+pub unsafe fn M_DrawThermo(
     mut x: i32,
     mut y: i32,
     mut thermWidth: i32,
@@ -1626,8 +1620,7 @@ pub unsafe extern "C" fn M_DrawThermo(
         ) as *mut patch_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_DrawEmptyCell(
+pub unsafe fn M_DrawEmptyCell(
     mut menu: *mut menu_t,
     mut item: i32,
 ) {
@@ -1639,8 +1632,7 @@ pub unsafe extern "C" fn M_DrawEmptyCell(
         ) as *mut patch_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_DrawSelCell(
+pub unsafe fn M_DrawSelCell(
     mut menu: *mut menu_t,
     mut item: i32,
 ) {
@@ -1667,8 +1659,7 @@ pub unsafe fn M_StartMessage(
     messageNeedsInput = input;
     menuactive = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StopMessage() {
+pub unsafe fn M_StopMessage() {
     menuactive = messageLastMenuActive != 0;
     messageToPrint = 0 as i32;
 }
@@ -2202,12 +2193,10 @@ pub unsafe fn M_Drawer() {
             as *mut patch_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_ClearMenus() {
+pub unsafe fn M_ClearMenus() {
     menuactive = false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_SetupNextMenu(mut menudef: *mut menu_t) {
+pub unsafe fn M_SetupNextMenu(mut menudef: *mut menu_t) {
     currentMenu = menudef;
     itemOn = (*currentMenu).lastOn;
 }

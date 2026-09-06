@@ -1869,8 +1869,7 @@ pub unsafe extern "C" fn M_SaveDefaults() {
     SaveDefaultCollection(&raw mut doom_defaults);
     SaveDefaultCollection(&raw mut extra_defaults);
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_SaveDefaultsAlternate(
+pub unsafe fn M_SaveDefaultsAlternate(
     mut main_0: *mut ::core::ffi::c_char,
     mut extra: *mut ::core::ffi::c_char,
 ) {

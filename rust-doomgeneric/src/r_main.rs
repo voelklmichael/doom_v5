@@ -105,8 +105,7 @@ pub static mut basecolfunc: Option<unsafe fn() -> ()> = None;
 pub static mut fuzzcolfunc: Option<unsafe fn() -> ()> = None;
 pub static mut transcolfunc: Option<unsafe fn() -> ()> = None;
 pub static mut spanfunc: Option<unsafe fn() -> ()> = None;
-#[no_mangle]
-pub unsafe extern "C" fn R_AddPointToBox(
+pub unsafe fn R_AddPointToBox(
     mut x: i32,
     mut y: i32,
     mut box_0: *mut fixed_t,
@@ -328,8 +327,7 @@ pub unsafe fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
     dist = FixedDiv(dx, finesine[angle as usize]);
     return dist;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitPointToAngle() {}
+pub unsafe fn R_InitPointToAngle() {}
 pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
     let mut scale: fixed_t = 0;
     let mut anglea: angle_t = 0;
@@ -356,10 +354,8 @@ pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
     }
     return scale;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitTables() {}
-#[no_mangle]
-pub unsafe extern "C" fn R_InitTextureMapping() {
+pub unsafe fn R_InitTables() {}
+pub unsafe fn R_InitTextureMapping() {
     let mut i: i32 = 0;
     let mut x: i32 = 0;
     let mut t: i32 = 0;
@@ -411,8 +407,7 @@ pub unsafe extern "C" fn R_InitTextureMapping() {
     clipangle = xtoviewangle[0 as i32 as usize];
 }
 pub const DISTMAP: i32 = 2 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn R_InitLightTables() {
+pub unsafe fn R_InitLightTables() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut level: i32 = 0;
@@ -576,8 +571,7 @@ pub unsafe fn R_PointInSubsector(
     }
     return subsectors.offset((nodenum & !NF_SUBSECTOR) as isize) as *mut subsector_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_SetupFrame(mut player: *mut player_t) {
+pub unsafe fn R_SetupFrame(mut player: *mut player_t) {
     let mut i: i32 = 0;
     viewplayer = player;
     viewx = (*(*player).mo).x;

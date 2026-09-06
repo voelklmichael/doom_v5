@@ -127,8 +127,7 @@ pub static mut maxframe: i32 = 0;
 pub static mut spritename: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
-#[no_mangle]
-pub unsafe extern "C" fn R_InstallSpriteLump(
+pub unsafe fn R_InstallSpriteLump(
     mut lump: i32,
     mut frame: u32,
     mut rotation: u32,
@@ -189,8 +188,7 @@ pub unsafe extern "C" fn R_InstallSpriteLump(
         as i16;
     sprtemp[frame as usize].flip[rotation as usize] = flipped as byte;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
+pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
     let mut check: *mut *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         *mut ::core::ffi::c_char,
     >();
@@ -382,8 +380,7 @@ pub static mut overflowsprite: vissprite_t = vissprite_s {
     colormap: ::core::ptr::null::<lighttable_t>() as *mut lighttable_t,
     mobjflags: 0,
 };
-#[no_mangle]
-pub unsafe extern "C" fn R_NewVisSprite() -> *mut vissprite_t {
+pub unsafe fn R_NewVisSprite() -> *mut vissprite_t {
     if vissprite_p
         == (&raw mut vissprites as *mut vissprite_t).offset(MAXVISSPRITES as isize)
             as *mut vissprite_t
@@ -433,8 +430,7 @@ pub unsafe fn R_DrawMaskedColumn(mut column: *mut column_t) {
     }
     dc_texturemid = basetexturemid;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawVisSprite(
+pub unsafe fn R_DrawVisSprite(
     mut vis: *mut vissprite_t,
     mut x1: i32,
     mut x2: i32,
@@ -484,8 +480,7 @@ pub unsafe extern "C" fn R_DrawVisSprite(
     }
     colfunc = basecolfunc;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
+pub unsafe fn R_ProjectSprite(mut thing: *mut mobj_t) {
     let mut tr_x: fixed_t = 0;
     let mut tr_y: fixed_t = 0;
     let mut gxt: fixed_t = 0;
@@ -622,8 +617,7 @@ pub unsafe fn R_AddSprites(mut sec: *mut sector_t) {
         thing = (*thing).snext as *mut mobj_t;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
+pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     let mut tx: fixed_t = 0;
     let mut x1: i32 = 0;
     let mut x2: i32 = 0;
@@ -718,8 +712,7 @@ pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     }
     R_DrawVisSprite(vis, (*vis).x1, (*vis).x2);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawPlayerSprites() {
+pub unsafe fn R_DrawPlayerSprites() {
     let mut i: i32 = 0;
     let mut lightnum: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
@@ -766,8 +759,7 @@ pub static mut vsprsortedhead: vissprite_t = vissprite_s {
     colormap: ::core::ptr::null::<lighttable_t>() as *mut lighttable_t,
     mobjflags: 0,
 };
-#[no_mangle]
-pub unsafe extern "C" fn R_SortVisSprites() {
+pub unsafe fn R_SortVisSprites() {
     let mut i: i32 = 0;
     let mut count: i32 = 0;
     let mut ds: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
@@ -837,8 +829,7 @@ pub unsafe extern "C" fn R_SortVisSprites() {
 }
 static mut clipbot: [i16; 320] = [0; 320];
 static mut cliptop: [i16; 320] = [0; 320];
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawSprite(mut spr: *mut vissprite_t) {
+pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
     let mut ds: *mut drawseg_t = ::core::ptr::null_mut::<drawseg_t>();
     let mut x: i32 = 0;
     let mut r1: i32 = 0;

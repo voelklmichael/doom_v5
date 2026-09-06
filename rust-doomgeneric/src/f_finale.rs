@@ -408,8 +408,7 @@ pub unsafe fn F_Ticker() {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_TextWrite() {
+pub unsafe fn F_TextWrite() {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut x: i32 = 0;
@@ -577,8 +576,7 @@ pub static mut castframes: i32 = 0;
 pub static mut castonmelee: i32 = 0;
 #[no_mangle]
 pub static mut castattacking: bool = false;
-#[no_mangle]
-pub unsafe extern "C" fn F_StartCast() {
+pub unsafe fn F_StartCast() {
     wipegamestate = 4294967295 as gamestate_t;
     castnum = 0 as i32;
     caststate = (&raw mut states as *mut state_t)
@@ -598,8 +596,7 @@ pub unsafe extern "C" fn F_StartCast() {
     castattacking = false;
     S_ChangeMusic(mus_evil as i32, true_0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_CastTicker() {
+pub unsafe fn F_CastTicker() {
     let mut current_block: u64;
     let mut st: i32 = 0;
     let mut sfx: i32 = 0;
@@ -808,8 +805,7 @@ pub unsafe extern "C" fn F_CastTicker() {
         casttics = 15 as i32;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> bool {
+pub unsafe fn F_CastResponder(mut ev: *mut event_t) -> bool {
     if (*ev).type_0 as u32
         != ev_keydown as i32 as u32
     {
@@ -865,8 +861,7 @@ pub unsafe fn F_CastPrint(text: &str) {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_CastDrawer() {
+pub unsafe fn F_CastDrawer() {
     let mut sprdef: *mut spritedef_t = ::core::ptr::null_mut::<spritedef_t>();
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
     let mut lump: i32 = 0;
@@ -894,8 +889,7 @@ pub unsafe extern "C" fn F_CastDrawer() {
         V_DrawPatch(160 as i32, 170 as i32, patch);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_DrawPatchCol(
+pub unsafe fn F_DrawPatchCol(
     mut x: i32,
     mut patch: *mut patch_t,
     mut col: i32,
@@ -932,8 +926,7 @@ pub unsafe extern "C" fn F_DrawPatchCol(
             .offset(4 as i32 as isize) as *mut column_t;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_BunnyScroll() {
+pub unsafe fn F_BunnyScroll() {
     let mut scrolled: i32 = 0;
     let mut x: i32 = 0;
     let mut p1: *mut patch_t = ::core::ptr::null_mut::<patch_t>();

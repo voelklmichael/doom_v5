@@ -390,8 +390,7 @@ pub static mut cheat_mypos: cheatseq_t = cheatseq_t {
     param_chars_read: 0,
     parameter_buf: [0; 5],
 };
-#[no_mangle]
-pub unsafe extern "C" fn ST_refreshBackground() {
+pub unsafe fn ST_refreshBackground() {
     if st_statusbaron {
         V_UseBuffer(st_backing_screen);
         V_DrawPatch(ST_X, 0 as i32, sbar);
@@ -708,8 +707,7 @@ pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
     }
     return false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_calcPainOffset() -> i32 {
+pub unsafe fn ST_calcPainOffset() -> i32 {
     let mut health: i32 = 0;
     static mut lastcalc: i32 = 0;
     static mut oldhealth: i32 = -(1 as i32);
@@ -726,8 +724,7 @@ pub unsafe extern "C" fn ST_calcPainOffset() -> i32 {
     }
     return lastcalc;
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_updateFaceWidget() {
+pub unsafe fn ST_updateFaceWidget() {
     let mut i: i32 = 0;
     let mut badguyangle: angle_t = 0;
     let mut diffang: angle_t = 0;
@@ -839,8 +836,7 @@ pub unsafe extern "C" fn ST_updateFaceWidget() {
     }
     st_facecount -= 1;
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_updateWidgets() {
+pub unsafe fn ST_updateWidgets() {
     static mut largeammo: i32 = 1994 as i32;
     let mut i: i32 = 0;
     if weaponinfo[(*plyr).readyweapon as usize].ammo as u32
@@ -900,8 +896,7 @@ pub unsafe fn ST_Ticker() {
     st_oldhealth = (*plyr).health;
 }
 static mut st_palette: i32 = 0 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn ST_doPaletteStuff() {
+pub unsafe fn ST_doPaletteStuff() {
     let mut palette: i32 = 0;
     let mut pal: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut cnt: i32 = 0;
@@ -950,8 +945,7 @@ pub unsafe extern "C" fn ST_doPaletteStuff() {
         I_SetPalette(pal);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_drawWidgets(mut refresh: bool) {
+pub unsafe fn ST_drawWidgets(mut refresh: bool) {
     let mut i: i32 = 0;
     st_armson = st_statusbaron && deathmatch == 0;
     st_fragson = deathmatch != 0 && st_statusbaron;
@@ -993,14 +987,12 @@ pub unsafe extern "C" fn ST_drawWidgets(mut refresh: bool) {
     }
     STlib_updateNum(&raw mut w_frags, refresh);
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_doRefresh() {
+pub unsafe fn ST_doRefresh() {
     st_firsttime = false;
     ST_refreshBackground();
     ST_drawWidgets(true);
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_diffDraw() {
+pub unsafe fn ST_diffDraw() {
     ST_drawWidgets(false);
 }
 pub unsafe fn ST_Drawer(mut fullscreen: bool, mut refresh: bool) {
@@ -1252,8 +1244,7 @@ unsafe fn ST_loadCallback(
         PU_STATIC as i32,
     ) as *mut patch_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_loadGraphics() {
+pub unsafe fn ST_loadGraphics() {
     ST_loadUnloadGraphics(
         Some(
             ST_loadCallback
@@ -1264,8 +1255,7 @@ pub unsafe extern "C" fn ST_loadGraphics() {
         ),
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_loadData() {
+pub unsafe fn ST_loadData() {
     lu_palette = W_GetNumForName("PLAYPAL",
     );
     ST_loadGraphics();
@@ -1277,8 +1267,7 @@ unsafe fn ST_unloadCallback(
     W_ReleaseLumpName(&wad_name8_to_string(lumpname));
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_unloadGraphics() {
+pub unsafe fn ST_unloadGraphics() {
     ST_loadUnloadGraphics(
         Some(
             ST_unloadCallback
@@ -1289,12 +1278,10 @@ pub unsafe extern "C" fn ST_unloadGraphics() {
         ),
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_unloadData() {
+pub unsafe fn ST_unloadData() {
     ST_unloadGraphics();
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_initData() {
+pub unsafe fn ST_initData() {
     let mut i: i32 = 0;
     st_firsttime = true;
     plyr = (&raw mut players as *mut player_t).offset(consoleplayer as isize)
@@ -1321,8 +1308,7 @@ pub unsafe extern "C" fn ST_initData() {
     }
     STlib_init();
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_createWidgets() {
+pub unsafe fn ST_createWidgets() {
     let mut i: i32 = 0;
     STlib_initNum(
         &raw mut w_ready,
@@ -1525,8 +1511,7 @@ pub unsafe fn ST_Start() {
     ST_createWidgets();
     st_stopped = false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Stop() {
+pub unsafe fn ST_Stop() {
     if st_stopped {
         return;
     }

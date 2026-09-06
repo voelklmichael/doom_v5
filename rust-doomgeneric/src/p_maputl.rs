@@ -158,8 +158,7 @@ pub unsafe fn P_BoxOnLineSide(
     }
     return -(1 as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_PointOnDivlineSide(
+pub unsafe fn P_PointOnDivlineSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut line: *mut divline_t,
@@ -205,15 +204,13 @@ pub unsafe extern "C" fn P_PointOnDivlineSide(
     }
     return 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_MakeDivline(mut li: *mut line_t, mut dl: *mut divline_t) {
+pub unsafe fn P_MakeDivline(mut li: *mut line_t, mut dl: *mut divline_t) {
     (*dl).x = (*(*li).v1).x;
     (*dl).y = (*(*li).v1).y;
     (*dl).dx = (*li).dx;
     (*dl).dy = (*li).dy;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_InterceptVector(
+pub unsafe fn P_InterceptVector(
     mut v2: *mut divline_t,
     mut v1: *mut divline_t,
 ) -> fixed_t {
@@ -495,8 +492,7 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
     intercept_p = intercept_p.offset(1);
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_TraverseIntercepts(
+pub unsafe fn P_TraverseIntercepts(
     mut func: traverser_t,
     mut maxfrac: fixed_t,
 ) -> bool {

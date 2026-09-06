@@ -5,8 +5,7 @@ extern "C" {
     fn DG_GetTicksMs() -> uint32_t;
 }
 static mut basetime: uint32_t = 0 as uint32_t;
-#[no_mangle]
-pub unsafe extern "C" fn I_GetTicks() -> i32 {
+pub unsafe fn I_GetTicks() -> i32 {
     return DG_GetTicksMs() as i32;
 }
 pub unsafe fn I_GetTime() -> i32 {

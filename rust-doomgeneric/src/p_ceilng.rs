@@ -256,8 +256,7 @@ pub unsafe fn P_AddActiveCeiling(mut c: *mut ceiling_t) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_RemoveActiveCeiling(mut c: *mut ceiling_t) {
+pub unsafe fn P_RemoveActiveCeiling(mut c: *mut ceiling_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXCEILINGS {
@@ -275,8 +274,7 @@ pub unsafe extern "C" fn P_RemoveActiveCeiling(mut c: *mut ceiling_t) {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ActivateInStasisCeiling(mut line: *mut line_t) {
+pub unsafe fn P_ActivateInStasisCeiling(mut line: *mut line_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXCEILINGS {
