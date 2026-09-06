@@ -130,6 +130,7 @@ use crate::src::p_tick::leveltime;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::doomstat::gamemode;
+use crate::src::s_sound::S_StartSound;
 
 extern "C" {
     fn memcpy(
@@ -169,7 +170,6 @@ extern "C" {
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -46,6 +46,7 @@ use crate::src::g_game::deathmatch;
 use crate::src::m_random::P_Random;
 use crate::src::p_setup::sectors;
 use crate::src::p_tick::leveltime;
+use crate::src::s_sound::S_StartSound;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -67,7 +68,6 @@ extern "C" {
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn T_MoveFloor(floor: *mut floormove_t);
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
