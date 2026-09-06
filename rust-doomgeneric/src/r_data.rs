@@ -17,7 +17,6 @@ use crate::src::p_setup::sides;
 use crate::src::p_tick::thinkercap;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::spriteframe_t;
-use crate::src::r_sky::skytexture;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::w_wad::W_CacheLumpNum;
@@ -765,7 +764,8 @@ pub unsafe fn R_PrecacheLevel() {
             1 as ::core::ffi::c_char;
         i += 1;
     }
-    *texturepresent.offset(skytexture as isize) = 1 as ::core::ffi::c_char;
+    *texturepresent.offset(unsafe { game_state() }.r_sky.skytexture as isize) =
+        1 as ::core::ffi::c_char;
     texturememory = 0 as i32;
     i = 0 as i32;
     while i < numtextures {

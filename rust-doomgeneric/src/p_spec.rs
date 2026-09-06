@@ -8,7 +8,7 @@ use crate::src::g_game::G_ExitLevel;
 use crate::src::g_game::G_SecretExitLevel;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_misc::M_StrToInt;
 use crate::src::m_random::P_Random;
@@ -1125,11 +1125,13 @@ unsafe fn DonutOverrun(
         p = M_CheckParmWithArgs("-donut", 2 as i32);
         if p > 0 as i32 {
             M_StrToInt(
-                myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 &raw mut state.p_spec.donut_overrun_tmp_s3_floorheight,
             );
             M_StrToInt(
-                myargv[(p + 2 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
+                unsafe { game_state() }.m_argv.myargv[(p + 2 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 &raw mut state.p_spec.donut_overrun_tmp_s3_floorpic,
             );
             if state.p_spec.donut_overrun_tmp_s3_floorpic >= numflats {

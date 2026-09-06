@@ -1,4 +1,5 @@
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
+use crate::src::game_state::game_state;
+use crate::src::m_argv::{M_CheckParmWithArgs, M_ParmExists};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::m_misc::M_snprintf;
 use crate::src::stdint_types::byte;
@@ -87,7 +88,10 @@ pub unsafe fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
     let mut p: i32 = 0;
     p = M_CheckParmWithArgs("-mb", 1 as i32);
     if p > 0 as i32 {
-        default_ram = atoi(myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+        default_ram = atoi(
+            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
         min_ram = default_ram;
     } else {
         default_ram = DEFAULT_RAM;
@@ -295,20 +299,20 @@ pub unsafe fn I_GetMemoryValue(
         p = M_CheckParmWithArgs("-setmem", 1 as i32);
         if p > 0 as i32 {
             if strcasecmp(
-                myargv[(p + 1 as i32) as usize].as_ptr(),
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos622\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
                 dos_mem_dump = &raw const mem_dump_dos622 as *const u8;
             }
             if strcasecmp(
-                myargv[(p + 1 as i32) as usize].as_ptr(),
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos71\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
                 dos_mem_dump = &raw const mem_dump_win98 as *const u8;
             } else if strcasecmp(
-                myargv[(p + 1 as i32) as usize].as_ptr(),
+                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dosbox\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
@@ -317,13 +321,17 @@ pub unsafe fn I_GetMemoryValue(
                 i = 0 as i32;
                 while i < DOS_MEM_DUMP_SIZE {
                     p += 1;
-                    if p >= myargv.len() as i32
-                        || myargv[p as usize].as_bytes().first() == Some(&b'-')
+                    if p >= unsafe { game_state() }.m_argv.myargv.len() as i32
+                        || unsafe { game_state() }.m_argv.myargv[p as usize]
+                            .as_bytes()
+                            .first()
+                            == Some(&b'-')
                     {
                         break;
                     }
                     M_StrToInt(
-                        myargv[p as usize].as_ptr() as *mut ::core::ffi::c_char,
+                        unsafe { game_state() }.m_argv.myargv[p as usize].as_ptr()
+                            as *mut ::core::ffi::c_char,
                         &raw mut val,
                     );
                     let fresh0 = i;

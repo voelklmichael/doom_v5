@@ -1,6 +1,7 @@
 use crate::src::doomdef::NULL;
+use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_controls::KEY_BACKSPACE;
 use crate::src::m_controls::KEY_CAPSLOCK;
 use crate::src::m_controls::KEY_DEL;
@@ -1899,8 +1900,9 @@ pub unsafe fn M_LoadDefaults(state: &mut MConfigState) {
     let mut i: i32 = 0;
     i = M_CheckParmWithArgs("-config", 1 as i32);
     if i != 0 {
-        state.doom_defaults.filename =
-            myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
+        state.doom_defaults.filename = unsafe { game_state() }.m_argv.myargv
+            [(i + 1 as i32) as usize]
+            .as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"\tdefault file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
             state.doom_defaults.filename,
@@ -1915,8 +1917,9 @@ pub unsafe fn M_LoadDefaults(state: &mut MConfigState) {
     );
     i = M_CheckParmWithArgs("-extraconfig", 1 as i32);
     if i != 0 {
-        state.extra_defaults.filename =
-            myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
+        state.extra_defaults.filename = unsafe { game_state() }.m_argv.myargv
+            [(i + 1 as i32) as usize]
+            .as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"        extra configuration file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
             state.extra_defaults.filename,
