@@ -1,4 +1,3 @@
-use crate::src::d_loop::gametic;
 use crate::src::d_main::fastparm;
 use crate::src::d_mode::commercial;
 use crate::src::d_mode::exe_ultimate;
@@ -908,7 +907,7 @@ pub unsafe fn A_Tracer(mut actor: *mut mobj_t) {
     let mut slope: fixed_t = 0;
     let mut dest: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut th: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    if gametic & 3 as i32 != 0 {
+    if unsafe { game_state() }.d_loop.gametic & 3 as i32 != 0 {
         return;
     }
     P_SpawnPuff((*actor).x, (*actor).y, (*actor).z);

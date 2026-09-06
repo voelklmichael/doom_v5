@@ -6,7 +6,6 @@ use crate::src::d_event::{ga_loadgame, ga_nothing, ga_playdemo};
 use crate::src::d_event::{gamestate_t, GS_DEMOSCREEN, GS_LEVEL};
 use crate::src::d_iwad::D_FindIWAD;
 use crate::src::d_iwad::D_SaveGameIWADName;
-use crate::src::d_loop::gametic;
 use crate::src::d_loop::D_StartGameLoop;
 use crate::src::d_loop::NetUpdate;
 use crate::src::d_loop::TryRunTics;
@@ -65,7 +64,6 @@ use crate::src::g_game::G_TimeDemo;
 use crate::src::g_game::G_VanillaVersionCode;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
-use crate::src::hu_stuff::chat_macros;
 use crate::src::hu_stuff::HU_Drawer;
 use crate::src::hu_stuff::HU_Erase;
 use crate::src::hu_stuff::HU_Init;
@@ -273,12 +271,12 @@ pub unsafe fn D_Display() {
     } else {
         wipe = false;
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 && gametic != 0 {
+    if gamestate as u32 == GS_LEVEL as i32 as u32 && unsafe { game_state() }.d_loop.gametic != 0 {
         HU_Erase();
     }
     match gamestate as u32 {
         0 => {
-            if !(gametic == 0) {
+            if !(unsafe { game_state() }.d_loop.gametic == 0) {
                 if automapactive {
                     AM_Drawer();
                 }
@@ -303,12 +301,15 @@ pub unsafe fn D_Display() {
         }
         _ => {}
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 && !automapactive && gametic != 0 {
+    if gamestate as u32 == GS_LEVEL as i32 as u32
+        && !automapactive
+        && unsafe { game_state() }.d_loop.gametic != 0
+    {
         R_RenderPlayerView(
             (&raw mut players as *mut player_t).offset(displayplayer as isize) as *mut player_t,
         );
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 && gametic != 0 {
+    if gamestate as u32 == GS_LEVEL as i32 as u32 && unsafe { game_state() }.d_loop.gametic != 0 {
         HU_Drawer();
     }
     if gamestate as u32 != oldgamestate as u32 && gamestate as u32 != GS_LEVEL as i32 as u32 {
@@ -459,8 +460,9 @@ pub unsafe fn D_BindVariables() {
             ::std::ffi::CStr::from_ptr(&raw mut buf as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),
-            (&raw mut chat_macros as *mut *mut ::core::ffi::c_char).offset(i as isize)
-                as *mut *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
+            (&raw mut unsafe { game_state() }.hu_stuff.chat_macros as *mut *mut ::core::ffi::c_char)
+                .offset(i as isize) as *mut *mut ::core::ffi::c_char
+                as *mut ::core::ffi::c_void,
         );
         i += 1;
     }

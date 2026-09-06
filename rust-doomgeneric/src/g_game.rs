@@ -9,9 +9,6 @@ use crate::src::d_event::{
     ga_screenshot, ga_victory, ga_worlddone, gameaction_t,
 };
 use crate::src::d_event::{gamestate_t, GS_DEMOSCREEN, GS_FINALE, GS_INTERMISSION, GS_LEVEL};
-use crate::src::d_loop::gametic;
-use crate::src::d_loop::singletics;
-use crate::src::d_loop::ticdup;
 use crate::src::d_loop::BACKUPTICS;
 use crate::src::d_main::fastparm;
 use crate::src::d_main::nomonsters;
@@ -522,7 +519,7 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
         || gamekeydown[key_right as usize] != 0
         || gamekeydown[key_left as usize] != 0
     {
-        turnheld += ticdup;
+        turnheld += unsafe { game_state() }.d_loop.ticdup;
     } else {
         turnheld = 0 as i32;
     }
@@ -638,7 +635,7 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
                 dclicktime = 0 as i32;
             }
         } else {
-            dclicktime += ticdup;
+            dclicktime += unsafe { game_state() }.d_loop.ticdup;
             if dclicktime > 20 as i32 {
                 dclicks = 0 as i32;
                 dclickstate = 0 as boolean;
@@ -658,7 +655,7 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
                 dclicktime2 = 0 as i32;
             }
         } else {
-            dclicktime2 += ticdup;
+            dclicktime2 += unsafe { game_state() }.d_loop.ticdup;
             if dclicktime2 > 20 as i32 {
                 dclicks2 = 0 as i32;
                 dclickstate2 = 0 as boolean;
@@ -730,7 +727,7 @@ pub unsafe fn G_DoLoadLevel() {
         skytexturename = skytexturename;
         skytexture = R_TextureNumForName(skytexturename);
     }
-    levelstarttic = gametic;
+    levelstarttic = unsafe { game_state() }.d_loop.gametic;
     if wipegamestate as u32 == GS_LEVEL as u32 {
         wipegamestate = 4294967295 as gamestate_t;
     }
@@ -951,7 +948,8 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
             0 | _ => {}
         }
     }
-    buf = gametic / ticdup % BACKUPTICS;
+    buf =
+        unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup % BACKUPTICS;
     i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
@@ -971,8 +969,8 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
             if (*cmd).forwardmove as i32 > TURBOTHRESHOLD {
                 turbodetected[i as usize] = true_0 as boolean;
             }
-            if gametic & 31 as i32 == 0 as i32
-                && (gametic >> 5 as i32) % MAXPLAYERS == i
+            if unsafe { game_state() }.d_loop.gametic & 31 as i32 == 0 as i32
+                && (unsafe { game_state() }.d_loop.gametic >> 5 as i32) % MAXPLAYERS == i
                 && turbodetected[i as usize] != 0
             {
                 static mut turbomessage: [::core::ffi::c_char; 80] = [0; 80];
@@ -986,8 +984,12 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
                     &raw mut turbomessage as *mut ::core::ffi::c_char;
                 turbodetected[i as usize] = false_0 as boolean;
             }
-            if netgame && !netdemo && gametic % ticdup == 0 {
-                if gametic > BACKUPTICS
+            if netgame
+                && !netdemo
+                && unsafe { game_state() }.d_loop.gametic % unsafe { game_state() }.d_loop.ticdup
+                    == 0
+            {
+                if unsafe { game_state() }.d_loop.gametic > BACKUPTICS
                     && consistancy[i as usize][buf as usize] as i32 != (*cmd).consistancy as i32
                 {
                     I_Error(&format!(
@@ -2041,7 +2043,7 @@ pub unsafe fn G_DoPlayDemo() {
 pub unsafe fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
     nodrawers = M_CheckParm("-nodraw") != 0;
     timingdemo = true;
-    singletics = true;
+    unsafe { game_state() }.d_loop.singletics = true;
     defdemoname = name;
     gameaction = ga_playdemo;
 }
@@ -2053,12 +2055,14 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         let mut realtics: i32 = 0;
         endtime = I_GetTime(unsafe { &mut game_state().i_timer });
         realtics = endtime - starttime;
-        fps = gametic as f32 * TICRATE as f32 / realtics as f32;
+        fps = unsafe { game_state() }.d_loop.gametic as f32 * TICRATE as f32 / realtics as f32;
         timingdemo = false;
         demoplayback = false;
         I_Error(&format!(
             "timed {} gametics in {} realtics ({:.6} fps)",
-            gametic, realtics, fps as f64,
+            unsafe { game_state() }.d_loop.gametic,
+            realtics,
+            fps as f64,
         ));
     }
     if demoplayback {

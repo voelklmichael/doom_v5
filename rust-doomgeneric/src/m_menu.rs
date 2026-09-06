@@ -9,7 +9,6 @@ use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 use crate::src::am_map::automapactive;
 use crate::src::d_event::GS_LEVEL;
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse, ev_quit};
-use crate::src::d_loop::gametic;
 use crate::src::d_main::devparm;
 use crate::src::d_mode::skill_t;
 use crate::src::d_mode::{commercial, registered, retail, shareware};
@@ -30,9 +29,6 @@ use crate::src::g_game::G_LoadGame;
 use crate::src::g_game::G_SaveGame;
 use crate::src::g_game::G_ScreenShot;
 use crate::src::game_state::game_state;
-use crate::src::hu_stuff::chat_on;
-use crate::src::hu_stuff::hu_font;
-use crate::src::hu_stuff::message_dontfuckwithme;
 use crate::src::hu_stuff::HU_FONTSIZE;
 use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::i_system::I_Quit;
@@ -1193,7 +1189,7 @@ pub unsafe extern "C" fn M_ChangeMessages(mut choice: i32) {
         players[consoleplayer as usize].message =
             b"Messages ON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
-    message_dontfuckwithme = true;
+    unsafe { game_state() }.hu_stuff.message_dontfuckwithme = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_EndGameResponse(mut key: i32) {
@@ -1276,13 +1272,15 @@ pub unsafe extern "C" fn M_QuitResponse(mut key: i32) {
             S_StartSound(
                 unsafe { &mut game_state().sounds },
                 NULL,
-                quitsounds2[(gametic >> 2 as i32 & 7 as i32) as usize],
+                quitsounds2
+                    [(unsafe { game_state() }.d_loop.gametic >> 2 as i32 & 7 as i32) as usize],
             );
         } else {
             S_StartSound(
                 unsafe { &mut game_state().sounds },
                 NULL,
-                quitsounds[(gametic >> 2 as i32 & 7 as i32) as usize],
+                quitsounds
+                    [(unsafe { game_state() }.d_loop.gametic >> 2 as i32 & 7 as i32) as usize],
             );
         }
     }
@@ -1304,7 +1302,7 @@ unsafe fn M_SelectEndMessage() -> &'static str {
         } else {
             &doom2_endmsg
         };
-    endmsg[(gametic % NUM_QUITMESSAGES) as usize]
+    endmsg[(unsafe { game_state() }.d_loop.gametic % NUM_QUITMESSAGES) as usize]
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_QuitDOOM(mut choice: i32) {
@@ -1447,14 +1445,14 @@ pub unsafe fn M_StringWidth(string: &str) -> i32 {
         if c < 0 as i32 || c >= HU_FONTSIZE {
             w += 4 as i32;
         } else {
-            w += (*hu_font[c as usize]).width as i32;
+            w += (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
         }
     }
     return w;
 }
 pub unsafe fn M_StringHeight(string: &str) -> i32 {
     let mut h: i32 = 0;
-    let height: i32 = (*hu_font[0 as i32 as usize]).height as i32;
+    let height: i32 = (*unsafe { game_state() }.hu_stuff.hu_font[0 as i32 as usize]).height as i32;
     h = height;
     for b in string.bytes() {
         if b == b'\n' {
@@ -1480,7 +1478,7 @@ pub unsafe fn M_WriteText(x: i32, y: i32, string: &str) {
             if c < 0 as i32 || c >= HU_FONTSIZE {
                 cx += 4 as i32;
             } else {
-                w = (*hu_font[c as usize]).width as i32;
+                w = (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
                 if cx + w > SCREENWIDTH {
                     break 'outer;
                 }
@@ -1488,7 +1486,7 @@ pub unsafe fn M_WriteText(x: i32, y: i32, string: &str) {
                     unsafe { &mut game_state().v_video },
                     cx,
                     cy,
-                    hu_font[c as usize],
+                    unsafe { game_state() }.hu_stuff.hu_font[c as usize],
                 );
                 cx += w;
             }
@@ -1685,14 +1683,14 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     }
     if !menuactive {
         if key == key_menu_decscreen {
-            if automapactive || chat_on {
+            if automapactive || unsafe { game_state() }.hu_stuff.chat_on {
                 return false;
             }
             M_SizeDisplay(0 as i32);
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             return true;
         } else if key == key_menu_incscreen {
-            if automapactive || chat_on {
+            if automapactive || unsafe { game_state() }.hu_stuff.chat_on {
                 return false;
             }
             M_SizeDisplay(1 as i32);
@@ -1893,7 +1891,9 @@ pub unsafe fn M_Drawer() {
             let line = if line.len() > 79 { &line[..79] } else { line };
             x = (SCREENWIDTH / 2 as i32 - M_StringWidth(line) / 2 as i32) as i16;
             M_WriteText(x as i32, y as i32, line);
-            y = (y as i32 + (*hu_font[0 as i32 as usize]).height as i32) as i16;
+            y = (y as i32
+                + (*unsafe { game_state() }.hu_stuff.hu_font[0 as i32 as usize]).height as i32)
+                as i16;
         }
         return;
     }
