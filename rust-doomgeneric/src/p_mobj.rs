@@ -55,7 +55,6 @@ use libc::{memcpy, memset};
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 pub use crate::src::d_ticcmd::ticcmd_t;
 pub type C2RustUnnamed_0 = u32;

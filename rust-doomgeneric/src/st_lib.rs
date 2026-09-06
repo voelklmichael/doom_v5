@@ -9,7 +9,6 @@ use crate::src::z_zone::PU_STATIC;
 
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 #[derive(Copy, Clone)]
 #[repr(C)]

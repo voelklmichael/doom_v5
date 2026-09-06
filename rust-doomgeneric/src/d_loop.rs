@@ -9,13 +9,13 @@ use crate::src::i_timer::I_GetTime;
 use crate::src::d_ticcmd::BT_SPECIAL;
 use crate::src::m_fixed::fixed_t;
 use crate::src::sha1::sha1_digest_t;
+use crate::src::doomdef::boolean;
 use libc::{memcpy, memset};
 use libc::printf;
 
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]

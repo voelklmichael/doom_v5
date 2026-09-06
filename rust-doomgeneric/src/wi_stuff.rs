@@ -23,12 +23,12 @@ use crate::src::d_ticcmd::{BT_ATTACK, BT_USE};
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::statenum_t;
 use crate::src::d_mode::{commercial, retail};
+use crate::src::doomdef::boolean;
 use libc::{printf, snprintf};
 
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;

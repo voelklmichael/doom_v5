@@ -8,8 +8,8 @@ use crate::src::r_draw::viewheight;
 use crate::src::am_map::automapactive;
 use libc::toupper;
 use crate::src::m_misc::__ctype_toupper_loc;
+use crate::src::doomdef::boolean;
 pub type __int32_t = i32;
-pub type boolean = u32;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct patch_t {

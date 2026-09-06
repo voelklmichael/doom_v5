@@ -15,6 +15,7 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::m_fixed::fixed_t;
+use crate::src::doomdef::boolean;
 use libc::{memcpy, memset};
 
 extern "C" {
@@ -23,7 +24,6 @@ extern "C" {
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 pub type vpatchclipfunc_t = Option<
     unsafe extern "C" fn(*mut patch_t, i32, i32) -> boolean,

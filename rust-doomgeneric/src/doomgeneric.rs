@@ -1,5 +1,6 @@
 use crate::src::m_argv::{myargv, M_FindResponseFile};
 use crate::src::d_main::D_DoomMain;
+use crate::src::doomdef::pixel_t;
 use libc::malloc;
 
 
@@ -9,7 +10,6 @@ extern "C" {
 pub type size_t = usize;
 pub type __uint32_t = u32;
 pub type uint32_t = __uint32_t;
-pub type pixel_t = uint32_t;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

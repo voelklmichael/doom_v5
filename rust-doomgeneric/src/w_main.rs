@@ -6,7 +6,6 @@ use libc::printf;
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;

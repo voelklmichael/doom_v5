@@ -65,6 +65,7 @@ use crate::src::p_floor::{build8, turbo16};
 use crate::src::p_ceilng::{ceiling_e, crushAndRaise, fastCrushAndRaise, lowerAndCrush, raiseToHighest, silentCrushAndRaise};
 use crate::src::p_switch::bwhere_e;
 use crate::src::m_fixed::fixed_t;
+use crate::src::doomdef::boolean;
 
 extern "C" {
     fn T_MoveFloor(floor: *mut floormove_t);
@@ -72,7 +73,6 @@ extern "C" {
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;

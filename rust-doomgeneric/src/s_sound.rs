@@ -39,7 +39,6 @@ use crate::src::z_zone::Z_Malloc;
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 use crate::src::sounds::{sfxinfo_t, musicinfo_t};
 use crate::src::z_zone::PU_STATIC;

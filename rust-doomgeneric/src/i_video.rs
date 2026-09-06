@@ -6,6 +6,8 @@ use crate::src::tables::gammatable;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
+use crate::src::doomdef::boolean;
+use crate::src::doomdef::pixel_t;
 use libc::{memcpy, memset};
 use libc::{atoi, strcmp};
 use libc::printf;
@@ -22,7 +24,6 @@ pub type __uint32_t = u32;
 pub type uint8_t = __uint8_t;
 pub type uint16_t = __uint16_t;
 pub type uint32_t = __uint32_t;
-pub type boolean = u32;
 pub type byte = uint8_t;
 pub type grabmouse_callback_t = Option<unsafe extern "C" fn() -> boolean>;
 #[derive(Copy, Clone)]
@@ -60,7 +61,6 @@ pub struct col_t {
     pub g: byte,
     pub b: byte,
 }
-pub type pixel_t = uint32_t;
 pub const INT_MAX: i32 = __INT_MAX__;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
