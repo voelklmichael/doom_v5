@@ -89,6 +89,7 @@ use crate::src::m_controls::KEY_CAPSLOCK;
 use crate::src::m_controls::KEY_SCRLCK;
 use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::hu_stuff::HU_FONTSIZE;
+use crate::src::game_state::game_state;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -1757,72 +1758,72 @@ pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
     key = -(1 as i32);
     if (*ev).type_0 as u32
         == ev_joystick as i32 as u32
-        && joywait < I_GetTime()
+        && joywait < I_GetTime(unsafe { &mut game_state().i_timer })
     {
         if (*ev).data3 < 0 as i32 {
             key = key_menu_up;
-            joywait = I_GetTime() + 5 as i32;
+            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         } else if (*ev).data3 > 0 as i32 {
             key = key_menu_down;
-            joywait = I_GetTime() + 5 as i32;
+            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
         if (*ev).data2 < 0 as i32 {
             key = key_menu_left;
-            joywait = I_GetTime() + 2 as i32;
+            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 2 as i32;
         } else if (*ev).data2 > 0 as i32 {
             key = key_menu_right;
-            joywait = I_GetTime() + 2 as i32;
+            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 2 as i32;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = key_menu_forward;
-            joywait = I_GetTime() + 5 as i32;
+            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
             key = key_menu_back;
-            joywait = I_GetTime() + 5 as i32;
+            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
         if joybmenu >= 0 as i32
             && (*ev).data1 & (1 as i32) << joybmenu
                 != 0 as i32
         {
             key = key_menu_activate;
-            joywait = I_GetTime() + 5 as i32;
+            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
     } else if (*ev).type_0 as u32
         == ev_mouse as i32 as u32
-        && mousewait < I_GetTime()
+        && mousewait < I_GetTime(unsafe { &mut game_state().i_timer })
     {
         mousey += (*ev).data3;
         if mousey < lasty - 30 as i32 {
             key = key_menu_down;
-            mousewait = I_GetTime() + 5 as i32;
+            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lasty -= 30 as i32;
             mousey = lasty;
         } else if mousey > lasty + 30 as i32 {
             key = key_menu_up;
-            mousewait = I_GetTime() + 5 as i32;
+            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lasty += 30 as i32;
             mousey = lasty;
         }
         mousex += (*ev).data2;
         if mousex < lastx - 30 as i32 {
             key = key_menu_left;
-            mousewait = I_GetTime() + 5 as i32;
+            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lastx -= 30 as i32;
             mousex = lastx;
         } else if mousex > lastx + 30 as i32 {
             key = key_menu_right;
-            mousewait = I_GetTime() + 5 as i32;
+            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lastx += 30 as i32;
             mousex = lastx;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = key_menu_forward;
-            mousewait = I_GetTime() + 15 as i32;
+            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 15 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
             key = key_menu_back;
-            mousewait = I_GetTime() + 15 as i32;
+            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 15 as i32;
         }
     } else if (*ev).type_0 as u32
         == ev_keydown as i32 as u32

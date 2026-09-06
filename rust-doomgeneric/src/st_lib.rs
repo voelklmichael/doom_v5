@@ -48,10 +48,20 @@ pub struct st_binicon_t {
     pub p: *mut patch_t,
     pub data: i32,
 }
-#[no_mangle]
-pub static mut sttminus: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
-pub unsafe fn STlib_init() {
-    sttminus = W_CacheLumpName("STTMINUS",
+pub struct StLibState {
+    sttminus: *mut patch_t,
+}
+
+impl StLibState {
+    pub const fn new() -> Self {
+        StLibState {
+            sttminus: ::core::ptr::null::<patch_t>() as *mut patch_t,
+        }
+    }
+}
+
+pub unsafe fn STlib_init(state: &mut StLibState) {
+    state.sttminus = W_CacheLumpName("STTMINUS",
         PU_STATIC as i32,
     ) as *mut patch_t;
 }
@@ -72,7 +82,7 @@ pub unsafe fn STlib_initNum(
     (*n).on = on;
     (*n).p = pl;
 }
-pub unsafe fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: bool) {
+pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut refresh: bool) {
     let mut numdigits: i32 = (*n).width;
     let mut num: i32 = *(*n).num;
     let mut w: i32 = (**(*n).p.offset(0 as i32 as isize))
@@ -121,12 +131,12 @@ pub unsafe fn STlib_drawNum(mut n: *mut st_number_t, mut refresh: bool) {
         num /= 10 as i32;
     }
     if neg != 0 {
-        V_DrawPatch(x - 8 as i32, (*n).y, sttminus);
+        V_DrawPatch(x - 8 as i32, (*n).y, state.sttminus);
     }
 }
-pub unsafe fn STlib_updateNum(mut n: *mut st_number_t, mut refresh: bool) {
+pub unsafe fn STlib_updateNum(state: &mut StLibState, mut n: *mut st_number_t, mut refresh: bool) {
     if *(*n).on {
-        STlib_drawNum(n, refresh);
+        STlib_drawNum(state, n, refresh);
     }
 }
 pub unsafe fn STlib_initPercent(
@@ -142,13 +152,14 @@ pub unsafe fn STlib_initPercent(
     (*p).p = percent;
 }
 pub unsafe fn STlib_updatePercent(
+    state: &mut StLibState,
     mut per: *mut st_percent_t,
     mut refresh: i32,
 ) {
     if refresh != 0 && *(*per).n.on {
         V_DrawPatch((*per).n.x, (*per).n.y, (*per).p);
     }
-    STlib_updateNum(&raw mut (*per).n, refresh != 0);
+    STlib_updateNum(state, &raw mut (*per).n, refresh != 0);
 }
 pub unsafe fn STlib_initMultIcon(
     mut i: *mut st_multicon_t,

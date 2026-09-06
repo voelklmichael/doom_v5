@@ -27,10 +27,23 @@ pub struct wad_file_class_t {
     >,
 }
 pub type wad_file_t = _wad_file_s;
-static mut wad_file_classes: [*mut wad_file_class_t; 1] = unsafe {
-    [&raw const stdc_wad_file as *mut wad_file_class_t]
-};
+
+pub struct WFileState {
+    wad_file_classes: [*mut wad_file_class_t; 1],
+}
+
+impl WFileState {
+    pub fn new() -> Self {
+        WFileState {
+            wad_file_classes: unsafe {
+                [&raw const stdc_wad_file as *mut wad_file_class_t]
+            },
+        }
+    }
+}
+
 pub unsafe fn W_OpenFile(
+    state: &mut WFileState,
     mut path: *mut ::core::ffi::c_char,
 ) -> *mut wad_file_t {
     let mut result: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
@@ -44,7 +57,7 @@ pub unsafe fn W_OpenFile(
         < (::core::mem::size_of::<[*mut wad_file_class_t; 1]>() as usize)
             .wrapping_div(::core::mem::size_of::<*mut wad_file_class_t>() as usize)
     {
-        result = (*wad_file_classes[i as usize])
+        result = (*state.wad_file_classes[i as usize])
             .OpenFile
             .expect("non-null function pointer")(path);
         if !result.is_null() {

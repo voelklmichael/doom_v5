@@ -404,10 +404,10 @@ pub unsafe fn D_Display() {
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    wipestart = I_GetTime() - 1 as i32;
+    wipestart = I_GetTime(unsafe { &mut game_state().i_timer }) - 1 as i32;
     loop {
         loop {
-            nowtime = I_GetTime();
+            nowtime = I_GetTime(unsafe { &mut game_state().i_timer });
             tics = nowtime - wipestart;
             I_Sleep(1 as i32);
             if !(tics <= 0 as i32) {

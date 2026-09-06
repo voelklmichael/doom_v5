@@ -4,27 +4,36 @@ extern "C" {
     fn DG_SleepMs(ms: uint32_t);
     fn DG_GetTicksMs() -> uint32_t;
 }
-static mut basetime: uint32_t = 0;
+pub struct ITimerState {
+    basetime: uint32_t,
+}
+
+impl ITimerState {
+    pub const fn new() -> Self {
+        ITimerState { basetime: 0 }
+    }
+}
+
 pub unsafe fn I_GetTicks() -> i32 {
     return DG_GetTicksMs() as i32;
 }
-pub unsafe fn I_GetTime() -> i32 {
+pub fn I_GetTime(state: &mut ITimerState) -> i32 {
     let mut ticks: uint32_t = 0;
-    ticks = I_GetTicks() as uint32_t;
-    if basetime == 0 as uint32_t {
-        basetime = ticks;
+    ticks = unsafe { I_GetTicks() } as uint32_t;
+    if state.basetime == 0 as uint32_t {
+        state.basetime = ticks;
     }
-    ticks = ticks.wrapping_sub(basetime);
+    ticks = ticks.wrapping_sub(state.basetime);
     return ticks.wrapping_mul(TICRATE as uint32_t).wrapping_div(1000 as uint32_t)
         as i32;
 }
-pub unsafe fn I_GetTimeMS() -> i32 {
+pub fn I_GetTimeMS(state: &mut ITimerState) -> i32 {
     let mut ticks: uint32_t = 0;
-    ticks = I_GetTicks() as uint32_t;
-    if basetime == 0 as uint32_t {
-        basetime = ticks;
+    ticks = unsafe { I_GetTicks() } as uint32_t;
+    if state.basetime == 0 as uint32_t {
+        state.basetime = ticks;
     }
-    return ticks.wrapping_sub(basetime) as i32;
+    return ticks.wrapping_sub(state.basetime) as i32;
 }
 pub unsafe fn I_Sleep(mut ms: i32) {
     DG_SleepMs(ms as uint32_t);

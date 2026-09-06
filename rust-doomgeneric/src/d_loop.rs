@@ -18,6 +18,7 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::TICRATE;
 use crate::src::m_fixed::FRACUNIT;
+use crate::src::game_state::game_state;
 
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
@@ -108,7 +109,7 @@ static mut local_playeringame: [boolean; 8] = [0; 8];
 static mut player_class: i32 = 0;
 unsafe fn GetAdjustedTime() -> i32 {
     let mut time_ms: i32 = 0;
-    time_ms = I_GetTimeMS();
+    time_ms = I_GetTimeMS(unsafe { &mut game_state().i_timer });
     if new_sync {
         time_ms += offsetms as i32 / FRACUNIT;
     }
@@ -332,7 +333,7 @@ pub unsafe fn TryRunTics() {
     let mut realtics: i32 = 0;
     let mut availabletics: i32 = 0;
     let mut counts: i32 = 0;
-    entertic = I_GetTime() / ticdup;
+    entertic = I_GetTime(unsafe { &mut game_state().i_timer }) / ticdup;
     realtics = entertic - oldentertics;
     oldentertics = entertic;
     if singletics {
@@ -368,7 +369,7 @@ pub unsafe fn TryRunTics() {
         if lowtic < gametic / ticdup {
             I_Error("TryRunTics: lowtic < gametic");
         }
-        if I_GetTime() / ticdup - entertic > 0 as i32 {
+        if I_GetTime(unsafe { &mut game_state().i_timer }) / ticdup - entertic > 0 as i32 {
             return;
         }
         I_Sleep(1 as i32);

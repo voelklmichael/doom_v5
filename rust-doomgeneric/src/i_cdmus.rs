@@ -1,5 +1,13 @@
-#[no_mangle]
-pub static mut cd_Error: i32 = 0;
+pub struct ICdMusState {
+    cd_Error: i32,
+}
+
+impl ICdMusState {
+    pub const fn new() -> Self {
+        ICdMusState { cd_Error: 0 }
+    }
+}
+
 pub unsafe fn I_CDMusInit() -> i32 {
     return 0 as i32;
 }
@@ -14,10 +22,11 @@ pub unsafe fn I_CDMusStop() -> i32 {
 pub unsafe fn I_CDMusResume() -> i32 {
     return 0 as i32;
 }
-pub unsafe fn I_CDMusSetVolume(
+pub fn I_CDMusSetVolume(
+    state: &mut ICdMusState,
     mut volume: i32,
 ) -> i32 {
-    cd_Error = 0 as i32;
+    state.cd_Error = 0 as i32;
     return 0 as i32;
 }
 pub unsafe fn I_CDMusFirstTrack() -> i32 {
