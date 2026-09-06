@@ -23,7 +23,6 @@ use crate::src::d_ticcmd::{BT_ATTACK, BT_USE};
 use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::statenum_t;
 use crate::src::d_mode::{commercial, retail};
-use crate::src::doomdef::boolean;
 use crate::src::stdint_types::size_t;
 use libc::{printf, snprintf};
 
@@ -1849,7 +1848,7 @@ pub unsafe extern "C" fn WI_drawOnLnode(
     let mut top: i32 = 0;
     let mut right: i32 = 0;
     let mut bottom: i32 = 0;
-    let mut fits: boolean = false_0 as boolean;
+    let mut fits: bool = false;
     i = 0 as i32;
     loop {
         left = lnodes[(*wbs).epsd as usize][n as usize].x
@@ -1861,17 +1860,17 @@ pub unsafe extern "C" fn WI_drawOnLnode(
         if left >= 0 as i32 && right < SCREENWIDTH
             && top >= 0 as i32 && bottom < SCREENHEIGHT
         {
-            fits = true_0 as boolean;
+            fits = true;
         } else {
             i += 1;
         }
-        if !(fits == 0 && i != 2 as i32
+        if !(!fits && i != 2 as i32
             && !(*c.offset(i as isize)).is_null())
         {
             break;
         }
     }
-    if fits != 0 && i < 2 as i32 {
+    if fits && i < 2 as i32 {
         V_DrawPatch(
             lnodes[(*wbs).epsd as usize][n as usize].x,
             lnodes[(*wbs).epsd as usize][n as usize].y,
@@ -2212,7 +2211,7 @@ pub unsafe extern "C" fn WI_initDeathmatchStats() {
 pub unsafe extern "C" fn WI_updateDeathmatchStats() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
-    let mut stillticking: boolean = 0;
+    let mut stillticking: bool = false;
     WI_updateAnimatedBack();
     if acceleratestage != 0 && dm_state != 4 as i32 {
         acceleratestage = 0 as i32;
@@ -2244,7 +2243,7 @@ pub unsafe extern "C" fn WI_updateDeathmatchStats() {
                 sfx_pistol as i32,
             );
         }
-        stillticking = false_0 as boolean;
+        stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
             if playeringame[i as usize] != 0 {
@@ -2269,7 +2268,7 @@ pub unsafe extern "C" fn WI_updateDeathmatchStats() {
                             dm_frags[i as usize][j as usize] = -(99
                                 as i32);
                         }
-                        stillticking = true_0 as boolean;
+                        stillticking = true;
                     }
                     j += 1;
                 }
@@ -2283,7 +2282,7 @@ pub unsafe extern "C" fn WI_updateDeathmatchStats() {
             }
             i += 1;
         }
-        if stillticking == 0 {
+        if !stillticking {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
@@ -2427,7 +2426,7 @@ pub unsafe extern "C" fn WI_initNetgameStats() {
 pub unsafe extern "C" fn WI_updateNetgameStats() {
     let mut i: i32 = 0;
     let mut fsum: i32 = 0;
-    let mut stillticking: boolean = 0;
+    let mut stillticking: bool = false;
     WI_updateAnimatedBack();
     if acceleratestage != 0 && ng_state != 10 as i32 {
         acceleratestage = 0 as i32;
@@ -2459,7 +2458,7 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
                 sfx_pistol as i32,
             );
         }
-        stillticking = false_0 as boolean;
+        stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
@@ -2471,12 +2470,12 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
                     cnt_kills[i as usize] = (*plrs.offset(i as isize)).skills
                         * 100 as i32 / (*wbs).maxkills;
                 } else {
-                    stillticking = true_0 as boolean;
+                    stillticking = true;
                 }
             }
             i += 1;
         }
-        if stillticking == 0 {
+        if !stillticking {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
@@ -2490,7 +2489,7 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
                 sfx_pistol as i32,
             );
         }
-        stillticking = false_0 as boolean;
+        stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
@@ -2502,12 +2501,12 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
                     cnt_items[i as usize] = (*plrs.offset(i as isize)).sitems
                         * 100 as i32 / (*wbs).maxitems;
                 } else {
-                    stillticking = true_0 as boolean;
+                    stillticking = true;
                 }
             }
             i += 1;
         }
-        if stillticking == 0 {
+        if !stillticking {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
@@ -2521,7 +2520,7 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
                 sfx_pistol as i32,
             );
         }
-        stillticking = false_0 as boolean;
+        stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
@@ -2533,12 +2532,12 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
                     cnt_secret[i as usize] = (*plrs.offset(i as isize)).ssecret
                         * 100 as i32 / (*wbs).maxsecret;
                 } else {
-                    stillticking = true_0 as boolean;
+                    stillticking = true;
                 }
             }
             i += 1;
         }
-        if stillticking == 0 {
+        if !stillticking {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
@@ -2554,7 +2553,7 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
                 sfx_pistol as i32,
             );
         }
-        stillticking = false_0 as boolean;
+        stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
@@ -2563,12 +2562,12 @@ pub unsafe extern "C" fn WI_updateNetgameStats() {
                 if cnt_frags[i as usize] >= fsum {
                     cnt_frags[i as usize] = fsum;
                 } else {
-                    stillticking = true_0 as boolean;
+                    stillticking = true;
                 }
             }
             i += 1;
         }
-        if stillticking == 0 {
+        if !stillticking {
             S_StartSound(
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pldeth as i32,

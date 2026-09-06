@@ -1201,7 +1201,7 @@ pub unsafe extern "C" fn PIT_CheckLine(mut ld: *mut line_t) -> boolean {
 #[no_mangle]
 pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
     let mut blockdist: fixed_t = 0;
-    let mut solid: boolean = 0;
+    let mut solid: bool = false;
     let mut damage: i32 = 0;
     if (*thing).flags
         & (MF_SOLID as i32 | MF_SPECIAL as i32
@@ -1268,11 +1268,11 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
         return false_0 as boolean;
     }
     if (*thing).flags & MF_SPECIAL as i32 != 0 {
-        solid = ((*thing).flags & MF_SOLID as i32) as boolean;
+        solid = (*thing).flags & MF_SOLID as i32 != 0;
         if tmflags & MF_PICKUP as i32 != 0 {
             P_TouchSpecialThing(thing, tmthing);
         }
-        return (solid == 0) as i32 as boolean;
+        return (!solid) as i32 as boolean;
     }
     return ((*thing).flags & MF_SOLID as i32 == 0) as i32
         as boolean;

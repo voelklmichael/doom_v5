@@ -253,7 +253,7 @@ pub unsafe fn I_Error(message: &str) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<
         atexit_listentry_t,
     >();
-    let mut exit_gui_popup: boolean = 0;
+    let mut exit_gui_popup: bool = false;
     if already_quitting {
         fprintf(
             stderr,
@@ -279,8 +279,8 @@ pub unsafe fn I_Error(message: &str) {
         }
         entry = (*entry).next;
     }
-    exit_gui_popup = (!M_ParmExists("-nogui")) as i32 as boolean;
-    if exit_gui_popup != 0 && !I_ConsoleStdout() {
+    exit_gui_popup = !M_ParmExists("-nogui");
+    if exit_gui_popup && !I_ConsoleStdout() {
         ZenityErrorBox(message_cstring.as_ptr() as *mut ::core::ffi::c_char);
     }
     exit(-(1 as i32));

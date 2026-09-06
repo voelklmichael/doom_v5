@@ -39,7 +39,6 @@ use crate::src::d_mode::{GameMission_t, doom, doom2, pack_chex, pack_hacx, pack_
 use crate::src::d_event::ev_keydown;
 use crate::src::d_event::{GS_FINALE, gamestate_t};
 use crate::src::d_event::{ga_nothing, ga_worlddone};
-use crate::src::doomdef::boolean;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
@@ -1845,7 +1844,7 @@ pub unsafe extern "C" fn F_CastDrawer() {
     let mut sprdef: *mut spritedef_t = ::core::ptr::null_mut::<spritedef_t>();
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
     let mut lump: i32 = 0;
-    let mut flip: boolean = 0;
+    let mut flip: bool = false;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     V_DrawPatch(
         0 as i32,
@@ -1860,10 +1859,10 @@ pub unsafe extern "C" fn F_CastDrawer() {
         .spriteframes
         .offset(((*caststate).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
     lump = (*sprframe).lump[0 as i32 as usize] as i32;
-    flip = (*sprframe).flip[0 as i32 as usize] as boolean;
+    flip = (*sprframe).flip[0 as i32 as usize] != 0;
     patch = W_CacheLumpNum(lump + firstspritelump, PU_CACHE as i32)
         as *mut patch_t;
-    if flip != 0 {
+    if flip {
         V_DrawPatchFlipped(160 as i32, 170 as i32, patch);
     } else {
         V_DrawPatch(160 as i32, 170 as i32, patch);

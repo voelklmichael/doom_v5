@@ -1961,7 +1961,7 @@ pub static mut viletryy: fixed_t = 0;
 #[no_mangle]
 pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
     let mut maxdist: i32 = 0;
-    let mut check: boolean = 0;
+    let mut check: bool = false;
     if (*thing).flags & MF_CORPSE as i32 == 0 {
         return true_0 as boolean;
     }
@@ -1983,9 +1983,9 @@ pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
     (*corpsehit).momy = 0 as i32 as fixed_t;
     (*corpsehit).momx = (*corpsehit).momy;
     (*corpsehit).height <<= 2 as i32;
-    check = P_CheckPosition(corpsehit, (*corpsehit).x, (*corpsehit).y) as i32 as boolean;
+    check = P_CheckPosition(corpsehit, (*corpsehit).x, (*corpsehit).y);
     (*corpsehit).height >>= 2 as i32;
-    if check == 0 {
+    if !check {
         return true_0 as boolean;
     }
     return false_0 as boolean;
