@@ -788,7 +788,12 @@ static mut bp: [*mut patch_t; 4] = [::core::ptr::null::<patch_t>() as *mut patch
 static mut lnames: *mut *mut patch_t = ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t;
 static mut background: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 pub unsafe fn WI_slamBackground() {
-    V_DrawPatch(0 as i32, 0 as i32, background);
+    V_DrawPatch(
+        unsafe { &mut game_state().v_video },
+        0 as i32,
+        0 as i32,
+        background,
+    );
 }
 pub unsafe fn WI_Responder(mut ev: *mut event_t) -> bool {
     return false;
@@ -797,12 +802,14 @@ pub unsafe fn WI_drawLF() {
     let mut y: i32 = WI_TITLEY;
     if gamemode as u32 != commercial as i32 as u32 || (*wbs).last < NUMCMAPS {
         V_DrawPatch(
+            unsafe { &mut game_state().v_video },
             (SCREENWIDTH - (**lnames.offset((*wbs).last as isize)).width as i32) / 2 as i32,
             y,
             *lnames.offset((*wbs).last as isize),
         );
         y += 5 as i32 * (**lnames.offset((*wbs).last as isize)).height as i32 / 4 as i32;
         V_DrawPatch(
+            unsafe { &mut game_state().v_video },
             (SCREENWIDTH - (*finished).width as i32) / 2 as i32,
             y,
             finished,
@@ -818,19 +825,26 @@ pub unsafe fn WI_drawLF() {
                     0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32,
                 ],
             };
-            V_DrawPatch(0 as i32, y, &raw mut tmp);
+            V_DrawPatch(
+                unsafe { &mut game_state().v_video },
+                0 as i32,
+                y,
+                &raw mut tmp,
+            );
         }
     }
 }
 pub unsafe fn WI_drawEL() {
     let mut y: i32 = WI_TITLEY;
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         (SCREENWIDTH - (*entering).width as i32) / 2 as i32,
         y,
         entering,
     );
     y += 5 as i32 * (**lnames.offset((*wbs).next as isize)).height as i32 / 4 as i32;
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         (SCREENWIDTH - (**lnames.offset((*wbs).next as isize)).width as i32) / 2 as i32,
         y,
         *lnames.offset((*wbs).next as isize),
@@ -862,6 +876,7 @@ pub unsafe fn WI_drawOnLnode(mut n: i32, mut c: *mut *mut patch_t) {
     }
     if fits && i < 2 as i32 {
         V_DrawPatch(
+            unsafe { &mut game_state().v_video },
             lnodes[(*wbs).epsd as usize][n as usize].x,
             lnodes[(*wbs).epsd as usize][n as usize].y,
             *c.offset(i as isize),
@@ -965,7 +980,12 @@ pub unsafe fn WI_drawAnimatedBack() {
         a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize)).offset(i as isize)
             as *mut anim_t;
         if (*a).ctr >= 0 as i32 {
-            V_DrawPatch((*a).loc.x, (*a).loc.y, (*a).p[(*a).ctr as usize]);
+            V_DrawPatch(
+                unsafe { &mut game_state().v_video },
+                (*a).loc.x,
+                (*a).loc.y,
+                (*a).p[(*a).ctr as usize],
+            );
         }
         i += 1;
     }
@@ -1000,12 +1020,17 @@ pub unsafe fn WI_drawNum(mut x: i32, mut y: i32, mut n: i32, mut digits: i32) ->
             break;
         }
         x -= fontwidth;
-        V_DrawPatch(x, y, num[(n % 10 as i32) as usize]);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            x,
+            y,
+            num[(n % 10 as i32) as usize],
+        );
         n /= 10 as i32;
     }
     if neg != 0 {
         x -= 8 as i32;
-        V_DrawPatch(x, y, wiminus);
+        V_DrawPatch(unsafe { &mut game_state().v_video }, x, y, wiminus);
     }
     return x;
 }
@@ -1013,7 +1038,7 @@ pub unsafe fn WI_drawPercent(mut x: i32, mut y: i32, mut p_0: i32) {
     if p_0 < 0 as i32 {
         return;
     }
-    V_DrawPatch(x, y, percent);
+    V_DrawPatch(unsafe { &mut game_state().v_video }, x, y, percent);
     WI_drawNum(x, y, p_0, -(1 as i32));
 }
 pub unsafe fn WI_drawTime(mut x: i32, mut y: i32, mut t: i32) {
@@ -1029,14 +1054,19 @@ pub unsafe fn WI_drawTime(mut x: i32, mut y: i32, mut t: i32) {
             x = WI_drawNum(x, y, n, 2 as i32) - (*colon).width as i32;
             div *= 60 as i32;
             if div == 60 as i32 || t / div != 0 {
-                V_DrawPatch(x, y, colon);
+                V_DrawPatch(unsafe { &mut game_state().v_video }, x, y, colon);
             }
             if !(t / div != 0) {
                 break;
             }
         }
     } else {
-        V_DrawPatch(x - (*sucks).width as i32, y, sucks);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            x - (*sucks).width as i32,
+            y,
+            sucks,
+        );
     };
 }
 pub unsafe fn WI_End() {
@@ -1260,34 +1290,49 @@ pub unsafe fn WI_drawDeathmatchStats() {
     WI_drawAnimatedBack();
     WI_drawLF();
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         DM_TOTALSX - (*total).width as i32 / 2 as i32,
         DM_MATRIXY - WI_SPACINGY + 10 as i32,
         total,
     );
-    V_DrawPatch(DM_KILLERSX, DM_KILLERSY, killers);
-    V_DrawPatch(DM_VICTIMSX, DM_VICTIMSY, victims);
+    V_DrawPatch(
+        unsafe { &mut game_state().v_video },
+        DM_KILLERSX,
+        DM_KILLERSY,
+        killers,
+    );
+    V_DrawPatch(
+        unsafe { &mut game_state().v_video },
+        DM_VICTIMSX,
+        DM_VICTIMSY,
+        victims,
+    );
     x = DM_MATRIXX + DM_SPACINGX;
     y = DM_MATRIXY;
     i = 0 as i32;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
             V_DrawPatch(
+                unsafe { &mut game_state().v_video },
                 x - (*p[i as usize]).width as i32 / 2 as i32,
                 DM_MATRIXY - WI_SPACINGY,
                 p[i as usize],
             );
             V_DrawPatch(
+                unsafe { &mut game_state().v_video },
                 DM_MATRIXX - (*p[i as usize]).width as i32 / 2 as i32,
                 y,
                 p[i as usize],
             );
             if i == me {
                 V_DrawPatch(
+                    unsafe { &mut game_state().v_video },
                     x - (*p[i as usize]).width as i32 / 2 as i32,
                     DM_MATRIXY - WI_SPACINGY,
                     bstar,
                 );
                 V_DrawPatch(
+                    unsafe { &mut game_state().v_video },
                     DM_MATRIXX - (*p[i as usize]).width as i32 / 2 as i32,
                     y,
                     star,
@@ -1526,6 +1571,7 @@ pub unsafe fn WI_drawNetgameStats() {
     WI_drawAnimatedBack();
     WI_drawLF();
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         32 as i32
             + (*star).width as i32 / 2 as i32
             + 32 as i32 * (dofrags == 0) as i32
@@ -1535,6 +1581,7 @@ pub unsafe fn WI_drawNetgameStats() {
         kills,
     );
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         32 as i32
             + (*star).width as i32 / 2 as i32
             + 32 as i32 * (dofrags == 0) as i32
@@ -1544,6 +1591,7 @@ pub unsafe fn WI_drawNetgameStats() {
         items,
     );
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         32 as i32
             + (*star).width as i32 / 2 as i32
             + 32 as i32 * (dofrags == 0) as i32
@@ -1554,6 +1602,7 @@ pub unsafe fn WI_drawNetgameStats() {
     );
     if dofrags != 0 {
         V_DrawPatch(
+            unsafe { &mut game_state().v_video },
             32 as i32
                 + (*star).width as i32 / 2 as i32
                 + 32 as i32 * (dofrags == 0) as i32
@@ -1568,9 +1617,19 @@ pub unsafe fn WI_drawNetgameStats() {
     while i < MAXPLAYERS {
         if !(playeringame[i as usize] == 0) {
             x = 32 as i32 + (*star).width as i32 / 2 as i32 + 32 as i32 * (dofrags == 0) as i32;
-            V_DrawPatch(x - (*p[i as usize]).width as i32, y, p[i as usize]);
+            V_DrawPatch(
+                unsafe { &mut game_state().v_video },
+                x - (*p[i as usize]).width as i32,
+                y,
+                p[i as usize],
+            );
             if i == me {
-                V_DrawPatch(x - (*p[i as usize]).width as i32, y, star);
+                V_DrawPatch(
+                    unsafe { &mut game_state().v_video },
+                    x - (*p[i as usize]).width as i32,
+                    y,
+                    star,
+                );
             }
             x += NG_SPACINGX;
             WI_drawPercent(x - pwidth, y + 10 as i32, cnt_kills[i as usize]);
@@ -1733,28 +1792,53 @@ pub unsafe fn WI_drawStats() {
     WI_slamBackground();
     WI_drawAnimatedBack();
     WI_drawLF();
-    V_DrawPatch(SP_STATSX, SP_STATSY, kills);
+    V_DrawPatch(
+        unsafe { &mut game_state().v_video },
+        SP_STATSX,
+        SP_STATSY,
+        kills,
+    );
     WI_drawPercent(
         SCREENWIDTH - SP_STATSX,
         SP_STATSY,
         cnt_kills[0 as i32 as usize],
     );
-    V_DrawPatch(SP_STATSX, SP_STATSY + lh, items);
+    V_DrawPatch(
+        unsafe { &mut game_state().v_video },
+        SP_STATSX,
+        SP_STATSY + lh,
+        items,
+    );
     WI_drawPercent(
         SCREENWIDTH - SP_STATSX,
         SP_STATSY + lh,
         cnt_items[0 as i32 as usize],
     );
-    V_DrawPatch(SP_STATSX, SP_STATSY + 2 as i32 * lh, sp_secret);
+    V_DrawPatch(
+        unsafe { &mut game_state().v_video },
+        SP_STATSX,
+        SP_STATSY + 2 as i32 * lh,
+        sp_secret,
+    );
     WI_drawPercent(
         SCREENWIDTH - SP_STATSX,
         SP_STATSY + 2 as i32 * lh,
         cnt_secret[0 as i32 as usize],
     );
-    V_DrawPatch(SP_TIMEX, SP_TIMEY, timepatch);
+    V_DrawPatch(
+        unsafe { &mut game_state().v_video },
+        SP_TIMEX,
+        SP_TIMEY,
+        timepatch,
+    );
     WI_drawTime(SCREENWIDTH / 2 as i32 - SP_TIMEX, SP_TIMEY, cnt_time);
     if (*wbs).epsd < 3 as i32 {
-        V_DrawPatch(SCREENWIDTH / 2 as i32 + SP_TIMEX, SP_TIMEY, par);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            SCREENWIDTH / 2 as i32 + SP_TIMEX,
+            SP_TIMEY,
+            par,
+        );
         WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
     }
 }

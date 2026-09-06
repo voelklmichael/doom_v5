@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::st_stuff::st_backing_screen;
@@ -101,6 +102,7 @@ pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut
         I_Error("drawNum: n->y - ST_Y < 0");
     }
     V_CopyRect(
+        unsafe { &mut game_state().v_video },
         x,
         (*n).y - ST_Y,
         st_backing_screen,
@@ -114,7 +116,12 @@ pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut
     }
     x = (*n).x;
     if num == 0 {
-        V_DrawPatch(x - w, (*n).y, *(*n).p.offset(0 as i32 as isize));
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            x - w,
+            (*n).y,
+            *(*n).p.offset(0 as i32 as isize),
+        );
     }
     while num != 0 && {
         let fresh0 = numdigits;
@@ -122,11 +129,21 @@ pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut
         fresh0 != 0
     } {
         x -= w;
-        V_DrawPatch(x, (*n).y, *(*n).p.offset((num % 10 as i32) as isize));
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            x,
+            (*n).y,
+            *(*n).p.offset((num % 10 as i32) as isize),
+        );
         num /= 10 as i32;
     }
     if neg != 0 {
-        V_DrawPatch(x - 8 as i32, (*n).y, state.sttminus);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            x - 8 as i32,
+            (*n).y,
+            state.sttminus,
+        );
     }
 }
 pub unsafe fn STlib_updateNum(state: &mut StLibState, mut n: *mut st_number_t, mut refresh: bool) {
@@ -152,7 +169,12 @@ pub unsafe fn STlib_updatePercent(
     mut refresh: i32,
 ) {
     if refresh != 0 && *(*per).n.on {
-        V_DrawPatch((*per).n.x, (*per).n.y, (*per).p);
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            (*per).n.x,
+            (*per).n.y,
+            (*per).p,
+        );
     }
     STlib_updateNum(state, &raw mut (*per).n, refresh != 0);
 }
@@ -185,9 +207,23 @@ pub unsafe fn STlib_updateMultIcon(mut mi: *mut st_multicon_t, mut refresh: bool
             if y - ST_Y < 0 as i32 {
                 I_Error("updateMultIcon: y - ST_Y < 0");
             }
-            V_CopyRect(x, y - ST_Y, st_backing_screen, w, h, x, y);
+            V_CopyRect(
+                unsafe { &mut game_state().v_video },
+                x,
+                y - ST_Y,
+                st_backing_screen,
+                w,
+                h,
+                x,
+                y,
+            );
         }
-        V_DrawPatch((*mi).x, (*mi).y, *(*mi).p.offset(*(*mi).inum as isize));
+        V_DrawPatch(
+            unsafe { &mut game_state().v_video },
+            (*mi).x,
+            (*mi).y,
+            *(*mi).p.offset(*(*mi).inum as isize),
+        );
         (*mi).oldinum = *(*mi).inum;
     }
 }
@@ -220,9 +256,23 @@ pub unsafe fn STlib_updateBinIcon(mut bi: *mut st_binicon_t, mut refresh: bool) 
             I_Error("updateBinIcon: y - ST_Y < 0");
         }
         if *(*bi).val {
-            V_DrawPatch((*bi).x, (*bi).y, (*bi).p);
+            V_DrawPatch(
+                unsafe { &mut game_state().v_video },
+                (*bi).x,
+                (*bi).y,
+                (*bi).p,
+            );
         } else {
-            V_CopyRect(x, y - ST_Y, st_backing_screen, w, h, x, y);
+            V_CopyRect(
+                unsafe { &mut game_state().v_video },
+                x,
+                y - ST_Y,
+                st_backing_screen,
+                w,
+                h,
+                x,
+                y,
+            );
         }
         (*bi).oldval = *(*bi).val;
     }

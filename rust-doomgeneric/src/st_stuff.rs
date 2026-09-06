@@ -382,13 +382,19 @@ pub static mut cheat_mypos: cheatseq_t = cheatseq_t {
 };
 pub unsafe fn ST_refreshBackground() {
     if st_statusbaron {
-        V_UseBuffer(st_backing_screen);
-        V_DrawPatch(ST_X, 0 as i32, sbar);
+        V_UseBuffer(unsafe { &mut game_state().v_video }, st_backing_screen);
+        V_DrawPatch(unsafe { &mut game_state().v_video }, ST_X, 0 as i32, sbar);
         if netgame {
-            V_DrawPatch(ST_FX, 0 as i32, faceback);
+            V_DrawPatch(
+                unsafe { &mut game_state().v_video },
+                ST_FX,
+                0 as i32,
+                faceback,
+            );
         }
-        V_RestoreBuffer();
+        V_RestoreBuffer(unsafe { &mut game_state().v_video });
         V_CopyRect(
+            unsafe { &mut game_state().v_video },
             ST_X,
             0 as i32,
             st_backing_screen,

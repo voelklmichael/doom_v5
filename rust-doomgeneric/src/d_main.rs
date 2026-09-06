@@ -350,6 +350,7 @@ pub unsafe fn D_Display() {
             y = viewwindowy + 4 as i32;
         }
         V_DrawPatchDirect(
+            unsafe { &mut game_state().v_video },
             viewwindowx + (scaledviewwidth - 68 as i32) / 2 as i32,
             y,
             W_CacheLumpName("M_PAUSE", PU_CACHE as i32) as *mut patch_t,
@@ -490,7 +491,7 @@ pub unsafe fn D_DoomLoop() {
     I_SetWindowTitle(gamedescription);
     I_SetGrabMouseCallback(Some(D_GrabMouseCallback as unsafe fn() -> boolean));
     I_InitGraphics();
-    V_RestoreBuffer();
+    V_RestoreBuffer(unsafe { &mut game_state().v_video });
     R_ExecuteSetViewSize();
     D_StartGameLoop();
     if testcontrols {
@@ -513,6 +514,7 @@ pub unsafe fn D_PageTicker() {
 }
 pub unsafe fn D_PageDrawer() {
     V_DrawPatch(
+        unsafe { &mut game_state().v_video },
         0 as i32,
         0 as i32,
         W_CacheLumpName(&wad_name8_to_string(pagename), PU_CACHE as i32) as *mut patch_t,

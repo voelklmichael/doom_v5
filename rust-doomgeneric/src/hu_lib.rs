@@ -3,6 +3,7 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::game_state::game_state;
 use crate::src::m_controls::KEY_BACKSPACE;
 use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_misc::__ctype_toupper_loc;
@@ -100,7 +101,12 @@ pub unsafe fn HUlib_drawTextLine(mut l: *mut hu_textline_t, mut drawcursor: bool
             if x + w > SCREENWIDTH {
                 break;
             }
-            V_DrawPatchDirect(x, (*l).y, *(*l).f.offset((c as i32 - (*l).sc) as isize));
+            V_DrawPatchDirect(
+                unsafe { &mut game_state().v_video },
+                x,
+                (*l).y,
+                *(*l).f.offset((c as i32 - (*l).sc) as isize),
+            );
             x += w;
         } else {
             x += 4 as i32;
@@ -113,7 +119,12 @@ pub unsafe fn HUlib_drawTextLine(mut l: *mut hu_textline_t, mut drawcursor: bool
     if drawcursor != 0
         && x + (**(*l).f.offset(('_' as i32 - (*l).sc) as isize)).width as i32 <= SCREENWIDTH
     {
-        V_DrawPatchDirect(x, (*l).y, *(*l).f.offset(('_' as i32 - (*l).sc) as isize));
+        V_DrawPatchDirect(
+            unsafe { &mut game_state().v_video },
+            x,
+            (*l).y,
+            *(*l).f.offset(('_' as i32 - (*l).sc) as isize),
+        );
     }
 }
 pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {

@@ -32,6 +32,7 @@ use crate::src::p_user::PUserState;
 use crate::src::sounds::SoundsState;
 use crate::src::st_lib::StLibState;
 use crate::src::statdump::StatDumpState;
+use crate::src::v_video::VVideoState;
 use crate::src::w_checksum::WChecksumState;
 use crate::src::w_file::WFileState;
 use crate::src::z_zone::ZZoneState;
@@ -58,6 +59,7 @@ pub struct GameState {
     pub sounds: SoundsState,
     pub st_lib: StLibState,
     pub statdump: StatDumpState,
+    pub v_video: VVideoState,
     pub w_checksum: WChecksumState,
     pub w_file: WFileState,
     pub z_zone: ZZoneState,
@@ -87,6 +89,7 @@ impl GameState {
             sounds: SoundsState::new(),
             st_lib: StLibState::new(),
             statdump: StatDumpState::new(),
+            v_video: VVideoState::new(),
             w_checksum: WChecksumState::new(),
             w_file: WFileState::new(),
             z_zone: ZZoneState::new(),
