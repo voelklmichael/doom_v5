@@ -1424,7 +1424,7 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
     let mut y2: fixed_t = 0;
     let mut s1: i32 = 0;
     let mut s2: i32 = 0;
-    let mut tracepositive: boolean = 0;
+    let mut tracepositive: bool = false;
     let mut dl: divline_t = divline_t {
         x: 0,
         y: 0,
@@ -1432,9 +1432,8 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boole
         dy: 0,
     };
     let mut frac: fixed_t = 0;
-    tracepositive = (trace.dx ^ trace.dy > 0 as i32) as i32
-        as boolean;
-    if tracepositive != 0 {
+    tracepositive = trace.dx ^ trace.dy > 0 as i32;
+    if tracepositive {
         x1 = (*thing).x - (*thing).radius;
         y1 = (*thing).y + (*thing).radius;
         x2 = (*thing).x + (*thing).radius;

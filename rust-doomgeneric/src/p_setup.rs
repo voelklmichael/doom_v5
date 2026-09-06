@@ -50,7 +50,6 @@ use crate::src::d_mode::commercial;
 use crate::src::d_mode::skill_t;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
-use crate::src::doomdef::boolean;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 
@@ -1427,7 +1426,7 @@ pub unsafe extern "C" fn P_LoadThings(mut lump: i32) {
         options: 0,
     };
     let mut numthings: i32 = 0;
-    let mut spawn: boolean = 0;
+    let mut spawn: bool = false;
     data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
     numthings = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapthing_t>() as usize)
@@ -1435,7 +1434,7 @@ pub unsafe extern "C" fn P_LoadThings(mut lump: i32) {
     mt = data as *mut mapthing_t;
     i = 0 as i32;
     while i < numthings {
-        spawn = true_0 as boolean;
+        spawn = true;
         if gamemode as u32
             != commercial as i32 as u32
         {
@@ -1516,12 +1515,12 @@ pub unsafe extern "C" fn P_LoadThings(mut lump: i32) {
             }
             match current_block_5 {
                 16749256938512238719 => {
-                    spawn = false_0 as boolean;
+                    spawn = false;
                 }
                 _ => {}
             }
         }
-        if spawn == false_0 as boolean {
+        if !spawn {
             break;
         }
         spawnthing.x = (*mt).x;

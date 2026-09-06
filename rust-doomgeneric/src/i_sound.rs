@@ -140,20 +140,18 @@ unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: bool) {
 }
 unsafe extern "C" fn InitMusicModule() {}
 pub unsafe fn I_InitSound(mut use_sfx_prefix: bool) {
-    let mut nosound: boolean = 0;
-    let mut nosfx: boolean = 0;
+    let mut nosound: bool = false;
+    let mut nosfx: bool = false;
     let mut nomusic: boolean = 0;
-    nosound = (M_CheckParm("-nosound") > 0 as i32) as i32
-        as boolean;
-    nosfx = (M_CheckParm("-nosfx") > 0 as i32) as i32
-        as boolean;
+    nosound = M_CheckParm("-nosound") > 0 as i32;
+    nosfx = M_CheckParm("-nosfx") > 0 as i32;
     nomusic = (M_CheckParm("-nomusic") > 0 as i32) as i32
         as boolean;
-    if nosound == 0 && !screensaver_mode {
+    if !nosound && !screensaver_mode {
         nomusic == 0
             && (snd_musicdevice == SNDDEVICE_GENMIDI as i32
                 || snd_musicdevice == SNDDEVICE_GUS as i32);
-        if nosfx == 0 {
+        if !nosfx {
             InitSfxModule(use_sfx_prefix);
         }
         if nomusic == 0 {

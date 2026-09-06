@@ -1472,7 +1472,7 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
     let mut lump: i32 = 0;
     let mut rot: u32 = 0;
-    let mut flip: boolean = 0;
+    let mut flip: bool = false;
     let mut index: i32 = 0;
     let mut vis: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut ang: angle_t = 0;
@@ -1517,10 +1517,10 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
                     .wrapping_mul(9 as u32),
             ) >> 29 as i32;
         lump = (*sprframe).lump[rot as usize] as i32;
-        flip = (*sprframe).flip[rot as usize] as boolean;
+        flip = (*sprframe).flip[rot as usize] != 0;
     } else {
         lump = (*sprframe).lump[0 as i32 as usize] as i32;
-        flip = (*sprframe).flip[0 as i32 as usize] as boolean;
+        flip = (*sprframe).flip[0 as i32 as usize] != 0;
     }
     tx -= *spriteoffset.offset(lump as isize);
     x1 = (centerxfrac + FixedMul(tx, xscale) >> FRACBITS) as i32;
@@ -1544,7 +1544,7 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
     (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
     (*vis).x2 = if x2 >= viewwidth { viewwidth - 1 as i32 } else { x2 };
     iscale = FixedDiv(FRACUNIT, xscale);
-    if flip != 0 {
+    if flip {
         (*vis).startfrac = (*spritewidth.offset(lump as isize) as i32
             - 1 as i32) as fixed_t;
         (*vis).xiscale = -iscale;
@@ -1603,7 +1603,7 @@ pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     let mut sprdef: *mut spritedef_t = ::core::ptr::null_mut::<spritedef_t>();
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
     let mut lump: i32 = 0;
-    let mut flip: boolean = 0;
+    let mut flip: bool = false;
     let mut vis: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut avis: vissprite_t = vissprite_s {
         prev: ::core::ptr::null::<vissprite_s>() as *mut vissprite_s,
@@ -1641,7 +1641,7 @@ pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
         .spriteframes
         .offset(((*(*psp).state).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
     lump = (*sprframe).lump[0 as i32 as usize] as i32;
-    flip = (*sprframe).flip[0 as i32 as usize] as boolean;
+    flip = (*sprframe).flip[0 as i32 as usize] != 0;
     tx = ((*psp).sx as i32 - 160 as i32 * FRACUNIT)
         as fixed_t;
     tx -= *spriteoffset.offset(lump as isize);
@@ -1663,7 +1663,7 @@ pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
     (*vis).x2 = if x2 >= viewwidth { viewwidth - 1 as i32 } else { x2 };
     (*vis).scale = pspritescale << detailshift;
-    if flip != 0 {
+    if flip {
         (*vis).xiscale = -pspriteiscale;
         (*vis).startfrac = (*spritewidth.offset(lump as isize) as i32
             - 1 as i32) as fixed_t;

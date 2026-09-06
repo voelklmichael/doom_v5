@@ -1251,20 +1251,20 @@ pub unsafe extern "C" fn D_Display() {
     let mut tics: i32 = 0;
     let mut wipestart: i32 = 0;
     let mut y: i32 = 0;
-    let mut done: boolean = 0;
-    let mut wipe: boolean = 0;
-    let mut redrawsbar: boolean = 0;
+    let mut done: bool = false;
+    let mut wipe: bool = false;
+    let mut redrawsbar: bool = false;
     if nodrawers {
         return;
     }
-    redrawsbar = false_0 as boolean;
+    redrawsbar = false;
     if setsizeneeded {
         R_ExecuteSetViewSize();
         oldgamestate = 4294967295 as gamestate_t;
         borderdrawcount = 3 as i32;
     }
     if gamestate as u32 != wipegamestate as u32 {
-        wipe = true_0 as boolean;
+        wipe = true;
         wipe_StartScreen(
             0 as i32,
             0 as i32,
@@ -1272,7 +1272,7 @@ pub unsafe extern "C" fn D_Display() {
             SCREENHEIGHT,
         );
     } else {
-        wipe = false_0 as boolean;
+        wipe = false;
     }
     if gamestate as u32
         == GS_LEVEL as i32 as u32 && gametic != 0
@@ -1285,17 +1285,17 @@ pub unsafe extern "C" fn D_Display() {
                 if automapactive {
                     AM_Drawer();
                 }
-                if wipe != 0
+                if wipe
                     || viewheight != 200 as i32 && fullscreen
                 {
-                    redrawsbar = true_0 as boolean;
+                    redrawsbar = true;
                 }
                 if inhelpscreensstate && !inhelpscreens {
-                    redrawsbar = true_0 as boolean;
+                    redrawsbar = true;
                 }
                 ST_Drawer(
                     viewheight == 200 as i32,
-                    redrawsbar != 0,
+                    redrawsbar,
                 );
                 fullscreen = viewheight == 200 as i32;
             }
@@ -1381,7 +1381,7 @@ pub unsafe extern "C" fn D_Display() {
     }
     M_Drawer();
     NetUpdate();
-    if wipe == 0 {
+    if !wipe {
         I_FinishUpdate();
         return;
     }
@@ -1409,11 +1409,11 @@ pub unsafe extern "C" fn D_Display() {
             SCREENWIDTH,
             SCREENHEIGHT,
             tics,
-        ) as boolean;
+        ) != 0;
         I_UpdateNoBlit();
         M_Drawer();
         I_FinishUpdate();
-        if !(done == 0) {
+        if done {
             break;
         }
     };
@@ -1863,10 +1863,10 @@ pub unsafe extern "C" fn D_IdentifyVersion() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_SetGameDescription() {
-    let mut is_freedoom: boolean = (W_CheckNumForName("FREEDOOM",
-    ) >= 0 as i32) as i32 as boolean;
-    let mut is_freedm: boolean = (W_CheckNumForName("FREEDM",
-    ) >= 0 as i32) as i32 as boolean;
+    let mut is_freedoom: bool = W_CheckNumForName("FREEDOOM",
+    ) >= 0 as i32;
+    let mut is_freedm: bool = W_CheckNumForName("FREEDM",
+    ) >= 0 as i32;
     gamedescription = b"Unknown\0" as *const u8 as *const ::core::ffi::c_char
         as *mut ::core::ffi::c_char;
     if (if gamemission as u32
@@ -1883,7 +1883,7 @@ pub unsafe extern "C" fn D_SetGameDescription() {
         })
     }) == doom as i32 as u32
     {
-        if is_freedoom != 0 {
+        if is_freedoom {
             gamedescription = GetGameName(
                 b"Freedoom: Phase 1\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
@@ -1910,8 +1910,8 @@ pub unsafe extern "C" fn D_SetGameDescription() {
                     as *mut ::core::ffi::c_char,
             );
         }
-    } else if is_freedoom != 0 {
-        if is_freedm != 0 {
+    } else if is_freedoom {
+        if is_freedm {
             gamedescription = GetGameName(
                 b"FreeDM\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,

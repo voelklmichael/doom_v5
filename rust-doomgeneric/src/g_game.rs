@@ -1501,7 +1501,7 @@ pub unsafe fn G_BuildTiccmd(
     mut maketic: i32,
 ) {
     let mut i: i32 = 0;
-    let mut strafe: boolean = 0;
+    let mut strafe: bool = false;
     let mut bstrafe: boolean = 0;
     let mut speed: i32 = 0;
     let mut tspeed: i32 = 0;
@@ -1514,10 +1514,9 @@ pub unsafe fn G_BuildTiccmd(
     );
     (*cmd).consistancy = consistancy[consoleplayer
         as usize][(maketic % BACKUPTICS) as usize];
-    strafe = (gamekeydown[key_strafe as usize] != 0
+    strafe = gamekeydown[key_strafe as usize] != 0
         || *mousebuttons.offset(mousebstrafe as isize) != 0
-        || *joybuttons.offset(joybstrafe as isize) != 0) as i32
-        as boolean;
+        || *joybuttons.offset(joybstrafe as isize) != 0;
     speed = (key_speed >= NUMKEYS || joybspeed >= MAX_JOY_BUTTONS
         || gamekeydown[key_speed as usize] != 0
         || *joybuttons.offset(joybspeed as isize) != 0) as i32;
@@ -1535,7 +1534,7 @@ pub unsafe fn G_BuildTiccmd(
     } else {
         tspeed = speed;
     }
-    if strafe != 0 {
+    if strafe {
         if gamekeydown[key_right as usize] != 0 {
             side += sidemove[speed as usize] as i32;
         }
@@ -1691,7 +1690,7 @@ pub unsafe fn G_BuildTiccmd(
         }
     }
     forward += mousey;
-    if strafe != 0 {
+    if strafe {
         side += mousex * 2 as i32;
     } else {
         (*cmd).angleturn = ((*cmd).angleturn as i32

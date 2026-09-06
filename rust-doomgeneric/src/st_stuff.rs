@@ -54,7 +54,6 @@ use crate::src::d_event::{ev_keydown, ev_keyup};
 use crate::src::d_player::{NUMWEAPONS, wp_chainsaw};
 use crate::src::d_player::{NUMAMMO, am_noammo};
 use crate::src::tables::angle_t;
-use crate::src::doomdef::boolean;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::snprintf;
@@ -1719,7 +1718,7 @@ pub unsafe extern "C" fn ST_updateFaceWidget() {
     let mut diffang: angle_t = 0;
     static mut lastattackdown: i32 = -(1 as i32);
     static mut priority: i32 = 0 as i32;
-    let mut doevilgrin: boolean = 0;
+    let mut doevilgrin: bool = false;
     if priority < 10 as i32 {
         if (*plyr).health == 0 {
             priority = 9 as i32;
@@ -1729,16 +1728,16 @@ pub unsafe extern "C" fn ST_updateFaceWidget() {
     }
     if priority < 9 as i32 {
         if (*plyr).bonuscount != 0 {
-            doevilgrin = false_0 as boolean;
+            doevilgrin = false;
             i = 0 as i32;
             while i < NUMWEAPONS as i32 {
                 if oldweaponsowned[i as usize] != (*plyr).weaponowned[i as usize] {
-                    doevilgrin = true_0 as boolean;
+                    doevilgrin = true;
                     oldweaponsowned[i as usize] = (*plyr).weaponowned[i as usize];
                 }
                 i += 1;
             }
-            if doevilgrin != 0 {
+            if doevilgrin {
                 priority = 8 as i32;
                 st_facecount = ST_EVILGRINCOUNT;
                 st_faceindex = ST_calcPainOffset() + ST_EVILGRINOFFSET;
