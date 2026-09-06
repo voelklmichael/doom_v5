@@ -756,7 +756,7 @@ pub unsafe fn G_DoLoadLevel() {
     P_SetupLevel(gameepisode, gamemap, 0 as i32, gameskill);
     displayplayer = consoleplayer;
     gameaction = ga_nothing;
-    Z_CheckHeap();
+    Z_CheckHeap(unsafe { &mut game_state().z_zone });
     memset(
         &raw mut gamekeydown as *mut boolean as *mut ::core::ffi::c_void,
         0 as i32,
@@ -1767,6 +1767,7 @@ unsafe fn IncreaseDemoBuffer() {
     current_length = demoend.offset_from(demobuffer) as i64 as i32;
     new_length = current_length * 2 as i32;
     new_demobuffer = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         new_length,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -1777,7 +1778,10 @@ unsafe fn IncreaseDemoBuffer() {
         demobuffer as *const ::core::ffi::c_void,
         current_length as size_t,
     );
-    Z_Free(demobuffer as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        demobuffer as *mut ::core::ffi::c_void,
+    );
     demobuffer = new_demobuffer;
     demo_p = new_demop;
     demoend = demobuffer.offset(new_length as isize);
@@ -1826,7 +1830,12 @@ pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     let mut maxsize: i32 = 0;
     usergame = false;
     demoname_size = strlen(name).wrapping_add(5 as size_t);
-    demoname = Z_Malloc(demoname_size as i32, PU_STATIC as i32, NULL) as *mut ::core::ffi::c_char;
+    demoname = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
+        demoname_size as i32,
+        PU_STATIC as i32,
+        NULL,
+    ) as *mut ::core::ffi::c_char;
     M_snprintf(
         demoname,
         demoname_size,
@@ -1839,7 +1848,12 @@ pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
         maxsize = atoi(myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char)
             * 1024 as i32;
     }
-    demobuffer = Z_Malloc(maxsize, PU_STATIC as i32, NULL) as *mut byte;
+    demobuffer = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
+        maxsize,
+        PU_STATIC as i32,
+        NULL,
+    ) as *mut byte;
     demoend = demobuffer.offset(maxsize as isize);
     demorecording = true;
 }
@@ -2074,7 +2088,10 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
             demobuffer as *mut ::core::ffi::c_void,
             demo_p.offset_from(demobuffer) as i64 as i32,
         );
-        Z_Free(demobuffer as *mut ::core::ffi::c_void);
+        Z_Free(
+            unsafe { &mut game_state().z_zone },
+            demobuffer as *mut ::core::ffi::c_void,
+        );
         demorecording = false;
         I_Error(&format!(
             "Demo {} recorded",

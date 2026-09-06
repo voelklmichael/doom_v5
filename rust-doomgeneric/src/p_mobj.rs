@@ -889,6 +889,7 @@ pub unsafe fn P_SpawnMobj(
     let mut st: *mut state_t = ::core::ptr::null_mut::<state_t>();
     let mut info: *mut mobjinfo_t = ::core::ptr::null_mut::<mobjinfo_t>();
     mobj = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<mobj_t>() as i32,
         PU_LEVEL as i32,
         NULL,

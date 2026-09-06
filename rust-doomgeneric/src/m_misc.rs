@@ -1,4 +1,5 @@
 use crate::src::doomdef::NULL;
+use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
 use crate::src::i_system::SEEK_SET;
@@ -85,7 +86,12 @@ pub unsafe fn M_ReadFile(mut name: *mut ::core::ffi::c_char, mut buffer: *mut *m
         ));
     }
     length = M_FileLength(handle) as i32;
-    buf = Z_Malloc(length, PU_STATIC as i32, NULL) as *mut byte;
+    buf = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
+        length,
+        PU_STATIC as i32,
+        NULL,
+    ) as *mut byte;
     count = fread(
         buf as *mut ::core::ffi::c_void,
         1 as size_t,

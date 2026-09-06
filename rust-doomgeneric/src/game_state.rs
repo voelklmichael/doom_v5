@@ -34,6 +34,7 @@ use crate::src::st_lib::StLibState;
 use crate::src::statdump::StatDumpState;
 use crate::src::w_checksum::WChecksumState;
 use crate::src::w_file::WFileState;
+use crate::src::z_zone::ZZoneState;
 
 pub struct GameState {
     pub d_event: DEventState,
@@ -59,6 +60,7 @@ pub struct GameState {
     pub statdump: StatDumpState,
     pub w_checksum: WChecksumState,
     pub w_file: WFileState,
+    pub z_zone: ZZoneState,
 }
 
 impl GameState {
@@ -87,6 +89,7 @@ impl GameState {
             statdump: StatDumpState::new(),
             w_checksum: WChecksumState::new(),
             w_file: WFileState::new(),
+            z_zone: ZZoneState::new(),
         }
     }
 }

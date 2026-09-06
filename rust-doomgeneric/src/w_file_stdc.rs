@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::i_system::FILE;
 use crate::src::i_system::SEEK_SET;
 use crate::src::i_system::{fclose, fopen, fread, fseek};
@@ -23,6 +24,7 @@ unsafe fn W_StdC_OpenFile(mut path: *mut ::core::ffi::c_char) -> *mut wad_file_t
         return ::core::ptr::null_mut::<wad_file_t>();
     }
     result = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<stdc_wad_file_t>() as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -37,7 +39,10 @@ unsafe fn W_StdC_CloseFile(mut wad: *mut wad_file_t) {
     let mut stdc_wad: *mut stdc_wad_file_t = ::core::ptr::null_mut::<stdc_wad_file_t>();
     stdc_wad = wad as *mut stdc_wad_file_t;
     fclose((*stdc_wad).fstream);
-    Z_Free(stdc_wad as *mut ::core::ffi::c_void);
+    Z_Free(
+        unsafe { &mut game_state().z_zone },
+        stdc_wad as *mut ::core::ffi::c_void,
+    );
 }
 pub unsafe fn W_StdC_Read(
     mut wad: *mut wad_file_t,

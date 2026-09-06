@@ -634,6 +634,7 @@ unsafe fn GetGameName(mut gamename: *mut ::core::ffi::c_char) -> *mut ::core::ff
             let mut version: i32 = 0;
             gamename_size = strlen(deh_sub).wrapping_add(10 as size_t);
             gamename = Z_Malloc(
+                unsafe { &mut game_state().z_zone },
                 gamename_size as i32,
                 PU_STATIC as i32,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -1063,7 +1064,7 @@ pub unsafe fn D_DoomMain() {
         b"Z_Init: Init zone memory allocation daemon. \n\0" as *const u8
             as *const ::core::ffi::c_char,
     );
-    Z_Init();
+    Z_Init(unsafe { &mut game_state().z_zone });
     nomonsters = M_CheckParm("-nomonsters") != 0;
     respawnparm = M_CheckParm("-respawn") != 0;
     fastparm = M_CheckParm("-fast") != 0;

@@ -1353,6 +1353,7 @@ pub unsafe fn ST_Stop() {
 pub unsafe fn ST_Init() {
     ST_loadData();
     st_backing_screen = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         ST_WIDTH * ST_HEIGHT,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),

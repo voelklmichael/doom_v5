@@ -166,6 +166,7 @@ pub unsafe fn EV_DoPlat(
         }
         rtn = 1 as i32;
         plat = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             ::core::mem::size_of::<plat_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),

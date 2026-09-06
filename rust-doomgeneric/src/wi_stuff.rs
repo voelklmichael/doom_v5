@@ -2050,6 +2050,7 @@ pub unsafe fn WI_loadData() {
     if gamemode as u32 == commercial as i32 as u32 {
         NUMCMAPS = 32 as i32;
         lnames = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             (::core::mem::size_of::<*mut patch_t>() as usize).wrapping_mul(NUMCMAPS as usize)
                 as i32,
             PU_STATIC as i32,
@@ -2057,6 +2058,7 @@ pub unsafe fn WI_loadData() {
         ) as *mut *mut patch_t;
     } else {
         lnames = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             (::core::mem::size_of::<*mut patch_t>() as usize).wrapping_mul(NUMMAPS as usize) as i32,
             PU_STATIC as i32,
             NULL,

@@ -218,6 +218,7 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
         }
         rtn = 1 as i32;
         floor = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             ::core::mem::size_of::<floormove_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -409,6 +410,7 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
         }
         rtn = 1 as i32;
         floor = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             ::core::mem::size_of::<floormove_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -449,6 +451,7 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
                                 sec = tsec;
                                 secnum = newsecnum;
                                 floor = Z_Malloc(
+                                    unsafe { &mut game_state().z_zone },
                                     ::core::mem::size_of::<floormove_t>() as i32,
                                     PU_LEVSPEC as i32,
                                     ::core::ptr::null_mut::<::core::ffi::c_void>(),

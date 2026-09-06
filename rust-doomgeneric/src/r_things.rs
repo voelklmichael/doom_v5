@@ -6,6 +6,7 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomstat::modifiedgame;
+use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
@@ -203,6 +204,7 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
         return;
     }
     sprites = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         (numsprites as usize).wrapping_mul(::core::mem::size_of::<spritedef_t>() as usize) as i32,
         PU_STATIC as i32,
         NULL,
@@ -283,6 +285,7 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
             (*sprites.offset(i as isize)).numframes = maxframe;
             let ref mut fresh1 = (*sprites.offset(i as isize)).spriteframes;
             *fresh1 = Z_Malloc(
+                unsafe { &mut game_state().z_zone },
                 (maxframe as usize).wrapping_mul(::core::mem::size_of::<spriteframe_t>() as usize)
                     as i32,
                 PU_STATIC as i32,

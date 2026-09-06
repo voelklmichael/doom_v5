@@ -3,6 +3,7 @@ use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomstat::gamemode;
+use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::i_video::I_VideoBuffer;
@@ -287,6 +288,7 @@ pub unsafe fn R_DrawTranslatedColumnLow() {
 pub unsafe fn R_InitTranslationTables() {
     let mut i: i32 = 0;
     translationtables = Z_Malloc(
+        unsafe { &mut game_state().z_zone },
         256 as i32 * 3 as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -430,13 +432,17 @@ pub unsafe fn R_FillBackScreen() {
     let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     if scaledviewwidth == SCREENWIDTH {
         if !background_buffer.is_null() {
-            Z_Free(background_buffer as *mut ::core::ffi::c_void);
+            Z_Free(
+                unsafe { &mut game_state().z_zone },
+                background_buffer as *mut ::core::ffi::c_void,
+            );
             background_buffer = ::core::ptr::null_mut::<byte>();
         }
         return;
     }
     if background_buffer.is_null() {
         background_buffer = Z_Malloc(
+            unsafe { &mut game_state().z_zone },
             SCREENWIDTH * (SCREENHEIGHT - SBARHEIGHT),
             PU_STATIC as i32,
             NULL,
