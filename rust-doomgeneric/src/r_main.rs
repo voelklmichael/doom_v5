@@ -51,7 +51,7 @@ use crate::src::r_draw::{
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const FRACBITS: i32 = 16 as i32;
 pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const FINEANGLES: i32 = 8192 as i32;
+pub const FINEANGLES: i32 = 8192;
 pub const ANGLETOFINESHIFT: i32 = 19 as i32;
 pub const ANG90: i32 = 0x40000000 as i32;
 pub const ANG180: u32 = 0x80000000 as u32;

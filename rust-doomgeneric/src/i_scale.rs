@@ -30,7 +30,7 @@ pub struct screen_mode_t {
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const INT_MAX: i32 = __INT_MAX__;
+pub const INT_MAX: i32 = i32::MAX;
 pub const SCREENWIDTH: i32 = 320 as i32;
 pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const SCREENWIDTH_4_3: i32 = 256 as i32;
@@ -2000,4 +2000,3 @@ pub static mut mode_squash_5x: screen_mode_t = unsafe {
         poor_quality: false,
     }
 };
-pub const __INT_MAX__: i32 = 2147483647 as i32;

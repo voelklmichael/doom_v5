@@ -91,7 +91,7 @@ pub struct islope_t {
     pub slp: fixed_t,
     pub islp: fixed_t,
 }
-pub const INT_MAX: i32 = __INT_MAX__;
+pub const INT_MAX: i32 = i32::MAX;
 pub const MAXPLAYERS: i32 = 4 as i32;
 pub const FRACBITS: i32 = 16 as i32;
 pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
@@ -1542,7 +1542,6 @@ pub unsafe fn AM_Drawer() {
     AM_drawMarks();
     V_MarkRect(f_x, f_y, f_w, f_h);
 }
-pub const __INT_MAX__: i32 = 2147483647 as i32;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 unsafe extern "C" fn run_static_initializers() {

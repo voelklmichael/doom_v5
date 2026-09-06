@@ -566,8 +566,8 @@ pub struct degenmobj_t {
 }
 pub type line_t = line_s;
 pub type subsector_t = subsector_s;
-pub const INT_MAX: i32 = __INT_MAX__;
-pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
+pub const INT_MAX: i32 = i32::MAX;
+pub const INT_MIN: i32 = i32::MIN;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
@@ -1405,6 +1405,5 @@ pub unsafe fn P_SpawnPlayerMissile(
     (*th).momz = FixedMul((*(*th).info).speed as fixed_t, slope);
     P_CheckMissileSpawn(th);
 }
-pub const __INT_MAX__: i32 = 2147483647 as i32;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;

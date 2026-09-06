@@ -41,7 +41,7 @@ pub const false_0: i32 = 0 as i32;
 pub const TICRATE: i32 = 35 as i32;
 pub const MAXPLAYERS: i32 = 4 as i32;
 pub const KEY_ESCAPE: i32 = 27 as i32;
-pub const KEY_ENTER: i32 = 13 as i32;
+pub const KEY_ENTER: i32 = 13;
 pub const KEY_RSHIFT: i32 = 0x80 as i32
     + 0x36 as i32;
 pub const KEY_RALT: i32 = 0x80 as i32

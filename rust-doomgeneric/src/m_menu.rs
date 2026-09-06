@@ -160,7 +160,7 @@ pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 pub const KEY_ESCAPE: i32 = 27 as i32;
 pub const KEY_ENTER: i32 = 13;
-pub const KEY_BACKSPACE: i32 = 127;
+pub const KEY_BACKSPACE: i32 = 0x7f;
 pub const KEY_PAUSE: i32 = 0xff as i32;
 pub const KEY_CAPSLOCK: i32 = 0x80 as i32
     + 0x3a as i32;

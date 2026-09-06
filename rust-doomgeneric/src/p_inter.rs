@@ -55,7 +55,7 @@ pub const INVULNTICS: C2RustUnnamed_0 = 1050;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
-pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
+pub const INT_MIN: i32 = i32::MIN;
 pub const DEH_DEFAULT_MAX_HEALTH: i32 = 200 as i32;
 pub const DEH_DEFAULT_MAX_ARMOR: i32 = 200 as i32;
 pub const DEH_DEFAULT_GREEN_ARMOR_CLASS: i32 = 1 as i32;
@@ -886,7 +886,6 @@ pub unsafe fn P_DamageMobj(
         }
     }
 }
-pub const __INT_MAX__: i32 = 2147483647 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
