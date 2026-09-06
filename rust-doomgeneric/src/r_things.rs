@@ -1,83 +1,83 @@
-use crate::src::r_data::column_t;
-use crate::src::r_defs::{drawseg_t, spritedef_t, spriteframe_t};
-use crate::src::hu_lib::patch_t;
-use crate::src::p_mobj::sector_t;
-use crate::src::p_mobj::{mobj_t, pspdef_t};
-use crate::src::i_system::I_Error;
-use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
-use crate::src::r_data::spritewidth;
-use crate::src::r_data::spriteoffset;
-use crate::src::r_data::spritetopoffset;
-use crate::src::r_data::lastspritelump;
-use crate::src::r_main::viewplayer;
-use crate::src::r_main::viewcos;
-use crate::src::r_main::viewsin;
-use crate::src::r_main::projection;
-use crate::src::r_main::transcolfunc;
-use crate::src::r_main::basecolfunc;
-use crate::src::r_main::fuzzcolfunc;
-use crate::src::r_main::R_PointOnSegSide;
-use crate::src::r_segs::R_RenderMaskedSegRange;
-use crate::src::r_draw::translationtables;
-use crate::src::r_draw::dc_translation;
-use crate::src::doomstat::modifiedgame;
-use crate::src::r_data::firstspritelump;
-use crate::src::r_main::viewangleoffset;
-use crate::src::r_main::centerxfrac;
-use crate::src::r_main::centeryfrac;
-use crate::src::r_main::detailshift;
-use crate::src::r_main::scalelight;
-use crate::src::r_bsp::drawsegs;
-use crate::src::r_bsp::ds_p;
-use crate::src::r_draw::dc_colormap;
-use crate::src::r_draw::dc_x;
-use crate::src::r_draw::dc_yl;
-use crate::src::r_draw::dc_yh;
-use crate::src::r_draw::dc_iscale;
-use crate::src::r_draw::dc_texturemid;
-use crate::src::r_draw::dc_source;
-use crate::src::r_main::fixedcolormap;
-use crate::src::r_main::viewx;
-use crate::src::r_main::viewy;
-use crate::src::r_main::extralight;
-use crate::src::r_main::colfunc;
-use crate::src::r_data::colormaps;
-use crate::src::r_main::viewz;
-use crate::src::w_wad::lumpinfo;
-use crate::src::r_main::validcount;
-use crate::src::r_draw::viewwidth;
-use crate::src::r_draw::viewheight;
-use crate::src::m_fixed::FixedDiv;
-use crate::src::m_fixed::FixedMul;
-use crate::src::r_main::R_PointToAngle;
-use crate::src::w_wad::W_CacheLumpNum;
-use crate::src::z_zone::Z_Malloc;
-use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use crate::src::p_mobj::{MF_SHADOW, MF_TRANSLATION, MF_TRANSSHIFT};
 use crate::src::d_player::pw_invisibility;
 use crate::src::d_player::NUMPSPRITES;
-use crate::src::tables::angle_t;
-use crate::src::m_fixed::fixed_t;
-use crate::src::r_defs::lighttable_t;
 use crate::src::doomdef::boolean;
-use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
-use libc::{memcpy, memset};
-use libc::strncasecmp;
-use crate::src::doomdef::NULL;
-use crate::src::doomdef::true_0;
 use crate::src::doomdef::false_0;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomstat::modifiedgame;
+use crate::src::hu_lib::patch_t;
+use crate::src::i_system::I_Error;
+use crate::src::m_fixed::fixed_t;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::m_fixed::FixedMul;
+use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
-use crate::src::tables::ANG45;
 use crate::src::m_fixed::INT_MAX;
-use crate::src::r_segs::SIL_BOTTOM;
-use crate::src::r_segs::SIL_TOP;
-use crate::src::r_main::MAXLIGHTSCALE;
+use crate::src::p_mobj::sector_t;
+use crate::src::p_mobj::{mobj_t, pspdef_t};
+use crate::src::p_mobj::{MF_SHADOW, MF_TRANSLATION, MF_TRANSSHIFT};
+use crate::src::r_bsp::drawsegs;
+use crate::src::r_bsp::ds_p;
+use crate::src::r_data::colormaps;
+use crate::src::r_data::column_t;
+use crate::src::r_data::firstspritelump;
+use crate::src::r_data::lastspritelump;
+use crate::src::r_data::spriteoffset;
+use crate::src::r_data::spritetopoffset;
+use crate::src::r_data::spritewidth;
+use crate::src::r_defs::lighttable_t;
+use crate::src::r_defs::{drawseg_t, spritedef_t, spriteframe_t};
+use crate::src::r_draw::dc_colormap;
+use crate::src::r_draw::dc_iscale;
+use crate::src::r_draw::dc_source;
+use crate::src::r_draw::dc_texturemid;
+use crate::src::r_draw::dc_translation;
+use crate::src::r_draw::dc_x;
+use crate::src::r_draw::dc_yh;
+use crate::src::r_draw::dc_yl;
+use crate::src::r_draw::translationtables;
+use crate::src::r_draw::viewheight;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_main::basecolfunc;
+use crate::src::r_main::centerxfrac;
+use crate::src::r_main::centeryfrac;
+use crate::src::r_main::colfunc;
+use crate::src::r_main::detailshift;
+use crate::src::r_main::extralight;
+use crate::src::r_main::fixedcolormap;
+use crate::src::r_main::fuzzcolfunc;
+use crate::src::r_main::projection;
+use crate::src::r_main::scalelight;
+use crate::src::r_main::transcolfunc;
+use crate::src::r_main::validcount;
+use crate::src::r_main::viewangleoffset;
+use crate::src::r_main::viewcos;
+use crate::src::r_main::viewplayer;
+use crate::src::r_main::viewsin;
+use crate::src::r_main::viewx;
+use crate::src::r_main::viewy;
+use crate::src::r_main::viewz;
+use crate::src::r_main::R_PointOnSegSide;
+use crate::src::r_main::R_PointToAngle;
+use crate::src::r_main::LIGHTLEVELS;
 use crate::src::r_main::LIGHTSCALESHIFT;
 use crate::src::r_main::LIGHTSEGSHIFT;
-use crate::src::r_main::LIGHTLEVELS;
-use crate::src::m_fixed::FRACBITS;
+use crate::src::r_main::MAXLIGHTSCALE;
+use crate::src::r_segs::R_RenderMaskedSegRange;
+use crate::src::r_segs::SIL_BOTTOM;
+use crate::src::r_segs::SIL_TOP;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
+use crate::src::tables::angle_t;
+use crate::src::tables::ANG45;
+use crate::src::w_wad::lumpinfo;
+use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::z_zone::Z_Malloc;
+use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use libc::strncasecmp;
+use libc::{memcpy, memset};
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -107,13 +107,11 @@ pub const BASEYCENTER: i32 = 100;
 pub static mut pspritescale: fixed_t = 0;
 pub static mut pspriteiscale: fixed_t = 0;
 #[no_mangle]
-pub static mut spritelights: *mut *mut lighttable_t = ::core::ptr::null::<
-    *mut lighttable_t,
->() as *mut *mut lighttable_t;
+pub static mut spritelights: *mut *mut lighttable_t =
+    ::core::ptr::null::<*mut lighttable_t>() as *mut *mut lighttable_t;
 pub static mut negonearray: [i16; 320] = [0; 320];
 pub static mut screenheightarray: [i16; 320] = [0; 320];
-pub static mut sprites: *mut spritedef_t = ::core::ptr::null::<spritedef_t>()
-    as *mut spritedef_t;
+pub static mut sprites: *mut spritedef_t = ::core::ptr::null::<spritedef_t>() as *mut spritedef_t;
 pub static mut numsprites: i32 = 0;
 #[no_mangle]
 pub static mut sprtemp: [spriteframe_t; 29] = [spriteframe_t {
@@ -124,9 +122,8 @@ pub static mut sprtemp: [spriteframe_t; 29] = [spriteframe_t {
 #[no_mangle]
 pub static mut maxframe: i32 = 0;
 #[no_mangle]
-pub static mut spritename: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
+pub static mut spritename: *mut ::core::ffi::c_char =
+    ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char;
 pub unsafe fn R_InstallSpriteLump(
     mut lump: i32,
     mut frame: u32,
@@ -135,7 +132,10 @@ pub unsafe fn R_InstallSpriteLump(
 ) {
     let mut r: i32 = 0;
     if frame >= 29 as u32 || rotation > 8 as u32 {
-        I_Error(&format!("R_InstallSpriteLump: Bad frame characters in lump {}", lump));
+        I_Error(&format!(
+            "R_InstallSpriteLump: Bad frame characters in lump {}",
+            lump
+        ));
     }
     if frame as i32 > maxframe {
         maxframe = frame as i32;
@@ -158,8 +158,7 @@ pub unsafe fn R_InstallSpriteLump(
         sprtemp[frame as usize].rotate = false_0 as boolean;
         r = 0 as i32;
         while r < 8 as i32 {
-            sprtemp[frame as usize].lump[r as usize] = (lump - firstspritelump)
-                as i16;
+            sprtemp[frame as usize].lump[r as usize] = (lump - firstspritelump) as i16;
             sprtemp[frame as usize].flip[r as usize] = flipped as byte;
             r += 1;
         }
@@ -174,9 +173,7 @@ pub unsafe fn R_InstallSpriteLump(
     }
     sprtemp[frame as usize].rotate = true_0 as boolean;
     rotation = rotation.wrapping_sub(1);
-    if sprtemp[frame as usize].lump[rotation as usize] as i32
-        != -(1 as i32)
-    {
+    if sprtemp[frame as usize].lump[rotation as usize] as i32 != -(1 as i32) {
         I_Error(&format!(
             "R_InitSprites: Sprite {} : {} : {} has two lumps mapped to it",
             ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
@@ -184,14 +181,12 @@ pub unsafe fn R_InstallSpriteLump(
             ('1' as i32 as u32).wrapping_add(rotation) as u8 as char,
         ));
     }
-    sprtemp[frame as usize].lump[rotation as usize] = (lump - firstspritelump)
-        as i16;
+    sprtemp[frame as usize].lump[rotation as usize] = (lump - firstspritelump) as i16;
     sprtemp[frame as usize].flip[rotation as usize] = flipped as byte;
 }
 pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
-    let mut check: *mut *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        *mut ::core::ffi::c_char,
-    >();
+    let mut check: *mut *mut ::core::ffi::c_char =
+        ::core::ptr::null_mut::<*mut ::core::ffi::c_char>();
     let mut i: i32 = 0;
     let mut l: i32 = 0;
     let mut frame: i32 = 0;
@@ -203,15 +198,12 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
     while !(*check).is_null() {
         check = check.offset(1);
     }
-    numsprites = check.offset_from(namelist) as i64
-        as i32;
+    numsprites = check.offset_from(namelist) as i64 as i32;
     if numsprites == 0 {
         return;
     }
     sprites = Z_Malloc(
-        (numsprites as usize)
-            .wrapping_mul(::core::mem::size_of::<spritedef_t>() as usize)
-            as i32,
+        (numsprites as usize).wrapping_mul(::core::mem::size_of::<spritedef_t>() as usize) as i32,
         PU_STATIC as i32,
         NULL,
     ) as *mut spritedef_t;
@@ -234,43 +226,24 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
                 4 as size_t,
             ) == 0
             {
-                frame = (*lumpinfo.offset(l as isize))
-                    .name[4 as i32 as usize] as i32
-                    - 'A' as i32;
-                rotation = (*lumpinfo.offset(l as isize))
-                    .name[5 as i32 as usize] as i32
-                    - '0' as i32;
+                frame = (*lumpinfo.offset(l as isize)).name[4 as i32 as usize] as i32 - 'A' as i32;
+                rotation =
+                    (*lumpinfo.offset(l as isize)).name[5 as i32 as usize] as i32 - '0' as i32;
                 if modifiedgame {
-                    patched = W_GetNumForName(
-                        &wad_name8_to_string(
-                            &raw const (*lumpinfo.offset(l as isize)).name
-                                as *const ::core::ffi::c_char,
-                        ),
-                    );
+                    patched = W_GetNumForName(&wad_name8_to_string(
+                        &raw const (*lumpinfo.offset(l as isize)).name
+                            as *const ::core::ffi::c_char,
+                    ));
                 } else {
                     patched = l;
                 }
-                R_InstallSpriteLump(
-                    patched,
-                    frame as u32,
-                    rotation as u32,
-                    false,
-                );
-                if (*lumpinfo.offset(l as isize)).name[6 as i32 as usize]
-                    != 0
-                {
-                    frame = (*lumpinfo.offset(l as isize))
-                        .name[6 as i32 as usize] as i32
-                        - 'A' as i32;
-                    rotation = (*lumpinfo.offset(l as isize))
-                        .name[7 as i32 as usize] as i32
-                        - '0' as i32;
-                    R_InstallSpriteLump(
-                        l,
-                        frame as u32,
-                        rotation as u32,
-                        true,
-                    );
+                R_InstallSpriteLump(patched, frame as u32, rotation as u32, false);
+                if (*lumpinfo.offset(l as isize)).name[6 as i32 as usize] != 0 {
+                    frame =
+                        (*lumpinfo.offset(l as isize)).name[6 as i32 as usize] as i32 - 'A' as i32;
+                    rotation =
+                        (*lumpinfo.offset(l as isize)).name[7 as i32 as usize] as i32 - '0' as i32;
+                    R_InstallSpriteLump(l, frame as u32, rotation as u32, true);
                 }
             }
             l += 1;
@@ -292,8 +265,7 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
                     1 => {
                         rotation = 0 as i32;
                         while rotation < 8 as i32 {
-                            if sprtemp[frame as usize].lump[rotation as usize]
-                                as i32 == -(1 as i32)
+                            if sprtemp[frame as usize].lump[rotation as usize] as i32 == -(1 as i32)
                             {
                                 I_Error(&format!(
                                     "R_InitSprites: Sprite {} frame {} is missing rotations",
@@ -311,8 +283,7 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
             (*sprites.offset(i as isize)).numframes = maxframe;
             let ref mut fresh1 = (*sprites.offset(i as isize)).spriteframes;
             *fresh1 = Z_Malloc(
-                (maxframe as usize)
-                    .wrapping_mul(::core::mem::size_of::<spriteframe_t>() as usize)
+                (maxframe as usize).wrapping_mul(::core::mem::size_of::<spriteframe_t>() as usize)
                     as i32,
                 PU_STATIC as i32,
                 NULL,
@@ -346,8 +317,8 @@ pub static mut vissprites: [vissprite_t; 128] = [vissprite_s {
     mobjflags: 0,
 }; 128];
 #[no_mangle]
-pub static mut vissprite_p: *mut vissprite_t = ::core::ptr::null::<vissprite_t>()
-    as *mut vissprite_t;
+pub static mut vissprite_p: *mut vissprite_t =
+    ::core::ptr::null::<vissprite_t>() as *mut vissprite_t;
 #[no_mangle]
 pub static mut newvissprite: i32 = 0;
 pub unsafe fn R_InitSprites(mut namelist: *mut *mut ::core::ffi::c_char) {
@@ -390,12 +361,8 @@ pub unsafe fn R_NewVisSprite() -> *mut vissprite_t {
     vissprite_p = vissprite_p.offset(1);
     return vissprite_p.offset(-(1 as i32 as isize));
 }
-pub static mut mfloorclip: *mut i16 = ::core::ptr::null::<
-    i16,
->() as *mut i16;
-pub static mut mceilingclip: *mut i16 = ::core::ptr::null::<
-    i16,
->() as *mut i16;
+pub static mut mfloorclip: *mut i16 = ::core::ptr::null::<i16>() as *mut i16;
+pub static mut mceilingclip: *mut i16 = ::core::ptr::null::<i16>() as *mut i16;
 pub static mut spryscale: fixed_t = 0;
 pub static mut sprtopscreen: fixed_t = 0;
 pub unsafe fn R_DrawMaskedColumn(mut column: *mut column_t) {
@@ -404,24 +371,20 @@ pub unsafe fn R_DrawMaskedColumn(mut column: *mut column_t) {
     let mut basetexturemid: fixed_t = 0;
     basetexturemid = dc_texturemid;
     while (*column).topdelta as i32 != 0xff as i32 {
-        topscreen = sprtopscreen as i32
-            + spryscale as i32 * (*column).topdelta as i32;
-        bottomscreen = topscreen
-            + spryscale as i32 * (*column).length as i32;
+        topscreen = sprtopscreen as i32 + spryscale as i32 * (*column).topdelta as i32;
+        bottomscreen = topscreen + spryscale as i32 * (*column).length as i32;
         dc_yl = topscreen + FRACUNIT - 1 as i32 >> FRACBITS;
         dc_yh = bottomscreen - 1 as i32 >> FRACBITS;
         if dc_yh >= *mfloorclip.offset(dc_x as isize) as i32 {
-            dc_yh = *mfloorclip.offset(dc_x as isize) as i32
-                - 1 as i32;
+            dc_yh = *mfloorclip.offset(dc_x as isize) as i32 - 1 as i32;
         }
         if dc_yl <= *mceilingclip.offset(dc_x as isize) as i32 {
-            dc_yl = *mceilingclip.offset(dc_x as isize) as i32
-                + 1 as i32;
+            dc_yl = *mceilingclip.offset(dc_x as isize) as i32 + 1 as i32;
         }
         if dc_yl <= dc_yh {
             dc_source = (column as *mut byte).offset(3 as i32 as isize);
-            dc_texturemid = (basetexturemid as i32
-                - (((*column).topdelta as i32) << FRACBITS)) as fixed_t;
+            dc_texturemid =
+                (basetexturemid as i32 - (((*column).topdelta as i32) << FRACBITS)) as fixed_t;
             colfunc.expect("non-null function pointer")();
         }
         column = (column as *mut byte)
@@ -430,31 +393,21 @@ pub unsafe fn R_DrawMaskedColumn(mut column: *mut column_t) {
     }
     dc_texturemid = basetexturemid;
 }
-pub unsafe fn R_DrawVisSprite(
-    mut vis: *mut vissprite_t,
-    mut x1: i32,
-    mut x2: i32,
-) {
+pub unsafe fn R_DrawVisSprite(mut vis: *mut vissprite_t, mut x1: i32, mut x2: i32) {
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
     let mut texturecolumn: i32 = 0;
     let mut frac: fixed_t = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    patch = W_CacheLumpNum(
-        (*vis).patch + firstspritelump,
-        PU_CACHE as i32,
-    ) as *mut patch_t;
+    patch = W_CacheLumpNum((*vis).patch + firstspritelump, PU_CACHE as i32) as *mut patch_t;
     dc_colormap = (*vis).colormap;
     if dc_colormap.is_null() {
         colfunc = fuzzcolfunc;
     } else if (*vis).mobjflags & MF_TRANSLATION as i32 != 0 {
         colfunc = transcolfunc;
-        dc_translation = translationtables
-            .offset(-(256 as i32 as isize))
-            .offset(
-                (((*vis).mobjflags & MF_TRANSLATION as i32)
-                    >> MF_TRANSSHIFT as i32 - 8 as i32)
-                    as isize,
-            );
+        dc_translation = translationtables.offset(-(256 as i32 as isize)).offset(
+            (((*vis).mobjflags & MF_TRANSLATION as i32) >> MF_TRANSSHIFT as i32 - 8 as i32)
+                as isize,
+        );
     }
     dc_iscale = (((*vis).xiscale as i32).abs() >> detailshift) as fixed_t;
     dc_texturemid = (*vis).texturemid;
@@ -464,16 +417,12 @@ pub unsafe fn R_DrawVisSprite(
     dc_x = (*vis).x1;
     while dc_x <= (*vis).x2 {
         texturecolumn = (frac >> FRACBITS) as i32;
-        if texturecolumn < 0 as i32
-            || texturecolumn >= (*patch).width as i32
-        {
+        if texturecolumn < 0 as i32 || texturecolumn >= (*patch).width as i32 {
             I_Error("R_DrawSpriteRange: bad texturecolumn");
         }
-        column = (patch as *mut byte)
-            .offset(
-                *(&raw const (*patch).columnofs as *const i32)
-                    .offset(texturecolumn as isize) as isize,
-            ) as *mut column_t;
+        column = (patch as *mut byte).offset(
+            *(&raw const (*patch).columnofs as *const i32).offset(texturecolumn as isize) as isize,
+        ) as *mut column_t;
         R_DrawMaskedColumn(column);
         dc_x += 1;
         frac += (*vis).xiscale;
@@ -528,16 +477,15 @@ pub unsafe fn R_ProjectSprite(mut thing: *mut mobj_t) {
             (*thing).frame,
         ));
     }
-    sprframe = (*sprdef).spriteframes.offset(((*thing).frame & FF_FRAMEMASK) as isize)
-        as *mut spriteframe_t;
+    sprframe = (*sprdef)
+        .spriteframes
+        .offset(((*thing).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
     if (*sprframe).rotate != 0 {
         ang = R_PointToAngle((*thing).x, (*thing).y);
         rot = (ang as u32)
             .wrapping_sub((*thing).angle as u32)
-            .wrapping_add(
-                ((ANG45 / 2 as i32) as u32)
-                    .wrapping_mul(9 as u32),
-            ) >> 29 as i32;
+            .wrapping_add(((ANG45 / 2 as i32) as u32).wrapping_mul(9 as u32))
+            >> 29 as i32;
         lump = (*sprframe).lump[rot as usize] as i32;
         flip = (*sprframe).flip[rot as usize] != 0;
     } else {
@@ -550,8 +498,7 @@ pub unsafe fn R_ProjectSprite(mut thing: *mut mobj_t) {
         return;
     }
     tx += *spritewidth.offset(lump as isize);
-    x2 = (centerxfrac as i32 + FixedMul(tx, xscale) as i32
-        >> FRACBITS) - 1 as i32;
+    x2 = (centerxfrac as i32 + FixedMul(tx, xscale) as i32 >> FRACBITS) - 1 as i32;
     if x2 < 0 as i32 {
         return;
     }
@@ -564,11 +511,14 @@ pub unsafe fn R_ProjectSprite(mut thing: *mut mobj_t) {
     (*vis).gzt = (*thing).z + *spritetopoffset.offset(lump as isize);
     (*vis).texturemid = (*vis).gzt - viewz;
     (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
-    (*vis).x2 = if x2 >= viewwidth { viewwidth - 1 as i32 } else { x2 };
+    (*vis).x2 = if x2 >= viewwidth {
+        viewwidth - 1 as i32
+    } else {
+        x2
+    };
     iscale = FixedDiv(FRACUNIT, xscale);
     if flip {
-        (*vis).startfrac = (*spritewidth.offset(lump as isize) as i32
-            - 1 as i32) as fixed_t;
+        (*vis).startfrac = (*spritewidth.offset(lump as isize) as i32 - 1 as i32) as fixed_t;
         (*vis).xiscale = -iscale;
     } else {
         (*vis).startfrac = 0 as i32 as fixed_t;
@@ -643,8 +593,7 @@ pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
         colormap: ::core::ptr::null::<lighttable_t>() as *mut lighttable_t,
         mobjflags: 0,
     };
-    if (*(*psp).state).sprite as u32 >= numsprites as u32
-    {
+    if (*(*psp).state).sprite as u32 >= numsprites as u32 {
         I_Error(&format!(
             "R_ProjectSprite: invalid sprite number {} ",
             (*(*psp).state).sprite as u32,
@@ -660,20 +609,18 @@ pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     }
     sprframe = (*sprdef)
         .spriteframes
-        .offset(((*(*psp).state).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
+        .offset(((*(*psp).state).frame & FF_FRAMEMASK) as isize)
+        as *mut spriteframe_t;
     lump = (*sprframe).lump[0 as i32 as usize] as i32;
     flip = (*sprframe).flip[0 as i32 as usize] != 0;
-    tx = ((*psp).sx as i32 - 160 as i32 * FRACUNIT)
-        as fixed_t;
+    tx = ((*psp).sx as i32 - 160 as i32 * FRACUNIT) as fixed_t;
     tx -= *spriteoffset.offset(lump as isize);
     x1 = (centerxfrac + FixedMul(tx, pspritescale) >> FRACBITS) as i32;
     if x1 > viewwidth {
         return;
     }
     tx += *spritewidth.offset(lump as isize);
-    x2 = (centerxfrac as i32
-        + FixedMul(tx, pspritescale) as i32 >> FRACBITS)
-        - 1 as i32;
+    x2 = (centerxfrac as i32 + FixedMul(tx, pspritescale) as i32 >> FRACBITS) - 1 as i32;
     if x2 < 0 as i32 {
         return;
     }
@@ -682,12 +629,15 @@ pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     (*vis).texturemid = (BASEYCENTER << FRACBITS) + FRACUNIT / 2 as fixed_t
         - ((*psp).sy - *spritetopoffset.offset(lump as isize));
     (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
-    (*vis).x2 = if x2 >= viewwidth { viewwidth - 1 as i32 } else { x2 };
+    (*vis).x2 = if x2 >= viewwidth {
+        viewwidth - 1 as i32
+    } else {
+        x2
+    };
     (*vis).scale = pspritescale << detailshift;
     if flip {
         (*vis).xiscale = -pspriteiscale;
-        (*vis).startfrac = (*spritewidth.offset(lump as isize) as i32
-            - 1 as i32) as fixed_t;
+        (*vis).startfrac = (*spritewidth.offset(lump as isize) as i32 - 1 as i32) as fixed_t;
     } else {
         (*vis).xiscale = pspriteiscale;
         (*vis).startfrac = 0 as i32 as fixed_t;
@@ -696,10 +646,8 @@ pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
         (*vis).startfrac += (*vis).xiscale as i32 * ((*vis).x1 - x1);
     }
     (*vis).patch = lump;
-    if (*viewplayer).powers[pw_invisibility as i32 as usize]
-        > 4 as i32 * 32 as i32
-        || (*viewplayer).powers[pw_invisibility as i32 as usize]
-            & 8 as i32 != 0
+    if (*viewplayer).powers[pw_invisibility as i32 as usize] > 4 as i32 * 32 as i32
+        || (*viewplayer).powers[pw_invisibility as i32 as usize] & 8 as i32 != 0
     {
         (*vis).colormap = ::core::ptr::null_mut::<lighttable_t>();
     } else if !fixedcolormap.is_null() {
@@ -707,8 +655,7 @@ pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     } else if (*(*psp).state).frame & FF_FULLBRIGHT != 0 {
         (*vis).colormap = colormaps;
     } else {
-        (*vis).colormap = *spritelights
-            .offset((MAXLIGHTSCALE - 1 as i32) as isize);
+        (*vis).colormap = *spritelights.offset((MAXLIGHTSCALE - 1 as i32) as isize);
     }
     R_DrawVisSprite(vis, (*vis).x1, (*vis).x2);
 }
@@ -716,8 +663,8 @@ pub unsafe fn R_DrawPlayerSprites() {
     let mut i: i32 = 0;
     let mut lightnum: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
-    lightnum = ((*(*(*(*viewplayer).mo).subsector).sector).lightlevel
-        as i32 >> LIGHTSEGSHIFT) + extralight;
+    lightnum = ((*(*(*(*viewplayer).mo).subsector).sector).lightlevel as i32 >> LIGHTSEGSHIFT)
+        + extralight;
     if lightnum < 0 as i32 {
         spritelights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
             .offset(0 as i32 as isize) as *mut *mut lighttable_t;
@@ -782,8 +729,7 @@ pub unsafe fn R_SortVisSprites() {
         mobjflags: 0,
     };
     let mut bestscale: fixed_t = 0;
-    count = vissprite_p.offset_from(&raw mut vissprites as *mut vissprite_t)
-        as i64 as i32;
+    count = vissprite_p.offset_from(&raw mut vissprites as *mut vissprite_t) as i64 as i32;
     unsorted.prev = &raw mut unsorted as *mut vissprite_s;
     unsorted.next = unsorted.prev;
     if count == 0 {
@@ -795,15 +741,12 @@ pub unsafe fn R_SortVisSprites() {
         (*ds).prev = ds.offset(-(1 as i32 as isize)) as *mut vissprite_s;
         ds = ds.offset(1);
     }
-    vissprites[0 as i32 as usize].prev = &raw mut unsorted
-        as *mut vissprite_s;
-    unsorted.next = (&raw mut vissprites as *mut vissprite_t)
-        .offset(0 as i32 as isize) as *mut vissprite_t
-        as *mut vissprite_s;
+    vissprites[0 as i32 as usize].prev = &raw mut unsorted as *mut vissprite_s;
+    unsorted.next = (&raw mut vissprites as *mut vissprite_t).offset(0 as i32 as isize)
+        as *mut vissprite_t as *mut vissprite_s;
     let ref mut fresh0 = (*vissprite_p.offset(-(1 as i32 as isize))).next;
     *fresh0 = &raw mut unsorted as *mut vissprite_s;
-    unsorted.prev = vissprite_p.offset(-(1 as i32 as isize))
-        as *mut vissprite_s;
+    unsorted.prev = vissprite_p.offset(-(1 as i32 as isize)) as *mut vissprite_s;
     vsprsortedhead.prev = &raw mut vsprsortedhead as *mut vissprite_s;
     vsprsortedhead.next = vsprsortedhead.prev;
     i = 0 as i32;
@@ -845,11 +788,20 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
     }
     ds = ds_p.offset(-(1 as i32 as isize));
     while ds >= &raw mut drawsegs as *mut drawseg_t {
-        if !((*ds).x1 > (*spr).x2 || (*ds).x2 < (*spr).x1
+        if !((*ds).x1 > (*spr).x2
+            || (*ds).x2 < (*spr).x1
             || (*ds).silhouette == 0 && (*ds).maskedtexturecol.is_null())
         {
-            r1 = if (*ds).x1 < (*spr).x1 { (*spr).x1 } else { (*ds).x1 };
-            r2 = if (*ds).x2 > (*spr).x2 { (*spr).x2 } else { (*ds).x2 };
+            r1 = if (*ds).x1 < (*spr).x1 {
+                (*spr).x1
+            } else {
+                (*ds).x1
+            };
+            r2 = if (*ds).x2 > (*spr).x2 {
+                (*spr).x2
+            } else {
+                (*ds).x2
+            };
             if (*ds).scale1 > (*ds).scale2 {
                 lowscale = (*ds).scale2;
                 scale = (*ds).scale1;
@@ -875,21 +827,15 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
                 if silhouette == 1 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if clipbot[x as usize] as i32
-                            == -(2 as i32)
-                        {
-                            clipbot[x as usize] = *(*ds)
-                                .sprbottomclip
-                                .offset(x as isize);
+                        if clipbot[x as usize] as i32 == -(2 as i32) {
+                            clipbot[x as usize] = *(*ds).sprbottomclip.offset(x as isize);
                         }
                         x += 1;
                     }
                 } else if silhouette == 2 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if cliptop[x as usize] as i32
-                            == -(2 as i32)
-                        {
+                        if cliptop[x as usize] as i32 == -(2 as i32) {
                             cliptop[x as usize] = *(*ds).sprtopclip.offset(x as isize);
                         }
                         x += 1;
@@ -897,16 +843,10 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
                 } else if silhouette == 3 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if clipbot[x as usize] as i32
-                            == -(2 as i32)
-                        {
-                            clipbot[x as usize] = *(*ds)
-                                .sprbottomclip
-                                .offset(x as isize);
+                        if clipbot[x as usize] as i32 == -(2 as i32) {
+                            clipbot[x as usize] = *(*ds).sprbottomclip.offset(x as isize);
                         }
-                        if cliptop[x as usize] as i32
-                            == -(2 as i32)
-                        {
+                        if cliptop[x as usize] as i32 == -(2 as i32) {
                             cliptop[x as usize] = *(*ds).sprtopclip.offset(x as isize);
                         }
                         x += 1;

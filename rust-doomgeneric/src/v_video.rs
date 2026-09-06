@@ -1,34 +1,32 @@
-use crate::src::r_data::column_t;
+use crate::src::doomdef::boolean;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::doomdef::SCREENWIDTH;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
-use crate::src::w_wad::W_CacheLumpName;
 use crate::src::i_video::mouse_acceleration;
 use crate::src::i_video::mouse_threshold;
-use crate::src::m_misc::M_FileExists;
 use crate::src::i_video::usemouse;
-use crate::src::m_bbox::M_AddToBox;
-use crate::src::m_misc::M_WriteFile;
-use crate::src::i_video::I_VideoBuffer;
-use crate::src::m_misc::M_snprintf;
 use crate::src::i_video::I_GetPaletteIndex;
+use crate::src::i_video::I_VideoBuffer;
+use crate::src::m_bbox::M_AddToBox;
+use crate::src::m_fixed::fixed_t;
+use crate::src::m_misc::M_FileExists;
+use crate::src::m_misc::M_WriteFile;
+use crate::src::m_misc::M_snprintf;
+use crate::src::r_data::column_t;
+use crate::src::stdint_types::size_t;
+use crate::src::stdint_types::{byte, uint8_t};
+use crate::src::w_wad::W_CacheLumpName;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use crate::src::m_fixed::fixed_t;
-use crate::src::doomdef::boolean;
-use crate::src::stdint_types::{byte, uint8_t};
-use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
-use crate::src::doomdef::NULL;
-use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomdef::SCREENHEIGHT;
 
 extern "C" {
     fn fabs(__x: f64) -> f64;
 }
-pub type vpatchclipfunc_t = Option<
-    unsafe extern "C" fn(*mut patch_t, i32, i32) -> boolean,
->;
+pub type vpatchclipfunc_t = Option<unsafe extern "C" fn(*mut patch_t, i32, i32) -> boolean>;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct pcx_t {
@@ -58,14 +56,13 @@ static mut dest_screen: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
 pub static mut dirtybox: [i32; 4] = [0; 4];
 static mut patchclip_callback: vpatchclipfunc_t = None;
-pub unsafe fn V_MarkRect(
-    mut x: i32,
-    mut y: i32,
-    mut width: i32,
-    mut height: i32,
-) {
+pub unsafe fn V_MarkRect(mut x: i32, mut y: i32, mut width: i32, mut height: i32) {
     if dest_screen == I_VideoBuffer {
-        M_AddToBox(&raw mut dirtybox as *mut fixed_t, x as fixed_t, y as fixed_t);
+        M_AddToBox(
+            &raw mut dirtybox as *mut fixed_t,
+            x as fixed_t,
+            y as fixed_t,
+        );
         M_AddToBox(
             &raw mut dirtybox as *mut fixed_t,
             x as fixed_t + width as fixed_t - 1 as fixed_t,
@@ -84,16 +81,24 @@ pub unsafe fn V_CopyRect(
 ) {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
-    if srcx < 0 as i32 || srcx + width > SCREENWIDTH
-        || srcy < 0 as i32 || srcy + height > SCREENHEIGHT
-        || destx < 0 as i32 || destx + width > SCREENWIDTH
-        || desty < 0 as i32 || desty + height > SCREENHEIGHT
+    if srcx < 0 as i32
+        || srcx + width > SCREENWIDTH
+        || srcy < 0 as i32
+        || srcy + height > SCREENHEIGHT
+        || destx < 0 as i32
+        || destx + width > SCREENWIDTH
+        || desty < 0 as i32
+        || desty + height > SCREENHEIGHT
     {
         I_Error("Bad V_CopyRect");
     }
     V_MarkRect(destx, desty, width, height);
-    src = source.offset((SCREENWIDTH * srcy) as isize).offset(srcx as isize);
-    dest = dest_screen.offset((SCREENWIDTH * desty) as isize).offset(destx as isize);
+    src = source
+        .offset((SCREENWIDTH * srcy) as isize)
+        .offset(srcx as isize);
+    dest = dest_screen
+        .offset((SCREENWIDTH * desty) as isize)
+        .offset(destx as isize);
     while height > 0 as i32 {
         memcpy(
             dest as *mut ::core::ffi::c_void,
@@ -108,11 +113,7 @@ pub unsafe fn V_CopyRect(
 pub unsafe fn V_SetPatchClipCallback(mut func: vpatchclipfunc_t) {
     patchclip_callback = func;
 }
-pub unsafe fn V_DrawPatch(
-    mut x: i32,
-    mut y: i32,
-    mut patch: *mut patch_t,
-) {
+pub unsafe fn V_DrawPatch(mut x: i32, mut y: i32, mut patch: *mut patch_t) {
     let mut count: i32 = 0;
     let mut col: i32 = 0;
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
@@ -142,27 +143,19 @@ pub unsafe fn V_DrawPatch(
             (*patch).leftoffset as i32,
         ));
     }
-    V_MarkRect(
-        x,
-        y,
-        (*patch).width as i32,
-        (*patch).height as i32,
-    );
+    V_MarkRect(x, y, (*patch).width as i32, (*patch).height as i32);
     col = 0 as i32;
-    desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
+    desttop = dest_screen
+        .offset((y * SCREENWIDTH) as isize)
+        .offset(x as isize);
     w = (*patch).width as i32;
     while col < w {
         column = (patch as *mut byte)
-            .offset(
-                *(&raw const (*patch).columnofs as *const i32)
-                    .offset(col as isize) as isize,
-            ) as *mut column_t;
+            .offset(*(&raw const (*patch).columnofs as *const i32).offset(col as isize) as isize)
+            as *mut column_t;
         while (*column).topdelta as i32 != 0xff as i32 {
             source = (column as *mut byte).offset(3 as i32 as isize);
-            dest = desttop
-                .offset(
-                    ((*column).topdelta as i32 * SCREENWIDTH) as isize,
-                );
+            dest = desttop.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
             count = (*column).length as i32;
             loop {
                 let fresh0 = count;
@@ -184,11 +177,7 @@ pub unsafe fn V_DrawPatch(
         desttop = desttop.offset(1);
     }
 }
-pub unsafe fn V_DrawPatchFlipped(
-    mut x: i32,
-    mut y: i32,
-    mut patch: *mut patch_t,
-) {
+pub unsafe fn V_DrawPatchFlipped(mut x: i32, mut y: i32, mut patch: *mut patch_t) {
     let mut count: i32 = 0;
     let mut col: i32 = 0;
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
@@ -210,27 +199,20 @@ pub unsafe fn V_DrawPatchFlipped(
     {
         I_Error("Bad V_DrawPatchFlipped");
     }
-    V_MarkRect(
-        x,
-        y,
-        (*patch).width as i32,
-        (*patch).height as i32,
-    );
+    V_MarkRect(x, y, (*patch).width as i32, (*patch).height as i32);
     col = 0 as i32;
-    desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
+    desttop = dest_screen
+        .offset((y * SCREENWIDTH) as isize)
+        .offset(x as isize);
     w = (*patch).width as i32;
     while col < w {
-        column = (patch as *mut byte)
-            .offset(
-                *(&raw const (*patch).columnofs as *const i32)
-                    .offset((w - 1 as i32 - col) as isize) as isize,
-            ) as *mut column_t;
+        column = (patch as *mut byte).offset(
+            *(&raw const (*patch).columnofs as *const i32).offset((w - 1 as i32 - col) as isize)
+                as isize,
+        ) as *mut column_t;
         while (*column).topdelta as i32 != 0xff as i32 {
             source = (column as *mut byte).offset(3 as i32 as isize);
-            dest = desttop
-                .offset(
-                    ((*column).topdelta as i32 * SCREENWIDTH) as isize,
-                );
+            dest = desttop.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
             count = (*column).length as i32;
             loop {
                 let fresh2 = count;
@@ -252,18 +234,10 @@ pub unsafe fn V_DrawPatchFlipped(
         desttop = desttop.offset(1);
     }
 }
-pub unsafe fn V_DrawPatchDirect(
-    mut x: i32,
-    mut y: i32,
-    mut patch: *mut patch_t,
-) {
+pub unsafe fn V_DrawPatchDirect(mut x: i32, mut y: i32, mut patch: *mut patch_t) {
     V_DrawPatch(x, y, patch);
 }
-pub unsafe fn V_DrawTLPatch(
-    mut x: i32,
-    mut y: i32,
-    mut patch: *mut patch_t,
-) {
+pub unsafe fn V_DrawTLPatch(mut x: i32, mut y: i32, mut patch: *mut patch_t) {
     let mut count: i32 = 0;
     let mut col: i32 = 0;
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
@@ -281,20 +255,17 @@ pub unsafe fn V_DrawTLPatch(
         I_Error("Bad V_DrawTLPatch");
     }
     col = 0 as i32;
-    desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
+    desttop = dest_screen
+        .offset((y * SCREENWIDTH) as isize)
+        .offset(x as isize);
     w = (*patch).width as i32;
     while col < w {
         column = (patch as *mut byte)
-            .offset(
-                *(&raw const (*patch).columnofs as *const i32)
-                    .offset(col as isize) as isize,
-            ) as *mut column_t;
+            .offset(*(&raw const (*patch).columnofs as *const i32).offset(col as isize) as isize)
+            as *mut column_t;
         while (*column).topdelta as i32 != 0xff as i32 {
             source = (column as *mut byte).offset(3 as i32 as isize);
-            dest = desttop
-                .offset(
-                    ((*column).topdelta as i32 * SCREENWIDTH) as isize,
-                );
+            dest = desttop.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
             count = (*column).length as i32;
             loop {
                 let fresh4 = count;
@@ -304,11 +275,7 @@ pub unsafe fn V_DrawTLPatch(
                 }
                 let fresh5 = source;
                 source = source.offset(1);
-                *dest = *tinttable
-                    .offset(
-                        (((*dest as i32) << 8 as i32)
-                            + *fresh5 as i32) as isize,
-                    );
+                *dest = *tinttable.offset((((*dest as i32) << 8 as i32) + *fresh5 as i32) as isize);
                 dest = dest.offset(SCREENWIDTH as isize);
             }
             column = (column as *mut byte)
@@ -320,11 +287,7 @@ pub unsafe fn V_DrawTLPatch(
         desttop = desttop.offset(1);
     }
 }
-pub unsafe fn V_DrawXlaPatch(
-    mut x: i32,
-    mut y: i32,
-    mut patch: *mut patch_t,
-) {
+pub unsafe fn V_DrawXlaPatch(mut x: i32, mut y: i32, mut patch: *mut patch_t) {
     let mut count: i32 = 0;
     let mut col: i32 = 0;
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
@@ -340,20 +303,17 @@ pub unsafe fn V_DrawXlaPatch(
         }
     }
     col = 0 as i32;
-    desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
+    desttop = dest_screen
+        .offset((y * SCREENWIDTH) as isize)
+        .offset(x as isize);
     w = (*patch).width as i32;
     while col < w {
         column = (patch as *mut byte)
-            .offset(
-                *(&raw const (*patch).columnofs as *const i32)
-                    .offset(col as isize) as isize,
-            ) as *mut column_t;
+            .offset(*(&raw const (*patch).columnofs as *const i32).offset(col as isize) as isize)
+            as *mut column_t;
         while (*column).topdelta as i32 != 0xff as i32 {
             source = (column as *mut byte).offset(3 as i32 as isize);
-            dest = desttop
-                .offset(
-                    ((*column).topdelta as i32 * SCREENWIDTH) as isize,
-                );
+            dest = desttop.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
             count = (*column).length as i32;
             loop {
                 let fresh10 = count;
@@ -361,12 +321,7 @@ pub unsafe fn V_DrawXlaPatch(
                 if !(fresh10 != 0) {
                     break;
                 }
-                *dest = *xlatab
-                    .offset(
-                        (*dest as i32
-                            + ((*source as i32)
-                                << 8 as i32)) as isize,
-                    );
+                *dest = *xlatab.offset((*dest as i32 + ((*source as i32) << 8 as i32)) as isize);
                 source = source.offset(1);
                 dest = dest.offset(SCREENWIDTH as isize);
             }
@@ -379,11 +334,7 @@ pub unsafe fn V_DrawXlaPatch(
         desttop = desttop.offset(1);
     }
 }
-pub unsafe fn V_DrawAltTLPatch(
-    mut x: i32,
-    mut y: i32,
-    mut patch: *mut patch_t,
-) {
+pub unsafe fn V_DrawAltTLPatch(mut x: i32, mut y: i32, mut patch: *mut patch_t) {
     let mut count: i32 = 0;
     let mut col: i32 = 0;
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
@@ -401,20 +352,17 @@ pub unsafe fn V_DrawAltTLPatch(
         I_Error("Bad V_DrawAltTLPatch");
     }
     col = 0 as i32;
-    desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
+    desttop = dest_screen
+        .offset((y * SCREENWIDTH) as isize)
+        .offset(x as isize);
     w = (*patch).width as i32;
     while col < w {
         column = (patch as *mut byte)
-            .offset(
-                *(&raw const (*patch).columnofs as *const i32)
-                    .offset(col as isize) as isize,
-            ) as *mut column_t;
+            .offset(*(&raw const (*patch).columnofs as *const i32).offset(col as isize) as isize)
+            as *mut column_t;
         while (*column).topdelta as i32 != 0xff as i32 {
             source = (column as *mut byte).offset(3 as i32 as isize);
-            dest = desttop
-                .offset(
-                    ((*column).topdelta as i32 * SCREENWIDTH) as isize,
-                );
+            dest = desttop.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
             count = (*column).length as i32;
             loop {
                 let fresh6 = count;
@@ -424,11 +372,7 @@ pub unsafe fn V_DrawAltTLPatch(
                 }
                 let fresh7 = source;
                 source = source.offset(1);
-                *dest = *tinttable
-                    .offset(
-                        (((*dest as i32) << 8 as i32)
-                            + *fresh7 as i32) as isize,
-                    );
+                *dest = *tinttable.offset((((*dest as i32) << 8 as i32) + *fresh7 as i32) as isize);
                 dest = dest.offset(SCREENWIDTH as isize);
             }
             column = (column as *mut byte)
@@ -440,11 +384,7 @@ pub unsafe fn V_DrawAltTLPatch(
         desttop = desttop.offset(1);
     }
 }
-pub unsafe fn V_DrawShadowedPatch(
-    mut x: i32,
-    mut y: i32,
-    mut patch: *mut patch_t,
-) {
+pub unsafe fn V_DrawShadowedPatch(mut x: i32, mut y: i32, mut patch: *mut patch_t) {
     let mut count: i32 = 0;
     let mut col: i32 = 0;
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
@@ -464,7 +404,9 @@ pub unsafe fn V_DrawShadowedPatch(
         I_Error("Bad V_DrawShadowedPatch");
     }
     col = 0 as i32;
-    desttop = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
+    desttop = dest_screen
+        .offset((y * SCREENWIDTH) as isize)
+        .offset(x as isize);
     desttop2 = dest_screen
         .offset(((y + 2 as i32) * SCREENWIDTH) as isize)
         .offset(x as isize)
@@ -472,20 +414,12 @@ pub unsafe fn V_DrawShadowedPatch(
     w = (*patch).width as i32;
     while col < w {
         column = (patch as *mut byte)
-            .offset(
-                *(&raw const (*patch).columnofs as *const i32)
-                    .offset(col as isize) as isize,
-            ) as *mut column_t;
+            .offset(*(&raw const (*patch).columnofs as *const i32).offset(col as isize) as isize)
+            as *mut column_t;
         while (*column).topdelta as i32 != 0xff as i32 {
             source = (column as *mut byte).offset(3 as i32 as isize);
-            dest = desttop
-                .offset(
-                    ((*column).topdelta as i32 * SCREENWIDTH) as isize,
-                );
-            dest2 = desttop2
-                .offset(
-                    ((*column).topdelta as i32 * SCREENWIDTH) as isize,
-                );
+            dest = desttop.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
+            dest2 = desttop2.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
             count = (*column).length as i32;
             loop {
                 let fresh8 = count;
@@ -493,11 +427,7 @@ pub unsafe fn V_DrawShadowedPatch(
                 if !(fresh8 != 0) {
                     break;
                 }
-                *dest2 = *tinttable
-                    .offset(
-                        ((*dest2 as i32) << 8 as i32)
-                            as isize,
-                    );
+                *dest2 = *tinttable.offset(((*dest2 as i32) << 8 as i32) as isize);
                 dest2 = dest2.offset(SCREENWIDTH as isize);
                 let fresh9 = source;
                 source = source.offset(1);
@@ -515,14 +445,10 @@ pub unsafe fn V_DrawShadowedPatch(
     }
 }
 pub unsafe fn V_LoadTintTable() {
-    tinttable = W_CacheLumpName("TINTTAB",
-        PU_STATIC as i32,
-    ) as *mut byte;
+    tinttable = W_CacheLumpName("TINTTAB", PU_STATIC as i32) as *mut byte;
 }
 pub unsafe fn V_LoadXlaTable() {
-    xlatab = W_CacheLumpName("XLATAB",
-        PU_STATIC as i32,
-    ) as *mut byte;
+    xlatab = W_CacheLumpName("XLATAB", PU_STATIC as i32) as *mut byte;
 }
 pub unsafe fn V_DrawBlock(
     mut x: i32,
@@ -532,13 +458,13 @@ pub unsafe fn V_DrawBlock(
     mut src: *mut byte,
 ) {
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
-    if x < 0 as i32 || x + width > SCREENWIDTH
-        || y < 0 as i32 || y + height > SCREENHEIGHT
-    {
+    if x < 0 as i32 || x + width > SCREENWIDTH || y < 0 as i32 || y + height > SCREENHEIGHT {
         I_Error("Bad V_DrawBlock");
     }
     V_MarkRect(x, y, width, height);
-    dest = dest_screen.offset((y * SCREENWIDTH) as isize).offset(x as isize);
+    dest = dest_screen
+        .offset((y * SCREENWIDTH) as isize)
+        .offset(x as isize);
     loop {
         let fresh11 = height;
         height = height - 1;
@@ -552,21 +478,16 @@ pub unsafe fn V_DrawBlock(
         );
         src = src.offset(width as isize);
         dest = dest.offset(SCREENWIDTH as isize);
-    };
+    }
 }
-pub unsafe fn V_DrawFilledBox(
-    mut x: i32,
-    mut y: i32,
-    mut w: i32,
-    mut h: i32,
-    mut c: i32,
-) {
+pub unsafe fn V_DrawFilledBox(mut x: i32, mut y: i32, mut w: i32, mut h: i32, mut c: i32) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut buf1: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut x1: i32 = 0;
     let mut y1: i32 = 0;
-    buf = I_VideoBuffer.offset((SCREENWIDTH * y) as isize).offset(x as isize)
-        as *mut uint8_t;
+    buf = I_VideoBuffer
+        .offset((SCREENWIDTH * y) as isize)
+        .offset(x as isize) as *mut uint8_t;
     y1 = 0 as i32;
     while y1 < h {
         buf1 = buf;
@@ -581,16 +502,12 @@ pub unsafe fn V_DrawFilledBox(
         y1 += 1;
     }
 }
-pub unsafe fn V_DrawHorizLine(
-    mut x: i32,
-    mut y: i32,
-    mut w: i32,
-    mut c: i32,
-) {
+pub unsafe fn V_DrawHorizLine(mut x: i32, mut y: i32, mut w: i32, mut c: i32) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut x1: i32 = 0;
-    buf = I_VideoBuffer.offset((SCREENWIDTH * y) as isize).offset(x as isize)
-        as *mut uint8_t;
+    buf = I_VideoBuffer
+        .offset((SCREENWIDTH * y) as isize)
+        .offset(x as isize) as *mut uint8_t;
     x1 = 0 as i32;
     while x1 < w {
         let fresh13 = buf;
@@ -599,16 +516,12 @@ pub unsafe fn V_DrawHorizLine(
         x1 += 1;
     }
 }
-pub unsafe fn V_DrawVertLine(
-    mut x: i32,
-    mut y: i32,
-    mut h: i32,
-    mut c: i32,
-) {
+pub unsafe fn V_DrawVertLine(mut x: i32, mut y: i32, mut h: i32, mut c: i32) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut y1: i32 = 0;
-    buf = I_VideoBuffer.offset((SCREENWIDTH * y) as isize).offset(x as isize)
-        as *mut uint8_t;
+    buf = I_VideoBuffer
+        .offset((SCREENWIDTH * y) as isize)
+        .offset(x as isize) as *mut uint8_t;
     y1 = 0 as i32;
     while y1 < h {
         *buf = c as uint8_t;
@@ -616,13 +529,7 @@ pub unsafe fn V_DrawVertLine(
         y1 += 1;
     }
 }
-pub unsafe fn V_DrawBox(
-    mut x: i32,
-    mut y: i32,
-    mut w: i32,
-    mut h: i32,
-    mut c: i32,
-) {
+pub unsafe fn V_DrawBox(mut x: i32, mut y: i32, mut w: i32, mut h: i32, mut c: i32) {
     V_DrawHorizLine(x, y, w, c);
     V_DrawHorizLine(x, y + h - 1 as i32, w, c);
     V_DrawVertLine(x, y, h, c);
@@ -663,10 +570,8 @@ pub unsafe fn WritePCXfile(
     (*pcx).bits_per_pixel = 8 as ::core::ffi::c_char;
     (*pcx).xmin = 0 as u16;
     (*pcx).ymin = 0 as u16;
-    (*pcx).xmax = (width - 1 as i32) as i16
-        as u16;
-    (*pcx).ymax = (height - 1 as i32) as i16
-        as u16;
+    (*pcx).xmax = (width - 1 as i32) as i16 as u16;
+    (*pcx).ymax = (height - 1 as i32) as i16 as u16;
     (*pcx).hres = width as i16 as u16;
     (*pcx).vres = height as i16 as u16;
     memset(
@@ -676,8 +581,7 @@ pub unsafe fn WritePCXfile(
     );
     (*pcx).color_planes = 1 as ::core::ffi::c_char;
     (*pcx).bytes_per_line = width as i16 as u16;
-    (*pcx).palette_type = 2 as i32 as i16
-        as u16;
+    (*pcx).palette_type = 2 as i32 as i16 as u16;
     memset(
         &raw mut (*pcx).filler as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
         0 as i32,
@@ -686,9 +590,7 @@ pub unsafe fn WritePCXfile(
     pack = &raw mut (*pcx).data as *mut byte;
     i = 0 as i32;
     while i < width * height {
-        if *data as i32 & 0xc0 as i32
-            != 0xc0 as i32
-        {
+        if *data as i32 & 0xc0 as i32 != 0xc0 as i32 {
             let fresh14 = data;
             data = data.offset(1);
             let fresh15 = pack;
@@ -718,19 +620,15 @@ pub unsafe fn WritePCXfile(
         *fresh21 = *fresh20;
         i += 1;
     }
-    length = pack.offset_from(pcx as *mut byte) as i64
-        as i32;
+    length = pack.offset_from(pcx as *mut byte) as i64 as i32;
     M_WriteFile(filename, pcx as *mut ::core::ffi::c_void, length);
     Z_Free(pcx as *mut ::core::ffi::c_void);
 }
 pub unsafe fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
     let mut lbmname: [::core::ffi::c_char; 16] = [0; 16];
-    let mut ext: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    ext = b"pcx\0" as *const u8 as *const ::core::ffi::c_char
-        as *mut ::core::ffi::c_char;
+    let mut ext: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    ext = b"pcx\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     i = 0 as i32;
     while i <= 99 as i32 {
         M_snprintf(
@@ -753,9 +651,7 @@ pub unsafe fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
         I_VideoBuffer,
         SCREENWIDTH,
         SCREENHEIGHT,
-        W_CacheLumpName("PLAYPAL",
-            PU_CACHE as i32,
-        ) as *mut byte,
+        W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte,
     );
 }
 pub const MOUSE_SPEED_BOX_WIDTH: i32 = 120;
@@ -772,42 +668,13 @@ pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
     let mut original_speed: i32 = 0;
     let mut redline_x: i32 = 0;
     let mut linelen: i32 = 0;
-    bgcolor = I_GetPaletteIndex(
-        0x77 as i32,
-        0x77 as i32,
-        0x77 as i32,
-    );
-    bordercolor = I_GetPaletteIndex(
-        0x55 as i32,
-        0x55 as i32,
-        0x55 as i32,
-    );
-    red = I_GetPaletteIndex(
-        0xff as i32,
-        0 as i32,
-        0 as i32,
-    );
-    black = I_GetPaletteIndex(
-        0 as i32,
-        0 as i32,
-        0 as i32,
-    );
-    yellow = I_GetPaletteIndex(
-        0xff as i32,
-        0xff as i32,
-        0 as i32,
-    );
-    white = I_GetPaletteIndex(
-        0xff as i32,
-        0xff as i32,
-        0xff as i32,
-    );
-    if usemouse == 0
-        || fabs(
-            (mouse_acceleration - 1 as i32 as f32)
-                as f64,
-        ) < 0.01f64
-    {
+    bgcolor = I_GetPaletteIndex(0x77 as i32, 0x77 as i32, 0x77 as i32);
+    bordercolor = I_GetPaletteIndex(0x55 as i32, 0x55 as i32, 0x55 as i32);
+    red = I_GetPaletteIndex(0xff as i32, 0 as i32, 0 as i32);
+    black = I_GetPaletteIndex(0 as i32, 0 as i32, 0 as i32);
+    yellow = I_GetPaletteIndex(0xff as i32, 0xff as i32, 0 as i32);
+    white = I_GetPaletteIndex(0xff as i32, 0xff as i32, 0xff as i32);
+    if usemouse == 0 || fabs((mouse_acceleration - 1 as i32 as f32) as f64) < 0.01f64 {
         return;
     }
     box_x = SCREENWIDTH - MOUSE_SPEED_BOX_WIDTH - 10 as i32;
@@ -819,14 +686,19 @@ pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
         MOUSE_SPEED_BOX_HEIGHT,
         bgcolor,
     );
-    V_DrawBox(box_x, box_y, MOUSE_SPEED_BOX_WIDTH, MOUSE_SPEED_BOX_HEIGHT, bordercolor);
+    V_DrawBox(
+        box_x,
+        box_y,
+        MOUSE_SPEED_BOX_WIDTH,
+        MOUSE_SPEED_BOX_HEIGHT,
+        bordercolor,
+    );
     redline_x = MOUSE_SPEED_BOX_WIDTH / 3 as i32;
     if speed < mouse_threshold {
         original_speed = speed;
     } else {
         original_speed = speed - mouse_threshold;
-        original_speed = (original_speed as f32 / mouse_acceleration)
-            as i32;
+        original_speed = (original_speed as f32 / mouse_acceleration) as i32;
         original_speed += mouse_threshold;
     }
     linelen = original_speed * redline_x / mouse_threshold;

@@ -1,13 +1,13 @@
 use crate::src::i_system::FILE;
-use crate::src::w_file::{wad_file_class_t, wad_file_t};
+use crate::src::i_system::SEEK_SET;
+use crate::src::i_system::{fclose, fopen, fread, fseek};
 use crate::src::m_misc::M_FileLength;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
+use crate::src::w_file::{wad_file_class_t, wad_file_t};
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use crate::src::i_system::{fclose, fopen, fread, fseek};
-use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
-use crate::src::i_system::SEEK_SET;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -15,13 +15,10 @@ pub struct stdc_wad_file_t {
     pub wad: wad_file_t,
     pub fstream: *mut FILE,
 }
-unsafe fn W_StdC_OpenFile(
-    mut path: *mut ::core::ffi::c_char,
-) -> *mut wad_file_t {
+unsafe fn W_StdC_OpenFile(mut path: *mut ::core::ffi::c_char) -> *mut wad_file_t {
     let mut result: *mut stdc_wad_file_t = ::core::ptr::null_mut::<stdc_wad_file_t>();
     let mut fstream: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    fstream = fopen(path, b"rb\0" as *const u8 as *const ::core::ffi::c_char)
-        as *mut FILE;
+    fstream = fopen(path, b"rb\0" as *const u8 as *const ::core::ffi::c_char) as *mut FILE;
     if fstream.is_null() {
         return ::core::ptr::null_mut::<wad_file_t>();
     }
@@ -57,19 +54,11 @@ pub unsafe fn W_StdC_Read(
 }
 pub static mut stdc_wad_file: wad_file_class_t = unsafe {
     wad_file_class_t {
-        OpenFile: Some(
-            W_StdC_OpenFile
-                as unsafe fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-        ),
+        OpenFile: Some(W_StdC_OpenFile as unsafe fn(*mut ::core::ffi::c_char) -> *mut wad_file_t),
         CloseFile: Some(W_StdC_CloseFile as unsafe fn(*mut wad_file_t) -> ()),
         Read: Some(
             W_StdC_Read
-                as unsafe fn(
-                    *mut wad_file_t,
-                    u32,
-                    *mut ::core::ffi::c_void,
-                    size_t,
-                ) -> size_t,
+                as unsafe fn(*mut wad_file_t, u32, *mut ::core::ffi::c_void, size_t) -> size_t,
         ),
     }
 };

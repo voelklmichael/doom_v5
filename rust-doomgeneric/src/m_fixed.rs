@@ -7,7 +7,7 @@ pub fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t {
 }
 pub fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t {
     if a.abs() >> 14 as i32 >= b.abs() {
-        return if a ^ b < 0 as i32 { INT_MIN } else { INT_MAX }
+        return if a ^ b < 0 as i32 { INT_MIN } else { INT_MAX };
     } else {
         let result: i64 = ((a as i64) << 16 as i32) / b as i64;
         return result as fixed_t;

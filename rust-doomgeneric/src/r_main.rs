@@ -1,68 +1,68 @@
-use crate::src::r_defs::{node_t, seg_t};
+use crate::src::d_loop::NetUpdate;
+use crate::src::d_player::player_t;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
+use crate::src::m_fixed::fixed_t;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::m_fixed::FixedMul;
+use crate::src::m_fixed::FRACBITS;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::m_menu::detailLevel;
+use crate::src::m_menu::screenblocks;
 use crate::src::p_mobj::subsector_t;
-use crate::src::d_player::{player_t};
-use crate::src::tables::SlopeDiv;
-use crate::src::r_segs::walllights;
-use crate::src::r_data::R_InitData;
-use crate::src::r_segs::rw_distance;
-use crate::src::r_segs::rw_normalangle;
+use crate::src::p_setup::nodes;
+use crate::src::p_setup::numnodes;
+use crate::src::p_setup::subsectors;
 use crate::src::r_bsp::R_ClearClipSegs;
 use crate::src::r_bsp::R_ClearDrawSegs;
 use crate::src::r_bsp::R_RenderBSPNode;
-use crate::src::r_plane::yslope;
-use crate::src::r_plane::distscale;
-use crate::src::r_plane::R_ClearPlanes;
-use crate::src::r_things::pspritescale;
-use crate::src::r_things::R_ClearSprites;
+use crate::src::r_bsp::NF_SUBSECTOR;
+use crate::src::r_data::colormaps;
+use crate::src::r_data::R_InitData;
+use crate::src::r_defs::lighttable_t;
+use crate::src::r_defs::{node_t, seg_t};
+use crate::src::r_draw::scaledviewwidth;
+use crate::src::r_draw::viewheight;
+use crate::src::r_draw::viewwidth;
 use crate::src::r_draw::R_InitBuffer;
 use crate::src::r_draw::R_InitTranslationTables;
+use crate::src::r_draw::{
+    R_DrawColumn, R_DrawColumnLow, R_DrawFuzzColumn, R_DrawFuzzColumnLow, R_DrawSpan,
+    R_DrawSpanLow, R_DrawTranslatedColumn, R_DrawTranslatedColumnLow,
+};
+use crate::src::r_plane::distscale;
+use crate::src::r_plane::yslope;
+use crate::src::r_plane::R_ClearPlanes;
+use crate::src::r_plane::R_DrawPlanes;
+use crate::src::r_segs::rw_distance;
+use crate::src::r_segs::rw_normalangle;
+use crate::src::r_segs::walllights;
 use crate::src::r_sky::R_InitSkyMap;
-use crate::src::d_loop::NetUpdate;
-use crate::src::m_menu::detailLevel;
-use crate::src::m_menu::screenblocks;
-use crate::src::p_setup::numnodes;
-use crate::src::r_draw::scaledviewwidth;
 use crate::src::r_things::pspriteiscale;
+use crate::src::r_things::pspritescale;
 use crate::src::r_things::screenheightarray;
-use crate::src::tables::tantoangle;
-use crate::src::p_setup::subsectors;
-use crate::src::p_setup::nodes;
-use crate::src::tables::finetangent;
-use crate::src::r_data::colormaps;
-use crate::src::r_draw::viewwidth;
-use crate::src::r_draw::viewheight;
-use crate::src::m_fixed::FixedDiv;
+use crate::src::r_things::R_ClearSprites;
+use crate::src::r_things::R_DrawMasked;
+use crate::src::tables::angle_t;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
-use crate::src::m_fixed::FixedMul;
-use crate::src::r_plane::R_DrawPlanes;
-use crate::src::r_things::R_DrawMasked;
-use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
-use crate::src::tables::angle_t;
-use crate::src::m_fixed::fixed_t;
-use crate::src::r_defs::lighttable_t;
-use libc::printf;
-use crate::src::r_draw::{
-    R_DrawColumn, R_DrawColumnLow, R_DrawFuzzColumn, R_DrawFuzzColumnLow,
-    R_DrawTranslatedColumn, R_DrawTranslatedColumnLow, R_DrawSpan, R_DrawSpanLow,
-};
-use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomdef::SCREENHEIGHT;
-use crate::src::m_fixed::FRACUNIT;
-use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::finetangent;
+use crate::src::tables::tantoangle;
+use crate::src::tables::SlopeDiv;
 use crate::src::tables::ANG180;
-use crate::src::tables::ANG90;
 use crate::src::tables::ANG270;
-use crate::src::r_bsp::NF_SUBSECTOR;
-use crate::src::m_fixed::FRACBITS;
+use crate::src::tables::ANG90;
+use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::FINEANGLES;
+use libc::printf;
 pub const SLOPEBITS: i32 = 11;
 pub const DBITS: i32 = FRACBITS - SLOPEBITS;
 pub const FIELDOFVIEW: i32 = 2048;
 pub static mut viewangleoffset: i32 = 0;
 pub static mut validcount: i32 = 1;
-pub static mut fixedcolormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
-    as *mut lighttable_t;
+pub static mut fixedcolormap: *mut lighttable_t =
+    ::core::ptr::null::<lighttable_t>() as *mut lighttable_t;
 #[no_mangle]
 pub static mut centerx: i32 = 0;
 pub static mut centery: i32 = 0;
@@ -82,33 +82,25 @@ pub static mut viewz: fixed_t = 0;
 pub static mut viewangle: angle_t = 0;
 pub static mut viewcos: fixed_t = 0;
 pub static mut viewsin: fixed_t = 0;
-pub static mut viewplayer: *mut player_t = ::core::ptr::null::<player_t>()
-    as *mut player_t;
+pub static mut viewplayer: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t;
 pub static mut detailshift: i32 = 0;
 pub static mut clipangle: angle_t = 0;
 pub static mut viewangletox: [i32; 4096] = [0; 4096];
 pub static mut xtoviewangle: [angle_t; 321] = [0; 321];
-pub static mut scalelight: [[*mut lighttable_t; 48]; 16] = [[::core::ptr::null::<
-    lighttable_t,
->() as *mut lighttable_t; 48]; 16];
+pub static mut scalelight: [[*mut lighttable_t; 48]; 16] =
+    [[::core::ptr::null::<lighttable_t>() as *mut lighttable_t; 48]; 16];
 #[no_mangle]
-pub static mut scalelightfixed: [*mut lighttable_t; 48] = [::core::ptr::null::<
-    lighttable_t,
->() as *mut lighttable_t; 48];
-pub static mut zlight: [[*mut lighttable_t; 128]; 16] = [[::core::ptr::null::<
-    lighttable_t,
->() as *mut lighttable_t; 128]; 16];
+pub static mut scalelightfixed: [*mut lighttable_t; 48] =
+    [::core::ptr::null::<lighttable_t>() as *mut lighttable_t; 48];
+pub static mut zlight: [[*mut lighttable_t; 128]; 16] =
+    [[::core::ptr::null::<lighttable_t>() as *mut lighttable_t; 128]; 16];
 pub static mut extralight: i32 = 0;
 pub static mut colfunc: Option<unsafe fn() -> ()> = None;
 pub static mut basecolfunc: Option<unsafe fn() -> ()> = None;
 pub static mut fuzzcolfunc: Option<unsafe fn() -> ()> = None;
 pub static mut transcolfunc: Option<unsafe fn() -> ()> = None;
 pub static mut spanfunc: Option<unsafe fn() -> ()> = None;
-pub unsafe fn R_AddPointToBox(
-    mut x: i32,
-    mut y: i32,
-    mut box_0: *mut fixed_t,
-) {
+pub unsafe fn R_AddPointToBox(mut x: i32, mut y: i32, mut box_0: *mut fixed_t) {
     if x < *box_0.offset(BOXLEFT as i32 as isize) {
         *box_0.offset(BOXLEFT as i32 as isize) = x as fixed_t;
     }
@@ -122,11 +114,7 @@ pub unsafe fn R_AddPointToBox(
         *box_0.offset(BOXTOP as i32 as isize) = y as fixed_t;
     }
 }
-pub unsafe fn R_PointOnSide(
-    mut x: fixed_t,
-    mut y: fixed_t,
-    mut node: *mut node_t,
-) -> i32 {
+pub unsafe fn R_PointOnSide(mut x: fixed_t, mut y: fixed_t, mut node: *mut node_t) -> i32 {
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut left: fixed_t = 0;
@@ -145,12 +133,8 @@ pub unsafe fn R_PointOnSide(
     }
     dx = x - (*node).x;
     dy = y - (*node).y;
-    if ((*node).dy ^ (*node).dx ^ dx ^ dy) as u32
-        & 0x80000000 as u32 != 0
-    {
-        if ((*node).dy ^ dx) as u32 & 0x80000000 as u32
-            != 0
-        {
+    if ((*node).dy ^ (*node).dx ^ dx ^ dy) as u32 & 0x80000000 as u32 != 0 {
+        if ((*node).dy ^ dx) as u32 & 0x80000000 as u32 != 0 {
             return 1 as i32;
         }
         return 0 as i32;
@@ -162,11 +146,7 @@ pub unsafe fn R_PointOnSide(
     }
     return 1 as i32;
 }
-pub unsafe fn R_PointOnSegSide(
-    mut x: fixed_t,
-    mut y: fixed_t,
-    mut line: *mut seg_t,
-) -> i32 {
+pub unsafe fn R_PointOnSegSide(mut x: fixed_t, mut y: fixed_t, mut line: *mut seg_t) -> i32 {
     let mut lx: fixed_t = 0;
     let mut ly: fixed_t = 0;
     let mut ldx: fixed_t = 0;
@@ -193,9 +173,7 @@ pub unsafe fn R_PointOnSegSide(
     }
     dx = x - lx;
     dy = y - ly;
-    if (ldy ^ ldx ^ dx ^ dy) as u32 & 0x80000000 as u32
-        != 0
-    {
+    if (ldy ^ ldx ^ dx ^ dy) as u32 & 0x80000000 as u32 != 0 {
         if (ldy ^ dx) as u32 & 0x80000000 as u32 != 0 {
             return 1 as i32;
         }
@@ -217,35 +195,17 @@ pub unsafe fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle_t {
     if x >= 0 as i32 {
         if y >= 0 as i32 {
             if x > y {
-                return tantoangle[SlopeDiv(
-                    y as u32,
-                    x as u32,
-                ) as usize]
+                return tantoangle[SlopeDiv(y as u32, x as u32) as usize];
             } else {
                 return ((ANG90 - 1 as i32) as angle_t)
-                    .wrapping_sub(
-                        tantoangle[SlopeDiv(
-                            x as u32,
-                            y as u32,
-                        ) as usize],
-                    )
+                    .wrapping_sub(tantoangle[SlopeDiv(x as u32, y as u32) as usize]);
             }
         } else {
             y = -y;
             if x > y {
-                return tantoangle[SlopeDiv(
-                        y as u32,
-                        x as u32,
-                    ) as usize]
-                    .wrapping_neg()
+                return tantoangle[SlopeDiv(y as u32, x as u32) as usize].wrapping_neg();
             } else {
-                return ANG270
-                    .wrapping_add(
-                        tantoangle[SlopeDiv(
-                            x as u32,
-                            y as u32,
-                        ) as usize],
-                    )
+                return ANG270.wrapping_add(tantoangle[SlopeDiv(x as u32, y as u32) as usize]);
             }
         }
     } else {
@@ -254,40 +214,19 @@ pub unsafe fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle_t {
             if x > y {
                 return ANG180
                     .wrapping_sub(1 as angle_t)
-                    .wrapping_sub(
-                        tantoangle[SlopeDiv(
-                            y as u32,
-                            x as u32,
-                        ) as usize],
-                    )
+                    .wrapping_sub(tantoangle[SlopeDiv(y as u32, x as u32) as usize]);
             } else {
                 return (ANG90 as angle_t)
-                    .wrapping_add(
-                        tantoangle[SlopeDiv(
-                            x as u32,
-                            y as u32,
-                        ) as usize],
-                    )
+                    .wrapping_add(tantoangle[SlopeDiv(x as u32, y as u32) as usize]);
             }
         } else {
             y = -y;
             if x > y {
-                return ANG180
-                    .wrapping_add(
-                        tantoangle[SlopeDiv(
-                            y as u32,
-                            x as u32,
-                        ) as usize],
-                    )
+                return ANG180.wrapping_add(tantoangle[SlopeDiv(y as u32, x as u32) as usize]);
             } else {
                 return ANG270
                     .wrapping_sub(1 as angle_t)
-                    .wrapping_sub(
-                        tantoangle[SlopeDiv(
-                            x as u32,
-                            y as u32,
-                        ) as usize],
-                    )
+                    .wrapping_sub(tantoangle[SlopeDiv(x as u32, y as u32) as usize]);
             }
         }
     };
@@ -359,8 +298,7 @@ pub unsafe fn R_InitTextureMapping() {
     let mut focallength: fixed_t = 0;
     focallength = FixedDiv(
         centerxfrac,
-        finetangent[(FINEANGLES / 4 as i32
-            + FIELDOFVIEW / 2 as i32) as usize],
+        finetangent[(FINEANGLES / 4 as i32 + FIELDOFVIEW / 2 as i32) as usize],
     );
     i = 0 as i32;
     while i < FINEANGLES / 2 as i32 {
@@ -370,8 +308,7 @@ pub unsafe fn R_InitTextureMapping() {
             t = viewwidth + 1 as i32;
         } else {
             t = FixedMul(finetangent[i as usize], focallength) as i32;
-            t = centerxfrac as i32 - t + FRACUNIT
-                - 1 as i32 >> FRACBITS;
+            t = centerxfrac as i32 - t + FRACUNIT - 1 as i32 >> FRACBITS;
             if t < -(1 as i32) {
                 t = -(1 as i32);
             } else if t > viewwidth + 1 as i32 {
@@ -412,8 +349,7 @@ pub unsafe fn R_InitLightTables() {
     let mut scale: i32 = 0;
     i = 0 as i32;
     while i < LIGHTLEVELS {
-        startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32
-            * NUMCOLORMAPS / LIGHTLEVELS;
+        startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32 * NUMCOLORMAPS / LIGHTLEVELS;
         j = 0 as i32;
         while j < MAXLIGHTZ {
             scale = FixedDiv(
@@ -428,8 +364,7 @@ pub unsafe fn R_InitLightTables() {
             if level >= NUMCOLORMAPS {
                 level = NUMCOLORMAPS - 1 as i32;
             }
-            zlight[i as usize][j as usize] = colormaps
-                .offset((level * 256 as i32) as isize);
+            zlight[i as usize][j as usize] = colormaps.offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;
@@ -440,10 +375,7 @@ pub static mut setsizeneeded: bool = false;
 pub static mut setblocks: i32 = 0;
 #[no_mangle]
 pub static mut setdetail: i32 = 0;
-pub unsafe fn R_SetViewSize(
-    mut blocks: i32,
-    mut detail: i32,
-) {
+pub unsafe fn R_SetViewSize(mut blocks: i32, mut detail: i32) {
     setsizeneeded = true;
     setblocks = blocks;
     setdetail = detail;
@@ -461,8 +393,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
         viewheight = SCREENHEIGHT;
     } else {
         scaledviewwidth = setblocks * 32 as i32;
-        viewheight = setblocks * 168 as i32 / 10 as i32
-            & !(7 as i32);
+        viewheight = setblocks * 168 as i32 / 10 as i32 & !(7 as i32);
     }
     detailshift = setdetail;
     viewwidth = scaledviewwidth >> detailshift;
@@ -495,8 +426,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
     }
     i = 0 as i32;
     while i < viewheight {
-        dy = (((i - viewheight / 2 as i32) << FRACBITS)
-            + FRACUNIT / 2 as i32) as fixed_t;
+        dy = (((i - viewheight / 2 as i32) << FRACBITS) + FRACUNIT / 2 as i32) as fixed_t;
         dy = (dy as i32).abs() as fixed_t;
         yslope[i as usize] = FixedDiv(
             ((viewwidth as fixed_t) << detailshift) / 2 as fixed_t * FRACUNIT,
@@ -506,17 +436,14 @@ pub unsafe fn R_ExecuteSetViewSize() {
     }
     i = 0 as i32;
     while i < viewwidth {
-        cosadj = (
-            finecosine[(xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize]
-                as i32
-        ).abs() as fixed_t;
+        cosadj = (finecosine[(xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize] as i32).abs()
+            as fixed_t;
         distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
         i += 1;
     }
     i = 0 as i32;
     while i < LIGHTLEVELS {
-        startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32
-            * NUMCOLORMAPS / LIGHTLEVELS;
+        startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32 * NUMCOLORMAPS / LIGHTLEVELS;
         j = 0 as i32;
         while j < MAXLIGHTSCALE {
             level = startmap - j * SCREENWIDTH / (viewwidth << detailshift) / DISTMAP;
@@ -526,8 +453,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
             if level >= NUMCOLORMAPS {
                 level = NUMCOLORMAPS - 1 as i32;
             }
-            scalelight[i as usize][j as usize] = colormaps
-                .offset((level * 256 as i32) as isize);
+            scalelight[i as usize][j as usize] = colormaps.offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;
@@ -546,10 +472,7 @@ pub unsafe fn R_Init() {
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     framecount = 0 as i32;
 }
-pub unsafe fn R_PointInSubsector(
-    mut x: fixed_t,
-    mut y: fixed_t,
-) -> *mut subsector_t {
+pub unsafe fn R_PointInSubsector(mut x: fixed_t, mut y: fixed_t) -> *mut subsector_t {
     let mut node: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     let mut nodenum: i32 = 0;
@@ -569,19 +492,19 @@ pub unsafe fn R_SetupFrame(mut player: *mut player_t) {
     viewplayer = player;
     viewx = (*(*player).mo).x;
     viewy = (*(*player).mo).y;
-    viewangle = (*(*player).mo).angle.wrapping_add(viewangleoffset as angle_t);
+    viewangle = (*(*player).mo)
+        .angle
+        .wrapping_add(viewangleoffset as angle_t);
     extralight = (*player).extralight;
     viewz = (*player).viewz;
     viewsin = finesine[(viewangle >> ANGLETOFINESHIFT) as usize];
     viewcos = finecosine[(viewangle >> ANGLETOFINESHIFT) as isize];
     sscount = 0 as i32;
     if (*player).fixedcolormap != 0 {
-        fixedcolormap = colormaps
-            .offset(
-                (((*player).fixedcolormap * 256 as i32) as usize)
-                    .wrapping_mul(::core::mem::size_of::<lighttable_t>() as usize)
-                    as isize,
-            );
+        fixedcolormap = colormaps.offset(
+            (((*player).fixedcolormap * 256 as i32) as usize)
+                .wrapping_mul(::core::mem::size_of::<lighttable_t>() as usize) as isize,
+        );
         walllights = &raw mut scalelightfixed as *mut *mut lighttable_t;
         i = 0 as i32;
         while i < MAXLIGHTSCALE {

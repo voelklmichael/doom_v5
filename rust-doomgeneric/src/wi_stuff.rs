@@ -1,37 +1,37 @@
-use crate::src::hu_lib::patch_t;
 use crate::src::d_event::event_t;
-use crate::src::d_player::{player_t};
+use crate::src::d_mode::{commercial, retail};
+use crate::src::d_player::player_t;
+use crate::src::d_ticcmd::{BT_ATTACK, BT_USE};
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::TICRATE;
+use crate::src::doomstat::gamemode;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::netgame;
+use crate::src::g_game::playeringame;
+use crate::src::g_game::players;
+use crate::src::g_game::G_WorldDone;
+use crate::src::game_state::game_state;
+use crate::src::hu_lib::patch_t;
+use crate::src::m_misc::M_StringCopy;
+use crate::src::m_random::M_Random;
+use crate::src::s_sound::S_ChangeMusic;
+use crate::src::s_sound::S_StartSound;
+use crate::src::sounds::{mus_dm2int, mus_inter};
+use crate::src::sounds::{sfx_barexp, sfx_pistol, sfx_pldeth, sfx_sgcock, sfx_slop};
+use crate::src::st_stuff::load_callback_t;
+use crate::src::stdint_types::size_t;
+use crate::src::v_video::V_DrawPatch;
 use crate::src::w_wad::{
     wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
 };
-use crate::src::g_game::G_WorldDone;
-use crate::src::m_random::M_Random;
-use crate::src::s_sound::S_ChangeMusic;
-use crate::src::m_misc::M_StringCopy;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::netgame;
-use crate::src::g_game::players;
-use crate::src::doomstat::gamemode;
-use crate::src::s_sound::S_StartSound;
-use crate::src::v_video::V_DrawPatch;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use crate::src::sounds::{sfx_barexp, sfx_pistol, sfx_pldeth, sfx_sgcock, sfx_slop};
-use crate::src::sounds::{mus_dm2int, mus_inter};
-use crate::src::d_ticcmd::{BT_ATTACK, BT_USE};
-use crate::src::d_mode::{commercial, retail};
-use crate::src::stdint_types::size_t;
 use libc::{printf, snprintf};
-use crate::src::st_stuff::load_callback_t;
-use crate::src::doomdef::NULL;
-use crate::src::doomdef::true_0;
-use crate::src::doomdef::false_0;
-use crate::src::doomdef::MAXPLAYERS;
-use crate::src::doomdef::TICRATE;
-use crate::src::doomdef::SCREENWIDTH;
-use crate::src::doomdef::SCREENHEIGHT;
-use crate::src::game_state::game_state;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -741,10 +741,10 @@ pub const SHOWNEXTLOCDELAY: i32 = 4;
 static mut acceleratestage: i32 = 0;
 static mut me: i32 = 0;
 static mut state: stateenum_t = StatCount;
-static mut wbs: *mut wbstartstruct_t = ::core::ptr::null::<wbstartstruct_t>()
-    as *mut wbstartstruct_t;
-static mut plrs: *mut wbplayerstruct_t = ::core::ptr::null::<wbplayerstruct_t>()
-    as *mut wbplayerstruct_t;
+static mut wbs: *mut wbstartstruct_t =
+    ::core::ptr::null::<wbstartstruct_t>() as *mut wbstartstruct_t;
+static mut plrs: *mut wbplayerstruct_t =
+    ::core::ptr::null::<wbplayerstruct_t>() as *mut wbplayerstruct_t;
 static mut cnt: i32 = 0;
 static mut bcnt: i32 = 0;
 static mut firstrefresh: i32 = 0;
@@ -766,8 +766,7 @@ static mut splat: [*mut patch_t; 2] = [
 ];
 static mut percent: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 static mut colon: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
-static mut num: [*mut patch_t; 10] = [::core::ptr::null::<patch_t>()
-    as *mut patch_t; 10];
+static mut num: [*mut patch_t; 10] = [::core::ptr::null::<patch_t>() as *mut patch_t; 10];
 static mut wiminus: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 static mut finished: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 static mut entering: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
@@ -786,8 +785,7 @@ static mut star: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 static mut bstar: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 static mut p: [*mut patch_t; 4] = [::core::ptr::null::<patch_t>() as *mut patch_t; 4];
 static mut bp: [*mut patch_t; 4] = [::core::ptr::null::<patch_t>() as *mut patch_t; 4];
-static mut lnames: *mut *mut patch_t = ::core::ptr::null::<*mut patch_t>()
-    as *mut *mut patch_t;
+static mut lnames: *mut *mut patch_t = ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t;
 static mut background: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 pub unsafe fn WI_slamBackground() {
     V_DrawPatch(0 as i32, 0 as i32, background);
@@ -797,24 +795,15 @@ pub unsafe fn WI_Responder(mut ev: *mut event_t) -> bool {
 }
 pub unsafe fn WI_drawLF() {
     let mut y: i32 = WI_TITLEY;
-    if gamemode as u32
-        != commercial as i32 as u32
-        || (*wbs).last < NUMCMAPS
-    {
+    if gamemode as u32 != commercial as i32 as u32 || (*wbs).last < NUMCMAPS {
         V_DrawPatch(
-            (SCREENWIDTH
-                - (**lnames.offset((*wbs).last as isize)).width as i32)
-                / 2 as i32,
+            (SCREENWIDTH - (**lnames.offset((*wbs).last as isize)).width as i32) / 2 as i32,
             y,
             *lnames.offset((*wbs).last as isize),
         );
-        y
-            += 5 as i32
-                * (**lnames.offset((*wbs).last as isize)).height as i32
-                / 4 as i32;
+        y += 5 as i32 * (**lnames.offset((*wbs).last as isize)).height as i32 / 4 as i32;
         V_DrawPatch(
-            (SCREENWIDTH - (*finished).width as i32)
-                / 2 as i32,
+            (SCREENWIDTH - (*finished).width as i32) / 2 as i32,
             y,
             finished,
         );
@@ -826,14 +815,7 @@ pub unsafe fn WI_drawLF() {
                 leftoffset: 1 as i16,
                 topoffset: 1 as i16,
                 columnofs: [
-                    0 as i32,
-                    0 as i32,
-                    0 as i32,
-                    0 as i32,
-                    0 as i32,
-                    0 as i32,
-                    0 as i32,
-                    0 as i32,
+                    0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32,
                 ],
             };
             V_DrawPatch(0 as i32, y, &raw mut tmp);
@@ -843,27 +825,18 @@ pub unsafe fn WI_drawLF() {
 pub unsafe fn WI_drawEL() {
     let mut y: i32 = WI_TITLEY;
     V_DrawPatch(
-        (SCREENWIDTH - (*entering).width as i32)
-            / 2 as i32,
+        (SCREENWIDTH - (*entering).width as i32) / 2 as i32,
         y,
         entering,
     );
-    y
-        += 5 as i32
-            * (**lnames.offset((*wbs).next as isize)).height as i32
-            / 4 as i32;
+    y += 5 as i32 * (**lnames.offset((*wbs).next as isize)).height as i32 / 4 as i32;
     V_DrawPatch(
-        (SCREENWIDTH
-            - (**lnames.offset((*wbs).next as isize)).width as i32)
-            / 2 as i32,
+        (SCREENWIDTH - (**lnames.offset((*wbs).next as isize)).width as i32) / 2 as i32,
         y,
         *lnames.offset((*wbs).next as isize),
     );
 }
-pub unsafe fn WI_drawOnLnode(
-    mut n: i32,
-    mut c: *mut *mut patch_t,
-) {
+pub unsafe fn WI_drawOnLnode(mut n: i32, mut c: *mut *mut patch_t) {
     let mut i: i32 = 0;
     let mut left: i32 = 0;
     let mut top: i32 = 0;
@@ -872,22 +845,18 @@ pub unsafe fn WI_drawOnLnode(
     let mut fits: bool = false;
     i = 0 as i32;
     loop {
-        left = lnodes[(*wbs).epsd as usize][n as usize].x
-            - (**c.offset(i as isize)).leftoffset as i32;
-        top = lnodes[(*wbs).epsd as usize][n as usize].y
-            - (**c.offset(i as isize)).topoffset as i32;
+        left =
+            lnodes[(*wbs).epsd as usize][n as usize].x - (**c.offset(i as isize)).leftoffset as i32;
+        top =
+            lnodes[(*wbs).epsd as usize][n as usize].y - (**c.offset(i as isize)).topoffset as i32;
         right = left + (**c.offset(i as isize)).width as i32;
         bottom = top + (**c.offset(i as isize)).height as i32;
-        if left >= 0 as i32 && right < SCREENWIDTH
-            && top >= 0 as i32 && bottom < SCREENHEIGHT
-        {
+        if left >= 0 as i32 && right < SCREENWIDTH && top >= 0 as i32 && bottom < SCREENHEIGHT {
             fits = true;
         } else {
             i += 1;
         }
-        if !(!fits && i != 2 as i32
-            && !(*c.offset(i as isize)).is_null())
-        {
+        if !(!fits && i != 2 as i32 && !(*c.offset(i as isize)).is_null()) {
             break;
         }
     }
@@ -899,8 +868,7 @@ pub unsafe fn WI_drawOnLnode(
         );
     } else {
         printf(
-            b"Could not place patch on level %d\0" as *const u8
-                as *const ::core::ffi::c_char,
+            b"Could not place patch on level %d\0" as *const u8 as *const ::core::ffi::c_char,
             n + 1 as i32,
         );
     };
@@ -908,9 +876,7 @@ pub unsafe fn WI_drawOnLnode(
 pub unsafe fn WI_initAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as u32
-        == commercial as i32 as u32
-    {
+    if gamemode as u32 == commercial as i32 as u32 {
         return;
     }
     if (*wbs).epsd > 2 as i32 {
@@ -918,21 +884,18 @@ pub unsafe fn WI_initAnimatedBack() {
     }
     i = 0 as i32;
     while i < NUMANIMS[(*wbs).epsd as usize] {
-        a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize))
-            .offset(i as isize) as *mut anim_t;
+        a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize)).offset(i as isize)
+            as *mut anim_t;
         (*a).ctr = -(1 as i32);
-        if (*a).type_0 as u32
-            == ANIM_ALWAYS as i32 as u32
-        {
-            (*a).nexttic = bcnt + 1 as i32 + M_Random(unsafe { &mut game_state().m_random }) % (*a).period;
-        } else if (*a).type_0 as u32
-            == ANIM_RANDOM as i32 as u32
-        {
-            (*a).nexttic = bcnt + 1 as i32 + (*a).data2
+        if (*a).type_0 as u32 == ANIM_ALWAYS as i32 as u32 {
+            (*a).nexttic =
+                bcnt + 1 as i32 + M_Random(unsafe { &mut game_state().m_random }) % (*a).period;
+        } else if (*a).type_0 as u32 == ANIM_RANDOM as i32 as u32 {
+            (*a).nexttic = bcnt
+                + 1 as i32
+                + (*a).data2
                 + M_Random(unsafe { &mut game_state().m_random }) % (*a).data1;
-        } else if (*a).type_0 as u32
-            == ANIM_LEVEL as i32 as u32
-        {
+        } else if (*a).type_0 as u32 == ANIM_LEVEL as i32 as u32 {
             (*a).nexttic = bcnt + 1 as i32;
         }
         i += 1;
@@ -941,9 +904,7 @@ pub unsafe fn WI_initAnimatedBack() {
 pub unsafe fn WI_updateAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as u32
-        == commercial as i32 as u32
-    {
+    if gamemode as u32 == commercial as i32 as u32 {
         return;
     }
     if (*wbs).epsd > 2 as i32 {
@@ -951,8 +912,8 @@ pub unsafe fn WI_updateAnimatedBack() {
     }
     i = 0 as i32;
     while i < NUMANIMS[(*wbs).epsd as usize] {
-        a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize))
-            .offset(i as isize) as *mut anim_t;
+        a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize)).offset(i as isize)
+            as *mut anim_t;
         if bcnt == (*a).nexttic {
             match (*a).type_0 as u32 {
                 0 => {
@@ -966,14 +927,16 @@ pub unsafe fn WI_updateAnimatedBack() {
                     (*a).ctr += 1;
                     if (*a).ctr == (*a).nanims {
                         (*a).ctr = -(1 as i32);
-                        (*a).nexttic = bcnt + (*a).data2 + M_Random(unsafe { &mut game_state().m_random }) % (*a).data1;
+                        (*a).nexttic = bcnt
+                            + (*a).data2
+                            + M_Random(unsafe { &mut game_state().m_random }) % (*a).data1;
                     } else {
                         (*a).nexttic = bcnt + (*a).period;
                     }
                 }
                 2 => {
-                    if !(state as i32 == StatCount as i32
-                        && i == 7 as i32) && (*wbs).next == (*a).data1
+                    if !(state as i32 == StatCount as i32 && i == 7 as i32)
+                        && (*wbs).next == (*a).data1
                     {
                         (*a).ctr += 1;
                         if (*a).ctr == (*a).nanims {
@@ -991,9 +954,7 @@ pub unsafe fn WI_updateAnimatedBack() {
 pub unsafe fn WI_drawAnimatedBack() {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as u32
-        == commercial as i32 as u32
-    {
+    if gamemode as u32 == commercial as i32 as u32 {
         return;
     }
     if (*wbs).epsd > 2 as i32 {
@@ -1001,22 +962,16 @@ pub unsafe fn WI_drawAnimatedBack() {
     }
     i = 0 as i32;
     while i < NUMANIMS[(*wbs).epsd as usize] {
-        a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize))
-            .offset(i as isize) as *mut anim_t;
+        a = (*(&raw mut anims as *mut *mut anim_t).offset((*wbs).epsd as isize)).offset(i as isize)
+            as *mut anim_t;
         if (*a).ctr >= 0 as i32 {
             V_DrawPatch((*a).loc.x, (*a).loc.y, (*a).p[(*a).ctr as usize]);
         }
         i += 1;
     }
 }
-pub unsafe fn WI_drawNum(
-    mut x: i32,
-    mut y: i32,
-    mut n: i32,
-    mut digits: i32,
-) -> i32 {
-    let mut fontwidth: i32 = (*num[0 as i32 as usize])
-        .width as i32;
+pub unsafe fn WI_drawNum(mut x: i32, mut y: i32, mut n: i32, mut digits: i32) -> i32 {
+    let mut fontwidth: i32 = (*num[0 as i32 as usize]).width as i32;
     let mut neg: i32 = 0;
     let mut temp: i32 = 0;
     if digits < 0 as i32 {
@@ -1054,22 +1009,14 @@ pub unsafe fn WI_drawNum(
     }
     return x;
 }
-pub unsafe fn WI_drawPercent(
-    mut x: i32,
-    mut y: i32,
-    mut p_0: i32,
-) {
+pub unsafe fn WI_drawPercent(mut x: i32, mut y: i32, mut p_0: i32) {
     if p_0 < 0 as i32 {
         return;
     }
     V_DrawPatch(x, y, percent);
     WI_drawNum(x, y, p_0, -(1 as i32));
 }
-pub unsafe fn WI_drawTime(
-    mut x: i32,
-    mut y: i32,
-    mut t: i32,
-) {
+pub unsafe fn WI_drawTime(mut x: i32, mut y: i32, mut t: i32) {
     let mut div: i32 = 0;
     let mut n: i32 = 0;
     if t < 0 as i32 {
@@ -1079,8 +1026,7 @@ pub unsafe fn WI_drawTime(
         div = 1 as i32;
         loop {
             n = t / div % 60 as i32;
-            x = WI_drawNum(x, y, n, 2 as i32)
-                - (*colon).width as i32;
+            x = WI_drawNum(x, y, n, 2 as i32) - (*colon).width as i32;
             div *= 60 as i32;
             if div == 60 as i32 || t / div != 0 {
                 V_DrawPatch(x, y, colon);
@@ -1095,12 +1041,9 @@ pub unsafe fn WI_drawTime(
 }
 pub unsafe fn WI_End() {
     pub unsafe fn WI_unloadData_0() {
-        WI_loadUnloadData(
-            Some(
-                WI_unloadCallback
-                    as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
-            ),
-        );
+        WI_loadUnloadData(Some(
+            WI_unloadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
+        ));
     }
     WI_unloadData_0();
 }
@@ -1137,9 +1080,7 @@ pub unsafe fn WI_drawShowNextLoc() {
     let mut last: i32 = 0;
     WI_slamBackground();
     WI_drawAnimatedBack();
-    if gamemode as u32
-        != commercial as i32 as u32
-    {
+    if gamemode as u32 != commercial as i32 as u32 {
         if (*wbs).epsd > 2 as i32 {
             WI_drawEL();
             return;
@@ -1161,10 +1102,7 @@ pub unsafe fn WI_drawShowNextLoc() {
             WI_drawOnLnode((*wbs).next, &raw mut yah as *mut *mut patch_t);
         }
     }
-    if gamemode as u32
-        != commercial as i32 as u32
-        || (*wbs).next != 30 as i32
-    {
+    if gamemode as u32 != commercial as i32 as u32 || (*wbs).next != 30 as i32 {
         WI_drawEL();
     }
 }
@@ -1172,9 +1110,7 @@ pub unsafe fn WI_drawNoState() {
     snl_pointeron = true;
     WI_drawShowNextLoc();
 }
-pub unsafe fn WI_fragSum(
-    mut playernum: i32,
-) -> i32 {
+pub unsafe fn WI_fragSum(mut playernum: i32) -> i32 {
     let mut i: i32 = 0;
     let mut frags_0: i32 = 0 as i32;
     i = 0 as i32;
@@ -1226,8 +1162,8 @@ pub unsafe fn WI_updateDeathmatchStats() {
                 j = 0 as i32;
                 while j < MAXPLAYERS {
                     if playeringame[j as usize] != 0 {
-                        dm_frags[i as usize][j as usize] = (*plrs.offset(i as isize))
-                            .frags[j as usize];
+                        dm_frags[i as usize][j as usize] =
+                            (*plrs.offset(i as isize)).frags[j as usize];
                     }
                     j += 1;
                 }
@@ -1235,7 +1171,8 @@ pub unsafe fn WI_updateDeathmatchStats() {
             }
             i += 1;
         }
-        S_StartSound(unsafe { &mut game_state().sounds }, 
+        S_StartSound(
+            unsafe { &mut game_state().sounds },
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
@@ -1243,7 +1180,8 @@ pub unsafe fn WI_updateDeathmatchStats() {
     }
     if dm_state == 2 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1258,9 +1196,7 @@ pub unsafe fn WI_updateDeathmatchStats() {
                         && dm_frags[i as usize][j as usize]
                             != (*plrs.offset(i as isize)).frags[j as usize]
                     {
-                        if (*plrs.offset(i as isize)).frags[j as usize]
-                            < 0 as i32
-                        {
+                        if (*plrs.offset(i as isize)).frags[j as usize] < 0 as i32 {
                             dm_frags[i as usize][j as usize] -= 1;
                         } else {
                             dm_frags[i as usize][j as usize] += 1;
@@ -1268,10 +1204,8 @@ pub unsafe fn WI_updateDeathmatchStats() {
                         if dm_frags[i as usize][j as usize] > 99 as i32 {
                             dm_frags[i as usize][j as usize] = 99 as i32;
                         }
-                        if dm_frags[i as usize][j as usize] < -(99 as i32)
-                        {
-                            dm_frags[i as usize][j as usize] = -(99
-                                as i32);
+                        if dm_frags[i as usize][j as usize] < -(99 as i32) {
+                            dm_frags[i as usize][j as usize] = -(99 as i32);
                         }
                         stillticking = true;
                     }
@@ -1288,7 +1222,8 @@ pub unsafe fn WI_updateDeathmatchStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1296,13 +1231,12 @@ pub unsafe fn WI_updateDeathmatchStats() {
         }
     } else if dm_state == 4 as i32 {
         if acceleratestage != 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_slop as i32,
             );
-            if gamemode as u32
-                == commercial as i32 as u32
-            {
+            if gamemode as u32 == commercial as i32 as u32 {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
@@ -1338,31 +1272,23 @@ pub unsafe fn WI_drawDeathmatchStats() {
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
             V_DrawPatch(
-                x
-                    - (*p[i as usize]).width as i32
-                        / 2 as i32,
+                x - (*p[i as usize]).width as i32 / 2 as i32,
                 DM_MATRIXY - WI_SPACINGY,
                 p[i as usize],
             );
             V_DrawPatch(
-                DM_MATRIXX
-                    - (*p[i as usize]).width as i32
-                        / 2 as i32,
+                DM_MATRIXX - (*p[i as usize]).width as i32 / 2 as i32,
                 y,
                 p[i as usize],
             );
             if i == me {
                 V_DrawPatch(
-                    x
-                        - (*p[i as usize]).width as i32
-                            / 2 as i32,
+                    x - (*p[i as usize]).width as i32 / 2 as i32,
                     DM_MATRIXY - WI_SPACINGY,
                     bstar,
                 );
                 V_DrawPatch(
-                    DM_MATRIXX
-                        - (*p[i as usize]).width as i32
-                            / 2 as i32,
+                    DM_MATRIXX - (*p[i as usize]).width as i32 / 2 as i32,
                     y,
                     star,
                 );
@@ -1381,22 +1307,12 @@ pub unsafe fn WI_drawDeathmatchStats() {
             j = 0 as i32;
             while j < MAXPLAYERS {
                 if playeringame[j as usize] != 0 {
-                    WI_drawNum(
-                        x + w,
-                        y,
-                        dm_frags[i as usize][j as usize],
-                        2 as i32,
-                    );
+                    WI_drawNum(x + w, y, dm_frags[i as usize][j as usize], 2 as i32);
                 }
                 x += DM_SPACINGX;
                 j += 1;
             }
-            WI_drawNum(
-                DM_TOTALSX + w,
-                y,
-                dm_totals[i as usize],
-                2 as i32,
-            );
+            WI_drawNum(DM_TOTALSX + w, y, dm_totals[i as usize], 2 as i32);
         }
         y += WI_SPACINGY;
         i += 1;
@@ -1435,19 +1351,20 @@ pub unsafe fn WI_updateNetgameStats() {
         i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
-                cnt_kills[i as usize] = (*plrs.offset(i as isize)).skills
-                    * 100 as i32 / (*wbs).maxkills;
-                cnt_items[i as usize] = (*plrs.offset(i as isize)).sitems
-                    * 100 as i32 / (*wbs).maxitems;
-                cnt_secret[i as usize] = (*plrs.offset(i as isize)).ssecret
-                    * 100 as i32 / (*wbs).maxsecret;
+                cnt_kills[i as usize] =
+                    (*plrs.offset(i as isize)).skills * 100 as i32 / (*wbs).maxkills;
+                cnt_items[i as usize] =
+                    (*plrs.offset(i as isize)).sitems * 100 as i32 / (*wbs).maxitems;
+                cnt_secret[i as usize] =
+                    (*plrs.offset(i as isize)).ssecret * 100 as i32 / (*wbs).maxsecret;
                 if dofrags != 0 {
                     cnt_frags[i as usize] = WI_fragSum(i);
                 }
             }
             i += 1;
         }
-        S_StartSound(unsafe { &mut game_state().sounds }, 
+        S_StartSound(
+            unsafe { &mut game_state().sounds },
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
@@ -1455,7 +1372,8 @@ pub unsafe fn WI_updateNetgameStats() {
     }
     if ng_state == 2 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1466,11 +1384,10 @@ pub unsafe fn WI_updateNetgameStats() {
             if !(playeringame[i as usize] == 0) {
                 cnt_kills[i as usize] += 2 as i32;
                 if cnt_kills[i as usize]
-                    >= (*plrs.offset(i as isize)).skills * 100 as i32
-                        / (*wbs).maxkills
+                    >= (*plrs.offset(i as isize)).skills * 100 as i32 / (*wbs).maxkills
                 {
-                    cnt_kills[i as usize] = (*plrs.offset(i as isize)).skills
-                        * 100 as i32 / (*wbs).maxkills;
+                    cnt_kills[i as usize] =
+                        (*plrs.offset(i as isize)).skills * 100 as i32 / (*wbs).maxkills;
                 } else {
                     stillticking = true;
                 }
@@ -1478,7 +1395,8 @@ pub unsafe fn WI_updateNetgameStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1486,7 +1404,8 @@ pub unsafe fn WI_updateNetgameStats() {
         }
     } else if ng_state == 4 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1497,11 +1416,10 @@ pub unsafe fn WI_updateNetgameStats() {
             if !(playeringame[i as usize] == 0) {
                 cnt_items[i as usize] += 2 as i32;
                 if cnt_items[i as usize]
-                    >= (*plrs.offset(i as isize)).sitems * 100 as i32
-                        / (*wbs).maxitems
+                    >= (*plrs.offset(i as isize)).sitems * 100 as i32 / (*wbs).maxitems
                 {
-                    cnt_items[i as usize] = (*plrs.offset(i as isize)).sitems
-                        * 100 as i32 / (*wbs).maxitems;
+                    cnt_items[i as usize] =
+                        (*plrs.offset(i as isize)).sitems * 100 as i32 / (*wbs).maxitems;
                 } else {
                     stillticking = true;
                 }
@@ -1509,7 +1427,8 @@ pub unsafe fn WI_updateNetgameStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1517,7 +1436,8 @@ pub unsafe fn WI_updateNetgameStats() {
         }
     } else if ng_state == 6 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1528,11 +1448,10 @@ pub unsafe fn WI_updateNetgameStats() {
             if !(playeringame[i as usize] == 0) {
                 cnt_secret[i as usize] += 2 as i32;
                 if cnt_secret[i as usize]
-                    >= (*plrs.offset(i as isize)).ssecret * 100 as i32
-                        / (*wbs).maxsecret
+                    >= (*plrs.offset(i as isize)).ssecret * 100 as i32 / (*wbs).maxsecret
                 {
-                    cnt_secret[i as usize] = (*plrs.offset(i as isize)).ssecret
-                        * 100 as i32 / (*wbs).maxsecret;
+                    cnt_secret[i as usize] =
+                        (*plrs.offset(i as isize)).ssecret * 100 as i32 / (*wbs).maxsecret;
                 } else {
                     stillticking = true;
                 }
@@ -1540,17 +1459,17 @@ pub unsafe fn WI_updateNetgameStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
-            ng_state
-                += 1 as i32
-                    + 2 as i32 * (dofrags == 0) as i32;
+            ng_state += 1 as i32 + 2 as i32 * (dofrags == 0) as i32;
         }
     } else if ng_state == 8 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1570,7 +1489,8 @@ pub unsafe fn WI_updateNetgameStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pldeth as i32,
             );
@@ -1578,13 +1498,12 @@ pub unsafe fn WI_updateNetgameStats() {
         }
     } else if ng_state == 10 as i32 {
         if acceleratestage != 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_sgcock as i32,
             );
-            if gamemode as u32
-                == commercial as i32 as u32
-            {
+            if gamemode as u32 == commercial as i32 as u32 {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
@@ -1610,7 +1529,8 @@ pub unsafe fn WI_drawNetgameStats() {
         32 as i32
             + (*star).width as i32 / 2 as i32
             + 32 as i32 * (dofrags == 0) as i32
-            + NG_SPACINGX - (*kills).width as i32,
+            + NG_SPACINGX
+            - (*kills).width as i32,
         NG_STATSY,
         kills,
     );
@@ -1647,43 +1567,20 @@ pub unsafe fn WI_drawNetgameStats() {
     i = 0 as i32;
     while i < MAXPLAYERS {
         if !(playeringame[i as usize] == 0) {
-            x = 32 as i32
-                + (*star).width as i32 / 2 as i32
-                + 32 as i32 * (dofrags == 0) as i32;
-            V_DrawPatch(
-                x - (*p[i as usize]).width as i32,
-                y,
-                p[i as usize],
-            );
+            x = 32 as i32 + (*star).width as i32 / 2 as i32 + 32 as i32 * (dofrags == 0) as i32;
+            V_DrawPatch(x - (*p[i as usize]).width as i32, y, p[i as usize]);
             if i == me {
                 V_DrawPatch(x - (*p[i as usize]).width as i32, y, star);
             }
             x += NG_SPACINGX;
-            WI_drawPercent(
-                x - pwidth,
-                y + 10 as i32,
-                cnt_kills[i as usize],
-            );
+            WI_drawPercent(x - pwidth, y + 10 as i32, cnt_kills[i as usize]);
             x += NG_SPACINGX;
-            WI_drawPercent(
-                x - pwidth,
-                y + 10 as i32,
-                cnt_items[i as usize],
-            );
+            WI_drawPercent(x - pwidth, y + 10 as i32, cnt_items[i as usize]);
             x += NG_SPACINGX;
-            WI_drawPercent(
-                x - pwidth,
-                y + 10 as i32,
-                cnt_secret[i as usize],
-            );
+            WI_drawPercent(x - pwidth, y + 10 as i32, cnt_secret[i as usize]);
             x += NG_SPACINGX;
             if dofrags != 0 {
-                WI_drawNum(
-                    x,
-                    y + 10 as i32,
-                    cnt_frags[i as usize],
-                    -(1 as i32),
-                );
+                WI_drawNum(x, y + 10 as i32, cnt_frags[i as usize], -(1 as i32));
             }
             y += WI_SPACINGY;
         }
@@ -1696,10 +1593,8 @@ pub unsafe fn WI_initStats() {
     acceleratestage = 0 as i32;
     sp_state = 1 as i32;
     cnt_secret[0 as i32 as usize] = -(1 as i32);
-    cnt_items[0 as i32 as usize] = cnt_secret[0 as i32
-        as usize];
-    cnt_kills[0 as i32 as usize] = cnt_items[0 as i32
-        as usize];
+    cnt_items[0 as i32 as usize] = cnt_secret[0 as i32 as usize];
+    cnt_kills[0 as i32 as usize] = cnt_items[0 as i32 as usize];
     cnt_par = -(1 as i32);
     cnt_time = cnt_par;
     cnt_pause = TICRATE;
@@ -1709,15 +1604,16 @@ pub unsafe fn WI_updateStats() {
     WI_updateAnimatedBack();
     if acceleratestage != 0 && sp_state != 10 as i32 {
         acceleratestage = 0 as i32;
-        cnt_kills[0 as i32 as usize] = (*plrs.offset(me as isize)).skills
-            * 100 as i32 / (*wbs).maxkills;
-        cnt_items[0 as i32 as usize] = (*plrs.offset(me as isize)).sitems
-            * 100 as i32 / (*wbs).maxitems;
-        cnt_secret[0 as i32 as usize] = (*plrs.offset(me as isize))
-            .ssecret * 100 as i32 / (*wbs).maxsecret;
+        cnt_kills[0 as i32 as usize] =
+            (*plrs.offset(me as isize)).skills * 100 as i32 / (*wbs).maxkills;
+        cnt_items[0 as i32 as usize] =
+            (*plrs.offset(me as isize)).sitems * 100 as i32 / (*wbs).maxitems;
+        cnt_secret[0 as i32 as usize] =
+            (*plrs.offset(me as isize)).ssecret * 100 as i32 / (*wbs).maxsecret;
         cnt_time = (*plrs.offset(me as isize)).stime / TICRATE;
         cnt_par = (*wbs).partime / TICRATE;
-        S_StartSound(unsafe { &mut game_state().sounds }, 
+        S_StartSound(
+            unsafe { &mut game_state().sounds },
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
@@ -1726,18 +1622,19 @@ pub unsafe fn WI_updateStats() {
     if sp_state == 2 as i32 {
         cnt_kills[0 as i32 as usize] += 2 as i32;
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
         }
         if cnt_kills[0 as i32 as usize]
-            >= (*plrs.offset(me as isize)).skills * 100 as i32
-                / (*wbs).maxkills
+            >= (*plrs.offset(me as isize)).skills * 100 as i32 / (*wbs).maxkills
         {
-            cnt_kills[0 as i32 as usize] = (*plrs.offset(me as isize))
-                .skills * 100 as i32 / (*wbs).maxkills;
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            cnt_kills[0 as i32 as usize] =
+                (*plrs.offset(me as isize)).skills * 100 as i32 / (*wbs).maxkills;
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1746,18 +1643,19 @@ pub unsafe fn WI_updateStats() {
     } else if sp_state == 4 as i32 {
         cnt_items[0 as i32 as usize] += 2 as i32;
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
         }
         if cnt_items[0 as i32 as usize]
-            >= (*plrs.offset(me as isize)).sitems * 100 as i32
-                / (*wbs).maxitems
+            >= (*plrs.offset(me as isize)).sitems * 100 as i32 / (*wbs).maxitems
         {
-            cnt_items[0 as i32 as usize] = (*plrs.offset(me as isize))
-                .sitems * 100 as i32 / (*wbs).maxitems;
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            cnt_items[0 as i32 as usize] =
+                (*plrs.offset(me as isize)).sitems * 100 as i32 / (*wbs).maxitems;
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1766,18 +1664,19 @@ pub unsafe fn WI_updateStats() {
     } else if sp_state == 6 as i32 {
         cnt_secret[0 as i32 as usize] += 2 as i32;
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
         }
         if cnt_secret[0 as i32 as usize]
-            >= (*plrs.offset(me as isize)).ssecret * 100 as i32
-                / (*wbs).maxsecret
+            >= (*plrs.offset(me as isize)).ssecret * 100 as i32 / (*wbs).maxsecret
         {
-            cnt_secret[0 as i32 as usize] = (*plrs.offset(me as isize))
-                .ssecret * 100 as i32 / (*wbs).maxsecret;
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            cnt_secret[0 as i32 as usize] =
+                (*plrs.offset(me as isize)).ssecret * 100 as i32 / (*wbs).maxsecret;
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1785,7 +1684,8 @@ pub unsafe fn WI_updateStats() {
         }
     } else if sp_state == 8 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1798,7 +1698,8 @@ pub unsafe fn WI_updateStats() {
         if cnt_par >= (*wbs).partime / TICRATE {
             cnt_par = (*wbs).partime / TICRATE;
             if cnt_time >= (*plrs.offset(me as isize)).stime / TICRATE {
-                S_StartSound(unsafe { &mut game_state().sounds }, 
+                S_StartSound(
+                    unsafe { &mut game_state().sounds },
                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     sfx_barexp as i32,
                 );
@@ -1807,13 +1708,12 @@ pub unsafe fn WI_updateStats() {
         }
     } else if sp_state == 10 as i32 {
         if acceleratestage != 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_sgcock as i32,
             );
-            if gamemode as u32
-                == commercial as i32 as u32
-            {
+            if gamemode as u32 == commercial as i32 as u32 {
                 WI_initNoState();
             } else {
                 WI_initShowNextLoc();
@@ -1829,9 +1729,7 @@ pub unsafe fn WI_updateStats() {
 }
 pub unsafe fn WI_drawStats() {
     let mut lh: i32 = 0;
-    lh = 3 as i32
-        * (*num[0 as i32 as usize]).height as i32
-        / 2 as i32;
+    lh = 3 as i32 * (*num[0 as i32 as usize]).height as i32 / 2 as i32;
     WI_slamBackground();
     WI_drawAnimatedBack();
     WI_drawLF();
@@ -1867,9 +1765,7 @@ pub unsafe fn WI_checkForAccelerate() {
     player = &raw mut players as *mut player_t;
     while i < MAXPLAYERS {
         if playeringame[i as usize] != 0 {
-            if (*player).cmd.buttons as i32
-                & BT_ATTACK as i32 != 0
-            {
+            if (*player).cmd.buttons as i32 & BT_ATTACK as i32 != 0 {
                 if (*player).attackdown == 0 {
                     acceleratestage = 1 as i32;
                 }
@@ -1877,9 +1773,7 @@ pub unsafe fn WI_checkForAccelerate() {
             } else {
                 (*player).attackdown = false_0;
             }
-            if (*player).cmd.buttons as i32 & BT_USE as i32
-                != 0
-            {
+            if (*player).cmd.buttons as i32 & BT_USE as i32 != 0 {
                 if (*player).usedown == 0 {
                     acceleratestage = 1 as i32;
                 }
@@ -1895,12 +1789,18 @@ pub unsafe fn WI_checkForAccelerate() {
 pub unsafe fn WI_Ticker() {
     bcnt += 1;
     if bcnt == 1 as i32 {
-        if gamemode as u32
-            == commercial as i32 as u32
-        {
-            S_ChangeMusic(unsafe { &mut game_state().sounds }, mus_dm2int as i32, true_0);
+        if gamemode as u32 == commercial as i32 as u32 {
+            S_ChangeMusic(
+                unsafe { &mut game_state().sounds },
+                mus_dm2int as i32,
+                true_0,
+            );
         } else {
-            S_ChangeMusic(unsafe { &mut game_state().sounds }, mus_inter as i32, true_0);
+            S_ChangeMusic(
+                unsafe { &mut game_state().sounds },
+                mus_inter as i32,
+                true_0,
+            );
         }
     }
     WI_checkForAccelerate();
@@ -1928,9 +1828,7 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
     let mut j: i32 = 0;
     let mut name: [::core::ffi::c_char; 9] = [0; 9];
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if gamemode as u32
-        == commercial as i32 as u32
-    {
+    if gamemode as u32 == commercial as i32 as u32 {
         i = 0 as i32;
         while i < NUMCMAPS {
             snprintf(
@@ -1939,10 +1837,7 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
                 b"CWILV%2.2d\0" as *const u8 as *const ::core::ffi::c_char,
                 i,
             );
-            callback
-                .expect(
-                    "non-null function pointer",
-                )(
+            callback.expect("non-null function pointer")(
                 &raw mut name as *mut ::core::ffi::c_char,
                 lnames.offset(i as isize) as *mut *mut patch_t,
             );
@@ -1958,41 +1853,23 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
                 (*wbs).epsd,
                 i,
             );
-            callback
-                .expect(
-                    "non-null function pointer",
-                )(
+            callback.expect("non-null function pointer")(
                 &raw mut name as *mut ::core::ffi::c_char,
                 lnames.offset(i as isize) as *mut *mut patch_t,
             );
             i += 1;
         }
-        callback
-            .expect(
-                "non-null function pointer",
-            )(
-            b"WIURH0\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            (&raw mut yah as *mut *mut patch_t).offset(0 as i32 as isize)
-                as *mut *mut patch_t,
+        callback.expect("non-null function pointer")(
+            b"WIURH0\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            (&raw mut yah as *mut *mut patch_t).offset(0 as i32 as isize) as *mut *mut patch_t,
         );
-        callback
-            .expect(
-                "non-null function pointer",
-            )(
-            b"WIURH1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            (&raw mut yah as *mut *mut patch_t).offset(1 as i32 as isize)
-                as *mut *mut patch_t,
+        callback.expect("non-null function pointer")(
+            b"WIURH1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            (&raw mut yah as *mut *mut patch_t).offset(1 as i32 as isize) as *mut *mut patch_t,
         );
-        callback
-            .expect(
-                "non-null function pointer",
-            )(
-            b"WISPLAT\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            (&raw mut splat as *mut *mut patch_t)
-                .offset(0 as i32 as isize) as *mut *mut patch_t,
+        callback.expect("non-null function pointer")(
+            b"WISPLAT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            (&raw mut splat as *mut *mut patch_t).offset(0 as i32 as isize) as *mut *mut patch_t,
         );
         if (*wbs).epsd < 3 as i32 {
             j = 0 as i32;
@@ -2001,30 +1878,23 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
                     .offset(j as isize) as *mut anim_t;
                 i = 0 as i32;
                 while i < (*a).nanims {
-                    if (*wbs).epsd != 1 as i32
-                        || j != 8 as i32
-                    {
+                    if (*wbs).epsd != 1 as i32 || j != 8 as i32 {
                         snprintf(
                             &raw mut name as *mut ::core::ffi::c_char,
                             9 as size_t,
-                            b"WIA%d%.2d%.2d\0" as *const u8
-                                as *const ::core::ffi::c_char,
+                            b"WIA%d%.2d%.2d\0" as *const u8 as *const ::core::ffi::c_char,
                             (*wbs).epsd,
                             j,
                             i,
                         );
-                        callback
-                            .expect(
-                                "non-null function pointer",
-                            )(
+                        callback.expect("non-null function pointer")(
                             &raw mut name as *mut ::core::ffi::c_char,
                             (&raw mut (*a).p as *mut *mut patch_t).offset(i as isize)
                                 as *mut *mut patch_t,
                         );
                     } else {
-                        (*a).p[i as usize] = (*anims[1 as i32 as usize]
-                            .offset(4 as i32 as isize))
-                            .p[i as usize];
+                        (*a).p[i as usize] =
+                            (*anims[1 as i32 as usize].offset(4 as i32 as isize)).p[i as usize];
                     }
                     i += 1;
                 }
@@ -2032,12 +1902,8 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
             }
         }
     }
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIMINUS\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIMINUS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut wiminus,
     );
     i = 0 as i32;
@@ -2048,156 +1914,84 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
             b"WINUM%d\0" as *const u8 as *const ::core::ffi::c_char,
             i,
         );
-        callback
-            .expect(
-                "non-null function pointer",
-            )(
+        callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
             (&raw mut num as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
         );
         i += 1;
     }
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIPCNT\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIPCNT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut percent,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
+    callback.expect("non-null function pointer")(
         b"WIF\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut finished,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIENTER\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIENTER\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut entering,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIOSTK\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIOSTK\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut kills,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIOSTS\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIOSTS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut secret,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WISCRT2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WISCRT2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut sp_secret,
     );
-    if W_CheckNumForName("WIOBJ",
-    ) >= 0 as i32
-    {
+    if W_CheckNumForName("WIOBJ") >= 0 as i32 {
         if netgame && deathmatch == 0 {
-            callback
-                .expect(
-                    "non-null function pointer",
-                )(
-                b"WIOBJ\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
+            callback.expect("non-null function pointer")(
+                b"WIOBJ\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
                 &raw mut items,
             );
         } else {
-            callback
-                .expect(
-                    "non-null function pointer",
-                )(
-                b"WIOSTI\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
+            callback.expect("non-null function pointer")(
+                b"WIOSTI\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
                 &raw mut items,
             );
         }
     } else {
-        callback
-            .expect(
-                "non-null function pointer",
-            )(
-            b"WIOSTI\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+        callback.expect("non-null function pointer")(
+            b"WIOSTI\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             &raw mut items,
         );
     }
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIFRGS\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIFRGS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut frags,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WICOLON\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WICOLON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut colon,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WITIME\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WITIME\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut timepatch,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WISUCKS\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WISUCKS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut sucks,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIPAR\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIPAR\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut par,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIKILRS\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIKILRS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut killers,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIVCTMS\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIVCTMS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut victims,
     );
-    callback
-        .expect(
-            "non-null function pointer",
-        )(
-        b"WIMSTT\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    callback.expect("non-null function pointer")(
+        b"WIMSTT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         &raw mut total,
     );
     i = 0 as i32;
@@ -2208,10 +2002,7 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
             b"STPB%d\0" as *const u8 as *const ::core::ffi::c_char,
             i,
         );
-        callback
-            .expect(
-                "non-null function pointer",
-            )(
+        callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
             (&raw mut p as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
         );
@@ -2221,27 +2012,19 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
             b"WIBP%d\0" as *const u8 as *const ::core::ffi::c_char,
             i + 1 as i32,
         );
-        callback
-            .expect(
-                "non-null function pointer",
-            )(
+        callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
             (&raw mut bp as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
         );
         i += 1;
     }
-    if gamemode as u32
-        == commercial as i32 as u32
-    {
+    if gamemode as u32 == commercial as i32 as u32 {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
             b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char,
             ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
         );
-    } else if gamemode as u32
-        == retail as i32 as u32
-        && (*wbs).epsd == 3 as i32
-    {
+    } else if gamemode as u32 == retail as i32 as u32 && (*wbs).epsd == 3 as i32 {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
             b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char,
@@ -2255,56 +2038,37 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
             (*wbs).epsd,
         );
     }
-    callback
-        .expect(
-            "non-null function pointer",
-        )(&raw mut name as *mut ::core::ffi::c_char, &raw mut background);
+    callback.expect("non-null function pointer")(
+        &raw mut name as *mut ::core::ffi::c_char,
+        &raw mut background,
+    );
 }
-unsafe fn WI_loadCallback(
-    mut name: *mut ::core::ffi::c_char,
-    mut variable: *mut *mut patch_t,
-) {
-    *variable = W_CacheLumpName(
-        &wad_name8_to_string(name),
-        PU_STATIC as i32,
-    ) as *mut patch_t;
+unsafe fn WI_loadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
+    *variable = W_CacheLumpName(&wad_name8_to_string(name), PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn WI_loadData() {
-    if gamemode as u32
-        == commercial as i32 as u32
-    {
+    if gamemode as u32 == commercial as i32 as u32 {
         NUMCMAPS = 32 as i32;
         lnames = Z_Malloc(
-            (::core::mem::size_of::<*mut patch_t>() as usize)
-                .wrapping_mul(NUMCMAPS as usize) as i32,
+            (::core::mem::size_of::<*mut patch_t>() as usize).wrapping_mul(NUMCMAPS as usize)
+                as i32,
             PU_STATIC as i32,
             NULL,
         ) as *mut *mut patch_t;
     } else {
         lnames = Z_Malloc(
-            (::core::mem::size_of::<*mut patch_t>() as usize)
-                .wrapping_mul(NUMMAPS as usize) as i32,
+            (::core::mem::size_of::<*mut patch_t>() as usize).wrapping_mul(NUMMAPS as usize) as i32,
             PU_STATIC as i32,
             NULL,
         ) as *mut *mut patch_t;
     }
-    WI_loadUnloadData(
-        Some(
-            WI_loadCallback
-                as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
-        ),
-    );
-    star = W_CacheLumpName("STFST01",
-        PU_STATIC as i32,
-    ) as *mut patch_t;
-    bstar = W_CacheLumpName("STFDEAD0",
-        PU_STATIC as i32,
-    ) as *mut patch_t;
+    WI_loadUnloadData(Some(
+        WI_loadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
+    ));
+    star = W_CacheLumpName("STFST01", PU_STATIC as i32) as *mut patch_t;
+    bstar = W_CacheLumpName("STFDEAD0", PU_STATIC as i32) as *mut patch_t;
 }
-unsafe fn WI_unloadCallback(
-    mut name: *mut ::core::ffi::c_char,
-    mut variable: *mut *mut patch_t,
-) {
+unsafe fn WI_unloadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
     W_ReleaseLumpName(&wad_name8_to_string(name));
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
@@ -2345,9 +2109,7 @@ pub unsafe fn WI_initVariables(mut wbstartstruct: *mut wbstartstruct_t) {
     if (*wbs).maxsecret == 0 {
         (*wbs).maxsecret = 1 as i32;
     }
-    if gamemode as u32
-        != retail as i32 as u32
-    {
+    if gamemode as u32 != retail as i32 as u32 {
         if (*wbs).epsd > 2 as i32 {
             (*wbs).epsd -= 3 as i32;
         }
@@ -2367,14 +2129,11 @@ pub unsafe fn WI_Start(mut wbstartstruct: *mut wbstartstruct_t) {
 unsafe extern "C" fn run_static_initializers() {
     NUMANIMS = [
         (::core::mem::size_of::<[anim_t; 10]>() as usize)
-            .wrapping_div(::core::mem::size_of::<anim_t>() as usize)
-            as i32,
+            .wrapping_div(::core::mem::size_of::<anim_t>() as usize) as i32,
         (::core::mem::size_of::<[anim_t; 9]>() as usize)
-            .wrapping_div(::core::mem::size_of::<anim_t>() as usize)
-            as i32,
+            .wrapping_div(::core::mem::size_of::<anim_t>() as usize) as i32,
         (::core::mem::size_of::<[anim_t; 6]>() as usize)
-            .wrapping_div(::core::mem::size_of::<anim_t>() as usize)
-            as i32,
+            .wrapping_div(::core::mem::size_of::<anim_t>() as usize) as i32,
         0,
     ];
 }

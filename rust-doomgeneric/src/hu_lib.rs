@@ -1,20 +1,19 @@
-
-use crate::src::r_draw::R_VideoErase;
-use crate::src::r_draw::viewwindowx;
-use crate::src::r_draw::viewwindowy;
-use crate::src::v_video::V_DrawPatchDirect;
-use crate::src::r_draw::viewwidth;
-use crate::src::r_draw::viewheight;
 use crate::src::am_map::automapactive;
-use libc::toupper;
-use crate::src::m_misc::__ctype_toupper_loc;
 use crate::src::doomdef::boolean;
-use crate::src::stdint_types::__int32_t;
-use crate::src::doomdef::true_0;
 use crate::src::doomdef::false_0;
+use crate::src::doomdef::true_0;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::m_controls::KEY_BACKSPACE;
 use crate::src::m_controls::KEY_ENTER;
+use crate::src::m_misc::__ctype_toupper_loc;
+use crate::src::r_draw::viewheight;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_draw::viewwindowx;
+use crate::src::r_draw::viewwindowy;
+use crate::src::r_draw::R_VideoErase;
+use crate::src::stdint_types::__int32_t;
+use crate::src::v_video::V_DrawPatchDirect;
+use libc::toupper;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct patch_t {
@@ -71,28 +70,23 @@ pub unsafe fn HUlib_addCharToTextLine(
     mut ch: ::core::ffi::c_char,
 ) -> boolean {
     if (*t).l.len() as i32 == HU_MAXLINELENGTH {
-        return false_0 as boolean
+        return false_0 as boolean;
     } else {
         (*t).l.push(ch as u8 as char);
         (*t).needsupdate = 4 as i32;
         return true_0 as boolean;
     };
 }
-pub unsafe fn HUlib_delCharFromTextLine(
-    mut t: *mut hu_textline_t,
-) -> bool {
+pub unsafe fn HUlib_delCharFromTextLine(mut t: *mut hu_textline_t) -> bool {
     if (*t).l.is_empty() {
-        return false
+        return false;
     } else {
         (*t).l.pop();
         (*t).needsupdate = 4 as i32;
         return true;
     };
 }
-pub unsafe fn HUlib_drawTextLine(
-    mut l: *mut hu_textline_t,
-    mut drawcursor: boolean,
-) {
+pub unsafe fn HUlib_drawTextLine(mut l: *mut hu_textline_t, mut drawcursor: boolean) {
     let mut i: i32 = 0;
     let mut w: i32 = 0;
     let mut x: i32 = 0;
@@ -101,19 +95,12 @@ pub unsafe fn HUlib_drawTextLine(
     i = 0 as i32;
     while i < (*l).l.len() as i32 {
         c = toupper((*l).l.as_bytes()[i as usize] as i32) as u8;
-        if c as i32 != ' ' as i32 && c as i32 >= (*l).sc
-            && c as i32 <= '_' as i32
-        {
-            w = (**(*l).f.offset((c as i32 - (*l).sc) as isize)).width
-                as i32;
+        if c as i32 != ' ' as i32 && c as i32 >= (*l).sc && c as i32 <= '_' as i32 {
+            w = (**(*l).f.offset((c as i32 - (*l).sc) as isize)).width as i32;
             if x + w > SCREENWIDTH {
                 break;
             }
-            V_DrawPatchDirect(
-                x,
-                (*l).y,
-                *(*l).f.offset((c as i32 - (*l).sc) as isize),
-            );
+            V_DrawPatchDirect(x, (*l).y, *(*l).f.offset((c as i32 - (*l).sc) as isize));
             x += w;
         } else {
             x += 4 as i32;
@@ -124,9 +111,7 @@ pub unsafe fn HUlib_drawTextLine(
         i += 1;
     }
     if drawcursor != 0
-        && x
-            + (**(*l).f.offset(('_' as i32 - (*l).sc) as isize)).width
-                as i32 <= SCREENWIDTH
+        && x + (**(*l).f.offset(('_' as i32 - (*l).sc) as isize)).width as i32 <= SCREENWIDTH
     {
         V_DrawPatchDirect(x, (*l).y, *(*l).f.offset(('_' as i32 - (*l).sc) as isize));
     }
@@ -136,8 +121,7 @@ pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
     let mut y: i32 = 0;
     let mut yoffset: i32 = 0;
     if !automapactive && viewwindowx != 0 && (*l).needsupdate != 0 {
-        lh = (**(*l).f.offset(0 as i32 as isize)).height
-            as i32 + 1 as i32;
+        lh = (**(*l).f.offset(0 as i32 as isize)).height as i32 + 1 as i32;
         y = (*l).y;
         yoffset = y * SCREENWIDTH;
         while y < (*l).y + lh {
@@ -145,10 +129,7 @@ pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
                 R_VideoErase(yoffset as u32, SCREENWIDTH);
             } else {
                 R_VideoErase(yoffset as u32, viewwindowx);
-                R_VideoErase(
-                    (yoffset + viewwindowx + viewwidth) as u32,
-                    viewwindowx,
-                );
+                R_VideoErase((yoffset + viewwindowx + viewwidth) as u32, viewwindowx);
             }
             y += 1;
             yoffset += SCREENWIDTH;
@@ -175,13 +156,9 @@ pub unsafe fn HUlib_initSText(
     i = 0 as i32;
     while i < h {
         HUlib_initTextLine(
-            (&raw mut (*s).l as *mut hu_textline_t).offset(i as isize)
-                as *mut hu_textline_t,
+            (&raw mut (*s).l as *mut hu_textline_t).offset(i as isize) as *mut hu_textline_t,
             x,
-            y
-                - i
-                    * ((**font.offset(0 as i32 as isize)).height
-                        as i32 + 1 as i32),
+            y - i * ((**font.offset(0 as i32 as isize)).height as i32 + 1 as i32),
             font,
             startchar,
         );
@@ -195,8 +172,7 @@ pub unsafe fn HUlib_addLineToSText(mut s: *mut hu_stext_t) {
         (*s).cl = 0 as i32;
     }
     HUlib_clearTextLine(
-        (&raw mut (*s).l as *mut hu_textline_t).offset((*s).cl as isize)
-            as *mut hu_textline_t,
+        (&raw mut (*s).l as *mut hu_textline_t).offset((*s).cl as isize) as *mut hu_textline_t,
     );
     i = 0 as i32;
     while i < (*s).h {
@@ -223,8 +199,7 @@ pub unsafe fn HUlib_addMessageToSText(
     }
     for b in msg.bytes() {
         HUlib_addCharToTextLine(
-            (&raw mut (*s).l as *mut hu_textline_t).offset((*s).cl as isize)
-                as *mut hu_textline_t,
+            (&raw mut (*s).l as *mut hu_textline_t).offset((*s).cl as isize) as *mut hu_textline_t,
             b as ::core::ffi::c_char,
         );
     }
@@ -242,8 +217,7 @@ pub unsafe fn HUlib_drawSText(mut s: *mut hu_stext_t) {
         if idx < 0 as i32 {
             idx += (*s).h;
         }
-        l = (&raw mut (*s).l as *mut hu_textline_t).offset(idx as isize)
-            as *mut hu_textline_t;
+        l = (&raw mut (*s).l as *mut hu_textline_t).offset(idx as isize) as *mut hu_textline_t;
         HUlib_drawTextLine(l, false_0 as boolean);
         i += 1;
     }
@@ -256,8 +230,7 @@ pub unsafe fn HUlib_eraseSText(mut s: *mut hu_stext_t) {
             (*s).l[i as usize].needsupdate = 4 as i32;
         }
         HUlib_eraseTextLine(
-            (&raw mut (*s).l as *mut hu_textline_t).offset(i as isize)
-                as *mut hu_textline_t,
+            (&raw mut (*s).l as *mut hu_textline_t).offset(i as isize) as *mut hu_textline_t
         );
         i += 1;
     }
@@ -296,18 +269,13 @@ pub unsafe fn HUlib_addPrefixToIText(it: *mut hu_itext_t, s: &str) {
     }
     (*it).lm = (*it).l.l.len() as i32;
 }
-pub unsafe fn HUlib_keyInIText(
-    mut it: *mut hu_itext_t,
-    mut ch: u8,
-) -> boolean {
+pub unsafe fn HUlib_keyInIText(mut it: *mut hu_itext_t, mut ch: u8) -> boolean {
     ch = ({
         let mut __res: i32 = 0;
         if ::core::mem::size_of::<u8>() as usize > 1 as usize {
             if 0 != 0 {
                 let mut __c: i32 = ch as i32;
-                __res = (if __c < -(128 as i32)
-                    || __c > 255 as i32
-                {
+                __res = (if __c < -(128 as i32) || __c > 255 as i32 {
                     __c as __int32_t
                 } else {
                     *(*__ctype_toupper_loc()).offset(__c as isize)
@@ -316,8 +284,7 @@ pub unsafe fn HUlib_keyInIText(
                 __res = toupper(ch as i32);
             }
         } else {
-            __res = *(*__ctype_toupper_loc()).offset(ch as i32 as isize)
-                as i32;
+            __res = *(*__ctype_toupper_loc()).offset(ch as i32 as isize) as i32;
         }
         __res
     }) as u8;
@@ -326,7 +293,7 @@ pub unsafe fn HUlib_keyInIText(
     } else if ch as i32 == KEY_BACKSPACE {
         HUlib_delCharFromIText(it);
     } else if ch as i32 != KEY_ENTER {
-        return false_0 as boolean
+        return false_0 as boolean;
     }
     return true_0 as boolean;
 }

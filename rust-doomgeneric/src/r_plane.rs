@@ -1,70 +1,68 @@
-use crate::src::r_defs::{drawseg_t, visplane_t};
+use crate::src::doomdef::SCREENWIDTH;
 use crate::src::i_system::I_Error;
-use crate::src::r_data::firstflat;
-use crate::src::r_main::zlight;
-use crate::src::r_main::spanfunc;
-use crate::src::r_draw::ds_y;
-use crate::src::r_draw::ds_x1;
-use crate::src::r_draw::ds_x2;
-use crate::src::r_draw::ds_colormap;
-use crate::src::r_draw::ds_xfrac;
-use crate::src::r_draw::ds_yfrac;
-use crate::src::r_draw::ds_xstep;
-use crate::src::r_draw::ds_ystep;
-use crate::src::r_draw::ds_source;
-use crate::src::r_sky::skytexturemid;
-use crate::src::r_data::R_GetColumn;
-use crate::src::r_data::flattranslation;
-use crate::src::r_main::centerxfrac;
-use crate::src::r_main::detailshift;
-use crate::src::r_main::xtoviewangle;
-use crate::src::r_things::pspriteiscale;
+use crate::src::m_fixed::fixed_t;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::m_fixed::FixedMul;
 use crate::src::r_bsp::drawsegs;
 use crate::src::r_bsp::ds_p;
+use crate::src::r_data::colormaps;
+use crate::src::r_data::firstflat;
+use crate::src::r_data::flattranslation;
+use crate::src::r_data::R_GetColumn;
+use crate::src::r_defs::lighttable_t;
+use crate::src::r_defs::{drawseg_t, visplane_t};
 use crate::src::r_draw::dc_colormap;
-use crate::src::r_draw::dc_x;
-use crate::src::r_draw::dc_yl;
-use crate::src::r_draw::dc_yh;
 use crate::src::r_draw::dc_iscale;
-use crate::src::r_draw::dc_texturemid;
 use crate::src::r_draw::dc_source;
+use crate::src::r_draw::dc_texturemid;
+use crate::src::r_draw::dc_x;
+use crate::src::r_draw::dc_yh;
+use crate::src::r_draw::dc_yl;
+use crate::src::r_draw::ds_colormap;
+use crate::src::r_draw::ds_source;
+use crate::src::r_draw::ds_x1;
+use crate::src::r_draw::ds_x2;
+use crate::src::r_draw::ds_xfrac;
+use crate::src::r_draw::ds_xstep;
+use crate::src::r_draw::ds_y;
+use crate::src::r_draw::ds_yfrac;
+use crate::src::r_draw::ds_ystep;
+use crate::src::r_draw::viewheight;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_main::centerxfrac;
+use crate::src::r_main::colfunc;
+use crate::src::r_main::detailshift;
+use crate::src::r_main::extralight;
 use crate::src::r_main::fixedcolormap;
+use crate::src::r_main::spanfunc;
+use crate::src::r_main::viewangle;
 use crate::src::r_main::viewx;
 use crate::src::r_main::viewy;
-use crate::src::r_main::viewangle;
-use crate::src::r_main::extralight;
-use crate::src::r_main::colfunc;
-use crate::src::r_sky::skytexture;
-use crate::src::r_data::colormaps;
 use crate::src::r_main::viewz;
-use crate::src::r_draw::viewwidth;
-use crate::src::r_draw::viewheight;
+use crate::src::r_main::xtoviewangle;
+use crate::src::r_main::zlight;
+use crate::src::r_main::LIGHTLEVELS;
+use crate::src::r_main::LIGHTSEGSHIFT;
+use crate::src::r_main::LIGHTZSHIFT;
+use crate::src::r_main::MAXLIGHTZ;
+use crate::src::r_segs::MAXDRAWSEGS;
 use crate::src::r_sky::skyflatnum;
-use crate::src::m_fixed::FixedDiv;
-use crate::src::tables::finecosine;
-use crate::src::tables::finesine;
-use crate::src::m_fixed::FixedMul;
-use crate::src::w_wad::W_ReleaseLumpNum;
-use crate::src::w_wad::W_CacheLumpNum;
-use crate::src::z_zone::PU_STATIC;
-use crate::src::tables::angle_t;
-use crate::src::m_fixed::fixed_t;
-use crate::src::r_defs::lighttable_t;
+use crate::src::r_sky::skytexture;
+use crate::src::r_sky::skytexturemid;
+use crate::src::r_things::pspriteiscale;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use libc::memset;
-use crate::src::doomdef::SCREENWIDTH;
-use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::angle_t;
+use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
 use crate::src::tables::ANG90;
-use crate::src::r_main::MAXLIGHTZ;
-use crate::src::r_main::LIGHTZSHIFT;
-use crate::src::r_segs::MAXDRAWSEGS;
-use crate::src::r_main::LIGHTSEGSHIFT;
-use crate::src::r_main::LIGHTLEVELS;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::w_wad::W_ReleaseLumpNum;
+use crate::src::z_zone::PU_STATIC;
+use libc::memset;
 
-pub type planefunction_t = Option<
-    unsafe extern "C" fn(i32, i32) -> (),
->;
+pub type planefunction_t = Option<unsafe extern "C" fn(i32, i32) -> ()>;
 pub const ANGLETOSKYSHIFT: i32 = 22;
 #[no_mangle]
 pub static mut floorfunc: planefunction_t = None;
@@ -86,17 +84,12 @@ pub static mut visplanes: [visplane_t; 128] = [visplane_t {
     pad4: 0,
 }; 128];
 #[no_mangle]
-pub static mut lastvisplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
-    as *mut visplane_t;
-pub static mut floorplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
-    as *mut visplane_t;
-pub static mut ceilingplane: *mut visplane_t = ::core::ptr::null::<visplane_t>()
-    as *mut visplane_t;
+pub static mut lastvisplane: *mut visplane_t = ::core::ptr::null::<visplane_t>() as *mut visplane_t;
+pub static mut floorplane: *mut visplane_t = ::core::ptr::null::<visplane_t>() as *mut visplane_t;
+pub static mut ceilingplane: *mut visplane_t = ::core::ptr::null::<visplane_t>() as *mut visplane_t;
 #[no_mangle]
 pub static mut openings: [i16; 20480] = [0; 20480];
-pub static mut lastopening: *mut i16 = ::core::ptr::null::<
-    i16,
->() as *mut i16;
+pub static mut lastopening: *mut i16 = ::core::ptr::null::<i16>() as *mut i16;
 pub static mut floorclip: [i16; 320] = [0; 320];
 pub static mut ceilingclip: [i16; 320] = [0; 320];
 #[no_mangle]
@@ -104,9 +97,8 @@ pub static mut spanstart: [i32; 200] = [0; 200];
 #[no_mangle]
 pub static mut spanstop: [i32; 200] = [0; 200];
 #[no_mangle]
-pub static mut planezlight: *mut *mut lighttable_t = ::core::ptr::null::<
-    *mut lighttable_t,
->() as *mut *mut lighttable_t;
+pub static mut planezlight: *mut *mut lighttable_t =
+    ::core::ptr::null::<*mut lighttable_t>() as *mut *mut lighttable_t;
 #[no_mangle]
 pub static mut planeheight: fixed_t = 0;
 pub static mut yslope: [fixed_t; 200] = [0; 200];
@@ -123,11 +115,7 @@ pub static mut cacheddistance: [fixed_t; 200] = [0; 200];
 pub static mut cachedxstep: [fixed_t; 200] = [0; 200];
 #[no_mangle]
 pub static mut cachedystep: [fixed_t; 200] = [0; 200];
-pub unsafe fn R_MapPlane(
-    mut y: i32,
-    mut x1: i32,
-    mut x2: i32,
-) {
+pub unsafe fn R_MapPlane(mut y: i32, mut x1: i32, mut x2: i32) {
     let mut angle: angle_t = 0;
     let mut distance: fixed_t = 0;
     let mut length: fixed_t = 0;
@@ -198,7 +186,8 @@ pub unsafe fn R_FindPlane(
     }
     check = &raw mut visplanes as *mut visplane_t;
     while check < lastvisplane {
-        if height == (*check).height && picnum == (*check).picnum
+        if height == (*check).height
+            && picnum == (*check).picnum
             && lightlevel == (*check).lightlevel
         {
             break;
@@ -208,8 +197,7 @@ pub unsafe fn R_FindPlane(
     if check < lastvisplane {
         return check;
     }
-    if lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
-        as i64 == MAXVISPLANES as i64
+    if lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t) as i64 == MAXVISPLANES as i64
     {
         I_Error("R_FindPlane: no more visplanes");
     }
@@ -277,13 +265,7 @@ pub unsafe fn R_CheckPlane(
     );
     return pl;
 }
-pub unsafe fn R_MakeSpans(
-    mut x: i32,
-    mut t1: i32,
-    mut b1: i32,
-    mut t2: i32,
-    mut b2: i32,
-) {
+pub unsafe fn R_MakeSpans(mut x: i32, mut t1: i32, mut b1: i32, mut t2: i32, mut b2: i32) {
     while t1 < t2 && t1 <= b1 {
         R_MapPlane(t1, spanstart[t1 as usize], x - 1 as i32);
         t1 += 1;
@@ -308,31 +290,25 @@ pub unsafe fn R_DrawPlanes() {
     let mut stop: i32 = 0;
     let mut angle: i32 = 0;
     let mut lumpnum: i32 = 0;
-    if ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as i64
-        > MAXDRAWSEGS as i64
-    {
+    if ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as i64 > MAXDRAWSEGS as i64 {
         I_Error(&format!(
             "R_DrawPlanes: drawsegs overflow ({})",
             ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as i64,
         ));
     }
-    if lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
-        as i64 > MAXVISPLANES as i64
+    if lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t) as i64 > MAXVISPLANES as i64
     {
         I_Error(&format!(
             "R_DrawPlanes: visplane overflow ({})",
-            lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t)
-                as i64,
+            lastvisplane.offset_from(&raw mut visplanes as *mut visplane_t) as i64,
         ));
     }
-    if lastopening.offset_from(&raw mut openings as *mut i16)
-        as i64
+    if lastopening.offset_from(&raw mut openings as *mut i16) as i64
         > (SCREENWIDTH * 64 as i32) as i64
     {
         I_Error(&format!(
             "R_DrawPlanes: opening overflow ({})",
-            lastopening.offset_from(&raw mut openings as *mut i16)
-                as i64,
+            lastopening.offset_from(&raw mut openings as *mut i16) as i64,
         ));
     }
     pl = &raw mut visplanes as *mut visplane_t;
@@ -357,11 +333,8 @@ pub unsafe fn R_DrawPlanes() {
                 }
             } else {
                 lumpnum = firstflat + *flattranslation.offset((*pl).picnum as isize);
-                ds_source = W_CacheLumpNum(lumpnum, PU_STATIC as i32)
-                    as *mut byte;
-                planeheight = (
-                    (*pl).height as i32 - viewz as i32
-                ).abs() as fixed_t;
+                ds_source = W_CacheLumpNum(lumpnum, PU_STATIC as i32) as *mut byte;
+                planeheight = ((*pl).height as i32 - viewz as i32).abs() as fixed_t;
                 light = ((*pl).lightlevel >> LIGHTSEGSHIFT) + extralight;
                 if light >= LIGHTLEVELS {
                     light = LIGHTLEVELS - 1 as i32;
@@ -369,30 +342,23 @@ pub unsafe fn R_DrawPlanes() {
                 if light < 0 as i32 {
                     light = 0 as i32;
                 }
-                planezlight = &raw mut *(&raw mut zlight
-                    as *mut [*mut lighttable_t; 128])
+                planezlight = &raw mut *(&raw mut zlight as *mut [*mut lighttable_t; 128])
                     .offset(light as isize) as *mut *mut lighttable_t;
-                *(&raw mut (*pl).top as *mut byte)
-                    .offset(((*pl).maxx + 1 as i32) as isize) = 0xff
-                    as byte;
-                *(&raw mut (*pl).top as *mut byte)
-                    .offset(((*pl).minx - 1 as i32) as isize) = 0xff
-                    as byte;
+                *(&raw mut (*pl).top as *mut byte).offset(((*pl).maxx + 1 as i32) as isize) =
+                    0xff as byte;
+                *(&raw mut (*pl).top as *mut byte).offset(((*pl).minx - 1 as i32) as isize) =
+                    0xff as byte;
                 stop = (*pl).maxx + 1 as i32;
                 x = (*pl).minx;
                 while x <= stop {
                     R_MakeSpans(
                         x,
-                        *(&raw const (*pl).top as *const byte)
-                            .offset((x - 1 as i32) as isize)
+                        *(&raw const (*pl).top as *const byte).offset((x - 1 as i32) as isize)
                             as i32,
-                        *(&raw const (*pl).bottom as *const byte)
-                            .offset((x - 1 as i32) as isize)
+                        *(&raw const (*pl).bottom as *const byte).offset((x - 1 as i32) as isize)
                             as i32,
-                        *(&raw const (*pl).top as *const byte).offset(x as isize)
-                            as i32,
-                        *(&raw const (*pl).bottom as *const byte).offset(x as isize)
-                            as i32,
+                        *(&raw const (*pl).top as *const byte).offset(x as isize) as i32,
+                        *(&raw const (*pl).bottom as *const byte).offset(x as isize) as i32,
                     );
                     x += 1;
                 }

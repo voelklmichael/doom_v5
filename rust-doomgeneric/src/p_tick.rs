@@ -1,23 +1,22 @@
-use ::libc;
-use crate::src::p_mobj::{thinker_s, thinker_t, ThinkerFn, mobj_t};
-use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
-use crate::src::p_doors::vldoor_t;
-use crate::src::p_lights::{fireflicker_t, lightflash_t, strobe_t, glow_t};
-use crate::src::d_player::{player_t};
-use crate::src::p_user::P_PlayerThink;
-use crate::src::p_mobj::P_RespawnSpecials;
-use crate::src::p_spec::P_UpdateSpecials;
-use crate::src::g_game::paused;
-use crate::src::m_menu::menuactive;
-use crate::src::g_game::demoplayback;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::netgame;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::players;
-use crate::src::z_zone::Z_Free;
+use crate::src::d_player::player_t;
 use crate::src::doomdef::MAXPLAYERS;
+use crate::src::g_game::consoleplayer;
+use crate::src::g_game::demoplayback;
+use crate::src::g_game::netgame;
+use crate::src::g_game::paused;
+use crate::src::g_game::playeringame;
+use crate::src::g_game::players;
 use crate::src::game_state::game_state;
-
+use crate::src::m_menu::menuactive;
+use crate::src::p_doors::vldoor_t;
+use crate::src::p_lights::{fireflicker_t, glow_t, lightflash_t, strobe_t};
+use crate::src::p_mobj::P_RespawnSpecials;
+use crate::src::p_mobj::{mobj_t, thinker_s, thinker_t, ThinkerFn};
+use crate::src::p_spec::P_UpdateSpecials;
+use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
+use crate::src::p_user::P_PlayerThink;
+use crate::src::z_zone::Z_Free;
+use ::libc;
 
 pub static mut leveltime: i32 = 0;
 pub static mut thinkercap: thinker_t = thinker_s {
@@ -67,8 +66,7 @@ pub unsafe fn P_Ticker() {
     if paused {
         return;
     }
-    if !netgame && menuactive && !demoplayback
-        && players[consoleplayer as usize].viewz != 1 as i32
+    if !netgame && menuactive && !demoplayback && players[consoleplayer as usize].viewz != 1 as i32
     {
         return;
     }

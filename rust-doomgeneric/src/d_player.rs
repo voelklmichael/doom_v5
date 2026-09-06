@@ -1,6 +1,6 @@
 use crate::src::d_ticcmd::ticcmd_t;
-use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::m_fixed::fixed_t;
+use crate::src::p_mobj::{mobj_t, pspdef_t};
 pub type ammotype_t = u32;
 pub const am_noammo: ammotype_t = 5;
 pub const NUMAMMO: ammotype_t = 4;

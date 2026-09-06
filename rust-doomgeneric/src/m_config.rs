@@ -1,16 +1,15 @@
+use crate::src::doomdef::NULL;
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
-use crate::src::m_misc::M_MakeDirectory;
-use crate::src::m_misc::M_StringJoin;
-use crate::src::stdint_types::size_t;
-use libc::{strcmp, strdup};
-use libc::{malloc, printf, sscanf};
-use crate::src::doomdef::NULL;
-use crate::src::m_controls::KEY_RIGHTARROW;
-use crate::src::m_controls::KEY_LEFTARROW;
-use crate::src::m_controls::KEY_UPARROW;
+use crate::src::m_controls::KEY_BACKSPACE;
+use crate::src::m_controls::KEY_CAPSLOCK;
+use crate::src::m_controls::KEY_DEL;
 use crate::src::m_controls::KEY_DOWNARROW;
+use crate::src::m_controls::KEY_END;
 use crate::src::m_controls::KEY_F1;
+use crate::src::m_controls::KEY_F10;
+use crate::src::m_controls::KEY_F11;
+use crate::src::m_controls::KEY_F12;
 use crate::src::m_controls::KEY_F2;
 use crate::src::m_controls::KEY_F3;
 use crate::src::m_controls::KEY_F4;
@@ -19,22 +18,23 @@ use crate::src::m_controls::KEY_F6;
 use crate::src::m_controls::KEY_F7;
 use crate::src::m_controls::KEY_F8;
 use crate::src::m_controls::KEY_F9;
-use crate::src::m_controls::KEY_F10;
-use crate::src::m_controls::KEY_F11;
-use crate::src::m_controls::KEY_F12;
-use crate::src::m_controls::KEY_BACKSPACE;
-use crate::src::m_controls::KEY_PAUSE;
-use crate::src::m_controls::KEY_MINUS;
-use crate::src::m_controls::KEY_RSHIFT;
-use crate::src::m_controls::KEY_RALT;
 use crate::src::m_controls::KEY_HOME;
-use crate::src::m_controls::KEY_END;
-use crate::src::m_controls::KEY_PGUP;
-use crate::src::m_controls::KEY_PGDN;
 use crate::src::m_controls::KEY_INS;
-use crate::src::m_controls::KEY_DEL;
-use crate::src::m_controls::KEY_CAPSLOCK;
+use crate::src::m_controls::KEY_LEFTARROW;
+use crate::src::m_controls::KEY_MINUS;
+use crate::src::m_controls::KEY_PAUSE;
+use crate::src::m_controls::KEY_PGDN;
+use crate::src::m_controls::KEY_PGUP;
+use crate::src::m_controls::KEY_RALT;
+use crate::src::m_controls::KEY_RIGHTARROW;
+use crate::src::m_controls::KEY_RSHIFT;
 use crate::src::m_controls::KEY_SCRLCK;
+use crate::src::m_controls::KEY_UPARROW;
+use crate::src::m_misc::M_MakeDirectory;
+use crate::src::m_misc::M_StringJoin;
+use crate::src::stdint_types::size_t;
+use libc::{malloc, printf, sscanf};
+use libc::{strcmp, strdup};
 
 extern "C" {
     fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
@@ -62,13 +62,10 @@ pub struct default_collection_t {
     pub numdefaults: i32,
     pub filename: *mut ::core::ffi::c_char,
 }
-pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
-    ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
-};
-pub const KEY_RCTRL: i32 = 0x80
-    + 0x1d as i32;
-pub const KEY_PRTSCR: i32 = 0x80
-    + 0x59 as i32;
+pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] =
+    unsafe { ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0") };
+pub const KEY_RCTRL: i32 = 0x80 + 0x1d as i32;
+pub const KEY_PRTSCR: i32 = 0x80 + 0x59 as i32;
 pub const KEYP_5: i32 = '5' as i32;
 pub const KEYP_PLUS: i32 = '+' as i32;
 pub const KEYP_MULTIPLY: i32 = '*' as i32;
@@ -1808,14 +1805,10 @@ static scantokey: [i32; 128] = [
     KEY_PRTSCR,
     0 as i32,
 ];
-unsafe fn ParseIntParameter(
-    mut strparm: *mut ::core::ffi::c_char,
-) -> i32 {
+unsafe fn ParseIntParameter(mut strparm: *mut ::core::ffi::c_char) -> i32 {
     let mut parm: i32 = 0;
-    if *strparm.offset(0 as i32 as isize) as i32
-        == '0' as i32
-        && *strparm.offset(1 as i32 as isize) as i32
-            == 'x' as i32
+    if *strparm.offset(0 as i32 as isize) as i32 == '0' as i32
+        && *strparm.offset(1 as i32 as isize) as i32 == 'x' as i32
     {
         sscanf(
             strparm.offset(2 as i32 as isize),
@@ -1831,10 +1824,7 @@ unsafe fn ParseIntParameter(
     }
     return parm;
 }
-unsafe fn SetVariable(
-    mut def: *mut default_t,
-    mut value: *mut ::core::ffi::c_char,
-) {
+unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_char) {
     let mut intparm: i32 = 0;
     match (*def).type_0 as u32 {
         2 => {
@@ -1847,8 +1837,7 @@ unsafe fn SetVariable(
         4 => {
             intparm = ParseIntParameter(value);
             (*def).untranslated = intparm;
-            if intparm >= 0 as i32 && intparm < 128 as i32
-            {
+            if intparm >= 0 as i32 && intparm < 128 as i32 {
                 intparm = scantokey[intparm as usize];
             } else {
                 intparm = 0 as i32;
@@ -1857,8 +1846,7 @@ unsafe fn SetVariable(
             *((*def).location as *mut i32) = intparm;
         }
         3 => {
-            *((*def).location as *mut f32) = atof(value)
-                as f32;
+            *((*def).location as *mut f32) = atof(value) as f32;
         }
         _ => {}
     };
@@ -1877,12 +1865,8 @@ pub unsafe fn M_SaveDefaultsAlternate(
     mut main_0: *mut ::core::ffi::c_char,
     mut extra: *mut ::core::ffi::c_char,
 ) {
-    let mut orig_main: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut orig_extra: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
+    let mut orig_main: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let mut orig_extra: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     orig_main = doom_defaults.filename;
     orig_extra = extra_defaults.filename;
     doom_defaults.filename = main_0;
@@ -1895,8 +1879,8 @@ pub unsafe fn M_LoadDefaults(state: &mut MConfigState) {
     let mut i: i32 = 0;
     i = M_CheckParmWithArgs("-config", 1 as i32);
     if i != 0 {
-        doom_defaults.filename = myargv[(i + 1 as i32) as usize]
-            .as_ptr() as *mut ::core::ffi::c_char;
+        doom_defaults.filename =
+            myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"\tdefault file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
             doom_defaults.filename,
@@ -1910,11 +1894,10 @@ pub unsafe fn M_LoadDefaults(state: &mut MConfigState) {
     );
     i = M_CheckParmWithArgs("-extraconfig", 1 as i32);
     if i != 0 {
-        extra_defaults.filename = myargv[(i + 1 as i32) as usize]
-            .as_ptr() as *mut ::core::ffi::c_char;
+        extra_defaults.filename =
+            myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
         printf(
-            b"        extra configuration file: %s\n\0" as *const u8
-                as *const ::core::ffi::c_char,
+            b"        extra configuration file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
             extra_defaults.filename,
         );
     } else {
@@ -1950,11 +1933,10 @@ pub unsafe fn M_SetVariable(name: &str, mut value: *mut ::core::ffi::c_char) -> 
 pub unsafe fn M_GetIntVariable(name: &str) -> i32 {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || !(*variable).bound
-        || (*variable).type_0 as u32
-            != DEFAULT_INT as i32 as u32
-            && (*variable).type_0 as u32
-                != DEFAULT_INT_HEX as i32 as u32
+    if variable.is_null()
+        || !(*variable).bound
+        || (*variable).type_0 as u32 != DEFAULT_INT as i32 as u32
+            && (*variable).type_0 as u32 != DEFAULT_INT_HEX as i32 as u32
     {
         return 0 as i32;
     }
@@ -1963,9 +1945,9 @@ pub unsafe fn M_GetIntVariable(name: &str) -> i32 {
 pub unsafe fn M_GetStrVariable(name: &str) -> *const ::core::ffi::c_char {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || !(*variable).bound
-        || (*variable).type_0 as u32
-            != DEFAULT_STRING as i32 as u32
+    if variable.is_null()
+        || !(*variable).bound
+        || (*variable).type_0 as u32 != DEFAULT_STRING as i32 as u32
     {
         return ::core::ptr::null::<::core::ffi::c_char>();
     }
@@ -1974,20 +1956,18 @@ pub unsafe fn M_GetStrVariable(name: &str) -> *const ::core::ffi::c_char {
 pub unsafe fn M_GetFloatVariable(name: &str) -> f32 {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || !(*variable).bound
-        || (*variable).type_0 as u32
-            != DEFAULT_FLOAT as i32 as u32
+    if variable.is_null()
+        || !(*variable).bound
+        || (*variable).type_0 as u32 != DEFAULT_FLOAT as i32 as u32
     {
         return 0 as i32 as f32;
     }
     return *((*variable).location as *mut f32);
 }
 unsafe fn GetDefaultConfigDir() -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = malloc(2 as size_t)
-        as *mut ::core::ffi::c_char;
+    let mut result: *mut ::core::ffi::c_char = malloc(2 as size_t) as *mut ::core::ffi::c_char;
     *result.offset(0 as i32 as isize) = '.' as i32 as ::core::ffi::c_char;
-    *result.offset(1 as i32 as isize) = '\0' as i32
-        as ::core::ffi::c_char;
+    *result.offset(1 as i32 as isize) = '\0' as i32 as ::core::ffi::c_char;
     return result;
 }
 pub unsafe fn M_SetConfigDir(state: &mut MConfigState, mut dir: *mut ::core::ffi::c_char) {
@@ -1996,12 +1976,13 @@ pub unsafe fn M_SetConfigDir(state: &mut MConfigState, mut dir: *mut ::core::ffi
     } else {
         state.configdir = GetDefaultConfigDir();
     }
-    if strcmp(state.configdir, b"\0" as *const u8 as *const ::core::ffi::c_char)
-        != 0 as i32
+    if strcmp(
+        state.configdir,
+        b"\0" as *const u8 as *const ::core::ffi::c_char,
+    ) != 0 as i32
     {
         printf(
-            b"Using %s for configuration and saves\n\0" as *const u8
-                as *const ::core::ffi::c_char,
+            b"Using %s for configuration and saves\n\0" as *const u8 as *const ::core::ffi::c_char,
             state.configdir,
         );
     }
@@ -2011,10 +1992,12 @@ pub unsafe fn M_GetSaveGameDir(
     state: &mut MConfigState,
     mut iwadname: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
-    let mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    if strcmp(state.configdir, b"\0" as *const u8 as *const ::core::ffi::c_char) == 0 {
+    let mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    if strcmp(
+        state.configdir,
+        b"\0" as *const u8 as *const ::core::ffi::c_char,
+    ) == 0
+    {
         savegamedir = strdup(b"\0" as *const u8 as *const ::core::ffi::c_char);
     } else {
         savegamedir = M_StringJoin(
@@ -2035,15 +2018,13 @@ unsafe extern "C" fn run_static_initializers() {
     doom_defaults = default_collection_t {
         defaults: &raw mut doom_defaults_list as *mut default_t,
         numdefaults: (::core::mem::size_of::<[default_t; 76]>() as usize)
-            .wrapping_div(::core::mem::size_of::<default_t>() as usize)
-            as i32,
+            .wrapping_div(::core::mem::size_of::<default_t>() as usize) as i32,
         filename: ::core::ptr::null_mut::<::core::ffi::c_char>(),
     };
     extra_defaults = default_collection_t {
         defaults: &raw mut extra_defaults_list as *mut default_t,
         numdefaults: (::core::mem::size_of::<[default_t; 119]>() as usize)
-            .wrapping_div(::core::mem::size_of::<default_t>() as usize)
-            as i32,
+            .wrapping_div(::core::mem::size_of::<default_t>() as usize) as i32,
         filename: ::core::ptr::null_mut::<::core::ffi::c_char>(),
     };
 }

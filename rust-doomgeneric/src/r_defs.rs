@@ -1,10 +1,9 @@
-use crate::src::p_mobj::{vertex_t, sector_t, line_t};
-use crate::src::m_fixed::fixed_t;
-use crate::src::tables::angle_t;
 use crate::src::doomdef::boolean;
+use crate::src::m_fixed::fixed_t;
+use crate::src::p_mobj::{line_t, sector_t, vertex_t};
 use crate::src::stdint_types::byte;
+use crate::src::tables::angle_t;
 pub type lighttable_t = byte;
-
 
 #[derive(Copy, Clone)]
 #[repr(C)]

@@ -1,12 +1,11 @@
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
-use crate::src::w_wad::W_CacheLumpName;
 use crate::src::st_stuff::st_backing_screen;
+use crate::src::st_stuff::ST_Y;
 use crate::src::v_video::V_CopyRect;
 use crate::src::v_video::V_DrawPatch;
+use crate::src::w_wad::W_CacheLumpName;
 use crate::src::z_zone::PU_STATIC;
-use crate::src::st_stuff::ST_Y;
-
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -61,9 +60,7 @@ impl StLibState {
 }
 
 pub unsafe fn STlib_init(state: &mut StLibState) {
-    state.sttminus = W_CacheLumpName("STTMINUS",
-        PU_STATIC as i32,
-    ) as *mut patch_t;
+    state.sttminus = W_CacheLumpName("STTMINUS", PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn STlib_initNum(
     mut n: *mut st_number_t,
@@ -85,10 +82,8 @@ pub unsafe fn STlib_initNum(
 pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut refresh: bool) {
     let mut numdigits: i32 = (*n).width;
     let mut num: i32 = *(*n).num;
-    let mut w: i32 = (**(*n).p.offset(0 as i32 as isize))
-        .width as i32;
-    let mut h: i32 = (**(*n).p.offset(0 as i32 as isize))
-        .height as i32;
+    let mut w: i32 = (**(*n).p.offset(0 as i32 as isize)).width as i32;
+    let mut h: i32 = (**(*n).p.offset(0 as i32 as isize)).height as i32;
     let mut x: i32 = (*n).x;
     let mut neg: i32 = 0;
     (*n).oldnum = *(*n).num;
@@ -96,9 +91,7 @@ pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut
     if neg != 0 {
         if numdigits == 2 as i32 && num < -(9 as i32) {
             num = -(9 as i32);
-        } else if numdigits == 3 as i32
-            && num < -(99 as i32)
-        {
+        } else if numdigits == 3 as i32 && num < -(99 as i32) {
             num = -(99 as i32);
         }
         num = -num;
@@ -107,7 +100,15 @@ pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut
     if (*n).y - ST_Y < 0 as i32 {
         I_Error("drawNum: n->y - ST_Y < 0");
     }
-    V_CopyRect(x, (*n).y - ST_Y, st_backing_screen, w * numdigits, h, x, (*n).y);
+    V_CopyRect(
+        x,
+        (*n).y - ST_Y,
+        st_backing_screen,
+        w * numdigits,
+        h,
+        x,
+        (*n).y,
+    );
     if num == 1994 as i32 {
         return;
     }
@@ -115,19 +116,13 @@ pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut
     if num == 0 {
         V_DrawPatch(x - w, (*n).y, *(*n).p.offset(0 as i32 as isize));
     }
-    while num != 0
-        && {
-            let fresh0 = numdigits;
-            numdigits = numdigits - 1;
-            fresh0 != 0
-        }
-    {
+    while num != 0 && {
+        let fresh0 = numdigits;
+        numdigits = numdigits - 1;
+        fresh0 != 0
+    } {
         x -= w;
-        V_DrawPatch(
-            x,
-            (*n).y,
-            *(*n).p.offset((num % 10 as i32) as isize),
-        );
+        V_DrawPatch(x, (*n).y, *(*n).p.offset((num % 10 as i32) as isize));
         num /= 10 as i32;
     }
     if neg != 0 {
@@ -176,24 +171,15 @@ pub unsafe fn STlib_initMultIcon(
     (*i).on = on;
     (*i).p = il;
 }
-pub unsafe fn STlib_updateMultIcon(
-    mut mi: *mut st_multicon_t,
-    mut refresh: bool,
-) {
+pub unsafe fn STlib_updateMultIcon(mut mi: *mut st_multicon_t, mut refresh: bool) {
     let mut w: i32 = 0;
     let mut h: i32 = 0;
     let mut x: i32 = 0;
     let mut y: i32 = 0;
-    if *(*mi).on && ((*mi).oldinum != *(*mi).inum || refresh)
-        && *(*mi).inum != -(1 as i32)
-    {
+    if *(*mi).on && ((*mi).oldinum != *(*mi).inum || refresh) && *(*mi).inum != -(1 as i32) {
         if (*mi).oldinum != -(1 as i32) {
-            x = (*mi).x
-                - (**(*mi).p.offset((*mi).oldinum as isize)).leftoffset
-                    as i32;
-            y = (*mi).y
-                - (**(*mi).p.offset((*mi).oldinum as isize)).topoffset
-                    as i32;
+            x = (*mi).x - (**(*mi).p.offset((*mi).oldinum as isize)).leftoffset as i32;
+            y = (*mi).y - (**(*mi).p.offset((*mi).oldinum as isize)).topoffset as i32;
             w = (**(*mi).p.offset((*mi).oldinum as isize)).width as i32;
             h = (**(*mi).p.offset((*mi).oldinum as isize)).height as i32;
             if y - ST_Y < 0 as i32 {
@@ -220,10 +206,7 @@ pub unsafe fn STlib_initBinIcon(
     (*b).on = on;
     (*b).p = i;
 }
-pub unsafe fn STlib_updateBinIcon(
-    mut bi: *mut st_binicon_t,
-    mut refresh: bool,
-) {
+pub unsafe fn STlib_updateBinIcon(mut bi: *mut st_binicon_t, mut refresh: bool) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut w: i32 = 0;

@@ -1,7 +1,7 @@
+use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use crate::src::stdint_types::size_t;
 use libc::memcpy;
 use libc::printf;
 #[derive(Copy, Clone)]
@@ -44,16 +44,12 @@ pub unsafe fn mem_fread(
     mut stream: *mut MEMFILE,
 ) -> size_t {
     let mut items: size_t = 0;
-    if (*stream).mode as u32
-        != MODE_READ as i32 as u32
-    {
+    if (*stream).mode as u32 != MODE_READ as i32 as u32 {
         printf(b"not a read stream\n\0" as *const u8 as *const ::core::ffi::c_char);
         return -(1 as i32) as size_t;
     }
     items = nmemb;
-    if items.wrapping_mul(size)
-        > (*stream).buflen.wrapping_sub((*stream).position as size_t)
-    {
+    if items.wrapping_mul(size) > (*stream).buflen.wrapping_sub((*stream).position as size_t) {
         items = (*stream)
             .buflen
             .wrapping_sub((*stream).position as size_t)
@@ -64,9 +60,8 @@ pub unsafe fn mem_fread(
         (*stream).buf.offset((*stream).position as isize) as *const ::core::ffi::c_void,
         items.wrapping_mul(size),
     );
-    (*stream).position = ((*stream).position as size_t)
-        .wrapping_add(items.wrapping_mul(size)) as u32
-        as u32;
+    (*stream).position =
+        ((*stream).position as size_t).wrapping_add(items.wrapping_mul(size)) as u32 as u32;
     return items;
 }
 pub unsafe fn mem_fopen_write() -> *mut MEMFILE {
@@ -94,16 +89,12 @@ pub unsafe fn mem_fwrite(
     mut stream: *mut MEMFILE,
 ) -> size_t {
     let mut bytes: size_t = 0;
-    if (*stream).mode as u32
-        != MODE_WRITE as i32 as u32
-    {
+    if (*stream).mode as u32 != MODE_WRITE as i32 as u32 {
         return -(1 as i32) as size_t;
     }
     bytes = size.wrapping_mul(nmemb);
     while bytes > (*stream).alloced.wrapping_sub((*stream).position as size_t) {
-        let mut newbuf: *mut u8 = ::core::ptr::null_mut::<
-            u8,
-        >();
+        let mut newbuf: *mut u8 = ::core::ptr::null_mut::<u8>();
         newbuf = Z_Malloc(
             (*stream).alloced.wrapping_mul(2 as size_t) as i32,
             PU_STATIC as i32,
@@ -123,8 +114,7 @@ pub unsafe fn mem_fwrite(
         ptr,
         bytes,
     );
-    (*stream).position = ((*stream).position as size_t).wrapping_add(bytes)
-        as u32 as u32;
+    (*stream).position = ((*stream).position as size_t).wrapping_add(bytes) as u32 as u32;
     if (*stream).position as size_t > (*stream).buflen {
         (*stream).buflen = (*stream).position as size_t;
     }
@@ -139,9 +129,7 @@ pub unsafe fn mem_get_buf(
     *buflen = (*stream).buflen;
 }
 pub unsafe fn mem_fclose(mut stream: *mut MEMFILE) {
-    if (*stream).mode as u32
-        == MODE_WRITE as i32 as u32
-    {
+    if (*stream).mode as u32 == MODE_WRITE as i32 as u32 {
         Z_Free((*stream).buf as *mut ::core::ffi::c_void);
     }
     Z_Free(stream as *mut ::core::ffi::c_void);
@@ -149,23 +137,17 @@ pub unsafe fn mem_fclose(mut stream: *mut MEMFILE) {
 pub unsafe fn mem_ftell(mut stream: *mut MEMFILE) -> i64 {
     return (*stream).position as i64;
 }
-pub unsafe fn mem_fseek(
-    mut stream: *mut MEMFILE,
-    mut position: i64,
-    mut whence: mem_rel_t,
-) -> i32 {
+pub unsafe fn mem_fseek(mut stream: *mut MEMFILE, mut position: i64, mut whence: mem_rel_t) -> i32 {
     let mut newpos: u32 = 0;
     match whence as u32 {
         0 => {
             newpos = position as i32 as u32;
         }
         1 => {
-            newpos = ((*stream).position as i64 + position)
-                as i32 as u32;
+            newpos = ((*stream).position as i64 + position) as i32 as u32;
         }
         2 => {
-            newpos = (*stream).buflen.wrapping_add(position as size_t)
-                as i32 as u32;
+            newpos = (*stream).buflen.wrapping_add(position as size_t) as i32 as u32;
         }
         _ => return -(1 as i32),
     }

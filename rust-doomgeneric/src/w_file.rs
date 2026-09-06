@@ -1,7 +1,7 @@
 use crate::src::m_argv::M_CheckParm;
-use crate::src::w_file_stdc::stdc_wad_file;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
+use crate::src::w_file_stdc::stdc_wad_file;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -13,18 +13,9 @@ pub struct _wad_file_s {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct wad_file_class_t {
-    pub OpenFile: Option<
-        unsafe fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-    >,
+    pub OpenFile: Option<unsafe fn(*mut ::core::ffi::c_char) -> *mut wad_file_t>,
     pub CloseFile: Option<unsafe fn(*mut wad_file_t) -> ()>,
-    pub Read: Option<
-        unsafe fn(
-            *mut wad_file_t,
-            u32,
-            *mut ::core::ffi::c_void,
-            size_t,
-        ) -> size_t,
-    >,
+    pub Read: Option<unsafe fn(*mut wad_file_t, u32, *mut ::core::ffi::c_void, size_t) -> size_t>,
 }
 pub type wad_file_t = _wad_file_s;
 
@@ -35,9 +26,7 @@ pub struct WFileState {
 impl WFileState {
     pub fn new() -> Self {
         WFileState {
-            wad_file_classes: unsafe {
-                [&raw const stdc_wad_file as *mut wad_file_class_t]
-            },
+            wad_file_classes: unsafe { [&raw const stdc_wad_file as *mut wad_file_class_t] },
         }
     }
 }
@@ -68,7 +57,9 @@ pub unsafe fn W_OpenFile(
     return result;
 }
 pub unsafe fn W_CloseFile(mut wad: *mut wad_file_t) {
-    (*(*wad).file_class).CloseFile.expect("non-null function pointer")(wad);
+    (*(*wad).file_class)
+        .CloseFile
+        .expect("non-null function pointer")(wad);
 }
 pub unsafe fn W_Read(
     mut wad: *mut wad_file_t,

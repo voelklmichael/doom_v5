@@ -1,26 +1,26 @@
-use crate::src::w_file::wad_file_t;
-use crate::src::i_system::I_Error;
-use crate::src::d_mode::D_GameMissionString;
 use crate::src::d_iwad::D_SuggestGameName;
+use crate::src::d_mode::indetermined;
+use crate::src::d_mode::D_GameMissionString;
+use crate::src::d_mode::{doom, heretic, hexen, strife, GameMission_t};
+use crate::src::doomdef::NULL;
+use crate::src::game_state::game_state;
+use crate::src::i_system::I_Error;
 use crate::src::m_misc::M_ExtractFileBase;
+use crate::src::m_misc::__ctype_toupper_loc;
+use crate::src::stdint_types::__int32_t;
+use crate::src::stdint_types::byte;
+use crate::src::stdint_types::size_t;
+use crate::src::w_file::wad_file_t;
 use crate::src::w_file::W_OpenFile;
-use crate::src::z_zone::Z_ChangeTag2;
 use crate::src::w_file::W_Read;
+use crate::src::z_zone::Z_ChangeTag2;
 use crate::src::z_zone::Z_ChangeUser;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
+use libc::{free, printf};
 use libc::{memcpy, memset};
 use libc::{strcasecmp, strlen, strncasecmp, strncmp, strncpy, toupper};
-use libc::{free, printf};
-use crate::src::m_misc::__ctype_toupper_loc;
-use crate::src::d_mode::indetermined;
-use crate::src::d_mode::{GameMission_t, doom, heretic, hexen, strife};
-use crate::src::stdint_types::byte;
-use crate::src::stdint_types::__int32_t;
-use crate::src::stdint_types::size_t;
-use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
 
 extern "C" {
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
@@ -55,33 +55,25 @@ pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
     pub lumpname: &'static str,
 }
-pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] = unsafe {
-    ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"doomgeneric\0")
-};
-pub static mut lumpinfo: *mut lumpinfo_t = ::core::ptr::null::<lumpinfo_t>()
-    as *mut lumpinfo_t;
+pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] =
+    unsafe { ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"doomgeneric\0") };
+pub static mut lumpinfo: *mut lumpinfo_t = ::core::ptr::null::<lumpinfo_t>() as *mut lumpinfo_t;
 pub static mut numlumps: u32 = 0;
-static mut lumphash: *mut *mut lumpinfo_t = ::core::ptr::null::<*mut lumpinfo_t>()
-    as *mut *mut lumpinfo_t;
-pub unsafe fn W_LumpNameHash(
-    mut s: *const ::core::ffi::c_char,
-) -> u32 {
+static mut lumphash: *mut *mut lumpinfo_t =
+    ::core::ptr::null::<*mut lumpinfo_t>() as *mut *mut lumpinfo_t;
+pub unsafe fn W_LumpNameHash(mut s: *const ::core::ffi::c_char) -> u32 {
     let mut result: u32 = 5381 as u32;
     let mut i: u32 = 0;
     i = 0 as u32;
-    while i < 8 as u32
-        && *s.offset(i as isize) as i32 != '\0' as i32
-    {
-        result = result << 5 as i32 ^ result
+    while i < 8 as u32 && *s.offset(i as isize) as i32 != '\0' as i32 {
+        result = result << 5 as i32
+            ^ result
             ^ ({
                 let mut __res: i32 = 0;
                 if ::core::mem::size_of::<i32>() as usize > 1 as usize {
                     if 0 != 0 {
-                        let mut __c: i32 = *s.offset(i as isize)
-                            as i32;
-                        __res = (if __c < -(128 as i32)
-                            || __c > 255 as i32
-                        {
+                        let mut __c: i32 = *s.offset(i as isize) as i32;
+                        __res = (if __c < -(128 as i32) || __c > 255 as i32 {
                             __c as __int32_t
                         } else {
                             *(*__ctype_toupper_loc()).offset(__c as isize)
@@ -90,8 +82,7 @@ pub unsafe fn W_LumpNameHash(
                         __res = toupper(*s.offset(i as isize) as i32);
                     }
                 } else {
-                    __res = *(*__ctype_toupper_loc())
-                        .offset(*s.offset(i as isize) as i32 as isize)
+                    __res = *(*__ctype_toupper_loc()).offset(*s.offset(i as isize) as i32 as isize)
                         as i32;
                 }
                 __res
@@ -113,8 +104,7 @@ unsafe fn ExtendLumpInfo(mut newnumlumps: i32) {
     i = 0 as u32;
     while i < numlumps && i < newnumlumps as u32 {
         memcpy(
-            newlumpinfo.offset(i as isize) as *mut lumpinfo_t
-                as *mut ::core::ffi::c_void,
+            newlumpinfo.offset(i as isize) as *mut lumpinfo_t as *mut ::core::ffi::c_void,
             lumpinfo.offset(i as isize) as *mut lumpinfo_t as *const ::core::ffi::c_void,
             ::core::mem::size_of::<lumpinfo_t>() as size_t,
         );
@@ -125,9 +115,8 @@ unsafe fn ExtendLumpInfo(mut newnumlumps: i32) {
             );
         }
         if !(*lumpinfo.offset(i as isize)).next.is_null() {
-            let mut nextlumpnum: i32 = (*lumpinfo.offset(i as isize))
-                .next
-                .offset_from(lumpinfo) as i64 as i32;
+            let mut nextlumpnum: i32 =
+                (*lumpinfo.offset(i as isize)).next.offset_from(lumpinfo) as i64 as i32;
             let ref mut fresh0 = (*newlumpinfo.offset(i as isize)).next;
             *fresh0 = newlumpinfo.offset(nextlumpnum as isize) as *mut lumpinfo_t;
         }
@@ -137,9 +126,7 @@ unsafe fn ExtendLumpInfo(mut newnumlumps: i32) {
     lumpinfo = newlumpinfo;
     numlumps = newnumlumps as u32;
 }
-pub unsafe fn W_AddFile(
-    mut filename: *mut ::core::ffi::c_char,
-) -> *mut wad_file_t {
+pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file_t {
     let mut header: wadinfo_t = wadinfo_t {
         identification: [0; 4],
         numlumps: 0,
@@ -209,8 +196,7 @@ pub unsafe fn W_AddFile(
         header.numlumps = header.numlumps;
         header.infotableofs = header.infotableofs;
         length = (header.numlumps as usize)
-            .wrapping_mul(::core::mem::size_of::<filelump_t>() as usize)
-            as i32;
+            .wrapping_mul(::core::mem::size_of::<filelump_t>() as usize) as i32;
         fileinfo = Z_Malloc(
             length,
             PU_STATIC as i32,
@@ -280,8 +266,7 @@ pub unsafe fn W_CheckNumForName(name: &str) -> i32 {
                 8 as size_t,
             ) == 0
             {
-                return lump_p.offset_from(lumpinfo) as i64
-                    as i32;
+                return lump_p.offset_from(lumpinfo) as i64 as i32;
             }
             lump_p = (*lump_p).next;
         }
@@ -309,18 +294,13 @@ pub unsafe fn W_GetNumForName(name: &str) -> i32 {
     }
     return i;
 }
-pub unsafe fn W_LumpLength(
-    mut lump: u32,
-) -> i32 {
+pub unsafe fn W_LumpLength(mut lump: u32) -> i32 {
     if lump >= numlumps {
         I_Error(&format!("W_LumpLength: {} >= numlumps", lump));
     }
     return (*lumpinfo.offset(lump as isize)).size;
 }
-pub unsafe fn W_ReadLump(
-    mut lump: u32,
-    mut dest: *mut ::core::ffi::c_void,
-) {
+pub unsafe fn W_ReadLump(mut lump: u32, mut dest: *mut ::core::ffi::c_void) {
     let mut c: i32 = 0;
     let mut l: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     if lump >= numlumps {
@@ -334,13 +314,15 @@ pub unsafe fn W_ReadLump(
         (*l).size as size_t,
     ) as i32;
     if c < (*l).size {
-        I_Error(&format!("W_ReadLump: only read {} of {} on lump {}", c, (*l).size, lump));
+        I_Error(&format!(
+            "W_ReadLump: only read {} of {} on lump {}",
+            c,
+            (*l).size,
+            lump
+        ));
     }
 }
-pub unsafe fn W_CacheLumpNum(
-    mut lumpnum: i32,
-    mut tag: i32,
-) -> *mut ::core::ffi::c_void {
+pub unsafe fn W_CacheLumpNum(mut lumpnum: i32, mut tag: i32) -> *mut ::core::ffi::c_void {
     let mut result: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut lump: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     if lumpnum as u32 >= numlumps {
@@ -354,8 +336,7 @@ pub unsafe fn W_CacheLumpNum(
         Z_ChangeTag2(
             (*lump).cache,
             tag,
-            b"w_wad.c\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+            b"w_wad.c\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             410 as i32,
         );
     } else {
@@ -369,10 +350,7 @@ pub unsafe fn W_CacheLumpNum(
     }
     return result as *mut ::core::ffi::c_void;
 }
-pub unsafe fn W_CacheLumpName(
-    name: &str,
-    mut tag: i32,
-) -> *mut ::core::ffi::c_void {
+pub unsafe fn W_CacheLumpName(name: &str, mut tag: i32) -> *mut ::core::ffi::c_void {
     return W_CacheLumpNum(W_GetNumForName(name), tag);
 }
 pub unsafe fn W_ReleaseLumpNum(mut lumpnum: i32) {
@@ -385,8 +363,7 @@ pub unsafe fn W_ReleaseLumpNum(mut lumpnum: i32) {
         Z_ChangeTag2(
             (*lump).cache,
             PU_CACHE as i32,
-            b"w_wad.c\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+            b"w_wad.c\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             461 as i32,
         );
     }
@@ -401,25 +378,23 @@ pub unsafe fn W_GenerateHashTable() {
     }
     if numlumps > 0 as u32 {
         lumphash = Z_Malloc(
-            (::core::mem::size_of::<*mut lumpinfo_t>() as usize)
-                .wrapping_mul(numlumps as usize) as i32,
+            (::core::mem::size_of::<*mut lumpinfo_t>() as usize).wrapping_mul(numlumps as usize)
+                as i32,
             PU_STATIC as i32,
             NULL,
         ) as *mut *mut lumpinfo_t;
         memset(
             lumphash as *mut ::core::ffi::c_void,
             0 as i32,
-            (::core::mem::size_of::<*mut lumpinfo_t>() as size_t)
-                .wrapping_mul(numlumps as size_t),
+            (::core::mem::size_of::<*mut lumpinfo_t>() as size_t).wrapping_mul(numlumps as size_t),
         );
         i = 0 as u32;
         while i < numlumps {
             let mut hash: u32 = 0;
             hash = W_LumpNameHash(
-                    &raw mut (*lumpinfo.offset(i as isize)).name
-                        as *mut ::core::ffi::c_char,
-                )
-                .wrapping_rem(numlumps);
+                &raw mut (*lumpinfo.offset(i as isize)).name as *mut ::core::ffi::c_char,
+            )
+            .wrapping_rem(numlumps);
             let ref mut fresh1 = (*lumpinfo.offset(i as isize)).next;
             *fresh1 = *lumphash.offset(hash as isize);
             let ref mut fresh2 = *lumphash.offset(hash as isize);
@@ -429,10 +404,22 @@ pub unsafe fn W_GenerateHashTable() {
     }
 }
 static unique_lumps: [C2RustUnnamed_0; 4] = [
-    C2RustUnnamed_0 { mission: doom, lumpname: "POSSA1" },
-    C2RustUnnamed_0 { mission: heretic, lumpname: "IMPXA1" },
-    C2RustUnnamed_0 { mission: hexen, lumpname: "ETTNA1" },
-    C2RustUnnamed_0 { mission: strife, lumpname: "AGRDA1" },
+    C2RustUnnamed_0 {
+        mission: doom,
+        lumpname: "POSSA1",
+    },
+    C2RustUnnamed_0 {
+        mission: heretic,
+        lumpname: "IMPXA1",
+    },
+    C2RustUnnamed_0 {
+        mission: hexen,
+        lumpname: "ETTNA1",
+    },
+    C2RustUnnamed_0 {
+        mission: strife,
+        lumpname: "AGRDA1",
+    },
 ];
 pub unsafe fn W_CheckCorrectIWAD(mut mission: GameMission_t) {
     let mut i: i32 = 0;
@@ -442,9 +429,7 @@ pub unsafe fn W_CheckCorrectIWAD(mut mission: GameMission_t) {
         < (::core::mem::size_of::<[C2RustUnnamed_0; 4]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_0>() as usize)
     {
-        if mission as u32
-            != unique_lumps[i as usize].mission as u32
-        {
+        if mission as u32 != unique_lumps[i as usize].mission as u32 {
             lumpnum = W_CheckNumForName(unique_lumps[i as usize].lumpname);
             if lumpnum >= 0 as i32 {
                 I_Error(&format!(

@@ -21,10 +21,7 @@ extern "C" {
     fn __ctype_tolower_loc() -> *mut *const __int32_t;
     fn tolower(__c: i32) -> i32;
     fn usleep(__useconds: __useconds_t) -> i32;
-    fn gettimeofday(
-        __tv: *mut timeval,
-        __tz: *mut ::core::ffi::c_void,
-    ) -> i32;
+    fn gettimeofday(__tv: *mut timeval, __tz: *mut ::core::ffi::c_void) -> i32;
     fn XCreateImage(
         _: *mut Display,
         _: *mut Visual,
@@ -38,12 +35,7 @@ extern "C" {
         _: i32,
     ) -> *mut XImage;
     fn XOpenDisplay(_: *const ::core::ffi::c_char) -> *mut Display;
-    fn XCreateGC(
-        _: *mut Display,
-        _: Drawable,
-        _: u64,
-        _: *mut XGCValues,
-    ) -> GC;
+    fn XCreateGC(_: *mut Display, _: Drawable, _: u64, _: *mut XGCValues) -> GC;
     fn XCreateSimpleWindow(
         _: *mut Display,
         _: Window,
@@ -80,27 +72,10 @@ extern "C" {
         _: u32,
         _: u32,
     ) -> i32;
-    fn XSelectInput(
-        _: *mut Display,
-        _: Window,
-        _: i64,
-    ) -> i32;
-    fn XSetForeground(
-        _: *mut Display,
-        _: GC,
-        _: u64,
-    ) -> i32;
-    fn XkbKeycodeToKeysym(
-        _: *mut Display,
-        _: KeyCode,
-        _: i32,
-        _: i32,
-    ) -> KeySym;
-    fn XkbSetDetectableAutoRepeat(
-        _: *mut Display,
-        _: i32,
-        _: *mut i32,
-    ) -> i32;
+    fn XSelectInput(_: *mut Display, _: Window, _: i64) -> i32;
+    fn XSetForeground(_: *mut Display, _: GC, _: u64) -> i32;
+    fn XkbKeycodeToKeysym(_: *mut Display, _: KeyCode, _: i32, _: i32) -> KeySym;
+    fn XkbSetDetectableAutoRepeat(_: *mut Display, _: i32, _: *mut i32) -> i32;
 }
 pub type size_t = usize;
 pub type __int32_t = i32;
@@ -156,33 +131,10 @@ pub struct funcs {
         ) -> *mut _XImage,
     >,
     pub destroy_image: Option<unsafe extern "C" fn(*mut _XImage) -> i32>,
-    pub get_pixel: Option<
-        unsafe extern "C" fn(
-            *mut _XImage,
-            i32,
-            i32,
-        ) -> u64,
-    >,
-    pub put_pixel: Option<
-        unsafe extern "C" fn(
-            *mut _XImage,
-            i32,
-            i32,
-            u64,
-        ) -> i32,
-    >,
-    pub sub_image: Option<
-        unsafe extern "C" fn(
-            *mut _XImage,
-            i32,
-            i32,
-            u32,
-            u32,
-        ) -> *mut _XImage,
-    >,
-    pub add_pixel: Option<
-        unsafe extern "C" fn(*mut _XImage, i64) -> i32,
-    >,
+    pub get_pixel: Option<unsafe extern "C" fn(*mut _XImage, i32, i32) -> u64>,
+    pub put_pixel: Option<unsafe extern "C" fn(*mut _XImage, i32, i32, u64) -> i32>,
+    pub sub_image: Option<unsafe extern "C" fn(*mut _XImage, i32, i32, u32, u32) -> *mut _XImage>,
+    pub add_pixel: Option<unsafe extern "C" fn(*mut _XImage, i64) -> i32>,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -845,26 +797,19 @@ pub const KEY_USE: i32 = 0xa2;
 pub const KEY_FIRE: i32 = 0xa3;
 pub const KEY_ESCAPE: i32 = 27;
 pub const KEY_ENTER: i32 = 13;
-pub const KEY_RSHIFT: i32 = 0x80
-    + 0x36 as i32;
+pub const KEY_RSHIFT: i32 = 0x80 + 0x36 as i32;
 pub const DOOMGENERIC_RESX: i32 = 640;
 pub const DOOMGENERIC_RESY: i32 = 400;
-pub const KeyPressMask: i64 = (1 as i64)
-    << 0 as i32;
-pub const KeyReleaseMask: i64 = (1 as i64)
-    << 1 as i32;
-pub const ExposureMask: i64 = (1 as i64)
-    << 15 as i32;
-pub const StructureNotifyMask: i64 = (1 as i64)
-    << 17 as i32;
+pub const KeyPressMask: i64 = (1 as i64) << 0 as i32;
+pub const KeyReleaseMask: i64 = (1 as i64) << 1 as i32;
+pub const ExposureMask: i64 = (1 as i64) << 15 as i32;
+pub const StructureNotifyMask: i64 = (1 as i64) << 17 as i32;
 pub const KeyPress: i32 = 2;
 pub const KeyRelease: i32 = 3;
 pub const MapNotify: i32 = 19;
 pub const PropModeReplace: i32 = 0;
 pub const ZPixmap: i32 = 2;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
+pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<::core::ffi::c_void>();
 pub const XK_Return: u32 = 65293;
 pub const XK_Escape: u32 = 65307;
 pub const XK_Left: u32 = 65361;
@@ -887,9 +832,7 @@ pub const KEYQUEUE_SIZE: i32 = 16;
 static mut s_KeyQueue: [u16; 16] = [0; 16];
 static mut s_KeyQueueWriteIndex: u32 = 0;
 static mut s_KeyQueueReadIndex: u32 = 0;
-unsafe extern "C" fn convertToDoomKey(
-    mut key: u32,
-) -> u8 {
+unsafe extern "C" fn convertToDoomKey(mut key: u32) -> u8 {
     match key {
         65293 => {
             key = KEY_ENTER as u32;
@@ -924,9 +867,7 @@ unsafe extern "C" fn convertToDoomKey(
                 if ::core::mem::size_of::<u32>() as usize > 1 as usize {
                     if 0 != 0 {
                         let mut __c: i32 = key as i32;
-                        __res = (if __c < -(128 as i32)
-                            || __c > 255 as i32
-                        {
+                        __res = (if __c < -(128 as i32) || __c > 255 as i32 {
                             __c as __int32_t
                         } else {
                             *(*__ctype_tolower_loc()).offset(__c as isize)
@@ -935,9 +876,7 @@ unsafe extern "C" fn convertToDoomKey(
                         __res = tolower(key as i32);
                     }
                 } else {
-                    __res = *(*__ctype_tolower_loc())
-                        .offset(key as i32 as isize)
-                        as i32;
+                    __res = *(*__ctype_tolower_loc()).offset(key as i32 as isize) as i32;
                 }
                 __res
             }) as u32;
@@ -945,36 +884,30 @@ unsafe extern "C" fn convertToDoomKey(
     }
     return key as u8;
 }
-unsafe extern "C" fn addKeyToQueue(
-    mut pressed: i32,
-    mut keyCode: u32,
-) {
+unsafe extern "C" fn addKeyToQueue(mut pressed: i32, mut keyCode: u32) {
     let mut key: u8 = convertToDoomKey(keyCode);
-    let mut keyData: u16 = (pressed << 8 as i32
-        | key as i32) as u16;
+    let mut keyData: u16 = (pressed << 8 as i32 | key as i32) as u16;
     s_KeyQueue[s_KeyQueueWriteIndex as usize] = keyData;
     s_KeyQueueWriteIndex = s_KeyQueueWriteIndex.wrapping_add(1);
-    s_KeyQueueWriteIndex = s_KeyQueueWriteIndex
-        .wrapping_rem(KEYQUEUE_SIZE as u32);
+    s_KeyQueueWriteIndex = s_KeyQueueWriteIndex.wrapping_rem(KEYQUEUE_SIZE as u32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn DG_Init() {
     memset(
         &raw mut s_KeyQueue as *mut u16 as *mut ::core::ffi::c_void,
         0 as i32,
-        (KEYQUEUE_SIZE as size_t)
-            .wrapping_mul(::core::mem::size_of::<u16>() as size_t),
+        (KEYQUEUE_SIZE as size_t).wrapping_mul(::core::mem::size_of::<u16>() as size_t),
     );
     s_Display = XOpenDisplay(::core::ptr::null::<::core::ffi::c_char>());
     s_Screen = (*(s_Display as _XPrivDisplay)).default_screen;
     let mut blackColor: i32 = (*(*(s_Display as _XPrivDisplay))
         .screens
         .offset(s_Screen as isize))
-        .black_pixel as i32;
+    .black_pixel as i32;
     let mut whiteColor: i32 = (*(*(s_Display as _XPrivDisplay))
         .screens
         .offset(s_Screen as isize))
-        .white_pixel as i32;
+    .white_pixel as i32;
     let mut attr: XSetWindowAttributes = XSetWindowAttributes {
         background_pixmap: 0,
         background_pixel: 0,
@@ -1001,17 +934,17 @@ pub unsafe extern "C" fn DG_Init() {
     attr.background_pixel = (*(*(s_Display as _XPrivDisplay))
         .screens
         .offset(s_Screen as isize))
-        .black_pixel;
+    .black_pixel;
     let mut depth: i32 = (*(*(s_Display as _XPrivDisplay))
         .screens
         .offset(s_Screen as isize))
-        .root_depth;
+    .root_depth;
     s_Window = XCreateSimpleWindow(
         s_Display,
         (*(*(s_Display as _XPrivDisplay))
             .screens
             .offset((*(s_Display as _XPrivDisplay)).default_screen as isize))
-            .root,
+        .root,
         0 as i32,
         0 as i32,
         DOOMGENERIC_RESX as u32,
@@ -1033,11 +966,7 @@ pub unsafe extern "C" fn DG_Init() {
         ::core::ptr::null_mut::<XGCValues>(),
     );
     XSetForeground(s_Display, s_Gc, whiteColor as u64);
-    XkbSetDetectableAutoRepeat(
-        s_Display,
-        1 as i32,
-        ::core::ptr::null_mut::<i32>(),
-    );
+    XkbSetDetectableAutoRepeat(s_Display, 1 as i32, ::core::ptr::null_mut::<i32>());
     loop {
         let mut e: XEvent = _XEvent { type_0: 0 };
         XNextEvent(s_Display, &raw mut e);
@@ -1047,7 +976,10 @@ pub unsafe extern "C" fn DG_Init() {
     }
     s_Image = XCreateImage(
         s_Display,
-        (*(*(s_Display as _XPrivDisplay)).screens.offset(s_Screen as isize)).root_visual,
+        (*(*(s_Display as _XPrivDisplay))
+            .screens
+            .offset(s_Screen as isize))
+        .root_visual,
         depth as u32,
         ZPixmap,
         0 as i32,
@@ -1065,20 +997,12 @@ pub unsafe extern "C" fn DG_DrawFrame() {
             let mut e: XEvent = _XEvent { type_0: 0 };
             XNextEvent(s_Display, &raw mut e);
             if e.type_0 == KeyPress {
-                let mut sym: KeySym = XkbKeycodeToKeysym(
-                    s_Display,
-                    e.xkey.keycode as KeyCode,
-                    0 as i32,
-                    0 as i32,
-                );
+                let mut sym: KeySym =
+                    XkbKeycodeToKeysym(s_Display, e.xkey.keycode as KeyCode, 0 as i32, 0 as i32);
                 addKeyToQueue(1 as i32, sym as u32);
             } else if e.type_0 == KeyRelease {
-                let mut sym_0: KeySym = XkbKeycodeToKeysym(
-                    s_Display,
-                    e.xkey.keycode as KeyCode,
-                    0 as i32,
-                    0 as i32,
-                );
+                let mut sym_0: KeySym =
+                    XkbKeycodeToKeysym(s_Display, e.xkey.keycode as KeyCode, 0 as i32, 0 as i32);
                 addKeyToQueue(0 as i32, sym_0 as u32);
             }
         }
@@ -1102,31 +1026,28 @@ pub unsafe extern "C" fn DG_SleepMs(mut ms: uint32_t) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn DG_GetTicksMs() -> uint32_t {
-    let mut tp: timeval = timeval { tv_sec: 0, tv_usec: 0 };
+    let mut tp: timeval = timeval {
+        tv_sec: 0,
+        tv_usec: 0,
+    };
     let mut tzp: timezone = timezone {
         tz_minuteswest: 0,
         tz_dsttime: 0,
     };
     gettimeofday(&raw mut tp, &raw mut tzp as *mut ::core::ffi::c_void);
-    return (tp.tv_sec as __suseconds_t * 1000 as __suseconds_t
-        + tp.tv_usec / 1000 as __suseconds_t) as uint32_t;
+    return (tp.tv_sec as __suseconds_t * 1000 as __suseconds_t + tp.tv_usec / 1000 as __suseconds_t)
+        as uint32_t;
 }
 #[no_mangle]
-pub unsafe extern "C" fn DG_GetKey(
-    mut pressed: *mut i32,
-    mut doomKey: *mut u8,
-) -> i32 {
+pub unsafe extern "C" fn DG_GetKey(mut pressed: *mut i32, mut doomKey: *mut u8) -> i32 {
     if s_KeyQueueReadIndex == s_KeyQueueWriteIndex {
-        return 0 as i32
+        return 0 as i32;
     } else {
-        let mut keyData: u16 = s_KeyQueue[s_KeyQueueReadIndex
-            as usize];
+        let mut keyData: u16 = s_KeyQueue[s_KeyQueueReadIndex as usize];
         s_KeyQueueReadIndex = s_KeyQueueReadIndex.wrapping_add(1);
-        s_KeyQueueReadIndex = s_KeyQueueReadIndex
-            .wrapping_rem(KEYQUEUE_SIZE as u32);
+        s_KeyQueueReadIndex = s_KeyQueueReadIndex.wrapping_rem(KEYQUEUE_SIZE as u32);
         *pressed = keyData as i32 >> 8 as i32;
-        *doomKey = (keyData as i32 & 0xff as i32)
-            as u8;
+        *doomKey = (keyData as i32 & 0xff as i32) as u8;
         return 1 as i32;
     };
 }
@@ -1147,9 +1068,7 @@ pub unsafe extern "C" fn DG_SetWindowTitle(mut title: *const ::core::ffi::c_char
 }
 pub fn main() {
     unsafe {
-        ::rust_doomgeneric::src::doomgeneric::doomgeneric_Create(
-            ::std::env::args().collect(),
-        );
+        ::rust_doomgeneric::src::doomgeneric::doomgeneric_Create(::std::env::args().collect());
         loop {
             doomgeneric_Tick();
         }

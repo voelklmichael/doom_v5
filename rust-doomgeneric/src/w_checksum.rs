@@ -1,16 +1,15 @@
-use crate::src::sha1::{sha1_context_s, sha1_context_t, SHA1_Init, SHA1_Final, SHA1_UpdateInt32, SHA1_UpdateString};
-use crate::src::w_wad::lumpinfo_t;
-use crate::src::w_file::wad_file_t;
-use crate::src::w_wad::numlumps;
-use crate::src::w_wad::lumpinfo;
 use crate::src::m_misc::M_StringCopy;
+use crate::src::sha1::{
+    sha1_context_s, sha1_context_t, SHA1_Final, SHA1_Init, SHA1_UpdateInt32, SHA1_UpdateString,
+};
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
+use crate::src::w_file::wad_file_t;
+use crate::src::w_wad::lumpinfo;
+use crate::src::w_wad::lumpinfo_t;
+use crate::src::w_wad::numlumps;
 extern "C" {
-    fn realloc(
-        __ptr: *mut ::core::ffi::c_void,
-        __size: size_t,
-    ) -> *mut ::core::ffi::c_void;
+    fn realloc(__ptr: *mut ::core::ffi::c_void, __size: size_t) -> *mut ::core::ffi::c_void;
 }
 pub struct WChecksumState {
     open_wadfiles: *mut *mut wad_file_t,
@@ -59,10 +58,7 @@ unsafe fn ChecksumAddLump(
         ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
     );
     SHA1_UpdateString(sha1_context, &raw mut buf as *mut ::core::ffi::c_char);
-    SHA1_UpdateInt32(
-        sha1_context,
-        GetFileNumber(state, (*lump).wad_file) as u32,
-    );
+    SHA1_UpdateInt32(sha1_context, GetFileNumber(state, (*lump).wad_file) as u32);
     SHA1_UpdateInt32(sha1_context, (*lump).position as u32);
     SHA1_UpdateInt32(sha1_context, (*lump).size as u32);
 }

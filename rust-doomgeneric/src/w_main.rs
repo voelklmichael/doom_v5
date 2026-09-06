@@ -1,8 +1,8 @@
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::d_iwad::D_TryFindWADByName;
+use crate::src::game_state::game_state;
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::w_wad::W_AddFile;
 use libc::printf;
-use crate::src::game_state::game_state;
 
 pub unsafe fn W_ParseCommandLine() -> bool {
     let mut modifiedgame: bool = false;
@@ -12,15 +12,13 @@ pub unsafe fn W_ParseCommandLine() -> bool {
         modifiedgame = true;
         loop {
             p += 1;
-            if !(p != myargv.len() as i32
-                && myargv[p as usize].as_bytes().first() != Some(&b'-'))
-            {
+            if !(p != myargv.len() as i32 && myargv[p as usize].as_bytes().first() != Some(&b'-')) {
                 break;
             }
-            let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-                ::core::ffi::c_char,
-            >();
-            filename = D_TryFindWADByName(unsafe { &mut game_state().d_iwad }, 
+            let mut filename: *mut ::core::ffi::c_char =
+                ::core::ptr::null_mut::<::core::ffi::c_char>();
+            filename = D_TryFindWADByName(
+                unsafe { &mut game_state().d_iwad },
                 myargv[p as usize].as_ptr() as *mut ::core::ffi::c_char,
             );
             printf(

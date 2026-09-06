@@ -62,8 +62,7 @@ pub fn D_PopEvent(state: &mut DEventState) -> *mut event_t {
         return ::core::ptr::null_mut::<event_t>();
     }
     let result = unsafe {
-        (&raw mut state.events as *mut event_t).offset(state.eventtail as isize)
-            as *mut event_t
+        (&raw mut state.events as *mut event_t).offset(state.eventtail as isize) as *mut event_t
     };
     state.eventtail = (state.eventtail + 1 as i32) % MAXEVENTS;
     return result;

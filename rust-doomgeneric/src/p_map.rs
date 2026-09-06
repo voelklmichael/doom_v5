@@ -1,72 +1,75 @@
-use crate::src::p_maputl::{intercept_t};
-use crate::src::p_mobj::{sector_t, ST_VERTICAL, ST_HORIZONTAL, line_t, subsector_t};
-use crate::src::d_player::{player_t};
-use crate::src::p_mobj::{mobj_t};
-use crate::src::i_system::I_Error;
-use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
-use crate::src::p_mobj::P_SpawnBlood;
-use crate::src::p_maputl::P_PointOnLineSide;
-use crate::src::p_maputl::P_BoxOnLineSide;
-use crate::src::p_maputl::opentop;
-use crate::src::p_maputl::openbottom;
-use crate::src::p_maputl::lowfloor;
-use crate::src::p_maputl::P_BlockLinesIterator;
-use crate::src::p_maputl::trace;
-use crate::src::p_maputl::P_PathTraverse;
-use crate::src::p_inter::P_TouchSpecialThing;
-use crate::src::p_spec::P_ShootSpecialLine;
-use crate::src::p_spec::P_CrossSpecialLine;
-use crate::src::p_maputl::P_LineOpening;
-use crate::src::p_maputl::P_BlockThingsIterator;
-use crate::src::p_maputl::openrange;
-use crate::src::p_mobj::P_SpawnPuff;
-use crate::src::p_mobj::P_SubstNullMobj;
-use crate::src::p_sight::P_CheckSight;
-use crate::src::p_switch::P_UseSpecialLine;
-use crate::src::m_misc::M_StrToInt;
-use crate::src::p_maputl::P_AproxDistance;
-use crate::src::p_maputl::P_UnsetThingPosition;
-use crate::src::p_inter::P_DamageMobj;
-use crate::src::p_maputl::P_SetThingPosition;
-use crate::src::p_setup::bmaporgx;
-use crate::src::p_setup::bmaporgy;
-use crate::src::r_main::R_PointInSubsector;
-use crate::src::p_mobj::P_SetMobjState;
-use crate::src::p_mobj::P_RemoveMobj;
-use crate::src::p_setup::lines;
-use crate::src::r_main::validcount;
-use crate::src::p_mobj::P_SpawnMobj;
-use crate::src::r_sky::skyflatnum;
-use crate::src::g_game::gamemap;
-use crate::src::m_fixed::FixedDiv;
-use crate::src::r_main::R_PointToAngle2;
-use crate::src::m_random::P_Random;
-use crate::src::p_tick::leveltime;
-use crate::src::tables::finecosine;
-use crate::src::tables::finesine;
-use crate::src::m_fixed::FixedMul;
-use crate::src::s_sound::S_StartSound;
-use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
-use crate::src::p_mobj::{MF_DROPOFF, MF_DROPPED, MF_FLOAT, MF_MISSILE, MF_NOBLOOD, MF_NOCLIP, MF_PICKUP, MF_SHOOTABLE, MF_SKULLFLY, MF_SOLID, MF_SPECIAL, MF_TELEPORT};
-use crate::src::sounds::sfx_noway;
-use crate::src::i_system::{fprintf, stderr};
-use crate::src::p_mobj::{MT_BLOOD, MT_BRUISER, MT_CYBORG, MT_KNIGHT, MT_PLAYER, MT_SPIDER};
-use crate::src::p_mobj::statenum_t;
-use crate::src::tables::angle_t;
-use crate::src::m_fixed::fixed_t;
+use crate::src::d_player::player_t;
 use crate::src::doomdef::boolean;
-use crate::src::info::{S_GIBS};
-use crate::src::doomdef::true_0;
 use crate::src::doomdef::false_0;
+use crate::src::doomdef::true_0;
+use crate::src::g_game::gamemap;
+use crate::src::game_state::game_state;
+use crate::src::i_system::I_Error;
+use crate::src::i_system::{fprintf, stderr};
+use crate::src::info::S_GIBS;
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
+use crate::src::m_fixed::fixed_t;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::m_fixed::FixedMul;
+use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
-use crate::src::tables::ANGLETOFINESHIFT;
-use crate::src::tables::ANG180;
-use crate::src::p_spec::ML_TWOSIDED;
+use crate::src::m_misc::M_StrToInt;
+use crate::src::m_random::P_Random;
+use crate::src::p_inter::P_DamageMobj;
+use crate::src::p_inter::P_TouchSpecialThing;
+use crate::src::p_maputl::intercept_t;
+use crate::src::p_maputl::lowfloor;
+use crate::src::p_maputl::openbottom;
+use crate::src::p_maputl::openrange;
+use crate::src::p_maputl::opentop;
+use crate::src::p_maputl::trace;
+use crate::src::p_maputl::P_AproxDistance;
+use crate::src::p_maputl::P_BlockLinesIterator;
+use crate::src::p_maputl::P_BlockThingsIterator;
+use crate::src::p_maputl::P_BoxOnLineSide;
+use crate::src::p_maputl::P_LineOpening;
+use crate::src::p_maputl::P_PathTraverse;
+use crate::src::p_maputl::P_PointOnLineSide;
+use crate::src::p_maputl::P_SetThingPosition;
+use crate::src::p_maputl::P_UnsetThingPosition;
+use crate::src::p_maputl::MAPBLOCKSHIFT;
 use crate::src::p_maputl::PT_ADDLINES;
 use crate::src::p_maputl::PT_ADDTHINGS;
-use crate::src::p_maputl::MAPBLOCKSHIFT;
-use crate::src::m_fixed::FRACBITS;
-use crate::src::game_state::game_state;
+use crate::src::p_mobj::mobj_t;
+use crate::src::p_mobj::statenum_t;
+use crate::src::p_mobj::P_RemoveMobj;
+use crate::src::p_mobj::P_SetMobjState;
+use crate::src::p_mobj::P_SpawnBlood;
+use crate::src::p_mobj::P_SpawnMobj;
+use crate::src::p_mobj::P_SpawnPuff;
+use crate::src::p_mobj::P_SubstNullMobj;
+use crate::src::p_mobj::{line_t, sector_t, subsector_t, ST_HORIZONTAL, ST_VERTICAL};
+use crate::src::p_mobj::{
+    MF_DROPOFF, MF_DROPPED, MF_FLOAT, MF_MISSILE, MF_NOBLOOD, MF_NOCLIP, MF_PICKUP, MF_SHOOTABLE,
+    MF_SKULLFLY, MF_SOLID, MF_SPECIAL, MF_TELEPORT,
+};
+use crate::src::p_mobj::{MT_BLOOD, MT_BRUISER, MT_CYBORG, MT_KNIGHT, MT_PLAYER, MT_SPIDER};
+use crate::src::p_setup::bmaporgx;
+use crate::src::p_setup::bmaporgy;
+use crate::src::p_setup::lines;
+use crate::src::p_sight::P_CheckSight;
+use crate::src::p_spec::P_CrossSpecialLine;
+use crate::src::p_spec::P_ShootSpecialLine;
+use crate::src::p_spec::ML_TWOSIDED;
+use crate::src::p_switch::P_UseSpecialLine;
+use crate::src::p_tick::leveltime;
+use crate::src::r_main::validcount;
+use crate::src::r_main::R_PointInSubsector;
+use crate::src::r_main::R_PointToAngle2;
+use crate::src::r_sky::skyflatnum;
+use crate::src::s_sound::S_StartSound;
+use crate::src::sounds::sfx_noway;
+use crate::src::tables::angle_t;
+use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
+use crate::src::tables::ANG180;
+use crate::src::tables::ANGLETOFINESHIFT;
 
 pub const DEH_DEFAULT_SPECIES_INFIGHTING: i32 = 0;
 pub const deh_species_infighting: i32 = DEH_DEFAULT_SPECIES_INFIGHTING;
@@ -92,8 +95,7 @@ pub static mut tmceilingz: fixed_t = 0;
 #[no_mangle]
 pub static mut tmdropoffz: fixed_t = 0;
 pub static mut ceilingline: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
-pub static mut spechit: [*mut line_t; 20] = [::core::ptr::null::<line_t>()
-    as *mut line_t; 20];
+pub static mut spechit: [*mut line_t; 20] = [::core::ptr::null::<line_t>() as *mut line_t; 20];
 pub static mut numspechit: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn PIT_StompThing(mut thing: *mut mobj_t) -> boolean {
@@ -116,11 +118,7 @@ pub unsafe extern "C" fn PIT_StompThing(mut thing: *mut mobj_t) -> boolean {
     P_DamageMobj(thing, tmthing, tmthing, 10000 as i32);
     return true_0 as boolean;
 }
-pub unsafe fn P_TeleportMove(
-    mut thing: *mut mobj_t,
-    mut x: fixed_t,
-    mut y: fixed_t,
-) -> bool {
+pub unsafe fn P_TeleportMove(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixed_t) -> bool {
     let mut xl: i32 = 0;
     let mut xh: i32 = 0;
     let mut yl: i32 = 0;
@@ -143,15 +141,11 @@ pub unsafe fn P_TeleportMove(
     tmceilingz = (*(*newsubsec).sector).ceilingheight;
     validcount += 1;
     numspechit = 0 as i32;
-    xl = tmbbox[BOXLEFT as i32 as usize] - bmaporgx as i32
-        - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
-    xh = tmbbox[BOXRIGHT as i32 as usize] - bmaporgx as i32
-        + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
-    yl = tmbbox[BOXBOTTOM as i32 as usize]
-        - bmaporgy as i32 - 32 as i32 * FRACUNIT
-        >> MAPBLOCKSHIFT;
-    yh = tmbbox[BOXTOP as i32 as usize] - bmaporgy as i32
-        + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+    xl = tmbbox[BOXLEFT as i32 as usize] - bmaporgx as i32 - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+    xh = tmbbox[BOXRIGHT as i32 as usize] - bmaporgx as i32 + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+    yl =
+        tmbbox[BOXBOTTOM as i32 as usize] - bmaporgy as i32 - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+    yh = tmbbox[BOXTOP as i32 as usize] - bmaporgy as i32 + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
     bx = xl;
     while bx <= xh {
         by = yl;
@@ -160,8 +154,7 @@ pub unsafe fn P_TeleportMove(
                 bx,
                 by,
                 Some(PIT_StompThing as unsafe extern "C" fn(*mut mobj_t) -> boolean),
-            )
-            {
+            ) {
                 return false;
             }
             by += 1;
@@ -178,19 +171,14 @@ pub unsafe fn P_TeleportMove(
 }
 #[no_mangle]
 pub unsafe extern "C" fn PIT_CheckLine(mut ld: *mut line_t) -> boolean {
-    if tmbbox[BOXRIGHT as i32 as usize]
-        <= (*ld).bbox[BOXLEFT as i32 as usize]
-        || tmbbox[BOXLEFT as i32 as usize]
-            >= (*ld).bbox[BOXRIGHT as i32 as usize]
-        || tmbbox[BOXTOP as i32 as usize]
-            <= (*ld).bbox[BOXBOTTOM as i32 as usize]
-        || tmbbox[BOXBOTTOM as i32 as usize]
-            >= (*ld).bbox[BOXTOP as i32 as usize]
+    if tmbbox[BOXRIGHT as i32 as usize] <= (*ld).bbox[BOXLEFT as i32 as usize]
+        || tmbbox[BOXLEFT as i32 as usize] >= (*ld).bbox[BOXRIGHT as i32 as usize]
+        || tmbbox[BOXTOP as i32 as usize] <= (*ld).bbox[BOXBOTTOM as i32 as usize]
+        || tmbbox[BOXBOTTOM as i32 as usize] >= (*ld).bbox[BOXTOP as i32 as usize]
     {
         return true_0 as boolean;
     }
-    if P_BoxOnLineSide(&raw mut tmbbox as *mut fixed_t, ld) != -(1 as i32)
-    {
+    if P_BoxOnLineSide(&raw mut tmbbox as *mut fixed_t, ld) != -(1 as i32) {
         return true_0 as boolean;
     }
     if (*ld).backsector.is_null() {
@@ -200,9 +188,7 @@ pub unsafe extern "C" fn PIT_CheckLine(mut ld: *mut line_t) -> boolean {
         if (*ld).flags as i32 & ML_BLOCKING != 0 {
             return false_0 as boolean;
         }
-        if (*tmthing).player.is_null()
-            && (*ld).flags as i32 & ML_BLOCKMONSTERS != 0
-        {
+        if (*tmthing).player.is_null() && (*ld).flags as i32 & ML_BLOCKMONSTERS != 0 {
             return false_0 as boolean;
         }
     }
@@ -231,10 +217,7 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
     let mut blockdist: fixed_t = 0;
     let mut solid: bool = false;
     let mut damage: i32 = 0;
-    if (*thing).flags
-        & (MF_SOLID as i32 | MF_SPECIAL as i32
-            | MF_SHOOTABLE as i32) == 0
-    {
+    if (*thing).flags & (MF_SOLID as i32 | MF_SPECIAL as i32 | MF_SHOOTABLE as i32) == 0 {
         return true_0 as boolean;
     }
     blockdist = (*thing).radius + (*tmthing).radius;
@@ -265,30 +248,21 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
             return true_0 as boolean;
         }
         if !(*tmthing).target.is_null()
-            && ((*(*tmthing).target).type_0 as u32
-                == (*thing).type_0 as u32
-                || (*(*tmthing).target).type_0 as u32
-                    == MT_KNIGHT as i32 as u32
-                    && (*thing).type_0 as u32
-                        == MT_BRUISER as i32 as u32
-                || (*(*tmthing).target).type_0 as u32
-                    == MT_BRUISER as i32 as u32
-                    && (*thing).type_0 as u32
-                        == MT_KNIGHT as i32 as u32)
+            && ((*(*tmthing).target).type_0 as u32 == (*thing).type_0 as u32
+                || (*(*tmthing).target).type_0 as u32 == MT_KNIGHT as i32 as u32
+                    && (*thing).type_0 as u32 == MT_BRUISER as i32 as u32
+                || (*(*tmthing).target).type_0 as u32 == MT_BRUISER as i32 as u32
+                    && (*thing).type_0 as u32 == MT_KNIGHT as i32 as u32)
         {
             if thing == (*tmthing).target {
                 return true_0 as boolean;
             }
-            if (*thing).type_0 as u32
-                != MT_PLAYER as i32 as u32
-                && deh_species_infighting == 0
-            {
+            if (*thing).type_0 as u32 != MT_PLAYER as i32 as u32 && deh_species_infighting == 0 {
                 return false_0 as boolean;
             }
         }
         if (*thing).flags & MF_SHOOTABLE as i32 == 0 {
-            return ((*thing).flags & MF_SOLID as i32 == 0)
-                as i32 as boolean;
+            return ((*thing).flags & MF_SOLID as i32 == 0) as i32 as boolean;
         }
         damage = (P_Random(unsafe { &mut game_state().m_random }) % 8 as i32 + 1 as i32)
             * (*(*tmthing).info).damage;
@@ -302,14 +276,9 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
         }
         return (!solid) as i32 as boolean;
     }
-    return ((*thing).flags & MF_SOLID as i32 == 0) as i32
-        as boolean;
+    return ((*thing).flags & MF_SOLID as i32 == 0) as i32 as boolean;
 }
-pub unsafe fn P_CheckPosition(
-    mut thing: *mut mobj_t,
-    mut x: fixed_t,
-    mut y: fixed_t,
-) -> bool {
+pub unsafe fn P_CheckPosition(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixed_t) -> bool {
     let mut xl: i32 = 0;
     let mut xh: i32 = 0;
     let mut yl: i32 = 0;
@@ -335,15 +304,11 @@ pub unsafe fn P_CheckPosition(
     if tmflags & MF_NOCLIP as i32 != 0 {
         return true;
     }
-    xl = tmbbox[BOXLEFT as i32 as usize] - bmaporgx as i32
-        - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
-    xh = tmbbox[BOXRIGHT as i32 as usize] - bmaporgx as i32
-        + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
-    yl = tmbbox[BOXBOTTOM as i32 as usize]
-        - bmaporgy as i32 - 32 as i32 * FRACUNIT
-        >> MAPBLOCKSHIFT;
-    yh = tmbbox[BOXTOP as i32 as usize] - bmaporgy as i32
-        + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+    xl = tmbbox[BOXLEFT as i32 as usize] - bmaporgx as i32 - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+    xh = tmbbox[BOXRIGHT as i32 as usize] - bmaporgx as i32 + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+    yl =
+        tmbbox[BOXBOTTOM as i32 as usize] - bmaporgy as i32 - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+    yh = tmbbox[BOXTOP as i32 as usize] - bmaporgy as i32 + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
     bx = xl;
     while bx <= xh {
         by = yl;
@@ -352,22 +317,17 @@ pub unsafe fn P_CheckPosition(
                 bx,
                 by,
                 Some(PIT_CheckThing as unsafe extern "C" fn(*mut mobj_t) -> boolean),
-            )
-            {
+            ) {
                 return false;
             }
             by += 1;
         }
         bx += 1;
     }
-    xl = (tmbbox[BOXLEFT as i32 as usize] - bmaporgx >> MAPBLOCKSHIFT)
-        as i32;
-    xh = (tmbbox[BOXRIGHT as i32 as usize] - bmaporgx >> MAPBLOCKSHIFT)
-        as i32;
-    yl = (tmbbox[BOXBOTTOM as i32 as usize] - bmaporgy >> MAPBLOCKSHIFT)
-        as i32;
-    yh = (tmbbox[BOXTOP as i32 as usize] - bmaporgy >> MAPBLOCKSHIFT)
-        as i32;
+    xl = (tmbbox[BOXLEFT as i32 as usize] - bmaporgx >> MAPBLOCKSHIFT) as i32;
+    xh = (tmbbox[BOXRIGHT as i32 as usize] - bmaporgx >> MAPBLOCKSHIFT) as i32;
+    yl = (tmbbox[BOXBOTTOM as i32 as usize] - bmaporgy >> MAPBLOCKSHIFT) as i32;
+    yh = (tmbbox[BOXTOP as i32 as usize] - bmaporgy >> MAPBLOCKSHIFT) as i32;
     bx = xl;
     while bx <= xh {
         by = yl;
@@ -376,8 +336,7 @@ pub unsafe fn P_CheckPosition(
                 bx,
                 by,
                 Some(PIT_CheckLine as unsafe extern "C" fn(*mut line_t) -> boolean),
-            )
-            {
+            ) {
                 return false;
             }
             by += 1;
@@ -386,11 +345,7 @@ pub unsafe fn P_CheckPosition(
     }
     return true;
 }
-pub unsafe fn P_TryMove(
-    mut thing: *mut mobj_t,
-    mut x: fixed_t,
-    mut y: fixed_t,
-) -> bool {
+pub unsafe fn P_TryMove(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixed_t) -> bool {
     let mut oldx: fixed_t = 0;
     let mut oldy: fixed_t = 0;
     let mut side: i32 = 0;
@@ -405,18 +360,14 @@ pub unsafe fn P_TryMove(
             return false;
         }
         floatok = true;
-        if (*thing).flags & MF_TELEPORT as i32 == 0
-            && tmceilingz - (*thing).z < (*thing).height
+        if (*thing).flags & MF_TELEPORT as i32 == 0 && tmceilingz - (*thing).z < (*thing).height {
+            return false;
+        }
+        if (*thing).flags & MF_TELEPORT as i32 == 0 && tmfloorz - (*thing).z > 24 as i32 * FRACUNIT
         {
             return false;
         }
-        if (*thing).flags & MF_TELEPORT as i32 == 0
-            && tmfloorz - (*thing).z > 24 as i32 * FRACUNIT
-        {
-            return false;
-        }
-        if (*thing).flags
-            & (MF_DROPOFF as i32 | MF_FLOAT as i32) == 0
+        if (*thing).flags & (MF_DROPOFF as i32 | MF_FLOAT as i32) == 0
             && tmfloorz - tmdropoffz > 24 as i32 * FRACUNIT
         {
             return false;
@@ -430,9 +381,7 @@ pub unsafe fn P_TryMove(
     (*thing).x = x;
     (*thing).y = y;
     P_SetThingPosition(thing);
-    if (*thing).flags
-        & (MF_TELEPORT as i32 | MF_NOCLIP as i32) == 0
-    {
+    if (*thing).flags & (MF_TELEPORT as i32 | MF_NOCLIP as i32) == 0 {
         loop {
             let fresh0 = numspechit;
             numspechit = numspechit - 1;
@@ -444,12 +393,7 @@ pub unsafe fn P_TryMove(
             oldside = P_PointOnLineSide(oldx, oldy, ld);
             if side != oldside {
                 if (*ld).special != 0 {
-                    P_CrossSpecialLine(
-                        ld.offset_from(lines) as i64
-                            as i32,
-                        oldside,
-                        thing,
-                    );
+                    P_CrossSpecialLine(ld.offset_from(lines) as i64 as i32, oldside, thing);
                 }
             }
         }
@@ -479,8 +423,7 @@ pub static mut secondslidefrac: fixed_t = 0;
 #[no_mangle]
 pub static mut bestslideline: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
 #[no_mangle]
-pub static mut secondslideline: *mut line_t = ::core::ptr::null::<line_t>()
-    as *mut line_t;
+pub static mut secondslideline: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
 #[no_mangle]
 pub static mut slidemo: *mut mobj_t = ::core::ptr::null::<mobj_t>() as *mut mobj_t;
 #[no_mangle]
@@ -494,29 +437,23 @@ pub unsafe fn P_HitSlideLine(mut ld: *mut line_t) {
     let mut deltaangle: angle_t = 0;
     let mut movelen: fixed_t = 0;
     let mut newlen: fixed_t = 0;
-    if (*ld).slopetype as u32
-        == ST_HORIZONTAL as i32 as u32
-    {
+    if (*ld).slopetype as u32 == ST_HORIZONTAL as i32 as u32 {
         tmymove = 0 as i32 as fixed_t;
         return;
     }
-    if (*ld).slopetype as u32
-        == ST_VERTICAL as i32 as u32
-    {
+    if (*ld).slopetype as u32 == ST_VERTICAL as i32 as u32 {
         tmxmove = 0 as i32 as fixed_t;
         return;
     }
     side = P_PointOnLineSide((*slidemo).x, (*slidemo).y, ld);
     lineangle = R_PointToAngle2(0 as fixed_t, 0 as fixed_t, (*ld).dx, (*ld).dy);
     if side == 1 as i32 {
-        lineangle = (lineangle as u32).wrapping_add(ANG180) as angle_t
-            as angle_t;
+        lineangle = (lineangle as u32).wrapping_add(ANG180) as angle_t as angle_t;
     }
     moveangle = R_PointToAngle2(0 as fixed_t, 0 as fixed_t, tmxmove, tmymove);
     deltaangle = moveangle.wrapping_sub(lineangle);
     if deltaangle > ANG180 {
-        deltaangle = (deltaangle as u32).wrapping_add(ANG180) as angle_t
-            as angle_t;
+        deltaangle = (deltaangle as u32).wrapping_add(ANG180) as angle_t as angle_t;
     }
     lineangle >>= ANGLETOFINESHIFT;
     deltaangle >>= ANGLETOFINESHIFT;
@@ -619,9 +556,7 @@ pub unsafe fn P_SlideMove(mut mo: *mut mobj_t) {
                 break;
             }
         }
-        bestslidefrac = (FRACUNIT
-            - (bestslidefrac as i32 + 0x800 as i32))
-            as fixed_t;
+        bestslidefrac = (FRACUNIT - (bestslidefrac as i32 + 0x800 as i32)) as fixed_t;
         if bestslidefrac > FRACUNIT {
             bestslidefrac = FRACUNIT as fixed_t;
         }
@@ -713,8 +648,7 @@ pub unsafe extern "C" fn PTR_AimTraverse(mut in_0: *mut intercept_t) -> boolean 
     if thingbottomslope < game_state().p_sight.bottomslope {
         thingbottomslope = game_state().p_sight.bottomslope;
     }
-    aimslope = ((thingtopslope as i32
-        + thingbottomslope as i32) / 2 as i32) as fixed_t;
+    aimslope = ((thingtopslope as i32 + thingbottomslope as i32) / 2 as i32) as fixed_t;
     linetarget = th;
     return false_0 as boolean;
 }
@@ -765,9 +699,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
                 match current_block {
                     15534775465039326179 => {}
                     _ => {
-                        if (*(*li).frontsector).ceilingheight
-                            != (*(*li).backsector).ceilingheight
-                        {
+                        if (*(*li).frontsector).ceilingheight != (*(*li).backsector).ceilingheight {
                             slope = FixedDiv(opentop - shootz, dist);
                             if slope < aimslope {
                                 current_block = 15534775465039326179;
@@ -793,9 +725,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
             if z > (*(*li).frontsector).ceilingheight {
                 return false_0 as boolean;
             }
-            if !(*li).backsector.is_null()
-                && (*(*li).backsector).ceilingpic as i32 == skyflatnum
-            {
+            if !(*li).backsector.is_null() && (*(*li).backsector).ceilingpic as i32 == skyflatnum {
                 return false_0 as boolean;
             }
         }
@@ -845,13 +775,9 @@ pub unsafe fn P_AimLineAttack(
     shootthing = t1;
     x2 = (*t1).x + (distance >> FRACBITS) * finecosine[angle as isize];
     y2 = (*t1).y + (distance >> FRACBITS) * finesine[angle as usize];
-    shootz = ((*t1).z as i32
-        + ((*t1).height as i32 >> 1 as i32)
-        + 8 as i32 * FRACUNIT) as fixed_t;
-    game_state().p_sight.topslope = (100 as i32 * FRACUNIT / 160 as i32)
-        as fixed_t;
-    game_state().p_sight.bottomslope = (-(100 as i32) * FRACUNIT / 160 as i32)
-        as fixed_t;
+    shootz = ((*t1).z as i32 + ((*t1).height as i32 >> 1 as i32) + 8 as i32 * FRACUNIT) as fixed_t;
+    game_state().p_sight.topslope = (100 as i32 * FRACUNIT / 160 as i32) as fixed_t;
+    game_state().p_sight.bottomslope = (-(100 as i32) * FRACUNIT / 160 as i32) as fixed_t;
     attackrange = distance;
     linetarget = ::core::ptr::null_mut::<mobj_t>();
     P_PathTraverse(
@@ -881,9 +807,7 @@ pub unsafe fn P_LineAttack(
     la_damage = damage;
     x2 = (*t1).x + (distance >> FRACBITS) * finecosine[angle as isize];
     y2 = (*t1).y + (distance >> FRACBITS) * finesine[angle as usize];
-    shootz = ((*t1).z as i32
-        + ((*t1).height as i32 >> 1 as i32)
-        + 8 as i32 * FRACUNIT) as fixed_t;
+    shootz = ((*t1).z as i32 + ((*t1).height as i32 >> 1 as i32) + 8 as i32 * FRACUNIT) as fixed_t;
     attackrange = distance;
     aimslope = slope;
     P_PathTraverse(
@@ -903,7 +827,8 @@ pub unsafe extern "C" fn PTR_UseTraverse(mut in_0: *mut intercept_t) -> boolean 
     if (*(*in_0).d.line).special == 0 {
         P_LineOpening((*in_0).d.line);
         if openrange <= 0 as i32 {
-            S_StartSound(unsafe { &mut game_state().sounds }, 
+            S_StartSound(
+                unsafe { &mut game_state().sounds },
                 usething as *mut ::core::ffi::c_void,
                 sfx_noway as i32,
             );
@@ -912,12 +837,15 @@ pub unsafe extern "C" fn PTR_UseTraverse(mut in_0: *mut intercept_t) -> boolean 
         return true_0 as boolean;
     }
     side = 0 as i32;
-    if P_PointOnLineSide((*usething).x, (*usething).y, (*in_0).d.line)
-        == 1 as i32
-    {
+    if P_PointOnLineSide((*usething).x, (*usething).y, (*in_0).d.line) == 1 as i32 {
         side = 1 as i32;
     }
-    P_UseSpecialLine(unsafe { &mut game_state().p_switch }, usething, (*in_0).d.line, side);
+    P_UseSpecialLine(
+        unsafe { &mut game_state().p_switch },
+        usething,
+        (*in_0).d.line,
+        side,
+    );
     return false_0 as boolean;
 }
 pub unsafe fn P_UseLines(mut player: *mut player_t) {
@@ -955,17 +883,13 @@ pub unsafe extern "C" fn PIT_RadiusAttack(mut thing: *mut mobj_t) -> boolean {
     if (*thing).flags & MF_SHOOTABLE as i32 == 0 {
         return true_0 as boolean;
     }
-    if (*thing).type_0 as u32
-        == MT_CYBORG as i32 as u32
-        || (*thing).type_0 as u32
-            == MT_SPIDER as i32 as u32
+    if (*thing).type_0 as u32 == MT_CYBORG as i32 as u32
+        || (*thing).type_0 as u32 == MT_SPIDER as i32 as u32
     {
         return true_0 as boolean;
     }
-    dx = ((*thing).x as i32 - (*bombspot).x as i32).abs()
-        as fixed_t;
-    dy = ((*thing).y as i32 - (*bombspot).y as i32).abs()
-        as fixed_t;
+    dx = ((*thing).x as i32 - (*bombspot).x as i32).abs() as fixed_t;
+    dy = ((*thing).y as i32 - (*bombspot).y as i32).abs() as fixed_t;
     dist = if dx > dy { dx } else { dy };
     dist = dist - (*thing).radius >> FRACBITS;
     if dist < 0 as i32 {
@@ -975,20 +899,11 @@ pub unsafe extern "C" fn PIT_RadiusAttack(mut thing: *mut mobj_t) -> boolean {
         return true_0 as boolean;
     }
     if P_CheckSight(unsafe { &mut game_state().p_sight }, thing, bombspot) {
-        P_DamageMobj(
-            thing,
-            bombspot,
-            bombsource,
-            bombdamage - dist as i32,
-        );
+        P_DamageMobj(thing, bombspot, bombsource, bombdamage - dist as i32);
     }
     return true_0 as boolean;
 }
-pub unsafe fn P_RadiusAttack(
-    mut spot: *mut mobj_t,
-    mut source: *mut mobj_t,
-    mut damage: i32,
-) {
+pub unsafe fn P_RadiusAttack(mut spot: *mut mobj_t, mut source: *mut mobj_t, mut damage: i32) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut xl: i32 = 0;
@@ -1056,15 +971,16 @@ pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
             (*thing).z + (*thing).height / 2 as fixed_t,
             MT_BLOOD,
         );
-        (*mo).momx = (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 12 as i32) as fixed_t;
-        (*mo).momy = (P_Random(unsafe { &mut game_state().m_random }) - P_Random(unsafe { &mut game_state().m_random }) << 12 as i32) as fixed_t;
+        (*mo).momx = (P_Random(unsafe { &mut game_state().m_random })
+            - P_Random(unsafe { &mut game_state().m_random })
+            << 12 as i32) as fixed_t;
+        (*mo).momy = (P_Random(unsafe { &mut game_state().m_random })
+            - P_Random(unsafe { &mut game_state().m_random })
+            << 12 as i32) as fixed_t;
     }
     return true_0 as boolean;
 }
-pub unsafe fn P_ChangeSector(
-    mut sector: *mut sector_t,
-    mut crunch: bool,
-) -> bool {
+pub unsafe fn P_ChangeSector(mut sector: *mut sector_t, mut crunch: bool) -> bool {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     nofit = false_0 as boolean;
@@ -1092,17 +1008,14 @@ unsafe fn SpechitOverrun(mut ld: *mut line_t) {
         p = M_CheckParmWithArgs("-spechit", 1 as i32);
         if p > 0 as i32 {
             M_StrToInt(
-                myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
+                myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
                 &raw mut baseaddr as *mut i32,
             );
         } else {
             baseaddr = DEFAULT_SPECHIT_MAGIC as u32;
         }
     }
-    addr = (baseaddr as i64
-        + ld.offset_from(lines) as i64 * 0x3e as i64)
-        as u32;
+    addr = (baseaddr as i64 + ld.offset_from(lines) as i64 * 0x3e as i64) as u32;
     match numspechit {
         9 | 10 | 11 | 12 => {
             tmbbox[(numspechit - 9 as i32) as usize] = addr as fixed_t;
