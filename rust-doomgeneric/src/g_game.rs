@@ -162,6 +162,7 @@ use crate::src::doomdef::boolean;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::info::{S_SARG_PAIN2, S_SARG_RUN1};
+use crate::src::d_player::{NUMAMMO, am_clip};
 
 extern "C" {
     fn remove(__filename: *const ::core::ffi::c_char) -> i32;
@@ -170,13 +171,6 @@ extern "C" {
         __new: *const ::core::ffi::c_char,
     ) -> i32;
 }
-pub type C2RustUnnamed = u32;
-pub const am_noammo: C2RustUnnamed = 5;
-pub const NUMAMMO: C2RustUnnamed = 4;
-pub const am_misl: C2RustUnnamed = 3;
-pub const am_cell: C2RustUnnamed = 2;
-pub const am_shell: C2RustUnnamed = 1;
-pub const am_clip: C2RustUnnamed = 0;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]

@@ -45,18 +45,7 @@ use crate::src::d_mode::commercial;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::stdint_types::size_t;
-pub type C2RustUnnamed = u32;
-pub const SNDDEVICE_CD: C2RustUnnamed = 10;
-pub const SNDDEVICE_AWE32: C2RustUnnamed = 9;
-pub const SNDDEVICE_GENMIDI: C2RustUnnamed = 8;
-pub const SNDDEVICE_SOUNDCANVAS: C2RustUnnamed = 7;
-pub const SNDDEVICE_WAVEBLASTER: C2RustUnnamed = 6;
-pub const SNDDEVICE_GUS: C2RustUnnamed = 5;
-pub const SNDDEVICE_PAS: C2RustUnnamed = 4;
-pub const SNDDEVICE_SB: C2RustUnnamed = 3;
-pub const SNDDEVICE_ADLIB: C2RustUnnamed = 2;
-pub const SNDDEVICE_PCSPEAKER: C2RustUnnamed = 1;
-pub const SNDDEVICE_NONE: C2RustUnnamed = 0;
+use crate::src::i_sound::{SNDDEVICE_ADLIB, SNDDEVICE_SB};
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]

@@ -45,9 +45,6 @@ extern "C" {
 use crate::src::d_main::D_ProcessEvents;
 use crate::src::m_menu::M_Ticker;
 use crate::src::g_game::G_BuildTiccmd;
-pub type netgame_startup_callback_t = Option<
-    unsafe extern "C" fn(i32, i32) -> boolean,
->;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,

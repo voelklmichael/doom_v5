@@ -24,6 +24,7 @@ use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::{commercial, retail};
 use crate::src::stdint_types::size_t;
 use libc::{printf, snprintf};
+use crate::src::st_stuff::load_callback_t;
 
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
@@ -81,9 +82,6 @@ pub type animenum_t = u32;
 pub const ANIM_LEVEL: animenum_t = 2;
 pub const ANIM_RANDOM: animenum_t = 1;
 pub const ANIM_ALWAYS: animenum_t = 0;
-pub type load_callback_t = Option<
-    unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
->;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
