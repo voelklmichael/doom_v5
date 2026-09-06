@@ -29,11 +29,11 @@ use crate::src::g_game::consoleplayer;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn I_UpdateSound();
-    static mut gamemode: GameMode_t;
     fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
         lump: i32,

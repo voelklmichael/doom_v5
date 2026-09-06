@@ -50,12 +50,12 @@ use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-    static mut gamemode: GameMode_t;
     fn A_ReFire(player: *mut player_t, psp: *mut pspdef_t);
 }
 pub type __uint8_t = u8;

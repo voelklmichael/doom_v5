@@ -31,7 +31,6 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-#[no_mangle]
 pub static mut gamemode: GameMode_t = indetermined;
 pub static mut gamemission: GameMission_t = doom;
 pub static mut gameversion: GameVersion_t = exe_final2;

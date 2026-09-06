@@ -129,6 +129,7 @@ use crate::src::doomstat::gameversion;
 use crate::src::p_tick::leveltime;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
+use crate::src::doomstat::gamemode;
 
 extern "C" {
     fn memcpy(
@@ -157,7 +158,6 @@ extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn ftell(__stream: *mut FILE) -> i64;
     fn I_GetTime() -> i32;
-    static mut gamemode: GameMode_t;
     fn P_SpawnPlayer(mthing: *mut mapthing_t);
     fn Z_Malloc(
         size: i32,

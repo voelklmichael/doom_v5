@@ -35,6 +35,7 @@ use crate::src::doomstat::gameversion;
 use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
 
 extern "C" {
     fn snprintf(
@@ -63,7 +64,6 @@ extern "C" {
         desty: i32,
     );
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
-    static mut gamemode: GameMode_t;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
