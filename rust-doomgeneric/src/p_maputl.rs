@@ -23,6 +23,7 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::false_0;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
+use crate::src::m_fixed::FRACBITS;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -53,7 +54,6 @@ pub struct intercepts_overrun_t {
     pub addr: *mut ::core::ffi::c_void,
     pub int16_array: bool,
 }
-pub const FRACBITS: i32 = 16 as i32;
 pub const MAPBLOCKUNITS: i32 = 128 as i32;
 pub const MAPBLOCKSIZE: i32 = MAPBLOCKUNITS * FRACUNIT;
 pub const MAPBLOCKSHIFT: i32 = FRACBITS + 7 as i32;

@@ -48,7 +48,6 @@ pub type result_e = u32;
 pub const pastdest: result_e = 2;
 pub const crushed: result_e = 1;
 pub const ok: result_e = 0;
-pub const FRACBITS: i32 = 16 as i32;
 pub const FLOORSPEED: i32 = FRACUNIT;
 pub unsafe fn T_MovePlane(
     mut sector: *mut sector_t,

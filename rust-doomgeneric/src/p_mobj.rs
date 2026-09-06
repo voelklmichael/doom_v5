@@ -66,6 +66,8 @@ use crate::src::tables::ANG45;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::m_fixed::INT_MIN;
 use crate::src::p_user::VIEWHEIGHT;
+use crate::src::m_fixed::FRACBITS;
+use crate::src::p_enemy::MELEERANGE;
 
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
@@ -569,11 +571,9 @@ pub struct degenmobj_t {
 pub type line_t = line_s;
 pub type subsector_t = subsector_s;
 pub const MTF_AMBUSH: i32 = 8 as i32;
-pub const FRACBITS: i32 = 16 as i32;
 pub const FLOATSPEED: i32 = FRACUNIT * 4 as i32;
 pub const GRAVITY: i32 = FRACUNIT;
 pub const MAXMOVE: i32 = 30 as i32 * FRACUNIT;
-pub const MELEERANGE: i32 = 64 as i32 * FRACUNIT;
 pub const ONFLOORZ: i32 = INT_MIN;
 pub const ONCEILINGZ: i32 = INT_MAX;
 pub const ITEMQUESIZE: i32 = 128 as i32;

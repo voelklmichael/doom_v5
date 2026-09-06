@@ -974,7 +974,6 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub const FRACBITS: i32 = 16 as i32;
 pub static mut sprnames: [*mut ::core::ffi::c_char; 139] = [
     b"TROO\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     b"SHTG\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,

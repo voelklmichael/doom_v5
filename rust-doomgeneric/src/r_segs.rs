@@ -63,11 +63,11 @@ use crate::src::r_main::MAXLIGHTSCALE;
 use crate::src::r_main::LIGHTSCALESHIFT;
 use crate::src::r_main::LIGHTSEGSHIFT;
 use crate::src::r_main::LIGHTLEVELS;
+use crate::src::m_fixed::FRACBITS;
 
 pub const SHRT_MAX: i32 = __SHRT_MAX__;
 pub const ML_DONTPEGTOP: i32 = 8 as i32;
 pub const ML_DONTPEGBOTTOM: i32 = 16 as i32;
-pub const FRACBITS: i32 = 16 as i32;
 pub const SIL_BOTTOM: i32 = 1 as i32;
 pub const SIL_TOP: i32 = 2 as i32;
 pub const SIL_BOTH: i32 = 3 as i32;

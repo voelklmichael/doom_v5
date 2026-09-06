@@ -29,10 +29,9 @@ use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::ANG180;
 use crate::src::tables::ANG90;
 use crate::src::tables::FINEMASK;
+use crate::src::tables::FINEANGLES;
 
 
-pub const FRACBITS: i32 = 16 as i32;
-pub const FINEANGLES: i32 = 8192;
 pub const VIEWHEIGHT: i32 = 41 as i32 * FRACUNIT;
 pub const INVERSECOLORMAP: i32 = 32 as i32;
 pub const MAXBOB: i32 = 0x100000 as i32;

@@ -33,6 +33,8 @@ use crate::src::m_controls::KEY_PGUP;
 use crate::src::m_controls::KEY_PGDN;
 use crate::src::m_controls::KEY_INS;
 use crate::src::m_controls::KEY_DEL;
+use crate::src::m_controls::KEY_CAPSLOCK;
+use crate::src::m_controls::KEY_SCRLCK;
 
 extern "C" {
     fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
@@ -65,10 +67,6 @@ pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
 };
 pub const KEY_RCTRL: i32 = 0x80 as i32
     + 0x1d as i32;
-pub const KEY_CAPSLOCK: i32 = 0x80 as i32
-    + 0x3a as i32;
-pub const KEY_SCRLCK: i32 = 0x80 as i32
-    + 0x46 as i32;
 pub const KEY_PRTSCR: i32 = 0x80 as i32
     + 0x59 as i32;
 pub const KEYP_5: i32 = '5' as i32;

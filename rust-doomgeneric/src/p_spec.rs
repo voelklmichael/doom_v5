@@ -148,7 +148,6 @@ pub struct floormove_t {
     pub speed: fixed_t,
 }
 pub const ML_TWOSIDED: i32 = 4 as i32;
-pub const FRACBITS: i32 = 16 as i32;
 pub const FASTDARK: i32 = 15 as i32;
 #[no_mangle]
 pub static mut animdefs: [animdef_t; 23] = unsafe {

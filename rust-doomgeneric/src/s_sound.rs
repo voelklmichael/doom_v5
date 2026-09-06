@@ -50,6 +50,7 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::false_0;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::m_fixed::FRACBITS;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct channel_t {
@@ -57,7 +58,6 @@ pub struct channel_t {
     pub origin: *mut mobj_t,
     pub handle: i32,
 }
-pub const FRACBITS: i32 = 16 as i32;
 pub const S_CLIPPING_DIST: i32 = 1200 as i32 * FRACUNIT;
 pub const S_CLOSE_DIST: i32 = 200 as i32 * FRACUNIT;
 pub const S_ATTENUATOR: i32 = S_CLIPPING_DIST - S_CLOSE_DIST >> FRACBITS;

@@ -71,7 +71,6 @@ pub const deh_blue_armor_class: i32 = DEH_DEFAULT_BLUE_ARMOR_CLASS;
 pub const deh_max_soulsphere: i32 = DEH_DEFAULT_MAX_SOULSPHERE;
 pub const deh_soulsphere_health: i32 = DEH_DEFAULT_SOULSPHERE_HEALTH;
 pub const deh_megasphere_health: i32 = DEH_DEFAULT_MEGASPHERE_HEALTH;
-pub const FRACBITS: i32 = 16 as i32;
 pub const MAXHEALTH: i32 = 100 as i32;
 pub const BASETHRESHOLD: i32 = 100 as i32;
 pub const BONUSADD: i32 = 6 as i32;
