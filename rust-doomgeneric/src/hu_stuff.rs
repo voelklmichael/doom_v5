@@ -26,15 +26,8 @@ use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::PU_STATIC;
 use crate::src::sounds::{sfx_radio, sfx_tink};
+use libc::snprintf;
 
-extern "C" {
-    fn snprintf(
-        __s: *mut ::core::ffi::c_char,
-        __maxlen: size_t,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-}
 pub type __uint8_t = u8;
 pub type size_t = usize;
 pub type uint8_t = __uint8_t;

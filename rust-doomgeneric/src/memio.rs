@@ -2,9 +2,7 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memcpy;
-extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-}
+use libc::printf;
 pub type size_t = usize;
 #[derive(Copy, Clone)]
 #[repr(C)]

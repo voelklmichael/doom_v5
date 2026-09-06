@@ -8,9 +8,9 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::{memcpy, memset};
 use libc::{atoi, strcmp};
+use libc::printf;
 
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn DG_DrawFrame();
     fn DG_SetWindowTitle(title: *const ::core::ffi::c_char);

@@ -8,10 +8,8 @@ use crate::src::i_system::I_AtExit;
 use crate::src::i_timer::I_GetTime;
 use crate::src::d_ticcmd::BT_SPECIAL;
 use libc::{memcpy, memset};
+use libc::printf;
 
-extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

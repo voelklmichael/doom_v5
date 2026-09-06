@@ -68,6 +68,7 @@ use crate::src::i_timer::I_GetTime;
 use crate::src::z_zone::PU_CACHE;
 use crate::src::sounds::{sfx_boscub, sfx_bspact, sfx_dmpain, sfx_getpow, sfx_kntdth, sfx_oof, sfx_pistol, sfx_pldeth, sfx_popain, sfx_posit1, sfx_posit3, sfx_pstop, sfx_sgtatk, sfx_skeswg, sfx_slop, sfx_stnmov, sfx_swtchn, sfx_swtchx, sfx_telept, sfx_vilact};
 use libc::toupper;
+use libc::snprintf;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -79,12 +80,6 @@ extern "C" {
     ) -> *mut FILE;
     fn fprintf(
         __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-    fn snprintf(
-        __s: *mut ::core::ffi::c_char,
-        __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;

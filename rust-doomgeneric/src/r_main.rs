@@ -39,10 +39,10 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::r_plane::R_DrawPlanes;
 use crate::src::r_things::R_DrawMasked;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
+use libc::printf;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn R_DrawColumn();
     fn R_DrawColumnLow();
     fn R_DrawFuzzColumn();

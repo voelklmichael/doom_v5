@@ -33,13 +33,8 @@ use crate::src::sounds::{sfx_claw, sfx_dshtgn, sfx_firsht, sfx_pistol, sfx_plasm
 use crate::src::sounds::{mus_bunny, mus_evil, mus_read_m, mus_victor};
 use libc::memcpy;
 use libc::toupper;
+use libc::snprintf;
 extern "C" {
-    fn snprintf(
-        __s: *mut ::core::ffi::c_char,
-        __maxlen: size_t,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
 }
 pub type size_t = usize;

@@ -1,9 +1,7 @@
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_misc::M_FileExists;
-extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-}
+use libc::printf;
 pub type size_t = usize;
 pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;

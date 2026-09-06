@@ -1,10 +1,8 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::d_iwad::D_TryFindWADByName;
 use crate::src::w_wad::W_AddFile;
+use libc::printf;
 
-extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
