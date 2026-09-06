@@ -65,7 +65,6 @@ use crate::src::p_floor::{build8, turbo16};
 use crate::src::p_ceilng::{ceiling_e, crushAndRaise, fastCrushAndRaise, lowerAndCrush, raiseToHighest, silentCrushAndRaise};
 use crate::src::p_switch::bwhere_e;
 use crate::src::m_fixed::fixed_t;
-use crate::src::doomdef::boolean;
 use crate::src::stdint_types::size_t;
 
 extern "C" {
@@ -1043,7 +1042,7 @@ pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {
-    pub istexture: boolean,
+    pub istexture: bool,
     pub picnum: i32,
     pub basepic: i32,
     pub numpics: i32,
@@ -1408,7 +1407,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
 };
 #[no_mangle]
 pub static mut anims: [anim_t; 32] = [anim_t {
-    istexture: 0,
+    istexture: false,
     picnum: 0,
     basepic: 0,
     numpics: 0,
@@ -1453,7 +1452,7 @@ pub unsafe fn P_InitPicAnims() {
         }
         match current_block_13 {
             11650488183268122163 => {
-                (*lastanim).istexture = animdefs[i as usize].istexture as boolean;
+                (*lastanim).istexture = animdefs[i as usize].istexture != 0;
                 (*lastanim).numpics = (*lastanim).picnum - (*lastanim).basepic
                     + 1 as i32;
                 if (*lastanim).numpics < 2 as i32 {
@@ -2089,7 +2088,7 @@ pub unsafe fn P_UpdateSpecials() {
         i = (*anim).basepic;
         while i < (*anim).basepic + (*anim).numpics {
             pic = (*anim).basepic + (leveltime / (*anim).speed + i) % (*anim).numpics;
-            if (*anim).istexture != 0 {
+            if (*anim).istexture {
                 *texturetranslation.offset(i as isize) = pic;
             } else {
                 *flattranslation.offset(i as isize) = pic;
