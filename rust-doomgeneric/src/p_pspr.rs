@@ -1185,8 +1185,7 @@ pub unsafe fn P_DropWeapon(mut player: *mut player_t) {
         weaponinfo[(*player).readyweapon as usize].downstate as statenum_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_WeaponReady(
+pub unsafe fn A_WeaponReady(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -1241,8 +1240,7 @@ pub unsafe extern "C" fn A_WeaponReady(
     (*psp).sy = 32 as fixed_t * FRACUNIT
         + FixedMul((*player).bob, finesine[angle as usize]);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_ReFire(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_ReFire(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     if (*player).cmd.buttons as i32 & BT_ATTACK as i32 != 0
         && (*player).pendingweapon as u32
             == wp_nochange as i32 as u32
@@ -1255,15 +1253,13 @@ pub unsafe extern "C" fn A_ReFire(mut player: *mut player_t, mut psp: *mut pspde
         P_CheckAmmo(player);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_CheckReload(
+pub unsafe fn A_CheckReload(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
     P_CheckAmmo(player);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Lower(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_Lower(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     (*psp).sy += FRACUNIT * 6 as i32;
     if (*psp).sy < 128 as i32 * FRACUNIT {
         return;
@@ -1281,8 +1277,7 @@ pub unsafe extern "C" fn A_Lower(mut player: *mut player_t, mut psp: *mut pspdef
     (*player).readyweapon = (*player).pendingweapon;
     P_BringUpWeapon(player);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Raise(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_Raise(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut newstate: statenum_t = S_NULL;
     (*psp).sy -= FRACUNIT * 6 as i32;
     if (*psp).sy > 32 as i32 * FRACUNIT {
@@ -1292,8 +1287,7 @@ pub unsafe extern "C" fn A_Raise(mut player: *mut player_t, mut psp: *mut pspdef
     newstate = weaponinfo[(*player).readyweapon as usize].readystate as statenum_t;
     P_SetPsprite(player, ps_weapon as i32, newstate);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_GunFlash(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_GunFlash(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     P_SetMobjState((*player).mo, S_PLAY_ATK2);
     P_SetPsprite(
         player,
@@ -1301,8 +1295,7 @@ pub unsafe extern "C" fn A_GunFlash(mut player: *mut player_t, mut psp: *mut psp
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
     let mut slope: i32 = 0;
@@ -1329,8 +1322,7 @@ pub unsafe extern "C" fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
     let mut slope: i32 = 0;
@@ -1399,8 +1391,7 @@ unsafe extern "C" fn DecreaseAmmo(
         (*player).maxammo[(ammonum - NUMAMMO as i32) as usize] -= amount;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FireMissile(
+pub unsafe fn A_FireMissile(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -1411,8 +1402,7 @@ pub unsafe extern "C" fn A_FireMissile(
     );
     P_SpawnPlayerMissile((*player).mo, MT_ROCKET);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FireBFG(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_FireBFG(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     DecreaseAmmo(
         player,
         weaponinfo[(*player).readyweapon as usize].ammo as i32,
@@ -1420,8 +1410,7 @@ pub unsafe extern "C" fn A_FireBFG(mut player: *mut player_t, mut psp: *mut pspd
     );
     P_SpawnPlayerMissile((*player).mo, MT_BFG);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FirePlasma(
+pub unsafe fn A_FirePlasma(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -1478,8 +1467,7 @@ pub unsafe extern "C" fn P_GunShot(mut mo: *mut mobj_t, mut accurate: bool) {
     }
     P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FirePistol(
+pub unsafe fn A_FirePistol(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -1501,8 +1489,7 @@ pub unsafe extern "C" fn A_FirePistol(
     P_BulletSlope((*player).mo);
     P_GunShot((*player).mo, (*player).refire == 0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FireShotgun(
+pub unsafe fn A_FireShotgun(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -1529,8 +1516,7 @@ pub unsafe extern "C" fn A_FireShotgun(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FireShotgun2(
+pub unsafe fn A_FireShotgun2(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -1574,8 +1560,7 @@ pub unsafe extern "C" fn A_FireShotgun2(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FireCGun(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_FireCGun(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_pistol as i32,
@@ -1603,20 +1588,16 @@ pub unsafe extern "C" fn A_FireCGun(mut player: *mut player_t, mut psp: *mut psp
     P_BulletSlope((*player).mo);
     P_GunShot((*player).mo, (*player).refire == 0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Light0(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_Light0(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     (*player).extralight = 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Light1(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_Light1(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     (*player).extralight = 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Light2(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_Light2(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     (*player).extralight = 2 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BFGSpray(mut mo: *mut mobj_t) {
+pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut damage: i32 = 0;
@@ -1656,8 +1637,7 @@ pub unsafe extern "C" fn A_BFGSpray(mut mo: *mut mobj_t) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BFGsound(mut player: *mut player_t, mut psp: *mut pspdef_t) {
+pub unsafe fn A_BFGsound(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
         sfx_bfg as i32,

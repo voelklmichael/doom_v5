@@ -1131,8 +1131,7 @@ pub unsafe fn T_MovePlane(
     }
     return ok;
 }
-#[no_mangle]
-pub unsafe extern "C" fn T_MoveFloor(mut floor: *mut floormove_t) {
+pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
     let mut res: result_e = ok;
     res = T_MovePlane(
         (*floor).sector,

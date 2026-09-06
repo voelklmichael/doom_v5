@@ -1482,8 +1482,7 @@ pub unsafe extern "C" fn P_LookForPlayers(
             & 3 as i32;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_KeenDie(mut mo: *mut mobj_t) {
+pub unsafe fn A_KeenDie(mut mo: *mut mobj_t) {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut mo2: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut junk: line_t = line_s {
@@ -1521,8 +1520,7 @@ pub unsafe extern "C" fn A_KeenDie(mut mo: *mut mobj_t) {
     junk.tag = 666 as i16;
     EV_DoDoor(&raw mut junk, vld_open);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Look(mut actor: *mut mobj_t) {
+pub unsafe fn A_Look(mut actor: *mut mobj_t) {
     let mut current_block: u64;
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     (*actor).threshold = 0 as i32;
@@ -1576,8 +1574,7 @@ pub unsafe extern "C" fn A_Look(mut actor: *mut mobj_t) {
     }
     P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
+pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
     let mut delta: i32 = 0;
     if (*actor).reactiontime != 0 {
         (*actor).reactiontime -= 1;
@@ -1662,8 +1659,7 @@ pub unsafe extern "C" fn A_Chase(mut actor: *mut mobj_t) {
         S_StartSound(actor as *mut ::core::ffi::c_void, (*(*actor).info).activesound);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FaceTarget(mut actor: *mut mobj_t) {
+pub unsafe fn A_FaceTarget(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
@@ -1682,8 +1678,7 @@ pub unsafe extern "C" fn A_FaceTarget(mut actor: *mut mobj_t) {
             );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_PosAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_PosAttack(mut actor: *mut mobj_t) {
     let mut angle: i32 = 0;
     let mut damage: i32 = 0;
     let mut slope: i32 = 0;
@@ -1699,8 +1694,7 @@ pub unsafe extern "C" fn A_PosAttack(mut actor: *mut mobj_t) {
         * 3 as i32;
     P_LineAttack(actor, angle as angle_t, MISSILERANGE, slope as fixed_t, damage);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_SPosAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_SPosAttack(mut actor: *mut mobj_t) {
     let mut i: i32 = 0;
     let mut angle: i32 = 0;
     let mut bangle: i32 = 0;
@@ -1723,8 +1717,7 @@ pub unsafe extern "C" fn A_SPosAttack(mut actor: *mut mobj_t) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_CPosAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_CPosAttack(mut actor: *mut mobj_t) {
     let mut angle: i32 = 0;
     let mut bangle: i32 = 0;
     let mut damage: i32 = 0;
@@ -1742,8 +1735,7 @@ pub unsafe extern "C" fn A_CPosAttack(mut actor: *mut mobj_t) {
         * 3 as i32;
     P_LineAttack(actor, angle as angle_t, MISSILERANGE, slope as fixed_t, damage);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_CPosRefire(mut actor: *mut mobj_t) {
+pub unsafe fn A_CPosRefire(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
     if P_Random() < 40 as i32 {
         return;
@@ -1754,8 +1746,7 @@ pub unsafe extern "C" fn A_CPosRefire(mut actor: *mut mobj_t) {
         P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_SpidRefire(mut actor: *mut mobj_t) {
+pub unsafe fn A_SpidRefire(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
     if P_Random() < 10 as i32 {
         return;
@@ -1766,16 +1757,14 @@ pub unsafe extern "C" fn A_SpidRefire(mut actor: *mut mobj_t) {
         P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BspiAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_BspiAttack(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
     P_SpawnMissile(actor, (*actor).target as *mut mobj_t, MT_ARACHPLAZ);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_TroopAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_TroopAttack(mut actor: *mut mobj_t) {
     let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
@@ -1790,8 +1779,7 @@ pub unsafe extern "C" fn A_TroopAttack(mut actor: *mut mobj_t) {
     }
     P_SpawnMissile(actor, (*actor).target as *mut mobj_t, MT_TROOPSHOT);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_SargAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_SargAttack(mut actor: *mut mobj_t) {
     let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
@@ -1803,8 +1791,7 @@ pub unsafe extern "C" fn A_SargAttack(mut actor: *mut mobj_t) {
         P_DamageMobj((*actor).target as *mut mobj_t, actor, actor, damage);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_HeadAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_HeadAttack(mut actor: *mut mobj_t) {
     let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
@@ -1818,16 +1805,14 @@ pub unsafe extern "C" fn A_HeadAttack(mut actor: *mut mobj_t) {
     }
     P_SpawnMissile(actor, (*actor).target as *mut mobj_t, MT_HEADSHOT);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_CyberAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_CyberAttack(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
     P_SpawnMissile(actor, (*actor).target as *mut mobj_t, MT_ROCKET);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BruisAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_BruisAttack(mut actor: *mut mobj_t) {
     let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
@@ -1841,8 +1826,7 @@ pub unsafe extern "C" fn A_BruisAttack(mut actor: *mut mobj_t) {
     }
     P_SpawnMissile(actor, (*actor).target as *mut mobj_t, MT_BRUISERSHOT);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_SkelMissile(mut actor: *mut mobj_t) {
+pub unsafe fn A_SkelMissile(mut actor: *mut mobj_t) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     if (*actor).target.is_null() {
         return;
@@ -1857,8 +1841,7 @@ pub unsafe extern "C" fn A_SkelMissile(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub static mut TRACEANGLE: i32 = 0xc000000 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn A_Tracer(mut actor: *mut mobj_t) {
+pub unsafe fn A_Tracer(mut actor: *mut mobj_t) {
     let mut exact: angle_t = 0;
     let mut dist: fixed_t = 0;
     let mut slope: fixed_t = 0;
@@ -1918,16 +1901,14 @@ pub unsafe extern "C" fn A_Tracer(mut actor: *mut mobj_t) {
         (*actor).momz += FRACUNIT / 8 as i32;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_SkelWhoosh(mut actor: *mut mobj_t) {
+pub unsafe fn A_SkelWhoosh(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
     S_StartSound(actor as *mut ::core::ffi::c_void, sfx_skeswg as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_SkelFist(mut actor: *mut mobj_t) {
+pub unsafe fn A_SkelFist(mut actor: *mut mobj_t) {
     let mut damage: i32 = 0;
     if (*actor).target.is_null() {
         return;
@@ -1983,8 +1964,7 @@ pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
     }
     return false_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_VileChase(mut actor: *mut mobj_t) {
+pub unsafe fn A_VileChase(mut actor: *mut mobj_t) {
     let mut xl: i32 = 0;
     let mut xh: i32 = 0;
     let mut yl: i32 = 0;
@@ -2045,22 +2025,18 @@ pub unsafe extern "C" fn A_VileChase(mut actor: *mut mobj_t) {
     }
     A_Chase(actor);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_VileStart(mut actor: *mut mobj_t) {
+pub unsafe fn A_VileStart(mut actor: *mut mobj_t) {
     S_StartSound(actor as *mut ::core::ffi::c_void, sfx_vilatk as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_StartFire(mut actor: *mut mobj_t) {
+pub unsafe fn A_StartFire(mut actor: *mut mobj_t) {
     S_StartSound(actor as *mut ::core::ffi::c_void, sfx_flamst as i32);
     A_Fire(actor);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FireCrackle(mut actor: *mut mobj_t) {
+pub unsafe fn A_FireCrackle(mut actor: *mut mobj_t) {
     S_StartSound(actor as *mut ::core::ffi::c_void, sfx_flame as i32);
     A_Fire(actor);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Fire(mut actor: *mut mobj_t) {
+pub unsafe fn A_Fire(mut actor: *mut mobj_t) {
     let mut dest: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: u32 = 0;
@@ -2080,8 +2056,7 @@ pub unsafe extern "C" fn A_Fire(mut actor: *mut mobj_t) {
     (*actor).z = (*dest).z;
     P_SetThingPosition(actor);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_VileTarget(mut actor: *mut mobj_t) {
+pub unsafe fn A_VileTarget(mut actor: *mut mobj_t) {
     let mut fog: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     if (*actor).target.is_null() {
         return;
@@ -2098,8 +2073,7 @@ pub unsafe extern "C" fn A_VileTarget(mut actor: *mut mobj_t) {
     (*fog).tracer = (*actor).target;
     A_Fire(fog);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_VileAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_VileAttack(mut actor: *mut mobj_t) {
     let mut fire: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
     if (*actor).target.is_null() {
@@ -2125,13 +2099,11 @@ pub unsafe extern "C" fn A_VileAttack(mut actor: *mut mobj_t) {
     P_RadiusAttack(fire, actor, 70 as i32);
 }
 pub const FATSPREAD: i32 = ANG90 / 8 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn A_FatRaise(mut actor: *mut mobj_t) {
+pub unsafe fn A_FatRaise(mut actor: *mut mobj_t) {
     A_FaceTarget(actor);
     S_StartSound(actor as *mut ::core::ffi::c_void, sfx_manatk as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FatAttack1(mut actor: *mut mobj_t) {
+pub unsafe fn A_FatAttack1(mut actor: *mut mobj_t) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
@@ -2148,8 +2120,7 @@ pub unsafe extern "C" fn A_FatAttack1(mut actor: *mut mobj_t) {
     );
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FatAttack2(mut actor: *mut mobj_t) {
+pub unsafe fn A_FatAttack2(mut actor: *mut mobj_t) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
@@ -2168,8 +2139,7 @@ pub unsafe extern "C" fn A_FatAttack2(mut actor: *mut mobj_t) {
     );
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_FatAttack3(mut actor: *mut mobj_t) {
+pub unsafe fn A_FatAttack3(mut actor: *mut mobj_t) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
@@ -2197,8 +2167,7 @@ pub unsafe extern "C" fn A_FatAttack3(mut actor: *mut mobj_t) {
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
 pub const SKULLSPEED: i32 = 20 as i32 * FRACUNIT;
-#[no_mangle]
-pub unsafe extern "C" fn A_SkullAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_SkullAttack(mut actor: *mut mobj_t) {
     let mut dest: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: angle_t = 0;
     let mut dist: i32 = 0;
@@ -2222,8 +2191,7 @@ pub unsafe extern "C" fn A_SkullAttack(mut actor: *mut mobj_t) {
         + ((*dest).height as i32 >> 1 as i32)
         - (*actor).z as i32) / dist) as fixed_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
+pub unsafe fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
@@ -2264,23 +2232,20 @@ pub unsafe extern "C" fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: ang
     (*newmobj).target = (*actor).target;
     A_SkullAttack(newmobj);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_PainAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_PainAttack(mut actor: *mut mobj_t) {
     if (*actor).target.is_null() {
         return;
     }
     A_FaceTarget(actor);
     A_PainShootSkull(actor, (*actor).angle);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_PainDie(mut actor: *mut mobj_t) {
+pub unsafe fn A_PainDie(mut actor: *mut mobj_t) {
     A_Fall(actor);
     A_PainShootSkull(actor, (*actor).angle.wrapping_add(ANG90 as angle_t));
     A_PainShootSkull(actor, (*actor).angle.wrapping_add(ANG180));
     A_PainShootSkull(actor, (*actor).angle.wrapping_add(ANG270));
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Scream(mut actor: *mut mobj_t) {
+pub unsafe fn A_Scream(mut actor: *mut mobj_t) {
     let mut sound: i32 = 0;
     match (*(*actor).info).deathsound {
         0 => return,
@@ -2306,22 +2271,18 @@ pub unsafe extern "C" fn A_Scream(mut actor: *mut mobj_t) {
         S_StartSound(actor as *mut ::core::ffi::c_void, sound);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_XScream(mut actor: *mut mobj_t) {
+pub unsafe fn A_XScream(mut actor: *mut mobj_t) {
     S_StartSound(actor as *mut ::core::ffi::c_void, sfx_slop as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Pain(mut actor: *mut mobj_t) {
+pub unsafe fn A_Pain(mut actor: *mut mobj_t) {
     if (*(*actor).info).painsound != 0 {
         S_StartSound(actor as *mut ::core::ffi::c_void, (*(*actor).info).painsound);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Fall(mut actor: *mut mobj_t) {
+pub unsafe fn A_Fall(mut actor: *mut mobj_t) {
     (*actor).flags &= !(MF_SOLID as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Explode(mut thingy: *mut mobj_t) {
+pub unsafe fn A_Explode(mut thingy: *mut mobj_t) {
     P_RadiusAttack(thingy, (*thingy).target as *mut mobj_t, 128 as i32);
 }
 unsafe extern "C" fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
@@ -2369,8 +2330,7 @@ unsafe extern "C" fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BossDeath(mut mo: *mut mobj_t) {
+pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut mo2: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut junk: line_t = line_s {
@@ -2479,23 +2439,19 @@ pub unsafe extern "C" fn A_BossDeath(mut mo: *mut mobj_t) {
     }
     G_ExitLevel();
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Hoof(mut mo: *mut mobj_t) {
+pub unsafe fn A_Hoof(mut mo: *mut mobj_t) {
     S_StartSound(mo as *mut ::core::ffi::c_void, sfx_hoof as i32);
     A_Chase(mo);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_Metal(mut mo: *mut mobj_t) {
+pub unsafe fn A_Metal(mut mo: *mut mobj_t) {
     S_StartSound(mo as *mut ::core::ffi::c_void, sfx_metal as i32);
     A_Chase(mo);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BabyMetal(mut mo: *mut mobj_t) {
+pub unsafe fn A_BabyMetal(mut mo: *mut mobj_t) {
     S_StartSound(mo as *mut ::core::ffi::c_void, sfx_bspwlk as i32);
     A_Chase(mo);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_OpenShotgun2(
+pub unsafe fn A_OpenShotgun2(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -2504,8 +2460,7 @@ pub unsafe extern "C" fn A_OpenShotgun2(
         sfx_dbopn as i32,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_LoadShotgun2(
+pub unsafe fn A_LoadShotgun2(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -2514,8 +2469,7 @@ pub unsafe extern "C" fn A_LoadShotgun2(
         sfx_dbload as i32,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_CloseShotgun2(
+pub unsafe fn A_CloseShotgun2(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
@@ -2532,8 +2486,7 @@ pub static mut braintargets: [*mut mobj_t; 32] = [::core::ptr::null::<mobj_t>()
 pub static mut numbraintargets: i32 = 0;
 #[no_mangle]
 pub static mut braintargeton: i32 = 0 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn A_BrainAwake(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainAwake(mut mo: *mut mobj_t) {
     let mut thinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     numbraintargets = 0 as i32;
@@ -2555,12 +2508,10 @@ pub unsafe extern "C" fn A_BrainAwake(mut mo: *mut mobj_t) {
     }
     S_StartSound(NULL, sfx_bossit as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BrainPain(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainPain(mut mo: *mut mobj_t) {
     S_StartSound(NULL, sfx_bospn as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BrainScream(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainScream(mut mo: *mut mobj_t) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut z: i32 = 0;
@@ -2580,8 +2531,7 @@ pub unsafe extern "C" fn A_BrainScream(mut mo: *mut mobj_t) {
     }
     S_StartSound(NULL, sfx_bosdth as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BrainExplode(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainExplode(mut mo: *mut mobj_t) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut z: i32 = 0;
@@ -2598,12 +2548,10 @@ pub unsafe extern "C" fn A_BrainExplode(mut mo: *mut mobj_t) {
         (*th).tics = 1 as i32;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BrainDie(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainDie(mut mo: *mut mobj_t) {
     G_ExitLevel();
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_BrainSpit(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainSpit(mut mo: *mut mobj_t) {
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     static mut easy: i32 = 0 as i32;
@@ -2620,13 +2568,11 @@ pub unsafe extern "C" fn A_BrainSpit(mut mo: *mut mobj_t) {
         / (*(*newmobj).state).tics;
     S_StartSound(NULL, sfx_bospit as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_SpawnSound(mut mo: *mut mobj_t) {
+pub unsafe fn A_SpawnSound(mut mo: *mut mobj_t) {
     S_StartSound(mo as *mut ::core::ffi::c_void, sfx_boscub as i32);
     A_SpawnFly(mo);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_SpawnFly(mut mo: *mut mobj_t) {
+pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut fog: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
@@ -2670,8 +2616,7 @@ pub unsafe extern "C" fn A_SpawnFly(mut mo: *mut mobj_t) {
     P_TeleportMove(newmobj, (*newmobj).x, (*newmobj).y);
     P_RemoveMobj(mo);
 }
-#[no_mangle]
-pub unsafe extern "C" fn A_PlayerScream(mut mo: *mut mobj_t) {
+pub unsafe fn A_PlayerScream(mut mo: *mut mobj_t) {
     let mut sound: i32 = sfx_pldeth as i32;
     if gamemode as u32
         == commercial as i32 as u32
