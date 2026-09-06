@@ -1,4 +1,3 @@
-use crate::src::i_system::FILE;
 use crate::src::r_defs::{node_t, seg_t, side_t};
 use crate::src::p_mobj::{thinker_s, mapthing_t, sector_t, line_s, ST_NEGATIVE, ST_POSITIVE, ST_VERTICAL, ST_HORIZONTAL, vertex_t, degenmobj_t, line_t, subsector_t, actionf_t};
 use crate::src::p_mobj::{mobj_t};
@@ -44,15 +43,8 @@ use crate::src::z_zone::{PU_LEVEL, PU_PURGELEVEL, PU_STATIC};
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use libc::memset;
 use libc::snprintf;
+use crate::src::i_system::{fprintf, stderr};
 
-extern "C" {
-    static mut stderr: *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-}
 pub type __uint8_t = u8;
 pub type size_t = usize;
 pub type uint8_t = __uint8_t;

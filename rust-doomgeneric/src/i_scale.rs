@@ -5,9 +5,9 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::{memcpy, memset};
 use libc::{printf, puts};
+use crate::src::i_system::fflush;
 extern "C" {
     static mut stdout: *mut FILE;
-    fn fflush(__stream: *mut FILE) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

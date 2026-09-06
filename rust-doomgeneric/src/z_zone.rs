@@ -2,14 +2,8 @@ use crate::src::i_system::FILE;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_ZoneBase;
 use libc::printf;
+use crate::src::i_system::fprintf;
 
-extern "C" {
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;

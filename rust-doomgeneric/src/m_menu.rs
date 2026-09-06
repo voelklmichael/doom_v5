@@ -70,26 +70,8 @@ use crate::src::sounds::{sfx_boscub, sfx_bspact, sfx_dmpain, sfx_getpow, sfx_knt
 use libc::toupper;
 use libc::snprintf;
 use crate::src::m_misc::__ctype_toupper_loc;
+use crate::src::i_system::{fclose, fopen, fprintf, fread, stderr};
 
-extern "C" {
-    static mut stderr: *mut FILE;
-    fn fclose(__stream: *mut FILE) -> i32;
-    fn fopen(
-        __filename: *const ::core::ffi::c_char,
-        __modes: *const ::core::ffi::c_char,
-    ) -> *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-    fn fread(
-        __ptr: *mut ::core::ffi::c_void,
-        __size: size_t,
-        __n: size_t,
-        __stream: *mut FILE,
-    ) -> u64;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type __int32_t = i32;

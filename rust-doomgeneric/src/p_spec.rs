@@ -1,4 +1,3 @@
-use crate::src::i_system::FILE;
 use crate::src::r_defs::{side_t};
 use crate::src::p_mobj::{thinker_t, sector_t, degenmobj_t, line_t, actionf_t};
 use crate::src::d_player::{player_t};
@@ -55,14 +54,9 @@ use crate::src::sounds::sfx_swtchn;
 use crate::src::d_player::pw_ironfeet;
 use crate::src::d_player::CF_GODMODE;
 use libc::memset;
+use crate::src::i_system::{fprintf, stderr};
 
 extern "C" {
-    static mut stderr: *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
     fn T_MoveFloor(floor: *mut floormove_t);
 }
 pub type size_t = usize;

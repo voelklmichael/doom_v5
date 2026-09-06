@@ -1,4 +1,3 @@
-use crate::src::i_system::FILE;
 use crate::src::p_maputl::{intercept_t};
 use crate::src::p_mobj::{sector_t, ST_VERTICAL, ST_HORIZONTAL, line_t, subsector_t, actionf_t};
 use crate::src::d_player::{player_t};
@@ -52,15 +51,8 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::p_mobj::{MF_DROPOFF, MF_DROPPED, MF_FLOAT, MF_MISSILE, MF_NOBLOOD, MF_NOCLIP, MF_PICKUP, MF_SHOOTABLE, MF_SKULLFLY, MF_SOLID, MF_SPECIAL, MF_TELEPORT};
 use crate::src::sounds::sfx_noway;
+use crate::src::i_system::{fprintf, stderr};
 
-extern "C" {
-    static mut stderr: *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        ...
-    ) -> i32;
-}
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type fixed_t = i32;
