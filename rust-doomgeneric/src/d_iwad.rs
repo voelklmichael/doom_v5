@@ -1,25 +1,10 @@
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::m_misc::M_FileExists;
+use crate::src::d_mode::{GameMode_t, commercial, indetermined, retail, shareware};
+use crate::src::d_mode::{GameMission_t, doom, doom2, heretic, hexen, none, pack_chex, pack_hacx, pack_plut, pack_tnt, strife};
 use libc::printf;
 pub type size_t = usize;
-pub type GameMission_t = u32;
-pub const none: GameMission_t = 9;
-pub const strife: GameMission_t = 8;
-pub const hexen: GameMission_t = 7;
-pub const heretic: GameMission_t = 6;
-pub const pack_hacx: GameMission_t = 5;
-pub const pack_chex: GameMission_t = 4;
-pub const pack_plut: GameMission_t = 3;
-pub const pack_tnt: GameMission_t = 2;
-pub const doom2: GameMission_t = 1;
-pub const doom: GameMission_t = 0;
-pub type GameMode_t = u32;
-pub const indetermined: GameMode_t = 4;
-pub const retail: GameMode_t = 3;
-pub const commercial: GameMode_t = 2;
-pub const registered: GameMode_t = 1;
-pub const shareware: GameMode_t = 0;
 #[derive(Copy, Clone)]
 pub struct iwad_t {
     pub name: &'static str,
