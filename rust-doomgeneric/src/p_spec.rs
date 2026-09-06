@@ -42,6 +42,8 @@ use crate::src::p_setup::lines;
 use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sides;
 use crate::src::p_tick::P_AddThinker;
+use crate::src::g_game::deathmatch;
+use crate::src::m_random::P_Random;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -55,14 +57,12 @@ extern "C" {
         __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    static mut deathmatch: i32;
     static mut leveltime: i32;
     fn Z_Malloc(
         size: i32,
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn P_Random() -> i32;
     static mut sectors: *mut sector_t;
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;

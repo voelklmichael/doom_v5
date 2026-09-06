@@ -34,6 +34,8 @@ use crate::src::g_game::gameepisode;
 use crate::src::g_game::gamemap;
 use crate::src::p_setup::numsectors;
 use crate::src::m_fixed::FixedDiv;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::playeringame;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -65,10 +67,8 @@ extern "C" {
     ) -> i32;
     fn V_DrawPatch(x: i32, y: i32, patch: *mut patch_t);
     static mut netgame: bool;
-    static mut deathmatch: i32;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

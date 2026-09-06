@@ -43,6 +43,7 @@ use crate::src::r_sky::skyflatnum;
 use crate::src::g_game::gamemap;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::r_main::R_PointToAngle2;
+use crate::src::m_random::P_Random;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -53,7 +54,6 @@ extern "C" {
     ) -> i32;
     fn abs(__x: i32) -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn P_Random() -> i32;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);

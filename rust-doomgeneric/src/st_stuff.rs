@@ -29,6 +29,7 @@ use crate::src::g_game::gameskill;
 use crate::src::doomstat::gamemission;
 use crate::src::am_map::automapactive;
 use crate::src::r_main::R_PointToAngle2;
+use crate::src::g_game::deathmatch;
 
 extern "C" {
     fn snprintf(
@@ -66,7 +67,6 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
-    static mut deathmatch: i32;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
 }

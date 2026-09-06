@@ -12,9 +12,9 @@ use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::info::states;
 use crate::src::r_main::R_PointToAngle2;
+use crate::src::m_random::P_Random;
 
 extern "C" {
-    fn P_Random() -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;

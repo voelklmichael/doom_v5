@@ -30,6 +30,9 @@ use crate::src::r_sky::skyflatnum;
 use crate::src::info::states;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::r_main::R_PointToAngle2;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::playeringame;
+use crate::src::m_random::P_Random;
 
 extern "C" {
     fn Z_Malloc(
@@ -37,7 +40,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn P_Random() -> i32;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
@@ -54,11 +56,9 @@ extern "C" {
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
-    static mut deathmatch: i32;
     static mut consoleplayer: i32;
     static mut leveltime: i32;
     static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

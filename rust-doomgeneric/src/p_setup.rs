@@ -24,6 +24,8 @@ use crate::src::g_game::totalitems;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::p_tick::P_InitThinkers;
 use crate::src::m_fixed::FixedDiv;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::playeringame;
 
 extern "C" {
     fn Z_Malloc(
@@ -62,11 +64,9 @@ extern "C" {
     fn P_InitPicAnims();
     fn S_Start();
     static mut gamemode: GameMode_t;
-    static mut deathmatch: i32;
     static mut consoleplayer: i32;
     static mut leveltime: i32;
     static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;

@@ -123,6 +123,7 @@ use crate::src::doomstat::gamemission;
 use crate::src::info::states;
 use crate::src::am_map::automapactive;
 use crate::src::m_misc::M_StringCopy;
+use crate::src::m_random::P_Random;
 
 extern "C" {
     fn memcpy(
@@ -170,7 +171,6 @@ extern "C" {
         s: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn P_Random() -> i32;
     fn V_ScreenShot(format: *mut ::core::ffi::c_char);
     fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
@@ -1727,11 +1727,9 @@ pub static mut nodrawers: bool = false;
 #[no_mangle]
 pub static mut starttime: i32 = 0;
 pub static mut viewactive: bool = false;
-#[no_mangle]
 pub static mut deathmatch: i32 = 0;
 #[no_mangle]
 pub static mut netgame: bool = false;
-#[no_mangle]
 pub static mut playeringame: [boolean; 4] = [0; 4];
 #[no_mangle]
 pub static mut players: [player_t; 4] = [player_s {

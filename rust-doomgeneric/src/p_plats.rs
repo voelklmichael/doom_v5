@@ -9,13 +9,13 @@ use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_tick::P_RemoveThinker;
 use crate::src::p_setup::sides;
 use crate::src::p_tick::P_AddThinker;
+use crate::src::m_random::P_Random;
 extern "C" {
     fn Z_Malloc(
         size: i32,
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn P_Random() -> i32;
     static mut sectors: *mut sector_t;
     fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
     static mut leveltime: i32;

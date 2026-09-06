@@ -7,13 +7,13 @@ use crate::src::p_spec::P_UpdateSpecials;
 use crate::src::g_game::paused;
 use crate::src::m_menu::menuactive;
 use crate::src::g_game::demoplayback;
+use crate::src::g_game::playeringame;
 
 extern "C" {
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
     static mut netgame: bool;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
