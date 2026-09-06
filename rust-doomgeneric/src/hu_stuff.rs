@@ -17,6 +17,7 @@ use crate::src::doomstat::gamemission;
 use crate::src::g_game::gamemap;
 use crate::src::am_map::automapactive;
 use crate::src::m_misc::M_StringCopy;
+use crate::src::g_game::playeringame;
 
 extern "C" {
     fn snprintf(
@@ -31,7 +32,6 @@ extern "C" {
     static mut netgame: bool;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;

@@ -26,6 +26,7 @@ use crate::src::info::states;
 use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sides;
 use crate::src::p_tick::P_AddThinker;
+use crate::src::g_game::playeringame;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -82,7 +83,6 @@ extern "C" {
     fn T_MoveFloor(floor: *mut floormove_t);
     static mut leveltime: i32;
     static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
     fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
     fn M_snprintf(
         buf: *mut ::core::ffi::c_char,

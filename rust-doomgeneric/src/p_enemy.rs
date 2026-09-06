@@ -42,10 +42,11 @@ use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::g_game::gamemap;
 use crate::src::p_setup::sides;
 use crate::src::r_main::R_PointToAngle2;
+use crate::src::g_game::playeringame;
+use crate::src::m_random::P_Random;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn P_Random() -> i32;
     fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     static finesine: [fixed_t; 10240];
     static mut finecosine: *const fixed_t;
@@ -55,7 +56,6 @@ extern "C" {
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
     static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
     fn A_ReFire(player: *mut player_t, psp: *mut pspdef_t);
 }
 pub type __uint8_t = u8;

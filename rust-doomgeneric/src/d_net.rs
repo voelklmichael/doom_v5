@@ -26,6 +26,8 @@ use crate::src::g_game::timelimit;
 use crate::src::g_game::demoplayback;
 use crate::src::doomstat::gamemission;
 use crate::src::m_misc::M_StringCopy;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::playeringame;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -36,10 +38,8 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
-    static mut deathmatch: i32;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

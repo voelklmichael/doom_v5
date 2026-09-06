@@ -123,6 +123,7 @@ use crate::src::r_draw::viewheight;
 use crate::src::doomstat::gamemission;
 use crate::src::am_map::automapactive;
 use crate::src::m_misc::M_StringCopy;
+use crate::src::g_game::deathmatch;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -159,7 +160,6 @@ extern "C" {
     static mut gamemode: GameMode_t;
     static mut gameversion: GameVersion_t;
     static mut netgame: bool;
-    static mut deathmatch: i32;
     static mut consoleplayer: i32;
     static mut players: [player_t; 4];
     fn Z_Init();
