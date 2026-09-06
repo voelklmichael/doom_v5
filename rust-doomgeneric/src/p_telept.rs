@@ -11,12 +11,11 @@ use crate::src::tables::finesine;
 use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::MF_MISSILE;
 use crate::src::sounds::sfx_telept;
-use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG, mobjtype_t};
+use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG};
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::d_mode::exe_final;
 use crate::src::m_fixed::fixed_t;
-pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+use crate::src::tables::ANGLETOFINESHIFT;
 pub unsafe fn EV_Teleport(
     mut line: *mut line_t,
     mut side: i32,

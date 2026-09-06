@@ -4,6 +4,7 @@ use crate::src::i_video::screensaver_mode;
 
 use crate::src::sounds::sfxinfo_t;
 use crate::src::doomdef::boolean;
+use crate::src::doomdef::NULL;
 pub type snddevice_t = u32;
 pub const SNDDEVICE_CD: snddevice_t = 10;
 pub const SNDDEVICE_AWE32: snddevice_t = 9;
@@ -70,11 +71,6 @@ pub struct music_module_t {
     pub MusicIsPlaying: Option<unsafe extern "C" fn() -> boolean>,
     pub Poll: Option<unsafe extern "C" fn() -> ()>,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 #[no_mangle]
 pub static mut snd_samplerate: i32 = 44100 as i32;
 #[no_mangle]

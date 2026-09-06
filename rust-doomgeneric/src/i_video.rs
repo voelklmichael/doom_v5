@@ -14,6 +14,10 @@ use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
 use libc::{atoi, strcmp};
 use libc::printf;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::m_fixed::INT_MAX;
 
 extern "C" {
     static mut DG_ScreenBuffer: *mut pixel_t;
@@ -58,12 +62,6 @@ pub struct col_t {
     pub g: byte,
     pub b: byte,
 }
-pub const INT_MAX: i32 = i32::MAX;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const DOOMGENERIC_RESX: i32 = 640 as i32;
 pub const DOOMGENERIC_RESY: i32 = 400 as i32;
 static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
@@ -440,5 +438,3 @@ pub unsafe fn I_EnableLoadingDisk() {}
 pub unsafe fn I_BindVideoVariables() {}
 pub unsafe fn I_DisplayFPSDots(mut dots_on: bool) {}
 pub unsafe fn I_CheckIsScreensaver() {}
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;

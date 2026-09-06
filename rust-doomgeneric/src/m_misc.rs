@@ -9,6 +9,7 @@ use crate::src::i_system::{fclose, fopen, fread, fseek, ftell, fwrite};
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::size_t;
+use crate::src::doomdef::NULL;
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -27,12 +28,7 @@ extern "C" {
 pub type __mode_t = u32;
 pub const SEEK_SET: i32 = 0 as i32;
 pub const SEEK_END: i32 = 2 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const EISDIR: i32 = 21 as i32;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const DIR_SEPARATOR: i32 = '/' as i32;
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")

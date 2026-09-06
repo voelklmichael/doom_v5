@@ -16,12 +16,13 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_pstart, sfx_pstop, sfx_stnmov};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::m_fixed::fixed_t;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::TICRATE;
+use crate::src::m_fixed::FRACUNIT;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub type plat_e = u32;
 pub const in_stasis: plat_e = 3;
 pub const waiting: plat_e = 2;
@@ -33,13 +34,7 @@ pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-pub const false_0: i32 = 0 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const TICRATE: i32 = 35 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const PLATWAIT: i32 = 3 as i32;
 pub const PLATSPEED: i32 = FRACUNIT;
 pub const MAXPLATS: i32 = 30 as i32;

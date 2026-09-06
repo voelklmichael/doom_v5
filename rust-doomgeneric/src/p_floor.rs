@@ -19,12 +19,13 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_pstop, sfx_stnmov};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::m_fixed::fixed_t;
+use crate::src::doomdef::NULL;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::m_fixed::INT_MAX;
 
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub type floor_e = u32;
 pub const raiseFloor512: floor_e = 12;
 pub const donutRaise: floor_e = 11;
@@ -46,11 +47,7 @@ pub type result_e = u32;
 pub const pastdest: result_e = 2;
 pub const crushed: result_e = 1;
 pub const ok: result_e = 0;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const INT_MAX: i32 = i32::MAX;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const ML_TWOSIDED: i32 = 4 as i32;
 pub const FLOORSPEED: i32 = FRACUNIT;
 pub unsafe fn T_MovePlane(
@@ -518,6 +515,3 @@ pub unsafe fn EV_BuildStairs(
     }
     return rtn;
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();

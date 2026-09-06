@@ -40,13 +40,16 @@ use crate::src::sounds::{sfxinfo_t, musicinfo_t};
 use crate::src::z_zone::PU_STATIC;
 use crate::src::sounds::NUMSFX;
 use crate::src::sounds::{NUMMUSIC, mus_None, mus_e1m1, mus_e1m5, mus_e1m9, mus_e2m4, mus_e2m5, mus_e2m6, mus_e2m7, mus_e3m2, mus_e3m3, mus_e3m4, mus_intro, mus_introa, mus_runnin};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::commercial;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::stdint_types::size_t;
 use crate::src::i_sound::{SNDDEVICE_ADLIB, SNDDEVICE_SB};
-pub const NUMMOBJTYPES: mobjtype_t = 137;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANGLETOFINESHIFT;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct channel_t {
@@ -54,14 +57,7 @@ pub struct channel_t {
     pub origin: *mut mobj_t,
     pub handle: i32,
 }
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
 pub const S_CLIPPING_DIST: i32 = 1200 as i32 * FRACUNIT;
 pub const S_CLOSE_DIST: i32 = 200 as i32 * FRACUNIT;
 pub const S_ATTENUATOR: i32 = S_CLIPPING_DIST - S_CLOSE_DIST >> FRACBITS;

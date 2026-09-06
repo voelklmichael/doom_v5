@@ -25,7 +25,6 @@ use crate::src::doomstat::gamemode;
 use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::PU_STATIC;
 use crate::src::sounds::{sfx_radio, sfx_tink};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::commercial;
 use crate::src::d_mode::exe_chex;
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
@@ -34,12 +33,10 @@ use crate::src::doomdef::boolean;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::snprintf;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::TICRATE;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const TICRATE: i32 = 35 as i32;
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const KEY_ESCAPE: i32 = 27 as i32;
 pub const KEY_ENTER: i32 = 13;
 pub const KEY_RSHIFT: i32 = 0x80 as i32

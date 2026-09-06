@@ -12,9 +12,6 @@ extern "C" {
         __size: size_t,
     ) -> *mut ::core::ffi::c_void;
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 static mut open_wadfiles: *mut *mut wad_file_t = ::core::ptr::null::<*mut wad_file_t>()
     as *mut *mut wad_file_t;
 static mut num_open_wadfiles: i32 = 0 as i32;

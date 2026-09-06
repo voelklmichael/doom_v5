@@ -23,26 +23,19 @@ use crate::src::r_sky::skyflatnum;
 use crate::src::r_plane::R_FindPlane;
 use crate::src::r_main::R_PointToAngle;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::ANG180;
+use crate::src::tables::ANG90;
 
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cliprange_t {
     pub first: i32,
     pub last: i32,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-pub const ANG90: i32 = 0x40000000 as i32;
-pub const ANG180: u32 = 0x80000000 as u32;
 pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
 pub static mut curline: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
 pub static mut sidedef: *mut side_t = ::core::ptr::null::<side_t>() as *mut side_t;

@@ -14,12 +14,13 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_bdcls, sfx_bdopn, sfx_dorcls, sfx_doropn, sfx_oof};
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_inter::{it_bluecard, it_blueskull, it_redcard, it_redskull, it_yellowcard, it_yellowskull};
-pub const NUMMOBJTYPES: mobjtype_t = 137;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::TICRATE;
+use crate::src::m_fixed::FRACUNIT;
 pub type vldoor_e = u32;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
@@ -41,13 +42,7 @@ pub struct vldoor_t {
     pub topwait: i32,
     pub topcountdown: i32,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const false_0: i32 = 0 as i32;
-pub const TICRATE: i32 = 35 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const VDOORWAIT: i32 = 150 as i32;
 pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
     let mut res: result_e = ok;

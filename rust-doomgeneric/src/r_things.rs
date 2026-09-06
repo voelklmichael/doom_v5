@@ -56,7 +56,6 @@ use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::p_mobj::{MF_SHADOW, MF_TRANSLATION, MF_TRANSSHIFT};
 use crate::src::d_player::pw_invisibility;
 use crate::src::d_player::NUMPSPRITES;
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::r_defs::lighttable_t;
@@ -65,8 +64,14 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
 use libc::strncasecmp;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANG45;
+use crate::src::m_fixed::INT_MAX;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct vissprite_s {
@@ -87,16 +92,7 @@ pub struct vissprite_s {
     pub mobjflags: i32,
 }
 pub type vissprite_t = vissprite_s;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const INT_MAX: i32 = i32::MAX;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const ANG45: i32 = 0x20000000 as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
 pub const SIL_BOTTOM: i32 = 1 as i32;
 pub const SIL_TOP: i32 = 2 as i32;
 pub const FF_FULLBRIGHT: i32 = 0x8000 as i32;

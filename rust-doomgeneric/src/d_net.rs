@@ -32,7 +32,6 @@ use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::skill_t;
 use crate::src::doomdef::boolean;
 use crate::src::stdint_types::byte;
@@ -45,15 +44,11 @@ extern "C" {
 use crate::src::d_main::D_ProcessEvents;
 use crate::src::m_menu::M_Ticker;
 use crate::src::g_game::G_BuildTiccmd;
-pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const MAXPLAYERS: i32 = 4 as i32;
-pub const ANG90: i32 = 0x40000000 as i32;
-pub const ANG270: u32 = 0xc0000000 as u32;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::tables::ANG90;
+use crate::src::tables::ANG270;
 pub static mut netcmds: *mut ticcmd_t = ::core::ptr::null::<ticcmd_t>() as *mut ticcmd_t;
 unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];

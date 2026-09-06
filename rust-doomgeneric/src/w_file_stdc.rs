@@ -14,9 +14,6 @@ pub struct stdc_wad_file_t {
     pub wad: wad_file_t,
     pub fstream: *mut FILE,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const SEEK_SET: i32 = 0 as i32;
 unsafe fn W_StdC_OpenFile(
     mut path: *mut ::core::ffi::c_char,

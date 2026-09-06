@@ -1,9 +1,9 @@
 use crate::src::stdint_types::uint32_t;
+use crate::src::doomdef::TICRATE;
 extern "C" {
     fn DG_SleepMs(ms: uint32_t);
     fn DG_GetTicksMs() -> uint32_t;
 }
-pub const TICRATE: i32 = 35 as i32;
 static mut basetime: uint32_t = 0 as uint32_t;
 #[no_mangle]
 pub unsafe extern "C" fn I_GetTicks() -> i32 {

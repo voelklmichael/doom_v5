@@ -70,7 +70,6 @@ use libc::toupper;
 use libc::snprintf;
 use crate::src::m_misc::__ctype_toupper_loc;
 use crate::src::i_system::{fclose, fopen, fprintf, fread, stderr};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::{commercial, registered, retail, shareware};
 use crate::src::d_mode::{exe_chex, exe_doom_1_9, exe_ultimate};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
@@ -80,8 +79,10 @@ use crate::src::d_event::GS_LEVEL;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::size_t;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct menuitem_t {
@@ -153,11 +154,6 @@ pub const load4: C2RustUnnamed_8 = 3;
 pub const load3: C2RustUnnamed_8 = 2;
 pub const load2: C2RustUnnamed_8 = 1;
 pub const load1: C2RustUnnamed_8 = 0;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const KEY_ESCAPE: i32 = 27 as i32;
 pub const KEY_ENTER: i32 = 13;
 pub const KEY_BACKSPACE: i32 = 0x7f;
@@ -175,8 +171,6 @@ pub const GAMMALVL3: &str = "Gamma correction level 3\0";
 pub const GAMMALVL4: &str = "Gamma correction level 4\0";
 pub const EMPTYSTRING: &str = "empty slot\0";
 pub const NUM_QUITMESSAGES: i32 = 8 as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const HU_FONTSTART: i32 = '!' as i32;
 pub const HU_FONTEND: i32 = '_' as i32;
 pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART

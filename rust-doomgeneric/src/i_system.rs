@@ -60,11 +60,6 @@ pub struct atexit_listentry_s {
     pub run_on_error: boolean,
     pub next: *mut atexit_listentry_t,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const DEFAULT_RAM: i32 = 6 as i32;
 pub const MIN_RAM: i32 = 6 as i32;
 static mut exit_funcs: *mut atexit_listentry_t = ::core::ptr::null::<

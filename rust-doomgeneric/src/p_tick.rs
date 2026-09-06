@@ -15,11 +15,9 @@ use crate::src::g_game::netgame;
 use crate::src::g_game::consoleplayer;
 use crate::src::g_game::players;
 use crate::src::z_zone::Z_Free;
-use crate::src::p_mobj::mobjtype_t;
+use crate::src::doomdef::MAXPLAYERS;
 
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub static mut leveltime: i32 = 0;
 pub static mut thinkercap: thinker_t = thinker_s {
     prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,

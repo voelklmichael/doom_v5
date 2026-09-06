@@ -44,7 +44,6 @@ use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::sounds::{mus_e1m1, mus_runnin};
 use crate::src::d_player::{pw_invulnerability, pw_ironfeet, pw_strength};
 use crate::src::d_player::{CF_GODMODE, CF_NOCLIP};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::d_mode::{commercial, registered, retail, shareware};
 use crate::src::d_mode::{exe_chex, exe_ultimate};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
@@ -57,8 +56,14 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::snprintf;
 use crate::src::p_inter::NUMCARDS;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::doomdef::TICRATE;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::tables::ANG180;
+use crate::src::tables::ANG45;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub type st_stateenum_t = u32;
 pub const FirstPersonState: st_stateenum_t = 1;
 pub const AutomapState: st_stateenum_t = 0;
@@ -69,10 +74,6 @@ pub const StartChatState: st_chatstateenum_t = 0;
 pub type load_callback_t = Option<
     unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
 >;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const DEH_DEFAULT_GOD_MODE_HEALTH: i32 = 100 as i32;
 pub const DEH_DEFAULT_IDFA_ARMOR: i32 = 200 as i32;
 pub const DEH_DEFAULT_IDFA_ARMOR_CLASS: i32 = 2 as i32;
@@ -83,16 +84,9 @@ pub const deh_idfa_armor: i32 = DEH_DEFAULT_IDFA_ARMOR;
 pub const deh_idfa_armor_class: i32 = DEH_DEFAULT_IDFA_ARMOR_CLASS;
 pub const deh_idkfa_armor: i32 = DEH_DEFAULT_IDKFA_ARMOR;
 pub const deh_idkfa_armor_class: i32 = DEH_DEFAULT_IDKFA_ARMOR_CLASS;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const TICRATE: i32 = 35 as i32;
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const ST_HEIGHT: i32 = 32 as i32;
 pub const ST_WIDTH: i32 = SCREENWIDTH;
 pub const ST_Y: i32 = SCREENHEIGHT - ST_HEIGHT;
-pub const ANG45: i32 = 0x20000000 as i32;
-pub const ANG180: u32 = 0x80000000 as u32;
 pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
     + (('m' as i32) << 16 as i32);
 pub const AM_MSGENTERED: i32 = 1634559232;

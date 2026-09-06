@@ -26,7 +26,6 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::m_fixed::fixed_t;
 use crate::src::r_defs::lighttable_t;
@@ -35,8 +34,8 @@ use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
 use libc::strncasecmp;
 use libc::printf;
+use crate::src::doomdef::NULL;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct post_t {
@@ -83,9 +82,6 @@ pub struct maptexture_t {
     pub patchcount: i16,
     pub patches: [mappatch_t; 1],
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const FRACBITS: i32 = 16 as i32;
 pub static mut firstflat: i32 = 0;
 #[no_mangle]

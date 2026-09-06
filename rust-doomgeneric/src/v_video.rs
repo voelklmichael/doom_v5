@@ -19,6 +19,9 @@ use crate::src::doomdef::boolean;
 use crate::src::stdint_types::{byte, uint8_t};
 use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
 
 extern "C" {
     fn fabs(__x: f64) -> f64;
@@ -47,8 +50,6 @@ pub struct pcx_t {
     pub filler: [::core::ffi::c_char; 58],
     pub data: u8,
 }
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 #[no_mangle]
 pub static mut tinttable: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
@@ -880,6 +881,3 @@ pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
         red,
     );
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();

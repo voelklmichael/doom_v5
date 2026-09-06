@@ -1,6 +1,8 @@
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
 use libc::strlen;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cheatseq_t {
@@ -11,8 +13,6 @@ pub struct cheatseq_t {
     pub param_chars_read: i32,
     pub parameter_buf: [::core::ffi::c_char; 5],
 }
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub unsafe fn cht_CheckCheat(
     mut cht: *mut cheatseq_t,
     mut key: ::core::ffi::c_char,

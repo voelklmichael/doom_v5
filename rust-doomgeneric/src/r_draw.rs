@@ -18,13 +18,11 @@ use crate::src::r_defs::lighttable_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
 
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const FRACBITS: i32 = 16 as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 pub const SBARHEIGHT: i32 = 32 as i32;
 #[no_mangle]
 pub static mut viewimage: *mut byte = ::core::ptr::null::<byte>() as *mut byte;

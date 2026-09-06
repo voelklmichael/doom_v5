@@ -47,30 +47,23 @@ use crate::src::r_draw::viewheight;
 use crate::src::r_sky::skyflatnum;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::r_defs::lighttable_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::ANG180;
+use crate::src::tables::ANG90;
+use crate::src::m_fixed::INT_MAX;
+use crate::src::m_fixed::INT_MIN;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const SHRT_MAX: i32 = __SHRT_MAX__;
-pub const INT_MAX: i32 = i32::MAX;
-pub const INT_MIN: i32 = i32::MIN;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const ML_DONTPEGTOP: i32 = 8 as i32;
 pub const ML_DONTPEGBOTTOM: i32 = 16 as i32;
 pub const ML_MAPPED: i32 = 256 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-pub const ANG90: i32 = 0x40000000 as i32;
-pub const ANG180: u32 = 0x80000000 as u32;
 pub const SIL_BOTTOM: i32 = 1 as i32;
 pub const SIL_TOP: i32 = 2 as i32;
 pub const SIL_BOTH: i32 = 3 as i32;

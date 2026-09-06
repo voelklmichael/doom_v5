@@ -13,17 +13,10 @@ use crate::src::p_setup::numsectors;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::p_setup::sectors;
 use crate::src::m_fixed::FixedMul;
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_maputl::divline_t;
 
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const FRACBITS: i32 = 16 as i32;
 pub const ML_TWOSIDED: i32 = 4 as i32;
 pub const NF_SUBSECTOR: i32 = 0x8000 as i32;

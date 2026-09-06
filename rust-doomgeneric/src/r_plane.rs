@@ -47,21 +47,19 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::w_wad::W_ReleaseLumpNum;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::PU_STATIC;
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::tables::angle_t;
 use crate::src::m_fixed::fixed_t;
 use crate::src::r_defs::lighttable_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::memset;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::ANG90;
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub type planefunction_t = Option<
     unsafe extern "C" fn(i32, i32) -> (),
 >;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-pub const ANG90: i32 = 0x40000000 as i32;
-pub const SCREENWIDTH: i32 = 320 as i32;
 pub const MAXDRAWSEGS: i32 = 256 as i32;
 pub const LIGHTLEVELS: i32 = 16 as i32;
 pub const LIGHTSEGSHIFT: i32 = 4 as i32;

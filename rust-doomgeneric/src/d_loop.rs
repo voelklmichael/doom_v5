@@ -14,6 +14,10 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
 use libc::printf;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::TICRATE;
+use crate::src::m_fixed::FRACUNIT;
 
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
@@ -70,16 +74,9 @@ pub struct ticcmd_set_t {
     pub cmds: [ticcmd_t; 8],
     pub ingame: [boolean; 8],
 }
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const NET_MAXPLAYERS: i32 = 8 as i32;
 pub const BACKUPTICS: i32 = 128 as i32;
-pub const TICRATE: i32 = 35 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 static mut ticdata: [ticcmd_set_t; 128] = [ticcmd_set_t {
     cmds: [ticcmd_t {
         forwardmove: 0,

@@ -67,7 +67,15 @@ use crate::src::doomdef::boolean;
 
 use crate::src::p_pspr::A_ReFire;
 use crate::src::info::{S_BRAINEXPLODE1, S_NULL, S_VILE_HEAL1};
-pub const NUMMOBJTYPES: mobjtype_t = 137;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::true_0;
+use crate::src::doomdef::false_0;
+use crate::src::doomdef::MAXPLAYERS;
+use crate::src::m_fixed::FRACUNIT;
+use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::tables::ANG180;
+use crate::src::tables::ANG90;
+use crate::src::tables::ANG270;
 pub type dirtype_t = u32;
 pub const NUMDIRS: dirtype_t = 9;
 pub const DI_NODIR: dirtype_t = 8;
@@ -79,18 +87,7 @@ pub const DI_NORTHWEST: dirtype_t = 3;
 pub const DI_NORTH: dirtype_t = 2;
 pub const DI_NORTHEAST: dirtype_t = 1;
 pub const DI_EAST: dirtype_t = 0;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const MAXPLAYERS: i32 = 4 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const ANGLETOFINESHIFT: i32 = 19 as i32;
-pub const ANG90: i32 = 0x40000000 as i32;
-pub const ANG180: u32 = 0x80000000 as u32;
-pub const ANG270: u32 = 0xc0000000 as u32;
 pub const ML_TWOSIDED: i32 = 4 as i32;
 pub const ML_SOUNDBLOCK: i32 = 64 as i32;
 pub const FLOATSPEED: i32 = FRACUNIT * 4 as i32;

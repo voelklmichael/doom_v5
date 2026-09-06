@@ -11,13 +11,13 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use crate::src::sounds::{sfx_pstop, sfx_stnmov};
-use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::m_fixed::fixed_t;
+use crate::src::doomdef::NULL;
+use crate::src::m_fixed::FRACUNIT;
 
 
-pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub type ceiling_e = u32;
 pub const silentCrushAndRaise: ceiling_e = 5;
 pub const fastCrushAndRaise: ceiling_e = 4;
@@ -25,13 +25,7 @@ pub const crushAndRaise: ceiling_e = 3;
 pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
 pub const CEILSPEED: i32 = FRACUNIT;
 pub const MAXCEILINGS: i32 = 30 as i32;
 pub static mut activeceilings: [*mut ceiling_t; 30] = [::core::ptr::null::<ceiling_t>()
