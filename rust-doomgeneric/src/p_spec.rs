@@ -89,6 +89,41 @@ use crate::src::p_floor::FLOORSPEED;
 use crate::src::p_lights::SLOWDARK;
 use crate::src::p_plats::MAXPLATS;
 use crate::src::p_switch::MAXBUTTONS;
+
+pub struct PSpecState {
+    pub anims: [anim_t; 32],
+    pub lastanim: *mut anim_t,
+    pub levelTimer: bool,
+    pub levelTimeCount: i32,
+    pub numlinespecials: i16,
+    pub linespeciallist: [*mut line_t; 64],
+    pub donut_overrun_first: i32,
+    pub donut_overrun_tmp_s3_floorheight: i32,
+    pub donut_overrun_tmp_s3_floorpic: i32,
+}
+
+impl PSpecState {
+    pub const fn new() -> Self {
+        PSpecState {
+            anims: [anim_t {
+                istexture: false,
+                picnum: 0,
+                basepic: 0,
+                numpics: 0,
+                speed: 0,
+            }; 32],
+            lastanim: ::core::ptr::null::<anim_t>() as *mut anim_t,
+            levelTimer: false,
+            levelTimeCount: 0,
+            numlinespecials: 0,
+            linespeciallist: [::core::ptr::null::<line_t>() as *mut line_t; 64],
+            donut_overrun_first: 1,
+            donut_overrun_tmp_s3_floorheight: 0,
+            donut_overrun_tmp_s3_floorpic: 0,
+        }
+    }
+}
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct anim_t {
@@ -161,7 +196,7 @@ pub struct floormove_t {
 pub const ML_TWOSIDED: i32 = 4;
 pub const FASTDARK: i32 = 15;
 #[no_mangle]
-pub static mut animdefs: [animdef_t; 23] = unsafe {
+pub static animdefs: [animdef_t; 23] = unsafe {
     [
         animdef_t {
             istexture: false_0,
@@ -317,58 +352,54 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
         },
     ]
 };
-#[no_mangle]
-pub static mut anims: [anim_t; 32] = [anim_t {
-    istexture: false,
-    picnum: 0,
-    basepic: 0,
-    numpics: 0,
-    speed: 0,
-}; 32];
-#[no_mangle]
-pub static mut lastanim: *mut anim_t = ::core::ptr::null::<anim_t>() as *mut anim_t;
 pub const MAXLINEANIMS: i32 = 64;
 pub unsafe fn P_InitPicAnims() {
     let mut i: i32 = 0;
-    lastanim = &raw mut anims as *mut anim_t;
+    unsafe { game_state() }.p_spec.lastanim =
+        &raw mut unsafe { game_state() }.p_spec.anims as *mut anim_t;
     let mut current_block_13: u64;
     i = 0 as i32;
     while animdefs[i as usize].istexture != -(1 as i32) {
         let mut startname: *mut ::core::ffi::c_char =
             ::core::ptr::null_mut::<::core::ffi::c_char>();
         let mut endname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-        startname = &raw mut (*(&raw mut animdefs as *mut animdef_t).offset(i as isize)).startname
+        startname = &raw mut (*(&raw const animdefs as *mut animdef_t).offset(i as isize)).startname
             as *mut ::core::ffi::c_char;
-        endname = &raw mut (*(&raw mut animdefs as *mut animdef_t).offset(i as isize)).endname
+        endname = &raw mut (*(&raw const animdefs as *mut animdef_t).offset(i as isize)).endname
             as *mut ::core::ffi::c_char;
         if animdefs[i as usize].istexture != 0 {
             if R_CheckTextureNumForName(startname) == -(1 as i32) {
                 current_block_13 = 12237857397564741460;
             } else {
-                (*lastanim).picnum = R_TextureNumForName(endname);
-                (*lastanim).basepic = R_TextureNumForName(startname);
+                (*unsafe { game_state() }.p_spec.lastanim).picnum = R_TextureNumForName(endname);
+                (*unsafe { game_state() }.p_spec.lastanim).basepic = R_TextureNumForName(startname);
                 current_block_13 = 11650488183268122163;
             }
         } else if W_CheckNumForName(&wad_name8_to_string(startname)) == -(1 as i32) {
             current_block_13 = 12237857397564741460;
         } else {
-            (*lastanim).picnum = R_FlatNumForName(endname);
-            (*lastanim).basepic = R_FlatNumForName(startname);
+            (*unsafe { game_state() }.p_spec.lastanim).picnum = R_FlatNumForName(endname);
+            (*unsafe { game_state() }.p_spec.lastanim).basepic = R_FlatNumForName(startname);
             current_block_13 = 11650488183268122163;
         }
         match current_block_13 {
             11650488183268122163 => {
-                (*lastanim).istexture = animdefs[i as usize].istexture != 0;
-                (*lastanim).numpics = (*lastanim).picnum - (*lastanim).basepic + 1 as i32;
-                if (*lastanim).numpics < 2 as i32 {
+                (*unsafe { game_state() }.p_spec.lastanim).istexture =
+                    animdefs[i as usize].istexture != 0;
+                (*unsafe { game_state() }.p_spec.lastanim).numpics =
+                    (*unsafe { game_state() }.p_spec.lastanim).picnum
+                        - (*unsafe { game_state() }.p_spec.lastanim).basepic
+                        + 1 as i32;
+                if (*unsafe { game_state() }.p_spec.lastanim).numpics < 2 as i32 {
                     I_Error(&format!(
                         "P_InitPicAnims: bad cycle from {} to {}",
                         wad_name8_to_string(startname),
                         wad_name8_to_string(endname),
                     ));
                 }
-                (*lastanim).speed = animdefs[i as usize].speed;
-                lastanim = lastanim.offset(1);
+                (*unsafe { game_state() }.p_spec.lastanim).speed = animdefs[i as usize].speed;
+                unsafe { game_state() }.p_spec.lastanim =
+                    unsafe { game_state() }.p_spec.lastanim.offset(1);
             }
             _ => {}
         }
@@ -993,23 +1024,19 @@ pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
         }
     };
 }
-#[no_mangle]
-pub static mut levelTimer: bool = false;
-#[no_mangle]
-pub static mut levelTimeCount: i32 = 0;
 pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
     let mut anim: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
     let mut pic: i32 = 0;
     let mut i: i32 = 0;
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    if levelTimer {
-        levelTimeCount -= 1;
-        if levelTimeCount == 0 {
+    if unsafe { game_state() }.p_spec.levelTimer {
+        unsafe { game_state() }.p_spec.levelTimeCount -= 1;
+        if unsafe { game_state() }.p_spec.levelTimeCount == 0 {
             G_ExitLevel();
         }
     }
-    anim = &raw mut anims as *mut anim_t;
-    while anim < lastanim {
+    anim = &raw mut unsafe { game_state() }.p_spec.anims as *mut anim_t;
+    while anim < unsafe { game_state() }.p_spec.lastanim {
         i = (*anim).basepic;
         while i < (*anim).basepic + (*anim).numpics {
             pic = (*anim).basepic + (leveltime / (*anim).speed + i) % (*anim).numpics;
@@ -1023,8 +1050,8 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
         anim = anim.offset(1);
     }
     i = 0 as i32;
-    while i < numlinespecials as i32 {
-        line = linespeciallist[i as usize];
+    while i < unsafe { game_state() }.p_spec.numlinespecials as i32 {
+        line = unsafe { game_state() }.p_spec.linespeciallist[i as usize];
         match (*line).special as i32 {
             48 => {
                 let ref mut fresh0 =
@@ -1089,25 +1116,23 @@ unsafe fn DonutOverrun(
     mut line: *mut line_t,
     mut pillar_sector: *mut sector_t,
 ) {
-    static mut first: i32 = 1;
-    static mut tmp_s3_floorheight: i32 = 0;
-    static mut tmp_s3_floorpic: i32 = 0;
-    if first != 0 {
+    let state = unsafe { game_state() };
+    if state.p_spec.donut_overrun_first != 0 {
         let mut p: i32 = 0;
-        first = 0 as i32;
-        tmp_s3_floorheight = DONUT_FLOORHEIGHT_DEFAULT;
-        tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
+        state.p_spec.donut_overrun_first = 0 as i32;
+        state.p_spec.donut_overrun_tmp_s3_floorheight = DONUT_FLOORHEIGHT_DEFAULT;
+        state.p_spec.donut_overrun_tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
         p = M_CheckParmWithArgs("-donut", 2 as i32);
         if p > 0 as i32 {
             M_StrToInt(
                 myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
-                &raw mut tmp_s3_floorheight,
+                &raw mut state.p_spec.donut_overrun_tmp_s3_floorheight,
             );
             M_StrToInt(
                 myargv[(p + 2 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
-                &raw mut tmp_s3_floorpic,
+                &raw mut state.p_spec.donut_overrun_tmp_s3_floorpic,
             );
-            if tmp_s3_floorpic >= numflats {
+            if state.p_spec.donut_overrun_tmp_s3_floorpic >= numflats {
                 fprintf(
                     stderr,
                     b"DonutOverrun: The second parameter for \"-donut\" switch should be greater than 0 and less than number of flats (%d). Using default value (%d) instead. \n\0"
@@ -1115,12 +1140,12 @@ unsafe fn DonutOverrun(
                     numflats,
                     DONUT_FLOORPIC_DEFAULT,
                 );
-                tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
+                state.p_spec.donut_overrun_tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
             }
         }
     }
-    *s3_floorheight = tmp_s3_floorheight;
-    *s3_floorpic = tmp_s3_floorpic as i16;
+    *s3_floorheight = state.p_spec.donut_overrun_tmp_s3_floorheight;
+    *s3_floorpic = state.p_spec.donut_overrun_tmp_s3_floorpic as i16;
 }
 pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
     let mut s1: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -1209,11 +1234,6 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
     }
     return rtn;
 }
-#[no_mangle]
-pub static mut numlinespecials: i16 = 0;
-#[no_mangle]
-pub static mut linespeciallist: [*mut line_t; 64] =
-    [::core::ptr::null::<line_t>() as *mut line_t; 64];
 pub unsafe fn P_SpawnSpecials(
     state: &mut PSwitchState,
     plats_state: &mut PPlatsState,
@@ -1222,10 +1242,10 @@ pub unsafe fn P_SpawnSpecials(
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: i32 = 0;
     if timelimit > 0 as i32 && deathmatch != 0 {
-        levelTimer = true;
-        levelTimeCount = timelimit * 60 as i32 * TICRATE;
+        unsafe { game_state() }.p_spec.levelTimer = true;
+        unsafe { game_state() }.p_spec.levelTimeCount = timelimit * 60 as i32 * TICRATE;
     } else {
-        levelTimer = false;
+        unsafe { game_state() }.p_spec.levelTimer = false;
     }
     sector = sectors;
     i = 0 as i32;
@@ -1272,16 +1292,18 @@ pub unsafe fn P_SpawnSpecials(
         i += 1;
         sector = sector.offset(1);
     }
-    numlinespecials = 0 as i16;
+    unsafe { game_state() }.p_spec.numlinespecials = 0 as i16;
     i = 0 as i32;
     while i < numlines {
         match (*lines.offset(i as isize)).special as i32 {
             48 => {
-                if numlinespecials as i32 >= MAXLINEANIMS {
+                if unsafe { game_state() }.p_spec.numlinespecials as i32 >= MAXLINEANIMS {
                     I_Error("Too many scrolling wall linedefs! (Vanilla limit is 64)");
                 }
-                linespeciallist[numlinespecials as usize] = lines.offset(i as isize) as *mut line_t;
-                numlinespecials += 1;
+                unsafe { game_state() }.p_spec.linespeciallist
+                    [unsafe { game_state() }.p_spec.numlinespecials as usize] =
+                    lines.offset(i as isize) as *mut line_t;
+                unsafe { game_state() }.p_spec.numlinespecials += 1;
             }
             _ => {}
         }
