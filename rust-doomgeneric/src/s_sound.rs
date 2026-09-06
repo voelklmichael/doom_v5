@@ -1753,8 +1753,7 @@ unsafe extern "C" fn S_AdjustSoundParams(
     }
     return (*vol > 0 as i32) as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_StartSound(
+pub unsafe fn S_StartSound(
     mut origin_p: *mut ::core::ffi::c_void,
     mut sfx_id: i32,
 ) {

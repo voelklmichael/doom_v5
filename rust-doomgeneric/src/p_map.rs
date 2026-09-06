@@ -48,6 +48,7 @@ use crate::src::p_tick::leveltime;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
+use crate::src::s_sound::S_StartSound;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -57,7 +58,6 @@ extern "C" {
         ...
     ) -> i32;
     fn abs(__x: i32) -> i32;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

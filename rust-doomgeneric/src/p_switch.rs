@@ -13,12 +13,12 @@ use crate::src::p_doors::EV_DoDoor;
 use crate::src::p_floor::EV_DoFloor;
 use crate::src::p_setup::sides;
 use crate::src::doomstat::gamemode;
+use crate::src::s_sound::S_StartSound;
 
 extern "C" {
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn EV_DoDonut(line: *mut line_t) -> i32;
     fn EV_VerticalDoor(line: *mut line_t, thing: *mut mobj_t);
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;

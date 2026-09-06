@@ -10,6 +10,7 @@ use crate::src::p_tick::P_RemoveThinker;
 use crate::src::p_setup::sides;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_setup::sectors;
+use crate::src::s_sound::S_StartSound;
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -23,7 +24,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn T_PlatRaise(plat: *mut plat_t);
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

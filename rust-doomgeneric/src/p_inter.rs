@@ -23,10 +23,9 @@ use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::g_game::players;
 use crate::src::doomstat::gamemode;
+use crate::src::s_sound::S_StartSound;
 
-extern "C" {
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: i32);
-}
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
