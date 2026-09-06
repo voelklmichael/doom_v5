@@ -683,30 +683,14 @@ const INITIAL_S_MUSIC: [musicinfo_t; 68] = [
 
 pub struct SoundsState {
     pub S_music: [musicinfo_t; 68],
+    pub S_sfx: [sfxinfo_t; 109],
 }
 
 impl SoundsState {
-    pub const fn new() -> Self {
-        SoundsState {
+    pub fn new() -> Self {
+        let state = unsafe { SoundsState {
             S_music: INITIAL_S_MUSIC,
-        }
-    }
-}
-
-pub static mut S_sfx: [sfxinfo_t; 109] = [sfxinfo_struct {
-    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
-    name: [0; 9],
-    priority: 0,
-    link: ::core::ptr::null_mut::<sfxinfo_t>(),
-    pitch: 0,
-    volume: 0,
-    usefulness: 0,
-    lumpnum: 0,
-    numchannels: 0,
-    driver_data: ::core::ptr::null_mut::<::core::ffi::c_void>(),
-}; 109];
-unsafe extern "C" fn run_static_initializers() {
-    S_sfx = [
+            S_sfx: [
         sfxinfo_struct {
             tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
             name: ::core::mem::transmute::<
@@ -2004,8 +1988,7 @@ unsafe extern "C" fn run_static_initializers() {
                 [::core::ffi::c_char; 9],
             >(*b"chgun\0\0\0\0"),
             priority: 64 as i32,
-            link: (&raw mut S_sfx as *mut sfxinfo_t)
-                .offset(sfx_pistol as i32 as isize) as *mut sfxinfo_t,
+            link: ::core::ptr::null_mut::<sfxinfo_t>(),
             pitch: 150 as i32,
             volume: 0 as i32,
             usefulness: 0 as i32,
@@ -2343,10 +2326,19 @@ unsafe extern "C" fn run_static_initializers() {
             numchannels: -(1 as i32),
             driver_data: NULL,
         },
-    ];
+            ],
+        } };
+        state
+    }
+
+    // Must run only after `self` is at its final, permanently-stable address
+    // (i.e. once already moved into GameState's 'static storage) -- link's
+    // target address is computed from `self`'s own location, which would be
+    // invalidated by any subsequent move (e.g. the one `OnceLock::get_or_init`
+    // performs when placing the value it constructs). See game_state().
+    pub unsafe fn fixup_self_links(&mut self) {
+        self.S_sfx[sfx_chgun as usize].link =
+            (&raw mut self.S_sfx as *mut sfxinfo_t).offset(sfx_pistol as i32 as isize);
+    }
 }
-#[used]
-#[cfg_attr(target_os = "linux", link_section = ".init_array")]
-#[cfg_attr(target_os = "windows", link_section = ".CRT$XIB")]
-#[cfg_attr(target_os = "macos", link_section = "__DATA,__mod_init_func")]
-static INIT_ARRAY: [unsafe extern "C" fn(); 1] = [run_static_initializers];
+

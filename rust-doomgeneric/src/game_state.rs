@@ -73,6 +73,14 @@ static mut GAME_STATE: OnceLock<GameState> = OnceLock::new();
 
 pub unsafe fn game_state() -> &'static mut GameState {
     let cell: &'static mut OnceLock<GameState> = &mut GAME_STATE;
+    let just_initialized = cell.get().is_none();
     cell.get_or_init(GameState::new);
-    cell.get_mut().unwrap()
+    let state = cell.get_mut().unwrap();
+    if just_initialized {
+        // Self-referential pointers (e.g. sounds.S_sfx's one aliased entry)
+        // can only be computed once the value is at its final, permanently-
+        // stable 'static address -- i.e. here, not inside any XxxState::new().
+        state.sounds.fixup_self_links();
+    }
+    state
 }

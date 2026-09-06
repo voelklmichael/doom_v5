@@ -1171,7 +1171,7 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
                     }
                     _ => {}
                 }
-                S_StartSound(
+                S_StartSound(unsafe { &mut game_state().sounds }, 
                     &raw mut (*(&raw mut state.buttonlist as *mut button_t).offset(i as isize))
                         .soundorg as *mut ::core::ffi::c_void,
                     sfx_swtchn as i32,

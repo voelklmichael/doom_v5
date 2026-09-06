@@ -1564,7 +1564,7 @@ pub unsafe fn D_DoomMain() {
     );
     P_Init();
     printf(b"S_Init: Setting up sound.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    S_Init(sfxVolume * 8 as i32, musicVolume * 8 as i32);
+    S_Init(unsafe { &mut game_state().sounds }, sfxVolume * 8 as i32, musicVolume * 8 as i32);
     printf(
         b"D_CheckNetGame: Checking network game status.\n\0" as *const u8
             as *const ::core::ffi::c_char,

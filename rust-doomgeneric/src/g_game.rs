@@ -1313,7 +1313,7 @@ pub unsafe fn G_CheckSpot(
         MT_TFOG,
     );
     if players[consoleplayer as usize].viewz != 1 as i32 {
-        S_StartSound(mo as *mut ::core::ffi::c_void, sfx_telept as i32);
+        S_StartSound(unsafe { &mut game_state().sounds }, mo as *mut ::core::ffi::c_void, sfx_telept as i32);
     }
     return true;
 }

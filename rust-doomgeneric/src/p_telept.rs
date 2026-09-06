@@ -16,6 +16,7 @@ use crate::src::p_mobj::ThinkerFn;
 use crate::src::d_mode::exe_final;
 use crate::src::m_fixed::fixed_t;
 use crate::src::tables::ANGLETOFINESHIFT;
+use crate::src::game_state::game_state;
 pub unsafe fn EV_Teleport(
     mut line: *mut line_t,
     mut side: i32,
@@ -70,7 +71,7 @@ pub unsafe fn EV_Teleport(
                                     + (*(*thing).player).viewheight;
                             }
                             fog = P_SpawnMobj(oldx, oldy, oldz, MT_TFOG);
-                            S_StartSound(
+                            S_StartSound(unsafe { &mut game_state().sounds }, 
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );
@@ -81,7 +82,7 @@ pub unsafe fn EV_Teleport(
                                 (*thing).z,
                                 MT_TFOG,
                             );
-                            S_StartSound(
+                            S_StartSound(unsafe { &mut game_state().sounds }, 
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );

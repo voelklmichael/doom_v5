@@ -1235,7 +1235,7 @@ pub unsafe fn WI_updateDeathmatchStats() {
             }
             i += 1;
         }
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
@@ -1243,7 +1243,7 @@ pub unsafe fn WI_updateDeathmatchStats() {
     }
     if dm_state == 2 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1288,7 +1288,7 @@ pub unsafe fn WI_updateDeathmatchStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1296,7 +1296,7 @@ pub unsafe fn WI_updateDeathmatchStats() {
         }
     } else if dm_state == 4 as i32 {
         if acceleratestage != 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_slop as i32,
             );
@@ -1447,7 +1447,7 @@ pub unsafe fn WI_updateNetgameStats() {
             }
             i += 1;
         }
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
@@ -1455,7 +1455,7 @@ pub unsafe fn WI_updateNetgameStats() {
     }
     if ng_state == 2 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1478,7 +1478,7 @@ pub unsafe fn WI_updateNetgameStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1486,7 +1486,7 @@ pub unsafe fn WI_updateNetgameStats() {
         }
     } else if ng_state == 4 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1509,7 +1509,7 @@ pub unsafe fn WI_updateNetgameStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1517,7 +1517,7 @@ pub unsafe fn WI_updateNetgameStats() {
         }
     } else if ng_state == 6 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1540,7 +1540,7 @@ pub unsafe fn WI_updateNetgameStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1550,7 +1550,7 @@ pub unsafe fn WI_updateNetgameStats() {
         }
     } else if ng_state == 8 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1570,7 +1570,7 @@ pub unsafe fn WI_updateNetgameStats() {
             i += 1;
         }
         if !stillticking {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pldeth as i32,
             );
@@ -1578,7 +1578,7 @@ pub unsafe fn WI_updateNetgameStats() {
         }
     } else if ng_state == 10 as i32 {
         if acceleratestage != 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_sgcock as i32,
             );
@@ -1717,7 +1717,7 @@ pub unsafe fn WI_updateStats() {
             .ssecret * 100 as i32 / (*wbs).maxsecret;
         cnt_time = (*plrs.offset(me as isize)).stime / TICRATE;
         cnt_par = (*wbs).partime / TICRATE;
-        S_StartSound(
+        S_StartSound(unsafe { &mut game_state().sounds }, 
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
@@ -1726,7 +1726,7 @@ pub unsafe fn WI_updateStats() {
     if sp_state == 2 as i32 {
         cnt_kills[0 as i32 as usize] += 2 as i32;
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1737,7 +1737,7 @@ pub unsafe fn WI_updateStats() {
         {
             cnt_kills[0 as i32 as usize] = (*plrs.offset(me as isize))
                 .skills * 100 as i32 / (*wbs).maxkills;
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1746,7 +1746,7 @@ pub unsafe fn WI_updateStats() {
     } else if sp_state == 4 as i32 {
         cnt_items[0 as i32 as usize] += 2 as i32;
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1757,7 +1757,7 @@ pub unsafe fn WI_updateStats() {
         {
             cnt_items[0 as i32 as usize] = (*plrs.offset(me as isize))
                 .sitems * 100 as i32 / (*wbs).maxitems;
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1766,7 +1766,7 @@ pub unsafe fn WI_updateStats() {
     } else if sp_state == 6 as i32 {
         cnt_secret[0 as i32 as usize] += 2 as i32;
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1777,7 +1777,7 @@ pub unsafe fn WI_updateStats() {
         {
             cnt_secret[0 as i32 as usize] = (*plrs.offset(me as isize))
                 .ssecret * 100 as i32 / (*wbs).maxsecret;
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
@@ -1785,7 +1785,7 @@ pub unsafe fn WI_updateStats() {
         }
     } else if sp_state == 8 as i32 {
         if bcnt & 3 as i32 == 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1798,7 +1798,7 @@ pub unsafe fn WI_updateStats() {
         if cnt_par >= (*wbs).partime / TICRATE {
             cnt_par = (*wbs).partime / TICRATE;
             if cnt_time >= (*plrs.offset(me as isize)).stime / TICRATE {
-                S_StartSound(
+                S_StartSound(unsafe { &mut game_state().sounds }, 
                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     sfx_barexp as i32,
                 );
@@ -1807,7 +1807,7 @@ pub unsafe fn WI_updateStats() {
         }
     } else if sp_state == 10 as i32 {
         if acceleratestage != 0 {
-            S_StartSound(
+            S_StartSound(unsafe { &mut game_state().sounds }, 
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_sgcock as i32,
             );
