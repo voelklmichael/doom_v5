@@ -11,18 +11,24 @@
 use std::sync::OnceLock;
 
 use crate::src::d_event::DEventState;
+use crate::src::d_iwad::DIwadState;
 use crate::src::i_cdmus::ICdMusState;
 use crate::src::i_timer::ITimerState;
 use crate::src::p_user::PUserState;
 use crate::src::st_lib::StLibState;
+use crate::src::statdump::StatDumpState;
+use crate::src::w_checksum::WChecksumState;
 use crate::src::w_file::WFileState;
 
 pub struct GameState {
     pub d_event: DEventState,
+    pub d_iwad: DIwadState,
     pub i_cdmus: ICdMusState,
     pub i_timer: ITimerState,
     pub p_user: PUserState,
     pub st_lib: StLibState,
+    pub statdump: StatDumpState,
+    pub w_checksum: WChecksumState,
     pub w_file: WFileState,
 }
 
@@ -30,10 +36,13 @@ impl GameState {
     fn new() -> Self {
         GameState {
             d_event: DEventState::new(),
+            d_iwad: DIwadState::new(),
             i_cdmus: ICdMusState::new(),
             i_timer: ITimerState::new(),
             p_user: PUserState::new(),
             st_lib: StLibState::new(),
+            statdump: StatDumpState::new(),
+            w_checksum: WChecksumState::new(),
             w_file: WFileState::new(),
         }
     }

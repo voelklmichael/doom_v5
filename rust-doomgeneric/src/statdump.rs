@@ -3,38 +3,51 @@ use crate::src::m_argv::M_ParmExists;
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
 pub const MAX_CAPTURES: i32 = 32;
-static mut captured_stats: [wbstartstruct_t; 32] = [wbstartstruct_t {
-    epsd: 0,
-    didsecret: false,
-    last: 0,
-    next: 0,
-    maxkills: 0,
-    maxitems: 0,
-    maxsecret: 0,
-    maxfrags: 0,
-    partime: 0,
-    pnum: 0,
-    plyr: [wbplayerstruct_t {
-        in_0: false,
-        skills: 0,
-        sitems: 0,
-        ssecret: 0,
-        stime: 0,
-        frags: [0; 4],
-        score: 0,
-    }; 4],
-}; 32];
-static mut num_captured_stats: i32 = 0;
-pub unsafe fn StatCopy(mut stats: *mut wbstartstruct_t) {
-    if M_ParmExists("-statdump") && num_captured_stats < MAX_CAPTURES {
+
+pub struct StatDumpState {
+    captured_stats: [wbstartstruct_t; 32],
+    num_captured_stats: i32,
+}
+
+impl StatDumpState {
+    pub const fn new() -> Self {
+        StatDumpState {
+            captured_stats: [wbstartstruct_t {
+                epsd: 0,
+                didsecret: false,
+                last: 0,
+                next: 0,
+                maxkills: 0,
+                maxitems: 0,
+                maxsecret: 0,
+                maxfrags: 0,
+                partime: 0,
+                pnum: 0,
+                plyr: [wbplayerstruct_t {
+                    in_0: false,
+                    skills: 0,
+                    sitems: 0,
+                    ssecret: 0,
+                    stime: 0,
+                    frags: [0; 4],
+                    score: 0,
+                }; 4],
+            }; 32],
+            num_captured_stats: 0,
+        }
+    }
+}
+
+pub unsafe fn StatCopy(state: &mut StatDumpState, mut stats: *mut wbstartstruct_t) {
+    if M_ParmExists("-statdump") && state.num_captured_stats < MAX_CAPTURES {
         memcpy(
-            (&raw mut captured_stats as *mut wbstartstruct_t)
-                .offset(num_captured_stats as isize) as *mut wbstartstruct_t
+            (&raw mut state.captured_stats as *mut wbstartstruct_t)
+                .offset(state.num_captured_stats as isize) as *mut wbstartstruct_t
                 as *mut ::core::ffi::c_void,
             stats as *const ::core::ffi::c_void,
             ::core::mem::size_of::<wbstartstruct_t>() as size_t,
         );
-        num_captured_stats += 1;
+        state.num_captured_stats += 1;
     }
 }
 #[no_mangle]

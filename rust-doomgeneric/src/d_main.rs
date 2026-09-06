@@ -1261,7 +1261,7 @@ pub unsafe fn D_DoomMain() {
     D_BindVariables();
     M_LoadDefaults();
     I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
-    iwadfile = D_FindIWAD(
+    iwadfile = D_FindIWAD(unsafe { &mut game_state().d_iwad }, 
         (1 as i32) << doom as i32
             | (1 as i32) << doom2 as i32
             | (1 as i32) << pack_tnt as i32

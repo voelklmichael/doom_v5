@@ -1632,7 +1632,7 @@ pub unsafe fn G_DoCompleted() {
     gamestate = GS_INTERMISSION;
     viewactive = false;
     automapactive = false;
-    StatCopy(&raw mut wminfo);
+    StatCopy(unsafe { &mut game_state().statdump }, &raw mut wminfo);
     WI_Start(&raw mut wminfo);
 }
 pub unsafe fn G_WorldDone() {
