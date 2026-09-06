@@ -3,6 +3,7 @@ use crate::src::i_system::I_Error;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memset;
+use libc::{strlen, strncmp, strncpy, toupper};
 extern "C" {
     fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
@@ -40,33 +41,11 @@ extern "C" {
     ) -> i32;
     fn ftell(__stream: *mut FILE) -> i64;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn strncpy(
-        __dest: *mut ::core::ffi::c_char,
-        __src: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> *mut ::core::ffi::c_char;
-    fn strcmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn strncmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> i32;
-    fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
     fn strstr(
         __haystack: *const ::core::ffi::c_char,
         __needle: *const ::core::ffi::c_char,
     ) -> *mut ::core::ffi::c_char;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn strncasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-        __n: size_t,
-    ) -> i32;
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: i32) -> i32;
     fn __errno_location() -> *mut i32;
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
 }

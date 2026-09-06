@@ -1,7 +1,5 @@
 use libc::memcpy;
-extern "C" {
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-}
+use libc::strlen;
 pub type size_t = usize;
 #[derive(Copy, Clone)]
 #[repr(C)]

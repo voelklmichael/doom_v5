@@ -1,10 +1,10 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::m_misc::M_snprintf;
+use libc::{atoi, strcasecmp, strlen};
 
 extern "C" {
     pub type FILE;
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn free(__ptr: *mut ::core::ffi::c_void);
     fn exit(__status: i32) -> !;
@@ -28,11 +28,6 @@ extern "C" {
         __s: *const ::core::ffi::c_char,
         __c: i32,
     ) -> *mut ::core::ffi::c_char;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn strcasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

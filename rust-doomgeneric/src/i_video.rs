@@ -7,14 +7,10 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::{memcpy, memset};
+use libc::{atoi, strcmp};
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
-    fn strcmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn DG_DrawFrame();
     fn DG_SetWindowTitle(title: *const ::core::ffi::c_char);

@@ -39,6 +39,7 @@ use crate::src::z_zone::PU_LEVEL;
 use crate::src::d_player::NUMPOWERS;
 use crate::src::d_player::NUMPSPRITES;
 use libc::memset;
+use libc::{strcmp, strlen};
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -67,11 +68,6 @@ extern "C" {
     ) -> u64;
     fn ftell(__stream: *mut FILE) -> i64;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn strcmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> i32;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn P_MobjThinker(mobj: *mut mobj_t);
     fn T_LightFlash(flash: *mut lightflash_t);
     fn T_StrobeFlash(flash: *mut strobe_t);
