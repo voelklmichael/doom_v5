@@ -134,6 +134,7 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::P_SpawnPlayer;
 use crate::src::v_video::V_ScreenShot;
 use crate::src::z_zone::Z_CheckHeap;
+use crate::src::r_data::R_FlatNumForName;
 
 extern "C" {
     fn memcpy(
@@ -168,7 +169,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
 }
 pub type size_t = usize;

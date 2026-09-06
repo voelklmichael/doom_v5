@@ -373,8 +373,7 @@ pub unsafe fn W_GetNumForName(name: &str) -> i32 {
     }
     return i;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_LumpLength(
+pub unsafe fn W_LumpLength(
     mut lump: u32,
 ) -> i32 {
     if lump >= numlumps {
@@ -443,8 +442,7 @@ pub unsafe fn W_CacheLumpName(
 ) -> *mut ::core::ffi::c_void {
     return W_CacheLumpNum(W_GetNumForName(name), tag);
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_ReleaseLumpNum(mut lumpnum: i32) {
+pub unsafe fn W_ReleaseLumpNum(mut lumpnum: i32) {
     let mut lump: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     if lumpnum as u32 >= numlumps {
         I_Error(&format!("W_ReleaseLumpNum: {} >= numlumps", lumpnum));

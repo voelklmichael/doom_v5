@@ -21,6 +21,7 @@ use crate::src::p_setup::numsectors;
 use crate::src::p_setup::sides;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::p_setup::sectors;
+use crate::src::w_wad::W_LumpLength;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -35,7 +36,6 @@ extern "C" {
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn Z_Free(ptr: *mut ::core::ffi::c_void);
-    fn W_LumpLength(lump: u32) -> i32;
     fn W_CacheLumpNum(
         lump: i32,
         tag: i32,
@@ -2047,8 +2047,7 @@ pub unsafe fn R_InitData() {
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitColormaps();
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_FlatNumForName(
+pub unsafe fn R_FlatNumForName(
     mut name: *mut ::core::ffi::c_char,
 ) -> i32 {
     let mut i: i32 = 0;

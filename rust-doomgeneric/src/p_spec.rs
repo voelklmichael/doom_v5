@@ -47,6 +47,7 @@ use crate::src::m_random::P_Random;
 use crate::src::p_setup::sectors;
 use crate::src::p_tick::leveltime;
 use crate::src::s_sound::S_StartSound;
+use crate::src::r_data::R_FlatNumForName;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -65,7 +66,6 @@ extern "C" {
         tag: i32,
         ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
-    fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> i32;
     fn T_MoveFloor(floor: *mut floormove_t);
 }
