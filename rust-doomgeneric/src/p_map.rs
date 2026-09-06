@@ -49,6 +49,7 @@ use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::s_sound::S_StartSound;
+use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -62,11 +63,6 @@ extern "C" {
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type fixed_t = i32;
-pub type C2RustUnnamed = u32;
-pub const BOXRIGHT: C2RustUnnamed = 3;
-pub const BOXLEFT: C2RustUnnamed = 2;
-pub const BOXBOTTOM: C2RustUnnamed = 1;
-pub const BOXTOP: C2RustUnnamed = 0;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;

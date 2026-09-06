@@ -22,6 +22,7 @@ use crate::src::r_draw::viewwidth;
 use crate::src::r_sky::skyflatnum;
 use crate::src::r_plane::R_FindPlane;
 use crate::src::r_main::R_PointToAngle;
+use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 
 
 pub type __uint8_t = u8;
@@ -41,11 +42,6 @@ pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
-pub type C2RustUnnamed = u32;
-pub const BOXRIGHT: C2RustUnnamed = 3;
-pub const BOXLEFT: C2RustUnnamed = 2;
-pub const BOXBOTTOM: C2RustUnnamed = 1;
-pub const BOXTOP: C2RustUnnamed = 0;
 pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;

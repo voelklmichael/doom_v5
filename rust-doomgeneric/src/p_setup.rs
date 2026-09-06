@@ -41,6 +41,7 @@ use crate::src::r_data::R_TextureNumForName;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_LEVEL, PU_PURGELEVEL, PU_STATIC};
+use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -67,11 +68,6 @@ pub type uint8_t = __uint8_t;
 pub type boolean = u32;
 pub type byte = uint8_t;
 pub type fixed_t = i32;
-pub type C2RustUnnamed_0 = u32;
-pub const BOXRIGHT: C2RustUnnamed_0 = 3;
-pub const BOXLEFT: C2RustUnnamed_0 = 2;
-pub const BOXBOTTOM: C2RustUnnamed_0 = 1;
-pub const BOXTOP: C2RustUnnamed_0 = 0;
 pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;

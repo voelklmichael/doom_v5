@@ -38,6 +38,7 @@ use crate::src::tables::finesine;
 use crate::src::m_fixed::FixedMul;
 use crate::src::r_plane::R_DrawPlanes;
 use crate::src::r_things::R_DrawMasked;
+use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -68,11 +69,6 @@ pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 pub type fixed_t = i32;
-pub type C2RustUnnamed = u32;
-pub const BOXRIGHT: C2RustUnnamed = 3;
-pub const BOXLEFT: C2RustUnnamed = 2;
-pub const BOXBOTTOM: C2RustUnnamed = 1;
-pub const BOXTOP: C2RustUnnamed = 0;
 pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
