@@ -1,3 +1,4 @@
+use crate::src::doomdef::NULL;
 pub type C2RustUnnamed_0 = u32;
 pub const NUMMUSIC: C2RustUnnamed_0 = 68;
 pub const mus_dm2int: C2RustUnnamed_0 = 67;
@@ -202,9 +203,6 @@ pub const sfx_dshtgn: C2RustUnnamed = 4;
 pub const sfx_sgcock: C2RustUnnamed = 3;
 pub const sfx_shotgn: C2RustUnnamed = 2;
 pub const sfx_None: C2RustUnnamed = 0;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub static mut S_music: [musicinfo_t; 68] = [
     musicinfo_t {
         name: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,

@@ -9,6 +9,8 @@ use crate::src::i_system::{fclose, fopen, fread, fseek, ftell, fwrite};
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::size_t;
+use crate::src::doomdef::NULL;
+use crate::src::i_system::SEEK_SET;
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -25,14 +27,8 @@ extern "C" {
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
 }
 pub type __mode_t = u32;
-pub const SEEK_SET: i32 = 0 as i32;
-pub const SEEK_END: i32 = 2 as i32;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const EISDIR: i32 = 21 as i32;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
+pub const SEEK_END: i32 = 2;
+pub const EISDIR: i32 = 21;
 pub const DIR_SEPARATOR: i32 = '/' as i32;
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
@@ -81,8 +77,7 @@ pub unsafe fn M_WriteFile(
     }
     return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_ReadFile(
+pub unsafe fn M_ReadFile(
     mut name: *mut ::core::ffi::c_char,
     mut buffer: *mut *mut byte,
 ) -> i32 {
@@ -206,8 +201,7 @@ pub fn M_StrCaseStr<'a>(haystack: &'a str, needle: &str) -> Option<&'a str> {
 pub fn M_StringDuplicate(orig: &str) -> String {
     orig.to_string()
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringReplace(
+pub unsafe fn M_StringReplace(
     mut haystack: *const ::core::ffi::c_char,
     mut needle: *const ::core::ffi::c_char,
     mut replacement: *const ::core::ffi::c_char,
@@ -273,8 +267,7 @@ pub unsafe fn M_StringCopy(
     len = strlen(dest);
     return *src.offset(len as isize) as i32 == '\0' as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringConcat(
+pub unsafe fn M_StringConcat(
     mut dest: *mut ::core::ffi::c_char,
     mut src: *const ::core::ffi::c_char,
     mut dest_size: size_t,

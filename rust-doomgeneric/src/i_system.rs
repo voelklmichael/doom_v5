@@ -59,13 +59,8 @@ pub struct atexit_listentry_s {
     pub run_on_error: bool,
     pub next: *mut atexit_listentry_t,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
-pub const DEFAULT_RAM: i32 = 6 as i32;
-pub const MIN_RAM: i32 = 6 as i32;
+pub const DEFAULT_RAM: i32 = 6;
+pub const MIN_RAM: i32 = 6;
 static mut exit_funcs: *mut atexit_listentry_t = ::core::ptr::null::<
     atexit_listentry_t,
 >() as *mut atexit_listentry_t;
@@ -85,7 +80,7 @@ pub unsafe fn I_Tactile(
     mut off: i32,
     mut total: i32,
 ) {}
-unsafe extern "C" fn AutoAllocMemory(
+unsafe fn AutoAllocMemory(
     mut size: *mut i32,
     mut default_ram: i32,
     mut min_ram: i32,
@@ -177,13 +172,13 @@ pub unsafe fn I_Quit() {
 pub const ZENITY_BINARY: [::core::ffi::c_char; 16] = unsafe {
     ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"/usr/bin/zenity\0")
 };
-unsafe extern "C" fn ZenityAvailable() -> i32 {
+unsafe fn ZenityAvailable() -> i32 {
     return (system(
         b"/usr/bin/zenity --help >/dev/null 2>&1\0" as *const u8
             as *const ::core::ffi::c_char,
     ) == 0 as i32) as i32;
 }
-unsafe extern "C" fn EscapeShellString(
+unsafe fn EscapeShellString(
     mut string: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
@@ -216,7 +211,7 @@ unsafe extern "C" fn EscapeShellString(
     *r = '\0' as i32 as ::core::ffi::c_char;
     return result;
 }
-unsafe extern "C" fn ZenityErrorBox(
+unsafe fn ZenityErrorBox(
     mut message: *mut ::core::ffi::c_char,
 ) -> i32 {
     let mut result: i32 = 0;
@@ -284,7 +279,7 @@ pub unsafe fn I_Error(message: &str) {
     }
     exit(-(1 as i32));
 }
-pub const DOS_MEM_DUMP_SIZE: i32 = 10 as i32;
+pub const DOS_MEM_DUMP_SIZE: i32 = 10;
 static mut mem_dump_dos622: [u8; 10] = [
     0x57 as i32 as u8,
     0x92 as i32 as u8,
@@ -414,3 +409,4 @@ pub unsafe fn I_GetMemoryValue(
     }
     return false;
 }
+pub const SEEK_SET: i32 = 0;

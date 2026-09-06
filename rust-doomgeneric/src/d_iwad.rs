@@ -100,7 +100,7 @@ static iwads: [iwad_t; 14] = [
         description: "Strife",
     },
 ];
-pub const MAX_IWAD_DIRS: i32 = 128 as i32;
+pub const MAX_IWAD_DIRS: i32 = 128;
 static mut iwad_dirs_built: bool = false;
 static mut iwad_dirs: Vec<String> = Vec::new();
 
@@ -167,8 +167,7 @@ unsafe fn build_iwad_dir_list() {
     add_iwad_dir(FILES_DIR);
     iwad_dirs_built = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_FindWADByName(
+pub unsafe fn D_FindWADByName(
     mut name: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let name_str = ::std::ffi::CStr::from_ptr(name).to_str().unwrap();
@@ -227,8 +226,7 @@ pub unsafe fn D_FindIWAD(
         ::core::ptr::null_mut::<::core::ffi::c_char>()
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_FindAllIWADs(
+pub unsafe fn D_FindAllIWADs(
     mut mask: i32,
 ) -> *mut *const iwad_t {
     let mut result: Vec<*const iwad_t> = Vec::new();
@@ -254,8 +252,7 @@ pub unsafe fn D_SaveGameIWADName(
     }
     ::std::ffi::CString::new("unknown.wad").unwrap().into_raw()
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_SuggestIWADName(
+pub unsafe fn D_SuggestIWADName(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
 ) -> *mut ::core::ffi::c_char {

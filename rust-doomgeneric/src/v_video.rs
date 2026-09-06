@@ -19,6 +19,9 @@ use crate::src::doomdef::boolean;
 use crate::src::stdint_types::{byte, uint8_t};
 use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
 
 extern "C" {
     fn fabs(__x: f64) -> f64;
@@ -47,8 +50,6 @@ pub struct pcx_t {
     pub filler: [::core::ffi::c_char; 58],
     pub data: u8,
 }
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
 #[no_mangle]
 pub static mut tinttable: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 #[no_mangle]
@@ -104,8 +105,7 @@ pub unsafe fn V_CopyRect(
         height -= 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_SetPatchClipCallback(mut func: vpatchclipfunc_t) {
+pub unsafe fn V_SetPatchClipCallback(mut func: vpatchclipfunc_t) {
     patchclip_callback = func;
 }
 pub unsafe fn V_DrawPatch(
@@ -259,8 +259,7 @@ pub unsafe fn V_DrawPatchDirect(
 ) {
     V_DrawPatch(x, y, patch);
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawTLPatch(
+pub unsafe fn V_DrawTLPatch(
     mut x: i32,
     mut y: i32,
     mut patch: *mut patch_t,
@@ -321,8 +320,7 @@ pub unsafe extern "C" fn V_DrawTLPatch(
         desttop = desttop.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawXlaPatch(
+pub unsafe fn V_DrawXlaPatch(
     mut x: i32,
     mut y: i32,
     mut patch: *mut patch_t,
@@ -381,8 +379,7 @@ pub unsafe extern "C" fn V_DrawXlaPatch(
         desttop = desttop.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawAltTLPatch(
+pub unsafe fn V_DrawAltTLPatch(
     mut x: i32,
     mut y: i32,
     mut patch: *mut patch_t,
@@ -443,8 +440,7 @@ pub unsafe extern "C" fn V_DrawAltTLPatch(
         desttop = desttop.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawShadowedPatch(
+pub unsafe fn V_DrawShadowedPatch(
     mut x: i32,
     mut y: i32,
     mut patch: *mut patch_t,
@@ -518,14 +514,12 @@ pub unsafe extern "C" fn V_DrawShadowedPatch(
         desttop2 = desttop2.offset(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_LoadTintTable() {
+pub unsafe fn V_LoadTintTable() {
     tinttable = W_CacheLumpName("TINTTAB",
         PU_STATIC as i32,
     ) as *mut byte;
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_LoadXlaTable() {
+pub unsafe fn V_LoadXlaTable() {
     xlatab = W_CacheLumpName("XLATAB",
         PU_STATIC as i32,
     ) as *mut byte;
@@ -560,8 +554,7 @@ pub unsafe fn V_DrawBlock(
         dest = dest.offset(SCREENWIDTH as isize);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawFilledBox(
+pub unsafe fn V_DrawFilledBox(
     mut x: i32,
     mut y: i32,
     mut w: i32,
@@ -588,8 +581,7 @@ pub unsafe extern "C" fn V_DrawFilledBox(
         y1 += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawHorizLine(
+pub unsafe fn V_DrawHorizLine(
     mut x: i32,
     mut y: i32,
     mut w: i32,
@@ -607,8 +599,7 @@ pub unsafe extern "C" fn V_DrawHorizLine(
         x1 += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawVertLine(
+pub unsafe fn V_DrawVertLine(
     mut x: i32,
     mut y: i32,
     mut h: i32,
@@ -625,8 +616,7 @@ pub unsafe extern "C" fn V_DrawVertLine(
         y1 += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawBox(
+pub unsafe fn V_DrawBox(
     mut x: i32,
     mut y: i32,
     mut w: i32,
@@ -638,8 +628,7 @@ pub unsafe extern "C" fn V_DrawBox(
     V_DrawVertLine(x, y, h, c);
     V_DrawVertLine(x + w - 1 as i32, y, h, c);
 }
-#[no_mangle]
-pub unsafe extern "C" fn V_DrawRawScreen(mut raw: *mut byte) {
+pub unsafe fn V_DrawRawScreen(mut raw: *mut byte) {
     memcpy(
         dest_screen as *mut ::core::ffi::c_void,
         raw as *const ::core::ffi::c_void,
@@ -653,8 +642,7 @@ pub unsafe fn V_UseBuffer(mut buffer: *mut byte) {
 pub unsafe fn V_RestoreBuffer() {
     dest_screen = I_VideoBuffer;
 }
-#[no_mangle]
-pub unsafe extern "C" fn WritePCXfile(
+pub unsafe fn WritePCXfile(
     mut filename: *mut ::core::ffi::c_char,
     mut data: *mut byte,
     mut width: i32,
@@ -771,8 +759,8 @@ pub unsafe fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
         ) as *mut byte,
     );
 }
-pub const MOUSE_SPEED_BOX_WIDTH: i32 = 120 as i32;
-pub const MOUSE_SPEED_BOX_HEIGHT: i32 = 9 as i32;
+pub const MOUSE_SPEED_BOX_WIDTH: i32 = 120;
+pub const MOUSE_SPEED_BOX_HEIGHT: i32 = 9;
 pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
     let mut bgcolor: i32 = 0;
     let mut bordercolor: i32 = 0;
@@ -880,6 +868,3 @@ pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
         red,
     );
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();

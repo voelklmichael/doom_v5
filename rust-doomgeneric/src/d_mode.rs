@@ -131,8 +131,7 @@ static mut valid_modes: [C2RustUnnamed; 13] = [
         map: 34 as i32,
     },
 ];
-#[no_mangle]
-pub unsafe extern "C" fn D_ValidGameMode(
+pub unsafe fn D_ValidGameMode(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
 ) -> bool {
@@ -153,8 +152,7 @@ pub unsafe extern "C" fn D_ValidGameMode(
     }
     return false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_ValidEpisodeMap(
+pub unsafe fn D_ValidEpisodeMap(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
     mut episode: i32,
@@ -194,8 +192,7 @@ pub unsafe extern "C" fn D_ValidEpisodeMap(
     }
     return false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_GetNumEpisodes(
+pub unsafe fn D_GetNumEpisodes(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
 ) -> i32 {
@@ -248,8 +245,7 @@ static mut valid_versions: [C2RustUnnamed_0; 10] = [
         version: exe_strife_1_31,
     },
 ];
-#[no_mangle]
-pub unsafe extern "C" fn D_ValidGameVersion(
+pub unsafe fn D_ValidGameVersion(
     mut mission: GameMission_t,
     mut version: GameVersion_t,
 ) -> bool {
@@ -283,8 +279,7 @@ pub unsafe extern "C" fn D_ValidGameVersion(
     }
     return false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_IsEpisodeMap(mut mission: GameMission_t) -> bool {
+pub unsafe fn D_IsEpisodeMap(mut mission: GameMission_t) -> bool {
     match mission as u32 {
         0 | 6 | 4 => return true,
         9 | 7 | 1 | 5 | 2 | 3 | 8 | _ => return false,

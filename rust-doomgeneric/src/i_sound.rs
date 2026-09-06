@@ -4,6 +4,7 @@ use crate::src::i_video::screensaver_mode;
 
 use crate::src::sounds::sfxinfo_t;
 use crate::src::doomdef::boolean;
+use crate::src::doomdef::NULL;
 pub type snddevice_t = u32;
 pub const SNDDEVICE_CD: snddevice_t = 10;
 pub const SNDDEVICE_AWE32: snddevice_t = 9;
@@ -70,11 +71,6 @@ pub struct music_module_t {
     pub MusicIsPlaying: Option<unsafe extern "C" fn() -> boolean>,
     pub Poll: Option<unsafe extern "C" fn() -> ()>,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
 #[no_mangle]
 pub static mut snd_samplerate: i32 = 44100 as i32;
 #[no_mangle]
@@ -99,7 +95,7 @@ static mut snd_mport: i32 = 0 as i32;
 static mut sound_modules: [*mut sound_module_t; 1] = [
     ::core::ptr::null::<sound_module_t>() as *mut sound_module_t,
 ];
-unsafe extern "C" fn SndDeviceInList(
+unsafe fn SndDeviceInList(
     mut device: snddevice_t,
     mut list: *mut snddevice_t,
     mut len: i32,
@@ -116,7 +112,7 @@ unsafe extern "C" fn SndDeviceInList(
     }
     return false;
 }
-unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: bool) {
+unsafe fn InitSfxModule(mut use_sfx_prefix: bool) {
     let mut i: i32 = 0;
     sound_module = ::core::ptr::null_mut::<sound_module_t>();
     i = 0 as i32;
@@ -138,7 +134,7 @@ unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: bool) {
         i += 1;
     }
 }
-unsafe extern "C" fn InitMusicModule() {}
+unsafe fn InitMusicModule() {}
 pub unsafe fn I_InitSound(mut use_sfx_prefix: bool) {
     let mut nosound: bool = false;
     let mut nosfx: bool = false;
@@ -184,7 +180,7 @@ pub unsafe fn I_UpdateSound() {
         (*music_module).Poll.expect("non-null function pointer")();
     }
 }
-unsafe extern "C" fn CheckVolumeSeparation(
+unsafe fn CheckVolumeSeparation(
     mut vol: *mut i32,
     mut sep: *mut i32,
 ) {

@@ -21,6 +21,7 @@ use crate::src::d_mode::{GameMission_t, doom, heretic, hexen, strife};
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::size_t;
+use crate::src::doomdef::NULL;
 
 extern "C" {
     fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
@@ -55,9 +56,6 @@ pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
     pub lumpname: &'static str,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] = unsafe {
     ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"doomgeneric\0")
 };
@@ -103,7 +101,7 @@ pub unsafe fn W_LumpNameHash(
     }
     return result;
 }
-unsafe extern "C" fn ExtendLumpInfo(mut newnumlumps: i32) {
+unsafe fn ExtendLumpInfo(mut newnumlumps: i32) {
     let mut newlumpinfo: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     let mut i: u32 = 0;
     newlumpinfo = calloc(
@@ -253,8 +251,7 @@ pub unsafe fn W_AddFile(
     }
     return wad_file;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_NumLumps() -> i32 {
+pub unsafe fn W_NumLumps() -> i32 {
     return numlumps as i32;
 }
 /// Reads up to 8 bytes at `ptr` as a WAD lump name and converts it to an

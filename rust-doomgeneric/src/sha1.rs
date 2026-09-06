@@ -17,11 +17,7 @@ pub struct sha1_context_s {
 }
 pub type sha1_context_t = sha1_context_s;
 pub type sha1_digest_t = [byte; 20];
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-#[no_mangle]
-pub unsafe extern "C" fn SHA1_Init(mut hd: *mut sha1_context_t) {
+pub unsafe fn SHA1_Init(mut hd: *mut sha1_context_t) {
     (*hd).h0 = 0x67452301 as uint32_t;
     (*hd).h1 = 0xefcdab89 as u32 as uint32_t;
     (*hd).h2 = 0x98badcfe as u32 as uint32_t;
@@ -30,7 +26,7 @@ pub unsafe extern "C" fn SHA1_Init(mut hd: *mut sha1_context_t) {
     (*hd).nblocks = 0 as uint32_t;
     (*hd).count = 0 as i32;
 }
-unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte) {
+unsafe fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte) {
     let mut a: uint32_t = 0;
     let mut b: uint32_t = 0;
     let mut c: uint32_t = 0;
@@ -1413,8 +1409,7 @@ unsafe extern "C" fn Transform(mut hd: *mut sha1_context_t, mut data: *mut byte)
     (*hd).h3 = (*hd).h3.wrapping_add(d);
     (*hd).h4 = (*hd).h4.wrapping_add(e);
 }
-#[no_mangle]
-pub unsafe extern "C" fn SHA1_Update(
+pub unsafe fn SHA1_Update(
     mut hd: *mut sha1_context_t,
     mut inbuf: *mut byte,
     mut inlen: size_t,
@@ -1457,8 +1452,7 @@ pub unsafe extern "C" fn SHA1_Update(
         inlen = inlen.wrapping_sub(1);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn SHA1_Final(mut digest: *mut byte, mut hd: *mut sha1_context_t) {
+pub unsafe fn SHA1_Final(mut digest: *mut byte, mut hd: *mut sha1_context_t) {
     let mut t: uint32_t = 0;
     let mut msb: uint32_t = 0;
     let mut lsb: uint32_t = 0;
@@ -1583,8 +1577,7 @@ pub unsafe extern "C" fn SHA1_Final(mut digest: *mut byte, mut hd: *mut sha1_con
         ::core::mem::size_of::<sha1_digest_t>() as size_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn SHA1_UpdateInt32(
+pub unsafe fn SHA1_UpdateInt32(
     mut context: *mut sha1_context_t,
     mut val: u32,
 ) {
@@ -1598,8 +1591,7 @@ pub unsafe extern "C" fn SHA1_UpdateInt32(
     buf[3 as i32 as usize] = (val & 0xff as u32) as byte;
     SHA1_Update(context, &raw mut buf as *mut byte, 4 as size_t);
 }
-#[no_mangle]
-pub unsafe extern "C" fn SHA1_UpdateString(
+pub unsafe fn SHA1_UpdateString(
     mut context: *mut sha1_context_t,
     mut str: *mut ::core::ffi::c_char,
 ) {

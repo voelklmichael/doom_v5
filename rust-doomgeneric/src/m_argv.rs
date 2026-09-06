@@ -1,6 +1,3 @@
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub const DIR_SEPARATOR: char = '/';
 pub static mut myargv: Vec<::std::ffi::CString> = Vec::new();
 pub unsafe fn M_CheckParmWithArgs(

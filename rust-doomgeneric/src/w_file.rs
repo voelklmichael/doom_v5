@@ -27,9 +27,6 @@ pub struct wad_file_class_t {
     >,
 }
 pub type wad_file_t = _wad_file_s;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 static mut wad_file_classes: [*mut wad_file_class_t; 1] = unsafe {
     [&raw const stdc_wad_file as *mut wad_file_class_t]
 };
@@ -57,8 +54,7 @@ pub unsafe fn W_OpenFile(
     }
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn W_CloseFile(mut wad: *mut wad_file_t) {
+pub unsafe fn W_CloseFile(mut wad: *mut wad_file_t) {
     (*(*wad).file_class).CloseFile.expect("non-null function pointer")(wad);
 }
 pub unsafe fn W_Read(

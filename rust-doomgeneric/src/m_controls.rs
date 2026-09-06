@@ -2,60 +2,60 @@ use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_snprintf;
 use crate::src::stdint_types::size_t;
 
-pub const KEY_RIGHTARROW: i32 = 0xae as i32;
-pub const KEY_LEFTARROW: i32 = 0xac as i32;
-pub const KEY_UPARROW: i32 = 0xad as i32;
-pub const KEY_DOWNARROW: i32 = 0xaf as i32;
-pub const KEY_STRAFE_L: i32 = 0xa0 as i32;
-pub const KEY_STRAFE_R: i32 = 0xa1 as i32;
-pub const KEY_USE: i32 = 0xa2 as i32;
-pub const KEY_FIRE: i32 = 0xa3 as i32;
-pub const KEY_ESCAPE: i32 = 27 as i32;
-pub const KEY_ENTER: i32 = 13 as i32;
-pub const KEY_TAB: i32 = 9 as i32;
-pub const KEY_F1: i32 = 0x80 as i32
+pub const KEY_RIGHTARROW: i32 = 0xae;
+pub const KEY_LEFTARROW: i32 = 0xac;
+pub const KEY_UPARROW: i32 = 0xad;
+pub const KEY_DOWNARROW: i32 = 0xaf;
+pub const KEY_STRAFE_L: i32 = 0xa0;
+pub const KEY_STRAFE_R: i32 = 0xa1;
+pub const KEY_USE: i32 = 0xa2;
+pub const KEY_FIRE: i32 = 0xa3;
+pub const KEY_ESCAPE: i32 = 27;
+pub const KEY_ENTER: i32 = 13;
+pub const KEY_TAB: i32 = 9;
+pub const KEY_F1: i32 = 0x80
     + 0x3b as i32;
-pub const KEY_F2: i32 = 0x80 as i32
+pub const KEY_F2: i32 = 0x80
     + 0x3c as i32;
-pub const KEY_F3: i32 = 0x80 as i32
+pub const KEY_F3: i32 = 0x80
     + 0x3d as i32;
-pub const KEY_F4: i32 = 0x80 as i32
+pub const KEY_F4: i32 = 0x80
     + 0x3e as i32;
-pub const KEY_F5: i32 = 0x80 as i32
+pub const KEY_F5: i32 = 0x80
     + 0x3f as i32;
-pub const KEY_F6: i32 = 0x80 as i32
+pub const KEY_F6: i32 = 0x80
     + 0x40 as i32;
-pub const KEY_F7: i32 = 0x80 as i32
+pub const KEY_F7: i32 = 0x80
     + 0x41 as i32;
-pub const KEY_F8: i32 = 0x80 as i32
+pub const KEY_F8: i32 = 0x80
     + 0x42 as i32;
-pub const KEY_F9: i32 = 0x80 as i32
+pub const KEY_F9: i32 = 0x80
     + 0x43 as i32;
-pub const KEY_F10: i32 = 0x80 as i32
+pub const KEY_F10: i32 = 0x80
     + 0x44 as i32;
-pub const KEY_F11: i32 = 0x80 as i32
+pub const KEY_F11: i32 = 0x80
     + 0x57 as i32;
-pub const KEY_F12: i32 = 0x80 as i32
+pub const KEY_F12: i32 = 0x80
     + 0x58 as i32;
-pub const KEY_BACKSPACE: i32 = 0x7f as i32;
-pub const KEY_PAUSE: i32 = 0xff as i32;
-pub const KEY_EQUALS: i32 = 0x3d as i32;
-pub const KEY_MINUS: i32 = 0x2d as i32;
-pub const KEY_RSHIFT: i32 = 0x80 as i32
+pub const KEY_BACKSPACE: i32 = 0x7f;
+pub const KEY_PAUSE: i32 = 0xff;
+pub const KEY_EQUALS: i32 = 0x3d;
+pub const KEY_MINUS: i32 = 0x2d;
+pub const KEY_RSHIFT: i32 = 0x80
     + 0x36 as i32;
-pub const KEY_RALT: i32 = 0x80 as i32
+pub const KEY_RALT: i32 = 0x80
     + 0x38 as i32;
-pub const KEY_HOME: i32 = 0x80 as i32
+pub const KEY_HOME: i32 = 0x80
     + 0x47 as i32;
-pub const KEY_END: i32 = 0x80 as i32
+pub const KEY_END: i32 = 0x80
     + 0x4f as i32;
-pub const KEY_PGUP: i32 = 0x80 as i32
+pub const KEY_PGUP: i32 = 0x80
     + 0x49 as i32;
-pub const KEY_PGDN: i32 = 0x80 as i32
+pub const KEY_PGDN: i32 = 0x80
     + 0x51 as i32;
-pub const KEY_INS: i32 = 0x80 as i32
+pub const KEY_INS: i32 = 0x80
     + 0x52 as i32;
-pub const KEY_DEL: i32 = 0x80 as i32
+pub const KEY_DEL: i32 = 0x80
     + 0x53 as i32;
 pub static mut key_right: i32 = KEY_RIGHTARROW;
 pub static mut key_left: i32 = KEY_LEFTARROW;
@@ -278,8 +278,7 @@ pub unsafe fn M_BindBaseControls() {
         &raw mut key_message_refresh as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindHereticControls() {
+pub unsafe fn M_BindHereticControls() {
     M_BindVariable("key_flyup",
         &raw mut key_flyup as *mut ::core::ffi::c_void,
     );
@@ -308,8 +307,7 @@ pub unsafe extern "C" fn M_BindHereticControls() {
         &raw mut key_useartifact as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindHexenControls() {
+pub unsafe fn M_BindHexenControls() {
     M_BindVariable("key_jump",
         &raw mut key_jump as *mut ::core::ffi::c_void,
     );
@@ -344,8 +342,7 @@ pub unsafe extern "C" fn M_BindHexenControls() {
         &raw mut key_arti_invulnerability as *mut ::core::ffi::c_void,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindStrifeControls() {
+pub unsafe fn M_BindStrifeControls() {
     key_message_refresh = '/' as i32;
     key_jump = 'a' as i32;
     key_lookup = KEY_PGUP;
@@ -585,3 +582,7 @@ pub unsafe fn M_BindChatControls(mut num_players: u32) {
     }
 }
 pub unsafe fn M_ApplyPlatformDefaults() {}
+pub const KEY_CAPSLOCK: i32 = 0x80
+    + 0x3a as i32;
+pub const KEY_SCRLCK: i32 = 0x80
+    + 0x46 as i32;

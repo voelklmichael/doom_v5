@@ -5,6 +5,7 @@ use crate::src::p_mobj::{SPR_AMMO, SPR_APBX, SPR_APLS, SPR_ARM1, SPR_ARM2, SPR_B
 use crate::src::p_mobj::statenum_t;
 use crate::src::p_enemy::{A_BabyMetal, A_BossDeath, A_BrainAwake, A_BrainDie, A_BrainExplode, A_BrainPain, A_BrainScream, A_BrainSpit, A_BruisAttack, A_BspiAttack, A_CPosAttack, A_CPosRefire, A_Chase, A_CloseShotgun2, A_CyberAttack, A_Explode, A_FaceTarget, A_Fall, A_FatAttack1, A_FatAttack2, A_FatAttack3, A_FatRaise, A_Fire, A_FireCrackle, A_HeadAttack, A_Hoof, A_KeenDie, A_LoadShotgun2, A_Look, A_Metal, A_OpenShotgun2, A_Pain, A_PainAttack, A_PainDie, A_PlayerScream, A_PosAttack, A_SPosAttack, A_SargAttack, A_Scream, A_SkelFist, A_SkelMissile, A_SkelWhoosh, A_SkullAttack, A_SpawnFly, A_SpawnSound, A_SpidRefire, A_StartFire, A_Tracer, A_TroopAttack, A_VileAttack, A_VileChase, A_VileStart, A_VileTarget, A_XScream};
 use crate::src::p_pspr::{A_BFGSpray, A_BFGsound, A_CheckReload, A_FireBFG, A_FireCGun, A_FireMissile, A_FirePistol, A_FirePlasma, A_FireShotgun, A_FireShotgun2, A_GunFlash, A_Light0, A_Light1, A_Light2, A_Lower, A_Punch, A_Raise, A_ReFire, A_Saw, A_WeaponReady};
+use crate::src::m_fixed::FRACUNIT;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -973,11 +974,6 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-pub const FRACBITS: i32 = 16 as i32;
-pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
 pub static mut sprnames: [*mut ::core::ffi::c_char; 139] = [
     b"TROO\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     b"SHTG\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,

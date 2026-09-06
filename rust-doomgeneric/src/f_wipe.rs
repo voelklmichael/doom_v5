@@ -10,17 +10,14 @@ use crate::src::z_zone::PU_STATIC;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
 static mut go: bool = false;
 static mut wipe_scr_start: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr_end: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut wipe_scr: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-#[no_mangle]
-pub unsafe extern "C" fn wipe_shittyColMajorXform(
+pub unsafe fn wipe_shittyColMajorXform(
     mut array: *mut i16,
     mut width: i32,
     mut height: i32,

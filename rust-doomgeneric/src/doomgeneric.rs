@@ -8,11 +8,8 @@ use libc::malloc;
 extern "C" {
     fn DG_Init();
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const DOOMGENERIC_RESX: i32 = 640 as i32;
-pub const DOOMGENERIC_RESY: i32 = 400 as i32;
+pub const DOOMGENERIC_RESX: i32 = 640;
+pub const DOOMGENERIC_RESY: i32 = 400;
 #[no_mangle]
 pub static mut DG_ScreenBuffer: *mut pixel_t = ::core::ptr::null::<pixel_t>()
     as *mut pixel_t;

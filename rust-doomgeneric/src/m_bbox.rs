@@ -1,4 +1,6 @@
 use crate::src::m_fixed::fixed_t;
+use crate::src::m_fixed::INT_MAX;
+use crate::src::m_fixed::INT_MIN;
 pub type C2RustUnnamed = u32;
 pub const BOXRIGHT: C2RustUnnamed = 3;
 pub const BOXLEFT: C2RustUnnamed = 2;
@@ -28,6 +30,3 @@ pub unsafe fn M_AddToBox(
         *box_0.offset(BOXTOP as i32 as isize) = y;
     }
 }
-pub const __INT_MAX__: i32 = 2147483647 as i32;
-pub const INT_MAX: i32 = __INT_MAX__;
-pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;

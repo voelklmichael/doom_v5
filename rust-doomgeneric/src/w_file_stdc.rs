@@ -7,6 +7,7 @@ use crate::src::z_zone::PU_STATIC;
 use crate::src::i_system::{fclose, fopen, fread, fseek};
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
+use crate::src::i_system::SEEK_SET;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -14,10 +15,6 @@ pub struct stdc_wad_file_t {
     pub wad: wad_file_t,
     pub fstream: *mut FILE,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const SEEK_SET: i32 = 0 as i32;
 unsafe fn W_StdC_OpenFile(
     mut path: *mut ::core::ffi::c_char,
 ) -> *mut wad_file_t {

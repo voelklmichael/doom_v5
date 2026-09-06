@@ -2,7 +2,7 @@ use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_snprintf;
 use crate::src::stdint_types::size_t;
 
-pub const NUM_VIRTUAL_BUTTONS: i32 = 10 as i32;
+pub const NUM_VIRTUAL_BUTTONS: i32 = 10;
 static mut usejoystick: i32 = 0 as i32;
 static mut joystick_index: i32 = -(1 as i32);
 static mut joystick_x_axis: i32 = 0 as i32;
@@ -23,11 +23,9 @@ static mut joystick_physical_buttons: [i32; 10] = [
     8 as i32,
     9 as i32,
 ];
-#[no_mangle]
-pub unsafe extern "C" fn I_ShutdownJoystick() {}
+pub unsafe fn I_ShutdownJoystick() {}
 pub unsafe fn I_InitJoystick() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_UpdateJoystick() {}
+pub unsafe fn I_UpdateJoystick() {}
 pub unsafe fn I_BindJoystickVariables() {
     let mut i: i32 = 0;
     M_BindVariable("use_joystick",

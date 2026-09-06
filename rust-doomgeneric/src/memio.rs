@@ -21,8 +21,7 @@ pub type mem_rel_t = u32;
 pub const MEM_SEEK_END: mem_rel_t = 2;
 pub const MEM_SEEK_CUR: mem_rel_t = 1;
 pub const MEM_SEEK_SET: mem_rel_t = 0;
-#[no_mangle]
-pub unsafe extern "C" fn mem_fopen_read(
+pub unsafe fn mem_fopen_read(
     mut buf: *mut ::core::ffi::c_void,
     mut buflen: size_t,
 ) -> *mut MEMFILE {
@@ -38,8 +37,7 @@ pub unsafe extern "C" fn mem_fopen_read(
     (*file).mode = MODE_READ;
     return file;
 }
-#[no_mangle]
-pub unsafe extern "C" fn mem_fread(
+pub unsafe fn mem_fread(
     mut buf: *mut ::core::ffi::c_void,
     mut size: size_t,
     mut nmemb: size_t,
@@ -71,8 +69,7 @@ pub unsafe extern "C" fn mem_fread(
         as u32;
     return items;
 }
-#[no_mangle]
-pub unsafe extern "C" fn mem_fopen_write() -> *mut MEMFILE {
+pub unsafe fn mem_fopen_write() -> *mut MEMFILE {
     let mut file: *mut MEMFILE = ::core::ptr::null_mut::<MEMFILE>();
     file = Z_Malloc(
         ::core::mem::size_of::<MEMFILE>() as i32,
@@ -90,8 +87,7 @@ pub unsafe extern "C" fn mem_fopen_write() -> *mut MEMFILE {
     (*file).mode = MODE_WRITE;
     return file;
 }
-#[no_mangle]
-pub unsafe extern "C" fn mem_fwrite(
+pub unsafe fn mem_fwrite(
     mut ptr: *const ::core::ffi::c_void,
     mut size: size_t,
     mut nmemb: size_t,
@@ -134,8 +130,7 @@ pub unsafe extern "C" fn mem_fwrite(
     }
     return nmemb;
 }
-#[no_mangle]
-pub unsafe extern "C" fn mem_get_buf(
+pub unsafe fn mem_get_buf(
     mut stream: *mut MEMFILE,
     mut buf: *mut *mut ::core::ffi::c_void,
     mut buflen: *mut size_t,
@@ -143,8 +138,7 @@ pub unsafe extern "C" fn mem_get_buf(
     *buf = (*stream).buf as *mut ::core::ffi::c_void;
     *buflen = (*stream).buflen;
 }
-#[no_mangle]
-pub unsafe extern "C" fn mem_fclose(mut stream: *mut MEMFILE) {
+pub unsafe fn mem_fclose(mut stream: *mut MEMFILE) {
     if (*stream).mode as u32
         == MODE_WRITE as i32 as u32
     {
@@ -152,12 +146,10 @@ pub unsafe extern "C" fn mem_fclose(mut stream: *mut MEMFILE) {
     }
     Z_Free(stream as *mut ::core::ffi::c_void);
 }
-#[no_mangle]
-pub unsafe extern "C" fn mem_ftell(mut stream: *mut MEMFILE) -> i64 {
+pub unsafe fn mem_ftell(mut stream: *mut MEMFILE) -> i64 {
     return (*stream).position as i64;
 }
-#[no_mangle]
-pub unsafe extern "C" fn mem_fseek(
+pub unsafe fn mem_fseek(
     mut stream: *mut MEMFILE,
     mut position: i64,
     mut whence: mem_rel_t,

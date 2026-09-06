@@ -14,6 +14,12 @@ use crate::src::stdint_types::size_t;
 use libc::{memcpy, memset};
 use libc::{atoi, strcmp};
 use libc::printf;
+use crate::src::doomdef::NULL;
+use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::m_fixed::INT_MAX;
+use crate::src::doomgeneric::DOOMGENERIC_RESX;
+use crate::src::doomgeneric::DOOMGENERIC_RESY;
 
 extern "C" {
     static mut DG_ScreenBuffer: *mut pixel_t;
@@ -58,14 +64,6 @@ pub struct col_t {
     pub g: byte,
     pub b: byte,
 }
-pub const INT_MAX: i32 = __INT_MAX__;
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const SCREENWIDTH: i32 = 320 as i32;
-pub const SCREENHEIGHT: i32 = 200 as i32;
-pub const DOOMGENERIC_RESX: i32 = 640 as i32;
-pub const DOOMGENERIC_RESY: i32 = 400 as i32;
 static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
     xres: 0,
     yres: 0,
@@ -100,8 +98,7 @@ pub static mut mouse_acceleration: f32 = 2.0f32;
 pub static mut mouse_threshold: i32 = 10 as i32;
 pub static mut usegamma: i32 = 0 as i32;
 static mut rgb565_palette: [uint16_t; 256] = [0; 256];
-#[no_mangle]
-pub unsafe extern "C" fn cmap_to_rgb565(
+pub unsafe fn cmap_to_rgb565(
     mut out: *mut uint16_t,
     mut in_0: *mut uint8_t,
     mut in_pixels: i32,
@@ -132,8 +129,7 @@ pub unsafe extern "C" fn cmap_to_rgb565(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn cmap_to_fb(
+pub unsafe fn cmap_to_fb(
     mut out: *mut uint8_t,
     mut in_0: *mut uint8_t,
     mut in_pixels: i32,
@@ -291,8 +287,7 @@ pub unsafe fn I_InitGraphics() {
     }
     I_InitInput_0();
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ShutdownGraphics() {
+pub unsafe fn I_ShutdownGraphics() {
     Z_Free(I_VideoBuffer as *mut ::core::ffi::c_void);
 }
 pub unsafe fn I_StartFrame() {}
@@ -440,6 +435,3 @@ pub unsafe fn I_EnableLoadingDisk() {}
 pub unsafe fn I_BindVideoVariables() {}
 pub unsafe fn I_DisplayFPSDots(mut dots_on: bool) {}
 pub unsafe fn I_CheckIsScreensaver() {}
-pub const __INT_MAX__: i32 = 2147483647 as i32;
-pub const true_0: i32 = 1 as i32;
-pub const false_0: i32 = 0 as i32;
