@@ -1,7 +1,6 @@
 use crate::src::m_argv::{myargv, M_CheckParmWithArgs, M_ParmExists};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::m_misc::M_snprintf;
-use crate::src::doomdef::boolean;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::{atoi, strcasecmp, strlen};
@@ -57,7 +56,7 @@ pub type atexit_listentry_t = atexit_listentry_s;
 #[repr(C)]
 pub struct atexit_listentry_s {
     pub func: atexit_func_t,
-    pub run_on_error: boolean,
+    pub run_on_error: bool,
     pub next: *mut atexit_listentry_t,
 }
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
@@ -77,7 +76,7 @@ pub unsafe fn I_AtExit(mut func: atexit_func_t, mut run_on_error: bool) {
     entry = malloc(::core::mem::size_of::<atexit_listentry_t>() as size_t)
         as *mut atexit_listentry_t;
     (*entry).func = func;
-    (*entry).run_on_error = run_on_error as i32 as boolean;
+    (*entry).run_on_error = run_on_error;
     (*entry).next = exit_funcs;
     exit_funcs = entry;
 }
@@ -274,7 +273,7 @@ pub unsafe fn I_Error(message: &str) {
     fflush(stderr);
     entry = exit_funcs;
     while !entry.is_null() {
-        if (*entry).run_on_error != 0 {
+        if (*entry).run_on_error {
             (*entry).func.expect("non-null function pointer")();
         }
         entry = (*entry).next;
