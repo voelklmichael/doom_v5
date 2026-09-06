@@ -26,7 +26,7 @@ pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
 pub const CEILSPEED: i32 = FRACUNIT;
-pub const MAXCEILINGS: i32 = 30 as i32;
+pub const MAXCEILINGS: i32 = 30;
 pub static mut activeceilings: [*mut ceiling_t; 30] = [::core::ptr::null::<ceiling_t>()
     as *mut ceiling_t; 30];
 pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {

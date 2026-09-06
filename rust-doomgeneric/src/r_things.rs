@@ -99,11 +99,11 @@ pub struct vissprite_s {
     pub mobjflags: i32,
 }
 pub type vissprite_t = vissprite_s;
-pub const FF_FULLBRIGHT: i32 = 0x8000 as i32;
-pub const FF_FRAMEMASK: i32 = 0x7fff as i32;
-pub const MAXVISSPRITES: i32 = 128 as i32;
+pub const FF_FULLBRIGHT: i32 = 0x8000;
+pub const FF_FRAMEMASK: i32 = 0x7fff;
+pub const MAXVISSPRITES: i32 = 128;
 pub const MINZ: i32 = FRACUNIT * 4 as i32;
-pub const BASEYCENTER: i32 = 100 as i32;
+pub const BASEYCENTER: i32 = 100;
 pub static mut pspritescale: fixed_t = 0;
 pub static mut pspriteiscale: fixed_t = 0;
 #[no_mangle]

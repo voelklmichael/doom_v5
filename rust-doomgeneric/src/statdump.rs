@@ -2,7 +2,7 @@ use crate::src::wi_stuff::{wbplayerstruct_t, wbstartstruct_t};
 use crate::src::m_argv::M_ParmExists;
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
-pub const MAX_CAPTURES: i32 = 32 as i32;
+pub const MAX_CAPTURES: i32 = 32;
 static mut captured_stats: [wbstartstruct_t; 32] = [wbstartstruct_t {
     epsd: 0,
     didsecret: false,

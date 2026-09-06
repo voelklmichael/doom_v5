@@ -31,8 +31,8 @@ pub struct screen_mode_t {
     >,
     pub poor_quality: bool,
 }
-pub const SCREENWIDTH_4_3: i32 = 256 as i32;
-pub const SCREENHEIGHT_4_3: i32 = 240 as i32;
+pub const SCREENWIDTH_4_3: i32 = 256;
+pub const SCREENHEIGHT_4_3: i32 = 240;
 static mut src_buffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut dest_buffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut dest_pitch: i32 = 0;

@@ -87,23 +87,23 @@ pub type animenum_t = u32;
 pub const ANIM_LEVEL: animenum_t = 2;
 pub const ANIM_RANDOM: animenum_t = 1;
 pub const ANIM_ALWAYS: animenum_t = 0;
-pub const NUMMAPS: i32 = 9 as i32;
-pub const WI_TITLEY: i32 = 2 as i32;
-pub const WI_SPACINGY: i32 = 33 as i32;
-pub const SP_STATSX: i32 = 50 as i32;
-pub const SP_STATSY: i32 = 50 as i32;
-pub const SP_TIMEX: i32 = 16 as i32;
+pub const NUMMAPS: i32 = 9;
+pub const WI_TITLEY: i32 = 2;
+pub const WI_SPACINGY: i32 = 33;
+pub const SP_STATSX: i32 = 50;
+pub const SP_STATSY: i32 = 50;
+pub const SP_TIMEX: i32 = 16;
 pub const SP_TIMEY: i32 = SCREENHEIGHT - 32 as i32;
-pub const NG_STATSY: i32 = 50 as i32;
-pub const NG_SPACINGX: i32 = 64 as i32;
-pub const DM_MATRIXX: i32 = 42 as i32;
-pub const DM_MATRIXY: i32 = 68 as i32;
-pub const DM_SPACINGX: i32 = 40 as i32;
-pub const DM_TOTALSX: i32 = 269 as i32;
-pub const DM_KILLERSX: i32 = 10 as i32;
-pub const DM_KILLERSY: i32 = 100 as i32;
-pub const DM_VICTIMSX: i32 = 5 as i32;
-pub const DM_VICTIMSY: i32 = 50 as i32;
+pub const NG_STATSY: i32 = 50;
+pub const NG_SPACINGX: i32 = 64;
+pub const DM_MATRIXX: i32 = 42;
+pub const DM_MATRIXY: i32 = 68;
+pub const DM_SPACINGX: i32 = 40;
+pub const DM_TOTALSX: i32 = 269;
+pub const DM_KILLERSX: i32 = 10;
+pub const DM_KILLERSY: i32 = 100;
+pub const DM_VICTIMSX: i32 = 5;
+pub const DM_VICTIMSY: i32 = 50;
 static mut lnodes: [[point_t; 9]; 4] = [
     [
         point_t {
@@ -736,7 +736,7 @@ static mut anims: [*mut anim_t; 4] = unsafe {
         ::core::ptr::null::<anim_t>() as *mut anim_t,
     ]
 };
-pub const SHOWNEXTLOCDELAY: i32 = 4 as i32;
+pub const SHOWNEXTLOCDELAY: i32 = 4;
 static mut acceleratestage: i32 = 0;
 static mut me: i32 = 0;
 static mut state: stateenum_t = StatCount;

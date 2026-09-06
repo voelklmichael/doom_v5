@@ -57,9 +57,9 @@ use crate::src::tables::ANG270;
 use crate::src::r_bsp::NF_SUBSECTOR;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::tables::FINEANGLES;
-pub const SLOPEBITS: i32 = 11 as i32;
+pub const SLOPEBITS: i32 = 11;
 pub const DBITS: i32 = FRACBITS - SLOPEBITS;
-pub const FIELDOFVIEW: i32 = 2048 as i32;
+pub const FIELDOFVIEW: i32 = 2048;
 pub static mut viewangleoffset: i32 = 0;
 pub static mut validcount: i32 = 1 as i32;
 pub static mut fixedcolormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
@@ -406,7 +406,7 @@ pub unsafe fn R_InitTextureMapping() {
     }
     clipangle = xtoviewangle[0 as i32 as usize];
 }
-pub const DISTMAP: i32 = 2 as i32;
+pub const DISTMAP: i32 = 2;
 pub unsafe fn R_InitLightTables() {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
@@ -615,10 +615,10 @@ pub unsafe fn R_RenderPlayerView(mut player: *mut player_t) {
     R_DrawMasked();
     NetUpdate();
 }
-pub const LIGHTLEVELS: i32 = 16 as i32;
-pub const MAXLIGHTSCALE: i32 = 48 as i32;
-pub const LIGHTSCALESHIFT: i32 = 12 as i32;
-pub const MAXLIGHTZ: i32 = 128 as i32;
-pub const LIGHTZSHIFT: i32 = 20 as i32;
-pub const NUMCOLORMAPS: i32 = 32 as i32;
-pub const LIGHTSEGSHIFT: i32 = 4 as i32;
+pub const LIGHTLEVELS: i32 = 16;
+pub const MAXLIGHTSCALE: i32 = 48;
+pub const LIGHTSCALESHIFT: i32 = 12;
+pub const MAXLIGHTZ: i32 = 128;
+pub const LIGHTZSHIFT: i32 = 20;
+pub const NUMCOLORMAPS: i32 = 32;
+pub const LIGHTSEGSHIFT: i32 = 4;

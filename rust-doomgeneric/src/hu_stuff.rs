@@ -46,11 +46,11 @@ pub const HU_FONTSTART: i32 = '!' as i32;
 pub const HU_FONTEND: i32 = '_' as i32;
 pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART
     + 1 as i32;
-pub const HU_BROADCAST: i32 = 5 as i32;
-pub const HU_MSGX: i32 = 0 as i32;
-pub const HU_MSGY: i32 = 0 as i32;
-pub const HU_MSGHEIGHT: i32 = 1 as i32;
-pub const HU_MSGTIMEOUT: i32 = 4 as i32 * TICRATE;
+pub const HU_BROADCAST: i32 = 5;
+pub const HU_MSGX: i32 = 0;
+pub const HU_MSGY: i32 = 0;
+pub const HU_MSGHEIGHT: i32 = 1;
+pub const HU_MSGTIMEOUT: i32 = 4 * TICRATE;
 pub const HUSTR_E1M1: &str = "E1M1: Hangar";
 pub const HUSTR_E1M2: &str = "E1M2: Nuclear Plant";
 pub const HUSTR_E1M3: &str = "E1M3: Toxin Refinery";
@@ -225,7 +225,7 @@ pub const HUSTR_PLRBROWN: [::core::ffi::c_char; 8] = unsafe {
 pub const HUSTR_PLRRED: [::core::ffi::c_char; 6] = unsafe {
     ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Red: \0")
 };
-pub const HU_TITLEX: i32 = 0 as i32;
+pub const HU_TITLEX: i32 = 0;
 pub const HU_INPUTX: i32 = HU_MSGX;
 pub static mut chat_macros: [*mut ::core::ffi::c_char; 10] = [
     HUSTR_CHATMACRO0.as_ptr() as *mut ::core::ffi::c_char,
@@ -686,7 +686,7 @@ pub unsafe fn HU_Ticker() {
         }
     }
 }
-pub const QUEUESIZE: i32 = 128 as i32;
+pub const QUEUESIZE: i32 = 128;
 static mut chatchars: [::core::ffi::c_char; 128] = [0; 128];
 static mut head: i32 = 0 as i32;
 static mut tail: i32 = 0 as i32;

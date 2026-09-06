@@ -54,14 +54,14 @@ pub struct intercepts_overrun_t {
     pub addr: *mut ::core::ffi::c_void,
     pub int16_array: bool,
 }
-pub const MAPBLOCKUNITS: i32 = 128 as i32;
+pub const MAPBLOCKUNITS: i32 = 128;
 pub const MAPBLOCKSIZE: i32 = MAPBLOCKUNITS * FRACUNIT;
 pub const MAPBLOCKSHIFT: i32 = FRACBITS + 7 as i32;
 pub const MAPBTOFRAC: i32 = MAPBLOCKSHIFT - FRACBITS;
-pub const MAXINTERCEPTS_ORIGINAL: i32 = 128 as i32;
-pub const PT_ADDLINES: i32 = 1 as i32;
-pub const PT_ADDTHINGS: i32 = 2 as i32;
-pub const PT_EARLYOUT: i32 = 4 as i32;
+pub const MAXINTERCEPTS_ORIGINAL: i32 = 128;
+pub const PT_ADDLINES: i32 = 1;
+pub const PT_ADDTHINGS: i32 = 2;
+pub const PT_EARLYOUT: i32 = 4;
 pub unsafe fn P_AproxDistance(mut dx: fixed_t, mut dy: fixed_t) -> fixed_t {
     dx = (dx as i32).abs() as fixed_t;
     dy = (dy as i32).abs() as fixed_t;

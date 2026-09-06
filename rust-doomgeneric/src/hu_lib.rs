@@ -48,7 +48,7 @@ pub struct hu_itext_t {
     pub on: *mut bool,
     pub laston: bool,
 }
-pub const HU_MAXLINELENGTH: i32 = 80 as i32;
+pub const HU_MAXLINELENGTH: i32 = 80;
 pub unsafe fn HUlib_init() {}
 pub unsafe fn HUlib_clearTextLine(mut t: *mut hu_textline_t) {
     (*t).l.clear();

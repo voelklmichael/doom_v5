@@ -65,9 +65,9 @@ pub struct default_collection_t {
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
 };
-pub const KEY_RCTRL: i32 = 0x80 as i32
+pub const KEY_RCTRL: i32 = 0x80
     + 0x1d as i32;
-pub const KEY_PRTSCR: i32 = 0x80 as i32
+pub const KEY_PRTSCR: i32 = 0x80
     + 0x59 as i32;
 pub const KEYP_5: i32 = '5' as i32;
 pub const KEYP_PLUS: i32 = '+' as i32;

@@ -74,8 +74,8 @@ pub struct ticcmd_set_t {
     pub cmds: [ticcmd_t; 8],
     pub ingame: [boolean; 8],
 }
-pub const NET_MAXPLAYERS: i32 = 8 as i32;
-pub const BACKUPTICS: i32 = 128 as i32;
+pub const NET_MAXPLAYERS: i32 = 8;
+pub const BACKUPTICS: i32 = 128;
 static mut ticdata: [ticcmd_set_t; 128] = [ticcmd_set_t {
     cmds: [ticcmd_t {
         forwardmove: 0,

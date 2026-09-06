@@ -100,7 +100,7 @@ static iwads: [iwad_t; 14] = [
         description: "Strife",
     },
 ];
-pub const MAX_IWAD_DIRS: i32 = 128 as i32;
+pub const MAX_IWAD_DIRS: i32 = 128;
 static mut iwad_dirs_built: bool = false;
 static mut iwad_dirs: Vec<String> = Vec::new();
 

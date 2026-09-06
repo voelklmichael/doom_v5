@@ -66,12 +66,12 @@ use crate::src::r_main::LIGHTLEVELS;
 use crate::src::m_fixed::FRACBITS;
 
 pub const SHRT_MAX: i32 = __SHRT_MAX__;
-pub const ML_DONTPEGTOP: i32 = 8 as i32;
-pub const ML_DONTPEGBOTTOM: i32 = 16 as i32;
-pub const SIL_BOTTOM: i32 = 1 as i32;
-pub const SIL_TOP: i32 = 2 as i32;
-pub const SIL_BOTH: i32 = 3 as i32;
-pub const MAXDRAWSEGS: i32 = 256 as i32;
+pub const ML_DONTPEGTOP: i32 = 8;
+pub const ML_DONTPEGBOTTOM: i32 = 16;
+pub const SIL_BOTTOM: i32 = 1;
+pub const SIL_TOP: i32 = 2;
+pub const SIL_BOTH: i32 = 3;
+pub const MAXDRAWSEGS: i32 = 256;
 #[no_mangle]
 pub static mut segtextured: bool = false;
 #[no_mangle]
@@ -219,7 +219,7 @@ pub unsafe fn R_RenderMaskedSegRange(
         dc_x += 1;
     }
 }
-pub const HEIGHTBITS: i32 = 12 as i32;
+pub const HEIGHTBITS: i32 = 12;
 pub const HEIGHTUNIT: i32 = (1 as i32) << HEIGHTBITS;
 pub unsafe fn R_RenderSegLoop() {
     let mut angle: angle_t = 0;
@@ -642,4 +642,4 @@ pub unsafe fn R_StoreWallRange(
     }
     ds_p = ds_p.offset(1);
 }
-pub const __SHRT_MAX__: i32 = 32767 as i32;
+pub const __SHRT_MAX__: i32 = 32767;
