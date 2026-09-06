@@ -138,6 +138,7 @@ use crate::src::r_data::R_FlatNumForName;
 use crate::src::i_timer::I_GetTime;
 use crate::src::r_data::R_TextureNumForName;
 use crate::src::z_zone::Z_Free;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     fn memcpy(
@@ -165,11 +166,6 @@ extern "C" {
     ) -> *mut FILE;
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn ftell(__stream: *mut FILE) -> i64;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

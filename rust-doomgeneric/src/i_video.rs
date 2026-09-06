@@ -4,6 +4,7 @@ use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
 use crate::src::i_input::I_GetEvent;
 use crate::src::tables::gammatable;
 use crate::src::z_zone::Z_Free;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
@@ -21,11 +22,6 @@ extern "C" {
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
     ) -> i32;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
     fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn DG_DrawFrame();

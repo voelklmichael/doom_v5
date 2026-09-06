@@ -39,13 +39,9 @@ use crate::src::w_wad::W_LumpLength;
 use crate::src::w_wad::W_ReleaseLumpNum;
 use crate::src::r_data::R_TextureNumForName;
 use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
     static mut stderr: *mut FILE;
     fn fprintf(
         __stream: *mut FILE,

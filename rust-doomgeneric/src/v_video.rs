@@ -12,6 +12,7 @@ use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_misc::M_snprintf;
 use crate::src::i_video::I_GetPaletteIndex;
 use crate::src::z_zone::Z_Free;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     fn memcpy(
@@ -25,11 +26,6 @@ extern "C" {
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn fabs(__x: f64) -> f64;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

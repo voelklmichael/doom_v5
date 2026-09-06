@@ -10,6 +10,7 @@ use crate::src::z_zone::Z_ChangeTag2;
 use crate::src::w_file::W_Read;
 use crate::src::z_zone::Z_ChangeUser;
 use crate::src::z_zone::Z_Free;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
@@ -47,11 +48,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
     ) -> i32;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type __uint8_t = u8;
 pub type __int32_t = i32;

@@ -126,8 +126,7 @@ pub unsafe fn Z_Free(mut ptr: *mut ::core::ffi::c_void) {
     }
 }
 pub const MINFRAGMENT: i32 = 64 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn Z_Malloc(
+pub unsafe fn Z_Malloc(
     mut size: i32,
     mut tag: i32,
     mut user: *mut ::core::ffi::c_void,

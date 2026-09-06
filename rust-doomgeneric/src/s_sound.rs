@@ -34,14 +34,10 @@ use crate::src::i_sound::I_UpdateSound;
 use crate::src::w_wad::W_LumpLength;
 use crate::src::w_wad::W_ReleaseLumpNum;
 use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

@@ -1,6 +1,7 @@
 use crate::src::i_system::FILE;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::z_zone::Z_Free;
+use crate::src::z_zone::Z_Malloc;
 extern "C" {
     static mut stdout: *mut FILE;
     fn fflush(__stream: *mut FILE) -> i32;
@@ -15,11 +16,6 @@ extern "C" {
         __s: *mut ::core::ffi::c_void,
         __c: i32,
         __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;

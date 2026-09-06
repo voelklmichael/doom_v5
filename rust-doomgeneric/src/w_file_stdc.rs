@@ -2,6 +2,7 @@ use crate::src::i_system::FILE;
 use crate::src::w_file::{wad_file_class_t, wad_file_t};
 use crate::src::m_misc::M_FileLength;
 use crate::src::z_zone::Z_Free;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     fn fclose(__stream: *mut FILE) -> i32;
@@ -20,11 +21,6 @@ extern "C" {
         __off: i64,
         __whence: i32,
     ) -> i32;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
