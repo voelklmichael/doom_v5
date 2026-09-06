@@ -1,5 +1,6 @@
 use crate::src::i_system::FILE;
 use crate::src::i_system::I_Error;
+use crate::src::z_zone::Z_Malloc;
 extern "C" {
     fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
@@ -71,11 +72,6 @@ extern "C" {
     fn toupper(__c: i32) -> i32;
     fn __errno_location() -> *mut i32;
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;

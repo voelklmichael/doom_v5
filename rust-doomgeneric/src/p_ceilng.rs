@@ -8,14 +8,9 @@ use crate::src::p_tick::P_AddThinker;
 use crate::src::p_setup::sectors;
 use crate::src::p_tick::leveltime;
 use crate::src::s_sound::S_StartSound;
+use crate::src::z_zone::Z_Malloc;
 
-extern "C" {
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
-}
+
 pub type __uint8_t = u8;
 pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;

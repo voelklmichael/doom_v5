@@ -144,6 +144,7 @@ use crate::src::v_video::V_Init;
 use crate::src::z_zone::Z_Init;
 use crate::src::i_timer::I_GetTime;
 use crate::src::v_video::V_DrawPatch;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -175,11 +176,6 @@ extern "C" {
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
     ) -> i32;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
     fn M_SaveDefaults();
     fn G_CheckDemoStatus() -> boolean;
     fn StatDump();

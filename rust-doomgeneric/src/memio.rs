@@ -1,15 +1,11 @@
 use crate::src::z_zone::Z_Free;
+use crate::src::z_zone::Z_Malloc;
 extern "C" {
     fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
         __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;

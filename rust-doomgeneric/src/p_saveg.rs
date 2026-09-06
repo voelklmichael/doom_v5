@@ -34,6 +34,7 @@ use crate::src::g_game::players;
 use crate::src::p_plats::P_AddActivePlat;
 use crate::src::m_misc::M_StringJoin;
 use crate::src::z_zone::Z_Free;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -62,11 +63,6 @@ extern "C" {
     ) -> u64;
     fn ftell(__stream: *mut FILE) -> i64;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
         __c: i32,

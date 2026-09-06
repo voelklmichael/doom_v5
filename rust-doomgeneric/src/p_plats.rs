@@ -13,13 +13,8 @@ use crate::src::m_random::P_Random;
 use crate::src::p_setup::sectors;
 use crate::src::p_tick::leveltime;
 use crate::src::s_sound::S_StartSound;
-extern "C" {
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
-}
+use crate::src::z_zone::Z_Malloc;
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
 pub type boolean = u32;

@@ -11,6 +11,7 @@ use crate::src::p_setup::sides;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_setup::sectors;
 use crate::src::s_sound::S_StartSound;
+use crate::src::z_zone::Z_Malloc;
 extern "C" {
     static mut stderr: *mut FILE;
     fn fprintf(
@@ -18,11 +19,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
     fn T_PlatRaise(plat: *mut plat_t);
 }
 pub type size_t = usize;

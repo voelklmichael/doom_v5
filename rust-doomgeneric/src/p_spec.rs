@@ -49,6 +49,7 @@ use crate::src::p_tick::leveltime;
 use crate::src::s_sound::S_StartSound;
 use crate::src::r_data::R_FlatNumForName;
 use crate::src::r_data::R_TextureNumForName;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -61,11 +62,6 @@ extern "C" {
         __s: *mut ::core::ffi::c_void,
         __c: i32,
         __n: size_t,
-    ) -> *mut ::core::ffi::c_void;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
     ) -> *mut ::core::ffi::c_void;
     fn T_MoveFloor(floor: *mut floormove_t);
 }

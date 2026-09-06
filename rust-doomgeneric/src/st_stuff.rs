@@ -40,6 +40,7 @@ use crate::src::st_lib::STlib_init;
 use crate::src::v_video::V_CopyRect;
 use crate::src::v_video::V_DrawPatch;
 use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::z_zone::Z_Malloc;
 
 extern "C" {
     fn snprintf(
@@ -48,11 +49,6 @@ extern "C" {
         __format: *const ::core::ffi::c_char,
         ...
     ) -> i32;
-    fn Z_Malloc(
-        size: i32,
-        tag: i32,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
