@@ -3190,8 +3190,7 @@ pub unsafe extern "C" fn M_SetupNextMenu(mut menudef: *mut menu_t) {
     currentMenu = menudef;
     itemOn = (*currentMenu).lastOn;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_Ticker() {
+pub unsafe fn M_Ticker() {
     skullAnimCounter -= 1;
     if skullAnimCounter as i32 <= 0 as i32 {
         whichSkull = (whichSkull as i32 ^ 1 as i32)

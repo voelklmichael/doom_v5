@@ -16,9 +16,9 @@ extern "C" {
 pub struct screen_mode_t {
     pub width: i32,
     pub height: i32,
-    pub InitMode: Option<unsafe extern "C" fn(*mut byte) -> ()>,
+    pub InitMode: Option<unsafe fn(*mut byte) -> ()>,
     pub DrawScreen: Option<
-        unsafe extern "C" fn(
+        unsafe fn(
             i32,
             i32,
             i32,
@@ -53,7 +53,7 @@ pub unsafe extern "C" fn I_InitScale(
     dest_buffer = _dest_buffer;
     dest_pitch = _dest_pitch;
 }
-unsafe extern "C" fn I_Scale1x(
+unsafe fn I_Scale1x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -86,7 +86,7 @@ pub static mut mode_scale_1x: screen_mode_t = unsafe {
         InitMode: None,
         DrawScreen: Some(
             I_Scale1x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -96,7 +96,7 @@ pub static mut mode_scale_1x: screen_mode_t = unsafe {
         poor_quality: false,
     }
 };
-unsafe extern "C" fn I_Scale2x(
+unsafe fn I_Scale2x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -153,7 +153,7 @@ pub static mut mode_scale_2x: screen_mode_t = unsafe {
         InitMode: None,
         DrawScreen: Some(
             I_Scale2x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -163,7 +163,7 @@ pub static mut mode_scale_2x: screen_mode_t = unsafe {
         poor_quality: false,
     }
 };
-unsafe extern "C" fn I_Scale3x(
+unsafe fn I_Scale3x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -240,7 +240,7 @@ pub static mut mode_scale_3x: screen_mode_t = unsafe {
         InitMode: None,
         DrawScreen: Some(
             I_Scale3x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -250,7 +250,7 @@ pub static mut mode_scale_3x: screen_mode_t = unsafe {
         poor_quality: false,
     }
 };
-unsafe extern "C" fn I_Scale4x(
+unsafe fn I_Scale4x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -353,7 +353,7 @@ pub static mut mode_scale_4x: screen_mode_t = unsafe {
         InitMode: None,
         DrawScreen: Some(
             I_Scale4x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -363,7 +363,7 @@ pub static mut mode_scale_4x: screen_mode_t = unsafe {
         poor_quality: false,
     }
 };
-unsafe extern "C" fn I_Scale5x(
+unsafe fn I_Scale5x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -498,7 +498,7 @@ pub static mut mode_scale_5x: screen_mode_t = unsafe {
         InitMode: None,
         DrawScreen: Some(
             I_Scale5x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -591,7 +591,7 @@ unsafe extern "C" fn GenerateStretchTable(
     }
     return result;
 }
-unsafe extern "C" fn I_InitStretchTables(mut palette: *mut byte) {
+unsafe fn I_InitStretchTables(mut palette: *mut byte) {
     if !stretch_tables[0 as i32 as usize].is_null() {
         return;
     }
@@ -612,7 +612,7 @@ unsafe extern "C" fn I_InitStretchTables(mut palette: *mut byte) {
     );
     puts(b"\0" as *const u8 as *const ::core::ffi::c_char);
 }
-unsafe extern "C" fn I_InitSquashTable(mut palette: *mut byte) {
+unsafe fn I_InitSquashTable(mut palette: *mut byte) {
     if !half_stretch_table.is_null() {
         return;
     }
@@ -676,7 +676,7 @@ unsafe extern "C" fn WriteBlendedLine1x(
         x += 1;
     }
 }
-unsafe extern "C" fn I_Stretch1x(
+unsafe fn I_Stretch1x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -748,10 +748,10 @@ pub static mut mode_stretch_1x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH,
         height: SCREENHEIGHT_4_3,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Stretch1x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -797,7 +797,7 @@ unsafe extern "C" fn WriteBlendedLine2x(
         x += 1;
     }
 }
-unsafe extern "C" fn I_Stretch2x(
+unsafe fn I_Stretch2x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -873,10 +873,10 @@ pub static mut mode_stretch_2x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH * 2 as i32,
         height: SCREENHEIGHT_4_3 * 2 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Stretch2x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -924,7 +924,7 @@ unsafe extern "C" fn WriteBlendedLine3x(
         x += 1;
     }
 }
-unsafe extern "C" fn I_Stretch3x(
+unsafe fn I_Stretch3x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -1012,10 +1012,10 @@ pub static mut mode_stretch_3x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH * 3 as i32,
         height: SCREENHEIGHT_4_3 * 3 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Stretch3x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -1065,7 +1065,7 @@ unsafe extern "C" fn WriteBlendedLine4x(
         x += 1;
     }
 }
-unsafe extern "C" fn I_Stretch4x(
+unsafe fn I_Stretch4x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -1165,10 +1165,10 @@ pub static mut mode_stretch_4x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH * 4 as i32,
         height: SCREENHEIGHT_4_3 * 4 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Stretch4x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -1193,7 +1193,7 @@ unsafe extern "C" fn WriteLine5x(mut dest: *mut byte, mut src: *mut byte) {
         x += 1;
     }
 }
-unsafe extern "C" fn I_Stretch5x(
+unsafe fn I_Stretch5x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -1246,10 +1246,10 @@ pub static mut mode_stretch_5x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH * 5 as i32,
         height: SCREENHEIGHT_4_3 * 5 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Stretch5x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -1304,7 +1304,7 @@ unsafe extern "C" fn WriteSquashedLine1x(mut dest: *mut byte, mut src: *mut byte
         src = src.offset(5 as i32 as isize);
     }
 }
-unsafe extern "C" fn I_Squash1x(
+unsafe fn I_Squash1x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -1334,10 +1334,10 @@ pub static mut mode_squash_1x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH_4_3,
         height: SCREENHEIGHT,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Squash1x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -1439,7 +1439,7 @@ unsafe extern "C" fn WriteSquashedLine2x(mut dest: *mut byte, mut src: *mut byte
         src = src.offset(5 as i32 as isize);
     }
 }
-unsafe extern "C" fn I_Squash2x(
+unsafe fn I_Squash2x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -1469,10 +1469,10 @@ pub static mut mode_squash_2x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH_4_3 * 2 as i32,
         height: SCREENHEIGHT * 2 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Squash2x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -1550,7 +1550,7 @@ unsafe extern "C" fn WriteSquashedLine3x(mut dest: *mut byte, mut src: *mut byte
         src = src.offset(2 as i32 as isize);
     }
 }
-unsafe extern "C" fn I_Squash3x(
+unsafe fn I_Squash3x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -1580,10 +1580,10 @@ pub static mut mode_squash_3x: screen_mode_t = unsafe {
     screen_mode_t {
         width: 800 as i32,
         height: 600 as i32,
-        InitMode: Some(I_InitSquashTable as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitSquashTable as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Squash3x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -1834,7 +1834,7 @@ unsafe extern "C" fn WriteSquashedLine4x(mut dest: *mut byte, mut src: *mut byte
         src = src.offset(5 as i32 as isize);
     }
 }
-unsafe extern "C" fn I_Squash4x(
+unsafe fn I_Squash4x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -1864,10 +1864,10 @@ pub static mut mode_squash_4x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH_4_3 * 4 as i32,
         height: SCREENHEIGHT * 4 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Squash4x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
@@ -1957,7 +1957,7 @@ unsafe extern "C" fn WriteSquashedLine5x(mut dest: *mut byte, mut src: *mut byte
         x += 1;
     }
 }
-unsafe extern "C" fn I_Squash5x(
+unsafe fn I_Squash5x(
     mut x1: i32,
     mut y1: i32,
     mut x2: i32,
@@ -1987,10 +1987,10 @@ pub static mut mode_squash_5x: screen_mode_t = unsafe {
     screen_mode_t {
         width: SCREENWIDTH_4_3 * 5 as i32,
         height: SCREENHEIGHT * 5 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe extern "C" fn(*mut byte) -> ()),
+        InitMode: Some(I_InitStretchTables as unsafe fn(*mut byte) -> ()),
         DrawScreen: Some(
             I_Squash5x
-                as unsafe extern "C" fn(
+                as unsafe fn(
                     i32,
                     i32,
                     i32,
