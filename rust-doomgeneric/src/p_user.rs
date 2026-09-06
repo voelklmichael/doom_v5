@@ -9,9 +9,9 @@ use crate::src::r_main::R_PointToAngle2;
 use crate::src::p_tick::leveltime;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
+use crate::src::m_fixed::FixedMul;
 
 extern "C" {
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
     fn P_PlayerInSpecialSector(player: *mut player_t);
     static mut gamemode: GameMode_t;
 }

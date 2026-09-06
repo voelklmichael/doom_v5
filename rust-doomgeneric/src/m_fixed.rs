@@ -7,8 +7,7 @@ pub type fixed_t = i32;
 pub const INT_MAX: i32 = __INT_MAX__;
 pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
 pub const FRACBITS: i32 = 16 as i32;
-#[no_mangle]
-pub unsafe extern "C" fn FixedMul(mut a: fixed_t, mut b: fixed_t) -> fixed_t {
+pub unsafe fn FixedMul(mut a: fixed_t, mut b: fixed_t) -> fixed_t {
     return (a as int64_t * b as int64_t >> FRACBITS) as fixed_t;
 }
 pub unsafe fn FixedDiv(mut a: fixed_t, mut b: fixed_t) -> fixed_t {
