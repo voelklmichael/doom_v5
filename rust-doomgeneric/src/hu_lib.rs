@@ -54,8 +54,7 @@ pub unsafe fn HUlib_clearTextLine(mut t: *mut hu_textline_t) {
     (*t).l.clear();
     (*t).needsupdate = true_0;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_initTextLine(
+pub unsafe fn HUlib_initTextLine(
     mut t: *mut hu_textline_t,
     mut x: i32,
     mut y: i32,
@@ -68,8 +67,7 @@ pub unsafe extern "C" fn HUlib_initTextLine(
     (*t).sc = sc;
     HUlib_clearTextLine(t);
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_addCharToTextLine(
+pub unsafe fn HUlib_addCharToTextLine(
     mut t: *mut hu_textline_t,
     mut ch: ::core::ffi::c_char,
 ) -> boolean {
@@ -92,8 +90,7 @@ pub unsafe fn HUlib_delCharFromTextLine(
         return true;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_drawTextLine(
+pub unsafe fn HUlib_drawTextLine(
     mut l: *mut hu_textline_t,
     mut drawcursor: boolean,
 ) {
@@ -135,8 +132,7 @@ pub unsafe extern "C" fn HUlib_drawTextLine(
         V_DrawPatchDirect(x, (*l).y, *(*l).f.offset(('_' as i32 - (*l).sc) as isize));
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
+pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
     let mut lh: i32 = 0;
     let mut y: i32 = 0;
     let mut yoffset: i32 = 0;
@@ -163,8 +159,7 @@ pub unsafe extern "C" fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
         (*l).needsupdate -= 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_initSText(
+pub unsafe fn HUlib_initSText(
     mut s: *mut hu_stext_t,
     mut x: i32,
     mut y: i32,
@@ -235,8 +230,7 @@ pub unsafe fn HUlib_addMessageToSText(
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_drawSText(mut s: *mut hu_stext_t) {
+pub unsafe fn HUlib_drawSText(mut s: *mut hu_stext_t) {
     let mut i: i32 = 0;
     let mut idx: i32 = 0;
     let mut l: *mut hu_textline_t = ::core::ptr::null_mut::<hu_textline_t>();
@@ -255,8 +249,7 @@ pub unsafe extern "C" fn HUlib_drawSText(mut s: *mut hu_stext_t) {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_eraseSText(mut s: *mut hu_stext_t) {
+pub unsafe fn HUlib_eraseSText(mut s: *mut hu_stext_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < (*s).h {
@@ -271,8 +264,7 @@ pub unsafe extern "C" fn HUlib_eraseSText(mut s: *mut hu_stext_t) {
     }
     (*s).laston = *(*s).on;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_initIText(
+pub unsafe fn HUlib_initIText(
     mut it: *mut hu_itext_t,
     mut x: i32,
     mut y: i32,
@@ -295,8 +287,7 @@ pub unsafe fn HUlib_eraseLineFromIText(mut it: *mut hu_itext_t) {
         HUlib_delCharFromTextLine(&raw mut (*it).l);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_resetIText(mut it: *mut hu_itext_t) {
+pub unsafe fn HUlib_resetIText(mut it: *mut hu_itext_t) {
     (*it).lm = 0 as i32;
     HUlib_clearTextLine(&raw mut (*it).l);
 }
@@ -306,8 +297,7 @@ pub unsafe fn HUlib_addPrefixToIText(it: *mut hu_itext_t, s: &str) {
     }
     (*it).lm = (*it).l.l.len() as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_keyInIText(
+pub unsafe fn HUlib_keyInIText(
     mut it: *mut hu_itext_t,
     mut ch: u8,
 ) -> boolean {
@@ -341,16 +331,14 @@ pub unsafe extern "C" fn HUlib_keyInIText(
     }
     return true_0 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_drawIText(mut it: *mut hu_itext_t) {
+pub unsafe fn HUlib_drawIText(mut it: *mut hu_itext_t) {
     let mut l: *mut hu_textline_t = &raw mut (*it).l;
     if !*(*it).on {
         return;
     }
     HUlib_drawTextLine(l, true_0 as boolean);
 }
-#[no_mangle]
-pub unsafe extern "C" fn HUlib_eraseIText(mut it: *mut hu_itext_t) {
+pub unsafe fn HUlib_eraseIText(mut it: *mut hu_itext_t) {
     if (*it).laston && !*(*it).on {
         (*it).l.needsupdate = 4 as i32;
     }
