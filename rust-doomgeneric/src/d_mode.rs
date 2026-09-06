@@ -1,5 +1,4 @@
-pub type boolean = ::core::ffi::c_uint;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -10,13 +9,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -36,8 +35,8 @@ pub const exe_doom_1_2: GameVersion_t = 0;
 pub struct C2RustUnnamed {
     pub mission: GameMission_t,
     pub mode: GameMode_t,
-    pub episode: ::core::ffi::c_int,
-    pub map: ::core::ffi::c_int,
+    pub episode: i32,
+    pub map: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -45,164 +44,160 @@ pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
     pub version: GameVersion_t,
 }
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 static mut valid_modes: [C2RustUnnamed; 13] = [
     C2RustUnnamed {
         mission: pack_chex,
         mode: shareware,
-        episode: 1 as ::core::ffi::c_int,
-        map: 5 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 5 as i32,
     },
     C2RustUnnamed {
         mission: doom,
         mode: shareware,
-        episode: 1 as ::core::ffi::c_int,
-        map: 9 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 9 as i32,
     },
     C2RustUnnamed {
         mission: doom,
         mode: registered,
-        episode: 3 as ::core::ffi::c_int,
-        map: 9 as ::core::ffi::c_int,
+        episode: 3 as i32,
+        map: 9 as i32,
     },
     C2RustUnnamed {
         mission: doom,
         mode: retail,
-        episode: 4 as ::core::ffi::c_int,
-        map: 9 as ::core::ffi::c_int,
+        episode: 4 as i32,
+        map: 9 as i32,
     },
     C2RustUnnamed {
         mission: doom2,
         mode: commercial,
-        episode: 1 as ::core::ffi::c_int,
-        map: 32 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 32 as i32,
     },
     C2RustUnnamed {
         mission: pack_tnt,
         mode: commercial,
-        episode: 1 as ::core::ffi::c_int,
-        map: 32 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 32 as i32,
     },
     C2RustUnnamed {
         mission: pack_plut,
         mode: commercial,
-        episode: 1 as ::core::ffi::c_int,
-        map: 32 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 32 as i32,
     },
     C2RustUnnamed {
         mission: pack_hacx,
         mode: commercial,
-        episode: 1 as ::core::ffi::c_int,
-        map: 32 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 32 as i32,
     },
     C2RustUnnamed {
         mission: heretic,
         mode: shareware,
-        episode: 1 as ::core::ffi::c_int,
-        map: 9 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 9 as i32,
     },
     C2RustUnnamed {
         mission: heretic,
         mode: registered,
-        episode: 3 as ::core::ffi::c_int,
-        map: 9 as ::core::ffi::c_int,
+        episode: 3 as i32,
+        map: 9 as i32,
     },
     C2RustUnnamed {
         mission: heretic,
         mode: retail,
-        episode: 5 as ::core::ffi::c_int,
-        map: 9 as ::core::ffi::c_int,
+        episode: 5 as i32,
+        map: 9 as i32,
     },
     C2RustUnnamed {
         mission: hexen,
         mode: commercial,
-        episode: 1 as ::core::ffi::c_int,
-        map: 60 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 60 as i32,
     },
     C2RustUnnamed {
         mission: strife,
         mode: commercial,
-        episode: 1 as ::core::ffi::c_int,
-        map: 34 as ::core::ffi::c_int,
+        episode: 1 as i32,
+        map: 34 as i32,
     },
 ];
 #[no_mangle]
 pub unsafe extern "C" fn D_ValidGameMode(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
-) -> boolean {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+) -> bool {
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while (i as usize)
         < (::core::mem::size_of::<[C2RustUnnamed; 13]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed>() as usize)
     {
-        if valid_modes[i as usize].mode as ::core::ffi::c_uint
-            == mode as ::core::ffi::c_uint
-            && valid_modes[i as usize].mission as ::core::ffi::c_uint
-                == mission as ::core::ffi::c_uint
+        if valid_modes[i as usize].mode as u32
+            == mode as u32
+            && valid_modes[i as usize].mission as u32
+                == mission as u32
         {
-            return true_0 as boolean;
+            return true;
         }
         i += 1;
     }
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_ValidEpisodeMap(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
-    mut episode: ::core::ffi::c_int,
-    mut map: ::core::ffi::c_int,
-) -> boolean {
-    let mut i: ::core::ffi::c_int = 0;
-    if mission as ::core::ffi::c_uint
-        == heretic as ::core::ffi::c_int as ::core::ffi::c_uint
+    mut episode: i32,
+    mut map: i32,
+) -> bool {
+    let mut i: i32 = 0;
+    if mission as u32
+        == heretic as i32 as u32
     {
-        if mode as ::core::ffi::c_uint
-            == retail as ::core::ffi::c_int as ::core::ffi::c_uint
-            && episode == 6 as ::core::ffi::c_int
+        if mode as u32
+            == retail as i32 as u32
+            && episode == 6 as i32
         {
-            return (map >= 1 as ::core::ffi::c_int && map <= 3 as ::core::ffi::c_int)
-                as ::core::ffi::c_int as boolean
-        } else if mode as ::core::ffi::c_uint
-            == registered as ::core::ffi::c_int as ::core::ffi::c_uint
-            && episode == 4 as ::core::ffi::c_int
+            return map >= 1 as i32 && map <= 3 as i32
+        } else if mode as u32
+            == registered as i32 as u32
+            && episode == 4 as i32
         {
-            return (map == 1 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean
+            return map == 1 as i32
         }
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while (i as usize)
         < (::core::mem::size_of::<[C2RustUnnamed; 13]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed>() as usize)
     {
-        if mission as ::core::ffi::c_uint
-            == valid_modes[i as usize].mission as ::core::ffi::c_uint
-            && mode as ::core::ffi::c_uint
-                == valid_modes[i as usize].mode as ::core::ffi::c_uint
+        if mission as u32
+            == valid_modes[i as usize].mission as u32
+            && mode as u32
+                == valid_modes[i as usize].mode as u32
         {
-            return (episode >= 1 as ::core::ffi::c_int
+            return episode >= 1 as i32
                 && episode <= valid_modes[i as usize].episode
-                && map >= 1 as ::core::ffi::c_int && map <= valid_modes[i as usize].map)
-                as ::core::ffi::c_int as boolean;
+                && map >= 1 as i32 && map <= valid_modes[i as usize].map;
         }
         i += 1;
     }
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_GetNumEpisodes(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
-) -> ::core::ffi::c_int {
-    let mut episode: ::core::ffi::c_int = 0;
-    episode = 1 as ::core::ffi::c_int;
-    while D_ValidEpisodeMap(mission, mode, episode, 1 as ::core::ffi::c_int) != 0 {
+) -> i32 {
+    let mut episode: i32 = 0;
+    episode = 1 as i32;
+    while D_ValidEpisodeMap(mission, mode, episode, 1 as i32) {
         episode += 1;
     }
-    return episode - 1 as ::core::ffi::c_int;
+    return episode - 1 as i32;
 }
 static mut valid_versions: [C2RustUnnamed_0; 10] = [
     C2RustUnnamed_0 {
@@ -250,49 +245,48 @@ static mut valid_versions: [C2RustUnnamed_0; 10] = [
 pub unsafe extern "C" fn D_ValidGameVersion(
     mut mission: GameMission_t,
     mut version: GameVersion_t,
-) -> boolean {
-    let mut i: ::core::ffi::c_int = 0;
-    if mission as ::core::ffi::c_uint
-        == doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
-        || mission as ::core::ffi::c_uint
-            == pack_plut as ::core::ffi::c_int as ::core::ffi::c_uint
-        || mission as ::core::ffi::c_uint
-            == pack_tnt as ::core::ffi::c_int as ::core::ffi::c_uint
-        || mission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
-        || mission as ::core::ffi::c_uint
-            == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+) -> bool {
+    let mut i: i32 = 0;
+    if mission as u32
+        == doom2 as i32 as u32
+        || mission as u32
+            == pack_plut as i32 as u32
+        || mission as u32
+            == pack_tnt as i32 as u32
+        || mission as u32
+            == pack_hacx as i32 as u32
+        || mission as u32
+            == pack_chex as i32 as u32
     {
         mission = doom;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while (i as usize)
         < (::core::mem::size_of::<[C2RustUnnamed_0; 10]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_0>() as usize)
     {
-        if valid_versions[i as usize].mission as ::core::ffi::c_uint
-            == mission as ::core::ffi::c_uint
-            && valid_versions[i as usize].version as ::core::ffi::c_uint
-                == version as ::core::ffi::c_uint
+        if valid_versions[i as usize].mission as u32
+            == mission as u32
+            && valid_versions[i as usize].version as u32
+                == version as u32
         {
-            return true_0 as boolean;
+            return true;
         }
         i += 1;
     }
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
-pub unsafe extern "C" fn D_IsEpisodeMap(mut mission: GameMission_t) -> boolean {
-    match mission as ::core::ffi::c_uint {
-        0 | 6 | 4 => return true_0 as boolean,
-        9 | 7 | 1 | 5 | 2 | 3 | 8 | _ => return false_0 as boolean,
+pub unsafe extern "C" fn D_IsEpisodeMap(mut mission: GameMission_t) -> bool {
+    match mission as u32 {
+        0 | 6 | 4 => return true,
+        9 | 7 | 1 | 5 | 2 | 3 | 8 | _ => return false,
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_GameMissionString(
+pub unsafe fn D_GameMissionString(
     mut mission: GameMission_t,
 ) -> *mut ::core::ffi::c_char {
-    match mission as ::core::ffi::c_uint {
+    match mission as u32 {
         0 => {
             return b"doom\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;

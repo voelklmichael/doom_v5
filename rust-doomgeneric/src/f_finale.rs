@@ -1,95 +1,62 @@
+use crate::src::r_data::column_t;
+use crate::src::r_defs::{spritedef_t, spriteframe_t};
+use crate::src::hu_lib::patch_t;
+use crate::src::d_event::event_t;
+use crate::src::p_mobj::{state_t, mobjinfo_t, actionf_t};
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::d_main::wipegamestate;
+use crate::src::g_game::gameaction;
+use crate::src::hu_stuff::hu_font;
+use crate::src::r_data::firstspritelump;
+use crate::src::r_things::sprites;
+use crate::src::s_sound::S_StartMusic;
+use crate::src::g_game::gamestate;
+use crate::src::g_game::viewactive;
+use crate::src::s_sound::S_ChangeMusic;
+use crate::src::v_video::V_MarkRect;
+use crate::src::i_video::I_VideoBuffer;
+use crate::src::info::mobjinfo;
+use crate::src::g_game::gameepisode;
+use crate::src::doomstat::gamemission;
+use crate::src::g_game::gamemap;
+use crate::src::info::states;
+use crate::src::am_map::automapactive;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
+use crate::src::s_sound::S_StartSound;
+use crate::src::v_video::V_DrawPatchFlipped;
+use crate::src::v_video::V_DrawPatch;
+use crate::src::w_wad::W_CacheLumpNum;
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
-    fn V_DrawPatchFlipped(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        patch: *mut patch_t,
-    );
-    fn V_MarkRect(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
-    );
-    fn W_CacheLumpNum(
-        lump: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
+    fn toupper(__c: i32) -> i32;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    static mut states: [state_t; 967];
-    static mut mobjinfo: [mobjinfo_t; 137];
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    fn S_StartMusic(music_id: ::core::ffi::c_int);
-    fn S_ChangeMusic(music_id: ::core::ffi::c_int, looping: ::core::ffi::c_int);
-    static mut gameaction: gameaction_t;
-    static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
-    static mut gameversion: GameVersion_t;
-    static mut gameepisode: ::core::ffi::c_int;
-    static mut gamemap: ::core::ffi::c_int;
-    static mut automapactive: boolean;
-    static mut viewactive: boolean;
-    static mut gamestate: gamestate_t;
-    static mut players: [player_t; 4];
-    static mut wipegamestate: gamestate_t;
-    static mut I_VideoBuffer: *mut byte;
-    static mut firstspritelump: ::core::ffi::c_int;
-    static mut sprites: *mut spritedef_t;
-    static mut hu_font: [*mut patch_t; 63];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type __int32_t = i32;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -99,23 +66,7 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct post_t {
-    pub topdelta: byte,
-    pub length: byte,
-}
-pub type column_t = post_t;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -126,13 +77,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -147,35 +98,20 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-pub type gamestate_t = ::core::ffi::c_uint;
+pub type gamestate_t = u32;
 pub const GS_DEMOSCREEN: gamestate_t = 3;
 pub const GS_FINALE: gamestate_t = 2;
 pub const GS_INTERMISSION: gamestate_t = 1;
 pub const GS_LEVEL: gamestate_t = 0;
-pub type gameaction_t = ::core::ffi::c_uint;
+pub type gameaction_t = u32;
 pub const ga_screenshot: gameaction_t = 9;
 pub const ga_worlddone: gameaction_t = 8;
 pub const ga_victory: gameaction_t = 7;
@@ -186,7 +122,7 @@ pub const ga_loadgame: gameaction_t = 3;
 pub const ga_newgame: gameaction_t = 2;
 pub const ga_loadlevel: gameaction_t = 1;
 pub const ga_nothing: gameaction_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -198,16 +134,7 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -347,7 +274,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1316,18 +1243,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1466,189 +1382,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMMUSIC: C2RustUnnamed_0 = 68;
 pub const mus_dm2int: C2RustUnnamed_0 = 67;
 pub const mus_dm2ttl: C2RustUnnamed_0 = 66;
@@ -1718,7 +1452,7 @@ pub const mus_e1m3: C2RustUnnamed_0 = 3;
 pub const mus_e1m2: C2RustUnnamed_0 = 2;
 pub const mus_e1m1: C2RustUnnamed_0 = 1;
 pub const mus_None: C2RustUnnamed_0 = 0;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const NUMSFX: C2RustUnnamed_1 = 109;
 pub const sfx_radio: C2RustUnnamed_1 = 108;
 pub const sfx_skeatk: C2RustUnnamed_1 = 107;
@@ -1829,21 +1563,7 @@ pub const sfx_sgcock: C2RustUnnamed_1 = 3;
 pub const sfx_shotgn: C2RustUnnamed_1 = 2;
 pub const sfx_pistol: C2RustUnnamed_1 = 1;
 pub const sfx_None: C2RustUnnamed_1 = 0;
-pub type player_t = player_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spriteframe_t {
-    pub rotate: boolean,
-    pub lump: [::core::ffi::c_short; 8],
-    pub flip: [byte; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spritedef_t {
-    pub numframes: ::core::ffi::c_int,
-    pub spriteframes: *mut spriteframe_t,
-}
-pub type finalestage_t = ::core::ffi::c_uint;
+pub type finalestage_t = u32;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;
 pub const F_STAGE_TEXT: finalestage_t = 0;
@@ -1851,475 +1571,254 @@ pub const F_STAGE_TEXT: finalestage_t = 0;
 #[repr(C)]
 pub struct textscreen_t {
     pub mission: GameMission_t,
-    pub episode: ::core::ffi::c_int,
-    pub level: ::core::ffi::c_int,
-    pub background: *mut ::core::ffi::c_char,
-    pub text: *mut ::core::ffi::c_char,
+    pub episode: i32,
+    pub level: i32,
+    pub background: &'static str,
+    pub text: &'static str,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct castinfo_t {
-    pub name: *mut ::core::ffi::c_char,
+    pub name: Option<&'static str>,
     pub type_0: mobjtype_t,
 }
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const E1TEXT: [::core::ffi::c_char; 441] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 441],
-        [::core::ffi::c_char; 441],
-    >(
-        *b"Once you beat the big badasses and\nclean out the moon base you're supposed\nto win, aren't you? Aren't you? Where's\nyour fat reward and ticket home? What\nthe hell is this? It's not supposed to\nend this way!\n\nIt stinks like rotten meat, but looks\nlike the lost Deimos base.  Looks like\nyou're stuck on The Shores of Hell.\nThe only way out is through.\n\nTo continue the DOOM experience, play\nThe Shores of Hell and its amazing\nsequel, Inferno!\n\0",
-    )
-};
-pub const E2TEXT: [::core::ffi::c_char; 467] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 467],
-        [::core::ffi::c_char; 467],
-    >(
-        *b"You've done it! The hideous cyber-\ndemon lord that ruled the lost Deimos\nmoon base has been slain and you\nare triumphant! But ... where are\nyou? You clamber to the edge of the\nmoon and look down to see the awful\ntruth.\n\nDeimos floats above Hell itself!\nYou've never heard of anyone escaping\nfrom Hell, but you'll make the bastards\nsorry they ever heard of you! Quickly,\nyou rappel down to  the surface of\nHell.\n\nNow, it's on to the final chapter of\nDOOM! -- Inferno.\0",
-    )
-};
-pub const E3TEXT: [::core::ffi::c_char; 493] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 493],
-        [::core::ffi::c_char; 493],
-    >(
-        *b"The loathsome spiderdemon that\nmasterminded the invasion of the moon\nbases and caused so much death has had\nits ass kicked for all time.\n\nA hidden doorway opens and you enter.\nYou've proven too tough for Hell to\ncontain, and now Hell at last plays\nfair -- for you emerge from the door\nto see the green fields of Earth!\nHome at last.\n\nYou wonder what's been happening on\nEarth while you were battling evil\nunleashed. It's good that no Hell-\nspawn could have come through that\ndoor with you ...\0",
-    )
-};
-pub const E4TEXT: [::core::ffi::c_char; 504] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 504],
-        [::core::ffi::c_char; 504],
-    >(
-        *b"the spider mastermind must have sent forth\nits legions of hellspawn before your\nfinal confrontation with that terrible\nbeast from hell.  but you stepped forward\nand brought forth eternal damnation and\nsuffering upon the horde as a true hero\nwould in the face of something so evil.\n\nbesides, someone was gonna pay for what\nhappened to daisy, your pet rabbit.\n\nbut now, you see spread before you more\npotential pain and gibbitude as a nation\nof demons run amok among our cities.\n\nnext stop, hell on earth!\0",
-    )
-};
-pub const C1TEXT: [::core::ffi::c_char; 406] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 406],
-        [::core::ffi::c_char; 406],
-    >(
-        *b"YOU HAVE ENTERED DEEPLY INTO THE INFESTED\nSTARPORT. BUT SOMETHING IS WRONG. THE\nMONSTERS HAVE BROUGHT THEIR OWN REALITY\nWITH THEM, AND THE STARPORT'S TECHNOLOGY\nIS BEING SUBVERTED BY THEIR PRESENCE.\n\nAHEAD, YOU SEE AN OUTPOST OF HELL, A\nFORTIFIED ZONE. IF YOU CAN GET PAST IT,\nYOU CAN PENETRATE INTO THE HAUNTED HEART\nOF THE STARBASE AND FIND THE CONTROLLING\nSWITCH WHICH HOLDS EARTH'S POPULATION\nHOSTAGE.\0",
-    )
-};
-pub const C2TEXT: [::core::ffi::c_char; 618] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 618],
-        [::core::ffi::c_char; 618],
-    >(
-        *b"YOU HAVE WON! YOUR VICTORY HAS ENABLED\nHUMANKIND TO EVACUATE EARTH AND ESCAPE\nTHE NIGHTMARE.  NOW YOU ARE THE ONLY\nHUMAN LEFT ON THE FACE OF THE PLANET.\nCANNIBAL MUTATIONS, CARNIVOROUS ALIENS,\nAND EVIL SPIRITS ARE YOUR ONLY NEIGHBORS.\nYOU SIT BACK AND WAIT FOR DEATH, CONTENT\nTHAT YOU HAVE SAVED YOUR SPECIES.\n\nBUT THEN, EARTH CONTROL BEAMS DOWN A\nMESSAGE FROM SPACE: \"SENSORS HAVE LOCATED\nTHE SOURCE OF THE ALIEN INVASION. IF YOU\nGO THERE, YOU MAY BE ABLE TO BLOCK THEIR\nENTRY.  THE ALIEN BASE IS IN THE HEART OF\nYOUR OWN HOME CITY, NOT FAR FROM THE\nSTARPORT.\" SLOWLY AND PAINFULLY YOU GET\nUP AND RETURN TO THE FRAY.\0",
-    )
-};
-pub const C3TEXT: [::core::ffi::c_char; 313] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 313],
-        [::core::ffi::c_char; 313],
-    >(
-        *b"YOU ARE AT THE CORRUPT HEART OF THE CITY,\nSURROUNDED BY THE CORPSES OF YOUR ENEMIES.\nYOU SEE NO WAY TO DESTROY THE CREATURES'\nENTRYWAY ON THIS SIDE, SO YOU CLENCH YOUR\nTEETH AND PLUNGE THROUGH IT.\n\nTHERE MUST BE A WAY TO CLOSE IT ON THE\nOTHER SIDE. WHAT DO YOU CARE IF YOU'VE\nGOT TO GO THROUGH HELL TO GET TO IT?\0",
-    )
-};
-pub const C4TEXT: [::core::ffi::c_char; 495] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 495],
-        [::core::ffi::c_char; 495],
-    >(
-        *b"THE HORRENDOUS VISAGE OF THE BIGGEST\nDEMON YOU'VE EVER SEEN CRUMBLES BEFORE\nYOU, AFTER YOU PUMP YOUR ROCKETS INTO\nHIS EXPOSED BRAIN. THE MONSTER SHRIVELS\nUP AND DIES, ITS THRASHING LIMBS\nDEVASTATING UNTOLD MILES OF HELL'S\nSURFACE.\n\nYOU'VE DONE IT. THE INVASION IS OVER.\nEARTH IS SAVED. HELL IS A WRECK. YOU\nWONDER WHERE BAD FOLKS WILL GO WHEN THEY\nDIE, NOW. WIPING THE SWEAT FROM YOUR\nFOREHEAD YOU BEGIN THE LONG TREK BACK\nHOME. REBUILDING EARTH OUGHT TO BE A\nLOT MORE FUN THAN RUINING IT WAS.\n\0",
-    )
-};
-pub const C5TEXT: [::core::ffi::c_char; 165] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 165],
-        [::core::ffi::c_char; 165],
-    >(
-        *b"CONGRATULATIONS, YOU'VE FOUND THE SECRET\nLEVEL! LOOKS LIKE IT'S BEEN BUILT BY\nHUMANS, RATHER THAN DEMONS. YOU WONDER\nWHO THE INMATES OF THIS CORNER OF HELL\nWILL BE.\0",
-    )
-};
-pub const C6TEXT: [::core::ffi::c_char; 93] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 93],
-        [::core::ffi::c_char; 93],
-    >(
-        *b"CONGRATULATIONS, YOU'VE FOUND THE\nSUPER SECRET LEVEL!  YOU'D BETTER\nBLAZE THROUGH THIS ONE!\n\0",
-    )
-};
-pub const P1TEXT: [::core::ffi::c_char; 434] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 434],
-        [::core::ffi::c_char; 434],
-    >(
-        *b"You gloat over the steaming carcass of the\nGuardian.  With its death, you've wrested\nthe Accelerator from the stinking claws\nof Hell.  You relax and glance around the\nroom.  Damn!  There was supposed to be at\nleast one working prototype, but you can't\nsee it. The demons must have taken it.\n\nYou must find the prototype, or all your\nstruggles will have been wasted. Keep\nmoving, keep fighting, keep killing.\nOh yes, keep living, too.\0",
-    )
-};
-pub const P2TEXT: [::core::ffi::c_char; 194] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 194],
-        [::core::ffi::c_char; 194],
-    >(
-        *b"Even the deadly Arch-Vile labyrinth could\nnot stop you, and you've gotten to the\nprototype Accelerator which is soon\nefficiently and permanently deactivated.\n\nYou're good at that kind of thing.\0",
-    )
-};
-pub const P3TEXT: [::core::ffi::c_char; 329] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 329],
-        [::core::ffi::c_char; 329],
-    >(
-        *b"You've bashed and battered your way into\nthe heart of the devil-hive.  Time for a\nSearch-and-Destroy mission, aimed at the\nGatekeeper, whose foul offspring is\ncascading to Earth.  Yeah, he's bad. But\nyou know who's worse!\n\nGrinning evilly, you check your gear, and\nget ready to give the bastard a little Hell\nof your own making!\0",
-    )
-};
-pub const P4TEXT: [::core::ffi::c_char; 461] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 461],
-        [::core::ffi::c_char; 461],
-    >(
-        *b"The Gatekeeper's evil face is splattered\nall over the place.  As its tattered corpse\ncollapses, an inverted Gate forms and\nsucks down the shards of the last\nprototype Accelerator, not to mention the\nfew remaining demons.  You're done. Hell\nhas gone back to pounding bad dead folks \ninstead of good live ones.  Remember to\ntell your grandkids to put a rocket\nlauncher in your coffin. If you go to Hell\nwhen you die, you'll need it for some\nfinal cleaning-up ...\0",
-    )
-};
-pub const P5TEXT: [::core::ffi::c_char; 160] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 160],
-        [::core::ffi::c_char; 160],
-    >(
-        *b"You've found the second-hardest level we\ngot. Hope you have a saved game a level or\ntwo previous.  If not, be prepared to die\naplenty. For master marines only.\0",
-    )
-};
-pub const P6TEXT: [::core::ffi::c_char; 107] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 107],
-        [::core::ffi::c_char; 107],
-    >(
-        *b"Betcha wondered just what WAS the hardest\nlevel we had ready for ya?  Now you know.\nNo one gets out alive.\0",
-    )
-};
-pub const T1TEXT: [::core::ffi::c_char; 390] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 390],
-        [::core::ffi::c_char; 390],
-    >(
-        *b"You've fought your way out of the infested\nexperimental labs.   It seems that UAC has\nonce again gulped it down.  With their\nhigh turnover, it must be hard for poor\nold UAC to buy corporate health insurance\nnowadays..\n\nAhead lies the military complex, now\nswarming with diseased horrors hot to get\ntheir teeth into you. With luck, the\ncomplex still has some warlike ordnance\nlaying around.\0",
-    )
-};
-pub const T2TEXT: [::core::ffi::c_char; 311] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 311],
-        [::core::ffi::c_char; 311],
-    >(
-        *b"You hear the grinding of heavy machinery\nahead.  You sure hope they're not stamping\nout new hellspawn, but you're ready to\nream out a whole herd if you have to.\nThey might be planning a blood feast, but\nyou feel about as mean as two thousand\nmaniacs packed into one mad killer.\n\nYou don't plan to go down easy.\0",
-    )
-};
-pub const T3TEXT: [::core::ffi::c_char; 310] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 310],
-        [::core::ffi::c_char; 310],
-    >(
-        *b"The vista opening ahead looks real damn\nfamiliar. Smells familiar, too -- like\nfried excrement. You didn't like this\nplace before, and you sure as hell ain't\nplanning to like it now. The more you\nbrood on it, the madder you get.\nHefting your gun, an evil grin trickles\nonto your face. Time to take some names.\0",
-    )
-};
-pub const T4TEXT: [::core::ffi::c_char; 386] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 386],
-        [::core::ffi::c_char; 386],
-    >(
-        *b"Suddenly, all is silent, from one horizon\nto the other. The agonizing echo of Hell\nfades away, the nightmare sky turns to\nblue, the heaps of monster corpses start \nto evaporate along with the evil stench \nthat filled the air. Jeeze, maybe you've\ndone it. Have you really won?\n\nSomething rumbles in the distance.\nA blue light begins to glow inside the\nruined skull of the demon-spitter.\0",
-    )
-};
-pub const T5TEXT: [::core::ffi::c_char; 174] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 174],
-        [::core::ffi::c_char; 174],
-    >(
-        *b"What now? Looks totally different. Kind\nof like King Tut's condo. Well,\nwhatever's here can't be any worse\nthan usual. Can it?  Or maybe it's best\nto let sleeping gods lie..\0",
-    )
-};
-pub const T6TEXT: [::core::ffi::c_char; 354] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 354],
-        [::core::ffi::c_char; 354],
-    >(
-        *b"Time for a vacation. You've burst the\nbowels of hell and by golly you're ready\nfor a break. You mutter to yourself,\nMaybe someone else can kick Hell's ass\nnext time around. Ahead lies a quiet town,\nwith peaceful flowing water, quaint\nbuildings, and presumably no Hellspawn.\n\nAs you step off the transport, you hear\nthe stomp of a cyberdemon's iron shoe.\0",
-    )
-};
-pub const CC_ZOMBIE: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"ZOMBIEMAN\0")
-};
-pub const CC_SHOTGUN: [::core::ffi::c_char; 12] = unsafe {
-    ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"SHOTGUN GUY\0")
-};
-pub const CC_HEAVY: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"HEAVY WEAPON DUDE\0")
-};
-pub const CC_IMP: [::core::ffi::c_char; 4] = unsafe {
-    ::core::mem::transmute::<[u8; 4], [::core::ffi::c_char; 4]>(*b"IMP\0")
-};
-pub const CC_DEMON: [::core::ffi::c_char; 6] = unsafe {
-    ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"DEMON\0")
-};
-pub const CC_LOST: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"LOST SOUL\0")
-};
-pub const CC_CACO: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"CACODEMON\0")
-};
-pub const CC_HELL: [::core::ffi::c_char; 12] = unsafe {
-    ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"HELL KNIGHT\0")
-};
-pub const CC_BARON: [::core::ffi::c_char; 14] = unsafe {
-    ::core::mem::transmute::<[u8; 14], [::core::ffi::c_char; 14]>(*b"BARON OF HELL\0")
-};
-pub const CC_ARACH: [::core::ffi::c_char; 12] = unsafe {
-    ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"ARACHNOTRON\0")
-};
-pub const CC_PAIN: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"PAIN ELEMENTAL\0")
-};
-pub const CC_REVEN: [::core::ffi::c_char; 9] = unsafe {
-    ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"REVENANT\0")
-};
-pub const CC_MANCU: [::core::ffi::c_char; 9] = unsafe {
-    ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"MANCUBUS\0")
-};
-pub const CC_ARCH: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"ARCH-VILE\0")
-};
-pub const CC_SPIDER: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"THE SPIDER MASTERMIND\0")
-};
-pub const CC_CYBER: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"THE CYBERDEMON\0")
-};
-pub const CC_HERO: [::core::ffi::c_char; 9] = unsafe {
-    ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"OUR HERO\0")
-};
-pub const FF_FRAMEMASK: ::core::ffi::c_int = 0x7fff as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const E1TEXT: &str = "Once you beat the big badasses and\nclean out the moon base you're supposed\nto win, aren't you? Aren't you? Where's\nyour fat reward and ticket home? What\nthe hell is this? It's not supposed to\nend this way!\n\nIt stinks like rotten meat, but looks\nlike the lost Deimos base.  Looks like\nyou're stuck on The Shores of Hell.\nThe only way out is through.\n\nTo continue the DOOM experience, play\nThe Shores of Hell and its amazing\nsequel, Inferno!\n";
+pub const E2TEXT: &str = "You've done it! The hideous cyber-\ndemon lord that ruled the lost Deimos\nmoon base has been slain and you\nare triumphant! But ... where are\nyou? You clamber to the edge of the\nmoon and look down to see the awful\ntruth.\n\nDeimos floats above Hell itself!\nYou've never heard of anyone escaping\nfrom Hell, but you'll make the bastards\nsorry they ever heard of you! Quickly,\nyou rappel down to  the surface of\nHell.\n\nNow, it's on to the final chapter of\nDOOM! -- Inferno.";
+pub const E3TEXT: &str = "The loathsome spiderdemon that\nmasterminded the invasion of the moon\nbases and caused so much death has had\nits ass kicked for all time.\n\nA hidden doorway opens and you enter.\nYou've proven too tough for Hell to\ncontain, and now Hell at last plays\nfair -- for you emerge from the door\nto see the green fields of Earth!\nHome at last.\n\nYou wonder what's been happening on\nEarth while you were battling evil\nunleashed. It's good that no Hell-\nspawn could have come through that\ndoor with you ...";
+pub const E4TEXT: &str = "the spider mastermind must have sent forth\nits legions of hellspawn before your\nfinal confrontation with that terrible\nbeast from hell.  but you stepped forward\nand brought forth eternal damnation and\nsuffering upon the horde as a true hero\nwould in the face of something so evil.\n\nbesides, someone was gonna pay for what\nhappened to daisy, your pet rabbit.\n\nbut now, you see spread before you more\npotential pain and gibbitude as a nation\nof demons run amok among our cities.\n\nnext stop, hell on earth!";
+pub const C1TEXT: &str = "YOU HAVE ENTERED DEEPLY INTO THE INFESTED\nSTARPORT. BUT SOMETHING IS WRONG. THE\nMONSTERS HAVE BROUGHT THEIR OWN REALITY\nWITH THEM, AND THE STARPORT'S TECHNOLOGY\nIS BEING SUBVERTED BY THEIR PRESENCE.\n\nAHEAD, YOU SEE AN OUTPOST OF HELL, A\nFORTIFIED ZONE. IF YOU CAN GET PAST IT,\nYOU CAN PENETRATE INTO THE HAUNTED HEART\nOF THE STARBASE AND FIND THE CONTROLLING\nSWITCH WHICH HOLDS EARTH'S POPULATION\nHOSTAGE.";
+pub const C2TEXT: &str = "YOU HAVE WON! YOUR VICTORY HAS ENABLED\nHUMANKIND TO EVACUATE EARTH AND ESCAPE\nTHE NIGHTMARE.  NOW YOU ARE THE ONLY\nHUMAN LEFT ON THE FACE OF THE PLANET.\nCANNIBAL MUTATIONS, CARNIVOROUS ALIENS,\nAND EVIL SPIRITS ARE YOUR ONLY NEIGHBORS.\nYOU SIT BACK AND WAIT FOR DEATH, CONTENT\nTHAT YOU HAVE SAVED YOUR SPECIES.\n\nBUT THEN, EARTH CONTROL BEAMS DOWN A\nMESSAGE FROM SPACE: \"SENSORS HAVE LOCATED\nTHE SOURCE OF THE ALIEN INVASION. IF YOU\nGO THERE, YOU MAY BE ABLE TO BLOCK THEIR\nENTRY.  THE ALIEN BASE IS IN THE HEART OF\nYOUR OWN HOME CITY, NOT FAR FROM THE\nSTARPORT.\" SLOWLY AND PAINFULLY YOU GET\nUP AND RETURN TO THE FRAY.";
+pub const C3TEXT: &str = "YOU ARE AT THE CORRUPT HEART OF THE CITY,\nSURROUNDED BY THE CORPSES OF YOUR ENEMIES.\nYOU SEE NO WAY TO DESTROY THE CREATURES'\nENTRYWAY ON THIS SIDE, SO YOU CLENCH YOUR\nTEETH AND PLUNGE THROUGH IT.\n\nTHERE MUST BE A WAY TO CLOSE IT ON THE\nOTHER SIDE. WHAT DO YOU CARE IF YOU'VE\nGOT TO GO THROUGH HELL TO GET TO IT?";
+pub const C4TEXT: &str = "THE HORRENDOUS VISAGE OF THE BIGGEST\nDEMON YOU'VE EVER SEEN CRUMBLES BEFORE\nYOU, AFTER YOU PUMP YOUR ROCKETS INTO\nHIS EXPOSED BRAIN. THE MONSTER SHRIVELS\nUP AND DIES, ITS THRASHING LIMBS\nDEVASTATING UNTOLD MILES OF HELL'S\nSURFACE.\n\nYOU'VE DONE IT. THE INVASION IS OVER.\nEARTH IS SAVED. HELL IS A WRECK. YOU\nWONDER WHERE BAD FOLKS WILL GO WHEN THEY\nDIE, NOW. WIPING THE SWEAT FROM YOUR\nFOREHEAD YOU BEGIN THE LONG TREK BACK\nHOME. REBUILDING EARTH OUGHT TO BE A\nLOT MORE FUN THAN RUINING IT WAS.\n";
+pub const C5TEXT: &str = "CONGRATULATIONS, YOU'VE FOUND THE SECRET\nLEVEL! LOOKS LIKE IT'S BEEN BUILT BY\nHUMANS, RATHER THAN DEMONS. YOU WONDER\nWHO THE INMATES OF THIS CORNER OF HELL\nWILL BE.";
+pub const C6TEXT: &str = "CONGRATULATIONS, YOU'VE FOUND THE\nSUPER SECRET LEVEL!  YOU'D BETTER\nBLAZE THROUGH THIS ONE!\n";
+pub const P1TEXT: &str = "You gloat over the steaming carcass of the\nGuardian.  With its death, you've wrested\nthe Accelerator from the stinking claws\nof Hell.  You relax and glance around the\nroom.  Damn!  There was supposed to be at\nleast one working prototype, but you can't\nsee it. The demons must have taken it.\n\nYou must find the prototype, or all your\nstruggles will have been wasted. Keep\nmoving, keep fighting, keep killing.\nOh yes, keep living, too.";
+pub const P2TEXT: &str = "Even the deadly Arch-Vile labyrinth could\nnot stop you, and you've gotten to the\nprototype Accelerator which is soon\nefficiently and permanently deactivated.\n\nYou're good at that kind of thing.";
+pub const P3TEXT: &str = "You've bashed and battered your way into\nthe heart of the devil-hive.  Time for a\nSearch-and-Destroy mission, aimed at the\nGatekeeper, whose foul offspring is\ncascading to Earth.  Yeah, he's bad. But\nyou know who's worse!\n\nGrinning evilly, you check your gear, and\nget ready to give the bastard a little Hell\nof your own making!";
+pub const P4TEXT: &str = "The Gatekeeper's evil face is splattered\nall over the place.  As its tattered corpse\ncollapses, an inverted Gate forms and\nsucks down the shards of the last\nprototype Accelerator, not to mention the\nfew remaining demons.  You're done. Hell\nhas gone back to pounding bad dead folks \ninstead of good live ones.  Remember to\ntell your grandkids to put a rocket\nlauncher in your coffin. If you go to Hell\nwhen you die, you'll need it for some\nfinal cleaning-up ...";
+pub const P5TEXT: &str = "You've found the second-hardest level we\ngot. Hope you have a saved game a level or\ntwo previous.  If not, be prepared to die\naplenty. For master marines only.";
+pub const P6TEXT: &str = "Betcha wondered just what WAS the hardest\nlevel we had ready for ya?  Now you know.\nNo one gets out alive.";
+pub const T1TEXT: &str = "You've fought your way out of the infested\nexperimental labs.   It seems that UAC has\nonce again gulped it down.  With their\nhigh turnover, it must be hard for poor\nold UAC to buy corporate health insurance\nnowadays..\n\nAhead lies the military complex, now\nswarming with diseased horrors hot to get\ntheir teeth into you. With luck, the\ncomplex still has some warlike ordnance\nlaying around.";
+pub const T2TEXT: &str = "You hear the grinding of heavy machinery\nahead.  You sure hope they're not stamping\nout new hellspawn, but you're ready to\nream out a whole herd if you have to.\nThey might be planning a blood feast, but\nyou feel about as mean as two thousand\nmaniacs packed into one mad killer.\n\nYou don't plan to go down easy.";
+pub const T3TEXT: &str = "The vista opening ahead looks real damn\nfamiliar. Smells familiar, too -- like\nfried excrement. You didn't like this\nplace before, and you sure as hell ain't\nplanning to like it now. The more you\nbrood on it, the madder you get.\nHefting your gun, an evil grin trickles\nonto your face. Time to take some names.";
+pub const T4TEXT: &str = "Suddenly, all is silent, from one horizon\nto the other. The agonizing echo of Hell\nfades away, the nightmare sky turns to\nblue, the heaps of monster corpses start \nto evaporate along with the evil stench \nthat filled the air. Jeeze, maybe you've\ndone it. Have you really won?\n\nSomething rumbles in the distance.\nA blue light begins to glow inside the\nruined skull of the demon-spitter.";
+pub const T5TEXT: &str = "What now? Looks totally different. Kind\nof like King Tut's condo. Well,\nwhatever's here can't be any worse\nthan usual. Can it?  Or maybe it's best\nto let sleeping gods lie..";
+pub const T6TEXT: &str = "Time for a vacation. You've burst the\nbowels of hell and by golly you're ready\nfor a break. You mutter to yourself,\nMaybe someone else can kick Hell's ass\nnext time around. Ahead lies a quiet town,\nwith peaceful flowing water, quaint\nbuildings, and presumably no Hellspawn.\n\nAs you step off the transport, you hear\nthe stomp of a cyberdemon's iron shoe.";
+pub const CC_ZOMBIE: &str = "ZOMBIEMAN";
+pub const CC_SHOTGUN: &str = "SHOTGUN GUY";
+pub const CC_HEAVY: &str = "HEAVY WEAPON DUDE";
+pub const CC_IMP: &str = "IMP";
+pub const CC_DEMON: &str = "DEMON";
+pub const CC_LOST: &str = "LOST SOUL";
+pub const CC_CACO: &str = "CACODEMON";
+pub const CC_HELL: &str = "HELL KNIGHT";
+pub const CC_BARON: &str = "BARON OF HELL";
+pub const CC_ARACH: &str = "ARACHNOTRON";
+pub const CC_PAIN: &str = "PAIN ELEMENTAL";
+pub const CC_REVEN: &str = "REVENANT";
+pub const CC_MANCU: &str = "MANCUBUS";
+pub const CC_ARCH: &str = "ARCH-VILE";
+pub const CC_SPIDER: &str = "THE SPIDER MASTERMIND";
+pub const CC_CYBER: &str = "THE CYBERDEMON";
+pub const CC_HERO: &str = "OUR HERO";
+pub const FF_FRAMEMASK: i32 = 0x7fff as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
 #[no_mangle]
 pub static mut finalestage: finalestage_t = F_STAGE_TEXT;
 #[no_mangle]
-pub static mut finalecount: ::core::ffi::c_uint = 0;
-pub const TEXTSPEED: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const TEXTWAIT: ::core::ffi::c_int = 250 as ::core::ffi::c_int;
+pub static mut finalecount: u32 = 0;
+pub const TEXTSPEED: i32 = 3 as i32;
+pub const TEXTWAIT: i32 = 250 as i32;
 static mut textscreens: [textscreen_t; 22] = [
     textscreen_t {
         mission: doom,
-        episode: 1 as ::core::ffi::c_int,
-        level: 8 as ::core::ffi::c_int,
-        background: b"FLOOR4_8\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: E1TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 8 as i32,
+        background: "FLOOR4_8",
+        text: E1TEXT,
     },
     textscreen_t {
         mission: doom,
-        episode: 2 as ::core::ffi::c_int,
-        level: 8 as ::core::ffi::c_int,
-        background: b"SFLR6_1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: E2TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 2 as i32,
+        level: 8 as i32,
+        background: "SFLR6_1",
+        text: E2TEXT,
     },
     textscreen_t {
         mission: doom,
-        episode: 3 as ::core::ffi::c_int,
-        level: 8 as ::core::ffi::c_int,
-        background: b"MFLR8_4\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: E3TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 3 as i32,
+        level: 8 as i32,
+        background: "MFLR8_4",
+        text: E3TEXT,
     },
     textscreen_t {
         mission: doom,
-        episode: 4 as ::core::ffi::c_int,
-        level: 8 as ::core::ffi::c_int,
-        background: b"MFLR8_3\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: E4TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 4 as i32,
+        level: 8 as i32,
+        background: "MFLR8_3",
+        text: E4TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 6 as ::core::ffi::c_int,
-        background: b"SLIME16\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C1TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 6 as i32,
+        background: "SLIME16",
+        text: C1TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 11 as ::core::ffi::c_int,
-        background: b"RROCK14\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C2TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 11 as i32,
+        background: "RROCK14",
+        text: C2TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 20 as ::core::ffi::c_int,
-        background: b"RROCK07\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C3TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 20 as i32,
+        background: "RROCK07",
+        text: C3TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 30 as ::core::ffi::c_int,
-        background: b"RROCK17\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C4TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 30 as i32,
+        background: "RROCK17",
+        text: C4TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 15 as ::core::ffi::c_int,
-        background: b"RROCK13\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C5TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 15 as i32,
+        background: "RROCK13",
+        text: C5TEXT,
     },
     textscreen_t {
         mission: doom2,
-        episode: 1 as ::core::ffi::c_int,
-        level: 31 as ::core::ffi::c_int,
-        background: b"RROCK19\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: C6TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 31 as i32,
+        background: "RROCK19",
+        text: C6TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 6 as ::core::ffi::c_int,
-        background: b"SLIME16\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T1TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 6 as i32,
+        background: "SLIME16",
+        text: T1TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 11 as ::core::ffi::c_int,
-        background: b"RROCK14\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T2TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 11 as i32,
+        background: "RROCK14",
+        text: T2TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 20 as ::core::ffi::c_int,
-        background: b"RROCK07\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T3TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 20 as i32,
+        background: "RROCK07",
+        text: T3TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 30 as ::core::ffi::c_int,
-        background: b"RROCK17\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T4TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 30 as i32,
+        background: "RROCK17",
+        text: T4TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 15 as ::core::ffi::c_int,
-        background: b"RROCK13\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T5TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 15 as i32,
+        background: "RROCK13",
+        text: T5TEXT,
     },
     textscreen_t {
         mission: pack_tnt,
-        episode: 1 as ::core::ffi::c_int,
-        level: 31 as ::core::ffi::c_int,
-        background: b"RROCK19\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: T6TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 31 as i32,
+        background: "RROCK19",
+        text: T6TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 6 as ::core::ffi::c_int,
-        background: b"SLIME16\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P1TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 6 as i32,
+        background: "SLIME16",
+        text: P1TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 11 as ::core::ffi::c_int,
-        background: b"RROCK14\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P2TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 11 as i32,
+        background: "RROCK14",
+        text: P2TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 20 as ::core::ffi::c_int,
-        background: b"RROCK07\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P3TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 20 as i32,
+        background: "RROCK07",
+        text: P3TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 30 as ::core::ffi::c_int,
-        background: b"RROCK17\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P4TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 30 as i32,
+        background: "RROCK17",
+        text: P4TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 15 as ::core::ffi::c_int,
-        background: b"RROCK13\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P5TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 15 as i32,
+        background: "RROCK13",
+        text: P5TEXT,
     },
     textscreen_t {
         mission: pack_plut,
-        episode: 1 as ::core::ffi::c_int,
-        level: 31 as ::core::ffi::c_int,
-        background: b"RROCK19\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        text: P6TEXT.as_ptr() as *mut ::core::ffi::c_char,
+        episode: 1 as i32,
+        level: 31 as i32,
+        background: "RROCK19",
+        text: P6TEXT,
     },
 ];
 #[no_mangle]
-pub static mut finaletext: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
+pub static mut finaletext: &str = "";
 #[no_mangle]
-pub static mut finaleflat: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
-#[no_mangle]
-pub unsafe extern "C" fn F_StartFinale() {
+pub static mut finaleflat: &str = "";
+pub unsafe fn F_StartFinale() {
     let mut i: size_t = 0;
     gameaction = ga_nothing;
     gamestate = GS_FINALE;
-    viewactive = false_0 as boolean;
-    automapactive = false_0 as boolean;
-    if (if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    viewactive = false;
+    automapactive = false;
+    if (if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
     } else {
-        (if gamemission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        (if gamemission as u32
+            == pack_hacx as i32 as u32
         {
-            doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom2 as i32 as u32
         } else {
-            gamemission as ::core::ffi::c_uint
+            gamemission as u32
         })
-    }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+    }) == doom as i32 as u32
     {
-        S_ChangeMusic(mus_victor as ::core::ffi::c_int, true_0);
+        S_ChangeMusic(mus_victor as i32, true_0);
     } else {
-        S_ChangeMusic(mus_read_m as ::core::ffi::c_int, true_0);
+        S_ChangeMusic(mus_read_m as i32, true_0);
     }
     i = 0 as size_t;
     while i
@@ -2328,39 +1827,39 @@ pub unsafe extern "C" fn F_StartFinale() {
     {
         let mut screen: *mut textscreen_t = (&raw mut textscreens as *mut textscreen_t)
             .offset(i as isize) as *mut textscreen_t;
-        if gameversion as ::core::ffi::c_uint
-            == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint
-            && (*screen).mission as ::core::ffi::c_uint
-                == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gameversion as u32
+            == exe_chex as i32 as u32
+            && (*screen).mission as u32
+                == doom as i32 as u32
         {
-            (*screen).level = 5 as ::core::ffi::c_int;
+            (*screen).level = 5 as i32;
         }
-        if (if gamemission as ::core::ffi::c_uint
-            == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+        if (if gamemission as u32
+            == pack_chex as i32 as u32
         {
-            doom as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom as i32 as u32
         } else {
-            (if gamemission as ::core::ffi::c_uint
-                == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+            (if gamemission as u32
+                == pack_hacx as i32 as u32
             {
-                doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+                doom2 as i32 as u32
             } else {
-                gamemission as ::core::ffi::c_uint
+                gamemission as u32
             })
-        }) == (*screen).mission as ::core::ffi::c_uint
-            && ((if gamemission as ::core::ffi::c_uint
-                == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+        }) == (*screen).mission as u32
+            && ((if gamemission as u32
+                == pack_chex as i32 as u32
             {
-                doom as ::core::ffi::c_int as ::core::ffi::c_uint
+                doom as i32 as u32
             } else {
-                (if gamemission as ::core::ffi::c_uint
-                    == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+                (if gamemission as u32
+                    == pack_hacx as i32 as u32
                 {
-                    doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+                    doom2 as i32 as u32
                 } else {
-                    gamemission as ::core::ffi::c_uint
+                    gamemission as u32
                 })
-            }) != doom as ::core::ffi::c_int as ::core::ffi::c_uint
+            }) != doom as i32 as u32
                 || gameepisode == (*screen).episode) && gamemap == (*screen).level
         {
             finaletext = (*screen).text;
@@ -2371,23 +1870,21 @@ pub unsafe extern "C" fn F_StartFinale() {
     finaletext = finaletext;
     finaleflat = finaleflat;
     finalestage = F_STAGE_TEXT;
-    finalecount = 0 as ::core::ffi::c_uint;
+    finalecount = 0 as u32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_Responder(mut event: *mut event_t) -> boolean {
-    if finalestage as ::core::ffi::c_uint
-        == F_STAGE_CAST as ::core::ffi::c_int as ::core::ffi::c_uint
+pub unsafe fn F_Responder(mut event: *mut event_t) -> bool {
+    if finalestage as u32
+        == F_STAGE_CAST as i32 as u32
     {
         return F_CastResponder(event);
     }
-    return false_0 as boolean;
+    return false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_Ticker() {
+pub unsafe fn F_Ticker() {
     let mut i: size_t = 0;
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        && finalecount > 50 as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
+        && finalecount > 50 as u32
     {
         i = 0 as size_t;
         while i < MAXPLAYERS as size_t {
@@ -2397,7 +1894,7 @@ pub unsafe extern "C" fn F_Ticker() {
             i = i.wrapping_add(1);
         }
         if i < MAXPLAYERS as size_t {
-            if gamemap == 30 as ::core::ffi::c_int {
+            if gamemap == 30 as i32 {
                 F_StartCast();
             } else {
                 gameaction = ga_worlddone;
@@ -2405,131 +1902,106 @@ pub unsafe extern "C" fn F_Ticker() {
         }
     }
     finalecount = finalecount.wrapping_add(1);
-    if finalestage as ::core::ffi::c_uint
-        == F_STAGE_CAST as ::core::ffi::c_int as ::core::ffi::c_uint
+    if finalestage as u32
+        == F_STAGE_CAST as i32 as u32
     {
         F_CastTicker();
         return;
     }
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
     {
         return;
     }
-    if finalestage as ::core::ffi::c_uint
-        == F_STAGE_TEXT as ::core::ffi::c_int as ::core::ffi::c_uint
+    if finalestage as u32
+        == F_STAGE_TEXT as i32 as u32
         && finalecount as size_t
-            > strlen(finaletext)
+            > (finaletext.len() as size_t)
                 .wrapping_mul(TEXTSPEED as size_t)
                 .wrapping_add(TEXTWAIT as size_t)
     {
-        finalecount = 0 as ::core::ffi::c_uint;
+        finalecount = 0 as u32;
         finalestage = F_STAGE_ARTSCREEN;
         wipegamestate = 4294967295 as gamestate_t;
-        if gameepisode == 3 as ::core::ffi::c_int {
-            S_StartMusic(mus_bunny as ::core::ffi::c_int);
+        if gameepisode == 3 as i32 {
+            S_StartMusic(mus_bunny as i32);
         }
     }
 }
-pub const HU_FONTSTART: ::core::ffi::c_int = '!' as i32;
-pub const HU_FONTEND: ::core::ffi::c_int = '_' as i32;
-pub const HU_FONTSIZE: ::core::ffi::c_int = HU_FONTEND - HU_FONTSTART
-    + 1 as ::core::ffi::c_int;
+pub const HU_FONTSTART: i32 = '!' as i32;
+pub const HU_FONTEND: i32 = '_' as i32;
+pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART
+    + 1 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn F_TextWrite() {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
-    let mut w: ::core::ffi::c_int = 0;
-    let mut count: ::core::ffi::c_int = 0;
-    let mut ch: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut c: ::core::ffi::c_int = 0;
-    let mut cx: ::core::ffi::c_int = 0;
-    let mut cy: ::core::ffi::c_int = 0;
-    src = W_CacheLumpName(finaleflat, PU_CACHE as ::core::ffi::c_int) as *mut byte;
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
+    let mut w: i32 = 0;
+    let mut count: i32 = 0;
+    let mut c: i32 = 0;
+    let mut cx: i32 = 0;
+    let mut cy: i32 = 0;
+    src = W_CacheLumpName(finaleflat, PU_CACHE as i32) as *mut byte;
     dest = I_VideoBuffer;
-    y = 0 as ::core::ffi::c_int;
+    y = 0 as i32;
     while y < SCREENHEIGHT {
-        x = 0 as ::core::ffi::c_int;
-        while x < SCREENWIDTH / 64 as ::core::ffi::c_int {
+        x = 0 as i32;
+        while x < SCREENWIDTH / 64 as i32 {
             memcpy(
                 dest as *mut ::core::ffi::c_void,
                 src
                     .offset(
-                        ((y & 63 as ::core::ffi::c_int) << 6 as ::core::ffi::c_int)
+                        ((y & 63 as i32) << 6 as i32)
                             as isize,
                     ) as *const ::core::ffi::c_void,
                 64 as size_t,
             );
-            dest = dest.offset(64 as ::core::ffi::c_int as isize);
+            dest = dest.offset(64 as i32 as isize);
             x += 1;
         }
-        if SCREENWIDTH & 63 as ::core::ffi::c_int != 0 {
+        if SCREENWIDTH & 63 as i32 != 0 {
             memcpy(
                 dest as *mut ::core::ffi::c_void,
                 src
                     .offset(
-                        ((y & 63 as ::core::ffi::c_int) << 6 as ::core::ffi::c_int)
+                        ((y & 63 as i32) << 6 as i32)
                             as isize,
                     ) as *const ::core::ffi::c_void,
-                (SCREENWIDTH & 63 as ::core::ffi::c_int) as size_t,
+                (SCREENWIDTH & 63 as i32) as size_t,
             );
-            dest = dest.offset((SCREENWIDTH & 63 as ::core::ffi::c_int) as isize);
+            dest = dest.offset((SCREENWIDTH & 63 as i32) as isize);
         }
         y += 1;
     }
     V_MarkRect(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    cx = 10 as ::core::ffi::c_int;
-    cy = 10 as ::core::ffi::c_int;
-    ch = finaletext;
-    count = (finalecount as ::core::ffi::c_int - 10 as ::core::ffi::c_int) / TEXTSPEED;
-    if count < 0 as ::core::ffi::c_int {
-        count = 0 as ::core::ffi::c_int;
+    cx = 10 as i32;
+    cy = 10 as i32;
+    let mut chars = finaletext.bytes();
+    count = (finalecount as i32 - 10 as i32) / TEXTSPEED;
+    if count < 0 as i32 {
+        count = 0 as i32;
     }
     while count != 0 {
-        let fresh2 = ch;
-        ch = ch.offset(1);
-        c = *fresh2 as ::core::ffi::c_int;
-        if c == 0 {
-            break;
-        }
+        c = match chars.next() {
+            Some(b) => b as i32,
+            None => break,
+        };
         if c == '\n' as i32 {
-            cx = 10 as ::core::ffi::c_int;
-            cy += 11 as ::core::ffi::c_int;
+            cx = 10 as i32;
+            cy += 11 as i32;
         } else {
-            c = ({
-                let mut __res: ::core::ffi::c_int = 0;
-                if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                    if 0 != 0 {
-                        let mut __c: ::core::ffi::c_int = c;
-                        __res = (if __c < -(128 as ::core::ffi::c_int)
-                            || __c > 255 as ::core::ffi::c_int
-                        {
-                            __c as __int32_t
-                        } else {
-                            *(*__ctype_toupper_loc()).offset(__c as isize)
-                        }) as ::core::ffi::c_int;
-                    } else {
-                        __res = toupper(c);
-                    }
-                } else {
-                    __res = *(*__ctype_toupper_loc()).offset(c as isize)
-                        as ::core::ffi::c_int;
-                }
-                __res
-            }) - HU_FONTSTART;
-            if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
-                cx += 4 as ::core::ffi::c_int;
+            c = toupper(c) - HU_FONTSTART;
+            if c < 0 as i32 || c > HU_FONTSIZE {
+                cx += 4 as i32;
             } else {
-                w = (*hu_font[c as usize]).width as ::core::ffi::c_int;
+                w = (*hu_font[c as usize]).width as i32;
                 if cx + w > SCREENWIDTH {
                     break;
                 }
@@ -2543,96 +2015,96 @@ pub unsafe extern "C" fn F_TextWrite() {
 #[no_mangle]
 pub static mut castorder: [castinfo_t; 18] = [
     castinfo_t {
-        name: CC_ZOMBIE.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_ZOMBIE),
         type_0: MT_POSSESSED,
     },
     castinfo_t {
-        name: CC_SHOTGUN.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_SHOTGUN),
         type_0: MT_SHOTGUY,
     },
     castinfo_t {
-        name: CC_HEAVY.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_HEAVY),
         type_0: MT_CHAINGUY,
     },
     castinfo_t {
-        name: CC_IMP.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_IMP),
         type_0: MT_TROOP,
     },
     castinfo_t {
-        name: CC_DEMON.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_DEMON),
         type_0: MT_SERGEANT,
     },
     castinfo_t {
-        name: CC_LOST.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_LOST),
         type_0: MT_SKULL,
     },
     castinfo_t {
-        name: CC_CACO.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_CACO),
         type_0: MT_HEAD,
     },
     castinfo_t {
-        name: CC_HELL.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_HELL),
         type_0: MT_KNIGHT,
     },
     castinfo_t {
-        name: CC_BARON.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_BARON),
         type_0: MT_BRUISER,
     },
     castinfo_t {
-        name: CC_ARACH.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_ARACH),
         type_0: MT_BABY,
     },
     castinfo_t {
-        name: CC_PAIN.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_PAIN),
         type_0: MT_PAIN,
     },
     castinfo_t {
-        name: CC_REVEN.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_REVEN),
         type_0: MT_UNDEAD,
     },
     castinfo_t {
-        name: CC_MANCU.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_MANCU),
         type_0: MT_FATSO,
     },
     castinfo_t {
-        name: CC_ARCH.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_ARCH),
         type_0: MT_VILE,
     },
     castinfo_t {
-        name: CC_SPIDER.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_SPIDER),
         type_0: MT_SPIDER,
     },
     castinfo_t {
-        name: CC_CYBER.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_CYBER),
         type_0: MT_CYBORG,
     },
     castinfo_t {
-        name: CC_HERO.as_ptr() as *mut ::core::ffi::c_char,
+        name: Some(CC_HERO),
         type_0: MT_PLAYER,
     },
     castinfo_t {
-        name: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+        name: None,
         type_0: MT_PLAYER,
     },
 ];
 #[no_mangle]
-pub static mut castnum: ::core::ffi::c_int = 0;
+pub static mut castnum: i32 = 0;
 #[no_mangle]
-pub static mut casttics: ::core::ffi::c_int = 0;
+pub static mut casttics: i32 = 0;
 #[no_mangle]
 pub static mut caststate: *mut state_t = ::core::ptr::null::<state_t>() as *mut state_t;
 #[no_mangle]
-pub static mut castdeath: boolean = 0;
+pub static mut castdeath: bool = false;
 #[no_mangle]
-pub static mut castframes: ::core::ffi::c_int = 0;
+pub static mut castframes: i32 = 0;
 #[no_mangle]
-pub static mut castonmelee: ::core::ffi::c_int = 0;
+pub static mut castonmelee: i32 = 0;
 #[no_mangle]
-pub static mut castattacking: boolean = 0;
+pub static mut castattacking: bool = false;
 #[no_mangle]
 pub unsafe extern "C" fn F_StartCast() {
     wipegamestate = 4294967295 as gamestate_t;
-    castnum = 0 as ::core::ffi::c_int;
+    castnum = 0 as i32;
     caststate = (&raw mut states as *mut state_t)
         .offset(
             (*(&raw mut mobjinfo as *mut mobjinfo_t)
@@ -2643,30 +2115,30 @@ pub unsafe extern "C" fn F_StartCast() {
                 .seestate as isize,
         ) as *mut state_t;
     casttics = (*caststate).tics;
-    castdeath = false_0 as boolean;
+    castdeath = false;
     finalestage = F_STAGE_CAST;
-    castframes = 0 as ::core::ffi::c_int;
-    castonmelee = 0 as ::core::ffi::c_int;
-    castattacking = false_0 as boolean;
-    S_ChangeMusic(mus_evil as ::core::ffi::c_int, true_0);
+    castframes = 0 as i32;
+    castonmelee = 0 as i32;
+    castattacking = false;
+    S_ChangeMusic(mus_evil as i32, true_0);
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_CastTicker() {
     let mut current_block: u64;
-    let mut st: ::core::ffi::c_int = 0;
-    let mut sfx: ::core::ffi::c_int = 0;
+    let mut st: i32 = 0;
+    let mut sfx: i32 = 0;
     casttics -= 1;
-    if casttics > 0 as ::core::ffi::c_int {
+    if casttics > 0 as i32 {
         return;
     }
-    if (*caststate).tics == -(1 as ::core::ffi::c_int)
-        || (*caststate).nextstate as ::core::ffi::c_uint
-            == S_NULL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*caststate).tics == -(1 as i32)
+        || (*caststate).nextstate as u32
+            == S_NULL as i32 as u32
     {
         castnum += 1;
-        castdeath = false_0 as boolean;
-        if castorder[castnum as usize].name.is_null() {
-            castnum = 0 as ::core::ffi::c_int;
+        castdeath = false;
+        if castorder[castnum as usize].name.is_none() {
+            castnum = 0 as i32;
         }
         if mobjinfo[castorder[castnum as usize].type_0 as usize].seesound != 0 {
             S_StartSound(
@@ -2684,72 +2156,72 @@ pub unsafe extern "C" fn F_CastTicker() {
                     ))
                     .seestate as isize,
             ) as *mut state_t;
-        castframes = 0 as ::core::ffi::c_int;
+        castframes = 0 as i32;
         current_block = 1356832168064818221;
     } else if caststate
         == (&raw mut states as *mut state_t)
-            .offset(S_PLAY_ATK1 as ::core::ffi::c_int as isize) as *mut state_t
+            .offset(S_PLAY_ATK1 as i32 as isize) as *mut state_t
     {
         current_block = 13354568087807251156;
     } else {
-        st = (*caststate).nextstate as ::core::ffi::c_int;
+        st = (*caststate).nextstate as i32;
         caststate = (&raw mut states as *mut state_t).offset(st as isize)
             as *mut state_t;
         castframes += 1;
         match st {
             154 => {
-                sfx = sfx_dshtgn as ::core::ffi::c_int;
+                sfx = sfx_dshtgn as i32;
             }
             185 => {
-                sfx = sfx_pistol as ::core::ffi::c_int;
+                sfx = sfx_pistol as i32;
             }
             218 => {
-                sfx = sfx_shotgn as ::core::ffi::c_int;
+                sfx = sfx_shotgn as i32;
             }
             256 => {
-                sfx = sfx_vilatk as ::core::ffi::c_int;
+                sfx = sfx_vilatk as i32;
             }
             336 => {
-                sfx = sfx_skeswg as ::core::ffi::c_int;
+                sfx = sfx_skeswg as i32;
             }
             338 => {
-                sfx = sfx_skepch as ::core::ffi::c_int;
+                sfx = sfx_skepch as i32;
             }
             340 => {
-                sfx = sfx_skeatk as ::core::ffi::c_int;
+                sfx = sfx_skeatk as i32;
             }
             383 | 380 | 377 => {
-                sfx = sfx_firsht as ::core::ffi::c_int;
+                sfx = sfx_firsht as i32;
             }
             417 | 418 | 419 => {
-                sfx = sfx_shotgn as ::core::ffi::c_int;
+                sfx = sfx_shotgn as i32;
             }
             454 => {
-                sfx = sfx_claw as ::core::ffi::c_int;
+                sfx = sfx_claw as i32;
             }
             486 => {
-                sfx = sfx_sgtatk as ::core::ffi::c_int;
+                sfx = sfx_sgtatk as i32;
             }
             538 | 567 | 505 => {
-                sfx = sfx_firsht as ::core::ffi::c_int;
+                sfx = sfx_firsht as i32;
             }
             590 => {
-                sfx = sfx_sklatk as ::core::ffi::c_int;
+                sfx = sfx_sklatk as i32;
             }
             616 | 617 => {
-                sfx = sfx_shotgn as ::core::ffi::c_int;
+                sfx = sfx_shotgn as i32;
             }
             648 => {
-                sfx = sfx_plasma as ::core::ffi::c_int;
+                sfx = sfx_plasma as i32;
             }
             685 | 687 | 689 => {
-                sfx = sfx_rlaunc as ::core::ffi::c_int;
+                sfx = sfx_rlaunc as i32;
             }
             710 => {
-                sfx = sfx_sklatk as ::core::ffi::c_int;
+                sfx = sfx_sklatk as i32;
             }
             _ => {
-                sfx = 0 as ::core::ffi::c_int;
+                sfx = 0 as i32;
             }
         }
         if sfx != 0 {
@@ -2759,8 +2231,8 @@ pub unsafe extern "C" fn F_CastTicker() {
     }
     match current_block {
         1356832168064818221 => {
-            if castframes == 12 as ::core::ffi::c_int {
-                castattacking = true_0 as boolean;
+            if castframes == 12 as i32 {
+                castattacking = true;
                 if castonmelee != 0 {
                     caststate = (&raw mut states as *mut state_t)
                         .offset(
@@ -2784,10 +2256,10 @@ pub unsafe extern "C" fn F_CastTicker() {
                                 .missilestate as isize,
                         ) as *mut state_t;
                 }
-                castonmelee ^= 1 as ::core::ffi::c_int;
+                castonmelee ^= 1 as i32;
                 if caststate
                     == (&raw mut states as *mut state_t)
-                        .offset(S_NULL as ::core::ffi::c_int as isize) as *mut state_t
+                        .offset(S_NULL as i32 as isize) as *mut state_t
                 {
                     if castonmelee != 0 {
                         caststate = (&raw mut states as *mut state_t)
@@ -2814,8 +2286,8 @@ pub unsafe extern "C" fn F_CastTicker() {
                     }
                 }
             }
-            if castattacking != 0 {
-                if castframes == 24 as ::core::ffi::c_int
+            if castattacking {
+                if castframes == 24 as i32
                     || caststate
                         == (&raw mut states as *mut state_t)
                             .offset(
@@ -2840,8 +2312,8 @@ pub unsafe extern "C" fn F_CastTicker() {
     }
     match current_block {
         13354568087807251156 => {
-            castattacking = false_0 as boolean;
-            castframes = 0 as ::core::ffi::c_int;
+            castattacking = false;
+            castframes = 0 as i32;
             caststate = (&raw mut states as *mut state_t)
                 .offset(
                     (*(&raw mut mobjinfo as *mut mobjinfo_t)
@@ -2856,21 +2328,21 @@ pub unsafe extern "C" fn F_CastTicker() {
         _ => {}
     }
     casttics = (*caststate).tics;
-    if casttics == -(1 as ::core::ffi::c_int) {
-        casttics = 15 as ::core::ffi::c_int;
+    if casttics == -(1 as i32) {
+        casttics = 15 as i32;
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
-    if (*ev).type_0 as ::core::ffi::c_uint
-        != ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> bool {
+    if (*ev).type_0 as u32
+        != ev_keydown as i32 as u32
     {
-        return false_0 as boolean;
+        return false;
     }
-    if castdeath != 0 {
-        return true_0 as boolean;
+    if castdeath {
+        return true;
     }
-    castdeath = true_0 as boolean;
+    castdeath = true;
     caststate = (&raw mut states as *mut state_t)
         .offset(
             (*(&raw mut mobjinfo as *mut mobjinfo_t)
@@ -2881,97 +2353,38 @@ pub unsafe extern "C" fn F_CastResponder(mut ev: *mut event_t) -> boolean {
                 .deathstate as isize,
         ) as *mut state_t;
     casttics = (*caststate).tics;
-    castframes = 0 as ::core::ffi::c_int;
-    castattacking = false_0 as boolean;
+    castframes = 0 as i32;
+    castattacking = false;
     if mobjinfo[castorder[castnum as usize].type_0 as usize].deathsound != 0 {
         S_StartSound(
             NULL,
             mobjinfo[castorder[castnum as usize].type_0 as usize].deathsound,
         );
     }
-    return true_0 as boolean;
+    return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_CastPrint(mut text: *mut ::core::ffi::c_char) {
-    let mut ch: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut c: ::core::ffi::c_int = 0;
-    let mut cx: ::core::ffi::c_int = 0;
-    let mut w: ::core::ffi::c_int = 0;
-    let mut width: ::core::ffi::c_int = 0;
-    ch = text;
-    width = 0 as ::core::ffi::c_int;
-    while !ch.is_null() {
-        let fresh0 = ch;
-        ch = ch.offset(1);
-        c = *fresh0 as ::core::ffi::c_int;
-        if c == 0 {
-            break;
-        }
-        c = ({
-            let mut __res: ::core::ffi::c_int = 0;
-            if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                if 0 != 0 {
-                    let mut __c: ::core::ffi::c_int = c;
-                    __res = (if __c < -(128 as ::core::ffi::c_int)
-                        || __c > 255 as ::core::ffi::c_int
-                    {
-                        __c as __int32_t
-                    } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
-                    }) as ::core::ffi::c_int;
-                } else {
-                    __res = toupper(c);
-                }
-            } else {
-                __res = *(*__ctype_toupper_loc()).offset(c as isize)
-                    as ::core::ffi::c_int;
-            }
-            __res
-        }) - HU_FONTSTART;
-        if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
-            width += 4 as ::core::ffi::c_int;
+pub unsafe fn F_CastPrint(text: &str) {
+    let mut c: i32 = 0;
+    let mut cx: i32 = 0;
+    let mut w: i32 = 0;
+    let mut width: i32 = 0;
+    for b in text.bytes() {
+        c = toupper(b as i32) - HU_FONTSTART;
+        if c < 0 as i32 || c > HU_FONTSIZE {
+            width += 4 as i32;
         } else {
-            w = (*hu_font[c as usize]).width as ::core::ffi::c_int;
+            w = (*hu_font[c as usize]).width as i32;
             width += w;
         }
     }
-    cx = 160 as ::core::ffi::c_int - width / 2 as ::core::ffi::c_int;
-    ch = text;
-    while !ch.is_null() {
-        let fresh1 = ch;
-        ch = ch.offset(1);
-        c = *fresh1 as ::core::ffi::c_int;
-        if c == 0 {
-            break;
-        }
-        c = ({
-            let mut __res: ::core::ffi::c_int = 0;
-            if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                if 0 != 0 {
-                    let mut __c: ::core::ffi::c_int = c;
-                    __res = (if __c < -(128 as ::core::ffi::c_int)
-                        || __c > 255 as ::core::ffi::c_int
-                    {
-                        __c as __int32_t
-                    } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
-                    }) as ::core::ffi::c_int;
-                } else {
-                    __res = toupper(c);
-                }
-            } else {
-                __res = *(*__ctype_toupper_loc()).offset(c as isize)
-                    as ::core::ffi::c_int;
-            }
-            __res
-        }) - HU_FONTSTART;
-        if c < 0 as ::core::ffi::c_int || c > HU_FONTSIZE {
-            cx += 4 as ::core::ffi::c_int;
+    cx = 160 as i32 - width / 2 as i32;
+    for b in text.bytes() {
+        c = toupper(b as i32) - HU_FONTSTART;
+        if c < 0 as i32 || c > HU_FONTSIZE {
+            cx += 4 as i32;
         } else {
-            w = (*hu_font[c as usize]).width as ::core::ffi::c_int;
-            V_DrawPatch(cx, 180 as ::core::ffi::c_int, hu_font[c as usize]);
+            w = (*hu_font[c as usize]).width as i32;
+            V_DrawPatch(cx, 180 as i32, hu_font[c as usize]);
             cx += w;
         }
     }
@@ -2980,52 +2393,53 @@ pub unsafe extern "C" fn F_CastPrint(mut text: *mut ::core::ffi::c_char) {
 pub unsafe extern "C" fn F_CastDrawer() {
     let mut sprdef: *mut spritedef_t = ::core::ptr::null_mut::<spritedef_t>();
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
-    let mut lump: ::core::ffi::c_int = 0;
+    let mut lump: i32 = 0;
     let mut flip: boolean = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     V_DrawPatch(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"BOSSBACK\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
+        W_CacheLumpName("BOSSBACK",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
-    F_CastPrint(castorder[castnum as usize].name);
+    F_CastPrint(castorder[castnum as usize].name.unwrap());
     sprdef = sprites.offset((*caststate).sprite as isize) as *mut spritedef_t;
     sprframe = (*sprdef)
         .spriteframes
         .offset(((*caststate).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
-    lump = (*sprframe).lump[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
-    flip = (*sprframe).flip[0 as ::core::ffi::c_int as usize] as boolean;
-    patch = W_CacheLumpNum(lump + firstspritelump, PU_CACHE as ::core::ffi::c_int)
+    lump = (*sprframe).lump[0 as i32 as usize] as i32;
+    flip = (*sprframe).flip[0 as i32 as usize] as boolean;
+    patch = W_CacheLumpNum(lump + firstspritelump, PU_CACHE as i32)
         as *mut patch_t;
     if flip != 0 {
-        V_DrawPatchFlipped(160 as ::core::ffi::c_int, 170 as ::core::ffi::c_int, patch);
+        V_DrawPatchFlipped(160 as i32, 170 as i32, patch);
     } else {
-        V_DrawPatch(160 as ::core::ffi::c_int, 170 as ::core::ffi::c_int, patch);
+        V_DrawPatch(160 as i32, 170 as i32, patch);
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_DrawPatchCol(
-    mut x: ::core::ffi::c_int,
+    mut x: i32,
     mut patch: *mut patch_t,
-    mut col: ::core::ffi::c_int,
+    mut col: i32,
 ) {
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
     let mut source: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut desttop: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut count: ::core::ffi::c_int = 0;
-    column = (patch as *mut byte).offset((*patch).columnofs[col as usize] as isize)
-        as *mut column_t;
+    let mut count: i32 = 0;
+    column = (patch as *mut byte)
+        .offset(
+            *(&raw const (*patch).columnofs as *const i32)
+                .offset(col as isize) as isize,
+        ) as *mut column_t;
     desttop = I_VideoBuffer.offset(x as isize);
-    while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
-        source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
+    while (*column).topdelta as i32 != 0xff as i32 {
+        source = (column as *mut byte).offset(3 as i32 as isize);
         dest = desttop
-            .offset(((*column).topdelta as ::core::ffi::c_int * SCREENWIDTH) as isize);
-        count = (*column).length as ::core::ffi::c_int;
+            .offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
+        count = (*column).length as i32;
         loop {
             let fresh3 = count;
             count = count - 1;
@@ -3038,79 +2452,73 @@ pub unsafe extern "C" fn F_DrawPatchCol(
             dest = dest.offset(SCREENWIDTH as isize);
         }
         column = (column as *mut byte)
-            .offset((*column).length as ::core::ffi::c_int as isize)
-            .offset(4 as ::core::ffi::c_int as isize) as *mut column_t;
+            .offset((*column).length as i32 as isize)
+            .offset(4 as i32 as isize) as *mut column_t;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn F_BunnyScroll() {
-    let mut scrolled: ::core::ffi::c_int = 0;
-    let mut x: ::core::ffi::c_int = 0;
+    let mut scrolled: i32 = 0;
+    let mut x: i32 = 0;
     let mut p1: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     let mut p2: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     let mut name: [::core::ffi::c_char; 10] = [0; 10];
-    let mut stage: ::core::ffi::c_int = 0;
-    static mut laststage: ::core::ffi::c_int = 0;
-    p1 = W_CacheLumpName(
-        b"PFUB2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        PU_LEVEL as ::core::ffi::c_int,
+    let mut stage: i32 = 0;
+    static mut laststage: i32 = 0;
+    p1 = W_CacheLumpName("PFUB2",
+        PU_LEVEL as i32,
     ) as *mut patch_t;
-    p2 = W_CacheLumpName(
-        b"PFUB1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        PU_LEVEL as ::core::ffi::c_int,
+    p2 = W_CacheLumpName("PFUB1",
+        PU_LEVEL as i32,
     ) as *mut patch_t;
     V_MarkRect(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    scrolled = 320 as ::core::ffi::c_int
-        - (finalecount as ::core::ffi::c_int - 230 as ::core::ffi::c_int)
-            / 2 as ::core::ffi::c_int;
-    if scrolled > 320 as ::core::ffi::c_int {
-        scrolled = 320 as ::core::ffi::c_int;
+    scrolled = 320 as i32
+        - (finalecount as i32 - 230 as i32)
+            / 2 as i32;
+    if scrolled > 320 as i32 {
+        scrolled = 320 as i32;
     }
-    if scrolled < 0 as ::core::ffi::c_int {
-        scrolled = 0 as ::core::ffi::c_int;
+    if scrolled < 0 as i32 {
+        scrolled = 0 as i32;
     }
-    x = 0 as ::core::ffi::c_int;
+    x = 0 as i32;
     while x < SCREENWIDTH {
-        if x + scrolled < 320 as ::core::ffi::c_int {
+        if x + scrolled < 320 as i32 {
             F_DrawPatchCol(x, p1, x + scrolled);
         } else {
-            F_DrawPatchCol(x, p2, x + scrolled - 320 as ::core::ffi::c_int);
+            F_DrawPatchCol(x, p2, x + scrolled - 320 as i32);
         }
         x += 1;
     }
-    if finalecount < 1130 as ::core::ffi::c_uint {
+    if finalecount < 1130 as u32 {
         return;
     }
-    if finalecount < 1180 as ::core::ffi::c_uint {
+    if finalecount < 1180 as u32 {
         V_DrawPatch(
-            (SCREENWIDTH - 13 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
-                / 2 as ::core::ffi::c_int,
-            (SCREENHEIGHT - 8 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
-                / 2 as ::core::ffi::c_int,
-            W_CacheLumpName(
-                b"END0\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                PU_CACHE as ::core::ffi::c_int,
+            (SCREENWIDTH - 13 as i32 * 8 as i32)
+                / 2 as i32,
+            (SCREENHEIGHT - 8 as i32 * 8 as i32)
+                / 2 as i32,
+            W_CacheLumpName("END0",
+                PU_CACHE as i32,
             ) as *mut patch_t,
         );
-        laststage = 0 as ::core::ffi::c_int;
+        laststage = 0 as i32;
         return;
     }
     stage = finalecount
-        .wrapping_sub(1180 as ::core::ffi::c_uint)
-        .wrapping_div(5 as ::core::ffi::c_uint) as ::core::ffi::c_int;
-    if stage > 6 as ::core::ffi::c_int {
-        stage = 6 as ::core::ffi::c_int;
+        .wrapping_sub(1180 as u32)
+        .wrapping_div(5 as u32) as i32;
+    if stage > 6 as i32 {
+        stage = 6 as i32;
     }
     if stage > laststage {
-        S_StartSound(NULL, sfx_pistol as ::core::ffi::c_int);
+        S_StartSound(NULL, sfx_pistol as i32);
         laststage = stage;
     }
     snprintf(
@@ -3120,13 +2528,13 @@ pub unsafe extern "C" fn F_BunnyScroll() {
         stage,
     );
     V_DrawPatch(
-        (SCREENWIDTH - 13 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
-            / 2 as ::core::ffi::c_int,
-        (SCREENHEIGHT - 8 as ::core::ffi::c_int * 8 as ::core::ffi::c_int)
-            / 2 as ::core::ffi::c_int,
+        (SCREENWIDTH - 13 as i32 * 8 as i32)
+            / 2 as i32,
+        (SCREENHEIGHT - 8 as i32 * 8 as i32)
+            / 2 as i32,
         W_CacheLumpName(
-            &raw mut name as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+            &wad_name8_to_string(&raw mut name as *mut ::core::ffi::c_char),
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
@@ -3134,13 +2542,13 @@ unsafe extern "C" fn F_ArtScreenDrawer() {
     let mut lumpname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    if gameepisode == 3 as ::core::ffi::c_int {
+    if gameepisode == 3 as i32 {
         F_BunnyScroll();
     } else {
         match gameepisode {
             1 => {
-                if gamemode as ::core::ffi::c_uint
-                    == retail as ::core::ffi::c_int as ::core::ffi::c_uint
+                if gamemode as u32
+                    == retail as i32 as u32
                 {
                     lumpname = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
@@ -3161,15 +2569,17 @@ unsafe extern "C" fn F_ArtScreenDrawer() {
         }
         lumpname = lumpname;
         V_DrawPatch(
-            0 as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
-            W_CacheLumpName(lumpname, PU_CACHE as ::core::ffi::c_int) as *mut patch_t,
+            0 as i32,
+            0 as i32,
+            W_CacheLumpName(
+                &wad_name8_to_string(lumpname),
+                PU_CACHE as i32,
+            ) as *mut patch_t,
         );
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn F_Drawer() {
-    match finalestage as ::core::ffi::c_uint {
+pub unsafe fn F_Drawer() {
+    match finalestage as u32 {
         2 => {
             F_CastDrawer();
         }

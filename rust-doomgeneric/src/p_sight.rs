@@ -1,22 +1,25 @@
-extern "C" {
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut segs: *mut seg_t;
-    static mut numsectors: ::core::ffi::c_int;
-    static mut sectors: *mut sector_t;
-    static mut numsubsectors: ::core::ffi::c_int;
-    static mut subsectors: *mut subsector_t;
-    static mut numnodes: ::core::ffi::c_int;
-    static mut nodes: *mut node_t;
-    static mut validcount: ::core::ffi::c_int;
-    static mut rejectmatrix: *mut byte;
-}
+use crate::src::r_defs::{node_t, seg_t};
+use crate::src::p_mobj::{sector_t, vertex_t, line_t, subsector_t, actionf_t};
+use crate::src::p_mobj::{mobj_t};
+use crate::src::i_system::I_Error;
+use crate::src::p_setup::rejectmatrix;
+use crate::src::p_setup::segs;
+use crate::src::p_setup::numsubsectors;
+use crate::src::p_setup::numnodes;
+use crate::src::p_setup::subsectors;
+use crate::src::p_setup::nodes;
+use crate::src::r_main::validcount;
+use crate::src::p_setup::numsectors;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::p_setup::sectors;
+use crate::src::m_fixed::FixedMul;
+
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -28,53 +31,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -214,7 +179,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1183,18 +1148,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1335,222 +1289,6 @@ pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-pub type line_t = line_s;
-pub type subsector_t = subsector_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct seg_t {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub offset: fixed_t,
-    pub angle: angle_t,
-    pub sidedef: *mut side_t,
-    pub linedef: *mut line_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct node_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub bbox: [[fixed_t; 4]; 2],
-    pub children: [::core::ffi::c_ushort; 2],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
 pub struct divline_t {
     pub x: fixed_t,
     pub y: fixed_t,
@@ -1560,16 +1298,14 @@ pub struct divline_t {
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const ML_TWOSIDED: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const NF_SUBSECTOR: ::core::ffi::c_int = 0x8000 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const ML_TWOSIDED: i32 = 4 as i32;
+pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
 #[no_mangle]
 pub static mut sightzstart: fixed_t = 0;
-#[no_mangle]
 pub static mut topslope: fixed_t = 0;
-#[no_mangle]
 pub static mut bottomslope: fixed_t = 0;
 #[no_mangle]
 pub static mut strace: divline_t = divline_t {
@@ -1583,46 +1319,46 @@ pub static mut t2x: fixed_t = 0;
 #[no_mangle]
 pub static mut t2y: fixed_t = 0;
 #[no_mangle]
-pub static mut sightcounts: [::core::ffi::c_int; 2] = [0; 2];
+pub static mut sightcounts: [i32; 2] = [0; 2];
 #[no_mangle]
 pub unsafe extern "C" fn P_DivlineSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut node: *mut divline_t,
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut left: fixed_t = 0;
     let mut right: fixed_t = 0;
     if (*node).dx == 0 {
         if x == (*node).x {
-            return 2 as ::core::ffi::c_int;
+            return 2 as i32;
         }
         if x <= (*node).x {
-            return ((*node).dy > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return ((*node).dy > 0 as i32) as i32;
         }
-        return ((*node).dy < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return ((*node).dy < 0 as i32) as i32;
     }
     if (*node).dy == 0 {
         if x == (*node).y {
-            return 2 as ::core::ffi::c_int;
+            return 2 as i32;
         }
         if y <= (*node).y {
-            return ((*node).dx < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return ((*node).dx < 0 as i32) as i32;
         }
-        return ((*node).dx > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return ((*node).dx > 0 as i32) as i32;
     }
     dx = x - (*node).x;
     dy = y - (*node).y;
     left = ((*node).dy >> FRACBITS) * (dx >> FRACBITS);
     right = (dy >> FRACBITS) * ((*node).dx >> FRACBITS);
     if right < left {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
     if left == right {
-        return 2 as ::core::ffi::c_int;
+        return 2 as i32;
     }
-    return 1 as ::core::ffi::c_int;
+    return 1 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_InterceptVector2(
@@ -1632,23 +1368,23 @@ pub unsafe extern "C" fn P_InterceptVector2(
     let mut frac: fixed_t = 0;
     let mut num: fixed_t = 0;
     let mut den: fixed_t = 0;
-    den = FixedMul((*v1).dy >> 8 as ::core::ffi::c_int, (*v2).dx)
-        - FixedMul((*v1).dx >> 8 as ::core::ffi::c_int, (*v2).dy);
-    if den == 0 as ::core::ffi::c_int {
+    den = FixedMul((*v1).dy >> 8 as i32, (*v2).dx)
+        - FixedMul((*v1).dx >> 8 as i32, (*v2).dy);
+    if den == 0 as i32 {
         return 0 as fixed_t;
     }
-    num = FixedMul((*v1).x - (*v2).x >> 8 as ::core::ffi::c_int, (*v1).dy)
-        + FixedMul((*v2).y - (*v1).y >> 8 as ::core::ffi::c_int, (*v1).dx);
+    num = FixedMul((*v1).x - (*v2).x >> 8 as i32, (*v1).dy)
+        + FixedMul((*v2).y - (*v1).y >> 8 as i32, (*v1).dx);
     frac = FixedDiv(num, den);
     return frac;
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_CrossSubsector(mut num: ::core::ffi::c_int) -> boolean {
+pub unsafe extern "C" fn P_CrossSubsector(mut num: i32) -> bool {
     let mut seg: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    let mut s1: ::core::ffi::c_int = 0;
-    let mut s2: ::core::ffi::c_int = 0;
-    let mut count: ::core::ffi::c_int = 0;
+    let mut s1: i32 = 0;
+    let mut s2: i32 = 0;
+    let mut count: i32 = 0;
     let mut sub: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
     let mut front: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut back: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -1665,15 +1401,10 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: ::core::ffi::c_int) -> boolea
     let mut frac: fixed_t = 0;
     let mut slope: fixed_t = 0;
     if num >= numsubsectors {
-        I_Error(
-            b"P_CrossSubsector: ss %i with numss = %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            num,
-            numsubsectors,
-        );
+        I_Error(&format!("P_CrossSubsector: ss {} with numss = {}", num, numsubsectors));
     }
     sub = subsectors.offset(num as isize) as *mut subsector_t;
-    count = (*sub).numlines as ::core::ffi::c_int;
+    count = (*sub).numlines as i32;
     seg = segs.offset((*sub).firstline as isize) as *mut seg_t;
     while count != 0 {
         line = (*seg).linedef;
@@ -1692,10 +1423,10 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: ::core::ffi::c_int) -> boolea
                 s2 = P_DivlineSide(t2x, t2y, &raw mut divl);
                 if !(s1 == s2) {
                     if (*line).backsector.is_null() {
-                        return false_0 as boolean;
+                        return false;
                     }
-                    if (*line).flags as ::core::ffi::c_int & ML_TWOSIDED == 0 {
-                        return false_0 as boolean;
+                    if (*line).flags as i32 & ML_TWOSIDED == 0 {
+                        return false;
                     }
                     front = (*seg).frontsector;
                     back = (*seg).backsector;
@@ -1713,7 +1444,7 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: ::core::ffi::c_int) -> boolea
                             openbottom = (*back).floorheight;
                         }
                         if openbottom >= opentop {
-                            return false_0 as boolean;
+                            return false;
                         }
                         frac = P_InterceptVector2(&raw mut strace, &raw mut divl);
                         if (*front).floorheight != (*back).floorheight {
@@ -1729,7 +1460,7 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: ::core::ffi::c_int) -> boolea
                             }
                         }
                         if topslope <= bottomslope {
-                            return false_0 as boolean;
+                            return false;
                         }
                     }
                 }
@@ -1738,58 +1469,57 @@ pub unsafe extern "C" fn P_CrossSubsector(mut num: ::core::ffi::c_int) -> boolea
         seg = seg.offset(1);
         count -= 1;
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_CrossBSPNode(mut bspnum: ::core::ffi::c_int) -> boolean {
+pub unsafe extern "C" fn P_CrossBSPNode(mut bspnum: i32) -> bool {
     let mut bsp: *mut node_t = ::core::ptr::null_mut::<node_t>();
-    let mut side: ::core::ffi::c_int = 0;
+    let mut side: i32 = 0;
     if bspnum & NF_SUBSECTOR != 0 {
-        if bspnum == -(1 as ::core::ffi::c_int) {
-            return P_CrossSubsector(0 as ::core::ffi::c_int)
+        if bspnum == -(1 as i32) {
+            return P_CrossSubsector(0 as i32)
         } else {
             return P_CrossSubsector(bspnum & !NF_SUBSECTOR)
         }
     }
     bsp = nodes.offset(bspnum as isize) as *mut node_t;
     side = P_DivlineSide(strace.x, strace.y, bsp as *mut divline_t);
-    if side == 2 as ::core::ffi::c_int {
-        side = 0 as ::core::ffi::c_int;
+    if side == 2 as i32 {
+        side = 0 as i32;
     }
-    if P_CrossBSPNode((*bsp).children[side as usize] as ::core::ffi::c_int) == 0 {
-        return false_0 as boolean;
+    if !P_CrossBSPNode((*bsp).children[side as usize] as i32) {
+        return false;
     }
     if side == P_DivlineSide(t2x, t2y, bsp as *mut divline_t) {
-        return true_0 as boolean;
+        return true;
     }
     return P_CrossBSPNode(
-        (*bsp).children[(side ^ 1 as ::core::ffi::c_int) as usize] as ::core::ffi::c_int,
+        (*bsp).children[(side ^ 1 as i32) as usize] as i32,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CheckSight(
+pub unsafe fn P_CheckSight(
     mut t1: *mut mobj_t,
     mut t2: *mut mobj_t,
-) -> boolean {
-    let mut s1: ::core::ffi::c_int = 0;
-    let mut s2: ::core::ffi::c_int = 0;
-    let mut pnum: ::core::ffi::c_int = 0;
-    let mut bytenum: ::core::ffi::c_int = 0;
-    let mut bitnum: ::core::ffi::c_int = 0;
-    s1 = (*(*t1).subsector).sector.offset_from(sectors) as ::core::ffi::c_long
-        as ::core::ffi::c_int;
-    s2 = (*(*t2).subsector).sector.offset_from(sectors) as ::core::ffi::c_long
-        as ::core::ffi::c_int;
+) -> bool {
+    let mut s1: i32 = 0;
+    let mut s2: i32 = 0;
+    let mut pnum: i32 = 0;
+    let mut bytenum: i32 = 0;
+    let mut bitnum: i32 = 0;
+    s1 = (*(*t1).subsector).sector.offset_from(sectors) as i64
+        as i32;
+    s2 = (*(*t2).subsector).sector.offset_from(sectors) as i64
+        as i32;
     pnum = s1 * numsectors + s2;
-    bytenum = pnum >> 3 as ::core::ffi::c_int;
-    bitnum = (1 as ::core::ffi::c_int) << (pnum & 7 as ::core::ffi::c_int);
-    if *rejectmatrix.offset(bytenum as isize) as ::core::ffi::c_int & bitnum != 0 {
-        sightcounts[0 as ::core::ffi::c_int as usize] += 1;
-        return false_0 as boolean;
+    bytenum = pnum >> 3 as i32;
+    bitnum = (1 as i32) << (pnum & 7 as i32);
+    if *rejectmatrix.offset(bytenum as isize) as i32 & bitnum != 0 {
+        sightcounts[0 as i32 as usize] += 1;
+        return false;
     }
-    sightcounts[1 as ::core::ffi::c_int as usize] += 1;
+    sightcounts[1 as i32 as usize] += 1;
     validcount += 1;
-    sightzstart = (*t1).z + (*t1).height - ((*t1).height >> 2 as ::core::ffi::c_int);
+    sightzstart = (*t1).z + (*t1).height - ((*t1).height >> 2 as i32);
     topslope = (*t2).z + (*t2).height - sightzstart;
     bottomslope = (*t2).z - sightzstart;
     strace.x = (*t1).x;
@@ -1798,5 +1528,5 @@ pub unsafe extern "C" fn P_CheckSight(
     t2y = (*t2).y;
     strace.dx = (*t2).x - (*t1).x;
     strace.dy = (*t2).y - (*t1).y;
-    return P_CrossBSPNode(numnodes - 1 as ::core::ffi::c_int);
+    return P_CrossBSPNode(numnodes - 1 as i32);
 }

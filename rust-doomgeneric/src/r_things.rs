@@ -1,10 +1,65 @@
+use crate::src::r_data::column_t;
+use crate::src::r_defs::{drawseg_t, spritedef_t, spriteframe_t};
+use crate::src::hu_lib::patch_t;
+use crate::src::p_mobj::{sector_t, actionf_t};
+use crate::src::p_mobj::{mobj_t, pspdef_t};
+use crate::src::i_system::I_Error;
+use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::r_data::spritewidth;
+use crate::src::r_data::spriteoffset;
+use crate::src::r_data::spritetopoffset;
+use crate::src::r_data::lastspritelump;
+use crate::src::r_main::viewplayer;
+use crate::src::r_main::viewcos;
+use crate::src::r_main::viewsin;
+use crate::src::r_main::projection;
+use crate::src::r_main::transcolfunc;
+use crate::src::r_main::basecolfunc;
+use crate::src::r_main::fuzzcolfunc;
+use crate::src::r_main::R_PointOnSegSide;
+use crate::src::r_segs::R_RenderMaskedSegRange;
+use crate::src::r_draw::translationtables;
+use crate::src::r_draw::dc_translation;
+use crate::src::doomstat::modifiedgame;
+use crate::src::r_data::firstspritelump;
+use crate::src::r_main::viewangleoffset;
+use crate::src::r_main::centerxfrac;
+use crate::src::r_main::centeryfrac;
+use crate::src::r_main::detailshift;
+use crate::src::r_main::scalelight;
+use crate::src::r_bsp::drawsegs;
+use crate::src::r_bsp::ds_p;
+use crate::src::r_draw::dc_colormap;
+use crate::src::r_draw::dc_x;
+use crate::src::r_draw::dc_yl;
+use crate::src::r_draw::dc_yh;
+use crate::src::r_draw::dc_iscale;
+use crate::src::r_draw::dc_texturemid;
+use crate::src::r_draw::dc_source;
+use crate::src::r_main::fixedcolormap;
+use crate::src::r_main::viewx;
+use crate::src::r_main::viewy;
+use crate::src::r_main::extralight;
+use crate::src::r_main::colfunc;
+use crate::src::r_data::colormaps;
+use crate::src::r_main::viewz;
+use crate::src::w_wad::lumpinfo;
+use crate::src::r_main::validcount;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_draw::viewheight;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::m_fixed::FixedMul;
+use crate::src::r_main::R_PointToAngle;
+use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::z_zone::Z_Malloc;
+
 extern "C" {
-    fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    fn abs(__x: i32) -> i32;
     fn strncasecmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
@@ -12,76 +67,16 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
-    static mut lumpinfo: *mut lumpinfo_t;
-    fn W_GetNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn W_CacheLumpNum(
-        lump: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut spritewidth: *mut fixed_t;
-    static mut spriteoffset: *mut fixed_t;
-    static mut spritetopoffset: *mut fixed_t;
-    static mut colormaps: *mut lighttable_t;
-    static mut viewwidth: ::core::ffi::c_int;
-    static mut viewheight: ::core::ffi::c_int;
-    static mut firstspritelump: ::core::ffi::c_int;
-    static mut lastspritelump: ::core::ffi::c_int;
-    static mut viewx: fixed_t;
-    static mut viewy: fixed_t;
-    static mut viewz: fixed_t;
-    static mut viewplayer: *mut player_t;
-    static mut viewcos: fixed_t;
-    static mut viewsin: fixed_t;
-    static mut centerxfrac: fixed_t;
-    static mut centeryfrac: fixed_t;
-    static mut projection: fixed_t;
-    static mut validcount: ::core::ffi::c_int;
-    static mut scalelight: [[*mut lighttable_t; 48]; 16];
-    static mut extralight: ::core::ffi::c_int;
-    static mut fixedcolormap: *mut lighttable_t;
-    static mut detailshift: ::core::ffi::c_int;
-    static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
-    static mut transcolfunc: Option<unsafe extern "C" fn() -> ()>;
-    static mut basecolfunc: Option<unsafe extern "C" fn() -> ()>;
-    static mut fuzzcolfunc: Option<unsafe extern "C" fn() -> ()>;
-    fn R_PointOnSegSide(x: fixed_t, y: fixed_t, line: *mut seg_t) -> ::core::ffi::c_int;
-    fn R_PointToAngle(x: fixed_t, y: fixed_t) -> angle_t;
-    static mut drawsegs: [drawseg_t; 256];
-    static mut ds_p: *mut drawseg_t;
-    fn R_RenderMaskedSegRange(
-        ds: *mut drawseg_t,
-        x1: ::core::ffi::c_int,
-        x2: ::core::ffi::c_int,
-    );
-    static mut dc_colormap: *mut lighttable_t;
-    static mut dc_x: ::core::ffi::c_int;
-    static mut dc_yl: ::core::ffi::c_int;
-    static mut dc_yh: ::core::ffi::c_int;
-    static mut dc_iscale: fixed_t;
-    static mut dc_texturemid: fixed_t;
-    static mut dc_source: *mut byte;
-    static mut translationtables: *mut byte;
-    static mut dc_translation: *mut byte;
-    static mut modifiedgame: boolean;
-    static mut viewangleoffset: ::core::ffi::c_int;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -93,7 +88,7 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const NUMPOWERS: C2RustUnnamed = 6;
 pub const pw_infrared: C2RustUnnamed = 5;
 pub const pw_allmap: C2RustUnnamed = 4;
@@ -101,21 +96,7 @@ pub const pw_ironfeet: C2RustUnnamed = 3;
 pub const pw_invisibility: C2RustUnnamed = 2;
 pub const pw_strength: C2RustUnnamed = 1;
 pub const pw_invulnerability: C2RustUnnamed = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed_0 = 9;
 pub const PU_CACHE: C2RustUnnamed_0 = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed_0 = 7;
@@ -125,74 +106,15 @@ pub const PU_FREE: C2RustUnnamed_0 = 4;
 pub const PU_MUSIC: C2RustUnnamed_0 = 3;
 pub const PU_SOUND: C2RustUnnamed_0 = 2;
 pub const PU_STATIC: C2RustUnnamed_0 = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _wad_file_s {
-    pub file_class: *mut wad_file_class_t,
-    pub mapped: *mut byte,
-    pub length: ::core::ffi::c_uint,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct wad_file_class_t {
-    pub OpenFile: Option<
-        unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-    >,
-    pub CloseFile: Option<unsafe extern "C" fn(*mut wad_file_t) -> ()>,
-    pub Read: Option<
-        unsafe extern "C" fn(
-            *mut wad_file_t,
-            ::core::ffi::c_uint,
-            *mut ::core::ffi::c_void,
-            size_t,
-        ) -> size_t,
-    >,
-}
-pub type wad_file_t = _wad_file_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lumpinfo_s {
-    pub name: [::core::ffi::c_char; 8],
-    pub wad_file: *mut wad_file_t,
-    pub position: ::core::ffi::c_int,
-    pub size: ::core::ffi::c_int,
-    pub cache: *mut ::core::ffi::c_void,
-    pub next: *mut lumpinfo_t,
-}
-pub type lumpinfo_t = lumpinfo_s;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -332,7 +254,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1301,18 +1223,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1451,34 +1362,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const MF_TRANSSHIFT: C2RustUnnamed_1 = 26;
 pub const MF_TRANSLATION: C2RustUnnamed_1 = 201326592;
 pub const MF_NOTDMATCH: C2RustUnnamed_1 = 33554432;
@@ -1507,225 +1391,14 @@ pub const MF_NOSECTOR: C2RustUnnamed_1 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_1 = 4;
 pub const MF_SOLID: C2RustUnnamed_1 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_1 = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct post_t {
-    pub topdelta: byte,
-    pub length: byte,
-}
-pub type column_t = post_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-pub type line_t = line_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct seg_t {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub offset: fixed_t,
-    pub angle: angle_t,
-    pub sidedef: *mut side_t,
-    pub linedef: *mut line_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-}
 pub type lighttable_t = byte;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct drawseg_s {
-    pub curline: *mut seg_t,
-    pub x1: ::core::ffi::c_int,
-    pub x2: ::core::ffi::c_int,
-    pub scale1: fixed_t,
-    pub scale2: fixed_t,
-    pub scalestep: fixed_t,
-    pub silhouette: ::core::ffi::c_int,
-    pub bsilheight: fixed_t,
-    pub tsilheight: fixed_t,
-    pub sprtopclip: *mut ::core::ffi::c_short,
-    pub sprbottomclip: *mut ::core::ffi::c_short,
-    pub maskedtexturecol: *mut ::core::ffi::c_short,
-}
-pub type drawseg_t = drawseg_s;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct vissprite_s {
     pub prev: *mut vissprite_s,
     pub next: *mut vissprite_s,
-    pub x1: ::core::ffi::c_int,
-    pub x2: ::core::ffi::c_int,
+    pub x1: i32,
+    pub x2: i32,
     pub gx: fixed_t,
     pub gy: fixed_t,
     pub gz: fixed_t,
@@ -1734,67 +1407,47 @@ pub struct vissprite_s {
     pub scale: fixed_t,
     pub xiscale: fixed_t,
     pub texturemid: fixed_t,
-    pub patch: ::core::ffi::c_int,
+    pub patch: i32,
     pub colormap: *mut lighttable_t,
-    pub mobjflags: ::core::ffi::c_int,
+    pub mobjflags: i32,
 }
 pub type vissprite_t = vissprite_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spriteframe_t {
-    pub rotate: boolean,
-    pub lump: [::core::ffi::c_short; 8],
-    pub flip: [byte; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct spritedef_t {
-    pub numframes: ::core::ffi::c_int,
-    pub spriteframes: *mut spriteframe_t,
-}
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const NUMPSPRITES: C2RustUnnamed_2 = 2;
 pub const ps_flash: C2RustUnnamed_2 = 1;
 pub const ps_weapon: C2RustUnnamed_2 = 0;
-pub type player_t = player_s;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const INT_MAX: i32 = __INT_MAX__;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const ANG45: ::core::ffi::c_int = 0x20000000 as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SIL_BOTTOM: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const SIL_TOP: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const FF_FULLBRIGHT: ::core::ffi::c_int = 0x8000 as ::core::ffi::c_int;
-pub const FF_FRAMEMASK: ::core::ffi::c_int = 0x7fff as ::core::ffi::c_int;
-pub const LIGHTLEVELS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const LIGHTSEGSHIFT: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const MAXLIGHTSCALE: ::core::ffi::c_int = 48 as ::core::ffi::c_int;
-pub const LIGHTSCALESHIFT: ::core::ffi::c_int = 12 as ::core::ffi::c_int;
-pub const MAXVISSPRITES: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-pub const MINZ: ::core::ffi::c_int = FRACUNIT * 4 as ::core::ffi::c_int;
-pub const BASEYCENTER: ::core::ffi::c_int = 100 as ::core::ffi::c_int;
-#[no_mangle]
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const ANG45: i32 = 0x20000000 as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SIL_BOTTOM: i32 = 1 as i32;
+pub const SIL_TOP: i32 = 2 as i32;
+pub const FF_FULLBRIGHT: i32 = 0x8000 as i32;
+pub const FF_FRAMEMASK: i32 = 0x7fff as i32;
+pub const LIGHTLEVELS: i32 = 16 as i32;
+pub const LIGHTSEGSHIFT: i32 = 4 as i32;
+pub const MAXLIGHTSCALE: i32 = 48 as i32;
+pub const LIGHTSCALESHIFT: i32 = 12 as i32;
+pub const MAXVISSPRITES: i32 = 128 as i32;
+pub const MINZ: i32 = FRACUNIT * 4 as i32;
+pub const BASEYCENTER: i32 = 100 as i32;
 pub static mut pspritescale: fixed_t = 0;
-#[no_mangle]
 pub static mut pspriteiscale: fixed_t = 0;
 #[no_mangle]
 pub static mut spritelights: *mut *mut lighttable_t = ::core::ptr::null::<
     *mut lighttable_t,
 >() as *mut *mut lighttable_t;
-#[no_mangle]
-pub static mut negonearray: [::core::ffi::c_short; 320] = [0; 320];
-#[no_mangle]
-pub static mut screenheightarray: [::core::ffi::c_short; 320] = [0; 320];
-#[no_mangle]
+pub static mut negonearray: [i16; 320] = [0; 320];
+pub static mut screenheightarray: [i16; 320] = [0; 320];
 pub static mut sprites: *mut spritedef_t = ::core::ptr::null::<spritedef_t>()
     as *mut spritedef_t;
-#[no_mangle]
-pub static mut numsprites: ::core::ffi::c_int = 0;
+pub static mut numsprites: i32 = 0;
 #[no_mangle]
 pub static mut sprtemp: [spriteframe_t; 29] = [spriteframe_t {
     rotate: 0,
@@ -1802,80 +1455,71 @@ pub static mut sprtemp: [spriteframe_t; 29] = [spriteframe_t {
     flip: [0; 8],
 }; 29];
 #[no_mangle]
-pub static mut maxframe: ::core::ffi::c_int = 0;
+pub static mut maxframe: i32 = 0;
 #[no_mangle]
 pub static mut spritename: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
 #[no_mangle]
 pub unsafe extern "C" fn R_InstallSpriteLump(
-    mut lump: ::core::ffi::c_int,
-    mut frame: ::core::ffi::c_uint,
-    mut rotation: ::core::ffi::c_uint,
-    mut flipped: boolean,
+    mut lump: i32,
+    mut frame: u32,
+    mut rotation: u32,
+    mut flipped: bool,
 ) {
-    let mut r: ::core::ffi::c_int = 0;
-    if frame >= 29 as ::core::ffi::c_uint || rotation > 8 as ::core::ffi::c_uint {
-        I_Error(
-            b"R_InstallSpriteLump: Bad frame characters in lump %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            lump,
-        );
+    let mut r: i32 = 0;
+    if frame >= 29 as u32 || rotation > 8 as u32 {
+        I_Error(&format!("R_InstallSpriteLump: Bad frame characters in lump {}", lump));
     }
-    if frame as ::core::ffi::c_int > maxframe {
-        maxframe = frame as ::core::ffi::c_int;
+    if frame as i32 > maxframe {
+        maxframe = frame as i32;
     }
-    if rotation == 0 as ::core::ffi::c_uint {
+    if rotation == 0 as u32 {
         if sprtemp[frame as usize].rotate == false_0 as boolean {
-            I_Error(
-                b"R_InitSprites: Sprite %s frame %c has multip rot=0 lump\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                spritename,
-                ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame),
-            );
+            I_Error(&format!(
+                "R_InitSprites: Sprite {} frame {} has multip rot=0 lump",
+                ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+                ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
+            ));
         }
         if sprtemp[frame as usize].rotate == true_0 as boolean {
-            I_Error(
-                b"R_InitSprites: Sprite %s frame %c has rotations and a rot=0 lump\0"
-                    as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                spritename,
-                ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame),
-            );
+            I_Error(&format!(
+                "R_InitSprites: Sprite {} frame {} has rotations and a rot=0 lump",
+                ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+                ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
+            ));
         }
         sprtemp[frame as usize].rotate = false_0 as boolean;
-        r = 0 as ::core::ffi::c_int;
-        while r < 8 as ::core::ffi::c_int {
+        r = 0 as i32;
+        while r < 8 as i32 {
             sprtemp[frame as usize].lump[r as usize] = (lump - firstspritelump)
-                as ::core::ffi::c_short;
+                as i16;
             sprtemp[frame as usize].flip[r as usize] = flipped as byte;
             r += 1;
         }
         return;
     }
     if sprtemp[frame as usize].rotate == false_0 as boolean {
-        I_Error(
-            b"R_InitSprites: Sprite %s frame %c has rotations and a rot=0 lump\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            spritename,
-            ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame),
-        );
+        I_Error(&format!(
+            "R_InitSprites: Sprite {} frame {} has rotations and a rot=0 lump",
+            ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+            ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
+        ));
     }
     sprtemp[frame as usize].rotate = true_0 as boolean;
     rotation = rotation.wrapping_sub(1);
-    if sprtemp[frame as usize].lump[rotation as usize] as ::core::ffi::c_int
-        != -(1 as ::core::ffi::c_int)
+    if sprtemp[frame as usize].lump[rotation as usize] as i32
+        != -(1 as i32)
     {
-        I_Error(
-            b"R_InitSprites: Sprite %s : %c : %c has two lumps mapped to it\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            spritename,
-            ('A' as i32 as ::core::ffi::c_uint).wrapping_add(frame),
-            ('1' as i32 as ::core::ffi::c_uint).wrapping_add(rotation),
-        );
+        I_Error(&format!(
+            "R_InitSprites: Sprite {} : {} : {} has two lumps mapped to it",
+            ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+            ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
+            ('1' as i32 as u32).wrapping_add(rotation) as u8 as char,
+        ));
     }
     sprtemp[frame as usize].lump[rotation as usize] = (lump - firstspritelump)
-        as ::core::ffi::c_short;
+        as i16;
     sprtemp[frame as usize].flip[rotation as usize] = flipped as byte;
 }
 #[no_mangle]
@@ -1883,41 +1527,41 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
     let mut check: *mut *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         *mut ::core::ffi::c_char,
     >();
-    let mut i: ::core::ffi::c_int = 0;
-    let mut l: ::core::ffi::c_int = 0;
-    let mut frame: ::core::ffi::c_int = 0;
-    let mut rotation: ::core::ffi::c_int = 0;
-    let mut start: ::core::ffi::c_int = 0;
-    let mut end: ::core::ffi::c_int = 0;
-    let mut patched: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut l: i32 = 0;
+    let mut frame: i32 = 0;
+    let mut rotation: i32 = 0;
+    let mut start: i32 = 0;
+    let mut end: i32 = 0;
+    let mut patched: i32 = 0;
     check = namelist;
     while !(*check).is_null() {
         check = check.offset(1);
     }
-    numsprites = check.offset_from(namelist) as ::core::ffi::c_long
-        as ::core::ffi::c_int;
+    numsprites = check.offset_from(namelist) as i64
+        as i32;
     if numsprites == 0 {
         return;
     }
     sprites = Z_Malloc(
         (numsprites as usize)
             .wrapping_mul(::core::mem::size_of::<spritedef_t>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         NULL,
     ) as *mut spritedef_t;
-    start = firstspritelump - 1 as ::core::ffi::c_int;
-    end = lastspritelump + 1 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    start = firstspritelump - 1 as i32;
+    end = lastspritelump + 1 as i32;
+    i = 0 as i32;
     while i < numsprites {
         spritename = *namelist.offset(i as isize);
         memset(
             &raw mut sprtemp as *mut spriteframe_t as *mut ::core::ffi::c_void,
-            -(1 as ::core::ffi::c_int),
+            -(1 as i32),
             ::core::mem::size_of::<[spriteframe_t; 29]>() as size_t,
         );
-        maxframe = -(1 as ::core::ffi::c_int);
-        l = start + 1 as ::core::ffi::c_int;
+        maxframe = -(1 as i32);
+        l = start + 1 as i32;
         while l < end {
             if strncasecmp(
                 &raw mut (*lumpinfo.offset(l as isize)).name as *mut ::core::ffi::c_char,
@@ -1926,73 +1570,71 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
             ) == 0
             {
                 frame = (*lumpinfo.offset(l as isize))
-                    .name[4 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
+                    .name[4 as i32 as usize] as i32
                     - 'A' as i32;
                 rotation = (*lumpinfo.offset(l as isize))
-                    .name[5 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
+                    .name[5 as i32 as usize] as i32
                     - '0' as i32;
-                if modifiedgame != 0 {
+                if modifiedgame {
                     patched = W_GetNumForName(
-                        &raw mut (*lumpinfo.offset(l as isize)).name
-                            as *mut ::core::ffi::c_char,
+                        &wad_name8_to_string(
+                            &raw const (*lumpinfo.offset(l as isize)).name
+                                as *const ::core::ffi::c_char,
+                        ),
                     );
                 } else {
                     patched = l;
                 }
                 R_InstallSpriteLump(
                     patched,
-                    frame as ::core::ffi::c_uint,
-                    rotation as ::core::ffi::c_uint,
-                    false_0 as boolean,
+                    frame as u32,
+                    rotation as u32,
+                    false,
                 );
-                if (*lumpinfo.offset(l as isize)).name[6 as ::core::ffi::c_int as usize]
+                if (*lumpinfo.offset(l as isize)).name[6 as i32 as usize]
                     != 0
                 {
                     frame = (*lumpinfo.offset(l as isize))
-                        .name[6 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
+                        .name[6 as i32 as usize] as i32
                         - 'A' as i32;
                     rotation = (*lumpinfo.offset(l as isize))
-                        .name[7 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
+                        .name[7 as i32 as usize] as i32
                         - '0' as i32;
                     R_InstallSpriteLump(
                         l,
-                        frame as ::core::ffi::c_uint,
-                        rotation as ::core::ffi::c_uint,
-                        true_0 as boolean,
+                        frame as u32,
+                        rotation as u32,
+                        true,
                     );
                 }
             }
             l += 1;
         }
-        if maxframe == -(1 as ::core::ffi::c_int) {
-            (*sprites.offset(i as isize)).numframes = 0 as ::core::ffi::c_int;
+        if maxframe == -(1 as i32) {
+            (*sprites.offset(i as isize)).numframes = 0 as i32;
         } else {
             maxframe += 1;
-            frame = 0 as ::core::ffi::c_int;
+            frame = 0 as i32;
             while frame < maxframe {
-                match sprtemp[frame as usize].rotate as ::core::ffi::c_int {
+                match sprtemp[frame as usize].rotate as i32 {
                     -1 => {
-                        I_Error(
-                            b"R_InitSprites: No patches found for %s frame %c\0"
-                                as *const u8 as *const ::core::ffi::c_char
-                                as *mut ::core::ffi::c_char,
-                            spritename,
-                            frame + 'A' as i32,
-                        );
+                        I_Error(&format!(
+                            "R_InitSprites: No patches found for {} frame {}",
+                            ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+                            (frame + 'A' as i32) as u8 as char,
+                        ));
                     }
                     1 => {
-                        rotation = 0 as ::core::ffi::c_int;
-                        while rotation < 8 as ::core::ffi::c_int {
+                        rotation = 0 as i32;
+                        while rotation < 8 as i32 {
                             if sprtemp[frame as usize].lump[rotation as usize]
-                                as ::core::ffi::c_int == -(1 as ::core::ffi::c_int)
+                                as i32 == -(1 as i32)
                             {
-                                I_Error(
-                                    b"R_InitSprites: Sprite %s frame %c is missing rotations\0"
-                                        as *const u8 as *const ::core::ffi::c_char
-                                        as *mut ::core::ffi::c_char,
-                                    spritename,
-                                    frame + 'A' as i32,
-                                );
+                                I_Error(&format!(
+                                    "R_InitSprites: Sprite {} frame {} is missing rotations",
+                                    ::std::ffi::CStr::from_ptr(spritename).to_str().unwrap(),
+                                    (frame + 'A' as i32) as u8 as char,
+                                ));
                             }
                             rotation += 1;
                         }
@@ -2006,8 +1648,8 @@ pub unsafe extern "C" fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c
             *fresh1 = Z_Malloc(
                 (maxframe as usize)
                     .wrapping_mul(::core::mem::size_of::<spriteframe_t>() as usize)
-                    as ::core::ffi::c_int,
-                PU_STATIC as ::core::ffi::c_int,
+                    as i32,
+                PU_STATIC as i32,
                 NULL,
             ) as *mut spriteframe_t;
             memcpy(
@@ -2042,19 +1684,17 @@ pub static mut vissprites: [vissprite_t; 128] = [vissprite_s {
 pub static mut vissprite_p: *mut vissprite_t = ::core::ptr::null::<vissprite_t>()
     as *mut vissprite_t;
 #[no_mangle]
-pub static mut newvissprite: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_InitSprites(mut namelist: *mut *mut ::core::ffi::c_char) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+pub static mut newvissprite: i32 = 0;
+pub unsafe fn R_InitSprites(mut namelist: *mut *mut ::core::ffi::c_char) {
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < SCREENWIDTH {
-        negonearray[i as usize] = -(1 as ::core::ffi::c_int) as ::core::ffi::c_short;
+        negonearray[i as usize] = -(1 as i32) as i16;
         i += 1;
     }
     R_InitSpriteDefs(namelist);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_ClearSprites() {
+pub unsafe fn R_ClearSprites() {
     vissprite_p = &raw mut vissprites as *mut vissprite_t;
 }
 #[no_mangle]
@@ -2084,99 +1724,93 @@ pub unsafe extern "C" fn R_NewVisSprite() -> *mut vissprite_t {
         return &raw mut overflowsprite;
     }
     vissprite_p = vissprite_p.offset(1);
-    return vissprite_p.offset(-(1 as ::core::ffi::c_int as isize));
+    return vissprite_p.offset(-(1 as i32 as isize));
 }
-#[no_mangle]
-pub static mut mfloorclip: *mut ::core::ffi::c_short = ::core::ptr::null::<
-    ::core::ffi::c_short,
->() as *mut ::core::ffi::c_short;
-#[no_mangle]
-pub static mut mceilingclip: *mut ::core::ffi::c_short = ::core::ptr::null::<
-    ::core::ffi::c_short,
->() as *mut ::core::ffi::c_short;
-#[no_mangle]
+pub static mut mfloorclip: *mut i16 = ::core::ptr::null::<
+    i16,
+>() as *mut i16;
+pub static mut mceilingclip: *mut i16 = ::core::ptr::null::<
+    i16,
+>() as *mut i16;
 pub static mut spryscale: fixed_t = 0;
-#[no_mangle]
 pub static mut sprtopscreen: fixed_t = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawMaskedColumn(mut column: *mut column_t) {
-    let mut topscreen: ::core::ffi::c_int = 0;
-    let mut bottomscreen: ::core::ffi::c_int = 0;
+pub unsafe fn R_DrawMaskedColumn(mut column: *mut column_t) {
+    let mut topscreen: i32 = 0;
+    let mut bottomscreen: i32 = 0;
     let mut basetexturemid: fixed_t = 0;
     basetexturemid = dc_texturemid;
-    while (*column).topdelta as ::core::ffi::c_int != 0xff as ::core::ffi::c_int {
-        topscreen = sprtopscreen as ::core::ffi::c_int
-            + spryscale as ::core::ffi::c_int * (*column).topdelta as ::core::ffi::c_int;
+    while (*column).topdelta as i32 != 0xff as i32 {
+        topscreen = sprtopscreen as i32
+            + spryscale as i32 * (*column).topdelta as i32;
         bottomscreen = topscreen
-            + spryscale as ::core::ffi::c_int * (*column).length as ::core::ffi::c_int;
-        dc_yl = topscreen + FRACUNIT - 1 as ::core::ffi::c_int >> FRACBITS;
-        dc_yh = bottomscreen - 1 as ::core::ffi::c_int >> FRACBITS;
-        if dc_yh >= *mfloorclip.offset(dc_x as isize) as ::core::ffi::c_int {
-            dc_yh = *mfloorclip.offset(dc_x as isize) as ::core::ffi::c_int
-                - 1 as ::core::ffi::c_int;
+            + spryscale as i32 * (*column).length as i32;
+        dc_yl = topscreen + FRACUNIT - 1 as i32 >> FRACBITS;
+        dc_yh = bottomscreen - 1 as i32 >> FRACBITS;
+        if dc_yh >= *mfloorclip.offset(dc_x as isize) as i32 {
+            dc_yh = *mfloorclip.offset(dc_x as isize) as i32
+                - 1 as i32;
         }
-        if dc_yl <= *mceilingclip.offset(dc_x as isize) as ::core::ffi::c_int {
-            dc_yl = *mceilingclip.offset(dc_x as isize) as ::core::ffi::c_int
-                + 1 as ::core::ffi::c_int;
+        if dc_yl <= *mceilingclip.offset(dc_x as isize) as i32 {
+            dc_yl = *mceilingclip.offset(dc_x as isize) as i32
+                + 1 as i32;
         }
         if dc_yl <= dc_yh {
-            dc_source = (column as *mut byte).offset(3 as ::core::ffi::c_int as isize);
-            dc_texturemid = (basetexturemid as ::core::ffi::c_int
-                - (((*column).topdelta as ::core::ffi::c_int) << FRACBITS)) as fixed_t;
+            dc_source = (column as *mut byte).offset(3 as i32 as isize);
+            dc_texturemid = (basetexturemid as i32
+                - (((*column).topdelta as i32) << FRACBITS)) as fixed_t;
             colfunc.expect("non-null function pointer")();
         }
         column = (column as *mut byte)
-            .offset((*column).length as ::core::ffi::c_int as isize)
-            .offset(4 as ::core::ffi::c_int as isize) as *mut column_t;
+            .offset((*column).length as i32 as isize)
+            .offset(4 as i32 as isize) as *mut column_t;
     }
     dc_texturemid = basetexturemid;
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawVisSprite(
     mut vis: *mut vissprite_t,
-    mut x1: ::core::ffi::c_int,
-    mut x2: ::core::ffi::c_int,
+    mut x1: i32,
+    mut x2: i32,
 ) {
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
-    let mut texturecolumn: ::core::ffi::c_int = 0;
+    let mut texturecolumn: i32 = 0;
     let mut frac: fixed_t = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     patch = W_CacheLumpNum(
         (*vis).patch + firstspritelump,
-        PU_CACHE as ::core::ffi::c_int,
+        PU_CACHE as i32,
     ) as *mut patch_t;
     dc_colormap = (*vis).colormap;
     if dc_colormap.is_null() {
         colfunc = fuzzcolfunc;
-    } else if (*vis).mobjflags & MF_TRANSLATION as ::core::ffi::c_int != 0 {
+    } else if (*vis).mobjflags & MF_TRANSLATION as i32 != 0 {
         colfunc = transcolfunc;
         dc_translation = translationtables
-            .offset(-(256 as ::core::ffi::c_int as isize))
+            .offset(-(256 as i32 as isize))
             .offset(
-                (((*vis).mobjflags & MF_TRANSLATION as ::core::ffi::c_int)
-                    >> MF_TRANSSHIFT as ::core::ffi::c_int - 8 as ::core::ffi::c_int)
+                (((*vis).mobjflags & MF_TRANSLATION as i32)
+                    >> MF_TRANSSHIFT as i32 - 8 as i32)
                     as isize,
             );
     }
-    dc_iscale = (abs((*vis).xiscale as ::core::ffi::c_int) >> detailshift) as fixed_t;
+    dc_iscale = (abs((*vis).xiscale as i32) >> detailshift) as fixed_t;
     dc_texturemid = (*vis).texturemid;
     frac = (*vis).startfrac;
     spryscale = (*vis).scale;
     sprtopscreen = centeryfrac - FixedMul(dc_texturemid, spryscale);
     dc_x = (*vis).x1;
     while dc_x <= (*vis).x2 {
-        texturecolumn = (frac >> FRACBITS) as ::core::ffi::c_int;
-        if texturecolumn < 0 as ::core::ffi::c_int
-            || texturecolumn >= (*patch).width as ::core::ffi::c_int
+        texturecolumn = (frac >> FRACBITS) as i32;
+        if texturecolumn < 0 as i32
+            || texturecolumn >= (*patch).width as i32
         {
-            I_Error(
-                b"R_DrawSpriteRange: bad texturecolumn\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("R_DrawSpriteRange: bad texturecolumn");
         }
         column = (patch as *mut byte)
-            .offset((*patch).columnofs[texturecolumn as usize] as isize)
-            as *mut column_t;
+            .offset(
+                *(&raw const (*patch).columnofs as *const i32)
+                    .offset(texturecolumn as isize) as isize,
+            ) as *mut column_t;
         R_DrawMaskedColumn(column);
         dc_x += 1;
         frac += (*vis).xiscale;
@@ -2192,14 +1826,14 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
     let mut tx: fixed_t = 0;
     let mut tz: fixed_t = 0;
     let mut xscale: fixed_t = 0;
-    let mut x1: ::core::ffi::c_int = 0;
-    let mut x2: ::core::ffi::c_int = 0;
+    let mut x1: i32 = 0;
+    let mut x2: i32 = 0;
     let mut sprdef: *mut spritedef_t = ::core::ptr::null_mut::<spritedef_t>();
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
-    let mut lump: ::core::ffi::c_int = 0;
-    let mut rot: ::core::ffi::c_uint = 0;
+    let mut lump: i32 = 0;
+    let mut rot: u32 = 0;
     let mut flip: boolean = 0;
-    let mut index: ::core::ffi::c_int = 0;
+    let mut index: i32 = 0;
     let mut vis: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut ang: angle_t = 0;
     let mut iscale: fixed_t = 0;
@@ -2215,50 +1849,48 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
     gxt = -FixedMul(tr_x, viewsin);
     gyt = FixedMul(tr_y, viewcos);
     tx = -(gyt + gxt);
-    if abs(tx as ::core::ffi::c_int) > tz << 2 as ::core::ffi::c_int {
+    if abs(tx as i32) > tz << 2 as i32 {
         return;
     }
-    if (*thing).sprite as ::core::ffi::c_uint >= numsprites as ::core::ffi::c_uint {
-        I_Error(
-            b"R_ProjectSprite: invalid sprite number %i \0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (*thing).sprite as ::core::ffi::c_uint,
-        );
+    if (*thing).sprite as u32 >= numsprites as u32 {
+        I_Error(&format!(
+            "R_ProjectSprite: invalid sprite number {} ",
+            (*thing).sprite as u32,
+        ));
     }
     sprdef = sprites.offset((*thing).sprite as isize) as *mut spritedef_t;
     if (*thing).frame & FF_FRAMEMASK >= (*sprdef).numframes {
-        I_Error(
-            b"R_ProjectSprite: invalid sprite frame %i : %i \0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (*thing).sprite as ::core::ffi::c_uint,
+        I_Error(&format!(
+            "R_ProjectSprite: invalid sprite frame {} : {} ",
+            (*thing).sprite as u32,
             (*thing).frame,
-        );
+        ));
     }
     sprframe = (*sprdef).spriteframes.offset(((*thing).frame & FF_FRAMEMASK) as isize)
         as *mut spriteframe_t;
     if (*sprframe).rotate != 0 {
         ang = R_PointToAngle((*thing).x, (*thing).y);
-        rot = (ang as ::core::ffi::c_uint)
-            .wrapping_sub((*thing).angle as ::core::ffi::c_uint)
+        rot = (ang as u32)
+            .wrapping_sub((*thing).angle as u32)
             .wrapping_add(
-                ((ANG45 / 2 as ::core::ffi::c_int) as ::core::ffi::c_uint)
-                    .wrapping_mul(9 as ::core::ffi::c_uint),
-            ) >> 29 as ::core::ffi::c_int;
-        lump = (*sprframe).lump[rot as usize] as ::core::ffi::c_int;
+                ((ANG45 / 2 as i32) as u32)
+                    .wrapping_mul(9 as u32),
+            ) >> 29 as i32;
+        lump = (*sprframe).lump[rot as usize] as i32;
         flip = (*sprframe).flip[rot as usize] as boolean;
     } else {
-        lump = (*sprframe).lump[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
-        flip = (*sprframe).flip[0 as ::core::ffi::c_int as usize] as boolean;
+        lump = (*sprframe).lump[0 as i32 as usize] as i32;
+        flip = (*sprframe).flip[0 as i32 as usize] as boolean;
     }
     tx -= *spriteoffset.offset(lump as isize);
-    x1 = (centerxfrac + FixedMul(tx, xscale) >> FRACBITS) as ::core::ffi::c_int;
+    x1 = (centerxfrac + FixedMul(tx, xscale) >> FRACBITS) as i32;
     if x1 > viewwidth {
         return;
     }
     tx += *spritewidth.offset(lump as isize);
-    x2 = (centerxfrac as ::core::ffi::c_int + FixedMul(tx, xscale) as ::core::ffi::c_int
-        >> FRACBITS) - 1 as ::core::ffi::c_int;
-    if x2 < 0 as ::core::ffi::c_int {
+    x2 = (centerxfrac as i32 + FixedMul(tx, xscale) as i32
+        >> FRACBITS) - 1 as i32;
+    if x2 < 0 as i32 {
         return;
     }
     vis = R_NewVisSprite();
@@ -2269,50 +1901,49 @@ pub unsafe extern "C" fn R_ProjectSprite(mut thing: *mut mobj_t) {
     (*vis).gz = (*thing).z;
     (*vis).gzt = (*thing).z + *spritetopoffset.offset(lump as isize);
     (*vis).texturemid = (*vis).gzt - viewz;
-    (*vis).x1 = if x1 < 0 as ::core::ffi::c_int { 0 as ::core::ffi::c_int } else { x1 };
-    (*vis).x2 = if x2 >= viewwidth { viewwidth - 1 as ::core::ffi::c_int } else { x2 };
+    (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
+    (*vis).x2 = if x2 >= viewwidth { viewwidth - 1 as i32 } else { x2 };
     iscale = FixedDiv(FRACUNIT, xscale);
     if flip != 0 {
-        (*vis).startfrac = (*spritewidth.offset(lump as isize) as ::core::ffi::c_int
-            - 1 as ::core::ffi::c_int) as fixed_t;
+        (*vis).startfrac = (*spritewidth.offset(lump as isize) as i32
+            - 1 as i32) as fixed_t;
         (*vis).xiscale = -iscale;
     } else {
-        (*vis).startfrac = 0 as ::core::ffi::c_int as fixed_t;
+        (*vis).startfrac = 0 as i32 as fixed_t;
         (*vis).xiscale = iscale;
     }
     if (*vis).x1 > x1 {
-        (*vis).startfrac += (*vis).xiscale as ::core::ffi::c_int * ((*vis).x1 - x1);
+        (*vis).startfrac += (*vis).xiscale as i32 * ((*vis).x1 - x1);
     }
     (*vis).patch = lump;
-    if (*thing).flags & MF_SHADOW as ::core::ffi::c_int != 0 {
+    if (*thing).flags & MF_SHADOW as i32 != 0 {
         (*vis).colormap = ::core::ptr::null_mut::<lighttable_t>();
     } else if !fixedcolormap.is_null() {
         (*vis).colormap = fixedcolormap;
     } else if (*thing).frame & FF_FULLBRIGHT != 0 {
         (*vis).colormap = colormaps;
     } else {
-        index = (xscale >> LIGHTSCALESHIFT - detailshift) as ::core::ffi::c_int;
+        index = (xscale >> LIGHTSCALESHIFT - detailshift) as i32;
         if index >= MAXLIGHTSCALE {
-            index = MAXLIGHTSCALE - 1 as ::core::ffi::c_int;
+            index = MAXLIGHTSCALE - 1 as i32;
         }
         (*vis).colormap = *spritelights.offset(index as isize);
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_AddSprites(mut sec: *mut sector_t) {
+pub unsafe fn R_AddSprites(mut sec: *mut sector_t) {
     let mut thing: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut lightnum: ::core::ffi::c_int = 0;
+    let mut lightnum: i32 = 0;
     if (*sec).validcount == validcount {
         return;
     }
     (*sec).validcount = validcount;
-    lightnum = ((*sec).lightlevel as ::core::ffi::c_int >> LIGHTSEGSHIFT) + extralight;
-    if lightnum < 0 as ::core::ffi::c_int {
+    lightnum = ((*sec).lightlevel as i32 >> LIGHTSEGSHIFT) + extralight;
+    if lightnum < 0 as i32 {
         spritelights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
-            .offset(0 as ::core::ffi::c_int as isize) as *mut *mut lighttable_t;
+            .offset(0 as i32 as isize) as *mut *mut lighttable_t;
     } else if lightnum >= LIGHTLEVELS {
         spritelights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
-            .offset((LIGHTLEVELS - 1 as ::core::ffi::c_int) as isize)
+            .offset((LIGHTLEVELS - 1 as i32) as isize)
             as *mut *mut lighttable_t;
     } else {
         spritelights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
@@ -2327,11 +1958,11 @@ pub unsafe extern "C" fn R_AddSprites(mut sec: *mut sector_t) {
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     let mut tx: fixed_t = 0;
-    let mut x1: ::core::ffi::c_int = 0;
-    let mut x2: ::core::ffi::c_int = 0;
+    let mut x1: i32 = 0;
+    let mut x2: i32 = 0;
     let mut sprdef: *mut spritedef_t = ::core::ptr::null_mut::<spritedef_t>();
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
-    let mut lump: ::core::ffi::c_int = 0;
+    let mut lump: i32 = 0;
     let mut flip: boolean = 0;
     let mut vis: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut avis: vissprite_t = vissprite_s {
@@ -2351,65 +1982,63 @@ pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
         colormap: ::core::ptr::null::<lighttable_t>() as *mut lighttable_t,
         mobjflags: 0,
     };
-    if (*(*psp).state).sprite as ::core::ffi::c_uint >= numsprites as ::core::ffi::c_uint
+    if (*(*psp).state).sprite as u32 >= numsprites as u32
     {
-        I_Error(
-            b"R_ProjectSprite: invalid sprite number %i \0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (*(*psp).state).sprite as ::core::ffi::c_uint,
-        );
+        I_Error(&format!(
+            "R_ProjectSprite: invalid sprite number {} ",
+            (*(*psp).state).sprite as u32,
+        ));
     }
     sprdef = sprites.offset((*(*psp).state).sprite as isize) as *mut spritedef_t;
     if (*(*psp).state).frame & FF_FRAMEMASK >= (*sprdef).numframes {
-        I_Error(
-            b"R_ProjectSprite: invalid sprite frame %i : %i \0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (*(*psp).state).sprite as ::core::ffi::c_uint,
+        I_Error(&format!(
+            "R_ProjectSprite: invalid sprite frame {} : {} ",
+            (*(*psp).state).sprite as u32,
             (*(*psp).state).frame,
-        );
+        ));
     }
     sprframe = (*sprdef)
         .spriteframes
         .offset(((*(*psp).state).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
-    lump = (*sprframe).lump[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
-    flip = (*sprframe).flip[0 as ::core::ffi::c_int as usize] as boolean;
-    tx = ((*psp).sx as ::core::ffi::c_int - 160 as ::core::ffi::c_int * FRACUNIT)
+    lump = (*sprframe).lump[0 as i32 as usize] as i32;
+    flip = (*sprframe).flip[0 as i32 as usize] as boolean;
+    tx = ((*psp).sx as i32 - 160 as i32 * FRACUNIT)
         as fixed_t;
     tx -= *spriteoffset.offset(lump as isize);
-    x1 = (centerxfrac + FixedMul(tx, pspritescale) >> FRACBITS) as ::core::ffi::c_int;
+    x1 = (centerxfrac + FixedMul(tx, pspritescale) >> FRACBITS) as i32;
     if x1 > viewwidth {
         return;
     }
     tx += *spritewidth.offset(lump as isize);
-    x2 = (centerxfrac as ::core::ffi::c_int
-        + FixedMul(tx, pspritescale) as ::core::ffi::c_int >> FRACBITS)
-        - 1 as ::core::ffi::c_int;
-    if x2 < 0 as ::core::ffi::c_int {
+    x2 = (centerxfrac as i32
+        + FixedMul(tx, pspritescale) as i32 >> FRACBITS)
+        - 1 as i32;
+    if x2 < 0 as i32 {
         return;
     }
     vis = &raw mut avis;
-    (*vis).mobjflags = 0 as ::core::ffi::c_int;
+    (*vis).mobjflags = 0 as i32;
     (*vis).texturemid = (BASEYCENTER << FRACBITS) + FRACUNIT / 2 as fixed_t
         - ((*psp).sy - *spritetopoffset.offset(lump as isize));
-    (*vis).x1 = if x1 < 0 as ::core::ffi::c_int { 0 as ::core::ffi::c_int } else { x1 };
-    (*vis).x2 = if x2 >= viewwidth { viewwidth - 1 as ::core::ffi::c_int } else { x2 };
+    (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
+    (*vis).x2 = if x2 >= viewwidth { viewwidth - 1 as i32 } else { x2 };
     (*vis).scale = pspritescale << detailshift;
     if flip != 0 {
         (*vis).xiscale = -pspriteiscale;
-        (*vis).startfrac = (*spritewidth.offset(lump as isize) as ::core::ffi::c_int
-            - 1 as ::core::ffi::c_int) as fixed_t;
+        (*vis).startfrac = (*spritewidth.offset(lump as isize) as i32
+            - 1 as i32) as fixed_t;
     } else {
         (*vis).xiscale = pspriteiscale;
-        (*vis).startfrac = 0 as ::core::ffi::c_int as fixed_t;
+        (*vis).startfrac = 0 as i32 as fixed_t;
     }
     if (*vis).x1 > x1 {
-        (*vis).startfrac += (*vis).xiscale as ::core::ffi::c_int * ((*vis).x1 - x1);
+        (*vis).startfrac += (*vis).xiscale as i32 * ((*vis).x1 - x1);
     }
     (*vis).patch = lump;
-    if (*viewplayer).powers[pw_invisibility as ::core::ffi::c_int as usize]
-        > 4 as ::core::ffi::c_int * 32 as ::core::ffi::c_int
-        || (*viewplayer).powers[pw_invisibility as ::core::ffi::c_int as usize]
-            & 8 as ::core::ffi::c_int != 0
+    if (*viewplayer).powers[pw_invisibility as i32 as usize]
+        > 4 as i32 * 32 as i32
+        || (*viewplayer).powers[pw_invisibility as i32 as usize]
+            & 8 as i32 != 0
     {
         (*vis).colormap = ::core::ptr::null_mut::<lighttable_t>();
     } else if !fixedcolormap.is_null() {
@@ -2418,33 +2047,33 @@ pub unsafe extern "C" fn R_DrawPSprite(mut psp: *mut pspdef_t) {
         (*vis).colormap = colormaps;
     } else {
         (*vis).colormap = *spritelights
-            .offset((MAXLIGHTSCALE - 1 as ::core::ffi::c_int) as isize);
+            .offset((MAXLIGHTSCALE - 1 as i32) as isize);
     }
     R_DrawVisSprite(vis, (*vis).x1, (*vis).x2);
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawPlayerSprites() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut lightnum: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut lightnum: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
     lightnum = ((*(*(*(*viewplayer).mo).subsector).sector).lightlevel
-        as ::core::ffi::c_int >> LIGHTSEGSHIFT) + extralight;
-    if lightnum < 0 as ::core::ffi::c_int {
+        as i32 >> LIGHTSEGSHIFT) + extralight;
+    if lightnum < 0 as i32 {
         spritelights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
-            .offset(0 as ::core::ffi::c_int as isize) as *mut *mut lighttable_t;
+            .offset(0 as i32 as isize) as *mut *mut lighttable_t;
     } else if lightnum >= LIGHTLEVELS {
         spritelights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
-            .offset((LIGHTLEVELS - 1 as ::core::ffi::c_int) as isize)
+            .offset((LIGHTLEVELS - 1 as i32) as isize)
             as *mut *mut lighttable_t;
     } else {
         spritelights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
             .offset(lightnum as isize) as *mut *mut lighttable_t;
     }
-    mfloorclip = &raw mut screenheightarray as *mut ::core::ffi::c_short;
-    mceilingclip = &raw mut negonearray as *mut ::core::ffi::c_short;
-    i = 0 as ::core::ffi::c_int;
+    mfloorclip = &raw mut screenheightarray as *mut i16;
+    mceilingclip = &raw mut negonearray as *mut i16;
+    i = 0 as i32;
     psp = &raw mut (*viewplayer).psprites as *mut pspdef_t;
-    while i < NUMPSPRITES as ::core::ffi::c_int {
+    while i < NUMPSPRITES as i32 {
         if !(*psp).state.is_null() {
             R_DrawPSprite(psp);
         }
@@ -2472,8 +2101,8 @@ pub static mut vsprsortedhead: vissprite_t = vissprite_s {
 };
 #[no_mangle]
 pub unsafe extern "C" fn R_SortVisSprites() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut count: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut count: i32 = 0;
     let mut ds: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut best: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut unsorted: vissprite_t = vissprite_s {
@@ -2495,7 +2124,7 @@ pub unsafe extern "C" fn R_SortVisSprites() {
     };
     let mut bestscale: fixed_t = 0;
     count = vissprite_p.offset_from(&raw mut vissprites as *mut vissprite_t)
-        as ::core::ffi::c_long as ::core::ffi::c_int;
+        as i64 as i32;
     unsorted.prev = &raw mut unsorted as *mut vissprite_s;
     unsorted.next = unsorted.prev;
     if count == 0 {
@@ -2503,22 +2132,22 @@ pub unsafe extern "C" fn R_SortVisSprites() {
     }
     ds = &raw mut vissprites as *mut vissprite_t;
     while ds < vissprite_p {
-        (*ds).next = ds.offset(1 as ::core::ffi::c_int as isize) as *mut vissprite_s;
-        (*ds).prev = ds.offset(-(1 as ::core::ffi::c_int as isize)) as *mut vissprite_s;
+        (*ds).next = ds.offset(1 as i32 as isize) as *mut vissprite_s;
+        (*ds).prev = ds.offset(-(1 as i32 as isize)) as *mut vissprite_s;
         ds = ds.offset(1);
     }
-    vissprites[0 as ::core::ffi::c_int as usize].prev = &raw mut unsorted
+    vissprites[0 as i32 as usize].prev = &raw mut unsorted
         as *mut vissprite_s;
     unsorted.next = (&raw mut vissprites as *mut vissprite_t)
-        .offset(0 as ::core::ffi::c_int as isize) as *mut vissprite_t
+        .offset(0 as i32 as isize) as *mut vissprite_t
         as *mut vissprite_s;
-    let ref mut fresh0 = (*vissprite_p.offset(-(1 as ::core::ffi::c_int as isize))).next;
+    let ref mut fresh0 = (*vissprite_p.offset(-(1 as i32 as isize))).next;
     *fresh0 = &raw mut unsorted as *mut vissprite_s;
-    unsorted.prev = vissprite_p.offset(-(1 as ::core::ffi::c_int as isize))
+    unsorted.prev = vissprite_p.offset(-(1 as i32 as isize))
         as *mut vissprite_s;
     vsprsortedhead.prev = &raw mut vsprsortedhead as *mut vissprite_s;
     vsprsortedhead.next = vsprsortedhead.prev;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < count {
         bestscale = INT_MAX as fixed_t;
         best = unsorted.next as *mut vissprite_t;
@@ -2539,24 +2168,24 @@ pub unsafe extern "C" fn R_SortVisSprites() {
         i += 1;
     }
 }
-static mut clipbot: [::core::ffi::c_short; 320] = [0; 320];
-static mut cliptop: [::core::ffi::c_short; 320] = [0; 320];
+static mut clipbot: [i16; 320] = [0; 320];
+static mut cliptop: [i16; 320] = [0; 320];
 #[no_mangle]
 pub unsafe extern "C" fn R_DrawSprite(mut spr: *mut vissprite_t) {
     let mut ds: *mut drawseg_t = ::core::ptr::null_mut::<drawseg_t>();
-    let mut x: ::core::ffi::c_int = 0;
-    let mut r1: ::core::ffi::c_int = 0;
-    let mut r2: ::core::ffi::c_int = 0;
+    let mut x: i32 = 0;
+    let mut r1: i32 = 0;
+    let mut r2: i32 = 0;
     let mut scale: fixed_t = 0;
     let mut lowscale: fixed_t = 0;
-    let mut silhouette: ::core::ffi::c_int = 0;
+    let mut silhouette: i32 = 0;
     x = (*spr).x1;
     while x <= (*spr).x2 {
-        cliptop[x as usize] = -(2 as ::core::ffi::c_int) as ::core::ffi::c_short;
+        cliptop[x as usize] = -(2 as i32) as i16;
         clipbot[x as usize] = cliptop[x as usize];
         x += 1;
     }
-    ds = ds_p.offset(-(1 as ::core::ffi::c_int as isize));
+    ds = ds_p.offset(-(1 as i32 as isize));
     while ds >= &raw mut drawsegs as *mut drawseg_t {
         if !((*ds).x1 > (*spr).x2 || (*ds).x2 < (*spr).x1
             || (*ds).silhouette == 0 && (*ds).maskedtexturecol.is_null())
@@ -2585,11 +2214,11 @@ pub unsafe extern "C" fn R_DrawSprite(mut spr: *mut vissprite_t) {
                 if (*spr).gzt <= (*ds).tsilheight {
                     silhouette &= !SIL_TOP;
                 }
-                if silhouette == 1 as ::core::ffi::c_int {
+                if silhouette == 1 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if clipbot[x as usize] as ::core::ffi::c_int
-                            == -(2 as ::core::ffi::c_int)
+                        if clipbot[x as usize] as i32
+                            == -(2 as i32)
                         {
                             clipbot[x as usize] = *(*ds)
                                 .sprbottomclip
@@ -2597,28 +2226,28 @@ pub unsafe extern "C" fn R_DrawSprite(mut spr: *mut vissprite_t) {
                         }
                         x += 1;
                     }
-                } else if silhouette == 2 as ::core::ffi::c_int {
+                } else if silhouette == 2 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if cliptop[x as usize] as ::core::ffi::c_int
-                            == -(2 as ::core::ffi::c_int)
+                        if cliptop[x as usize] as i32
+                            == -(2 as i32)
                         {
                             cliptop[x as usize] = *(*ds).sprtopclip.offset(x as isize);
                         }
                         x += 1;
                     }
-                } else if silhouette == 3 as ::core::ffi::c_int {
+                } else if silhouette == 3 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if clipbot[x as usize] as ::core::ffi::c_int
-                            == -(2 as ::core::ffi::c_int)
+                        if clipbot[x as usize] as i32
+                            == -(2 as i32)
                         {
                             clipbot[x as usize] = *(*ds)
                                 .sprbottomclip
                                 .offset(x as isize);
                         }
-                        if cliptop[x as usize] as ::core::ffi::c_int
-                            == -(2 as ::core::ffi::c_int)
+                        if cliptop[x as usize] as i32
+                            == -(2 as i32)
                         {
                             cliptop[x as usize] = *(*ds).sprtopclip.offset(x as isize);
                         }
@@ -2631,20 +2260,19 @@ pub unsafe extern "C" fn R_DrawSprite(mut spr: *mut vissprite_t) {
     }
     x = (*spr).x1;
     while x <= (*spr).x2 {
-        if clipbot[x as usize] as ::core::ffi::c_int == -(2 as ::core::ffi::c_int) {
-            clipbot[x as usize] = viewheight as ::core::ffi::c_short;
+        if clipbot[x as usize] as i32 == -(2 as i32) {
+            clipbot[x as usize] = viewheight as i16;
         }
-        if cliptop[x as usize] as ::core::ffi::c_int == -(2 as ::core::ffi::c_int) {
-            cliptop[x as usize] = -(1 as ::core::ffi::c_int) as ::core::ffi::c_short;
+        if cliptop[x as usize] as i32 == -(2 as i32) {
+            cliptop[x as usize] = -(1 as i32) as i16;
         }
         x += 1;
     }
-    mfloorclip = &raw mut clipbot as *mut ::core::ffi::c_short;
-    mceilingclip = &raw mut cliptop as *mut ::core::ffi::c_short;
+    mfloorclip = &raw mut clipbot as *mut i16;
+    mceilingclip = &raw mut cliptop as *mut i16;
     R_DrawVisSprite(spr, (*spr).x1, (*spr).x2);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_DrawMasked() {
+pub unsafe fn R_DrawMasked() {
     let mut spr: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut ds: *mut drawseg_t = ::core::ptr::null_mut::<drawseg_t>();
     R_SortVisSprites();
@@ -2655,7 +2283,7 @@ pub unsafe extern "C" fn R_DrawMasked() {
             spr = (*spr).next as *mut vissprite_t;
         }
     }
-    ds = ds_p.offset(-(1 as ::core::ffi::c_int as isize));
+    ds = ds_p.offset(-(1 as i32 as isize));
     while ds >= &raw mut drawsegs as *mut drawseg_t {
         if !(*ds).maskedtexturecol.is_null() {
             R_RenderMaskedSegRange(ds, (*ds).x1, (*ds).x2);
@@ -2666,4 +2294,4 @@ pub unsafe extern "C" fn R_DrawMasked() {
         R_DrawPlayerSprites();
     }
 }
-pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
+pub const __INT_MAX__: i32 = 2147483647 as i32;

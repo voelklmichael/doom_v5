@@ -1,137 +1,76 @@
+use crate::src::i_system::FILE;
+use crate::src::r_defs::{side_t};
+use crate::src::p_mobj::{thinker_t, sector_t, degenmobj_t, line_t, actionf_t};
+use crate::src::d_player::{player_t};
+use crate::src::p_mobj::{mobj_t};
+use crate::src::i_system::I_Error;
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::w_wad::{wad_name8_to_string, W_CheckNumForName};
+use crate::src::r_data::R_CheckTextureNumForName;
+use crate::src::p_lights::P_SpawnFireFlicker;
+use crate::src::p_lights::P_SpawnLightFlash;
+use crate::src::p_lights::P_SpawnStrobeFlash;
+use crate::src::p_lights::EV_StartLightStrobing;
+use crate::src::p_lights::EV_TurnTagLightsOff;
+use crate::src::p_lights::P_SpawnGlowingLight;
+use crate::src::p_switch::buttonlist;
+use crate::src::p_switch::P_ChangeSwitchTexture;
+use crate::src::p_plats::activeplats;
+use crate::src::p_plats::EV_StopPlat;
+use crate::src::p_doors::P_SpawnDoorCloseIn30;
+use crate::src::p_doors::P_SpawnDoorRaiseIn5Mins;
+use crate::src::p_ceilng::EV_CeilingCrushStop;
+use crate::src::p_telept::EV_Teleport;
+use crate::src::r_data::numflats;
+use crate::src::g_game::G_SecretExitLevel;
+use crate::src::g_game::totalsecret;
+use crate::src::p_ceilng::EV_DoCeiling;
+use crate::src::p_ceilng::activeceilings;
+use crate::src::p_floor::EV_BuildStairs;
+use crate::src::p_lights::EV_LightTurnOn;
+use crate::src::p_plats::EV_DoPlat;
+use crate::src::r_data::flattranslation;
+use crate::src::r_data::texturetranslation;
+use crate::src::g_game::G_ExitLevel;
+use crate::src::g_game::timelimit;
+use crate::src::m_misc::M_StrToInt;
+use crate::src::p_doors::EV_DoDoor;
+use crate::src::p_floor::EV_DoFloor;
+use crate::src::p_setup::numlines;
+use crate::src::p_inter::P_DamageMobj;
+use crate::src::p_setup::lines;
+use crate::src::p_setup::numsectors;
+use crate::src::p_setup::sides;
+use crate::src::p_tick::P_AddThinker;
+use crate::src::g_game::deathmatch;
+use crate::src::m_random::P_Random;
+use crate::src::p_setup::sectors;
+use crate::src::p_tick::leveltime;
+use crate::src::s_sound::S_StartSound;
+use crate::src::r_data::R_FlatNumForName;
+use crate::src::r_data::R_TextureNumForName;
+use crate::src::z_zone::Z_Malloc;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     static mut stderr: *mut FILE;
     fn fprintf(
         __stream: *mut FILE,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    static mut timelimit: ::core::ffi::c_int;
-    static mut deathmatch: ::core::ffi::c_int;
-    static mut totalsecret: ::core::ffi::c_int;
-    static mut leveltime: ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn M_StrToInt(
-        str: *const ::core::ffi::c_char,
-        result: *mut ::core::ffi::c_int,
-    ) -> boolean;
-    fn P_Random() -> ::core::ffi::c_int;
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    static mut flattranslation: *mut ::core::ffi::c_int;
-    static mut texturetranslation: *mut ::core::ffi::c_int;
-    static mut numsectors: ::core::ffi::c_int;
-    static mut sectors: *mut sector_t;
-    static mut numlines: ::core::ffi::c_int;
-    static mut lines: *mut line_t;
-    static mut sides: *mut side_t;
-    fn R_FlatNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn R_CheckTextureNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn P_AddThinker(thinker: *mut thinker_t);
-    fn P_DamageMobj(
-        target: *mut mobj_t,
-        inflictor: *mut mobj_t,
-        source: *mut mobj_t,
-        damage: ::core::ffi::c_int,
-    );
-    fn P_SpawnFireFlicker(sector: *mut sector_t);
-    fn P_SpawnLightFlash(sector: *mut sector_t);
-    fn P_SpawnStrobeFlash(
-        sector: *mut sector_t,
-        fastOrSlow: ::core::ffi::c_int,
-        inSync: ::core::ffi::c_int,
-    );
-    fn EV_StartLightStrobing(line: *mut line_t);
-    fn EV_TurnTagLightsOff(line: *mut line_t);
-    fn EV_LightTurnOn(line: *mut line_t, bright: ::core::ffi::c_int);
-    fn P_SpawnGlowingLight(sector: *mut sector_t);
-    static mut buttonlist: [button_t; 16];
-    fn P_ChangeSwitchTexture(line: *mut line_t, useAgain: ::core::ffi::c_int);
-    static mut activeplats: [*mut plat_t; 30];
-    fn EV_DoPlat(
-        line: *mut line_t,
-        type_0: plattype_e,
-        amount: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn EV_StopPlat(line: *mut line_t);
-    fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> ::core::ffi::c_int;
-    fn P_SpawnDoorCloseIn30(sec: *mut sector_t);
-    fn P_SpawnDoorRaiseIn5Mins(sec: *mut sector_t, secnum: ::core::ffi::c_int);
-    static mut activeceilings: [*mut ceiling_t; 30];
-    fn EV_DoCeiling(line: *mut line_t, type_0: ceiling_e) -> ::core::ffi::c_int;
-    fn EV_CeilingCrushStop(line: *mut line_t) -> ::core::ffi::c_int;
-    fn EV_BuildStairs(line: *mut line_t, type_0: stair_e) -> ::core::ffi::c_int;
-    fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> ::core::ffi::c_int;
     fn T_MoveFloor(floor: *mut floormove_t);
-    fn EV_Teleport(
-        line: *mut line_t,
-        side: ::core::ffi::c_int,
-        thing: *mut mobj_t,
-    ) -> ::core::ffi::c_int;
-    fn G_ExitLevel();
-    fn G_SecretExitLevel();
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
-pub type __off_t = ::core::ffi::c_long;
-pub type __off64_t = ::core::ffi::c_long;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: ::core::ffi::c_int,
-    pub _IO_read_ptr: *mut ::core::ffi::c_char,
-    pub _IO_read_end: *mut ::core::ffi::c_char,
-    pub _IO_read_base: *mut ::core::ffi::c_char,
-    pub _IO_write_base: *mut ::core::ffi::c_char,
-    pub _IO_write_ptr: *mut ::core::ffi::c_char,
-    pub _IO_write_end: *mut ::core::ffi::c_char,
-    pub _IO_buf_base: *mut ::core::ffi::c_char,
-    pub _IO_buf_end: *mut ::core::ffi::c_char,
-    pub _IO_save_base: *mut ::core::ffi::c_char,
-    pub _IO_backup_base: *mut ::core::ffi::c_char,
-    pub _IO_save_end: *mut ::core::ffi::c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: ::core::ffi::c_int,
-    pub _flags2: ::core::ffi::c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: ::core::ffi::c_ushort,
-    pub _vtable_offset: ::core::ffi::c_schar,
-    pub _shortbuf: [::core::ffi::c_char; 1],
-    pub _lock: *mut ::core::ffi::c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut ::core::ffi::c_void,
-    pub __pad5: size_t,
-    pub _mode: ::core::ffi::c_int,
-    pub _unused2: [::core::ffi::c_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -143,7 +82,7 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const NUMPOWERS: C2RustUnnamed = 6;
 pub const pw_infrared: C2RustUnnamed = 5;
 pub const pw_allmap: C2RustUnnamed = 4;
@@ -151,53 +90,15 @@ pub const pw_ironfeet: C2RustUnnamed = 3;
 pub const pw_invisibility: C2RustUnnamed = 2;
 pub const pw_strength: C2RustUnnamed = 1;
 pub const pw_invulnerability: C2RustUnnamed = 0;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -337,7 +238,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1306,18 +1207,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1456,194 +1346,11 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const CF_NOMOMENTUM: C2RustUnnamed_0 = 4;
 pub const CF_GODMODE: C2RustUnnamed_0 = 2;
 pub const CF_NOCLIP: C2RustUnnamed_0 = 1;
-pub type player_t = player_s;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed_1 = 9;
 pub const PU_CACHE: C2RustUnnamed_1 = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed_1 = 7;
@@ -1655,42 +1362,31 @@ pub const PU_SOUND: C2RustUnnamed_1 = 2;
 pub const PU_STATIC: C2RustUnnamed_1 = 1;
 #[derive(Copy, Clone)]
 #[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-pub type line_t = line_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
 pub struct anim_t {
     pub istexture: boolean,
-    pub picnum: ::core::ffi::c_int,
-    pub basepic: ::core::ffi::c_int,
-    pub numpics: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
+    pub picnum: i32,
+    pub basepic: i32,
+    pub numpics: i32,
+    pub speed: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct animdef_t {
-    pub istexture: ::core::ffi::c_int,
+    pub istexture: i32,
     pub endname: [::core::ffi::c_char; 9],
     pub startname: [::core::ffi::c_char; 9],
-    pub speed: ::core::ffi::c_int,
+    pub speed: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct button_t {
     pub line: *mut line_t,
     pub where_0: bwhere_e,
-    pub btexture: ::core::ffi::c_int,
-    pub btimer: ::core::ffi::c_int,
+    pub btexture: i32,
+    pub btimer: i32,
     pub soundorg: *mut degenmobj_t,
 }
-pub type bwhere_e = ::core::ffi::c_uint;
+pub type bwhere_e = u32;
 pub const bottom: bwhere_e = 2;
 pub const middle: bwhere_e = 1;
 pub const top: bwhere_e = 0;
@@ -1702,21 +1398,21 @@ pub struct plat_t {
     pub speed: fixed_t,
     pub low: fixed_t,
     pub high: fixed_t,
-    pub wait: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
+    pub wait: i32,
+    pub count: i32,
     pub status: plat_e,
     pub oldstatus: plat_e,
-    pub crush: boolean,
-    pub tag: ::core::ffi::c_int,
+    pub crush: bool,
+    pub tag: i32,
     pub type_0: plattype_e,
 }
-pub type plattype_e = ::core::ffi::c_uint;
+pub type plattype_e = u32;
 pub const blazeDWUS: plattype_e = 4;
 pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-pub type plat_e = ::core::ffi::c_uint;
+pub type plat_e = u32;
 pub const in_stasis: plat_e = 3;
 pub const waiting: plat_e = 2;
 pub const down: plat_e = 1;
@@ -1730,12 +1426,12 @@ pub struct ceiling_t {
     pub bottomheight: fixed_t,
     pub topheight: fixed_t,
     pub speed: fixed_t,
-    pub crush: boolean,
-    pub direction: ::core::ffi::c_int,
-    pub tag: ::core::ffi::c_int,
-    pub olddirection: ::core::ffi::c_int,
+    pub crush: bool,
+    pub direction: i32,
+    pub tag: i32,
+    pub olddirection: i32,
 }
-pub type ceiling_e = ::core::ffi::c_uint;
+pub type ceiling_e = u32;
 pub const silentCrushAndRaise: ceiling_e = 5;
 pub const fastCrushAndRaise: ceiling_e = 4;
 pub const crushAndRaise: ceiling_e = 3;
@@ -1743,7 +1439,7 @@ pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
 pub const sfx_swtchn: C2RustUnnamed_2 = 23;
-pub type vldoor_e = ::core::ffi::c_uint;
+pub type vldoor_e = u32;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
 pub const vld_blazeRaise: vldoor_e = 5;
@@ -1752,7 +1448,7 @@ pub const vld_open: vldoor_e = 3;
 pub const vld_close: vldoor_e = 2;
 pub const vld_close30ThenOpen: vldoor_e = 1;
 pub const vld_normal: vldoor_e = 0;
-pub type floor_e = ::core::ffi::c_uint;
+pub type floor_e = u32;
 pub const raiseFloor512: floor_e = 12;
 pub const donutRaise: floor_e = 11;
 pub const raiseFloorTurbo: floor_e = 10;
@@ -1766,7 +1462,7 @@ pub const raiseFloor: floor_e = 3;
 pub const turboLower: floor_e = 2;
 pub const lowerFloorToLowest: floor_e = 1;
 pub const lowerFloor: floor_e = 0;
-pub type stair_e = ::core::ffi::c_uint;
+pub type stair_e = u32;
 pub const turbo16: stair_e = 1;
 pub const build8: stair_e = 0;
 #[derive(Copy, Clone)]
@@ -1774,15 +1470,15 @@ pub const build8: stair_e = 0;
 pub struct floormove_t {
     pub thinker: thinker_t,
     pub type_0: floor_e,
-    pub crush: boolean,
+    pub crush: bool,
     pub sector: *mut sector_t,
-    pub direction: ::core::ffi::c_int,
-    pub newspecial: ::core::ffi::c_int,
-    pub texture: ::core::ffi::c_short,
+    pub direction: i32,
+    pub newspecial: i32,
+    pub texture: i16,
     pub floordestheight: fixed_t,
     pub speed: fixed_t,
 }
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const NUMSFX: C2RustUnnamed_2 = 109;
 pub const sfx_radio: C2RustUnnamed_2 = 108;
 pub const sfx_skeatk: C2RustUnnamed_2 = 107;
@@ -1895,19 +1591,19 @@ pub const sfx_None: C2RustUnnamed_2 = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
-pub const TICRATE: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const ML_TWOSIDED: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const FASTDARK: ::core::ffi::c_int = 15 as ::core::ffi::c_int;
-pub const SLOWDARK: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const MAXBUTTONS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const MAXPLATS: ::core::ffi::c_int = 30 as ::core::ffi::c_int;
-pub const MAXCEILINGS: ::core::ffi::c_int = 30 as ::core::ffi::c_int;
-pub const FLOORSPEED: ::core::ffi::c_int = FRACUNIT;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const INT_MAX: i32 = __INT_MAX__;
+pub const TICRATE: i32 = 35 as i32;
+pub const ML_TWOSIDED: i32 = 4 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const FASTDARK: i32 = 15 as i32;
+pub const SLOWDARK: i32 = 35 as i32;
+pub const MAXBUTTONS: i32 = 16 as i32;
+pub const MAXPLATS: i32 = 30 as i32;
+pub const MAXCEILINGS: i32 = 30 as i32;
+pub const FLOORSPEED: i32 = FRACUNIT;
 #[no_mangle]
 pub static mut animdefs: [animdef_t; 23] = unsafe {
     [
@@ -1921,7 +1617,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"NUKAGE1\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
@@ -1933,7 +1629,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"FWATER1\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
@@ -1945,7 +1641,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SWATER1\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
@@ -1957,7 +1653,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"LAVA1\0\0\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
@@ -1969,7 +1665,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"BLOOD1\0\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
@@ -1981,7 +1677,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"RROCK05\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
@@ -1993,7 +1689,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SLIME01\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
@@ -2005,7 +1701,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SLIME05\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: false_0,
@@ -2017,7 +1713,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SLIME09\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2029,7 +1725,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"BLODGR1\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2041,7 +1737,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SLADRIP1\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2053,7 +1749,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"BLODRIP1\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2065,7 +1761,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"FIREWALA\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2077,7 +1773,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"GSTFONT1\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2089,7 +1785,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"FIRELAV3\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2101,7 +1797,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"FIREMAG1\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2113,7 +1809,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"FIREBLU1\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2125,7 +1821,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"ROCKRED1\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2137,7 +1833,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"BFALL1\0\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2149,7 +1845,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SFALL1\0\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2161,7 +1857,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"WFALL1\0\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
             istexture: true_0,
@@ -2173,10 +1869,10 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"DBRAIN1\0\0"),
-            speed: 8 as ::core::ffi::c_int,
+            speed: 8 as i32,
         },
         animdef_t {
-            istexture: -(1 as ::core::ffi::c_int),
+            istexture: -(1 as i32),
             endname: ::core::mem::transmute::<
                 [u8; 9],
                 [::core::ffi::c_char; 9],
@@ -2185,7 +1881,7 @@ pub static mut animdefs: [animdef_t; 23] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"\0\0\0\0\0\0\0\0\0"),
-            speed: 0 as ::core::ffi::c_int,
+            speed: 0 as i32,
         },
     ]
 };
@@ -2199,14 +1895,13 @@ pub static mut anims: [anim_t; 32] = [anim_t {
 }; 32];
 #[no_mangle]
 pub static mut lastanim: *mut anim_t = ::core::ptr::null::<anim_t>() as *mut anim_t;
-pub const MAXLINEANIMS: ::core::ffi::c_int = 64 as ::core::ffi::c_int;
-#[no_mangle]
-pub unsafe extern "C" fn P_InitPicAnims() {
-    let mut i: ::core::ffi::c_int = 0;
+pub const MAXLINEANIMS: i32 = 64 as i32;
+pub unsafe fn P_InitPicAnims() {
+    let mut i: i32 = 0;
     lastanim = &raw mut anims as *mut anim_t;
     let mut current_block_13: u64;
-    i = 0 as ::core::ffi::c_int;
-    while animdefs[i as usize].istexture != -(1 as ::core::ffi::c_int) {
+    i = 0 as i32;
+    while animdefs[i as usize].istexture != -(1 as i32) {
         let mut startname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
             ::core::ffi::c_char,
         >();
@@ -2218,14 +1913,17 @@ pub unsafe extern "C" fn P_InitPicAnims() {
         endname = &raw mut (*(&raw mut animdefs as *mut animdef_t).offset(i as isize))
             .endname as *mut ::core::ffi::c_char;
         if animdefs[i as usize].istexture != 0 {
-            if R_CheckTextureNumForName(startname) == -(1 as ::core::ffi::c_int) {
+            if R_CheckTextureNumForName(startname) == -(1 as i32) {
                 current_block_13 = 12237857397564741460;
             } else {
                 (*lastanim).picnum = R_TextureNumForName(endname);
                 (*lastanim).basepic = R_TextureNumForName(startname);
                 current_block_13 = 11650488183268122163;
             }
-        } else if W_CheckNumForName(startname) == -(1 as ::core::ffi::c_int) {
+        } else if W_CheckNumForName(
+            &wad_name8_to_string(startname),
+        ) == -(1 as i32)
+        {
             current_block_13 = 12237857397564741460;
         } else {
             (*lastanim).picnum = R_FlatNumForName(endname);
@@ -2236,14 +1934,13 @@ pub unsafe extern "C" fn P_InitPicAnims() {
             11650488183268122163 => {
                 (*lastanim).istexture = animdefs[i as usize].istexture as boolean;
                 (*lastanim).numpics = (*lastanim).picnum - (*lastanim).basepic
-                    + 1 as ::core::ffi::c_int;
-                if (*lastanim).numpics < 2 as ::core::ffi::c_int {
-                    I_Error(
-                        b"P_InitPicAnims: bad cycle from %s to %s\0" as *const u8
-                            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                        startname,
-                        endname,
-                    );
+                    + 1 as i32;
+                if (*lastanim).numpics < 2 as i32 {
+                    I_Error(&format!(
+                        "P_InitPicAnims: bad cycle from {} to {}",
+                        wad_name8_to_string(startname),
+                        wad_name8_to_string(endname),
+                    ));
                 }
                 (*lastanim).speed = animdefs[i as usize].speed;
                 lastanim = lastanim.offset(1);
@@ -2253,26 +1950,24 @@ pub unsafe extern "C" fn P_InitPicAnims() {
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn getSide(
-    mut currentSector: ::core::ffi::c_int,
-    mut line: ::core::ffi::c_int,
-    mut side: ::core::ffi::c_int,
+pub unsafe fn getSide(
+    mut currentSector: i32,
+    mut line: i32,
+    mut side: i32,
 ) -> *mut side_t {
     return sides
         .offset(
             *(&raw mut (**(*sectors.offset(currentSector as isize))
                 .lines
                 .offset(line as isize))
-                .sidenum as *mut ::core::ffi::c_short)
+                .sidenum as *mut i16)
                 .offset(side as isize) as isize,
         ) as *mut side_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn getSector(
-    mut currentSector: ::core::ffi::c_int,
-    mut line: ::core::ffi::c_int,
-    mut side: ::core::ffi::c_int,
+pub unsafe fn getSector(
+    mut currentSector: i32,
+    mut line: i32,
+    mut side: i32,
 ) -> *mut sector_t {
     return (*sides
         .offset(
@@ -2281,20 +1976,18 @@ pub unsafe extern "C" fn getSector(
         ))
         .sector;
 }
-#[no_mangle]
-pub unsafe extern "C" fn twoSided(
-    mut sector: ::core::ffi::c_int,
-    mut line: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+pub unsafe fn twoSided(
+    mut sector: i32,
+    mut line: i32,
+) -> i32 {
     return (**(*sectors.offset(sector as isize)).lines.offset(line as isize)).flags
-        as ::core::ffi::c_int & ML_TWOSIDED;
+        as i32 & ML_TWOSIDED;
 }
-#[no_mangle]
-pub unsafe extern "C" fn getNextSector(
+pub unsafe fn getNextSector(
     mut line: *mut line_t,
     mut sec: *mut sector_t,
 ) -> *mut sector_t {
-    if (*line).flags as ::core::ffi::c_int & ML_TWOSIDED == 0 {
+    if (*line).flags as i32 & ML_TWOSIDED == 0 {
         return ::core::ptr::null_mut::<sector_t>();
     }
     if (*line).frontsector == sec {
@@ -2302,15 +1995,14 @@ pub unsafe extern "C" fn getNextSector(
     }
     return (*line).frontsector;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindLowestFloorSurrounding(
+pub unsafe fn P_FindLowestFloorSurrounding(
     mut sec: *mut sector_t,
 ) -> fixed_t {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut floor: fixed_t = (*sec).floorheight;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
         other = getNextSector(check, sec);
@@ -2323,15 +2015,14 @@ pub unsafe extern "C" fn P_FindLowestFloorSurrounding(
     }
     return floor;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindHighestFloorSurrounding(
+pub unsafe fn P_FindHighestFloorSurrounding(
     mut sec: *mut sector_t,
 ) -> fixed_t {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut floor: fixed_t = -(500 as fixed_t) * FRACUNIT;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
         other = getNextSector(check, sec);
@@ -2344,34 +2035,29 @@ pub unsafe extern "C" fn P_FindHighestFloorSurrounding(
     }
     return floor;
 }
-pub const MAX_ADJOINING_SECTORS: ::core::ffi::c_int = 20 as ::core::ffi::c_int;
-#[no_mangle]
-pub unsafe extern "C" fn P_FindNextHighestFloor(
+pub const MAX_ADJOINING_SECTORS: i32 = 20 as i32;
+pub unsafe fn P_FindNextHighestFloor(
     mut sec: *mut sector_t,
-    mut currentheight: ::core::ffi::c_int,
+    mut currentheight: i32,
 ) -> fixed_t {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut h: ::core::ffi::c_int = 0;
-    let mut min: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut h: i32 = 0;
+    let mut min: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut height: fixed_t = currentheight as fixed_t;
     let mut heightlist: [fixed_t; 22] = [0; 22];
-    i = 0 as ::core::ffi::c_int;
-    h = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
+    h = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
         other = getNextSector(check, sec);
         if !other.is_null() {
             if (*other).floorheight > height {
-                if h == MAX_ADJOINING_SECTORS + 1 as ::core::ffi::c_int {
+                if h == MAX_ADJOINING_SECTORS + 1 as i32 {
                     height = (*other).floorheight;
-                } else if h == MAX_ADJOINING_SECTORS + 2 as ::core::ffi::c_int {
-                    I_Error(
-                        b"Sector with more than 22 adjoining sectors. Vanilla will crash here\0"
-                            as *const u8 as *const ::core::ffi::c_char
-                            as *mut ::core::ffi::c_char,
-                    );
+                } else if h == MAX_ADJOINING_SECTORS + 2 as i32 {
+                    I_Error("Sector with more than 22 adjoining sectors. Vanilla will crash here");
                 }
                 let fresh1 = h;
                 h = h + 1;
@@ -2383,25 +2069,24 @@ pub unsafe extern "C" fn P_FindNextHighestFloor(
     if h == 0 {
         return currentheight as fixed_t;
     }
-    min = heightlist[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int;
-    i = 1 as ::core::ffi::c_int;
+    min = heightlist[0 as i32 as usize] as i32;
+    i = 1 as i32;
     while i < h {
         if heightlist[i as usize] < min {
-            min = heightlist[i as usize] as ::core::ffi::c_int;
+            min = heightlist[i as usize] as i32;
         }
         i += 1;
     }
     return min as fixed_t;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindLowestCeilingSurrounding(
+pub unsafe fn P_FindLowestCeilingSurrounding(
     mut sec: *mut sector_t,
 ) -> fixed_t {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut height: fixed_t = INT_MAX;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
         other = getNextSector(check, sec);
@@ -2414,15 +2099,14 @@ pub unsafe extern "C" fn P_FindLowestCeilingSurrounding(
     }
     return height;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindHighestCeilingSurrounding(
+pub unsafe fn P_FindHighestCeilingSurrounding(
     mut sec: *mut sector_t,
 ) -> fixed_t {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut height: fixed_t = 0 as fixed_t;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
         other = getNextSector(check, sec);
@@ -2435,64 +2119,61 @@ pub unsafe extern "C" fn P_FindHighestCeilingSurrounding(
     }
     return height;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindSectorFromLineTag(
+pub unsafe fn P_FindSectorFromLineTag(
     mut line: *mut line_t,
-    mut start: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
-    i = start + 1 as ::core::ffi::c_int;
+    mut start: i32,
+) -> i32 {
+    let mut i: i32 = 0;
+    i = start + 1 as i32;
     while i < numsectors {
-        if (*sectors.offset(i as isize)).tag as ::core::ffi::c_int
-            == (*line).tag as ::core::ffi::c_int
+        if (*sectors.offset(i as isize)).tag as i32
+            == (*line).tag as i32
         {
             return i;
         }
         i += 1;
     }
-    return -(1 as ::core::ffi::c_int);
+    return -(1 as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_FindMinSurroundingLight(
+pub unsafe fn P_FindMinSurroundingLight(
     mut sector: *mut sector_t,
-    mut max: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut min: ::core::ffi::c_int = 0;
+    mut max: i32,
+) -> i32 {
+    let mut i: i32 = 0;
+    let mut min: i32 = 0;
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut check: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     min = max;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < (*sector).linecount {
         line = *(*sector).lines.offset(i as isize) as *mut line_t;
         check = getNextSector(line, sector);
         if !check.is_null() {
-            if ((*check).lightlevel as ::core::ffi::c_int) < min {
-                min = (*check).lightlevel as ::core::ffi::c_int;
+            if ((*check).lightlevel as i32) < min {
+                min = (*check).lightlevel as i32;
             }
         }
         i += 1;
     }
     return min;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_CrossSpecialLine(
-    mut linenum: ::core::ffi::c_int,
-    mut side: ::core::ffi::c_int,
+pub unsafe fn P_CrossSpecialLine(
+    mut linenum: i32,
+    mut side: i32,
     mut thing: *mut mobj_t,
 ) {
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    let mut ok: ::core::ffi::c_int = 0;
+    let mut ok: i32 = 0;
     line = lines.offset(linenum as isize) as *mut line_t;
     if (*thing).player.is_null() {
-        match (*thing).type_0 as ::core::ffi::c_uint {
+        match (*thing).type_0 as u32 {
             33 | 34 | 35 | 31 | 32 | 16 => return,
             _ => {}
         }
-        ok = 0 as ::core::ffi::c_int;
-        match (*line).special as ::core::ffi::c_int {
+        ok = 0 as i32;
+        match (*line).special as i32 {
             39 | 97 | 125 | 126 | 4 | 10 | 88 => {
-                ok = 1 as ::core::ffi::c_int;
+                ok = 1 as i32;
             }
             _ => {}
         }
@@ -2500,150 +2181,150 @@ pub unsafe extern "C" fn P_CrossSpecialLine(
             return;
         }
     }
-    match (*line).special as ::core::ffi::c_int {
+    match (*line).special as i32 {
         2 => {
             EV_DoDoor(line, vld_open);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         3 => {
             EV_DoDoor(line, vld_close);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         4 => {
             EV_DoDoor(line, vld_normal);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         5 => {
             EV_DoFloor(line, raiseFloor);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         6 => {
             EV_DoCeiling(line, fastCrushAndRaise);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         8 => {
             EV_BuildStairs(line, build8);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         10 => {
-            EV_DoPlat(line, downWaitUpStay, 0 as ::core::ffi::c_int);
-            (*line).special = 0 as ::core::ffi::c_short;
+            EV_DoPlat(line, downWaitUpStay, 0 as i32);
+            (*line).special = 0 as i16;
         }
         12 => {
-            EV_LightTurnOn(line, 0 as ::core::ffi::c_int);
-            (*line).special = 0 as ::core::ffi::c_short;
+            EV_LightTurnOn(line, 0 as i32);
+            (*line).special = 0 as i16;
         }
         13 => {
-            EV_LightTurnOn(line, 255 as ::core::ffi::c_int);
-            (*line).special = 0 as ::core::ffi::c_short;
+            EV_LightTurnOn(line, 255 as i32);
+            (*line).special = 0 as i16;
         }
         16 => {
             EV_DoDoor(line, vld_close30ThenOpen);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         17 => {
             EV_StartLightStrobing(line);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         19 => {
             EV_DoFloor(line, lowerFloor);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         22 => {
-            EV_DoPlat(line, raiseToNearestAndChange, 0 as ::core::ffi::c_int);
-            (*line).special = 0 as ::core::ffi::c_short;
+            EV_DoPlat(line, raiseToNearestAndChange, 0 as i32);
+            (*line).special = 0 as i16;
         }
         25 => {
             EV_DoCeiling(line, crushAndRaise);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         30 => {
             EV_DoFloor(line, raiseToTexture);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         35 => {
-            EV_LightTurnOn(line, 35 as ::core::ffi::c_int);
-            (*line).special = 0 as ::core::ffi::c_short;
+            EV_LightTurnOn(line, 35 as i32);
+            (*line).special = 0 as i16;
         }
         36 => {
             EV_DoFloor(line, turboLower);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         37 => {
             EV_DoFloor(line, lowerAndChange);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         38 => {
             EV_DoFloor(line, lowerFloorToLowest);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         39 => {
             EV_Teleport(line, side, thing);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         40 => {
             EV_DoCeiling(line, raiseToHighest);
             EV_DoFloor(line, lowerFloorToLowest);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         44 => {
             EV_DoCeiling(line, lowerAndCrush);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         52 => {
             G_ExitLevel();
         }
         53 => {
-            EV_DoPlat(line, perpetualRaise, 0 as ::core::ffi::c_int);
-            (*line).special = 0 as ::core::ffi::c_short;
+            EV_DoPlat(line, perpetualRaise, 0 as i32);
+            (*line).special = 0 as i16;
         }
         54 => {
             EV_StopPlat(line);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         56 => {
             EV_DoFloor(line, raiseFloorCrush);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         57 => {
             EV_CeilingCrushStop(line);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         58 => {
             EV_DoFloor(line, raiseFloor24);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         59 => {
             EV_DoFloor(line, raiseFloor24AndChange);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         104 => {
             EV_TurnTagLightsOff(line);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         108 => {
             EV_DoDoor(line, vld_blazeRaise);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         109 => {
             EV_DoDoor(line, vld_blazeOpen);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         100 => {
             EV_BuildStairs(line, turbo16);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         110 => {
             EV_DoDoor(line, vld_blazeClose);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         119 => {
             EV_DoFloor(line, raiseFloorToNearest);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         121 => {
-            EV_DoPlat(line, blazeDWUS, 0 as ::core::ffi::c_int);
-            (*line).special = 0 as ::core::ffi::c_short;
+            EV_DoPlat(line, blazeDWUS, 0 as i32);
+            (*line).special = 0 as i16;
         }
         124 => {
             G_SecretExitLevel();
@@ -2651,16 +2332,16 @@ pub unsafe extern "C" fn P_CrossSpecialLine(
         125 => {
             if (*thing).player.is_null() {
                 EV_Teleport(line, side, thing);
-                (*line).special = 0 as ::core::ffi::c_short;
+                (*line).special = 0 as i16;
             }
         }
         130 => {
             EV_DoFloor(line, raiseFloorTurbo);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         141 => {
             EV_DoCeiling(line, silentCrushAndRaise);
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         72 => {
             EV_DoCeiling(line, lowerAndCrush);
@@ -2681,13 +2362,13 @@ pub unsafe extern "C" fn P_CrossSpecialLine(
             EV_DoCeiling(line, fastCrushAndRaise);
         }
         79 => {
-            EV_LightTurnOn(line, 35 as ::core::ffi::c_int);
+            EV_LightTurnOn(line, 35 as i32);
         }
         80 => {
-            EV_LightTurnOn(line, 0 as ::core::ffi::c_int);
+            EV_LightTurnOn(line, 0 as i32);
         }
         81 => {
-            EV_LightTurnOn(line, 255 as ::core::ffi::c_int);
+            EV_LightTurnOn(line, 255 as i32);
         }
         82 => {
             EV_DoFloor(line, lowerFloorToLowest);
@@ -2702,10 +2383,10 @@ pub unsafe extern "C" fn P_CrossSpecialLine(
             EV_DoDoor(line, vld_open);
         }
         87 => {
-            EV_DoPlat(line, perpetualRaise, 0 as ::core::ffi::c_int);
+            EV_DoPlat(line, perpetualRaise, 0 as i32);
         }
         88 => {
-            EV_DoPlat(line, downWaitUpStay, 0 as ::core::ffi::c_int);
+            EV_DoPlat(line, downWaitUpStay, 0 as i32);
         }
         89 => {
             EV_StopPlat(line);
@@ -2726,7 +2407,7 @@ pub unsafe extern "C" fn P_CrossSpecialLine(
             EV_DoFloor(line, raiseFloorCrush);
         }
         95 => {
-            EV_DoPlat(line, raiseToNearestAndChange, 0 as ::core::ffi::c_int);
+            EV_DoPlat(line, raiseToNearestAndChange, 0 as i32);
         }
         96 => {
             EV_DoFloor(line, raiseToTexture);
@@ -2747,7 +2428,7 @@ pub unsafe extern "C" fn P_CrossSpecialLine(
             EV_DoDoor(line, vld_blazeClose);
         }
         120 => {
-            EV_DoPlat(line, blazeDWUS, 0 as ::core::ffi::c_int);
+            EV_DoPlat(line, blazeDWUS, 0 as i32);
         }
         126 => {
             if (*thing).player.is_null() {
@@ -2763,17 +2444,16 @@ pub unsafe extern "C" fn P_CrossSpecialLine(
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ShootSpecialLine(
+pub unsafe fn P_ShootSpecialLine(
     mut thing: *mut mobj_t,
     mut line: *mut line_t,
 ) {
-    let mut ok: ::core::ffi::c_int = 0;
+    let mut ok: i32 = 0;
     if (*thing).player.is_null() {
-        ok = 0 as ::core::ffi::c_int;
-        match (*line).special as ::core::ffi::c_int {
+        ok = 0 as i32;
+        match (*line).special as i32 {
             46 => {
-                ok = 1 as ::core::ffi::c_int;
+                ok = 1 as i32;
             }
             _ => {}
         }
@@ -2781,106 +2461,103 @@ pub unsafe extern "C" fn P_ShootSpecialLine(
             return;
         }
     }
-    match (*line).special as ::core::ffi::c_int {
+    match (*line).special as i32 {
         24 => {
             EV_DoFloor(line, raiseFloor);
-            P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            P_ChangeSwitchTexture(line, 0 as i32);
         }
         46 => {
             EV_DoDoor(line, vld_open);
-            P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+            P_ChangeSwitchTexture(line, 1 as i32);
         }
         47 => {
-            EV_DoPlat(line, raiseToNearestAndChange, 0 as ::core::ffi::c_int);
-            P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            EV_DoPlat(line, raiseToNearestAndChange, 0 as i32);
+            P_ChangeSwitchTexture(line, 0 as i32);
         }
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_PlayerInSpecialSector(mut player: *mut player_t) {
+pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     sector = (*(*(*player).mo).subsector).sector;
     if (*(*player).mo).z != (*sector).floorheight {
         return;
     }
-    match (*sector).special as ::core::ffi::c_int {
+    match (*sector).special as i32 {
         5 => {
-            if (*player).powers[pw_ironfeet as ::core::ffi::c_int as usize] == 0 {
-                if leveltime & 0x1f as ::core::ffi::c_int == 0 {
+            if (*player).powers[pw_ironfeet as i32 as usize] == 0 {
+                if leveltime & 0x1f as i32 == 0 {
                     P_DamageMobj(
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
-                        10 as ::core::ffi::c_int,
+                        10 as i32,
                     );
                 }
             }
         }
         7 => {
-            if (*player).powers[pw_ironfeet as ::core::ffi::c_int as usize] == 0 {
-                if leveltime & 0x1f as ::core::ffi::c_int == 0 {
+            if (*player).powers[pw_ironfeet as i32 as usize] == 0 {
+                if leveltime & 0x1f as i32 == 0 {
                     P_DamageMobj(
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
-                        5 as ::core::ffi::c_int,
+                        5 as i32,
                     );
                 }
             }
         }
         16 | 4 => {
-            if (*player).powers[pw_ironfeet as ::core::ffi::c_int as usize] == 0
-                || P_Random() < 5 as ::core::ffi::c_int
+            if (*player).powers[pw_ironfeet as i32 as usize] == 0
+                || P_Random() < 5 as i32
             {
-                if leveltime & 0x1f as ::core::ffi::c_int == 0 {
+                if leveltime & 0x1f as i32 == 0 {
                     P_DamageMobj(
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
-                        20 as ::core::ffi::c_int,
+                        20 as i32,
                     );
                 }
             }
         }
         9 => {
             (*player).secretcount += 1;
-            (*sector).special = 0 as ::core::ffi::c_short;
+            (*sector).special = 0 as i16;
         }
         11 => {
-            (*player).cheats &= !(CF_GODMODE as ::core::ffi::c_int);
-            if leveltime & 0x1f as ::core::ffi::c_int == 0 {
+            (*player).cheats &= !(CF_GODMODE as i32);
+            if leveltime & 0x1f as i32 == 0 {
                 P_DamageMobj(
                     (*player).mo,
                     ::core::ptr::null_mut::<mobj_t>(),
                     ::core::ptr::null_mut::<mobj_t>(),
-                    20 as ::core::ffi::c_int,
+                    20 as i32,
                 );
             }
-            if (*player).health <= 10 as ::core::ffi::c_int {
+            if (*player).health <= 10 as i32 {
                 G_ExitLevel();
             }
         }
         _ => {
-            I_Error(
-                b"P_PlayerInSpecialSector: unknown special %i\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                (*sector).special as ::core::ffi::c_int,
-            );
+            I_Error(&format!(
+                "P_PlayerInSpecialSector: unknown special {}",
+                (*sector).special as i32,
+            ));
         }
     };
 }
 #[no_mangle]
-pub static mut levelTimer: boolean = 0;
+pub static mut levelTimer: bool = false;
 #[no_mangle]
-pub static mut levelTimeCount: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub unsafe extern "C" fn P_UpdateSpecials() {
+pub static mut levelTimeCount: i32 = 0;
+pub unsafe fn P_UpdateSpecials() {
     let mut anim: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    let mut pic: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+    let mut pic: i32 = 0;
+    let mut i: i32 = 0;
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    if levelTimer == true_0 as boolean {
+    if levelTimer {
         levelTimeCount -= 1;
         if levelTimeCount == 0 {
             G_ExitLevel();
@@ -2900,13 +2577,13 @@ pub unsafe extern "C" fn P_UpdateSpecials() {
         }
         anim = anim.offset(1);
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < numlinespecials as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < numlinespecials as i32 {
         line = linespeciallist[i as usize];
-        match (*line).special as ::core::ffi::c_int {
+        match (*line).special as i32 {
             48 => {
                 let ref mut fresh0 = (*sides
-                    .offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
+                    .offset((*line).sidenum[0 as i32 as usize] as isize))
                     .textureoffset;
                 *fresh0 += FRACUNIT;
             }
@@ -2914,50 +2591,50 @@ pub unsafe extern "C" fn P_UpdateSpecials() {
         }
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXBUTTONS {
         if buttonlist[i as usize].btimer != 0 {
             buttonlist[i as usize].btimer -= 1;
             if buttonlist[i as usize].btimer == 0 {
-                match buttonlist[i as usize].where_0 as ::core::ffi::c_uint {
+                match buttonlist[i as usize].where_0 as u32 {
                     0 => {
                         (*sides
                             .offset(
                                 (*buttonlist[i as usize].line)
-                                    .sidenum[0 as ::core::ffi::c_int as usize] as isize,
+                                    .sidenum[0 as i32 as usize] as isize,
                             ))
                             .toptexture = buttonlist[i as usize].btexture
-                            as ::core::ffi::c_short;
+                            as i16;
                     }
                     1 => {
                         (*sides
                             .offset(
                                 (*buttonlist[i as usize].line)
-                                    .sidenum[0 as ::core::ffi::c_int as usize] as isize,
+                                    .sidenum[0 as i32 as usize] as isize,
                             ))
                             .midtexture = buttonlist[i as usize].btexture
-                            as ::core::ffi::c_short;
+                            as i16;
                     }
                     2 => {
                         (*sides
                             .offset(
                                 (*buttonlist[i as usize].line)
-                                    .sidenum[0 as ::core::ffi::c_int as usize] as isize,
+                                    .sidenum[0 as i32 as usize] as isize,
                             ))
                             .bottomtexture = buttonlist[i as usize].btexture
-                            as ::core::ffi::c_short;
+                            as i16;
                     }
                     _ => {}
                 }
                 S_StartSound(
                     &raw mut (*(&raw mut buttonlist as *mut button_t).offset(i as isize))
                         .soundorg as *mut ::core::ffi::c_void,
-                    sfx_swtchn as ::core::ffi::c_int,
+                    sfx_swtchn as i32,
                 );
                 memset(
                     (&raw mut buttonlist as *mut button_t).offset(i as isize)
                         as *mut button_t as *mut ::core::ffi::c_void,
-                    0 as ::core::ffi::c_int,
+                    0 as i32,
                     ::core::mem::size_of::<button_t>() as size_t,
                 );
             }
@@ -2965,37 +2642,32 @@ pub unsafe extern "C" fn P_UpdateSpecials() {
         i += 1;
     }
 }
-pub const DONUT_FLOORHEIGHT_DEFAULT: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const DONUT_FLOORPIC_DEFAULT: ::core::ffi::c_int = 0x16 as ::core::ffi::c_int;
+pub const DONUT_FLOORHEIGHT_DEFAULT: i32 = 0 as i32;
+pub const DONUT_FLOORPIC_DEFAULT: i32 = 0x16 as i32;
 unsafe extern "C" fn DonutOverrun(
     mut s3_floorheight: *mut fixed_t,
-    mut s3_floorpic: *mut ::core::ffi::c_short,
+    mut s3_floorpic: *mut i16,
     mut line: *mut line_t,
     mut pillar_sector: *mut sector_t,
 ) {
-    static mut first: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-    static mut tmp_s3_floorheight: ::core::ffi::c_int = 0;
-    static mut tmp_s3_floorpic: ::core::ffi::c_int = 0;
-    extern "C" {
-        static mut numflats: ::core::ffi::c_int;
-    }
+    static mut first: i32 = 1 as i32;
+    static mut tmp_s3_floorheight: i32 = 0;
+    static mut tmp_s3_floorpic: i32 = 0;
     if first != 0 {
-        let mut p: ::core::ffi::c_int = 0;
-        first = 0 as ::core::ffi::c_int;
+        let mut p: i32 = 0;
+        first = 0 as i32;
         tmp_s3_floorheight = DONUT_FLOORHEIGHT_DEFAULT;
         tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
-        p = M_CheckParmWithArgs(
-            b"-donut\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            2 as ::core::ffi::c_int,
-        );
-        if p > 0 as ::core::ffi::c_int {
+        p = M_CheckParmWithArgs("-donut", 2 as i32);
+        if p > 0 as i32 {
             M_StrToInt(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 &raw mut tmp_s3_floorheight,
             );
             M_StrToInt(
-                *myargv.offset((p + 2 as ::core::ffi::c_int) as isize),
+                myargv[(p + 2 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 &raw mut tmp_s3_floorpic,
             );
             if tmp_s3_floorpic >= numflats {
@@ -3011,33 +2683,32 @@ unsafe extern "C" fn DonutOverrun(
         }
     }
     *s3_floorheight = tmp_s3_floorheight;
-    *s3_floorpic = tmp_s3_floorpic as ::core::ffi::c_short;
+    *s3_floorpic = tmp_s3_floorpic as i16;
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoDonut(mut line: *mut line_t) -> ::core::ffi::c_int {
+pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
     let mut s1: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut s2: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut s3: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    let mut secnum: ::core::ffi::c_int = 0;
-    let mut rtn: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+    let mut secnum: i32 = 0;
+    let mut rtn: i32 = 0;
+    let mut i: i32 = 0;
     let mut floor: *mut floormove_t = ::core::ptr::null_mut::<floormove_t>();
     let mut s3_floorheight: fixed_t = 0;
-    let mut s3_floorpic: ::core::ffi::c_short = 0;
-    secnum = -(1 as ::core::ffi::c_int);
-    rtn = 0 as ::core::ffi::c_int;
+    let mut s3_floorpic: i16 = 0;
+    secnum = -(1 as i32);
+    rtn = 0 as i32;
     loop {
         secnum = P_FindSectorFromLineTag(line, secnum);
-        if !(secnum >= 0 as ::core::ffi::c_int) {
+        if !(secnum >= 0 as i32) {
             break;
         }
         s1 = sectors.offset(secnum as isize) as *mut sector_t;
         if !(*s1).specialdata.is_null() {
             continue;
         }
-        rtn = 1 as ::core::ffi::c_int;
+        rtn = 1 as i32;
         s2 = getNextSector(
-            *(*s1).lines.offset(0 as ::core::ffi::c_int as isize) as *mut line_t,
+            *(*s1).lines.offset(0 as i32 as isize) as *mut line_t,
             s1,
         );
         if s2.is_null() {
@@ -3048,7 +2719,7 @@ pub unsafe extern "C" fn EV_DoDonut(mut line: *mut line_t) -> ::core::ffi::c_int
             );
             break;
         } else {
-            i = 0 as ::core::ffi::c_int;
+            i = 0 as i32;
             while i < (*s2).linecount {
                 s3 = (**(*s2).lines.offset(i as isize)).backsector;
                 if s3 == s1 {
@@ -3071,8 +2742,8 @@ pub unsafe extern "C" fn EV_DoDonut(mut line: *mut line_t) -> ::core::ffi::c_int
                         s3_floorpic = (*s3).floorpic;
                     }
                     floor = Z_Malloc(
-                        ::core::mem::size_of::<floormove_t>() as ::core::ffi::c_int,
-                        PU_LEVSPEC as ::core::ffi::c_int,
+                        ::core::mem::size_of::<floormove_t>() as i32,
+                        PU_LEVSPEC as i32,
                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     ) as *mut floormove_t;
                     P_AddThinker(&raw mut (*floor).thinker);
@@ -3082,16 +2753,16 @@ pub unsafe extern "C" fn EV_DoDonut(mut line: *mut line_t) -> ::core::ffi::c_int
                         actionf_p1,
                     >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
                     (*floor).type_0 = donutRaise;
-                    (*floor).crush = false_0 as boolean;
-                    (*floor).direction = 1 as ::core::ffi::c_int;
+                    (*floor).crush = false;
+                    (*floor).direction = 1 as i32;
                     (*floor).sector = s2;
-                    (*floor).speed = (FLOORSPEED / 2 as ::core::ffi::c_int) as fixed_t;
+                    (*floor).speed = (FLOORSPEED / 2 as i32) as fixed_t;
                     (*floor).texture = s3_floorpic;
-                    (*floor).newspecial = 0 as ::core::ffi::c_int;
+                    (*floor).newspecial = 0 as i32;
                     (*floor).floordestheight = s3_floorheight;
                     floor = Z_Malloc(
-                        ::core::mem::size_of::<floormove_t>() as ::core::ffi::c_int,
-                        PU_LEVSPEC as ::core::ffi::c_int,
+                        ::core::mem::size_of::<floormove_t>() as i32,
+                        PU_LEVSPEC as i32,
                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     ) as *mut floormove_t;
                     P_AddThinker(&raw mut (*floor).thinker);
@@ -3101,10 +2772,10 @@ pub unsafe extern "C" fn EV_DoDonut(mut line: *mut line_t) -> ::core::ffi::c_int
                         actionf_p1,
                     >(Some(T_MoveFloor as unsafe extern "C" fn(*mut floormove_t) -> ()));
                     (*floor).type_0 = lowerFloor;
-                    (*floor).crush = false_0 as boolean;
-                    (*floor).direction = -(1 as ::core::ffi::c_int);
+                    (*floor).crush = false;
+                    (*floor).direction = -(1 as i32);
                     (*floor).sector = s1;
-                    (*floor).speed = (FLOORSPEED / 2 as ::core::ffi::c_int) as fixed_t;
+                    (*floor).speed = (FLOORSPEED / 2 as i32) as fixed_t;
                     (*floor).floordestheight = s3_floorheight;
                     break;
                 }
@@ -3114,37 +2785,36 @@ pub unsafe extern "C" fn EV_DoDonut(mut line: *mut line_t) -> ::core::ffi::c_int
     return rtn;
 }
 #[no_mangle]
-pub static mut numlinespecials: ::core::ffi::c_short = 0;
+pub static mut numlinespecials: i16 = 0;
 #[no_mangle]
 pub static mut linespeciallist: [*mut line_t; 64] = [::core::ptr::null::<line_t>()
     as *mut line_t; 64];
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnSpecials() {
+pub unsafe fn P_SpawnSpecials() {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    let mut i: ::core::ffi::c_int = 0;
-    if timelimit > 0 as ::core::ffi::c_int && deathmatch != 0 {
-        levelTimer = true_0 as boolean;
-        levelTimeCount = timelimit * 60 as ::core::ffi::c_int * TICRATE;
+    let mut i: i32 = 0;
+    if timelimit > 0 as i32 && deathmatch != 0 {
+        levelTimer = true;
+        levelTimeCount = timelimit * 60 as i32 * TICRATE;
     } else {
-        levelTimer = false_0 as boolean;
+        levelTimer = false;
     }
     sector = sectors;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numsectors {
         if !((*sector).special == 0) {
-            match (*sector).special as ::core::ffi::c_int {
+            match (*sector).special as i32 {
                 1 => {
                     P_SpawnLightFlash(sector);
                 }
                 2 => {
-                    P_SpawnStrobeFlash(sector, FASTDARK, 0 as ::core::ffi::c_int);
+                    P_SpawnStrobeFlash(sector, FASTDARK, 0 as i32);
                 }
                 3 => {
-                    P_SpawnStrobeFlash(sector, SLOWDARK, 0 as ::core::ffi::c_int);
+                    P_SpawnStrobeFlash(sector, SLOWDARK, 0 as i32);
                 }
                 4 => {
-                    P_SpawnStrobeFlash(sector, FASTDARK, 0 as ::core::ffi::c_int);
-                    (*sector).special = 4 as ::core::ffi::c_short;
+                    P_SpawnStrobeFlash(sector, FASTDARK, 0 as i32);
+                    (*sector).special = 4 as i16;
                 }
                 8 => {
                     P_SpawnGlowingLight(sector);
@@ -3156,10 +2826,10 @@ pub unsafe extern "C" fn P_SpawnSpecials() {
                     P_SpawnDoorCloseIn30(sector);
                 }
                 12 => {
-                    P_SpawnStrobeFlash(sector, SLOWDARK, 1 as ::core::ffi::c_int);
+                    P_SpawnStrobeFlash(sector, SLOWDARK, 1 as i32);
                 }
                 13 => {
-                    P_SpawnStrobeFlash(sector, FASTDARK, 1 as ::core::ffi::c_int);
+                    P_SpawnStrobeFlash(sector, FASTDARK, 1 as i32);
                 }
                 14 => {
                     P_SpawnDoorRaiseIn5Mins(sector, i);
@@ -3173,17 +2843,13 @@ pub unsafe extern "C" fn P_SpawnSpecials() {
         i += 1;
         sector = sector.offset(1);
     }
-    numlinespecials = 0 as ::core::ffi::c_short;
-    i = 0 as ::core::ffi::c_int;
+    numlinespecials = 0 as i16;
+    i = 0 as i32;
     while i < numlines {
-        match (*lines.offset(i as isize)).special as ::core::ffi::c_int {
+        match (*lines.offset(i as isize)).special as i32 {
             48 => {
-                if numlinespecials as ::core::ffi::c_int >= MAXLINEANIMS {
-                    I_Error(
-                        b"Too many scrolling wall linedefs! (Vanilla limit is 64)\0"
-                            as *const u8 as *const ::core::ffi::c_char
-                            as *mut ::core::ffi::c_char,
-                    );
+                if numlinespecials as i32 >= MAXLINEANIMS {
+                    I_Error("Too many scrolling wall linedefs! (Vanilla limit is 64)");
                 }
                 linespeciallist[numlinespecials as usize] = lines.offset(i as isize)
                     as *mut line_t;
@@ -3193,25 +2859,25 @@ pub unsafe extern "C" fn P_SpawnSpecials() {
         }
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXCEILINGS {
         activeceilings[i as usize] = ::core::ptr::null_mut::<ceiling_t>();
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLATS {
         activeplats[i as usize] = ::core::ptr::null_mut::<plat_t>();
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXBUTTONS {
         memset(
             (&raw mut buttonlist as *mut button_t).offset(i as isize) as *mut button_t
                 as *mut ::core::ffi::c_void,
-            0 as ::core::ffi::c_int,
+            0 as i32,
             ::core::mem::size_of::<button_t>() as size_t,
         );
         i += 1;
     }
 }
-pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
+pub const __INT_MAX__: i32 = 2147483647 as i32;

@@ -1,143 +1,67 @@
+use crate::src::hu_lib::patch_t;
+use crate::src::st_lib::{st_number_t, st_percent_t, st_multicon_t, st_binicon_t};
+use crate::src::m_cheat::cheatseq_t;
+use crate::src::d_items::{weaponinfo_t, weaponinfo};
+use crate::src::d_event::event_t;
+use crate::src::d_player::{player_t};
+use crate::src::p_mobj::{actionf_t};
+use crate::src::w_wad::{
+    wad_name8_to_string, W_CacheLumpName, W_GetNumForName, W_ReleaseLumpName,
+};
+use crate::src::m_cheat::cht_GetParam;
+use crate::src::st_lib::STlib_initNum;
+use crate::src::st_lib::STlib_updateNum;
+use crate::src::st_lib::STlib_initPercent;
+use crate::src::st_lib::STlib_updatePercent;
+use crate::src::st_lib::STlib_initMultIcon;
+use crate::src::st_lib::STlib_updateMultIcon;
+use crate::src::st_lib::STlib_initBinIcon;
+use crate::src::st_lib::STlib_updateBinIcon;
+use crate::src::p_inter::P_GivePower;
+use crate::src::g_game::G_DeferedInitNew;
+use crate::src::m_cheat::cht_CheckCheat;
+use crate::src::v_video::V_UseBuffer;
+use crate::src::i_video::I_SetPalette;
+use crate::src::m_random::M_Random;
+use crate::src::s_sound::S_ChangeMusic;
+use crate::src::v_video::V_RestoreBuffer;
+use crate::src::g_game::gameskill;
+use crate::src::doomstat::gamemission;
+use crate::src::am_map::automapactive;
+use crate::src::r_main::R_PointToAngle2;
+use crate::src::g_game::deathmatch;
+use crate::src::m_misc::M_snprintf;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
+use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
+use crate::src::st_lib::STlib_init;
+use crate::src::v_video::V_CopyRect;
+use crate::src::v_video::V_DrawPatch;
+use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::z_zone::Z_Malloc;
+
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
-    fn I_SetPalette(palette: *mut byte);
-    fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> ::core::ffi::c_int;
-    fn M_Random() -> ::core::ffi::c_int;
-    fn W_GetNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn W_CacheLumpNum(
-        lump: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpName(name: *mut ::core::ffi::c_char);
-    fn G_DeferedInitNew(
-        skill: skill_t,
-        episode: ::core::ffi::c_int,
-        map: ::core::ffi::c_int,
-    );
-    fn cht_CheckCheat(
-        cht: *mut cheatseq_t,
-        key: ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    fn cht_GetParam(cht: *mut cheatseq_t, buffer: *mut ::core::ffi::c_char);
-    fn STlib_init();
-    fn STlib_initNum(
-        n: *mut st_number_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        pl: *mut *mut patch_t,
-        num: *mut ::core::ffi::c_int,
-        on: *mut boolean,
-        width: ::core::ffi::c_int,
-    );
-    fn STlib_updateNum(n: *mut st_number_t, refresh: boolean);
-    fn STlib_initPercent(
-        p: *mut st_percent_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        pl: *mut *mut patch_t,
-        num: *mut ::core::ffi::c_int,
-        on: *mut boolean,
-        percent: *mut patch_t,
-    );
-    fn STlib_updatePercent(per: *mut st_percent_t, refresh: ::core::ffi::c_int);
-    fn STlib_initMultIcon(
-        mi: *mut st_multicon_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        il: *mut *mut patch_t,
-        inum: *mut ::core::ffi::c_int,
-        on: *mut boolean,
-    );
-    fn STlib_updateMultIcon(mi: *mut st_multicon_t, refresh: boolean);
-    fn STlib_initBinIcon(
-        b: *mut st_binicon_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        i: *mut patch_t,
-        val: *mut boolean,
-        on: *mut boolean,
-    );
-    fn STlib_updateBinIcon(bi: *mut st_binicon_t, refresh: boolean);
-    static mut weaponinfo: [weaponinfo_t; 9];
-    fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_GivePower(_: *mut player_t, _: ::core::ffi::c_int) -> boolean;
-    fn S_ChangeMusic(music_id: ::core::ffi::c_int, looping: ::core::ffi::c_int);
-    fn V_CopyRect(
-        srcx: ::core::ffi::c_int,
-        srcy: ::core::ffi::c_int,
-        source: *mut byte,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
-        destx: ::core::ffi::c_int,
-        desty: ::core::ffi::c_int,
-    );
-    fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
-    fn V_UseBuffer(buffer: *mut byte);
-    fn V_RestoreBuffer();
-    static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
-    static mut gameversion: GameVersion_t;
-    static mut gameskill: skill_t;
-    static mut netgame: boolean;
-    static mut deathmatch: ::core::ffi::c_int;
-    static mut automapactive: boolean;
-    static mut consoleplayer: ::core::ffi::c_int;
-    static mut players: [player_t; 4];
+    ) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -147,7 +71,7 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -158,13 +82,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -179,14 +103,14 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type skill_t = ::core::ffi::c_int;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;
 pub const it_yellowskull: C2RustUnnamed_0 = 4;
@@ -194,7 +118,7 @@ pub const it_blueskull: C2RustUnnamed_0 = 3;
 pub const it_redcard: C2RustUnnamed_0 = 2;
 pub const it_yellowcard: C2RustUnnamed_0 = 1;
 pub const it_bluecard: C2RustUnnamed_0 = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -206,14 +130,14 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type ammotype_t = ::core::ffi::c_uint;
+pub type ammotype_t = u32;
 pub const am_noammo: ammotype_t = 5;
 pub const NUMAMMO: ammotype_t = 4;
 pub const am_misl: ammotype_t = 3;
 pub const am_cell: ammotype_t = 2;
 pub const am_shell: ammotype_t = 1;
 pub const am_clip: ammotype_t = 0;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const NUMPOWERS: C2RustUnnamed_1 = 6;
 pub const pw_infrared: C2RustUnnamed_1 = 5;
 pub const pw_allmap: C2RustUnnamed_1 = 4;
@@ -221,77 +145,8 @@ pub const pw_ironfeet: C2RustUnnamed_1 = 3;
 pub const pw_invisibility: C2RustUnnamed_1 = 2;
 pub const pw_strength: C2RustUnnamed_1 = 1;
 pub const pw_invulnerability: C2RustUnnamed_1 = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct cheatseq_t {
-    pub sequence: [::core::ffi::c_char; 25],
-    pub sequence_len: size_t,
-    pub parameter_chars: ::core::ffi::c_int,
-    pub chars_read: size_t,
-    pub param_chars_read: ::core::ffi::c_int,
-    pub parameter_buf: [::core::ffi::c_char; 5],
-}
-pub type player_t = player_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type fixed_t = ::core::ffi::c_int;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type statenum_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1260,19 +1115,12 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -1412,83 +1260,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type mobj_t = mobj_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1627,160 +1399,25 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
 pub type think_t = actionf_t;
-pub type angle_t = ::core::ffi::c_uint;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
+pub type angle_t = u32;
 pub const CF_NOCLIP: C2RustUnnamed_2 = 1;
 pub const mus_e1m1: C2RustUnnamed_3 = 1;
 pub const mus_runnin: C2RustUnnamed_3 = 33;
 pub const CF_GODMODE: C2RustUnnamed_2 = 2;
-pub type st_stateenum_t = ::core::ffi::c_uint;
+pub type st_stateenum_t = u32;
 pub const FirstPersonState: st_stateenum_t = 1;
 pub const AutomapState: st_stateenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct st_number_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub width: ::core::ffi::c_int,
-    pub oldnum: ::core::ffi::c_int,
-    pub num: *mut ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub p: *mut *mut patch_t,
-    pub data: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct weaponinfo_t {
-    pub ammo: ammotype_t,
-    pub upstate: ::core::ffi::c_int,
-    pub downstate: ::core::ffi::c_int,
-    pub readystate: ::core::ffi::c_int,
-    pub atkstate: ::core::ffi::c_int,
-    pub flashstate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct st_multicon_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub oldinum: ::core::ffi::c_int,
-    pub inum: *mut ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub p: *mut *mut patch_t,
-    pub data: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct st_binicon_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub oldval: boolean,
-    pub val: *mut boolean,
-    pub on: *mut boolean,
-    pub p: *mut patch_t,
-    pub data: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct st_percent_t {
-    pub n: st_number_t,
-    pub p: *mut patch_t,
-}
-pub type st_chatstateenum_t = ::core::ffi::c_uint;
+pub type st_chatstateenum_t = u32;
 pub const GetChatState: st_chatstateenum_t = 2;
 pub const WaitDestState: st_chatstateenum_t = 1;
 pub const StartChatState: st_chatstateenum_t = 0;
 pub type load_callback_t = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
 >;
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const CF_NOMOMENTUM: C2RustUnnamed_2 = 4;
-pub type C2RustUnnamed_3 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_3 = u32;
 pub const NUMMUSIC: C2RustUnnamed_3 = 68;
 pub const mus_dm2int: C2RustUnnamed_3 = 67;
 pub const mus_dm2ttl: C2RustUnnamed_3 = 66;
@@ -1848,124 +1485,123 @@ pub const mus_e1m4: C2RustUnnamed_3 = 4;
 pub const mus_e1m3: C2RustUnnamed_3 = 3;
 pub const mus_e1m2: C2RustUnnamed_3 = 2;
 pub const mus_None: C2RustUnnamed_3 = 0;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_GOD_MODE_HEALTH: ::core::ffi::c_int = 100 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_IDFA_ARMOR: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_IDFA_ARMOR_CLASS: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_IDKFA_ARMOR: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_IDKFA_ARMOR_CLASS: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const deh_god_mode_health: ::core::ffi::c_int = DEH_DEFAULT_GOD_MODE_HEALTH;
-pub const deh_idfa_armor: ::core::ffi::c_int = DEH_DEFAULT_IDFA_ARMOR;
-pub const deh_idfa_armor_class: ::core::ffi::c_int = DEH_DEFAULT_IDFA_ARMOR_CLASS;
-pub const deh_idkfa_armor: ::core::ffi::c_int = DEH_DEFAULT_IDKFA_ARMOR;
-pub const deh_idkfa_armor_class: ::core::ffi::c_int = DEH_DEFAULT_IDKFA_ARMOR_CLASS;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
+pub const DEH_DEFAULT_GOD_MODE_HEALTH: i32 = 100 as i32;
+pub const DEH_DEFAULT_IDFA_ARMOR: i32 = 200 as i32;
+pub const DEH_DEFAULT_IDFA_ARMOR_CLASS: i32 = 2 as i32;
+pub const DEH_DEFAULT_IDKFA_ARMOR: i32 = 200 as i32;
+pub const DEH_DEFAULT_IDKFA_ARMOR_CLASS: i32 = 2 as i32;
+pub const deh_god_mode_health: i32 = DEH_DEFAULT_GOD_MODE_HEALTH;
+pub const deh_idfa_armor: i32 = DEH_DEFAULT_IDFA_ARMOR;
+pub const deh_idfa_armor_class: i32 = DEH_DEFAULT_IDFA_ARMOR_CLASS;
+pub const deh_idkfa_armor: i32 = DEH_DEFAULT_IDKFA_ARMOR;
+pub const deh_idkfa_armor_class: i32 = DEH_DEFAULT_IDKFA_ARMOR_CLASS;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const TICRATE: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const ST_HEIGHT: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
-pub const ST_WIDTH: ::core::ffi::c_int = SCREENWIDTH;
-pub const ST_Y: ::core::ffi::c_int = SCREENHEIGHT - ST_HEIGHT;
-pub const ANG45: ::core::ffi::c_int = 0x20000000 as ::core::ffi::c_int;
-pub const ANG180: ::core::ffi::c_uint = 0x80000000 as ::core::ffi::c_uint;
-pub const AM_MSGHEADER: ::core::ffi::c_int = (('a' as i32) << 24 as ::core::ffi::c_int)
-    + (('m' as i32) << 16 as ::core::ffi::c_int);
-pub const AM_MSGENTERED: ::core::ffi::c_int = 1634559232;
-pub const AM_MSGEXITED: ::core::ffi::c_int = 1634564096;
-pub const STARTREDPALS: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const STARTBONUSPALS: ::core::ffi::c_int = 9 as ::core::ffi::c_int;
-pub const NUMREDPALS: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
-pub const NUMBONUSPALS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const RADIATIONPAL: ::core::ffi::c_int = 13 as ::core::ffi::c_int;
-pub const ST_X: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const ST_FX: ::core::ffi::c_int = 143 as ::core::ffi::c_int;
-pub const ST_NUMPAINFACES: ::core::ffi::c_int = 5 as ::core::ffi::c_int;
-pub const ST_NUMSTRAIGHTFACES: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const ST_NUMTURNFACES: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const ST_NUMSPECIALFACES: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const ST_FACESTRIDE: ::core::ffi::c_int = ST_NUMSTRAIGHTFACES + ST_NUMTURNFACES
+pub const TICRATE: i32 = 35 as i32;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const ST_HEIGHT: i32 = 32 as i32;
+pub const ST_WIDTH: i32 = SCREENWIDTH;
+pub const ST_Y: i32 = SCREENHEIGHT - ST_HEIGHT;
+pub const ANG45: i32 = 0x20000000 as i32;
+pub const ANG180: u32 = 0x80000000 as u32;
+pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
+    + (('m' as i32) << 16 as i32);
+pub const AM_MSGENTERED: i32 = 1634559232;
+pub const AM_MSGEXITED: i32 = 1634564096;
+pub const STARTREDPALS: i32 = 1 as i32;
+pub const STARTBONUSPALS: i32 = 9 as i32;
+pub const NUMREDPALS: i32 = 8 as i32;
+pub const NUMBONUSPALS: i32 = 4 as i32;
+pub const RADIATIONPAL: i32 = 13 as i32;
+pub const ST_X: i32 = 0 as i32;
+pub const ST_FX: i32 = 143 as i32;
+pub const ST_NUMPAINFACES: i32 = 5 as i32;
+pub const ST_NUMSTRAIGHTFACES: i32 = 3 as i32;
+pub const ST_NUMTURNFACES: i32 = 2 as i32;
+pub const ST_NUMSPECIALFACES: i32 = 3 as i32;
+pub const ST_FACESTRIDE: i32 = ST_NUMSTRAIGHTFACES + ST_NUMTURNFACES
     + ST_NUMSPECIALFACES;
-pub const ST_TURNOFFSET: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const ST_OUCHOFFSET: ::core::ffi::c_int = ST_TURNOFFSET + ST_NUMTURNFACES;
-pub const ST_EVILGRINOFFSET: ::core::ffi::c_int = ST_OUCHOFFSET
-    + 1 as ::core::ffi::c_int;
-pub const ST_RAMPAGEOFFSET: ::core::ffi::c_int = ST_EVILGRINOFFSET
-    + 1 as ::core::ffi::c_int;
-pub const ST_GODFACE: ::core::ffi::c_int = ST_NUMPAINFACES * ST_FACESTRIDE;
-pub const ST_DEADFACE: ::core::ffi::c_int = ST_GODFACE + 1 as ::core::ffi::c_int;
-pub const ST_FACESX: ::core::ffi::c_int = 143 as ::core::ffi::c_int;
-pub const ST_FACESY: ::core::ffi::c_int = 168 as ::core::ffi::c_int;
-pub const ST_EVILGRINCOUNT: ::core::ffi::c_int = 2 as ::core::ffi::c_int * TICRATE;
-pub const ST_STRAIGHTFACECOUNT: ::core::ffi::c_int = TICRATE / 2 as ::core::ffi::c_int;
-pub const ST_TURNCOUNT: ::core::ffi::c_int = 1 as ::core::ffi::c_int * TICRATE;
-pub const ST_RAMPAGEDELAY: ::core::ffi::c_int = 2 as ::core::ffi::c_int * TICRATE;
-pub const ST_MUCHPAIN: ::core::ffi::c_int = 20 as ::core::ffi::c_int;
-pub const ST_AMMOWIDTH: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const ST_AMMOX: ::core::ffi::c_int = 44 as ::core::ffi::c_int;
-pub const ST_AMMOY: ::core::ffi::c_int = 171 as ::core::ffi::c_int;
-pub const ST_HEALTHX: ::core::ffi::c_int = 90 as ::core::ffi::c_int;
-pub const ST_HEALTHY: ::core::ffi::c_int = 171 as ::core::ffi::c_int;
-pub const ST_ARMSX: ::core::ffi::c_int = 111 as ::core::ffi::c_int;
-pub const ST_ARMSY: ::core::ffi::c_int = 172 as ::core::ffi::c_int;
-pub const ST_ARMSBGX: ::core::ffi::c_int = 104 as ::core::ffi::c_int;
-pub const ST_ARMSBGY: ::core::ffi::c_int = 168 as ::core::ffi::c_int;
-pub const ST_ARMSXSPACE: ::core::ffi::c_int = 12 as ::core::ffi::c_int;
-pub const ST_ARMSYSPACE: ::core::ffi::c_int = 10 as ::core::ffi::c_int;
-pub const ST_FRAGSX: ::core::ffi::c_int = 138 as ::core::ffi::c_int;
-pub const ST_FRAGSY: ::core::ffi::c_int = 171 as ::core::ffi::c_int;
-pub const ST_FRAGSWIDTH: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const ST_ARMORX: ::core::ffi::c_int = 221 as ::core::ffi::c_int;
-pub const ST_ARMORY: ::core::ffi::c_int = 171 as ::core::ffi::c_int;
-pub const ST_KEY0X: ::core::ffi::c_int = 239 as ::core::ffi::c_int;
-pub const ST_KEY0Y: ::core::ffi::c_int = 171 as ::core::ffi::c_int;
-pub const ST_KEY1X: ::core::ffi::c_int = 239 as ::core::ffi::c_int;
-pub const ST_KEY1Y: ::core::ffi::c_int = 181 as ::core::ffi::c_int;
-pub const ST_KEY2X: ::core::ffi::c_int = 239 as ::core::ffi::c_int;
-pub const ST_KEY2Y: ::core::ffi::c_int = 191 as ::core::ffi::c_int;
-pub const ST_AMMO0WIDTH: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const ST_AMMO0X: ::core::ffi::c_int = 288 as ::core::ffi::c_int;
-pub const ST_AMMO0Y: ::core::ffi::c_int = 173 as ::core::ffi::c_int;
-pub const ST_AMMO1WIDTH: ::core::ffi::c_int = ST_AMMO0WIDTH;
-pub const ST_AMMO1X: ::core::ffi::c_int = 288 as ::core::ffi::c_int;
-pub const ST_AMMO1Y: ::core::ffi::c_int = 179 as ::core::ffi::c_int;
-pub const ST_AMMO2WIDTH: ::core::ffi::c_int = ST_AMMO0WIDTH;
-pub const ST_AMMO2X: ::core::ffi::c_int = 288 as ::core::ffi::c_int;
-pub const ST_AMMO2Y: ::core::ffi::c_int = 191 as ::core::ffi::c_int;
-pub const ST_AMMO3WIDTH: ::core::ffi::c_int = ST_AMMO0WIDTH;
-pub const ST_AMMO3X: ::core::ffi::c_int = 288 as ::core::ffi::c_int;
-pub const ST_AMMO3Y: ::core::ffi::c_int = 185 as ::core::ffi::c_int;
-pub const ST_MAXAMMO0WIDTH: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const ST_MAXAMMO0X: ::core::ffi::c_int = 314 as ::core::ffi::c_int;
-pub const ST_MAXAMMO0Y: ::core::ffi::c_int = 173 as ::core::ffi::c_int;
-pub const ST_MAXAMMO1WIDTH: ::core::ffi::c_int = ST_MAXAMMO0WIDTH;
-pub const ST_MAXAMMO1X: ::core::ffi::c_int = 314 as ::core::ffi::c_int;
-pub const ST_MAXAMMO1Y: ::core::ffi::c_int = 179 as ::core::ffi::c_int;
-pub const ST_MAXAMMO2WIDTH: ::core::ffi::c_int = ST_MAXAMMO0WIDTH;
-pub const ST_MAXAMMO2X: ::core::ffi::c_int = 314 as ::core::ffi::c_int;
-pub const ST_MAXAMMO2Y: ::core::ffi::c_int = 191 as ::core::ffi::c_int;
-pub const ST_MAXAMMO3WIDTH: ::core::ffi::c_int = ST_MAXAMMO0WIDTH;
-pub const ST_MAXAMMO3X: ::core::ffi::c_int = 314 as ::core::ffi::c_int;
-pub const ST_MAXAMMO3Y: ::core::ffi::c_int = 185 as ::core::ffi::c_int;
-#[no_mangle]
+pub const ST_TURNOFFSET: i32 = 3 as i32;
+pub const ST_OUCHOFFSET: i32 = ST_TURNOFFSET + ST_NUMTURNFACES;
+pub const ST_EVILGRINOFFSET: i32 = ST_OUCHOFFSET
+    + 1 as i32;
+pub const ST_RAMPAGEOFFSET: i32 = ST_EVILGRINOFFSET
+    + 1 as i32;
+pub const ST_GODFACE: i32 = ST_NUMPAINFACES * ST_FACESTRIDE;
+pub const ST_DEADFACE: i32 = ST_GODFACE + 1 as i32;
+pub const ST_FACESX: i32 = 143 as i32;
+pub const ST_FACESY: i32 = 168 as i32;
+pub const ST_EVILGRINCOUNT: i32 = 2 as i32 * TICRATE;
+pub const ST_STRAIGHTFACECOUNT: i32 = TICRATE / 2 as i32;
+pub const ST_TURNCOUNT: i32 = 1 as i32 * TICRATE;
+pub const ST_RAMPAGEDELAY: i32 = 2 as i32 * TICRATE;
+pub const ST_MUCHPAIN: i32 = 20 as i32;
+pub const ST_AMMOWIDTH: i32 = 3 as i32;
+pub const ST_AMMOX: i32 = 44 as i32;
+pub const ST_AMMOY: i32 = 171 as i32;
+pub const ST_HEALTHX: i32 = 90 as i32;
+pub const ST_HEALTHY: i32 = 171 as i32;
+pub const ST_ARMSX: i32 = 111 as i32;
+pub const ST_ARMSY: i32 = 172 as i32;
+pub const ST_ARMSBGX: i32 = 104 as i32;
+pub const ST_ARMSBGY: i32 = 168 as i32;
+pub const ST_ARMSXSPACE: i32 = 12 as i32;
+pub const ST_ARMSYSPACE: i32 = 10 as i32;
+pub const ST_FRAGSX: i32 = 138 as i32;
+pub const ST_FRAGSY: i32 = 171 as i32;
+pub const ST_FRAGSWIDTH: i32 = 2 as i32;
+pub const ST_ARMORX: i32 = 221 as i32;
+pub const ST_ARMORY: i32 = 171 as i32;
+pub const ST_KEY0X: i32 = 239 as i32;
+pub const ST_KEY0Y: i32 = 171 as i32;
+pub const ST_KEY1X: i32 = 239 as i32;
+pub const ST_KEY1Y: i32 = 181 as i32;
+pub const ST_KEY2X: i32 = 239 as i32;
+pub const ST_KEY2Y: i32 = 191 as i32;
+pub const ST_AMMO0WIDTH: i32 = 3 as i32;
+pub const ST_AMMO0X: i32 = 288 as i32;
+pub const ST_AMMO0Y: i32 = 173 as i32;
+pub const ST_AMMO1WIDTH: i32 = ST_AMMO0WIDTH;
+pub const ST_AMMO1X: i32 = 288 as i32;
+pub const ST_AMMO1Y: i32 = 179 as i32;
+pub const ST_AMMO2WIDTH: i32 = ST_AMMO0WIDTH;
+pub const ST_AMMO2X: i32 = 288 as i32;
+pub const ST_AMMO2Y: i32 = 191 as i32;
+pub const ST_AMMO3WIDTH: i32 = ST_AMMO0WIDTH;
+pub const ST_AMMO3X: i32 = 288 as i32;
+pub const ST_AMMO3Y: i32 = 185 as i32;
+pub const ST_MAXAMMO0WIDTH: i32 = 3 as i32;
+pub const ST_MAXAMMO0X: i32 = 314 as i32;
+pub const ST_MAXAMMO0Y: i32 = 173 as i32;
+pub const ST_MAXAMMO1WIDTH: i32 = ST_MAXAMMO0WIDTH;
+pub const ST_MAXAMMO1X: i32 = 314 as i32;
+pub const ST_MAXAMMO1Y: i32 = 179 as i32;
+pub const ST_MAXAMMO2WIDTH: i32 = ST_MAXAMMO0WIDTH;
+pub const ST_MAXAMMO2X: i32 = 314 as i32;
+pub const ST_MAXAMMO2Y: i32 = 191 as i32;
+pub const ST_MAXAMMO3WIDTH: i32 = ST_MAXAMMO0WIDTH;
+pub const ST_MAXAMMO3X: i32 = 314 as i32;
+pub const ST_MAXAMMO3Y: i32 = 185 as i32;
 pub static mut st_backing_screen: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
 static mut plyr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t;
-static mut st_firsttime: boolean = 0;
-static mut lu_palette: ::core::ffi::c_int = 0;
-static mut st_clock: ::core::ffi::c_uint = 0;
-static mut st_msgcounter: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+static mut st_firsttime: bool = false;
+static mut lu_palette: i32 = 0;
+static mut st_clock: u32 = 0;
+static mut st_msgcounter: i32 = 0 as i32;
 static mut st_chatstate: st_chatstateenum_t = StartChatState;
 static mut st_gamestate: st_stateenum_t = AutomapState;
-static mut st_statusbaron: boolean = 0;
-static mut st_chat: boolean = 0;
-static mut st_oldchat: boolean = 0;
-static mut st_cursoron: boolean = 0;
-static mut st_notdeathmatch: boolean = 0;
-static mut st_armson: boolean = 0;
-static mut st_fragson: boolean = 0;
+static mut st_statusbaron: bool = false;
+static mut st_chat: bool = false;
+static mut st_oldchat: bool = false;
+static mut st_cursoron: bool = false;
+static mut st_notdeathmatch: bool = false;
+static mut st_armson: bool = false;
+static mut st_fragson: bool = false;
 static mut sbar: *mut patch_t = ::core::ptr::null::<patch_t>() as *mut patch_t;
 static mut tallnum: [*mut patch_t; 10] = [::core::ptr::null::<patch_t>()
     as *mut patch_t; 10];
@@ -1984,8 +1620,8 @@ static mut w_ready: st_number_t = st_number_t {
     y: 0,
     width: 0,
     oldnum: 0,
-    num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    num: ::core::ptr::null::<i32>() as *mut i32,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 };
@@ -1994,8 +1630,8 @@ static mut w_frags: st_number_t = st_number_t {
     y: 0,
     width: 0,
     oldnum: 0,
-    num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    num: ::core::ptr::null::<i32>() as *mut i32,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 };
@@ -2005,8 +1641,8 @@ static mut w_health: st_percent_t = st_percent_t {
         y: 0,
         width: 0,
         oldnum: 0,
-        num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-        on: ::core::ptr::null::<boolean>() as *mut boolean,
+        num: ::core::ptr::null::<i32>() as *mut i32,
+        on: ::core::ptr::null::<bool>() as *mut bool,
         p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
         data: 0,
     },
@@ -2015,18 +1651,19 @@ static mut w_health: st_percent_t = st_percent_t {
 static mut w_armsbg: st_binicon_t = st_binicon_t {
     x: 0,
     y: 0,
-    oldval: 0,
-    val: ::core::ptr::null::<boolean>() as *mut boolean,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    oldval: false,
+    val: ::core::ptr::null::<bool>() as *mut bool,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<patch_t>() as *mut patch_t,
     data: 0,
 };
+static mut w_arms_owned: [i32; 6] = [0; 6];
 static mut w_arms: [st_multicon_t; 6] = [st_multicon_t {
     x: 0,
     y: 0,
     oldinum: 0,
-    inum: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    inum: ::core::ptr::null::<i32>() as *mut i32,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 }; 6];
@@ -2034,8 +1671,8 @@ static mut w_faces: st_multicon_t = st_multicon_t {
     x: 0,
     y: 0,
     oldinum: 0,
-    inum: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    inum: ::core::ptr::null::<i32>() as *mut i32,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 };
@@ -2043,8 +1680,8 @@ static mut w_keyboxes: [st_multicon_t; 3] = [st_multicon_t {
     x: 0,
     y: 0,
     oldinum: 0,
-    inum: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    inum: ::core::ptr::null::<i32>() as *mut i32,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 }; 3];
@@ -2054,8 +1691,8 @@ static mut w_armor: st_percent_t = st_percent_t {
         y: 0,
         width: 0,
         oldnum: 0,
-        num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-        on: ::core::ptr::null::<boolean>() as *mut boolean,
+        num: ::core::ptr::null::<i32>() as *mut i32,
+        on: ::core::ptr::null::<bool>() as *mut bool,
         p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
         data: 0,
     },
@@ -2066,8 +1703,8 @@ static mut w_ammo: [st_number_t; 4] = [st_number_t {
     y: 0,
     width: 0,
     oldnum: 0,
-    num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    num: ::core::ptr::null::<i32>() as *mut i32,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 }; 4];
@@ -2076,18 +1713,18 @@ static mut w_maxammo: [st_number_t; 4] = [st_number_t {
     y: 0,
     width: 0,
     oldnum: 0,
-    num: ::core::ptr::null::<::core::ffi::c_int>() as *mut ::core::ffi::c_int,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
+    num: ::core::ptr::null::<i32>() as *mut i32,
+    on: ::core::ptr::null::<bool>() as *mut bool,
     p: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     data: 0,
 }; 4];
-static mut st_fragscount: ::core::ffi::c_int = 0;
-static mut st_oldhealth: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
-static mut oldweaponsowned: [boolean; 9] = [0; 9];
-static mut st_facecount: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut st_faceindex: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut keyboxes: [::core::ffi::c_int; 3] = [0; 3];
-static mut st_randomnumber: ::core::ffi::c_int = 0;
+static mut st_fragscount: i32 = 0;
+static mut st_oldhealth: i32 = -(1 as i32);
+static mut oldweaponsowned: [bool; 9] = [false; 9];
+static mut st_facecount: i32 = 0 as i32;
+static mut st_faceindex: i32 = 0 as i32;
+static mut keyboxes: [i32; 3] = [0; 3];
+static mut st_randomnumber: i32 = 0;
 #[no_mangle]
 pub static mut cheat_mus: cheatseq_t = cheatseq_t {
     sequence: [0; 25],
@@ -2180,16 +1817,16 @@ pub static mut cheat_mypos: cheatseq_t = cheatseq_t {
 };
 #[no_mangle]
 pub unsafe extern "C" fn ST_refreshBackground() {
-    if st_statusbaron != 0 {
+    if st_statusbaron {
         V_UseBuffer(st_backing_screen);
-        V_DrawPatch(ST_X, 0 as ::core::ffi::c_int, sbar);
-        if netgame != 0 {
-            V_DrawPatch(ST_FX, 0 as ::core::ffi::c_int, faceback);
+        V_DrawPatch(ST_X, 0 as i32, sbar);
+        if netgame {
+            V_DrawPatch(ST_FX, 0 as i32, faceback);
         }
         V_RestoreBuffer();
         V_CopyRect(
             ST_X,
-            0 as ::core::ffi::c_int,
+            0 as i32,
             st_backing_screen,
             ST_WIDTH,
             ST_HEIGHT,
@@ -2198,37 +1835,36 @@ pub unsafe extern "C" fn ST_refreshBackground() {
         );
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
-    let mut i: ::core::ffi::c_int = 0;
-    if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_keyup as ::core::ffi::c_int as ::core::ffi::c_uint
-        && (*ev).data1 as ::core::ffi::c_uint & 0xffff0000 as ::core::ffi::c_uint
-            == AM_MSGHEADER as ::core::ffi::c_uint
+pub unsafe fn ST_Responder(mut ev: *mut event_t) -> bool {
+    let mut i: i32 = 0;
+    if (*ev).type_0 as u32
+        == ev_keyup as i32 as u32
+        && (*ev).data1 as u32 & 0xffff0000 as u32
+            == AM_MSGHEADER as u32
     {
         match (*ev).data1 {
             AM_MSGENTERED => {
                 st_gamestate = AutomapState;
-                st_firsttime = true_0 as boolean;
+                st_firsttime = true;
             }
             AM_MSGEXITED => {
                 st_gamestate = FirstPersonState;
             }
             _ => {}
         }
-    } else if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (*ev).type_0 as u32
+        == ev_keydown as i32 as u32
     {
-        if netgame == 0
-            && gameskill as ::core::ffi::c_int != sk_nightmare as ::core::ffi::c_int
+        if !netgame
+            && gameskill as i32 != sk_nightmare as i32
         {
             if cht_CheckCheat(&raw mut cheat_god, (*ev).data2 as ::core::ffi::c_char)
                 != 0
             {
-                (*plyr).cheats ^= CF_GODMODE as ::core::ffi::c_int;
-                if (*plyr).cheats & CF_GODMODE as ::core::ffi::c_int != 0 {
+                (*plyr).cheats ^= CF_GODMODE as i32;
+                if (*plyr).cheats & CF_GODMODE as i32 != 0 {
                     if !(*plyr).mo.is_null() {
-                        (*(*plyr).mo).health = 100 as ::core::ffi::c_int;
+                        (*(*plyr).mo).health = 100 as i32;
                     }
                     (*plyr).health = deh_god_mode_health;
                     (*plyr).message = b"Degreelessness Mode On\0" as *const u8
@@ -2244,13 +1880,13 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
             {
                 (*plyr).armorpoints = deh_idfa_armor;
                 (*plyr).armortype = deh_idfa_armor_class;
-                i = 0 as ::core::ffi::c_int;
-                while i < NUMWEAPONS as ::core::ffi::c_int {
-                    (*plyr).weaponowned[i as usize] = true_0 as boolean;
+                i = 0 as i32;
+                while i < NUMWEAPONS as i32 {
+                    (*plyr).weaponowned[i as usize] = true;
                     i += 1;
                 }
-                i = 0 as ::core::ffi::c_int;
-                while i < NUMAMMO as ::core::ffi::c_int {
+                i = 0 as i32;
+                while i < NUMAMMO as i32 {
                     (*plyr).ammo[i as usize] = (*plyr).maxammo[i as usize];
                     i += 1;
                 }
@@ -2263,19 +1899,19 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
             {
                 (*plyr).armorpoints = deh_idkfa_armor;
                 (*plyr).armortype = deh_idkfa_armor_class;
-                i = 0 as ::core::ffi::c_int;
-                while i < NUMWEAPONS as ::core::ffi::c_int {
-                    (*plyr).weaponowned[i as usize] = true_0 as boolean;
+                i = 0 as i32;
+                while i < NUMWEAPONS as i32 {
+                    (*plyr).weaponowned[i as usize] = true;
                     i += 1;
                 }
-                i = 0 as ::core::ffi::c_int;
-                while i < NUMAMMO as ::core::ffi::c_int {
+                i = 0 as i32;
+                while i < NUMAMMO as i32 {
                     (*plyr).ammo[i as usize] = (*plyr).maxammo[i as usize];
                     i += 1;
                 }
-                i = 0 as ::core::ffi::c_int;
-                while i < NUMCARDS as ::core::ffi::c_int {
-                    (*plyr).cards[i as usize] = true_0 as boolean;
+                i = 0 as i32;
+                while i < NUMCARDS as i32 {
+                    (*plyr).cards[i as usize] = true;
                     i += 1;
                 }
                 (*plyr).message = b"Very Happy Ammo Added\0" as *const u8
@@ -2286,87 +1922,87 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
             ) != 0
             {
                 let mut buf: [::core::ffi::c_char; 3] = [0; 3];
-                let mut musnum: ::core::ffi::c_int = 0;
+                let mut musnum: i32 = 0;
                 (*plyr).message = b"Music Change\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                 cht_GetParam(
                     &raw mut cheat_mus,
                     &raw mut buf as *mut ::core::ffi::c_char,
                 );
-                if gamemode as ::core::ffi::c_uint
-                    == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-                    || (gameversion as ::core::ffi::c_uint)
-                        < exe_ultimate as ::core::ffi::c_int as ::core::ffi::c_uint
+                if gamemode as u32
+                    == commercial as i32 as u32
+                    || (gameversion as u32)
+                        < exe_ultimate as i32 as u32
                 {
-                    musnum = mus_runnin as ::core::ffi::c_int
-                        + (buf[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-                            - '0' as i32) * 10 as ::core::ffi::c_int
-                        + buf[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-                        - '0' as i32 - 1 as ::core::ffi::c_int;
-                    if (buf[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-                        - '0' as i32) * 10 as ::core::ffi::c_int
-                        + buf[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-                        - '0' as i32 > 35 as ::core::ffi::c_int
+                    musnum = mus_runnin as i32
+                        + (buf[0 as i32 as usize] as i32
+                            - '0' as i32) * 10 as i32
+                        + buf[1 as i32 as usize] as i32
+                        - '0' as i32 - 1 as i32;
+                    if (buf[0 as i32 as usize] as i32
+                        - '0' as i32) * 10 as i32
+                        + buf[1 as i32 as usize] as i32
+                        - '0' as i32 > 35 as i32
                     {
                         (*plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
                             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(musnum, 1 as ::core::ffi::c_int);
+                        S_ChangeMusic(musnum, 1 as i32);
                     }
                 } else {
-                    musnum = mus_e1m1 as ::core::ffi::c_int
-                        + (buf[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-                            - '1' as i32) * 9 as ::core::ffi::c_int
-                        + (buf[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
+                    musnum = mus_e1m1 as i32
+                        + (buf[0 as i32 as usize] as i32
+                            - '1' as i32) * 9 as i32
+                        + (buf[1 as i32 as usize] as i32
                             - '1' as i32);
-                    if (buf[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-                        - '1' as i32) * 9 as ::core::ffi::c_int
-                        + buf[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-                        - '1' as i32 > 31 as ::core::ffi::c_int
+                    if (buf[0 as i32 as usize] as i32
+                        - '1' as i32) * 9 as i32
+                        + buf[1 as i32 as usize] as i32
+                        - '1' as i32 > 31 as i32
                     {
                         (*plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
                             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(musnum, 1 as ::core::ffi::c_int);
+                        S_ChangeMusic(musnum, 1 as i32);
                     }
                 }
-            } else if (if gamemission as ::core::ffi::c_uint
-                == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+            } else if (if gamemission as u32
+                == pack_chex as i32 as u32
             {
-                doom as ::core::ffi::c_int as ::core::ffi::c_uint
+                doom as i32 as u32
             } else {
-                (if gamemission as ::core::ffi::c_uint
-                    == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+                (if gamemission as u32
+                    == pack_hacx as i32 as u32
                 {
-                    doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+                    doom2 as i32 as u32
                 } else {
-                    gamemission as ::core::ffi::c_uint
+                    gamemission as u32
                 })
-            }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+            }) == doom as i32 as u32
                 && cht_CheckCheat(
                     &raw mut cheat_noclip,
                     (*ev).data2 as ::core::ffi::c_char,
                 ) != 0
-                || (if gamemission as ::core::ffi::c_uint
-                    == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+                || (if gamemission as u32
+                    == pack_chex as i32 as u32
                 {
-                    doom as ::core::ffi::c_int as ::core::ffi::c_uint
+                    doom as i32 as u32
                 } else {
-                    (if gamemission as ::core::ffi::c_uint
-                        == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+                    (if gamemission as u32
+                        == pack_hacx as i32 as u32
                     {
-                        doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+                        doom2 as i32 as u32
                     } else {
-                        gamemission as ::core::ffi::c_uint
+                        gamemission as u32
                     })
-                }) != doom as ::core::ffi::c_int as ::core::ffi::c_uint
+                }) != doom as i32 as u32
                     && cht_CheckCheat(
                         &raw mut cheat_commercial_noclip,
                         (*ev).data2 as ::core::ffi::c_char,
                     ) != 0
             {
-                (*plyr).cheats ^= CF_NOCLIP as ::core::ffi::c_int;
-                if (*plyr).cheats & CF_NOCLIP as ::core::ffi::c_int != 0 {
+                (*plyr).cheats ^= CF_NOCLIP as i32;
+                if (*plyr).cheats & CF_NOCLIP as i32 != 0 {
                     (*plyr).message = b"No Clipping Mode ON\0" as *const u8
                         as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                 } else {
@@ -2374,8 +2010,8 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                         as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                 }
             }
-            i = 0 as ::core::ffi::c_int;
-            while i < 6 as ::core::ffi::c_int {
+            i = 0 as i32;
+            while i < 6 as i32 {
                 if cht_CheckCheat(
                     (&raw mut cheat_powerup as *mut cheatseq_t).offset(i as isize)
                         as *mut cheatseq_t,
@@ -2384,10 +2020,10 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 {
                     if (*plyr).powers[i as usize] == 0 {
                         P_GivePower(plyr, i);
-                    } else if i != pw_strength as ::core::ffi::c_int {
-                        (*plyr).powers[i as usize] = 1 as ::core::ffi::c_int;
+                    } else if i != pw_strength as i32 {
+                        (*plyr).powers[i as usize] = 1 as i32;
                     } else {
-                        (*plyr).powers[i as usize] = 0 as ::core::ffi::c_int;
+                        (*plyr).powers[i as usize] = 0 as i32;
                     }
                     (*plyr).message = b"Power-up Toggled\0" as *const u8
                         as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -2396,7 +2032,7 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
             }
             if cht_CheckCheat(
                 (&raw mut cheat_powerup as *mut cheatseq_t)
-                    .offset(6 as ::core::ffi::c_int as isize) as *mut cheatseq_t,
+                    .offset(6 as i32 as isize) as *mut cheatseq_t,
                 (*ev).data2 as ::core::ffi::c_char,
             ) != 0
             {
@@ -2408,9 +2044,8 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 (*ev).data2 as ::core::ffi::c_char,
             ) != 0
             {
-                (*plyr).weaponowned[wp_chainsaw as ::core::ffi::c_int as usize] = true_0
-                    as boolean;
-                (*plyr).powers[pw_invulnerability as ::core::ffi::c_int as usize] = true_0;
+                (*plyr).weaponowned[wp_chainsaw as i32 as usize] = true;
+                (*plyr).powers[pw_invulnerability as i32 as usize] = true_0;
                 (*plyr).message = b"... doesn't suck - GM\0" as *const u8
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             } else if cht_CheckCheat(
@@ -2431,111 +2066,111 @@ pub unsafe extern "C" fn ST_Responder(mut ev: *mut event_t) -> boolean {
                 (*plyr).message = &raw mut buf_0 as *mut ::core::ffi::c_char;
             }
         }
-        if netgame == 0
+        if !netgame
             && cht_CheckCheat(&raw mut cheat_clev, (*ev).data2 as ::core::ffi::c_char)
                 != 0
         {
             let mut buf_1: [::core::ffi::c_char; 3] = [0; 3];
-            let mut epsd: ::core::ffi::c_int = 0;
-            let mut map: ::core::ffi::c_int = 0;
+            let mut epsd: i32 = 0;
+            let mut map: i32 = 0;
             cht_GetParam(
                 &raw mut cheat_clev,
                 &raw mut buf_1 as *mut ::core::ffi::c_char,
             );
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == commercial as i32 as u32
             {
-                epsd = 1 as ::core::ffi::c_int;
-                map = (buf_1[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
-                    - '0' as i32) * 10 as ::core::ffi::c_int
-                    + buf_1[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
+                epsd = 1 as i32;
+                map = (buf_1[0 as i32 as usize] as i32
+                    - '0' as i32) * 10 as i32
+                    + buf_1[1 as i32 as usize] as i32
                     - '0' as i32;
             } else {
-                epsd = buf_1[0 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
+                epsd = buf_1[0 as i32 as usize] as i32
                     - '0' as i32;
-                map = buf_1[1 as ::core::ffi::c_int as usize] as ::core::ffi::c_int
+                map = buf_1[1 as i32 as usize] as i32
                     - '0' as i32;
             }
-            if gameversion as ::core::ffi::c_uint
-                == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gameversion as u32
+                == exe_chex as i32 as u32
             {
-                epsd = 1 as ::core::ffi::c_int;
+                epsd = 1 as i32;
             }
-            if epsd < 1 as ::core::ffi::c_int {
-                return false_0 as boolean;
+            if epsd < 1 as i32 {
+                return false;
             }
-            if map < 1 as ::core::ffi::c_int {
-                return false_0 as boolean;
+            if map < 1 as i32 {
+                return false;
             }
-            if gamemode as ::core::ffi::c_uint
-                == retail as ::core::ffi::c_int as ::core::ffi::c_uint
-                && (epsd > 4 as ::core::ffi::c_int || map > 9 as ::core::ffi::c_int)
+            if gamemode as u32
+                == retail as i32 as u32
+                && (epsd > 4 as i32 || map > 9 as i32)
             {
-                return false_0 as boolean;
+                return false;
             }
-            if gamemode as ::core::ffi::c_uint
-                == registered as ::core::ffi::c_int as ::core::ffi::c_uint
-                && (epsd > 3 as ::core::ffi::c_int || map > 9 as ::core::ffi::c_int)
+            if gamemode as u32
+                == registered as i32 as u32
+                && (epsd > 3 as i32 || map > 9 as i32)
             {
-                return false_0 as boolean;
+                return false;
             }
-            if gamemode as ::core::ffi::c_uint
-                == shareware as ::core::ffi::c_int as ::core::ffi::c_uint
-                && (epsd > 1 as ::core::ffi::c_int || map > 9 as ::core::ffi::c_int)
+            if gamemode as u32
+                == shareware as i32 as u32
+                && (epsd > 1 as i32 || map > 9 as i32)
             {
-                return false_0 as boolean;
+                return false;
             }
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-                && (epsd > 1 as ::core::ffi::c_int || map > 40 as ::core::ffi::c_int)
+            if gamemode as u32
+                == commercial as i32 as u32
+                && (epsd > 1 as i32 || map > 40 as i32)
             {
-                return false_0 as boolean;
+                return false;
             }
             (*plyr).message = b"Changing Level...\0" as *const u8
                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             G_DeferedInitNew(gameskill, epsd, map);
         }
     }
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
-pub unsafe extern "C" fn ST_calcPainOffset() -> ::core::ffi::c_int {
-    let mut health: ::core::ffi::c_int = 0;
-    static mut lastcalc: ::core::ffi::c_int = 0;
-    static mut oldhealth: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
-    health = if (*plyr).health > 100 as ::core::ffi::c_int {
-        100 as ::core::ffi::c_int
+pub unsafe extern "C" fn ST_calcPainOffset() -> i32 {
+    let mut health: i32 = 0;
+    static mut lastcalc: i32 = 0;
+    static mut oldhealth: i32 = -(1 as i32);
+    health = if (*plyr).health > 100 as i32 {
+        100 as i32
     } else {
         (*plyr).health
     };
     if health != oldhealth {
         lastcalc = ST_FACESTRIDE
-            * ((100 as ::core::ffi::c_int - health) * ST_NUMPAINFACES
-                / 101 as ::core::ffi::c_int);
+            * ((100 as i32 - health) * ST_NUMPAINFACES
+                / 101 as i32);
         oldhealth = health;
     }
     return lastcalc;
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_updateFaceWidget() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut badguyangle: angle_t = 0;
     let mut diffang: angle_t = 0;
-    static mut lastattackdown: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
-    static mut priority: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+    static mut lastattackdown: i32 = -(1 as i32);
+    static mut priority: i32 = 0 as i32;
     let mut doevilgrin: boolean = 0;
-    if priority < 10 as ::core::ffi::c_int {
+    if priority < 10 as i32 {
         if (*plyr).health == 0 {
-            priority = 9 as ::core::ffi::c_int;
+            priority = 9 as i32;
             st_faceindex = ST_DEADFACE;
-            st_facecount = 1 as ::core::ffi::c_int;
+            st_facecount = 1 as i32;
         }
     }
-    if priority < 9 as ::core::ffi::c_int {
+    if priority < 9 as i32 {
         if (*plyr).bonuscount != 0 {
             doevilgrin = false_0 as boolean;
-            i = 0 as ::core::ffi::c_int;
-            while i < NUMWEAPONS as ::core::ffi::c_int {
+            i = 0 as i32;
+            while i < NUMWEAPONS as i32 {
                 if oldweaponsowned[i as usize] != (*plyr).weaponowned[i as usize] {
                     doevilgrin = true_0 as boolean;
                     oldweaponsowned[i as usize] = (*plyr).weaponowned[i as usize];
@@ -2543,17 +2178,17 @@ pub unsafe extern "C" fn ST_updateFaceWidget() {
                 i += 1;
             }
             if doevilgrin != 0 {
-                priority = 8 as ::core::ffi::c_int;
+                priority = 8 as i32;
                 st_facecount = ST_EVILGRINCOUNT;
                 st_faceindex = ST_calcPainOffset() + ST_EVILGRINOFFSET;
             }
         }
     }
-    if priority < 8 as ::core::ffi::c_int {
+    if priority < 8 as i32 {
         if (*plyr).damagecount != 0 && !(*plyr).attacker.is_null()
             && (*plyr).attacker != (*plyr).mo
         {
-            priority = 7 as ::core::ffi::c_int;
+            priority = 7 as i32;
             if (*plyr).health - st_oldhealth > ST_MUCHPAIN {
                 st_facecount = ST_TURNCOUNT;
                 st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
@@ -2566,10 +2201,10 @@ pub unsafe extern "C" fn ST_updateFaceWidget() {
                 );
                 if badguyangle > (*(*plyr).mo).angle {
                     diffang = badguyangle.wrapping_sub((*(*plyr).mo).angle);
-                    i = (diffang > ANG180) as ::core::ffi::c_int;
+                    i = (diffang > ANG180) as i32;
                 } else {
                     diffang = (*(*plyr).mo).angle.wrapping_sub(badguyangle);
-                    i = (diffang <= ANG180) as ::core::ffi::c_int;
+                    i = (diffang <= ANG180) as i32;
                 }
                 st_facecount = ST_TURNCOUNT;
                 st_faceindex = ST_calcPainOffset();
@@ -2578,94 +2213,98 @@ pub unsafe extern "C" fn ST_updateFaceWidget() {
                 } else if i != 0 {
                     st_faceindex += ST_TURNOFFSET;
                 } else {
-                    st_faceindex += ST_TURNOFFSET + 1 as ::core::ffi::c_int;
+                    st_faceindex += ST_TURNOFFSET + 1 as i32;
                 }
             }
         }
     }
-    if priority < 7 as ::core::ffi::c_int {
+    if priority < 7 as i32 {
         if (*plyr).damagecount != 0 {
             if (*plyr).health - st_oldhealth > ST_MUCHPAIN {
-                priority = 7 as ::core::ffi::c_int;
+                priority = 7 as i32;
                 st_facecount = ST_TURNCOUNT;
                 st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
             } else {
-                priority = 6 as ::core::ffi::c_int;
+                priority = 6 as i32;
                 st_facecount = ST_TURNCOUNT;
                 st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
             }
         }
     }
-    if priority < 6 as ::core::ffi::c_int {
+    if priority < 6 as i32 {
         if (*plyr).attackdown != 0 {
-            if lastattackdown == -(1 as ::core::ffi::c_int) {
+            if lastattackdown == -(1 as i32) {
                 lastattackdown = ST_RAMPAGEDELAY;
             } else {
                 lastattackdown -= 1;
                 if lastattackdown == 0 {
-                    priority = 5 as ::core::ffi::c_int;
+                    priority = 5 as i32;
                     st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
-                    st_facecount = 1 as ::core::ffi::c_int;
-                    lastattackdown = 1 as ::core::ffi::c_int;
+                    st_facecount = 1 as i32;
+                    lastattackdown = 1 as i32;
                 }
             }
         } else {
-            lastattackdown = -(1 as ::core::ffi::c_int);
+            lastattackdown = -(1 as i32);
         }
     }
-    if priority < 5 as ::core::ffi::c_int {
-        if (*plyr).cheats & CF_GODMODE as ::core::ffi::c_int != 0
-            || (*plyr).powers[pw_invulnerability as ::core::ffi::c_int as usize] != 0
+    if priority < 5 as i32 {
+        if (*plyr).cheats & CF_GODMODE as i32 != 0
+            || (*plyr).powers[pw_invulnerability as i32 as usize] != 0
         {
-            priority = 4 as ::core::ffi::c_int;
+            priority = 4 as i32;
             st_faceindex = ST_GODFACE;
-            st_facecount = 1 as ::core::ffi::c_int;
+            st_facecount = 1 as i32;
         }
     }
     if st_facecount == 0 {
-        st_faceindex = ST_calcPainOffset() + st_randomnumber % 3 as ::core::ffi::c_int;
+        st_faceindex = ST_calcPainOffset() + st_randomnumber % 3 as i32;
         st_facecount = ST_STRAIGHTFACECOUNT;
-        priority = 0 as ::core::ffi::c_int;
+        priority = 0 as i32;
     }
     st_facecount -= 1;
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_updateWidgets() {
-    static mut largeammo: ::core::ffi::c_int = 1994 as ::core::ffi::c_int;
-    let mut i: ::core::ffi::c_int = 0;
-    if weaponinfo[(*plyr).readyweapon as usize].ammo as ::core::ffi::c_uint
-        == am_noammo as ::core::ffi::c_int as ::core::ffi::c_uint
+    static mut largeammo: i32 = 1994 as i32;
+    let mut i: i32 = 0;
+    if weaponinfo[(*plyr).readyweapon as usize].ammo as u32
+        == am_noammo as i32 as u32
     {
         w_ready.num = &raw mut largeammo;
     } else {
-        w_ready.num = (&raw mut (*plyr).ammo as *mut ::core::ffi::c_int)
+        w_ready.num = (&raw mut (*plyr).ammo as *mut i32)
             .offset(
                 (*(&raw mut weaponinfo as *mut weaponinfo_t)
                     .offset((*plyr).readyweapon as isize))
                     .ammo as isize,
-            ) as *mut ::core::ffi::c_int;
+            ) as *mut i32;
     }
-    w_ready.data = (*plyr).readyweapon as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
-    while i < 3 as ::core::ffi::c_int {
-        keyboxes[i as usize] = if (*plyr).cards[i as usize] != 0 {
+    w_ready.data = (*plyr).readyweapon as i32;
+    i = 0 as i32;
+    while i < 6 as i32 {
+        w_arms_owned[i as usize] = (*plyr)
+            .weaponowned[(i + 1 as i32) as usize] as i32;
+        i += 1;
+    }
+    i = 0 as i32;
+    while i < 3 as i32 {
+        keyboxes[i as usize] = if (*plyr).cards[i as usize] {
             i
         } else {
-            -(1 as ::core::ffi::c_int)
+            -(1 as i32)
         };
-        if (*plyr).cards[(i + 3 as ::core::ffi::c_int) as usize] != 0 {
-            keyboxes[i as usize] = i + 3 as ::core::ffi::c_int;
+        if (*plyr).cards[(i + 3 as i32) as usize] {
+            keyboxes[i as usize] = i + 3 as i32;
         }
         i += 1;
     }
     ST_updateFaceWidget();
-    st_notdeathmatch = (deathmatch == 0) as ::core::ffi::c_int as boolean;
-    st_armson = (st_statusbaron != 0 && deathmatch == 0) as ::core::ffi::c_int
-        as boolean;
-    st_fragson = (deathmatch != 0 && st_statusbaron != 0) as ::core::ffi::c_int
-        as boolean;
-    st_fragscount = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    st_notdeathmatch = deathmatch == 0;
+    st_armson = st_statusbaron && deathmatch == 0;
+    st_fragson = deathmatch != 0 && st_statusbaron;
+    st_fragscount = 0 as i32;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         if i != consoleplayer {
             st_fragscount += (*plyr).frags[i as usize];
@@ -2679,74 +2318,71 @@ pub unsafe extern "C" fn ST_updateWidgets() {
         st_chat = st_oldchat;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Ticker() {
+pub unsafe fn ST_Ticker() {
     st_clock = st_clock.wrapping_add(1);
     st_randomnumber = M_Random();
     ST_updateWidgets();
     st_oldhealth = (*plyr).health;
 }
-static mut st_palette: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+static mut st_palette: i32 = 0 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn ST_doPaletteStuff() {
-    let mut palette: ::core::ffi::c_int = 0;
+    let mut palette: i32 = 0;
     let mut pal: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut cnt: ::core::ffi::c_int = 0;
-    let mut bzc: ::core::ffi::c_int = 0;
+    let mut cnt: i32 = 0;
+    let mut bzc: i32 = 0;
     cnt = (*plyr).damagecount;
-    if (*plyr).powers[pw_strength as ::core::ffi::c_int as usize] != 0 {
-        bzc = 12 as ::core::ffi::c_int
-            - ((*plyr).powers[pw_strength as ::core::ffi::c_int as usize]
-                >> 6 as ::core::ffi::c_int);
+    if (*plyr).powers[pw_strength as i32 as usize] != 0 {
+        bzc = 12 as i32
+            - ((*plyr).powers[pw_strength as i32 as usize]
+                >> 6 as i32);
         if bzc > cnt {
             cnt = bzc;
         }
     }
     if cnt != 0 {
-        palette = cnt + 7 as ::core::ffi::c_int >> 3 as ::core::ffi::c_int;
+        palette = cnt + 7 as i32 >> 3 as i32;
         if palette >= NUMREDPALS {
-            palette = NUMREDPALS - 1 as ::core::ffi::c_int;
+            palette = NUMREDPALS - 1 as i32;
         }
         palette += STARTREDPALS;
     } else if (*plyr).bonuscount != 0 {
-        palette = (*plyr).bonuscount + 7 as ::core::ffi::c_int
-            >> 3 as ::core::ffi::c_int;
+        palette = (*plyr).bonuscount + 7 as i32
+            >> 3 as i32;
         if palette >= NUMBONUSPALS {
-            palette = NUMBONUSPALS - 1 as ::core::ffi::c_int;
+            palette = NUMBONUSPALS - 1 as i32;
         }
         palette += STARTBONUSPALS;
-    } else if (*plyr).powers[pw_ironfeet as ::core::ffi::c_int as usize]
-        > 4 as ::core::ffi::c_int * 32 as ::core::ffi::c_int
-        || (*plyr).powers[pw_ironfeet as ::core::ffi::c_int as usize]
-            & 8 as ::core::ffi::c_int != 0
+    } else if (*plyr).powers[pw_ironfeet as i32 as usize]
+        > 4 as i32 * 32 as i32
+        || (*plyr).powers[pw_ironfeet as i32 as usize]
+            & 8 as i32 != 0
     {
         palette = RADIATIONPAL;
     } else {
-        palette = 0 as ::core::ffi::c_int;
+        palette = 0 as i32;
     }
-    if gameversion as ::core::ffi::c_uint
-        == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gameversion as u32
+        == exe_chex as i32 as u32
         && palette >= STARTREDPALS && palette < STARTREDPALS + NUMREDPALS
     {
         palette = RADIATIONPAL;
     }
     if palette != st_palette {
         st_palette = palette;
-        pal = (W_CacheLumpNum(lu_palette, PU_CACHE as ::core::ffi::c_int) as *mut byte)
-            .offset((palette * 768 as ::core::ffi::c_int) as isize);
+        pal = (W_CacheLumpNum(lu_palette, PU_CACHE as i32) as *mut byte)
+            .offset((palette * 768 as i32) as isize);
         I_SetPalette(pal);
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn ST_drawWidgets(mut refresh: boolean) {
-    let mut i: ::core::ffi::c_int = 0;
-    st_armson = (st_statusbaron != 0 && deathmatch == 0) as ::core::ffi::c_int
-        as boolean;
-    st_fragson = (deathmatch != 0 && st_statusbaron != 0) as ::core::ffi::c_int
-        as boolean;
+pub unsafe extern "C" fn ST_drawWidgets(mut refresh: bool) {
+    let mut i: i32 = 0;
+    st_armson = st_statusbaron && deathmatch == 0;
+    st_fragson = deathmatch != 0 && st_statusbaron;
     STlib_updateNum(&raw mut w_ready, refresh);
-    i = 0 as ::core::ffi::c_int;
-    while i < 4 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 4 as i32 {
         STlib_updateNum(
             (&raw mut w_ammo as *mut st_number_t).offset(i as isize) as *mut st_number_t,
             refresh,
@@ -2758,11 +2394,11 @@ pub unsafe extern "C" fn ST_drawWidgets(mut refresh: boolean) {
         );
         i += 1;
     }
-    STlib_updatePercent(&raw mut w_health, refresh as ::core::ffi::c_int);
-    STlib_updatePercent(&raw mut w_armor, refresh as ::core::ffi::c_int);
+    STlib_updatePercent(&raw mut w_health, refresh as i32);
+    STlib_updatePercent(&raw mut w_armor, refresh as i32);
     STlib_updateBinIcon(&raw mut w_armsbg, refresh);
-    i = 0 as ::core::ffi::c_int;
-    while i < 6 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 6 as i32 {
         STlib_updateMultIcon(
             (&raw mut w_arms as *mut st_multicon_t).offset(i as isize)
                 as *mut st_multicon_t,
@@ -2771,8 +2407,8 @@ pub unsafe extern "C" fn ST_drawWidgets(mut refresh: boolean) {
         i += 1;
     }
     STlib_updateMultIcon(&raw mut w_faces, refresh);
-    i = 0 as ::core::ffi::c_int;
-    while i < 3 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 3 as i32 {
         STlib_updateMultIcon(
             (&raw mut w_keyboxes as *mut st_multicon_t).offset(i as isize)
                 as *mut st_multicon_t,
@@ -2784,33 +2420,31 @@ pub unsafe extern "C" fn ST_drawWidgets(mut refresh: boolean) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_doRefresh() {
-    st_firsttime = false_0 as boolean;
+    st_firsttime = false;
     ST_refreshBackground();
-    ST_drawWidgets(true_0 as boolean);
+    ST_drawWidgets(true);
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_diffDraw() {
-    ST_drawWidgets(false_0 as boolean);
+    ST_drawWidgets(false);
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Drawer(mut fullscreen: boolean, mut refresh: boolean) {
-    st_statusbaron = (fullscreen == 0 || automapactive != 0) as ::core::ffi::c_int
-        as boolean;
-    st_firsttime = (st_firsttime != 0 || refresh != 0) as ::core::ffi::c_int as boolean;
+pub unsafe fn ST_Drawer(mut fullscreen: bool, mut refresh: bool) {
+    st_statusbaron = !fullscreen || automapactive;
+    st_firsttime = st_firsttime || refresh;
     ST_doPaletteStuff();
-    if st_firsttime != 0 {
+    if st_firsttime {
         ST_doRefresh();
     } else {
         ST_diffDraw();
     };
 }
 unsafe extern "C" fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut facenum: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut facenum: i32 = 0;
     let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
-    i = 0 as ::core::ffi::c_int;
-    while i < 10 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 10 as i32 {
         snprintf(
             &raw mut namebuf as *mut ::core::ffi::c_char,
             9 as size_t,
@@ -2849,8 +2483,8 @@ unsafe extern "C" fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
             as *mut ::core::ffi::c_char,
         &raw mut tallpercent,
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMCARDS as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < NUMCARDS as i32 {
         snprintf(
             &raw mut namebuf as *mut ::core::ffi::c_char,
             9 as size_t,
@@ -2874,13 +2508,13 @@ unsafe extern "C" fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
             as *mut ::core::ffi::c_char,
         &raw mut armsbg,
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < 6 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 6 as i32 {
         snprintf(
             &raw mut namebuf as *mut ::core::ffi::c_char,
             9 as size_t,
             b"STGNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i + 2 as ::core::ffi::c_int,
+            i + 2 as i32,
         );
         callback
             .expect(
@@ -2889,10 +2523,10 @@ unsafe extern "C" fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
             &raw mut namebuf as *mut ::core::ffi::c_char,
             (&raw mut *(&raw mut arms as *mut [*mut patch_t; 2]).offset(i as isize)
                 as *mut *mut patch_t)
-                .offset(0 as ::core::ffi::c_int as isize) as *mut *mut patch_t,
+                .offset(0 as i32 as isize) as *mut *mut patch_t,
         );
-        arms[i as usize][1 as ::core::ffi::c_int as usize] = shortnum[(i
-            + 2 as ::core::ffi::c_int) as usize];
+        arms[i as usize][1 as i32 as usize] = shortnum[(i
+            + 2 as i32) as usize];
         i += 1;
     }
     snprintf(
@@ -2913,10 +2547,10 @@ unsafe extern "C" fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
             as *mut ::core::ffi::c_char,
         &raw mut sbar,
     );
-    facenum = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    facenum = 0 as i32;
+    i = 0 as i32;
     while i < ST_NUMPAINFACES {
-        j = 0 as ::core::ffi::c_int;
+        j = 0 as i32;
         while j < ST_NUMSTRAIGHTFACES {
             snprintf(
                 &raw mut namebuf as *mut ::core::ffi::c_char,
@@ -3038,8 +2672,10 @@ unsafe extern "C" fn ST_loadCallback(
     mut lumpname: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
-    *variable = W_CacheLumpName(lumpname, PU_STATIC as ::core::ffi::c_int)
-        as *mut patch_t;
+    *variable = W_CacheLumpName(
+        &wad_name8_to_string(lumpname),
+        PU_STATIC as i32,
+    ) as *mut patch_t;
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_loadGraphics() {
@@ -3055,9 +2691,7 @@ pub unsafe extern "C" fn ST_loadGraphics() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_loadData() {
-    lu_palette = W_GetNumForName(
-        b"PLAYPAL\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    lu_palette = W_GetNumForName("PLAYPAL",
     );
     ST_loadGraphics();
 }
@@ -3065,7 +2699,7 @@ unsafe extern "C" fn ST_unloadCallback(
     mut lumpname: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
-    W_ReleaseLumpName(lumpname);
+    W_ReleaseLumpName(&wad_name8_to_string(lumpname));
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
 #[no_mangle]
@@ -3086,50 +2720,50 @@ pub unsafe extern "C" fn ST_unloadData() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_initData() {
-    let mut i: ::core::ffi::c_int = 0;
-    st_firsttime = true_0 as boolean;
+    let mut i: i32 = 0;
+    st_firsttime = true;
     plyr = (&raw mut players as *mut player_t).offset(consoleplayer as isize)
         as *mut player_t;
-    st_clock = 0 as ::core::ffi::c_uint;
+    st_clock = 0 as u32;
     st_chatstate = StartChatState;
     st_gamestate = FirstPersonState;
-    st_statusbaron = true_0 as boolean;
-    st_chat = false_0 as boolean;
+    st_statusbaron = true;
+    st_chat = false;
     st_oldchat = st_chat;
-    st_cursoron = false_0 as boolean;
-    st_faceindex = 0 as ::core::ffi::c_int;
-    st_palette = -(1 as ::core::ffi::c_int);
-    st_oldhealth = -(1 as ::core::ffi::c_int);
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMWEAPONS as ::core::ffi::c_int {
+    st_cursoron = false;
+    st_faceindex = 0 as i32;
+    st_palette = -(1 as i32);
+    st_oldhealth = -(1 as i32);
+    i = 0 as i32;
+    while i < NUMWEAPONS as i32 {
         oldweaponsowned[i as usize] = (*plyr).weaponowned[i as usize];
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < 3 as ::core::ffi::c_int {
-        keyboxes[i as usize] = -(1 as ::core::ffi::c_int);
+    i = 0 as i32;
+    while i < 3 as i32 {
+        keyboxes[i as usize] = -(1 as i32);
         i += 1;
     }
     STlib_init();
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_createWidgets() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     STlib_initNum(
         &raw mut w_ready,
         ST_AMMOX,
         ST_AMMOY,
         &raw mut tallnum as *mut *mut patch_t,
-        (&raw mut (*plyr).ammo as *mut ::core::ffi::c_int)
+        (&raw mut (*plyr).ammo as *mut i32)
             .offset(
                 (*(&raw mut weaponinfo as *mut weaponinfo_t)
                     .offset((*plyr).readyweapon as isize))
                     .ammo as isize,
-            ) as *mut ::core::ffi::c_int,
+            ) as *mut i32,
         &raw mut st_statusbaron,
         ST_AMMOWIDTH,
     );
-    w_ready.data = (*plyr).readyweapon as ::core::ffi::c_int;
+    w_ready.data = (*plyr).readyweapon as i32;
     STlib_initPercent(
         &raw mut w_health,
         ST_HEALTHX,
@@ -3147,18 +2781,17 @@ pub unsafe extern "C" fn ST_createWidgets() {
         &raw mut st_notdeathmatch,
         &raw mut st_statusbaron,
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < 6 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 6 as i32 {
         STlib_initMultIcon(
             (&raw mut w_arms as *mut st_multicon_t).offset(i as isize)
                 as *mut st_multicon_t,
-            ST_ARMSX + i % 3 as ::core::ffi::c_int * ST_ARMSXSPACE,
-            ST_ARMSY + i / 3 as ::core::ffi::c_int * ST_ARMSYSPACE,
+            ST_ARMSX + i % 3 as i32 * ST_ARMSXSPACE,
+            ST_ARMSY + i / 3 as i32 * ST_ARMSYSPACE,
             &raw mut *(&raw mut arms as *mut [*mut patch_t; 2]).offset(i as isize)
                 as *mut *mut patch_t,
-            (&raw mut (*plyr).weaponowned as *mut boolean)
-                .offset((i + 1 as ::core::ffi::c_int) as isize) as *mut boolean
-                as *mut ::core::ffi::c_int,
+            (&raw mut w_arms_owned as *mut i32)
+                .offset(i as isize),
             &raw mut st_armson,
         );
         i += 1;
@@ -3191,149 +2824,147 @@ pub unsafe extern "C" fn ST_createWidgets() {
     );
     STlib_initMultIcon(
         (&raw mut w_keyboxes as *mut st_multicon_t)
-            .offset(0 as ::core::ffi::c_int as isize) as *mut st_multicon_t,
+            .offset(0 as i32 as isize) as *mut st_multicon_t,
         ST_KEY0X,
         ST_KEY0Y,
         &raw mut keys as *mut *mut patch_t,
-        (&raw mut keyboxes as *mut ::core::ffi::c_int)
-            .offset(0 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut keyboxes as *mut i32)
+            .offset(0 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
     );
     STlib_initMultIcon(
         (&raw mut w_keyboxes as *mut st_multicon_t)
-            .offset(1 as ::core::ffi::c_int as isize) as *mut st_multicon_t,
+            .offset(1 as i32 as isize) as *mut st_multicon_t,
         ST_KEY1X,
         ST_KEY1Y,
         &raw mut keys as *mut *mut patch_t,
-        (&raw mut keyboxes as *mut ::core::ffi::c_int)
-            .offset(1 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut keyboxes as *mut i32)
+            .offset(1 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
     );
     STlib_initMultIcon(
         (&raw mut w_keyboxes as *mut st_multicon_t)
-            .offset(2 as ::core::ffi::c_int as isize) as *mut st_multicon_t,
+            .offset(2 as i32 as isize) as *mut st_multicon_t,
         ST_KEY2X,
         ST_KEY2Y,
         &raw mut keys as *mut *mut patch_t,
-        (&raw mut keyboxes as *mut ::core::ffi::c_int)
-            .offset(2 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut keyboxes as *mut i32)
+            .offset(2 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
     );
     STlib_initNum(
-        (&raw mut w_ammo as *mut st_number_t).offset(0 as ::core::ffi::c_int as isize)
+        (&raw mut w_ammo as *mut st_number_t).offset(0 as i32 as isize)
             as *mut st_number_t,
         ST_AMMO0X,
         ST_AMMO0Y,
         &raw mut shortnum as *mut *mut patch_t,
-        (&raw mut (*plyr).ammo as *mut ::core::ffi::c_int)
-            .offset(0 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut (*plyr).ammo as *mut i32)
+            .offset(0 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
         ST_AMMO0WIDTH,
     );
     STlib_initNum(
-        (&raw mut w_ammo as *mut st_number_t).offset(1 as ::core::ffi::c_int as isize)
+        (&raw mut w_ammo as *mut st_number_t).offset(1 as i32 as isize)
             as *mut st_number_t,
         ST_AMMO1X,
         ST_AMMO1Y,
         &raw mut shortnum as *mut *mut patch_t,
-        (&raw mut (*plyr).ammo as *mut ::core::ffi::c_int)
-            .offset(1 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut (*plyr).ammo as *mut i32)
+            .offset(1 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
         ST_AMMO1WIDTH,
     );
     STlib_initNum(
-        (&raw mut w_ammo as *mut st_number_t).offset(2 as ::core::ffi::c_int as isize)
+        (&raw mut w_ammo as *mut st_number_t).offset(2 as i32 as isize)
             as *mut st_number_t,
         ST_AMMO2X,
         ST_AMMO2Y,
         &raw mut shortnum as *mut *mut patch_t,
-        (&raw mut (*plyr).ammo as *mut ::core::ffi::c_int)
-            .offset(2 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut (*plyr).ammo as *mut i32)
+            .offset(2 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
         ST_AMMO2WIDTH,
     );
     STlib_initNum(
-        (&raw mut w_ammo as *mut st_number_t).offset(3 as ::core::ffi::c_int as isize)
+        (&raw mut w_ammo as *mut st_number_t).offset(3 as i32 as isize)
             as *mut st_number_t,
         ST_AMMO3X,
         ST_AMMO3Y,
         &raw mut shortnum as *mut *mut patch_t,
-        (&raw mut (*plyr).ammo as *mut ::core::ffi::c_int)
-            .offset(3 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut (*plyr).ammo as *mut i32)
+            .offset(3 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
         ST_AMMO3WIDTH,
     );
     STlib_initNum(
-        (&raw mut w_maxammo as *mut st_number_t).offset(0 as ::core::ffi::c_int as isize)
+        (&raw mut w_maxammo as *mut st_number_t).offset(0 as i32 as isize)
             as *mut st_number_t,
         ST_MAXAMMO0X,
         ST_MAXAMMO0Y,
         &raw mut shortnum as *mut *mut patch_t,
-        (&raw mut (*plyr).maxammo as *mut ::core::ffi::c_int)
-            .offset(0 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut (*plyr).maxammo as *mut i32)
+            .offset(0 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
         ST_MAXAMMO0WIDTH,
     );
     STlib_initNum(
-        (&raw mut w_maxammo as *mut st_number_t).offset(1 as ::core::ffi::c_int as isize)
+        (&raw mut w_maxammo as *mut st_number_t).offset(1 as i32 as isize)
             as *mut st_number_t,
         ST_MAXAMMO1X,
         ST_MAXAMMO1Y,
         &raw mut shortnum as *mut *mut patch_t,
-        (&raw mut (*plyr).maxammo as *mut ::core::ffi::c_int)
-            .offset(1 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut (*plyr).maxammo as *mut i32)
+            .offset(1 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
         ST_MAXAMMO1WIDTH,
     );
     STlib_initNum(
-        (&raw mut w_maxammo as *mut st_number_t).offset(2 as ::core::ffi::c_int as isize)
+        (&raw mut w_maxammo as *mut st_number_t).offset(2 as i32 as isize)
             as *mut st_number_t,
         ST_MAXAMMO2X,
         ST_MAXAMMO2Y,
         &raw mut shortnum as *mut *mut patch_t,
-        (&raw mut (*plyr).maxammo as *mut ::core::ffi::c_int)
-            .offset(2 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut (*plyr).maxammo as *mut i32)
+            .offset(2 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
         ST_MAXAMMO2WIDTH,
     );
     STlib_initNum(
-        (&raw mut w_maxammo as *mut st_number_t).offset(3 as ::core::ffi::c_int as isize)
+        (&raw mut w_maxammo as *mut st_number_t).offset(3 as i32 as isize)
             as *mut st_number_t,
         ST_MAXAMMO3X,
         ST_MAXAMMO3Y,
         &raw mut shortnum as *mut *mut patch_t,
-        (&raw mut (*plyr).maxammo as *mut ::core::ffi::c_int)
-            .offset(3 as ::core::ffi::c_int as isize) as *mut ::core::ffi::c_int,
+        (&raw mut (*plyr).maxammo as *mut i32)
+            .offset(3 as i32 as isize) as *mut i32,
         &raw mut st_statusbaron,
         ST_MAXAMMO3WIDTH,
     );
 }
-static mut st_stopped: boolean = true_0 as boolean;
-#[no_mangle]
-pub unsafe extern "C" fn ST_Start() {
-    if st_stopped == 0 {
+static mut st_stopped: bool = true;
+pub unsafe fn ST_Start() {
+    if !st_stopped {
         ST_Stop();
     }
     ST_initData();
     ST_createWidgets();
-    st_stopped = false_0 as boolean;
+    st_stopped = false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn ST_Stop() {
-    if st_stopped != 0 {
+    if st_stopped {
         return;
     }
     I_SetPalette(
-        W_CacheLumpNum(lu_palette, PU_CACHE as ::core::ffi::c_int) as *mut byte,
+        W_CacheLumpNum(lu_palette, PU_CACHE as i32) as *mut byte,
     );
-    st_stopped = true_0 as boolean;
+    st_stopped = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn ST_Init() {
+pub unsafe fn ST_Init() {
     ST_loadData();
     st_backing_screen = Z_Malloc(
         ST_WIDTH * ST_HEIGHT,
-        PU_STATIC as ::core::ffi::c_int,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut byte;
 }
@@ -3345,9 +2976,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"idclev\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 7]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 2 as ::core::ffi::c_int,
+        parameter_chars: 2 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],
@@ -3360,9 +2991,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"idmypos\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 8]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as ::core::ffi::c_int,
+        parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],
@@ -3375,9 +3006,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"idchoppers\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 11]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as ::core::ffi::c_int,
+        parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],
@@ -3391,9 +3022,9 @@ unsafe extern "C" fn run_static_initializers() {
             >(*b"idbeholdv\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
             sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 10]>() as size_t)
                 .wrapping_sub(1 as size_t),
-            parameter_chars: 0 as ::core::ffi::c_int,
+            parameter_chars: 0 as i32,
             chars_read: 0 as size_t,
-            param_chars_read: 0 as ::core::ffi::c_int,
+            param_chars_read: 0 as i32,
             parameter_buf: ::core::mem::transmute::<
                 [u8; 5],
                 [::core::ffi::c_char; 5],
@@ -3406,9 +3037,9 @@ unsafe extern "C" fn run_static_initializers() {
             >(*b"idbeholds\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
             sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 10]>() as size_t)
                 .wrapping_sub(1 as size_t),
-            parameter_chars: 0 as ::core::ffi::c_int,
+            parameter_chars: 0 as i32,
             chars_read: 0 as size_t,
-            param_chars_read: 0 as ::core::ffi::c_int,
+            param_chars_read: 0 as i32,
             parameter_buf: ::core::mem::transmute::<
                 [u8; 5],
                 [::core::ffi::c_char; 5],
@@ -3421,9 +3052,9 @@ unsafe extern "C" fn run_static_initializers() {
             >(*b"idbeholdi\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
             sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 10]>() as size_t)
                 .wrapping_sub(1 as size_t),
-            parameter_chars: 0 as ::core::ffi::c_int,
+            parameter_chars: 0 as i32,
             chars_read: 0 as size_t,
-            param_chars_read: 0 as ::core::ffi::c_int,
+            param_chars_read: 0 as i32,
             parameter_buf: ::core::mem::transmute::<
                 [u8; 5],
                 [::core::ffi::c_char; 5],
@@ -3436,9 +3067,9 @@ unsafe extern "C" fn run_static_initializers() {
             >(*b"idbeholdr\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
             sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 10]>() as size_t)
                 .wrapping_sub(1 as size_t),
-            parameter_chars: 0 as ::core::ffi::c_int,
+            parameter_chars: 0 as i32,
             chars_read: 0 as size_t,
-            param_chars_read: 0 as ::core::ffi::c_int,
+            param_chars_read: 0 as i32,
             parameter_buf: ::core::mem::transmute::<
                 [u8; 5],
                 [::core::ffi::c_char; 5],
@@ -3451,9 +3082,9 @@ unsafe extern "C" fn run_static_initializers() {
             >(*b"idbeholda\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
             sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 10]>() as size_t)
                 .wrapping_sub(1 as size_t),
-            parameter_chars: 0 as ::core::ffi::c_int,
+            parameter_chars: 0 as i32,
             chars_read: 0 as size_t,
-            param_chars_read: 0 as ::core::ffi::c_int,
+            param_chars_read: 0 as i32,
             parameter_buf: ::core::mem::transmute::<
                 [u8; 5],
                 [::core::ffi::c_char; 5],
@@ -3466,9 +3097,9 @@ unsafe extern "C" fn run_static_initializers() {
             >(*b"idbeholdl\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
             sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 10]>() as size_t)
                 .wrapping_sub(1 as size_t),
-            parameter_chars: 0 as ::core::ffi::c_int,
+            parameter_chars: 0 as i32,
             chars_read: 0 as size_t,
-            param_chars_read: 0 as ::core::ffi::c_int,
+            param_chars_read: 0 as i32,
             parameter_buf: ::core::mem::transmute::<
                 [u8; 5],
                 [::core::ffi::c_char; 5],
@@ -3481,9 +3112,9 @@ unsafe extern "C" fn run_static_initializers() {
             >(*b"idbehold\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
             sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t)
                 .wrapping_sub(1 as size_t),
-            parameter_chars: 0 as ::core::ffi::c_int,
+            parameter_chars: 0 as i32,
             chars_read: 0 as size_t,
-            param_chars_read: 0 as ::core::ffi::c_int,
+            param_chars_read: 0 as i32,
             parameter_buf: ::core::mem::transmute::<
                 [u8; 5],
                 [::core::ffi::c_char; 5],
@@ -3497,9 +3128,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"idclip\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 7]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as ::core::ffi::c_int,
+        parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],
@@ -3512,9 +3143,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"idspispopd\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 11]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as ::core::ffi::c_int,
+        parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],
@@ -3527,9 +3158,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"idmus\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 6]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 2 as ::core::ffi::c_int,
+        parameter_chars: 2 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],
@@ -3542,9 +3173,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"idkfa\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 6]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as ::core::ffi::c_int,
+        parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],
@@ -3557,9 +3188,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"idfa\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 5]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as ::core::ffi::c_int,
+        parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],
@@ -3572,9 +3203,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"iddqd\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 6]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as ::core::ffi::c_int,
+        parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],

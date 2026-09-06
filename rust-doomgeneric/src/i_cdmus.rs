@@ -1,43 +1,43 @@
 #[no_mangle]
-pub static mut cd_Error: ::core::ffi::c_int = 0;
+pub static mut cd_Error: i32 = 0;
 #[no_mangle]
-pub unsafe extern "C" fn I_CDMusInit() -> ::core::ffi::c_int {
-    return 0 as ::core::ffi::c_int;
+pub unsafe extern "C" fn I_CDMusInit() -> i32 {
+    return 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_CDMusPrintStartup() {}
 #[no_mangle]
 pub unsafe extern "C" fn I_CDMusPlay(
-    mut track: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    return 0 as ::core::ffi::c_int;
+    mut track: i32,
+) -> i32 {
+    return 0 as i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn I_CDMusStop() -> ::core::ffi::c_int {
-    return 0 as ::core::ffi::c_int;
+pub unsafe extern "C" fn I_CDMusStop() -> i32 {
+    return 0 as i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn I_CDMusResume() -> ::core::ffi::c_int {
-    return 0 as ::core::ffi::c_int;
+pub unsafe extern "C" fn I_CDMusResume() -> i32 {
+    return 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_CDMusSetVolume(
-    mut volume: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    cd_Error = 0 as ::core::ffi::c_int;
-    return 0 as ::core::ffi::c_int;
+    mut volume: i32,
+) -> i32 {
+    cd_Error = 0 as i32;
+    return 0 as i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn I_CDMusFirstTrack() -> ::core::ffi::c_int {
-    return 0 as ::core::ffi::c_int;
+pub unsafe extern "C" fn I_CDMusFirstTrack() -> i32 {
+    return 0 as i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn I_CDMusLastTrack() -> ::core::ffi::c_int {
-    return 0 as ::core::ffi::c_int;
+pub unsafe extern "C" fn I_CDMusLastTrack() -> i32 {
+    return 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn I_CDMusTrackLength(
-    mut track_num: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    return 0 as ::core::ffi::c_int;
+    mut track_num: i32,
+) -> i32 {
+    return 0 as i32;
 }

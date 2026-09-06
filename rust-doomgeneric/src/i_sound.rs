@@ -1,28 +1,10 @@
-extern "C" {
-    static mut screensaver_mode: boolean;
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn M_BindVariable(
-        name: *mut ::core::ffi::c_char,
-        variable: *mut ::core::ffi::c_void,
-    );
-}
-pub type boolean = ::core::ffi::c_uint;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sfxinfo_struct {
-    pub tagname: *mut ::core::ffi::c_char,
-    pub name: [::core::ffi::c_char; 9],
-    pub priority: ::core::ffi::c_int,
-    pub link: *mut sfxinfo_t,
-    pub pitch: ::core::ffi::c_int,
-    pub volume: ::core::ffi::c_int,
-    pub usefulness: ::core::ffi::c_int,
-    pub lumpnum: ::core::ffi::c_int,
-    pub numchannels: ::core::ffi::c_int,
-    pub driver_data: *mut ::core::ffi::c_void,
-}
-pub type sfxinfo_t = sfxinfo_struct;
-pub type snddevice_t = ::core::ffi::c_uint;
+use crate::src::m_argv::M_CheckParm;
+use crate::src::m_config::M_BindVariable;
+use crate::src::i_video::screensaver_mode;
+
+pub type boolean = u32;
+use crate::src::sounds::sfxinfo_t;
+pub type snddevice_t = u32;
 pub const SNDDEVICE_CD: snddevice_t = 10;
 pub const SNDDEVICE_AWE32: snddevice_t = 9;
 pub const SNDDEVICE_GENMIDI: snddevice_t = 8;
@@ -38,48 +20,48 @@ pub const SNDDEVICE_NONE: snddevice_t = 0;
 #[repr(C)]
 pub struct sound_module_t {
     pub sound_devices: *mut snddevice_t,
-    pub num_sound_devices: ::core::ffi::c_int,
+    pub num_sound_devices: i32,
     pub Init: Option<unsafe extern "C" fn(boolean) -> boolean>,
     pub Shutdown: Option<unsafe extern "C" fn() -> ()>,
     pub GetSfxLumpNum: Option<
-        unsafe extern "C" fn(*mut sfxinfo_t) -> ::core::ffi::c_int,
+        unsafe extern "C" fn(*mut sfxinfo_t) -> i32,
     >,
     pub Update: Option<unsafe extern "C" fn() -> ()>,
     pub UpdateSoundParams: Option<
         unsafe extern "C" fn(
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
+            i32,
+            i32,
+            i32,
         ) -> (),
     >,
     pub StartSound: Option<
         unsafe extern "C" fn(
             *mut sfxinfo_t,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
-        ) -> ::core::ffi::c_int,
+            i32,
+            i32,
+            i32,
+        ) -> i32,
     >,
-    pub StopSound: Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
-    pub SoundIsPlaying: Option<unsafe extern "C" fn(::core::ffi::c_int) -> boolean>,
+    pub StopSound: Option<unsafe extern "C" fn(i32) -> ()>,
+    pub SoundIsPlaying: Option<unsafe extern "C" fn(i32) -> boolean>,
     pub CacheSounds: Option<
-        unsafe extern "C" fn(*mut sfxinfo_t, ::core::ffi::c_int) -> (),
+        unsafe extern "C" fn(*mut sfxinfo_t, i32) -> (),
     >,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct music_module_t {
     pub sound_devices: *mut snddevice_t,
-    pub num_sound_devices: ::core::ffi::c_int,
+    pub num_sound_devices: i32,
     pub Init: Option<unsafe extern "C" fn() -> boolean>,
     pub Shutdown: Option<unsafe extern "C" fn() -> ()>,
-    pub SetMusicVolume: Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
+    pub SetMusicVolume: Option<unsafe extern "C" fn(i32) -> ()>,
     pub PauseMusic: Option<unsafe extern "C" fn() -> ()>,
     pub ResumeMusic: Option<unsafe extern "C" fn() -> ()>,
     pub RegisterSong: Option<
         unsafe extern "C" fn(
             *mut ::core::ffi::c_void,
-            ::core::ffi::c_int,
+            i32,
         ) -> *mut ::core::ffi::c_void,
     >,
     pub UnRegisterSong: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>,
@@ -91,15 +73,15 @@ pub struct music_module_t {
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 #[no_mangle]
-pub static mut snd_samplerate: ::core::ffi::c_int = 44100 as ::core::ffi::c_int;
+pub static mut snd_samplerate: i32 = 44100 as i32;
 #[no_mangle]
-pub static mut snd_cachesize: ::core::ffi::c_int = 64 as ::core::ffi::c_int
-    * 1024 as ::core::ffi::c_int * 1024 as ::core::ffi::c_int;
+pub static mut snd_cachesize: i32 = 64 as i32
+    * 1024 as i32 * 1024 as i32;
 #[no_mangle]
-pub static mut snd_maxslicetime_ms: ::core::ffi::c_int = 28 as ::core::ffi::c_int;
+pub static mut snd_maxslicetime_ms: i32 = 28 as i32;
 #[no_mangle]
 pub static mut snd_musiccmd: *mut ::core::ffi::c_char = b"\0" as *const u8
     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -107,48 +89,47 @@ static mut sound_module: *mut sound_module_t = ::core::ptr::null::<sound_module_
     as *mut sound_module_t;
 static mut music_module: *mut music_module_t = ::core::ptr::null::<music_module_t>()
     as *mut music_module_t;
+pub static mut snd_musicdevice: i32 = SNDDEVICE_SB as i32;
 #[no_mangle]
-pub static mut snd_musicdevice: ::core::ffi::c_int = SNDDEVICE_SB as ::core::ffi::c_int;
-#[no_mangle]
-pub static mut snd_sfxdevice: ::core::ffi::c_int = SNDDEVICE_SB as ::core::ffi::c_int;
-static mut snd_sbport: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut snd_sbirq: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut snd_sbdma: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut snd_mport: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub static mut snd_sfxdevice: i32 = SNDDEVICE_SB as i32;
+static mut snd_sbport: i32 = 0 as i32;
+static mut snd_sbirq: i32 = 0 as i32;
+static mut snd_sbdma: i32 = 0 as i32;
+static mut snd_mport: i32 = 0 as i32;
 static mut sound_modules: [*mut sound_module_t; 1] = [
     ::core::ptr::null::<sound_module_t>() as *mut sound_module_t,
 ];
 unsafe extern "C" fn SndDeviceInList(
     mut device: snddevice_t,
     mut list: *mut snddevice_t,
-    mut len: ::core::ffi::c_int,
-) -> boolean {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    mut len: i32,
+) -> bool {
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < len {
-        if device as ::core::ffi::c_uint
-            == *list.offset(i as isize) as ::core::ffi::c_uint
+        if device as u32
+            == *list.offset(i as isize) as u32
         {
-            return true_0 as boolean;
+            return true;
         }
         i += 1;
     }
-    return false_0 as boolean;
+    return false;
 }
-unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: boolean) {
-    let mut i: ::core::ffi::c_int = 0;
+unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: bool) {
+    let mut i: i32 = 0;
     sound_module = ::core::ptr::null_mut::<sound_module_t>();
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while !sound_modules[i as usize].is_null() {
         if SndDeviceInList(
             snd_sfxdevice as snddevice_t,
             (*sound_modules[i as usize]).sound_devices,
             (*sound_modules[i as usize]).num_sound_devices,
-        ) != 0
+        )
         {
             if (*sound_modules[i as usize])
                 .Init
-                .expect("non-null function pointer")(use_sfx_prefix) != 0
+                .expect("non-null function pointer")(use_sfx_prefix as i32 as boolean) != 0
             {
                 sound_module = sound_modules[i as usize];
                 return;
@@ -158,27 +139,20 @@ unsafe extern "C" fn InitSfxModule(mut use_sfx_prefix: boolean) {
     }
 }
 unsafe extern "C" fn InitMusicModule() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_InitSound(mut use_sfx_prefix: boolean) {
+pub unsafe fn I_InitSound(mut use_sfx_prefix: bool) {
     let mut nosound: boolean = 0;
     let mut nosfx: boolean = 0;
     let mut nomusic: boolean = 0;
-    nosound = (M_CheckParm(
-        b"-nosound\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
-    nosfx = (M_CheckParm(
-        b"-nosfx\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
-    nomusic = (M_CheckParm(
-        b"-nomusic\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
-    if nosound == 0 && screensaver_mode == 0 {
+    nosound = (M_CheckParm("-nosound") > 0 as i32) as i32
+        as boolean;
+    nosfx = (M_CheckParm("-nosfx") > 0 as i32) as i32
+        as boolean;
+    nomusic = (M_CheckParm("-nomusic") > 0 as i32) as i32
+        as boolean;
+    if nosound == 0 && !screensaver_mode {
         nomusic == 0
-            && (snd_musicdevice == SNDDEVICE_GENMIDI as ::core::ffi::c_int
-                || snd_musicdevice == SNDDEVICE_GUS as ::core::ffi::c_int);
+            && (snd_musicdevice == SNDDEVICE_GENMIDI as i32
+                || snd_musicdevice == SNDDEVICE_GUS as i32);
         if nosfx == 0 {
             InitSfxModule(use_sfx_prefix);
         }
@@ -187,8 +161,7 @@ pub unsafe extern "C" fn I_InitSound(mut use_sfx_prefix: boolean) {
         }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ShutdownSound() {
+pub unsafe fn I_ShutdownSound() {
     if !sound_module.is_null() {
         (*sound_module).Shutdown.expect("non-null function pointer")();
     }
@@ -196,18 +169,16 @@ pub unsafe extern "C" fn I_ShutdownSound() {
         (*music_module).Shutdown.expect("non-null function pointer")();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_GetSfxLumpNum(
+pub unsafe fn I_GetSfxLumpNum(
     mut sfxinfo: *mut sfxinfo_t,
-) -> ::core::ffi::c_int {
+) -> i32 {
     if !sound_module.is_null() {
         return (*sound_module).GetSfxLumpNum.expect("non-null function pointer")(sfxinfo)
     } else {
-        return 0 as ::core::ffi::c_int
+        return 0 as i32
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_UpdateSound() {
+pub unsafe fn I_UpdateSound() {
     if !sound_module.is_null() {
         (*sound_module).Update.expect("non-null function pointer")();
     }
@@ -216,25 +187,24 @@ pub unsafe extern "C" fn I_UpdateSound() {
     }
 }
 unsafe extern "C" fn CheckVolumeSeparation(
-    mut vol: *mut ::core::ffi::c_int,
-    mut sep: *mut ::core::ffi::c_int,
+    mut vol: *mut i32,
+    mut sep: *mut i32,
 ) {
-    if *sep < 0 as ::core::ffi::c_int {
-        *sep = 0 as ::core::ffi::c_int;
-    } else if *sep > 254 as ::core::ffi::c_int {
-        *sep = 254 as ::core::ffi::c_int;
+    if *sep < 0 as i32 {
+        *sep = 0 as i32;
+    } else if *sep > 254 as i32 {
+        *sep = 254 as i32;
     }
-    if *vol < 0 as ::core::ffi::c_int {
-        *vol = 0 as ::core::ffi::c_int;
-    } else if *vol > 127 as ::core::ffi::c_int {
-        *vol = 127 as ::core::ffi::c_int;
+    if *vol < 0 as i32 {
+        *vol = 0 as i32;
+    } else if *vol > 127 as i32 {
+        *vol = 127 as i32;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_UpdateSoundParams(
-    mut channel: ::core::ffi::c_int,
-    mut vol: ::core::ffi::c_int,
-    mut sep: ::core::ffi::c_int,
+pub unsafe fn I_UpdateSoundParams(
+    mut channel: i32,
+    mut vol: i32,
+    mut sep: i32,
 ) {
     if !sound_module.is_null() {
         CheckVolumeSeparation(&raw mut vol, &raw mut sep);
@@ -243,42 +213,38 @@ pub unsafe extern "C" fn I_UpdateSoundParams(
             .expect("non-null function pointer")(channel, vol, sep);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_StartSound(
+pub unsafe fn I_StartSound(
     mut sfxinfo: *mut sfxinfo_t,
-    mut channel: ::core::ffi::c_int,
-    mut vol: ::core::ffi::c_int,
-    mut sep: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut channel: i32,
+    mut vol: i32,
+    mut sep: i32,
+) -> i32 {
     if !sound_module.is_null() {
         CheckVolumeSeparation(&raw mut vol, &raw mut sep);
         return (*sound_module)
             .StartSound
             .expect("non-null function pointer")(sfxinfo, channel, vol, sep);
     } else {
-        return 0 as ::core::ffi::c_int
+        return 0 as i32
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_StopSound(mut channel: ::core::ffi::c_int) {
+pub unsafe fn I_StopSound(mut channel: i32) {
     if !sound_module.is_null() {
         (*sound_module).StopSound.expect("non-null function pointer")(channel);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_SoundIsPlaying(mut channel: ::core::ffi::c_int) -> boolean {
+pub unsafe fn I_SoundIsPlaying(mut channel: i32) -> bool {
     if !sound_module.is_null() {
         return (*sound_module)
             .SoundIsPlaying
-            .expect("non-null function pointer")(channel)
+            .expect("non-null function pointer")(channel) != 0
     } else {
-        return false_0 as boolean
+        return false
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_PrecacheSounds(
+pub unsafe fn I_PrecacheSounds(
     mut sounds: *mut sfxinfo_t,
-    mut num_sounds: ::core::ffi::c_int,
+    mut num_sounds: i32,
 ) {
     if !sound_module.is_null() && (*sound_module).CacheSounds.is_some() {
         (*sound_module)
@@ -286,36 +252,30 @@ pub unsafe extern "C" fn I_PrecacheSounds(
             .expect("non-null function pointer")(sounds, num_sounds);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_InitMusic() {
+pub unsafe fn I_InitMusic() {
     if !music_module.is_null() {
         (*music_module).Init.expect("non-null function pointer")();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ShutdownMusic() {}
-#[no_mangle]
-pub unsafe extern "C" fn I_SetMusicVolume(mut volume: ::core::ffi::c_int) {
+pub unsafe fn I_ShutdownMusic() {}
+pub unsafe fn I_SetMusicVolume(mut volume: i32) {
     if !music_module.is_null() {
         (*music_module).SetMusicVolume.expect("non-null function pointer")(volume);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_PauseSong() {
+pub unsafe fn I_PauseSong() {
     if !music_module.is_null() {
         (*music_module).PauseMusic.expect("non-null function pointer")();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_ResumeSong() {
+pub unsafe fn I_ResumeSong() {
     if !music_module.is_null() {
         (*music_module).ResumeMusic.expect("non-null function pointer")();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_RegisterSong(
+pub unsafe fn I_RegisterSong(
     mut data: *mut ::core::ffi::c_void,
-    mut len: ::core::ffi::c_int,
+    mut len: i32,
 ) -> *mut ::core::ffi::c_void {
     if !music_module.is_null() {
         return (*music_module)
@@ -325,91 +285,66 @@ pub unsafe extern "C" fn I_RegisterSong(
         return NULL
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_UnRegisterSong(mut handle: *mut ::core::ffi::c_void) {
+pub unsafe fn I_UnRegisterSong(mut handle: *mut ::core::ffi::c_void) {
     if !music_module.is_null() {
         (*music_module).UnRegisterSong.expect("non-null function pointer")(handle);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_PlaySong(
+pub unsafe fn I_PlaySong(
     mut handle: *mut ::core::ffi::c_void,
-    mut looping: boolean,
+    mut looping: bool,
 ) {
     if !music_module.is_null() {
-        (*music_module).PlaySong.expect("non-null function pointer")(handle, looping);
+        (*music_module).PlaySong.expect("non-null function pointer")(handle, looping as i32 as boolean);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_StopSong() {
+pub unsafe fn I_StopSong() {
     if !music_module.is_null() {
         (*music_module).StopSong.expect("non-null function pointer")();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_MusicIsPlaying() -> boolean {
+pub unsafe fn I_MusicIsPlaying() -> bool {
     if !music_module.is_null() {
-        return (*music_module).MusicIsPlaying.expect("non-null function pointer")()
+        return (*music_module).MusicIsPlaying.expect("non-null function pointer")() != 0
     } else {
-        return false_0 as boolean
+        return false
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn I_BindSoundVariables() {
+pub unsafe fn I_BindSoundVariables() {
     extern "C" {
-        static mut use_libsamplerate: ::core::ffi::c_int;
+        static mut use_libsamplerate: i32;
     }
     extern "C" {
-        static mut libsamplerate_scale: ::core::ffi::c_float;
+        static mut libsamplerate_scale: f32;
     }
-    M_BindVariable(
-        b"snd_musicdevice\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_musicdevice",
         &raw mut snd_musicdevice as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_sfxdevice\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_sfxdevice",
         &raw mut snd_sfxdevice as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_sbport\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_sbport",
         &raw mut snd_sbport as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_sbirq\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_sbirq",
         &raw mut snd_sbirq as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_sbdma\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_sbdma",
         &raw mut snd_sbdma as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_mport\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_mport",
         &raw mut snd_mport as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_maxslicetime_ms\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_maxslicetime_ms",
         &raw mut snd_maxslicetime_ms as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_musiccmd\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_musiccmd",
         &raw mut snd_musiccmd as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_samplerate\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_samplerate",
         &raw mut snd_samplerate as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_cachesize\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_cachesize",
         &raw mut snd_cachesize as *mut ::core::ffi::c_void,
     );
 }

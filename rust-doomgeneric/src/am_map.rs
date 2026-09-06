@@ -1,125 +1,76 @@
+use crate::src::i_system::FILE;
+use crate::src::hu_lib::patch_t;
+use crate::src::m_cheat::cheatseq_t;
+use crate::src::d_event::event_t;
+use crate::src::p_mobj::{actionf_t};
+use crate::src::d_player::{player_t};
+use crate::src::p_mobj::{mobj_t};
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_ReleaseLumpName};
+use crate::src::p_setup::numvertexes;
+use crate::src::p_setup::vertexes;
+use crate::src::m_controls::key_map_north;
+use crate::src::m_controls::key_map_south;
+use crate::src::m_controls::key_map_east;
+use crate::src::m_controls::key_map_west;
+use crate::src::m_controls::key_map_zoomin;
+use crate::src::m_controls::key_map_zoomout;
+use crate::src::m_controls::key_map_toggle;
+use crate::src::m_controls::key_map_maxzoom;
+use crate::src::m_controls::key_map_follow;
+use crate::src::m_controls::key_map_grid;
+use crate::src::m_controls::key_map_mark;
+use crate::src::m_controls::key_map_clearmark;
+use crate::src::g_game::singledemo;
+use crate::src::m_cheat::cht_CheckCheat;
+use crate::src::st_stuff::ST_Responder;
+use crate::src::g_game::viewactive;
+use crate::src::p_setup::numlines;
+use crate::src::p_setup::bmaporgx;
+use crate::src::p_setup::bmaporgy;
+use crate::src::v_video::V_MarkRect;
+use crate::src::i_video::I_VideoBuffer;
+use crate::src::p_setup::lines;
+use crate::src::g_game::gameepisode;
+use crate::src::g_game::gamemap;
+use crate::src::p_setup::numsectors;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::playeringame;
+use crate::src::m_misc::M_snprintf;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
+use crate::src::p_setup::sectors;
+use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
+use crate::src::m_fixed::FixedMul;
+use crate::src::g_game::players;
+use crate::src::v_video::V_DrawPatch;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     static mut stderr: *mut FILE;
     fn fprintf(
         __stream: *mut FILE,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn cht_CheckCheat(
-        cht: *mut cheatseq_t,
-        key: ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    fn ST_Responder(ev: *mut event_t) -> boolean;
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
-    static mut I_VideoBuffer: *mut byte;
-    static mut numvertexes: ::core::ffi::c_int;
-    static mut vertexes: *mut vertex_t;
-    static mut numsectors: ::core::ffi::c_int;
-    static mut sectors: *mut sector_t;
-    static mut numlines: ::core::ffi::c_int;
-    static mut lines: *mut line_t;
-    static mut bmaporgx: fixed_t;
-    static mut bmaporgy: fixed_t;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpName(name: *mut ::core::ffi::c_char);
-    static mut key_map_north: ::core::ffi::c_int;
-    static mut key_map_south: ::core::ffi::c_int;
-    static mut key_map_east: ::core::ffi::c_int;
-    static mut key_map_west: ::core::ffi::c_int;
-    static mut key_map_zoomin: ::core::ffi::c_int;
-    static mut key_map_zoomout: ::core::ffi::c_int;
-    static mut key_map_toggle: ::core::ffi::c_int;
-    static mut key_map_maxzoom: ::core::ffi::c_int;
-    static mut key_map_follow: ::core::ffi::c_int;
-    static mut key_map_grid: ::core::ffi::c_int;
-    static mut key_map_mark: ::core::ffi::c_int;
-    static mut key_map_clearmark: ::core::ffi::c_int;
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> ::core::ffi::c_int;
-    fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
-    fn V_MarkRect(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
-    );
-    static mut gameepisode: ::core::ffi::c_int;
-    static mut gamemap: ::core::ffi::c_int;
-    static mut netgame: boolean;
-    static mut deathmatch: ::core::ffi::c_int;
-    static mut viewactive: boolean;
-    static mut consoleplayer: ::core::ffi::c_int;
-    static mut singledemo: boolean;
-    static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
-pub type __off_t = ::core::ffi::c_long;
-pub type __off64_t = ::core::ffi::c_long;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: ::core::ffi::c_int,
-    pub _IO_read_ptr: *mut ::core::ffi::c_char,
-    pub _IO_read_end: *mut ::core::ffi::c_char,
-    pub _IO_read_base: *mut ::core::ffi::c_char,
-    pub _IO_write_base: *mut ::core::ffi::c_char,
-    pub _IO_write_ptr: *mut ::core::ffi::c_char,
-    pub _IO_write_end: *mut ::core::ffi::c_char,
-    pub _IO_buf_base: *mut ::core::ffi::c_char,
-    pub _IO_buf_end: *mut ::core::ffi::c_char,
-    pub _IO_save_base: *mut ::core::ffi::c_char,
-    pub _IO_backup_base: *mut ::core::ffi::c_char,
-    pub _IO_save_end: *mut ::core::ffi::c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: ::core::ffi::c_int,
-    pub _flags2: ::core::ffi::c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: ::core::ffi::c_ushort,
-    pub _vtable_offset: ::core::ffi::c_schar,
-    pub _shortbuf: [::core::ffi::c_char; 1],
-    pub _lock: *mut ::core::ffi::c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut ::core::ffi::c_void,
-    pub __pad5: size_t,
-    pub _mode: ::core::ffi::c_int,
-    pub _unused2: [::core::ffi::c_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -129,7 +80,7 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -141,7 +92,7 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMPOWERS: C2RustUnnamed_0 = 6;
 pub const pw_infrared: C2RustUnnamed_0 = 5;
 pub const pw_allmap: C2RustUnnamed_0 = 4;
@@ -149,64 +100,21 @@ pub const pw_ironfeet: C2RustUnnamed_0 = 3;
 pub const pw_invisibility: C2RustUnnamed_0 = 2;
 pub const pw_strength: C2RustUnnamed_0 = 1;
 pub const pw_invulnerability: C2RustUnnamed_0 = 0;
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct cheatseq_t {
-    pub sequence: [::core::ffi::c_char; 25],
-    pub sequence_len: size_t,
-    pub parameter_chars: ::core::ffi::c_int,
-    pub chars_read: size_t,
-    pub param_chars_read: ::core::ffi::c_int,
-    pub parameter_buf: [::core::ffi::c_char; 5],
-}
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -346,7 +254,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1315,18 +1223,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1467,213 +1364,6 @@ pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-pub type line_t = line_s;
-pub type player_t = player_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
 pub struct mpoint_t {
     pub x: fixed_t,
     pub y: fixed_t,
@@ -1693,73 +1383,73 @@ pub struct fline_t {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct fpoint_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
 }
 pub const RIGHT: C2RustUnnamed_1 = 2;
 pub const LEFT: C2RustUnnamed_1 = 1;
 pub const BOTTOM: C2RustUnnamed_1 = 4;
 pub const TOP: C2RustUnnamed_1 = 8;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct islope_t {
     pub slp: fixed_t,
     pub islp: fixed_t,
 }
-pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ML_SECRET: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
-pub const ML_DONTDRAW: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-pub const ML_MAPPED: ::core::ffi::c_int = 256 as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const MAPBLOCKUNITS: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-pub const AM_MSGHEADER: ::core::ffi::c_int = (('a' as i32) << 24 as ::core::ffi::c_int)
-    + (('m' as i32) << 16 as ::core::ffi::c_int);
-pub const AM_MSGENTERED: ::core::ffi::c_int = AM_MSGHEADER
-    | ('e' as i32) << 8 as ::core::ffi::c_int;
-pub const AM_MSGEXITED: ::core::ffi::c_int = AM_MSGHEADER
-    | ('x' as i32) << 8 as ::core::ffi::c_int;
-pub const REDS: ::core::ffi::c_int = 256 as ::core::ffi::c_int
-    - 5 as ::core::ffi::c_int * 16 as ::core::ffi::c_int;
-pub const REDRANGE: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const GREENS: ::core::ffi::c_int = 7 as ::core::ffi::c_int
-    * 16 as ::core::ffi::c_int;
-pub const GREENRANGE: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const GRAYS: ::core::ffi::c_int = 6 as ::core::ffi::c_int * 16 as ::core::ffi::c_int;
-pub const GRAYSRANGE: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const BROWNS: ::core::ffi::c_int = 4 as ::core::ffi::c_int
-    * 16 as ::core::ffi::c_int;
-pub const YELLOWS: ::core::ffi::c_int = 256 as ::core::ffi::c_int
-    - 32 as ::core::ffi::c_int + 7 as ::core::ffi::c_int;
-pub const BLACK: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const WHITE: ::core::ffi::c_int = 256 as ::core::ffi::c_int
-    - 47 as ::core::ffi::c_int;
-pub const BACKGROUND: ::core::ffi::c_int = BLACK;
-pub const WALLCOLORS: ::core::ffi::c_int = REDS;
-pub const WALLRANGE: ::core::ffi::c_int = REDRANGE;
-pub const TSWALLCOLORS: ::core::ffi::c_int = GRAYS;
-pub const FDWALLCOLORS: ::core::ffi::c_int = BROWNS;
-pub const CDWALLCOLORS: ::core::ffi::c_int = YELLOWS;
-pub const THINGCOLORS: ::core::ffi::c_int = GREENS;
-pub const THINGRANGE: ::core::ffi::c_int = GREENRANGE;
-pub const SECRETWALLCOLORS: ::core::ffi::c_int = WALLCOLORS;
-pub const GRIDCOLORS: ::core::ffi::c_int = GRAYS + GRAYSRANGE / 2 as ::core::ffi::c_int;
-pub const XHAIRCOLORS: ::core::ffi::c_int = GRAYS;
-pub const AM_NUMMARKPOINTS: ::core::ffi::c_int = 10 as ::core::ffi::c_int;
-pub const INITSCALEMTOF: ::core::ffi::c_double = 0.2f64
-    * FRACUNIT as ::core::ffi::c_double;
-pub const M_ZOOMIN: ::core::ffi::c_int = (1.02f64 * FRACUNIT as ::core::ffi::c_double)
-    as ::core::ffi::c_int;
-pub const M_ZOOMOUT: ::core::ffi::c_int = (FRACUNIT as ::core::ffi::c_double / 1.02f64)
-    as ::core::ffi::c_int;
-pub const LINE_NEVERSEE: ::core::ffi::c_int = ML_DONTDRAW;
-pub const R_0: ::core::ffi::c_int = 8 as ::core::ffi::c_int * 16 as ::core::ffi::c_int
-    * FRACUNIT / 7 as ::core::ffi::c_int;
+pub const INT_MAX: i32 = __INT_MAX__;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ML_SECRET: i32 = 32 as i32;
+pub const ML_DONTDRAW: i32 = 128 as i32;
+pub const ML_MAPPED: i32 = 256 as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
+pub const MAPBLOCKUNITS: i32 = 128 as i32;
+pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
+    + (('m' as i32) << 16 as i32);
+pub const AM_MSGENTERED: i32 = AM_MSGHEADER
+    | ('e' as i32) << 8 as i32;
+pub const AM_MSGEXITED: i32 = AM_MSGHEADER
+    | ('x' as i32) << 8 as i32;
+pub const REDS: i32 = 256 as i32
+    - 5 as i32 * 16 as i32;
+pub const REDRANGE: i32 = 16 as i32;
+pub const GREENS: i32 = 7 as i32
+    * 16 as i32;
+pub const GREENRANGE: i32 = 16 as i32;
+pub const GRAYS: i32 = 6 as i32 * 16 as i32;
+pub const GRAYSRANGE: i32 = 16 as i32;
+pub const BROWNS: i32 = 4 as i32
+    * 16 as i32;
+pub const YELLOWS: i32 = 256 as i32
+    - 32 as i32 + 7 as i32;
+pub const BLACK: i32 = 0 as i32;
+pub const WHITE: i32 = 256 as i32
+    - 47 as i32;
+pub const BACKGROUND: i32 = BLACK;
+pub const WALLCOLORS: i32 = REDS;
+pub const WALLRANGE: i32 = REDRANGE;
+pub const TSWALLCOLORS: i32 = GRAYS;
+pub const FDWALLCOLORS: i32 = BROWNS;
+pub const CDWALLCOLORS: i32 = YELLOWS;
+pub const THINGCOLORS: i32 = GREENS;
+pub const THINGRANGE: i32 = GREENRANGE;
+pub const SECRETWALLCOLORS: i32 = WALLCOLORS;
+pub const GRIDCOLORS: i32 = GRAYS + GRAYSRANGE / 2 as i32;
+pub const XHAIRCOLORS: i32 = GRAYS;
+pub const AM_NUMMARKPOINTS: i32 = 10 as i32;
+pub const INITSCALEMTOF: f64 = 0.2f64
+    * FRACUNIT as f64;
+pub const M_ZOOMIN: i32 = (1.02f64 * FRACUNIT as f64)
+    as i32;
+pub const M_ZOOMOUT: i32 = (FRACUNIT as f64 / 1.02f64)
+    as i32;
+pub const LINE_NEVERSEE: i32 = ML_DONTDRAW;
+pub const R_0: i32 = 8 as i32 * 16 as i32
+    * FRACUNIT / 7 as i32;
 #[no_mangle]
 pub static mut player_arrow: [mline_t; 7] = [
     mline_t {
@@ -1833,8 +1523,8 @@ pub static mut player_arrow: [mline_t; 7] = [
         },
     },
 ];
-pub const R_1: ::core::ffi::c_int = 8 as ::core::ffi::c_int * 16 as ::core::ffi::c_int
-    * FRACUNIT / 7 as ::core::ffi::c_int;
+pub const R_1: i32 = 8 as i32 * 16 as i32
+    * FRACUNIT / 7 as i32;
 #[no_mangle]
 pub static mut cheat_player_arrow: [mline_t; 16] = [
     mline_t {
@@ -1998,88 +1688,87 @@ pub static mut cheat_player_arrow: [mline_t; 16] = [
         },
     },
 ];
-pub const R_2: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
+pub const R_2: i32 = (1 as i32) << FRACBITS;
 #[no_mangle]
 pub static mut triangle_guy: [mline_t; 3] = [
     mline_t {
         a: mpoint_t {
-            x: (-0.867f64 * R_2 as ::core::ffi::c_double) as fixed_t,
-            y: (-0.5f64 * R_2 as ::core::ffi::c_double) as fixed_t,
+            x: (-0.867f64 * R_2 as f64) as fixed_t,
+            y: (-0.5f64 * R_2 as f64) as fixed_t,
         },
         b: mpoint_t {
-            x: (0.867f64 * R_2 as ::core::ffi::c_double) as fixed_t,
-            y: (-0.5f64 * R_2 as ::core::ffi::c_double) as fixed_t,
+            x: (0.867f64 * R_2 as f64) as fixed_t,
+            y: (-0.5f64 * R_2 as f64) as fixed_t,
         },
     },
     mline_t {
         a: mpoint_t {
-            x: (0.867f64 * R_2 as ::core::ffi::c_double) as fixed_t,
-            y: (-0.5f64 * R_2 as ::core::ffi::c_double) as fixed_t,
+            x: (0.867f64 * R_2 as f64) as fixed_t,
+            y: (-0.5f64 * R_2 as f64) as fixed_t,
         },
         b: mpoint_t {
-            x: 0 as ::core::ffi::c_int,
-            y: (1 as ::core::ffi::c_int) << FRACBITS,
+            x: 0 as i32,
+            y: (1 as i32) << FRACBITS,
         },
     },
     mline_t {
         a: mpoint_t {
-            x: 0 as ::core::ffi::c_int,
-            y: (1 as ::core::ffi::c_int) << FRACBITS,
+            x: 0 as i32,
+            y: (1 as i32) << FRACBITS,
         },
         b: mpoint_t {
-            x: (-0.867f64 * R_2 as ::core::ffi::c_double) as fixed_t,
-            y: (-0.5f64 * R_2 as ::core::ffi::c_double) as fixed_t,
+            x: (-0.867f64 * R_2 as f64) as fixed_t,
+            y: (-0.5f64 * R_2 as f64) as fixed_t,
         },
     },
 ];
-pub const R: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
+pub const R: i32 = (1 as i32) << FRACBITS;
 #[no_mangle]
 pub static mut thintriangle_guy: [mline_t; 3] = [
     mline_t {
         a: mpoint_t {
-            x: (-0.5f64 * R as ::core::ffi::c_double) as fixed_t,
-            y: (-0.7f64 * R as ::core::ffi::c_double) as fixed_t,
+            x: (-0.5f64 * R as f64) as fixed_t,
+            y: (-0.7f64 * R as f64) as fixed_t,
         },
         b: mpoint_t {
-            x: (1 as ::core::ffi::c_int) << FRACBITS,
-            y: 0 as ::core::ffi::c_int,
+            x: (1 as i32) << FRACBITS,
+            y: 0 as i32,
         },
     },
     mline_t {
         a: mpoint_t {
-            x: (1 as ::core::ffi::c_int) << FRACBITS,
-            y: 0 as ::core::ffi::c_int,
+            x: (1 as i32) << FRACBITS,
+            y: 0 as i32,
         },
         b: mpoint_t {
-            x: (-0.5f64 * R as ::core::ffi::c_double) as fixed_t,
-            y: (0.7f64 * R as ::core::ffi::c_double) as fixed_t,
+            x: (-0.5f64 * R as f64) as fixed_t,
+            y: (0.7f64 * R as f64) as fixed_t,
         },
     },
     mline_t {
         a: mpoint_t {
-            x: (-0.5f64 * R as ::core::ffi::c_double) as fixed_t,
-            y: (0.7f64 * R as ::core::ffi::c_double) as fixed_t,
+            x: (-0.5f64 * R as f64) as fixed_t,
+            y: (0.7f64 * R as f64) as fixed_t,
         },
         b: mpoint_t {
-            x: (-0.5f64 * R as ::core::ffi::c_double) as fixed_t,
-            y: (-0.7f64 * R as ::core::ffi::c_double) as fixed_t,
+            x: (-0.5f64 * R as f64) as fixed_t,
+            y: (-0.7f64 * R as f64) as fixed_t,
         },
     },
 ];
-static mut cheating: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut grid: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut leveljuststarted: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-#[no_mangle]
-pub static mut automapactive: boolean = false_0 as boolean;
-static mut finit_width: ::core::ffi::c_int = SCREENWIDTH;
-static mut finit_height: ::core::ffi::c_int = SCREENHEIGHT - 32 as ::core::ffi::c_int;
-static mut f_x: ::core::ffi::c_int = 0;
-static mut f_y: ::core::ffi::c_int = 0;
-static mut f_w: ::core::ffi::c_int = 0;
-static mut f_h: ::core::ffi::c_int = 0;
-static mut lightlev: ::core::ffi::c_int = 0;
+static mut cheating: i32 = 0 as i32;
+static mut grid: i32 = 0 as i32;
+static mut leveljuststarted: i32 = 1 as i32;
+pub static mut automapactive: bool = false;
+static mut finit_width: i32 = SCREENWIDTH;
+static mut finit_height: i32 = SCREENHEIGHT - 32 as i32;
+static mut f_x: i32 = 0;
+static mut f_y: i32 = 0;
+static mut f_w: i32 = 0;
+static mut f_h: i32 = 0;
+static mut lightlev: i32 = 0;
 static mut fb: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-static mut amclock: ::core::ffi::c_int = 0;
+static mut amclock: i32 = 0;
 static mut m_paninc: mpoint_t = mpoint_t { x: 0, y: 0 };
 static mut mtof_zoommul: fixed_t = 0;
 static mut ftom_zoommul: fixed_t = 0;
@@ -2110,8 +1799,8 @@ static mut plr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t
 static mut marknums: [*mut patch_t; 10] = [::core::ptr::null::<patch_t>()
     as *mut patch_t; 10];
 static mut markpoints: [mpoint_t; 10] = [mpoint_t { x: 0, y: 0 }; 10];
-static mut markpointnum: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut followplayer: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
+static mut markpointnum: i32 = 0 as i32;
+static mut followplayer: i32 = 1 as i32;
 #[no_mangle]
 pub static mut cheat_amap: cheatseq_t = cheatseq_t {
     sequence: [0; 25],
@@ -2121,21 +1810,21 @@ pub static mut cheat_amap: cheatseq_t = cheatseq_t {
     param_chars_read: 0,
     parameter_buf: [0; 5],
 };
-static mut stopped: boolean = true_0 as boolean;
+static mut stopped: bool = true;
 #[no_mangle]
 pub unsafe extern "C" fn AM_getIslope(mut ml: *mut mline_t, mut is: *mut islope_t) {
-    let mut dx: ::core::ffi::c_int = 0;
-    let mut dy: ::core::ffi::c_int = 0;
-    dy = ((*ml).a.y - (*ml).b.y) as ::core::ffi::c_int;
-    dx = ((*ml).b.x - (*ml).a.x) as ::core::ffi::c_int;
+    let mut dx: i32 = 0;
+    let mut dy: i32 = 0;
+    dy = ((*ml).a.y - (*ml).b.y) as i32;
+    dx = ((*ml).b.x - (*ml).a.x) as i32;
     if dy == 0 {
-        (*is).islp = (if dx < 0 as ::core::ffi::c_int { -INT_MAX } else { INT_MAX })
+        (*is).islp = (if dx < 0 as i32 { -INT_MAX } else { INT_MAX })
             as fixed_t;
     } else {
         (*is).islp = FixedDiv(dx as fixed_t, dy as fixed_t);
     }
     if dx == 0 {
-        (*is).slp = (if dy < 0 as ::core::ffi::c_int { -INT_MAX } else { INT_MAX })
+        (*is).slp = (if dy < 0 as i32 { -INT_MAX } else { INT_MAX })
             as fixed_t;
     } else {
         (*is).slp = FixedDiv(dy as fixed_t, dx as fixed_t);
@@ -2143,12 +1832,12 @@ pub unsafe extern "C" fn AM_getIslope(mut ml: *mut mline_t, mut is: *mut islope_
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_activateNewScale() {
-    m_x += m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int;
-    m_y += m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int;
-    m_w = FixedMul((f_w as fixed_t) << 16 as ::core::ffi::c_int, scale_ftom);
-    m_h = FixedMul((f_h as fixed_t) << 16 as ::core::ffi::c_int, scale_ftom);
-    m_x -= m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int;
-    m_y -= m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int;
+    m_x += m_w as i32 / 2 as i32;
+    m_y += m_h as i32 / 2 as i32;
+    m_w = FixedMul((f_w as fixed_t) << 16 as i32, scale_ftom);
+    m_h = FixedMul((f_h as fixed_t) << 16 as i32, scale_ftom);
+    m_x -= m_w as i32 / 2 as i32;
+    m_y -= m_h as i32 / 2 as i32;
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
 }
@@ -2167,10 +1856,10 @@ pub unsafe extern "C" fn AM_restoreScaleAndLoc() {
         m_x = old_m_x;
         m_y = old_m_y;
     } else {
-        m_x = ((*(*plr).mo).x as ::core::ffi::c_int
-            - m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
-        m_y = ((*(*plr).mo).y as ::core::ffi::c_int
-            - m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
+        m_x = ((*(*plr).mo).x as i32
+            - m_w as i32 / 2 as i32) as fixed_t;
+        m_y = ((*(*plr).mo).y as i32
+            - m_h as i32 / 2 as i32) as fixed_t;
     }
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
@@ -2179,22 +1868,22 @@ pub unsafe extern "C" fn AM_restoreScaleAndLoc() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_addMark() {
-    markpoints[markpointnum as usize].x = (m_x as ::core::ffi::c_int
-        + m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
-    markpoints[markpointnum as usize].y = (m_y as ::core::ffi::c_int
-        + m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
-    markpointnum = (markpointnum + 1 as ::core::ffi::c_int) % AM_NUMMARKPOINTS;
+    markpoints[markpointnum as usize].x = (m_x as i32
+        + m_w as i32 / 2 as i32) as fixed_t;
+    markpoints[markpointnum as usize].y = (m_y as i32
+        + m_h as i32 / 2 as i32) as fixed_t;
+    markpointnum = (markpointnum + 1 as i32) % AM_NUMMARKPOINTS;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_findMinMaxBoundaries() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut a: fixed_t = 0;
     let mut b: fixed_t = 0;
     min_y = INT_MAX as fixed_t;
     min_x = min_y;
     max_y = -INT_MAX as fixed_t;
     max_x = max_y;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numvertexes {
         if (*vertexes.offset(i as isize)).x < min_x {
             min_x = (*vertexes.offset(i as isize)).x;
@@ -2210,8 +1899,8 @@ pub unsafe extern "C" fn AM_findMinMaxBoundaries() {
     }
     max_w = max_x - min_x;
     max_h = max_y - min_y;
-    min_w = (2 as ::core::ffi::c_int * 16 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
-    min_h = (2 as ::core::ffi::c_int * 16 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+    min_w = (2 as i32 * 16 as i32 * FRACUNIT) as fixed_t;
+    min_h = (2 as i32 * 16 as i32 * FRACUNIT) as fixed_t;
     a = FixedDiv((f_w as fixed_t) << FRACBITS, max_w);
     b = FixedDiv((f_h as fixed_t) << FRACBITS, max_h);
     min_scale_mtof = if a < b { a } else { b };
@@ -2223,64 +1912,64 @@ pub unsafe extern "C" fn AM_findMinMaxBoundaries() {
 #[no_mangle]
 pub unsafe extern "C" fn AM_changeWindowLoc() {
     if m_paninc.x != 0 || m_paninc.y != 0 {
-        followplayer = 0 as ::core::ffi::c_int;
+        followplayer = 0 as i32;
         f_oldloc.x = INT_MAX as fixed_t;
     }
     m_x += m_paninc.x;
     m_y += m_paninc.y;
-    if m_x as ::core::ffi::c_int + m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int
+    if m_x as i32 + m_w as i32 / 2 as i32
         > max_x
     {
-        m_x = (max_x as ::core::ffi::c_int
-            - m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
-    } else if (m_x as ::core::ffi::c_int
-        + m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int) < min_x
+        m_x = (max_x as i32
+            - m_w as i32 / 2 as i32) as fixed_t;
+    } else if (m_x as i32
+        + m_w as i32 / 2 as i32) < min_x
     {
-        m_x = (min_x as ::core::ffi::c_int
-            - m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
+        m_x = (min_x as i32
+            - m_w as i32 / 2 as i32) as fixed_t;
     }
-    if m_y as ::core::ffi::c_int + m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int
+    if m_y as i32 + m_h as i32 / 2 as i32
         > max_y
     {
-        m_y = (max_y as ::core::ffi::c_int
-            - m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
-    } else if (m_y as ::core::ffi::c_int
-        + m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int) < min_y
+        m_y = (max_y as i32
+            - m_h as i32 / 2 as i32) as fixed_t;
+    } else if (m_y as i32
+        + m_h as i32 / 2 as i32) < min_y
     {
-        m_y = (min_y as ::core::ffi::c_int
-            - m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
+        m_y = (min_y as i32
+            - m_h as i32 / 2 as i32) as fixed_t;
     }
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_initVariables() {
-    let mut pnum: ::core::ffi::c_int = 0;
+    let mut pnum: i32 = 0;
     static mut st_notify: event_t = event_t {
         type_0: ev_keyup,
         data1: AM_MSGENTERED,
-        data2: 0 as ::core::ffi::c_int,
-        data3: 0 as ::core::ffi::c_int,
+        data2: 0 as i32,
+        data3: 0 as i32,
         data4: 0,
     };
-    automapactive = true_0 as boolean;
+    automapactive = true;
     fb = I_VideoBuffer;
     f_oldloc.x = INT_MAX as fixed_t;
-    amclock = 0 as ::core::ffi::c_int;
-    lightlev = 0 as ::core::ffi::c_int;
-    m_paninc.y = 0 as ::core::ffi::c_int as fixed_t;
+    amclock = 0 as i32;
+    lightlev = 0 as i32;
+    m_paninc.y = 0 as i32 as fixed_t;
     m_paninc.x = m_paninc.y;
     ftom_zoommul = FRACUNIT as fixed_t;
     mtof_zoommul = FRACUNIT as fixed_t;
-    m_w = FixedMul((f_w as fixed_t) << 16 as ::core::ffi::c_int, scale_ftom);
-    m_h = FixedMul((f_h as fixed_t) << 16 as ::core::ffi::c_int, scale_ftom);
+    m_w = FixedMul((f_w as fixed_t) << 16 as i32, scale_ftom);
+    m_h = FixedMul((f_h as fixed_t) << 16 as i32, scale_ftom);
     if playeringame[consoleplayer as usize] != 0 {
         plr = (&raw mut players as *mut player_t).offset(consoleplayer as isize)
             as *mut player_t;
     } else {
         plr = (&raw mut players as *mut player_t)
-            .offset(0 as ::core::ffi::c_int as isize) as *mut player_t;
-        pnum = 0 as ::core::ffi::c_int;
+            .offset(0 as i32 as isize) as *mut player_t;
+        pnum = 0 as i32;
         while pnum < MAXPLAYERS {
             if playeringame[pnum as usize] != 0 {
                 plr = (&raw mut players as *mut player_t).offset(pnum as isize)
@@ -2291,10 +1980,10 @@ pub unsafe extern "C" fn AM_initVariables() {
             }
         }
     }
-    m_x = ((*(*plr).mo).x as ::core::ffi::c_int
-        - m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
-    m_y = ((*(*plr).mo).y as ::core::ffi::c_int
-        - m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int) as fixed_t;
+    m_x = ((*(*plr).mo).x as i32
+        - m_w as i32 / 2 as i32) as fixed_t;
+    m_y = ((*(*plr).mo).y as i32
+        - m_h as i32 / 2 as i32) as fixed_t;
     AM_changeWindowLoc();
     old_m_x = m_x;
     old_m_y = m_y;
@@ -2304,10 +1993,10 @@ pub unsafe extern "C" fn AM_initVariables() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_loadPics() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
-    i = 0 as ::core::ffi::c_int;
-    while i < 10 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 10 as i32 {
         snprintf(
             &raw mut namebuf as *mut ::core::ffi::c_char,
             9 as size_t,
@@ -2315,42 +2004,42 @@ pub unsafe extern "C" fn AM_loadPics() {
             i,
         );
         marknums[i as usize] = W_CacheLumpName(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            PU_STATIC as ::core::ffi::c_int,
+            &wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char),
+            PU_STATIC as i32,
         ) as *mut patch_t;
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_unloadPics() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
-    i = 0 as ::core::ffi::c_int;
-    while i < 10 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 10 as i32 {
         snprintf(
             &raw mut namebuf as *mut ::core::ffi::c_char,
             9 as size_t,
             b"AMMNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
             i,
         );
-        W_ReleaseLumpName(&raw mut namebuf as *mut ::core::ffi::c_char);
+        W_ReleaseLumpName(&wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char));
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_clearMarks() {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < AM_NUMMARKPOINTS {
-        markpoints[i as usize].x = -(1 as ::core::ffi::c_int) as fixed_t;
+        markpoints[i as usize].x = -(1 as i32) as fixed_t;
         i += 1;
     }
-    markpointnum = 0 as ::core::ffi::c_int;
+    markpointnum = 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_LevelInit() {
-    leveljuststarted = 0 as ::core::ffi::c_int;
-    f_y = 0 as ::core::ffi::c_int;
+    leveljuststarted = 0 as i32;
+    f_y = 0 as i32;
     f_x = f_y;
     f_w = finit_width;
     f_h = finit_height;
@@ -2358,35 +2047,34 @@ pub unsafe extern "C" fn AM_LevelInit() {
     AM_findMinMaxBoundaries();
     scale_mtof = FixedDiv(
         min_scale_mtof,
-        (0.7f64 * FRACUNIT as ::core::ffi::c_double) as fixed_t,
+        (0.7f64 * FRACUNIT as f64) as fixed_t,
     );
     if scale_mtof > max_scale_mtof {
         scale_mtof = min_scale_mtof;
     }
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Stop() {
+pub unsafe fn AM_Stop() {
     static mut st_notify: event_t = event_t {
         type_0: ev_keydown,
-        data1: ev_keyup as ::core::ffi::c_int,
+        data1: ev_keyup as i32,
         data2: AM_MSGEXITED,
-        data3: 0 as ::core::ffi::c_int,
+        data3: 0 as i32,
         data4: 0,
     };
     AM_unloadPics();
-    automapactive = false_0 as boolean;
+    automapactive = false;
     ST_Responder(&raw mut st_notify);
-    stopped = true_0 as boolean;
+    stopped = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_Start() {
-    static mut lastlevel: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
-    static mut lastepisode: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
-    if stopped == 0 {
+    static mut lastlevel: i32 = -(1 as i32);
+    static mut lastepisode: i32 = -(1 as i32);
+    if !stopped {
         AM_Stop();
     }
-    stopped = false_0 as boolean;
+    stopped = false;
     if lastlevel != gamemap || lastepisode != gameepisode {
         AM_LevelInit();
         lastlevel = gamemap;
@@ -2407,31 +2095,30 @@ pub unsafe extern "C" fn AM_maxOutWindowScale() {
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
     AM_activateNewScale();
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
-    let mut rc: ::core::ffi::c_int = 0;
-    static mut bigstate: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub unsafe fn AM_Responder(mut ev: *mut event_t) -> bool {
+    let mut rc: i32 = 0;
+    static mut bigstate: i32 = 0 as i32;
     static mut buffer: [::core::ffi::c_char; 20] = [0; 20];
-    let mut key: ::core::ffi::c_int = 0;
+    let mut key: i32 = 0;
     rc = false_0;
-    if automapactive == 0 {
-        if (*ev).type_0 as ::core::ffi::c_uint
-            == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+    if !automapactive {
+        if (*ev).type_0 as u32
+            == ev_keydown as i32 as u32
             && (*ev).data1 == key_map_toggle
         {
             AM_Start();
-            viewactive = false_0 as boolean;
+            viewactive = false;
             rc = true_0;
         }
-    } else if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (*ev).type_0 as u32
+        == ev_keydown as i32 as u32
     {
         rc = true_0;
         key = (*ev).data1;
         if key == key_map_east {
             if followplayer == 0 {
                 m_paninc.x = FixedMul(
-                    (4 as fixed_t) << 16 as ::core::ffi::c_int,
+                    (4 as fixed_t) << 16 as i32,
                     scale_ftom,
                 );
             } else {
@@ -2440,7 +2127,7 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
         } else if key == key_map_west {
             if followplayer == 0 {
                 m_paninc.x = -FixedMul(
-                    (4 as fixed_t) << 16 as ::core::ffi::c_int,
+                    (4 as fixed_t) << 16 as i32,
                     scale_ftom,
                 );
             } else {
@@ -2449,7 +2136,7 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
         } else if key == key_map_north {
             if followplayer == 0 {
                 m_paninc.y = FixedMul(
-                    (4 as fixed_t) << 16 as ::core::ffi::c_int,
+                    (4 as fixed_t) << 16 as i32,
                     scale_ftom,
                 );
             } else {
@@ -2458,7 +2145,7 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
         } else if key == key_map_south {
             if followplayer == 0 {
                 m_paninc.y = -FixedMul(
-                    (4 as fixed_t) << 16 as ::core::ffi::c_int,
+                    (4 as fixed_t) << 16 as i32,
                     scale_ftom,
                 );
             } else {
@@ -2471,11 +2158,11 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
             mtof_zoommul = M_ZOOMIN as fixed_t;
             ftom_zoommul = M_ZOOMOUT as fixed_t;
         } else if key == key_map_toggle {
-            bigstate = 0 as ::core::ffi::c_int;
-            viewactive = true_0 as boolean;
+            bigstate = 0 as i32;
+            viewactive = true;
             AM_Stop();
         } else if key == key_map_maxzoom {
-            bigstate = (bigstate == 0) as ::core::ffi::c_int;
+            bigstate = (bigstate == 0) as i32;
             if bigstate != 0 {
                 AM_saveScaleAndLoc();
                 AM_minOutWindowScale();
@@ -2483,7 +2170,7 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
                 AM_restoreScaleAndLoc();
             }
         } else if key == key_map_follow {
-            followplayer = (followplayer == 0) as ::core::ffi::c_int;
+            followplayer = (followplayer == 0) as i32;
             f_oldloc.x = INT_MAX as fixed_t;
             if followplayer != 0 {
                 (*plr).message = b"Follow Mode ON\0" as *const u8
@@ -2493,7 +2180,7 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
                     as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
             }
         } else if key == key_map_grid {
-            grid = (grid == 0) as ::core::ffi::c_int;
+            grid = (grid == 0) as i32;
             if grid != 0 {
                 (*plr).message = b"Grid ON\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
@@ -2523,35 +2210,35 @@ pub unsafe extern "C" fn AM_Responder(mut ev: *mut event_t) -> boolean {
                 != 0
         {
             rc = false_0;
-            cheating = (cheating + 1 as ::core::ffi::c_int) % 3 as ::core::ffi::c_int;
+            cheating = (cheating + 1 as i32) % 3 as i32;
         }
-    } else if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_keyup as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (*ev).type_0 as u32
+        == ev_keyup as i32 as u32
     {
         rc = false_0;
         key = (*ev).data1;
         if key == key_map_east {
             if followplayer == 0 {
-                m_paninc.x = 0 as ::core::ffi::c_int as fixed_t;
+                m_paninc.x = 0 as i32 as fixed_t;
             }
         } else if key == key_map_west {
             if followplayer == 0 {
-                m_paninc.x = 0 as ::core::ffi::c_int as fixed_t;
+                m_paninc.x = 0 as i32 as fixed_t;
             }
         } else if key == key_map_north {
             if followplayer == 0 {
-                m_paninc.y = 0 as ::core::ffi::c_int as fixed_t;
+                m_paninc.y = 0 as i32 as fixed_t;
             }
         } else if key == key_map_south {
             if followplayer == 0 {
-                m_paninc.y = 0 as ::core::ffi::c_int as fixed_t;
+                m_paninc.y = 0 as i32 as fixed_t;
             }
         } else if key == key_map_zoomout || key == key_map_zoomin {
             mtof_zoommul = FRACUNIT as fixed_t;
             ftom_zoommul = FRACUNIT as fixed_t;
         }
     }
-    return rc as boolean;
+    return rc != 0;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_changeWindowScale() {
@@ -2569,16 +2256,16 @@ pub unsafe extern "C" fn AM_changeWindowScale() {
 pub unsafe extern "C" fn AM_doFollowPlayer() {
     if f_oldloc.x != (*(*plr).mo).x || f_oldloc.y != (*(*plr).mo).y {
         m_x = (FixedMul(
-            (FixedMul((*(*plr).mo).x, scale_mtof) >> 16 as ::core::ffi::c_int)
-                << 16 as ::core::ffi::c_int,
+            (FixedMul((*(*plr).mo).x, scale_mtof) >> 16 as i32)
+                << 16 as i32,
             scale_ftom,
-        ) as ::core::ffi::c_int - m_w as ::core::ffi::c_int / 2 as ::core::ffi::c_int)
+        ) as i32 - m_w as i32 / 2 as i32)
             as fixed_t;
         m_y = (FixedMul(
-            (FixedMul((*(*plr).mo).y, scale_mtof) >> 16 as ::core::ffi::c_int)
-                << 16 as ::core::ffi::c_int,
+            (FixedMul((*(*plr).mo).y, scale_mtof) >> 16 as i32)
+                << 16 as i32,
             scale_ftom,
-        ) as ::core::ffi::c_int - m_h as ::core::ffi::c_int / 2 as ::core::ffi::c_int)
+        ) as i32 - m_h as i32 / 2 as i32)
             as fixed_t;
         m_x2 = m_x + m_w;
         m_y2 = m_y + m_h;
@@ -2588,34 +2275,33 @@ pub unsafe extern "C" fn AM_doFollowPlayer() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_updateLightLev() {
-    static mut nexttic: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    static mut litelevels: [::core::ffi::c_int; 8] = [
-        0 as ::core::ffi::c_int,
-        4 as ::core::ffi::c_int,
-        7 as ::core::ffi::c_int,
-        10 as ::core::ffi::c_int,
-        12 as ::core::ffi::c_int,
-        14 as ::core::ffi::c_int,
-        15 as ::core::ffi::c_int,
-        15 as ::core::ffi::c_int,
+    static mut nexttic: i32 = 0 as i32;
+    static mut litelevels: [i32; 8] = [
+        0 as i32,
+        4 as i32,
+        7 as i32,
+        10 as i32,
+        12 as i32,
+        14 as i32,
+        15 as i32,
+        15 as i32,
     ];
-    static mut litelevelscnt: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+    static mut litelevelscnt: i32 = 0 as i32;
     if amclock > nexttic {
         let fresh1 = litelevelscnt;
         litelevelscnt = litelevelscnt + 1;
         lightlev = litelevels[fresh1 as usize];
         if litelevelscnt as usize
-            == (::core::mem::size_of::<[::core::ffi::c_int; 8]>() as usize)
-                .wrapping_div(::core::mem::size_of::<::core::ffi::c_int>() as usize)
+            == (::core::mem::size_of::<[i32; 8]>() as usize)
+                .wrapping_div(::core::mem::size_of::<i32>() as usize)
         {
-            litelevelscnt = 0 as ::core::ffi::c_int;
+            litelevelscnt = 0 as i32;
         }
-        nexttic = amclock + 6 as ::core::ffi::c_int - amclock % 6 as ::core::ffi::c_int;
+        nexttic = amclock + 6 as i32 - amclock % 6 as i32;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Ticker() {
-    if automapactive == 0 {
+pub unsafe fn AM_Ticker() {
+    if !automapactive {
         return;
     }
     amclock += 1;
@@ -2630,84 +2316,84 @@ pub unsafe extern "C" fn AM_Ticker() {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn AM_clearFB(mut color: ::core::ffi::c_int) {
+pub unsafe extern "C" fn AM_clearFB(mut color: i32) {
     memset(fb as *mut ::core::ffi::c_void, color, (f_w * f_h) as size_t);
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_clipMline(
     mut ml: *mut mline_t,
     mut fl: *mut fline_t,
-) -> boolean {
-    let mut outcode1: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    let mut outcode2: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    let mut outside: ::core::ffi::c_int = 0;
+) -> bool {
+    let mut outcode1: i32 = 0 as i32;
+    let mut outcode2: i32 = 0 as i32;
+    let mut outside: i32 = 0;
     let mut tmp: fpoint_t = fpoint_t { x: 0, y: 0 };
-    let mut dx: ::core::ffi::c_int = 0;
-    let mut dy: ::core::ffi::c_int = 0;
+    let mut dx: i32 = 0;
+    let mut dy: i32 = 0;
     if (*ml).a.y > m_y2 {
-        outcode1 = TOP as ::core::ffi::c_int;
+        outcode1 = TOP as i32;
     } else if (*ml).a.y < m_y {
-        outcode1 = BOTTOM as ::core::ffi::c_int;
+        outcode1 = BOTTOM as i32;
     }
     if (*ml).b.y > m_y2 {
-        outcode2 = TOP as ::core::ffi::c_int;
+        outcode2 = TOP as i32;
     } else if (*ml).b.y < m_y {
-        outcode2 = BOTTOM as ::core::ffi::c_int;
+        outcode2 = BOTTOM as i32;
     }
     if outcode1 & outcode2 != 0 {
-        return false_0 as boolean;
+        return false;
     }
     if (*ml).a.x < m_x {
-        outcode1 |= LEFT as ::core::ffi::c_int;
+        outcode1 |= LEFT as i32;
     } else if (*ml).a.x > m_x2 {
-        outcode1 |= RIGHT as ::core::ffi::c_int;
+        outcode1 |= RIGHT as i32;
     }
     if (*ml).b.x < m_x {
-        outcode2 |= LEFT as ::core::ffi::c_int;
+        outcode2 |= LEFT as i32;
     } else if (*ml).b.x > m_x2 {
-        outcode2 |= RIGHT as ::core::ffi::c_int;
+        outcode2 |= RIGHT as i32;
     }
     if outcode1 & outcode2 != 0 {
-        return false_0 as boolean;
+        return false;
     }
     (*fl).a.x = (f_x as fixed_t
-        + (FixedMul((*ml).a.x - m_x, scale_mtof) >> 16 as ::core::ffi::c_int))
-        as ::core::ffi::c_int;
+        + (FixedMul((*ml).a.x - m_x, scale_mtof) >> 16 as i32))
+        as i32;
     (*fl).a.y = (f_y as fixed_t
         + (f_h as fixed_t
-            - (FixedMul((*ml).a.y - m_y, scale_mtof) >> 16 as ::core::ffi::c_int)))
-        as ::core::ffi::c_int;
+            - (FixedMul((*ml).a.y - m_y, scale_mtof) >> 16 as i32)))
+        as i32;
     (*fl).b.x = (f_x as fixed_t
-        + (FixedMul((*ml).b.x - m_x, scale_mtof) >> 16 as ::core::ffi::c_int))
-        as ::core::ffi::c_int;
+        + (FixedMul((*ml).b.x - m_x, scale_mtof) >> 16 as i32))
+        as i32;
     (*fl).b.y = (f_y as fixed_t
         + (f_h as fixed_t
-            - (FixedMul((*ml).b.y - m_y, scale_mtof) >> 16 as ::core::ffi::c_int)))
-        as ::core::ffi::c_int;
-    outcode1 = 0 as ::core::ffi::c_int;
-    if (*fl).a.y < 0 as ::core::ffi::c_int {
-        outcode1 |= TOP as ::core::ffi::c_int;
+            - (FixedMul((*ml).b.y - m_y, scale_mtof) >> 16 as i32)))
+        as i32;
+    outcode1 = 0 as i32;
+    if (*fl).a.y < 0 as i32 {
+        outcode1 |= TOP as i32;
     } else if (*fl).a.y >= f_h {
-        outcode1 |= BOTTOM as ::core::ffi::c_int;
+        outcode1 |= BOTTOM as i32;
     }
-    if (*fl).a.x < 0 as ::core::ffi::c_int {
-        outcode1 |= LEFT as ::core::ffi::c_int;
+    if (*fl).a.x < 0 as i32 {
+        outcode1 |= LEFT as i32;
     } else if (*fl).a.x >= f_w {
-        outcode1 |= RIGHT as ::core::ffi::c_int;
+        outcode1 |= RIGHT as i32;
     }
-    outcode2 = 0 as ::core::ffi::c_int;
-    if (*fl).b.y < 0 as ::core::ffi::c_int {
-        outcode2 |= TOP as ::core::ffi::c_int;
+    outcode2 = 0 as i32;
+    if (*fl).b.y < 0 as i32 {
+        outcode2 |= TOP as i32;
     } else if (*fl).b.y >= f_h {
-        outcode2 |= BOTTOM as ::core::ffi::c_int;
+        outcode2 |= BOTTOM as i32;
     }
-    if (*fl).b.x < 0 as ::core::ffi::c_int {
-        outcode2 |= LEFT as ::core::ffi::c_int;
+    if (*fl).b.x < 0 as i32 {
+        outcode2 |= LEFT as i32;
     } else if (*fl).b.x >= f_w {
-        outcode2 |= RIGHT as ::core::ffi::c_int;
+        outcode2 |= RIGHT as i32;
     }
     if outcode1 & outcode2 != 0 {
-        return false_0 as boolean;
+        return false;
     }
     while outcode1 | outcode2 != 0 {
         if outcode1 != 0 {
@@ -2715,82 +2401,82 @@ pub unsafe extern "C" fn AM_clipMline(
         } else {
             outside = outcode2;
         }
-        if outside & TOP as ::core::ffi::c_int != 0 {
+        if outside & TOP as i32 != 0 {
             dy = (*fl).a.y - (*fl).b.y;
             dx = (*fl).b.x - (*fl).a.x;
             tmp.x = (*fl).a.x + dx * (*fl).a.y / dy;
-            tmp.y = 0 as ::core::ffi::c_int;
-        } else if outside & BOTTOM as ::core::ffi::c_int != 0 {
+            tmp.y = 0 as i32;
+        } else if outside & BOTTOM as i32 != 0 {
             dy = (*fl).a.y - (*fl).b.y;
             dx = (*fl).b.x - (*fl).a.x;
             tmp.x = (*fl).a.x + dx * ((*fl).a.y - f_h) / dy;
-            tmp.y = f_h - 1 as ::core::ffi::c_int;
-        } else if outside & RIGHT as ::core::ffi::c_int != 0 {
+            tmp.y = f_h - 1 as i32;
+        } else if outside & RIGHT as i32 != 0 {
             dy = (*fl).b.y - (*fl).a.y;
             dx = (*fl).b.x - (*fl).a.x;
-            tmp.y = (*fl).a.y + dy * (f_w - 1 as ::core::ffi::c_int - (*fl).a.x) / dx;
-            tmp.x = f_w - 1 as ::core::ffi::c_int;
-        } else if outside & LEFT as ::core::ffi::c_int != 0 {
+            tmp.y = (*fl).a.y + dy * (f_w - 1 as i32 - (*fl).a.x) / dx;
+            tmp.x = f_w - 1 as i32;
+        } else if outside & LEFT as i32 != 0 {
             dy = (*fl).b.y - (*fl).a.y;
             dx = (*fl).b.x - (*fl).a.x;
             tmp.y = (*fl).a.y + dy * -(*fl).a.x / dx;
-            tmp.x = 0 as ::core::ffi::c_int;
+            tmp.x = 0 as i32;
         } else {
-            tmp.x = 0 as ::core::ffi::c_int;
-            tmp.y = 0 as ::core::ffi::c_int;
+            tmp.x = 0 as i32;
+            tmp.y = 0 as i32;
         }
         if outside == outcode1 {
             (*fl).a = tmp;
-            outcode1 = 0 as ::core::ffi::c_int;
-            if (*fl).a.y < 0 as ::core::ffi::c_int {
-                outcode1 |= TOP as ::core::ffi::c_int;
+            outcode1 = 0 as i32;
+            if (*fl).a.y < 0 as i32 {
+                outcode1 |= TOP as i32;
             } else if (*fl).a.y >= f_h {
-                outcode1 |= BOTTOM as ::core::ffi::c_int;
+                outcode1 |= BOTTOM as i32;
             }
-            if (*fl).a.x < 0 as ::core::ffi::c_int {
-                outcode1 |= LEFT as ::core::ffi::c_int;
+            if (*fl).a.x < 0 as i32 {
+                outcode1 |= LEFT as i32;
             } else if (*fl).a.x >= f_w {
-                outcode1 |= RIGHT as ::core::ffi::c_int;
+                outcode1 |= RIGHT as i32;
             }
         } else {
             (*fl).b = tmp;
-            outcode2 = 0 as ::core::ffi::c_int;
-            if (*fl).b.y < 0 as ::core::ffi::c_int {
-                outcode2 |= TOP as ::core::ffi::c_int;
+            outcode2 = 0 as i32;
+            if (*fl).b.y < 0 as i32 {
+                outcode2 |= TOP as i32;
             } else if (*fl).b.y >= f_h {
-                outcode2 |= BOTTOM as ::core::ffi::c_int;
+                outcode2 |= BOTTOM as i32;
             }
-            if (*fl).b.x < 0 as ::core::ffi::c_int {
-                outcode2 |= LEFT as ::core::ffi::c_int;
+            if (*fl).b.x < 0 as i32 {
+                outcode2 |= LEFT as i32;
             } else if (*fl).b.x >= f_w {
-                outcode2 |= RIGHT as ::core::ffi::c_int;
+                outcode2 |= RIGHT as i32;
             }
         }
         if outcode1 & outcode2 != 0 {
-            return false_0 as boolean;
+            return false;
         }
     }
-    return true_0 as boolean;
+    return true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_drawFline(
     mut fl: *mut fline_t,
-    mut color: ::core::ffi::c_int,
+    mut color: i32,
 ) {
-    let mut x: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
-    let mut dx: ::core::ffi::c_int = 0;
-    let mut dy: ::core::ffi::c_int = 0;
-    let mut sx: ::core::ffi::c_int = 0;
-    let mut sy: ::core::ffi::c_int = 0;
-    let mut ax: ::core::ffi::c_int = 0;
-    let mut ay: ::core::ffi::c_int = 0;
-    let mut d: ::core::ffi::c_int = 0;
-    static mut fuck: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    if (*fl).a.x < 0 as ::core::ffi::c_int || (*fl).a.x >= f_w
-        || (*fl).a.y < 0 as ::core::ffi::c_int || (*fl).a.y >= f_h
-        || (*fl).b.x < 0 as ::core::ffi::c_int || (*fl).b.x >= f_w
-        || (*fl).b.y < 0 as ::core::ffi::c_int || (*fl).b.y >= f_h
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
+    let mut dx: i32 = 0;
+    let mut dy: i32 = 0;
+    let mut sx: i32 = 0;
+    let mut sy: i32 = 0;
+    let mut ax: i32 = 0;
+    let mut ay: i32 = 0;
+    let mut d: i32 = 0;
+    static mut fuck: i32 = 0 as i32;
+    if (*fl).a.x < 0 as i32 || (*fl).a.x >= f_w
+        || (*fl).a.y < 0 as i32 || (*fl).a.y >= f_h
+        || (*fl).b.x < 0 as i32 || (*fl).b.x >= f_w
+        || (*fl).b.y < 0 as i32 || (*fl).b.y >= f_h
     {
         let fresh0 = fuck;
         fuck = fuck + 1;
@@ -2802,29 +2488,29 @@ pub unsafe extern "C" fn AM_drawFline(
         return;
     }
     dx = (*fl).b.x - (*fl).a.x;
-    ax = 2 as ::core::ffi::c_int * (if dx < 0 as ::core::ffi::c_int { -dx } else { dx });
-    sx = if dx < 0 as ::core::ffi::c_int {
-        -(1 as ::core::ffi::c_int)
+    ax = 2 as i32 * (if dx < 0 as i32 { -dx } else { dx });
+    sx = if dx < 0 as i32 {
+        -(1 as i32)
     } else {
-        1 as ::core::ffi::c_int
+        1 as i32
     };
     dy = (*fl).b.y - (*fl).a.y;
-    ay = 2 as ::core::ffi::c_int * (if dy < 0 as ::core::ffi::c_int { -dy } else { dy });
-    sy = if dy < 0 as ::core::ffi::c_int {
-        -(1 as ::core::ffi::c_int)
+    ay = 2 as i32 * (if dy < 0 as i32 { -dy } else { dy });
+    sy = if dy < 0 as i32 {
+        -(1 as i32)
     } else {
-        1 as ::core::ffi::c_int
+        1 as i32
     };
     x = (*fl).a.x;
     y = (*fl).a.y;
     if ax > ay {
-        d = ay - ax / 2 as ::core::ffi::c_int;
+        d = ay - ax / 2 as i32;
         loop {
             *fb.offset((y * f_w + x) as isize) = color as byte;
             if x == (*fl).b.x {
                 return;
             }
-            if d >= 0 as ::core::ffi::c_int {
+            if d >= 0 as i32 {
                 y += sy;
                 d -= ax;
             }
@@ -2832,13 +2518,13 @@ pub unsafe extern "C" fn AM_drawFline(
             d += ay;
         }
     } else {
-        d = ax - ay / 2 as ::core::ffi::c_int;
+        d = ax - ay / 2 as i32;
         loop {
             *fb.offset((y * f_w + x) as isize) = color as byte;
             if y == (*fl).b.y {
                 return;
             }
-            if d >= 0 as ::core::ffi::c_int {
+            if d >= 0 as i32 {
                 x += sx;
                 d -= ay;
             }
@@ -2850,18 +2536,18 @@ pub unsafe extern "C" fn AM_drawFline(
 #[no_mangle]
 pub unsafe extern "C" fn AM_drawMline(
     mut ml: *mut mline_t,
-    mut color: ::core::ffi::c_int,
+    mut color: i32,
 ) {
     static mut fl: fline_t = fline_t {
         a: fpoint_t { x: 0, y: 0 },
         b: fpoint_t { x: 0, y: 0 },
     };
-    if AM_clipMline(ml, &raw mut fl) != 0 {
+    if AM_clipMline(ml, &raw mut fl) {
         AM_drawFline(&raw mut fl, color);
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn AM_drawGrid(mut color: ::core::ffi::c_int) {
+pub unsafe extern "C" fn AM_drawGrid(mut color: i32) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut start: fixed_t = 0;
@@ -2871,12 +2557,12 @@ pub unsafe extern "C" fn AM_drawGrid(mut color: ::core::ffi::c_int) {
         b: mpoint_t { x: 0, y: 0 },
     };
     start = m_x;
-    if (start as ::core::ffi::c_int - bmaporgx as ::core::ffi::c_int)
+    if (start as i32 - bmaporgx as i32)
         % (MAPBLOCKUNITS << FRACBITS) != 0
     {
         start
             += (MAPBLOCKUNITS << FRACBITS)
-                - (start as ::core::ffi::c_int - bmaporgx as ::core::ffi::c_int)
+                - (start as i32 - bmaporgx as i32)
                     % (MAPBLOCKUNITS << FRACBITS);
     }
     end = m_x + m_w;
@@ -2890,12 +2576,12 @@ pub unsafe extern "C" fn AM_drawGrid(mut color: ::core::ffi::c_int) {
         x += MAPBLOCKUNITS << FRACBITS;
     }
     start = m_y;
-    if (start as ::core::ffi::c_int - bmaporgy as ::core::ffi::c_int)
+    if (start as i32 - bmaporgy as i32)
         % (MAPBLOCKUNITS << FRACBITS) != 0
     {
         start
             += (MAPBLOCKUNITS << FRACBITS)
-                - (start as ::core::ffi::c_int - bmaporgy as ::core::ffi::c_int)
+                - (start as i32 - bmaporgy as i32)
                     % (MAPBLOCKUNITS << FRACBITS);
     }
     end = m_y + m_h;
@@ -2911,33 +2597,33 @@ pub unsafe extern "C" fn AM_drawGrid(mut color: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_drawWalls() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     static mut l: mline_t = mline_t {
         a: mpoint_t { x: 0, y: 0 },
         b: mpoint_t { x: 0, y: 0 },
     };
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numlines {
         l.a.x = (*(*lines.offset(i as isize)).v1).x;
         l.a.y = (*(*lines.offset(i as isize)).v1).y;
         l.b.x = (*(*lines.offset(i as isize)).v2).x;
         l.b.y = (*(*lines.offset(i as isize)).v2).y;
         if cheating != 0
-            || (*lines.offset(i as isize)).flags as ::core::ffi::c_int & ML_MAPPED != 0
+            || (*lines.offset(i as isize)).flags as i32 & ML_MAPPED != 0
         {
-            if !((*lines.offset(i as isize)).flags as ::core::ffi::c_int & LINE_NEVERSEE
+            if !((*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE
                 != 0 && cheating == 0)
             {
                 if (*lines.offset(i as isize)).backsector.is_null() {
                     AM_drawMline(&raw mut l, WALLCOLORS + lightlev);
-                } else if (*lines.offset(i as isize)).special as ::core::ffi::c_int
-                    == 39 as ::core::ffi::c_int
+                } else if (*lines.offset(i as isize)).special as i32
+                    == 39 as i32
                 {
                     AM_drawMline(
                         &raw mut l,
-                        WALLCOLORS + WALLRANGE / 2 as ::core::ffi::c_int,
+                        WALLCOLORS + WALLRANGE / 2 as i32,
                     );
-                } else if (*lines.offset(i as isize)).flags as ::core::ffi::c_int
+                } else if (*lines.offset(i as isize)).flags as i32
                     & ML_SECRET != 0
                 {
                     if cheating != 0 {
@@ -2957,11 +2643,11 @@ pub unsafe extern "C" fn AM_drawWalls() {
                     AM_drawMline(&raw mut l, TSWALLCOLORS + lightlev);
                 }
             }
-        } else if (*plr).powers[pw_allmap as ::core::ffi::c_int as usize] != 0 {
-            if (*lines.offset(i as isize)).flags as ::core::ffi::c_int & LINE_NEVERSEE
+        } else if (*plr).powers[pw_allmap as i32 as usize] != 0 {
+            if (*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE
                 == 0
             {
-                AM_drawMline(&raw mut l, GRAYS + 3 as ::core::ffi::c_int);
+                AM_drawMline(&raw mut l, GRAYS + 3 as i32);
             }
         }
         i += 1;
@@ -2983,19 +2669,19 @@ pub unsafe extern "C" fn AM_rotate(
 #[no_mangle]
 pub unsafe extern "C" fn AM_drawLineCharacter(
     mut lineguy: *mut mline_t,
-    mut lineguylines: ::core::ffi::c_int,
+    mut lineguylines: i32,
     mut scale: fixed_t,
     mut angle: angle_t,
-    mut color: ::core::ffi::c_int,
+    mut color: i32,
     mut x: fixed_t,
     mut y: fixed_t,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut l: mline_t = mline_t {
         a: mpoint_t { x: 0, y: 0 },
         b: mpoint_t { x: 0, y: 0 },
     };
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < lineguylines {
         l.a.x = (*lineguy.offset(i as isize)).a.x;
         l.a.y = (*lineguy.offset(i as isize)).a.y;
@@ -3025,18 +2711,18 @@ pub unsafe extern "C" fn AM_drawLineCharacter(
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_drawPlayers() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
-    static mut their_colors: [::core::ffi::c_int; 4] = [GREENS, GRAYS, BROWNS, REDS];
-    let mut their_color: ::core::ffi::c_int = -(1 as ::core::ffi::c_int);
-    let mut color: ::core::ffi::c_int = 0;
-    if netgame == 0 {
+    static mut their_colors: [i32; 4] = [GREENS, GRAYS, BROWNS, REDS];
+    let mut their_color: i32 = -(1 as i32);
+    let mut color: i32 = 0;
+    if !netgame {
         if cheating != 0 {
             AM_drawLineCharacter(
                 &raw mut cheat_player_arrow as *mut mline_t,
                 (::core::mem::size_of::<[mline_t; 16]>() as usize)
                     .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
-                    as ::core::ffi::c_int,
+                    as i32,
                 0 as fixed_t,
                 (*(*plr).mo).angle,
                 WHITE,
@@ -3048,7 +2734,7 @@ pub unsafe extern "C" fn AM_drawPlayers() {
                 &raw mut player_arrow as *mut mline_t,
                 (::core::mem::size_of::<[mline_t; 7]>() as usize)
                     .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
-                    as ::core::ffi::c_int,
+                    as i32,
                 0 as fixed_t,
                 (*(*plr).mo).angle,
                 WHITE,
@@ -3058,14 +2744,14 @@ pub unsafe extern "C" fn AM_drawPlayers() {
         }
         return;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         their_color += 1;
         p = (&raw mut players as *mut player_t).offset(i as isize) as *mut player_t;
-        if !(deathmatch != 0 && singledemo == 0 && p != plr) {
+        if !(deathmatch != 0 && !singledemo && p != plr) {
             if !(playeringame[i as usize] == 0) {
-                if (*p).powers[pw_invisibility as ::core::ffi::c_int as usize] != 0 {
-                    color = 246 as ::core::ffi::c_int;
+                if (*p).powers[pw_invisibility as i32 as usize] != 0 {
+                    color = 246 as i32;
                 } else {
                     color = their_colors[their_color as usize];
                 }
@@ -3073,7 +2759,7 @@ pub unsafe extern "C" fn AM_drawPlayers() {
                     &raw mut player_arrow as *mut mline_t,
                     (::core::mem::size_of::<[mline_t; 7]>() as usize)
                         .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
-                        as ::core::ffi::c_int,
+                        as i32,
                     0 as fixed_t,
                     (*(*p).mo).angle,
                     color,
@@ -3087,12 +2773,12 @@ pub unsafe extern "C" fn AM_drawPlayers() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_drawThings(
-    mut colors: ::core::ffi::c_int,
-    mut colorrange: ::core::ffi::c_int,
+    mut colors: i32,
+    mut colorrange: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut t: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < numsectors {
         t = (*sectors.offset(i as isize)).thinglist;
         while !t.is_null() {
@@ -3100,7 +2786,7 @@ pub unsafe extern "C" fn AM_drawThings(
                 &raw mut thintriangle_guy as *mut mline_t,
                 (::core::mem::size_of::<[mline_t; 3]>() as usize)
                     .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
-                    as ::core::ffi::c_int,
+                    as i32,
                 (16 as fixed_t) << FRACBITS,
                 (*t).angle,
                 colors + lightlev,
@@ -3114,23 +2800,23 @@ pub unsafe extern "C" fn AM_drawThings(
 }
 #[no_mangle]
 pub unsafe extern "C" fn AM_drawMarks() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut fx: ::core::ffi::c_int = 0;
-    let mut fy: ::core::ffi::c_int = 0;
-    let mut w: ::core::ffi::c_int = 0;
-    let mut h: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    let mut fx: i32 = 0;
+    let mut fy: i32 = 0;
+    let mut w: i32 = 0;
+    let mut h: i32 = 0;
+    i = 0 as i32;
     while i < AM_NUMMARKPOINTS {
-        if markpoints[i as usize].x != -(1 as ::core::ffi::c_int) {
-            w = 5 as ::core::ffi::c_int;
-            h = 6 as ::core::ffi::c_int;
+        if markpoints[i as usize].x != -(1 as i32) {
+            w = 5 as i32;
+            h = 6 as i32;
             fx = (f_x as fixed_t
                 + (FixedMul(markpoints[i as usize].x - m_x, scale_mtof)
-                    >> 16 as ::core::ffi::c_int)) as ::core::ffi::c_int;
+                    >> 16 as i32)) as i32;
             fy = (f_y as fixed_t
                 + (f_h as fixed_t
                     - (FixedMul(markpoints[i as usize].y - m_y, scale_mtof)
-                        >> 16 as ::core::ffi::c_int))) as ::core::ffi::c_int;
+                        >> 16 as i32))) as i32;
             if fx >= f_x && fx <= f_w - w && fy >= f_y && fy <= f_h - h {
                 V_DrawPatch(fx, fy, marknums[i as usize]);
             }
@@ -3139,15 +2825,14 @@ pub unsafe extern "C" fn AM_drawMarks() {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn AM_drawCrosshair(mut color: ::core::ffi::c_int) {
+pub unsafe extern "C" fn AM_drawCrosshair(mut color: i32) {
     *fb
         .offset(
-            (f_w * (f_h + 1 as ::core::ffi::c_int) / 2 as ::core::ffi::c_int) as isize,
+            (f_w * (f_h + 1 as i32) / 2 as i32) as isize,
         ) = color as byte;
 }
-#[no_mangle]
-pub unsafe extern "C" fn AM_Drawer() {
-    if automapactive == 0 {
+pub unsafe fn AM_Drawer() {
+    if !automapactive {
         return;
     }
     AM_clearFB(BACKGROUND);
@@ -3156,16 +2841,16 @@ pub unsafe extern "C" fn AM_Drawer() {
     }
     AM_drawWalls();
     AM_drawPlayers();
-    if cheating == 2 as ::core::ffi::c_int {
+    if cheating == 2 as i32 {
         AM_drawThings(THINGCOLORS, THINGRANGE);
     }
     AM_drawCrosshair(XHAIRCOLORS);
     AM_drawMarks();
     V_MarkRect(f_x, f_y, f_w, f_h);
 }
-pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const __INT_MAX__: i32 = 2147483647 as i32;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 unsafe extern "C" fn run_static_initializers() {
     cheat_amap = cheatseq_t {
         sequence: ::core::mem::transmute::<
@@ -3174,9 +2859,9 @@ unsafe extern "C" fn run_static_initializers() {
         >(*b"iddt\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"),
         sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 5]>() as size_t)
             .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as ::core::ffi::c_int,
+        parameter_chars: 0 as i32,
         chars_read: 0 as size_t,
-        param_chars_read: 0 as ::core::ffi::c_int,
+        param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<
             [u8; 5],
             [::core::ffi::c_char; 5],

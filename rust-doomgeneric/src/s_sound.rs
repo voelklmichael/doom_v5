@@ -1,95 +1,51 @@
+use crate::src::p_mobj::{mobj_t, actionf_t};
+use crate::src::i_system::I_Error;
+use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::i_sound::I_ShutdownSound;
+use crate::src::i_sound::I_GetSfxLumpNum;
+use crate::src::i_sound::I_UpdateSoundParams;
+use crate::src::i_sound::I_StartSound;
+use crate::src::i_sound::I_StopSound;
+use crate::src::i_sound::I_SoundIsPlaying;
+use crate::src::i_sound::I_PrecacheSounds;
+use crate::src::i_sound::I_ShutdownMusic;
+use crate::src::i_sound::I_SetMusicVolume;
+use crate::src::i_sound::I_PauseSong;
+use crate::src::i_sound::I_ResumeSong;
+use crate::src::i_sound::I_RegisterSong;
+use crate::src::i_sound::I_UnRegisterSong;
+use crate::src::i_sound::I_PlaySong;
+use crate::src::i_sound::I_StopSong;
+use crate::src::i_sound::I_MusicIsPlaying;
+use crate::src::i_sound::snd_musicdevice;
+use crate::src::sounds::S_sfx;
+use crate::src::sounds::S_music;
+use crate::src::i_system::I_AtExit;
+use crate::src::g_game::gameepisode;
+use crate::src::g_game::gamemap;
+use crate::src::r_main::R_PointToAngle2;
+use crate::src::m_misc::M_snprintf;
+use crate::src::g_game::consoleplayer;
+use crate::src::tables::finesine;
+use crate::src::m_fixed::FixedMul;
+use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
+use crate::src::i_sound::I_UpdateSound;
+use crate::src::w_wad::W_LumpLength;
+use crate::src::w_wad::W_ReleaseLumpNum;
+use crate::src::w_wad::W_CacheLumpNum;
+use crate::src::z_zone::Z_Malloc;
+
 extern "C" {
-    fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn I_ShutdownSound();
-    fn I_GetSfxLumpNum(sfxinfo: *mut sfxinfo_t) -> ::core::ffi::c_int;
-    fn I_UpdateSound();
-    fn I_UpdateSoundParams(
-        channel: ::core::ffi::c_int,
-        vol: ::core::ffi::c_int,
-        sep: ::core::ffi::c_int,
-    );
-    fn I_StartSound(
-        sfxinfo: *mut sfxinfo_t,
-        channel: ::core::ffi::c_int,
-        vol: ::core::ffi::c_int,
-        sep: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn I_StopSound(channel: ::core::ffi::c_int);
-    fn I_SoundIsPlaying(channel: ::core::ffi::c_int) -> boolean;
-    fn I_PrecacheSounds(sounds: *mut sfxinfo_t, num_sounds: ::core::ffi::c_int);
-    fn I_ShutdownMusic();
-    fn I_SetMusicVolume(volume: ::core::ffi::c_int);
-    fn I_PauseSong();
-    fn I_ResumeSong();
-    fn I_RegisterSong(
-        data: *mut ::core::ffi::c_void,
-        len: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn I_UnRegisterSong(handle: *mut ::core::ffi::c_void);
-    fn I_PlaySong(handle: *mut ::core::ffi::c_void, looping: boolean);
-    fn I_StopSong();
-    fn I_MusicIsPlaying() -> boolean;
-    static mut snd_musicdevice: ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
-    static mut gamemode: GameMode_t;
-    static mut gameepisode: ::core::ffi::c_int;
-    static mut gamemap: ::core::ffi::c_int;
-    static mut consoleplayer: ::core::ffi::c_int;
-    static mut players: [player_t; 4];
-    static mut S_sfx: [sfxinfo_t; 0];
-    static mut S_music: [musicinfo_t; 0];
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> ::core::ffi::c_int;
-    fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn W_GetNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn W_LumpLength(lump: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    fn W_CacheLumpNum(
-        lump: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_ReleaseLumpNum(lump: ::core::ffi::c_int);
-    fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
+    fn abs(__x: i32) -> i32;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sfxinfo_struct {
-    pub tagname: *mut ::core::ffi::c_char,
-    pub name: [::core::ffi::c_char; 9],
-    pub priority: ::core::ffi::c_int,
-    pub link: *mut sfxinfo_t,
-    pub pitch: ::core::ffi::c_int,
-    pub volume: ::core::ffi::c_int,
-    pub usefulness: ::core::ffi::c_int,
-    pub lumpnum: ::core::ffi::c_int,
-    pub numchannels: ::core::ffi::c_int,
-    pub driver_data: *mut ::core::ffi::c_void,
-}
-pub type sfxinfo_t = sfxinfo_struct;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct musicinfo_t {
-    pub name: *mut ::core::ffi::c_char,
-    pub lumpnum: ::core::ffi::c_int,
-    pub data: *mut ::core::ffi::c_void,
-    pub handle: *mut ::core::ffi::c_void,
-}
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+use crate::src::sounds::{sfxinfo_t, musicinfo_t};
+pub type C2RustUnnamed = u32;
 pub const SNDDEVICE_CD: C2RustUnnamed = 10;
 pub const SNDDEVICE_AWE32: C2RustUnnamed = 9;
 pub const SNDDEVICE_GENMIDI: C2RustUnnamed = 8;
@@ -101,28 +57,14 @@ pub const SNDDEVICE_SB: C2RustUnnamed = 3;
 pub const SNDDEVICE_ADLIB: C2RustUnnamed = 2;
 pub const SNDDEVICE_PCSPEAKER: C2RustUnnamed = 1;
 pub const SNDDEVICE_NONE: C2RustUnnamed = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
 pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -134,39 +76,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -306,7 +224,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1275,18 +1193,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1425,190 +1332,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-pub type player_t = player_s;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMMUSIC: C2RustUnnamed_0 = 68;
 pub const mus_dm2int: C2RustUnnamed_0 = 67;
 pub const mus_dm2ttl: C2RustUnnamed_0 = 66;
@@ -1678,7 +1402,7 @@ pub const mus_e1m3: C2RustUnnamed_0 = 3;
 pub const mus_e1m2: C2RustUnnamed_0 = 2;
 pub const mus_e1m1: C2RustUnnamed_0 = 1;
 pub const mus_None: C2RustUnnamed_0 = 0;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const NUMSFX: C2RustUnnamed_1 = 109;
 pub const sfx_radio: C2RustUnnamed_1 = 108;
 pub const sfx_skeatk: C2RustUnnamed_1 = 107;
@@ -1794,10 +1518,10 @@ pub const sfx_None: C2RustUnnamed_1 = 0;
 pub struct channel_t {
     pub sfxinfo: *mut sfxinfo_t,
     pub origin: *mut mobj_t,
-    pub handle: ::core::ffi::c_int,
+    pub handle: i32,
 }
 pub const PU_STATIC: C2RustUnnamed_2 = 1;
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed_2 = 9;
 pub const PU_CACHE: C2RustUnnamed_2 = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed_2 = 7;
@@ -1806,77 +1530,73 @@ pub const PU_LEVEL: C2RustUnnamed_2 = 5;
 pub const PU_FREE: C2RustUnnamed_2 = 4;
 pub const PU_MUSIC: C2RustUnnamed_2 = 3;
 pub const PU_SOUND: C2RustUnnamed_2 = 2;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const S_CLIPPING_DIST: ::core::ffi::c_int = 1200 as ::core::ffi::c_int * FRACUNIT;
-pub const S_CLOSE_DIST: ::core::ffi::c_int = 200 as ::core::ffi::c_int * FRACUNIT;
-pub const S_ATTENUATOR: ::core::ffi::c_int = S_CLIPPING_DIST - S_CLOSE_DIST >> FRACBITS;
-pub const S_STEREO_SWING: ::core::ffi::c_int = 96 as ::core::ffi::c_int * FRACUNIT;
-pub const NORM_SEP: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const S_CLIPPING_DIST: i32 = 1200 as i32 * FRACUNIT;
+pub const S_CLOSE_DIST: i32 = 200 as i32 * FRACUNIT;
+pub const S_ATTENUATOR: i32 = S_CLIPPING_DIST - S_CLOSE_DIST >> FRACBITS;
+pub const S_STEREO_SWING: i32 = 96 as i32 * FRACUNIT;
+pub const NORM_SEP: i32 = 128 as i32;
 static mut channels: *mut channel_t = ::core::ptr::null::<channel_t>() as *mut channel_t;
-#[no_mangle]
-pub static mut sfxVolume: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
-#[no_mangle]
-pub static mut musicVolume: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
-static mut snd_SfxVolume: ::core::ffi::c_int = 0;
-static mut mus_paused: boolean = 0;
+pub static mut sfxVolume: i32 = 8 as i32;
+pub static mut musicVolume: i32 = 8 as i32;
+static mut snd_SfxVolume: i32 = 0;
+static mut mus_paused: bool = false;
 static mut mus_playing: *mut musicinfo_t = ::core::ptr::null::<musicinfo_t>()
     as *mut musicinfo_t;
-#[no_mangle]
-pub static mut snd_channels: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
-#[no_mangle]
-pub unsafe extern "C" fn S_Init(
-    mut sfxVolume_0: ::core::ffi::c_int,
-    mut musicVolume_0: ::core::ffi::c_int,
+pub static mut snd_channels: i32 = 8 as i32;
+pub unsafe fn S_Init(
+    mut sfxVolume_0: i32,
+    mut musicVolume_0: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
-    I_PrecacheSounds(&raw mut S_sfx as *mut sfxinfo_t, NUMSFX as ::core::ffi::c_int);
+    let mut i: i32 = 0;
+    I_PrecacheSounds(&raw mut S_sfx as *mut sfxinfo_t, NUMSFX as i32);
     S_SetSfxVolume(sfxVolume_0);
     S_SetMusicVolume(musicVolume_0);
     channels = Z_Malloc(
         (snd_channels as usize)
             .wrapping_mul(::core::mem::size_of::<channel_t>() as usize)
-            as ::core::ffi::c_int,
-        PU_STATIC as ::core::ffi::c_int,
+            as i32,
+        PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut channel_t;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < snd_channels {
         let ref mut fresh0 = (*channels.offset(i as isize)).sfxinfo;
         *fresh0 = ::core::ptr::null_mut::<sfxinfo_t>();
         i += 1;
     }
-    mus_paused = 0 as boolean;
-    i = 1 as ::core::ffi::c_int;
-    while i < NUMSFX as ::core::ffi::c_int {
+    mus_paused = false;
+    i = 1 as i32;
+    while i < NUMSFX as i32 {
         let ref mut fresh1 = (*(&raw mut S_sfx as *mut sfxinfo_t).offset(i as isize))
             .usefulness;
-        *fresh1 = -(1 as ::core::ffi::c_int);
+        *fresh1 = -(1 as i32);
         (*(&raw mut S_sfx as *mut sfxinfo_t).offset(i as isize)).lumpnum = *fresh1;
         i += 1;
     }
-    I_AtExit(Some(S_Shutdown as unsafe extern "C" fn() -> ()), true_0 as boolean);
+    I_AtExit(Some(S_Shutdown as unsafe extern "C" fn() -> ()), true);
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_Shutdown() {
     I_ShutdownSound();
     I_ShutdownMusic();
 }
-unsafe extern "C" fn S_StopChannel(mut cnum: ::core::ffi::c_int) {
-    let mut i: ::core::ffi::c_int = 0;
+unsafe extern "C" fn S_StopChannel(mut cnum: i32) {
+    let mut i: i32 = 0;
     let mut c: *mut channel_t = ::core::ptr::null_mut::<channel_t>();
     c = channels.offset(cnum as isize) as *mut channel_t;
     if !(*c).sfxinfo.is_null() {
-        if I_SoundIsPlaying((*c).handle) != 0 {
+        if I_SoundIsPlaying((*c).handle) {
             I_StopSound((*c).handle);
         }
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < snd_channels {
             if cnum != i && (*c).sfxinfo == (*channels.offset(i as isize)).sfxinfo {
                 break;
@@ -1887,48 +1607,46 @@ unsafe extern "C" fn S_StopChannel(mut cnum: ::core::ffi::c_int) {
         (*c).sfxinfo = ::core::ptr::null_mut::<sfxinfo_t>();
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_Start() {
-    let mut cnum: ::core::ffi::c_int = 0;
-    let mut mnum: ::core::ffi::c_int = 0;
-    cnum = 0 as ::core::ffi::c_int;
+pub unsafe fn S_Start() {
+    let mut cnum: i32 = 0;
+    let mut mnum: i32 = 0;
+    cnum = 0 as i32;
     while cnum < snd_channels {
         if !(*channels.offset(cnum as isize)).sfxinfo.is_null() {
             S_StopChannel(cnum);
         }
         cnum += 1;
     }
-    mus_paused = 0 as boolean;
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    mus_paused = false;
+    if gamemode as u32
+        == commercial as i32 as u32
     {
-        mnum = mus_runnin as ::core::ffi::c_int + gamemap - 1 as ::core::ffi::c_int;
+        mnum = mus_runnin as i32 + gamemap - 1 as i32;
     } else {
-        let mut spmus: [::core::ffi::c_int; 9] = [
-            mus_e3m4 as ::core::ffi::c_int,
-            mus_e3m2 as ::core::ffi::c_int,
-            mus_e3m3 as ::core::ffi::c_int,
-            mus_e1m5 as ::core::ffi::c_int,
-            mus_e2m7 as ::core::ffi::c_int,
-            mus_e2m4 as ::core::ffi::c_int,
-            mus_e2m6 as ::core::ffi::c_int,
-            mus_e2m5 as ::core::ffi::c_int,
-            mus_e1m9 as ::core::ffi::c_int,
+        let mut spmus: [i32; 9] = [
+            mus_e3m4 as i32,
+            mus_e3m2 as i32,
+            mus_e3m3 as i32,
+            mus_e1m5 as i32,
+            mus_e2m7 as i32,
+            mus_e2m4 as i32,
+            mus_e2m6 as i32,
+            mus_e2m5 as i32,
+            mus_e1m9 as i32,
         ];
-        if gameepisode < 4 as ::core::ffi::c_int {
-            mnum = mus_e1m1 as ::core::ffi::c_int
-                + (gameepisode - 1 as ::core::ffi::c_int) * 9 as ::core::ffi::c_int
-                + gamemap - 1 as ::core::ffi::c_int;
+        if gameepisode < 4 as i32 {
+            mnum = mus_e1m1 as i32
+                + (gameepisode - 1 as i32) * 9 as i32
+                + gamemap - 1 as i32;
         } else {
-            mnum = spmus[(gamemap - 1 as ::core::ffi::c_int) as usize];
+            mnum = spmus[(gamemap - 1 as i32) as usize];
         }
     }
     S_ChangeMusic(mnum, true_0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_StopSound(mut origin: *mut mobj_t) {
-    let mut cnum: ::core::ffi::c_int = 0;
-    cnum = 0 as ::core::ffi::c_int;
+pub unsafe fn S_StopSound(mut origin: *mut mobj_t) {
+    let mut cnum: i32 = 0;
+    cnum = 0 as i32;
     while cnum < snd_channels {
         if !(*channels.offset(cnum as isize)).sfxinfo.is_null()
             && (*channels.offset(cnum as isize)).origin == origin
@@ -1943,10 +1661,10 @@ pub unsafe extern "C" fn S_StopSound(mut origin: *mut mobj_t) {
 unsafe extern "C" fn S_GetChannel(
     mut origin: *mut mobj_t,
     mut sfxinfo: *mut sfxinfo_t,
-) -> ::core::ffi::c_int {
-    let mut cnum: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut cnum: i32 = 0;
     let mut c: *mut channel_t = ::core::ptr::null_mut::<channel_t>();
-    cnum = 0 as ::core::ffi::c_int;
+    cnum = 0 as i32;
     while cnum < snd_channels {
         if (*channels.offset(cnum as isize)).sfxinfo.is_null() {
             break;
@@ -1959,7 +1677,7 @@ unsafe extern "C" fn S_GetChannel(
         }
     }
     if cnum == snd_channels {
-        cnum = 0 as ::core::ffi::c_int;
+        cnum = 0 as i32;
         while cnum < snd_channels {
             if (*(*channels.offset(cnum as isize)).sfxinfo).priority
                 >= (*sfxinfo).priority
@@ -1969,7 +1687,7 @@ unsafe extern "C" fn S_GetChannel(
             cnum += 1;
         }
         if cnum == snd_channels {
-            return -(1 as ::core::ffi::c_int)
+            return -(1 as i32)
         } else {
             S_StopChannel(cnum);
         }
@@ -1982,21 +1700,21 @@ unsafe extern "C" fn S_GetChannel(
 unsafe extern "C" fn S_AdjustSoundParams(
     mut listener: *mut mobj_t,
     mut source: *mut mobj_t,
-    mut vol: *mut ::core::ffi::c_int,
-    mut sep: *mut ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut vol: *mut i32,
+    mut sep: *mut i32,
+) -> i32 {
     let mut approx_dist: fixed_t = 0;
     let mut adx: fixed_t = 0;
     let mut ady: fixed_t = 0;
     let mut angle: angle_t = 0;
-    adx = abs((*listener).x as ::core::ffi::c_int - (*source).x as ::core::ffi::c_int)
+    adx = abs((*listener).x as i32 - (*source).x as i32)
         as fixed_t;
-    ady = abs((*listener).y as ::core::ffi::c_int - (*source).y as ::core::ffi::c_int)
+    ady = abs((*listener).y as i32 - (*source).y as i32)
         as fixed_t;
     approx_dist = adx + ady
-        - ((if adx < ady { adx } else { ady }) >> 1 as ::core::ffi::c_int);
-    if gamemap != 8 as ::core::ffi::c_int && approx_dist > S_CLIPPING_DIST {
-        return 0 as ::core::ffi::c_int;
+        - ((if adx < ady { adx } else { ady }) >> 1 as i32);
+    if gamemap != 8 as i32 && approx_dist > S_CLIPPING_DIST {
+        return 0 as i32;
     }
     angle = R_PointToAngle2((*listener).x, (*listener).y, (*source).x, (*source).y);
     if angle > (*listener).angle {
@@ -2008,48 +1726,43 @@ unsafe extern "C" fn S_AdjustSoundParams(
     angle >>= ANGLETOFINESHIFT;
     *sep = (128 as fixed_t
         - (FixedMul(S_STEREO_SWING, finesine[angle as usize]) >> FRACBITS))
-        as ::core::ffi::c_int;
+        as i32;
     if approx_dist < S_CLOSE_DIST {
         *vol = snd_SfxVolume;
-    } else if gamemap == 8 as ::core::ffi::c_int {
+    } else if gamemap == 8 as i32 {
         if approx_dist > S_CLIPPING_DIST {
             approx_dist = S_CLIPPING_DIST as fixed_t;
         }
-        *vol = 15 as ::core::ffi::c_int
-            + (snd_SfxVolume - 15 as ::core::ffi::c_int)
-                * (S_CLIPPING_DIST - approx_dist as ::core::ffi::c_int >> FRACBITS)
+        *vol = 15 as i32
+            + (snd_SfxVolume - 15 as i32)
+                * (S_CLIPPING_DIST - approx_dist as i32 >> FRACBITS)
                 / S_ATTENUATOR;
     } else {
         *vol = snd_SfxVolume
-            * (S_CLIPPING_DIST - approx_dist as ::core::ffi::c_int >> FRACBITS)
+            * (S_CLIPPING_DIST - approx_dist as i32 >> FRACBITS)
             / S_ATTENUATOR;
     }
-    return (*vol > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    return (*vol > 0 as i32) as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_StartSound(
+pub unsafe fn S_StartSound(
     mut origin_p: *mut ::core::ffi::c_void,
-    mut sfx_id: ::core::ffi::c_int,
+    mut sfx_id: i32,
 ) {
     let mut sfx: *mut sfxinfo_t = ::core::ptr::null_mut::<sfxinfo_t>();
     let mut origin: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    let mut rc: ::core::ffi::c_int = 0;
-    let mut sep: ::core::ffi::c_int = 0;
-    let mut cnum: ::core::ffi::c_int = 0;
-    let mut volume: ::core::ffi::c_int = 0;
+    let mut rc: i32 = 0;
+    let mut sep: i32 = 0;
+    let mut cnum: i32 = 0;
+    let mut volume: i32 = 0;
     origin = origin_p as *mut mobj_t;
     volume = snd_SfxVolume;
-    if sfx_id < 1 as ::core::ffi::c_int || sfx_id > NUMSFX as ::core::ffi::c_int {
-        I_Error(
-            b"Bad sfx #: %d\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            sfx_id,
-        );
+    if sfx_id < 1 as i32 || sfx_id > NUMSFX as i32 {
+        I_Error(&format!("Bad sfx #: {}", sfx_id));
     }
     sfx = (&raw mut S_sfx as *mut sfxinfo_t).offset(sfx_id as isize) as *mut sfxinfo_t;
     if !(*sfx).link.is_null() {
         volume += (*sfx).volume;
-        if volume < 1 as ::core::ffi::c_int {
+        if volume < 1 as i32 {
             return;
         }
         if volume > snd_SfxVolume {
@@ -2076,54 +1789,51 @@ pub unsafe extern "C" fn S_StartSound(
     }
     S_StopSound(origin);
     cnum = S_GetChannel(origin, sfx);
-    if cnum < 0 as ::core::ffi::c_int {
+    if cnum < 0 as i32 {
         return;
     }
     let fresh2 = (*sfx).usefulness;
     (*sfx).usefulness = (*sfx).usefulness + 1;
-    if fresh2 < 0 as ::core::ffi::c_int {
-        (*sfx).usefulness = 1 as ::core::ffi::c_int;
+    if fresh2 < 0 as i32 {
+        (*sfx).usefulness = 1 as i32;
     }
-    if (*sfx).lumpnum < 0 as ::core::ffi::c_int {
+    if (*sfx).lumpnum < 0 as i32 {
         (*sfx).lumpnum = I_GetSfxLumpNum(sfx);
     }
     (*channels.offset(cnum as isize)).handle = I_StartSound(sfx, cnum, volume, sep);
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_PauseSound() {
-    if !mus_playing.is_null() && mus_paused == 0 {
+pub unsafe fn S_PauseSound() {
+    if !mus_playing.is_null() && !mus_paused {
         I_PauseSong();
-        mus_paused = true_0 as boolean;
+        mus_paused = true;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_ResumeSound() {
-    if !mus_playing.is_null() && mus_paused != 0 {
+pub unsafe fn S_ResumeSound() {
+    if !mus_playing.is_null() && mus_paused {
         I_ResumeSong();
-        mus_paused = false_0 as boolean;
+        mus_paused = false;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_UpdateSounds(mut listener: *mut mobj_t) {
-    let mut audible: ::core::ffi::c_int = 0;
-    let mut cnum: ::core::ffi::c_int = 0;
-    let mut volume: ::core::ffi::c_int = 0;
-    let mut sep: ::core::ffi::c_int = 0;
+pub unsafe fn S_UpdateSounds(mut listener: *mut mobj_t) {
+    let mut audible: i32 = 0;
+    let mut cnum: i32 = 0;
+    let mut volume: i32 = 0;
+    let mut sep: i32 = 0;
     let mut sfx: *mut sfxinfo_t = ::core::ptr::null_mut::<sfxinfo_t>();
     let mut c: *mut channel_t = ::core::ptr::null_mut::<channel_t>();
     I_UpdateSound();
     let mut current_block_20: u64;
-    cnum = 0 as ::core::ffi::c_int;
+    cnum = 0 as i32;
     while cnum < snd_channels {
         c = channels.offset(cnum as isize) as *mut channel_t;
         sfx = (*c).sfxinfo;
         if !(*c).sfxinfo.is_null() {
-            if I_SoundIsPlaying((*c).handle) != 0 {
+            if I_SoundIsPlaying((*c).handle) {
                 volume = snd_SfxVolume;
                 sep = NORM_SEP;
                 if !(*sfx).link.is_null() {
                     volume += (*sfx).volume;
-                    if volume < 1 as ::core::ffi::c_int {
+                    if volume < 1 as i32 {
                         S_StopChannel(cnum);
                         current_block_20 = 10680521327981672866;
                     } else {
@@ -2160,56 +1870,40 @@ pub unsafe extern "C" fn S_UpdateSounds(mut listener: *mut mobj_t) {
         cnum += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_SetMusicVolume(mut volume: ::core::ffi::c_int) {
-    if volume < 0 as ::core::ffi::c_int || volume > 127 as ::core::ffi::c_int {
-        I_Error(
-            b"Attempt to set music volume at %d\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            volume,
-        );
+pub unsafe fn S_SetMusicVolume(mut volume: i32) {
+    if volume < 0 as i32 || volume > 127 as i32 {
+        I_Error(&format!("Attempt to set music volume at {}", volume));
     }
     I_SetMusicVolume(volume);
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_SetSfxVolume(mut volume: ::core::ffi::c_int) {
-    if volume < 0 as ::core::ffi::c_int || volume > 127 as ::core::ffi::c_int {
-        I_Error(
-            b"Attempt to set sfx volume at %d\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            volume,
-        );
+pub unsafe fn S_SetSfxVolume(mut volume: i32) {
+    if volume < 0 as i32 || volume > 127 as i32 {
+        I_Error(&format!("Attempt to set sfx volume at {}", volume));
     }
     snd_SfxVolume = volume;
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_StartMusic(mut m_id: ::core::ffi::c_int) {
+pub unsafe fn S_StartMusic(mut m_id: i32) {
     S_ChangeMusic(m_id, false_0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn S_ChangeMusic(
-    mut musicnum: ::core::ffi::c_int,
-    mut looping: ::core::ffi::c_int,
+pub unsafe fn S_ChangeMusic(
+    mut musicnum: i32,
+    mut looping: i32,
 ) {
     let mut music: *mut musicinfo_t = ::core::ptr::null_mut::<musicinfo_t>();
     let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
     let mut handle: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
         ::core::ffi::c_void,
     >();
-    if musicnum == mus_intro as ::core::ffi::c_int
-        && (snd_musicdevice == SNDDEVICE_ADLIB as ::core::ffi::c_int
-            || snd_musicdevice == SNDDEVICE_SB as ::core::ffi::c_int)
+    if musicnum == mus_intro as i32
+        && (snd_musicdevice == SNDDEVICE_ADLIB as i32
+            || snd_musicdevice == SNDDEVICE_SB as i32)
     {
-        musicnum = mus_introa as ::core::ffi::c_int;
+        musicnum = mus_introa as i32;
     }
-    if musicnum <= mus_None as ::core::ffi::c_int
-        || musicnum >= NUMMUSIC as ::core::ffi::c_int
+    if musicnum <= mus_None as i32
+        || musicnum >= NUMMUSIC as i32
     {
-        I_Error(
-            b"Bad music number %d\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            musicnum,
-        );
+        I_Error(&format!("Bad music number {}", musicnum));
     } else {
         music = (&raw mut S_music as *mut musicinfo_t).offset(musicnum as isize)
             as *mut musicinfo_t;
@@ -2225,25 +1919,27 @@ pub unsafe extern "C" fn S_ChangeMusic(
             b"d_%s\0" as *const u8 as *const ::core::ffi::c_char,
             (*music).name,
         );
-        (*music).lumpnum = W_GetNumForName(&raw mut namebuf as *mut ::core::ffi::c_char);
+        (*music).lumpnum = W_GetNumForName(
+            &wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char),
+        );
     }
-    (*music).data = W_CacheLumpNum((*music).lumpnum, PU_STATIC as ::core::ffi::c_int);
+    (*music).data = W_CacheLumpNum((*music).lumpnum, PU_STATIC as i32);
     handle = I_RegisterSong(
         (*music).data,
-        W_LumpLength((*music).lumpnum as ::core::ffi::c_uint),
+        W_LumpLength((*music).lumpnum as u32),
     );
     (*music).handle = handle;
-    I_PlaySong(handle, looping as boolean);
+    I_PlaySong(handle, looping != 0);
     mus_playing = music;
 }
 #[no_mangle]
-pub unsafe extern "C" fn S_MusicPlaying() -> boolean {
+pub unsafe extern "C" fn S_MusicPlaying() -> bool {
     return I_MusicIsPlaying();
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_StopMusic() {
     if !mus_playing.is_null() {
-        if mus_paused != 0 {
+        if mus_paused {
             I_ResumeSong();
         }
         I_StopSong();

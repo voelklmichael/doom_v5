@@ -1,82 +1,44 @@
+use crate::src::d_event::event_t;
+use crate::src::d_player::{player_t};
+use crate::src::p_mobj::{actionf_t};
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::hu_lib::{
+    hu_itext_t, hu_stext_t, hu_textline_t, patch_t, HUlib_addCharToTextLine,
+    HUlib_addMessageToSText, HUlib_drawIText, HUlib_drawSText, HUlib_drawTextLine,
+    HUlib_eraseIText, HUlib_eraseSText, HUlib_eraseTextLine, HUlib_initIText, HUlib_initSText,
+    HUlib_initTextLine, HUlib_keyInIText, HUlib_resetIText,
+};
+use crate::src::m_controls::key_message_refresh;
+use crate::src::m_controls::key_multi_msg;
+use crate::src::m_controls::key_multi_msgplayer;
+use crate::src::m_menu::showMessages;
+use crate::src::g_game::gameepisode;
+use crate::src::doomstat::gamemission;
+use crate::src::g_game::gamemap;
+use crate::src::am_map::automapactive;
+use crate::src::m_misc::M_StringCopy;
+use crate::src::g_game::playeringame;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
+use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
+use crate::src::s_sound::S_StartSound;
+
 extern "C" {
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
-    fn HUlib_initTextLine(
-        t: *mut hu_textline_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        f: *mut *mut patch_t,
-        sc: ::core::ffi::c_int,
-    );
-    fn HUlib_addCharToTextLine(
-        t: *mut hu_textline_t,
-        ch: ::core::ffi::c_char,
-    ) -> boolean;
-    fn HUlib_drawTextLine(l: *mut hu_textline_t, drawcursor: boolean);
-    fn HUlib_eraseTextLine(l: *mut hu_textline_t);
-    fn HUlib_initSText(
-        s: *mut hu_stext_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        h: ::core::ffi::c_int,
-        font: *mut *mut patch_t,
-        startchar: ::core::ffi::c_int,
-        on: *mut boolean,
-    );
-    fn HUlib_addMessageToSText(
-        s: *mut hu_stext_t,
-        prefix: *mut ::core::ffi::c_char,
-        msg: *mut ::core::ffi::c_char,
-    );
-    fn HUlib_drawSText(s: *mut hu_stext_t);
-    fn HUlib_eraseSText(s: *mut hu_stext_t);
-    fn HUlib_initIText(
-        it: *mut hu_itext_t,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        font: *mut *mut patch_t,
-        startchar: ::core::ffi::c_int,
-        on: *mut boolean,
-    );
-    fn HUlib_resetIText(it: *mut hu_itext_t);
-    fn HUlib_keyInIText(it: *mut hu_itext_t, ch: ::core::ffi::c_uchar) -> boolean;
-    fn HUlib_drawIText(it: *mut hu_itext_t);
-    fn HUlib_eraseIText(it: *mut hu_itext_t);
-    static mut key_message_refresh: ::core::ffi::c_int;
-    static mut key_multi_msg: ::core::ffi::c_int;
-    static mut key_multi_msgplayer: [::core::ffi::c_int; 8];
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
-    static mut gameversion: GameVersion_t;
-    static mut gameepisode: ::core::ffi::c_int;
-    static mut gamemap: ::core::ffi::c_int;
-    static mut netgame: boolean;
-    static mut automapactive: boolean;
-    static mut consoleplayer: ::core::ffi::c_int;
-    static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
-    static mut showMessages: ::core::ffi::c_int;
+    ) -> i32;
 }
 pub type __uint8_t = u8;
 pub type size_t = usize;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -87,13 +49,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -108,7 +70,7 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -120,7 +82,7 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -130,119 +92,14 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct hu_itext_t {
-    pub l: hu_textline_t,
-    pub lm: ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub laston: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct hu_textline_t {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub f: *mut *mut patch_t,
-    pub sc: ::core::ffi::c_int,
-    pub l: [::core::ffi::c_char; 81],
-    pub len: ::core::ffi::c_int,
-    pub needsupdate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct hu_stext_t {
-    pub l: [hu_textline_t; 4],
-    pub h: ::core::ffi::c_int,
-    pub cl: ::core::ffi::c_int,
-    pub on: *mut boolean,
-    pub laston: boolean,
-}
-pub type player_t = player_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type fixed_t = ::core::ffi::c_int;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type statenum_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1211,19 +1068,12 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -1363,83 +1213,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type mobj_t = mobj_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1578,101 +1352,11 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
 pub type think_t = actionf_t;
-pub type angle_t = ::core::ffi::c_uint;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
+pub type angle_t = u32;
 pub const sfx_tink: C2RustUnnamed_0 = 87;
 pub const sfx_radio: C2RustUnnamed_0 = 108;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMSFX: C2RustUnnamed_0 = 109;
 pub const sfx_skeatk: C2RustUnnamed_0 = 107;
 pub const sfx_skesit: C2RustUnnamed_0 = 106;
@@ -1781,748 +1465,166 @@ pub const sfx_sgcock: C2RustUnnamed_0 = 3;
 pub const sfx_shotgn: C2RustUnnamed_0 = 2;
 pub const sfx_pistol: C2RustUnnamed_0 = 1;
 pub const sfx_None: C2RustUnnamed_0 = 0;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const TICRATE: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const KEY_ESCAPE: ::core::ffi::c_int = 27 as ::core::ffi::c_int;
-pub const KEY_ENTER: ::core::ffi::c_int = 13 as ::core::ffi::c_int;
-pub const KEY_RSHIFT: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x36 as ::core::ffi::c_int;
-pub const KEY_RALT: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x38 as ::core::ffi::c_int;
-pub const KEY_LALT: ::core::ffi::c_int = KEY_RALT;
-pub const HU_FONTSTART: ::core::ffi::c_int = '!' as i32;
-pub const HU_FONTEND: ::core::ffi::c_int = '_' as i32;
-pub const HU_FONTSIZE: ::core::ffi::c_int = HU_FONTEND - HU_FONTSTART
-    + 1 as ::core::ffi::c_int;
-pub const HU_BROADCAST: ::core::ffi::c_int = 5 as ::core::ffi::c_int;
-pub const HU_MSGX: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const HU_MSGY: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const HU_MSGHEIGHT: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const HU_MSGTIMEOUT: ::core::ffi::c_int = 4 as ::core::ffi::c_int * TICRATE;
-pub const HUSTR_E1M1: [::core::ffi::c_char; 13] = unsafe {
-    ::core::mem::transmute::<[u8; 13], [::core::ffi::c_char; 13]>(*b"E1M1: Hangar\0")
-};
-pub const HUSTR_E1M2: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"E1M2: Nuclear Plant\0")
-};
-pub const HUSTR_E1M3: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"E1M3: Toxin Refinery\0")
-};
-pub const HUSTR_E1M4: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"E1M4: Command Control\0")
-};
-pub const HUSTR_E1M5: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"E1M5: Phobos Lab\0")
-};
-pub const HUSTR_E1M6: [::core::ffi::c_char; 25] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 25],
-        [::core::ffi::c_char; 25],
-    >(*b"E1M6: Central Processing\0")
-};
-pub const HUSTR_E1M7: [::core::ffi::c_char; 23] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 23],
-        [::core::ffi::c_char; 23],
-    >(*b"E1M7: Computer Station\0")
-};
-pub const HUSTR_E1M8: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"E1M8: Phobos Anomaly\0")
-};
-pub const HUSTR_E1M9: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"E1M9: Military Base\0")
-};
-pub const HUSTR_E2M1: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"E2M1: Deimos Anomaly\0")
-};
-pub const HUSTR_E2M2: [::core::ffi::c_char; 23] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 23],
-        [::core::ffi::c_char; 23],
-    >(*b"E2M2: Containment Area\0")
-};
-pub const HUSTR_E2M3: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"E2M3: Refinery\0")
-};
-pub const HUSTR_E2M4: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"E2M4: Deimos Lab\0")
-};
-pub const HUSTR_E2M5: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"E2M5: Command Center\0")
-};
-pub const HUSTR_E2M6: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"E2M6: Halls of the Damned\0")
-};
-pub const HUSTR_E2M7: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"E2M7: Spawning Vats\0")
-};
-pub const HUSTR_E2M8: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"E2M8: Tower of Babel\0")
-};
-pub const HUSTR_E2M9: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"E2M9: Fortress of Mystery\0")
-};
-pub const HUSTR_E3M1: [::core::ffi::c_char; 16] = unsafe {
-    ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"E3M1: Hell Keep\0")
-};
-pub const HUSTR_E3M2: [::core::ffi::c_char; 24] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 24],
-        [::core::ffi::c_char; 24],
-    >(*b"E3M2: Slough of Despair\0")
-};
-pub const HUSTR_E3M3: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"E3M3: Pandemonium\0")
-};
-pub const HUSTR_E3M4: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"E3M4: House of Pain\0")
-};
-pub const HUSTR_E3M5: [::core::ffi::c_char; 23] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 23],
-        [::core::ffi::c_char; 23],
-    >(*b"E3M5: Unholy Cathedral\0")
-};
-pub const HUSTR_E3M6: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"E3M6: Mt. Erebus\0")
-};
-pub const HUSTR_E3M7: [::core::ffi::c_char; 12] = unsafe {
-    ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"E3M7: Limbo\0")
-};
-pub const HUSTR_E3M8: [::core::ffi::c_char; 10] = unsafe {
-    ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"E3M8: Dis\0")
-};
-pub const HUSTR_E3M9: [::core::ffi::c_char; 14] = unsafe {
-    ::core::mem::transmute::<[u8; 14], [::core::ffi::c_char; 14]>(*b"E3M9: Warrens\0")
-};
-pub const HUSTR_E4M1: [::core::ffi::c_char; 19] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 19],
-        [::core::ffi::c_char; 19],
-    >(*b"E4M1: Hell Beneath\0")
-};
-pub const HUSTR_E4M2: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"E4M2: Perfect Hatred\0")
-};
-pub const HUSTR_E4M3: [::core::ffi::c_char; 23] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 23],
-        [::core::ffi::c_char; 23],
-    >(*b"E4M3: Sever The Wicked\0")
-};
-pub const HUSTR_E4M4: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"E4M4: Unruly Evil\0")
-};
-pub const HUSTR_E4M5: [::core::ffi::c_char; 23] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 23],
-        [::core::ffi::c_char; 23],
-    >(*b"E4M5: They Will Repent\0")
-};
-pub const HUSTR_E4M6: [::core::ffi::c_char; 28] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 28],
-        [::core::ffi::c_char; 28],
-    >(*b"E4M6: Against Thee Wickedly\0")
-};
-pub const HUSTR_E4M7: [::core::ffi::c_char; 24] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 24],
-        [::core::ffi::c_char; 24],
-    >(*b"E4M7: And Hell Followed\0")
-};
-pub const HUSTR_E4M8: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"E4M8: Unto The Cruel\0")
-};
-pub const HUSTR_E4M9: [::core::ffi::c_char; 11] = unsafe {
-    ::core::mem::transmute::<[u8; 11], [::core::ffi::c_char; 11]>(*b"E4M9: Fear\0")
-};
-pub const HUSTR_1: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 1: entryway\0")
-};
-pub const HUSTR_2: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 2: underhalls\0")
-};
-pub const HUSTR_3: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 3: the gantlet\0")
-};
-pub const HUSTR_4: [::core::ffi::c_char; 19] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 19],
-        [::core::ffi::c_char; 19],
-    >(*b"level 4: the focus\0")
-};
-pub const HUSTR_5: [::core::ffi::c_char; 27] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 27],
-        [::core::ffi::c_char; 27],
-    >(*b"level 5: the waste tunnels\0")
-};
-pub const HUSTR_6: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 6: the crusher\0")
-};
-pub const HUSTR_7: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 7: dead simple\0")
-};
-pub const HUSTR_8: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"level 8: tricks and traps\0")
-};
-pub const HUSTR_9: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"level 9: the pit\0")
-};
-pub const HUSTR_10: [::core::ffi::c_char; 25] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 25],
-        [::core::ffi::c_char; 25],
-    >(*b"level 10: refueling base\0")
-};
-pub const HUSTR_11: [::core::ffi::c_char; 30] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 30],
-        [::core::ffi::c_char; 30],
-    >(*b"level 11: 'o' of destruction!\0")
-};
-pub const HUSTR_12: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 12: the factory\0")
-};
-pub const HUSTR_13: [::core::ffi::c_char; 19] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 19],
-        [::core::ffi::c_char; 19],
-    >(*b"level 13: downtown\0")
-};
-pub const HUSTR_14: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"level 14: the inmost dens\0")
-};
-pub const HUSTR_15: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"level 15: industrial zone\0")
-};
-pub const HUSTR_16: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 16: suburbs\0")
-};
-pub const HUSTR_17: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 17: tenements\0")
-};
-pub const HUSTR_18: [::core::ffi::c_char; 24] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 24],
-        [::core::ffi::c_char; 24],
-    >(*b"level 18: the courtyard\0")
-};
-pub const HUSTR_19: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 19: the citadel\0")
-};
-pub const HUSTR_20: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 20: gotcha!\0")
-};
-pub const HUSTR_21: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 21: nirvana\0")
-};
-pub const HUSTR_22: [::core::ffi::c_char; 24] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 24],
-        [::core::ffi::c_char; 24],
-    >(*b"level 22: the catacombs\0")
-};
-pub const HUSTR_23: [::core::ffi::c_char; 25] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 25],
-        [::core::ffi::c_char; 25],
-    >(*b"level 23: barrels o' fun\0")
-};
-pub const HUSTR_24: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 24: the chasm\0")
-};
-pub const HUSTR_25: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 25: bloodfalls\0")
-};
-pub const HUSTR_26: [::core::ffi::c_char; 30] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 30],
-        [::core::ffi::c_char; 30],
-    >(*b"level 26: the abandoned mines\0")
-};
-pub const HUSTR_27: [::core::ffi::c_char; 24] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 24],
-        [::core::ffi::c_char; 24],
-    >(*b"level 27: monster condo\0")
-};
-pub const HUSTR_28: [::core::ffi::c_char; 27] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 27],
-        [::core::ffi::c_char; 27],
-    >(*b"level 28: the spirit world\0")
-};
-pub const HUSTR_29: [::core::ffi::c_char; 25] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 25],
-        [::core::ffi::c_char; 25],
-    >(*b"level 29: the living end\0")
-};
-pub const HUSTR_30: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 30: icon of sin\0")
-};
-pub const HUSTR_31: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 31: wolfenstein\0")
-};
-pub const HUSTR_32: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"level 32: grosse\0")
-};
-pub const PHUSTR_1: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"level 1: congo\0")
-};
-pub const PHUSTR_2: [::core::ffi::c_char; 23] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 23],
-        [::core::ffi::c_char; 23],
-    >(*b"level 2: well of souls\0")
-};
-pub const PHUSTR_3: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"level 3: aztec\0")
-};
-pub const PHUSTR_4: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"level 4: caged\0")
-};
-pub const PHUSTR_5: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 5: ghost town\0")
-};
-pub const PHUSTR_6: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 6: baron's lair\0")
-};
-pub const PHUSTR_7: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 7: caughtyard\0")
-};
-pub const PHUSTR_8: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"level 8: realm\0")
-};
-pub const PHUSTR_9: [::core::ffi::c_char; 19] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 19],
-        [::core::ffi::c_char; 19],
-    >(*b"level 9: abattoire\0")
-};
-pub const PHUSTR_10: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 10: onslaught\0")
-};
-pub const PHUSTR_11: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"level 11: hunted\0")
-};
-pub const PHUSTR_12: [::core::ffi::c_char; 16] = unsafe {
-    ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"level 12: speed\0")
-};
-pub const PHUSTR_13: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 13: the crypt\0")
-};
-pub const PHUSTR_14: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 14: genesis\0")
-};
-pub const PHUSTR_15: [::core::ffi::c_char; 23] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 23],
-        [::core::ffi::c_char; 23],
-    >(*b"level 15: the twilight\0")
-};
-pub const PHUSTR_16: [::core::ffi::c_char; 19] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 19],
-        [::core::ffi::c_char; 19],
-    >(*b"level 16: the omen\0")
-};
-pub const PHUSTR_17: [::core::ffi::c_char; 19] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 19],
-        [::core::ffi::c_char; 19],
-    >(*b"level 17: compound\0")
-};
-pub const PHUSTR_18: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 18: neurosphere\0")
-};
-pub const PHUSTR_19: [::core::ffi::c_char; 14] = unsafe {
-    ::core::mem::transmute::<[u8; 14], [::core::ffi::c_char; 14]>(*b"level 19: nme\0")
-};
-pub const PHUSTR_20: [::core::ffi::c_char; 27] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 27],
-        [::core::ffi::c_char; 27],
-    >(*b"level 20: the death domain\0")
-};
-pub const PHUSTR_21: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"level 21: slayer\0")
-};
-pub const PHUSTR_22: [::core::ffi::c_char; 29] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 29],
-        [::core::ffi::c_char; 29],
-    >(*b"level 22: impossible mission\0")
-};
-pub const PHUSTR_23: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 23: tombstone\0")
-};
-pub const PHUSTR_24: [::core::ffi::c_char; 29] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 29],
-        [::core::ffi::c_char; 29],
-    >(*b"level 24: the final frontier\0")
-};
-pub const PHUSTR_25: [::core::ffi::c_char; 33] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 33],
-        [::core::ffi::c_char; 33],
-    >(*b"level 25: the temple of darkness\0")
-};
-pub const PHUSTR_26: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"level 26: bunker\0")
-};
-pub const PHUSTR_27: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 27: anti-christ\0")
-};
-pub const PHUSTR_28: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 28: the sewers\0")
-};
-pub const PHUSTR_29: [::core::ffi::c_char; 28] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 28],
-        [::core::ffi::c_char; 28],
-    >(*b"level 29: odyssey of noises\0")
-};
-pub const PHUSTR_30: [::core::ffi::c_char; 30] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 30],
-        [::core::ffi::c_char; 30],
-    >(*b"level 30: the gateway of hell\0")
-};
-pub const PHUSTR_31: [::core::ffi::c_char; 19] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 19],
-        [::core::ffi::c_char; 19],
-    >(*b"level 31: cyberden\0")
-};
-pub const PHUSTR_32: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 32: go 2 it\0")
-};
-pub const THUSTR_1: [::core::ffi::c_char; 24] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 24],
-        [::core::ffi::c_char; 24],
-    >(*b"level 1: system control\0")
-};
-pub const THUSTR_2: [::core::ffi::c_char; 19] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 19],
-        [::core::ffi::c_char; 19],
-    >(*b"level 2: human bbq\0")
-};
-pub const THUSTR_3: [::core::ffi::c_char; 23] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 23],
-        [::core::ffi::c_char; 23],
-    >(*b"level 3: power control\0")
-};
-pub const THUSTR_4: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 4: wormhole\0")
-};
-pub const THUSTR_5: [::core::ffi::c_char; 16] = unsafe {
-    ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"level 5: hanger\0")
-};
-pub const THUSTR_6: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 6: open season\0")
-};
-pub const THUSTR_7: [::core::ffi::c_char; 16] = unsafe {
-    ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"level 7: prison\0")
-};
-pub const THUSTR_8: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"level 8: metal\0")
-};
-pub const THUSTR_9: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 9: stronghold\0")
-};
-pub const THUSTR_10: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 10: redemption\0")
-};
-pub const THUSTR_11: [::core::ffi::c_char; 27] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 27],
-        [::core::ffi::c_char; 27],
-    >(*b"level 11: storage facility\0")
-};
-pub const THUSTR_12: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"level 12: crater\0")
-};
-pub const THUSTR_13: [::core::ffi::c_char; 28] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 28],
-        [::core::ffi::c_char; 28],
-    >(*b"level 13: nukage processing\0")
-};
-pub const THUSTR_14: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 14: steel works\0")
-};
-pub const THUSTR_15: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 15: dead zone\0")
-};
-pub const THUSTR_16: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"level 16: deepest reaches\0")
-};
-pub const THUSTR_17: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"level 17: processing area\0")
-};
-pub const THUSTR_18: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"level 18: mill\0")
-};
-pub const THUSTR_19: [::core::ffi::c_char; 30] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 30],
-        [::core::ffi::c_char; 30],
-    >(*b"level 19: shipping/respawning\0")
-};
-pub const THUSTR_20: [::core::ffi::c_char; 29] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 29],
-        [::core::ffi::c_char; 29],
-    >(*b"level 20: central processing\0")
-};
-pub const THUSTR_21: [::core::ffi::c_char; 32] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 32],
-        [::core::ffi::c_char; 32],
-    >(*b"level 21: administration center\0")
-};
-pub const THUSTR_22: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 22: habitat\0")
-};
-pub const THUSTR_23: [::core::ffi::c_char; 31] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 31],
-        [::core::ffi::c_char; 31],
-    >(*b"level 23: lunar mining project\0")
-};
-pub const THUSTR_24: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"level 24: quarry\0")
-};
-pub const THUSTR_25: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"level 25: baron's den\0")
-};
-pub const THUSTR_26: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 26: ballistyx\0")
-};
-pub const THUSTR_27: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 27: mount pain\0")
-};
-pub const THUSTR_28: [::core::ffi::c_char; 15] = unsafe {
-    ::core::mem::transmute::<[u8; 15], [::core::ffi::c_char; 15]>(*b"level 28: heck\0")
-};
-pub const THUSTR_29: [::core::ffi::c_char; 21] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 21],
-        [::core::ffi::c_char; 21],
-    >(*b"level 29: river styx\0")
-};
-pub const THUSTR_30: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 30: last call\0")
-};
-pub const THUSTR_31: [::core::ffi::c_char; 18] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 18],
-        [::core::ffi::c_char; 18],
-    >(*b"level 31: pharaoh\0")
-};
-pub const THUSTR_32: [::core::ffi::c_char; 20] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 20],
-        [::core::ffi::c_char; 20],
-    >(*b"level 32: caribbean\0")
-};
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const TICRATE: i32 = 35 as i32;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const KEY_ESCAPE: i32 = 27 as i32;
+pub const KEY_ENTER: i32 = 13 as i32;
+pub const KEY_RSHIFT: i32 = 0x80 as i32
+    + 0x36 as i32;
+pub const KEY_RALT: i32 = 0x80 as i32
+    + 0x38 as i32;
+pub const KEY_LALT: i32 = KEY_RALT;
+pub const HU_FONTSTART: i32 = '!' as i32;
+pub const HU_FONTEND: i32 = '_' as i32;
+pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART
+    + 1 as i32;
+pub const HU_BROADCAST: i32 = 5 as i32;
+pub const HU_MSGX: i32 = 0 as i32;
+pub const HU_MSGY: i32 = 0 as i32;
+pub const HU_MSGHEIGHT: i32 = 1 as i32;
+pub const HU_MSGTIMEOUT: i32 = 4 as i32 * TICRATE;
+pub const HUSTR_E1M1: &str = "E1M1: Hangar";
+pub const HUSTR_E1M2: &str = "E1M2: Nuclear Plant";
+pub const HUSTR_E1M3: &str = "E1M3: Toxin Refinery";
+pub const HUSTR_E1M4: &str = "E1M4: Command Control";
+pub const HUSTR_E1M5: &str = "E1M5: Phobos Lab";
+pub const HUSTR_E1M6: &str = "E1M6: Central Processing";
+pub const HUSTR_E1M7: &str = "E1M7: Computer Station";
+pub const HUSTR_E1M8: &str = "E1M8: Phobos Anomaly";
+pub const HUSTR_E1M9: &str = "E1M9: Military Base";
+pub const HUSTR_E2M1: &str = "E2M1: Deimos Anomaly";
+pub const HUSTR_E2M2: &str = "E2M2: Containment Area";
+pub const HUSTR_E2M3: &str = "E2M3: Refinery";
+pub const HUSTR_E2M4: &str = "E2M4: Deimos Lab";
+pub const HUSTR_E2M5: &str = "E2M5: Command Center";
+pub const HUSTR_E2M6: &str = "E2M6: Halls of the Damned";
+pub const HUSTR_E2M7: &str = "E2M7: Spawning Vats";
+pub const HUSTR_E2M8: &str = "E2M8: Tower of Babel";
+pub const HUSTR_E2M9: &str = "E2M9: Fortress of Mystery";
+pub const HUSTR_E3M1: &str = "E3M1: Hell Keep";
+pub const HUSTR_E3M2: &str = "E3M2: Slough of Despair";
+pub const HUSTR_E3M3: &str = "E3M3: Pandemonium";
+pub const HUSTR_E3M4: &str = "E3M4: House of Pain";
+pub const HUSTR_E3M5: &str = "E3M5: Unholy Cathedral";
+pub const HUSTR_E3M6: &str = "E3M6: Mt. Erebus";
+pub const HUSTR_E3M7: &str = "E3M7: Limbo";
+pub const HUSTR_E3M8: &str = "E3M8: Dis";
+pub const HUSTR_E3M9: &str = "E3M9: Warrens";
+pub const HUSTR_E4M1: &str = "E4M1: Hell Beneath";
+pub const HUSTR_E4M2: &str = "E4M2: Perfect Hatred";
+pub const HUSTR_E4M3: &str = "E4M3: Sever The Wicked";
+pub const HUSTR_E4M4: &str = "E4M4: Unruly Evil";
+pub const HUSTR_E4M5: &str = "E4M5: They Will Repent";
+pub const HUSTR_E4M6: &str = "E4M6: Against Thee Wickedly";
+pub const HUSTR_E4M7: &str = "E4M7: And Hell Followed";
+pub const HUSTR_E4M8: &str = "E4M8: Unto The Cruel";
+pub const HUSTR_E4M9: &str = "E4M9: Fear";
+pub const HUSTR_1: &str = "level 1: entryway";
+pub const HUSTR_2: &str = "level 2: underhalls";
+pub const HUSTR_3: &str = "level 3: the gantlet";
+pub const HUSTR_4: &str = "level 4: the focus";
+pub const HUSTR_5: &str = "level 5: the waste tunnels";
+pub const HUSTR_6: &str = "level 6: the crusher";
+pub const HUSTR_7: &str = "level 7: dead simple";
+pub const HUSTR_8: &str = "level 8: tricks and traps";
+pub const HUSTR_9: &str = "level 9: the pit";
+pub const HUSTR_10: &str = "level 10: refueling base";
+pub const HUSTR_11: &str = "level 11: 'o' of destruction!";
+pub const HUSTR_12: &str = "level 12: the factory";
+pub const HUSTR_13: &str = "level 13: downtown";
+pub const HUSTR_14: &str = "level 14: the inmost dens";
+pub const HUSTR_15: &str = "level 15: industrial zone";
+pub const HUSTR_16: &str = "level 16: suburbs";
+pub const HUSTR_17: &str = "level 17: tenements";
+pub const HUSTR_18: &str = "level 18: the courtyard";
+pub const HUSTR_19: &str = "level 19: the citadel";
+pub const HUSTR_20: &str = "level 20: gotcha!";
+pub const HUSTR_21: &str = "level 21: nirvana";
+pub const HUSTR_22: &str = "level 22: the catacombs";
+pub const HUSTR_23: &str = "level 23: barrels o' fun";
+pub const HUSTR_24: &str = "level 24: the chasm";
+pub const HUSTR_25: &str = "level 25: bloodfalls";
+pub const HUSTR_26: &str = "level 26: the abandoned mines";
+pub const HUSTR_27: &str = "level 27: monster condo";
+pub const HUSTR_28: &str = "level 28: the spirit world";
+pub const HUSTR_29: &str = "level 29: the living end";
+pub const HUSTR_30: &str = "level 30: icon of sin";
+pub const HUSTR_31: &str = "level 31: wolfenstein";
+pub const HUSTR_32: &str = "level 32: grosse";
+pub const PHUSTR_1: &str = "level 1: congo";
+pub const PHUSTR_2: &str = "level 2: well of souls";
+pub const PHUSTR_3: &str = "level 3: aztec";
+pub const PHUSTR_4: &str = "level 4: caged";
+pub const PHUSTR_5: &str = "level 5: ghost town";
+pub const PHUSTR_6: &str = "level 6: baron's lair";
+pub const PHUSTR_7: &str = "level 7: caughtyard";
+pub const PHUSTR_8: &str = "level 8: realm";
+pub const PHUSTR_9: &str = "level 9: abattoire";
+pub const PHUSTR_10: &str = "level 10: onslaught";
+pub const PHUSTR_11: &str = "level 11: hunted";
+pub const PHUSTR_12: &str = "level 12: speed";
+pub const PHUSTR_13: &str = "level 13: the crypt";
+pub const PHUSTR_14: &str = "level 14: genesis";
+pub const PHUSTR_15: &str = "level 15: the twilight";
+pub const PHUSTR_16: &str = "level 16: the omen";
+pub const PHUSTR_17: &str = "level 17: compound";
+pub const PHUSTR_18: &str = "level 18: neurosphere";
+pub const PHUSTR_19: &str = "level 19: nme";
+pub const PHUSTR_20: &str = "level 20: the death domain";
+pub const PHUSTR_21: &str = "level 21: slayer";
+pub const PHUSTR_22: &str = "level 22: impossible mission";
+pub const PHUSTR_23: &str = "level 23: tombstone";
+pub const PHUSTR_24: &str = "level 24: the final frontier";
+pub const PHUSTR_25: &str = "level 25: the temple of darkness";
+pub const PHUSTR_26: &str = "level 26: bunker";
+pub const PHUSTR_27: &str = "level 27: anti-christ";
+pub const PHUSTR_28: &str = "level 28: the sewers";
+pub const PHUSTR_29: &str = "level 29: odyssey of noises";
+pub const PHUSTR_30: &str = "level 30: the gateway of hell";
+pub const PHUSTR_31: &str = "level 31: cyberden";
+pub const PHUSTR_32: &str = "level 32: go 2 it";
+pub const THUSTR_1: &str = "level 1: system control";
+pub const THUSTR_2: &str = "level 2: human bbq";
+pub const THUSTR_3: &str = "level 3: power control";
+pub const THUSTR_4: &str = "level 4: wormhole";
+pub const THUSTR_5: &str = "level 5: hanger";
+pub const THUSTR_6: &str = "level 6: open season";
+pub const THUSTR_7: &str = "level 7: prison";
+pub const THUSTR_8: &str = "level 8: metal";
+pub const THUSTR_9: &str = "level 9: stronghold";
+pub const THUSTR_10: &str = "level 10: redemption";
+pub const THUSTR_11: &str = "level 11: storage facility";
+pub const THUSTR_12: &str = "level 12: crater";
+pub const THUSTR_13: &str = "level 13: nukage processing";
+pub const THUSTR_14: &str = "level 14: steel works";
+pub const THUSTR_15: &str = "level 15: dead zone";
+pub const THUSTR_16: &str = "level 16: deepest reaches";
+pub const THUSTR_17: &str = "level 17: processing area";
+pub const THUSTR_18: &str = "level 18: mill";
+pub const THUSTR_19: &str = "level 19: shipping/respawning";
+pub const THUSTR_20: &str = "level 20: central processing";
+pub const THUSTR_21: &str = "level 21: administration center";
+pub const THUSTR_22: &str = "level 22: habitat";
+pub const THUSTR_23: &str = "level 23: lunar mining project";
+pub const THUSTR_24: &str = "level 24: quarry";
+pub const THUSTR_25: &str = "level 25: baron's den";
+pub const THUSTR_26: &str = "level 26: ballistyx";
+pub const THUSTR_27: &str = "level 27: mount pain";
+pub const THUSTR_28: &str = "level 28: heck";
+pub const THUSTR_29: &str = "level 29: river styx";
+pub const THUSTR_30: &str = "level 30: last call";
+pub const THUSTR_31: &str = "level 31: pharaoh";
+pub const THUSTR_32: &str = "level 32: caribbean";
 pub const HUSTR_CHATMACRO1: [::core::ffi::c_char; 24] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 24],
-        [::core::ffi::c_char; 24],
-    >(*b"I'm ready to kick butt!\0")
+    ::core::mem::transmute::<[u8; 24], [::core::ffi::c_char; 24]>(*b"I'm ready to kick butt!\0")
 };
 pub const HUSTR_CHATMACRO2: [::core::ffi::c_char; 8] = unsafe {
     ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"I'm OK.\0")
 };
 pub const HUSTR_CHATMACRO3: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"I'm not looking too good!\0")
+    ::core::mem::transmute::<[u8; 26], [::core::ffi::c_char; 26]>(*b"I'm not looking too good!\0")
 };
 pub const HUSTR_CHATMACRO4: [::core::ffi::c_char; 6] = unsafe {
     ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Help!\0")
@@ -2531,19 +1633,13 @@ pub const HUSTR_CHATMACRO5: [::core::ffi::c_char; 10] = unsafe {
     ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"You suck!\0")
 };
 pub const HUSTR_CHATMACRO6: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"Next time, scumbag...\0")
+    ::core::mem::transmute::<[u8; 22], [::core::ffi::c_char; 22]>(*b"Next time, scumbag...\0")
 };
 pub const HUSTR_CHATMACRO7: [::core::ffi::c_char; 11] = unsafe {
     ::core::mem::transmute::<[u8; 11], [::core::ffi::c_char; 11]>(*b"Come here!\0")
 };
 pub const HUSTR_CHATMACRO8: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 22],
-        [::core::ffi::c_char; 22],
-    >(*b"I'll take care of it.\0")
+    ::core::mem::transmute::<[u8; 22], [::core::ffi::c_char; 22]>(*b"I'll take care of it.\0")
 };
 pub const HUSTR_CHATMACRO9: [::core::ffi::c_char; 4] = unsafe {
     ::core::mem::transmute::<[u8; 4], [::core::ffi::c_char; 4]>(*b"Yes\0")
@@ -2563,9 +1659,8 @@ pub const HUSTR_PLRBROWN: [::core::ffi::c_char; 8] = unsafe {
 pub const HUSTR_PLRRED: [::core::ffi::c_char; 6] = unsafe {
     ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Red: \0")
 };
-pub const HU_TITLEX: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const HU_INPUTX: ::core::ffi::c_int = HU_MSGX;
-#[no_mangle]
+pub const HU_TITLEX: i32 = 0 as i32;
+pub const HU_INPUTX: i32 = HU_MSGX;
 pub static mut chat_macros: [*mut ::core::ffi::c_char; 10] = [
     HUSTR_CHATMACRO0.as_ptr() as *mut ::core::ffi::c_char,
     HUSTR_CHATMACRO1.as_ptr() as *mut ::core::ffi::c_char,
@@ -2578,7 +1673,6 @@ pub static mut chat_macros: [*mut ::core::ffi::c_char; 10] = [
     HUSTR_CHATMACRO8.as_ptr() as *mut ::core::ffi::c_char,
     HUSTR_CHATMACRO9.as_ptr() as *mut ::core::ffi::c_char,
 ];
-#[no_mangle]
 pub static mut player_names: [*mut ::core::ffi::c_char; 4] = [
     HUSTR_PLRGREEN.as_ptr() as *mut ::core::ffi::c_char,
     HUSTR_PLRINDIGO.as_ptr() as *mut ::core::ffi::c_char,
@@ -2588,7 +1682,6 @@ pub static mut player_names: [*mut ::core::ffi::c_char; 4] = [
 #[no_mangle]
 pub static mut chat_char: ::core::ffi::c_char = 0;
 static mut plr: *mut player_t = ::core::ptr::null::<player_t>() as *mut player_t;
-#[no_mangle]
 pub static mut hu_font: [*mut patch_t; 63] = [::core::ptr::null::<patch_t>()
     as *mut patch_t; 63];
 static mut w_title: hu_textline_t = hu_textline_t {
@@ -2596,217 +1689,224 @@ static mut w_title: hu_textline_t = hu_textline_t {
     y: 0,
     f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
     sc: 0,
-    l: [0; 81],
-    len: 0,
+    l: String::new(),
     needsupdate: 0,
 };
-#[no_mangle]
-pub static mut chat_on: boolean = 0;
+pub static mut chat_on: bool = false;
 static mut w_chat: hu_itext_t = hu_itext_t {
     l: hu_textline_t {
         x: 0,
         y: 0,
         f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
         sc: 0,
-        l: [0; 81],
-        len: 0,
+        l: String::new(),
         needsupdate: 0,
     },
     lm: 0,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
-    laston: 0,
+    on: ::core::ptr::null::<bool>() as *mut bool,
+    laston: false,
 };
-static mut always_off: boolean = false_0 as boolean;
+static mut always_off: bool = false;
 static mut chat_dest: [::core::ffi::c_char; 4] = [0; 4];
-static mut w_inputbuffer: [hu_itext_t; 4] = [hu_itext_t {
-    l: hu_textline_t {
+const fn new_hu_itext_t() -> hu_itext_t {
+    hu_itext_t {
+        l: hu_textline_t {
+            x: 0,
+            y: 0,
+            f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
+            sc: 0,
+            l: String::new(),
+            needsupdate: 0,
+        },
+        lm: 0,
+        on: ::core::ptr::null::<bool>() as *mut bool,
+        laston: false,
+    }
+}
+static mut w_inputbuffer: [hu_itext_t; 4] = [
+    new_hu_itext_t(),
+    new_hu_itext_t(),
+    new_hu_itext_t(),
+    new_hu_itext_t(),
+];
+static mut message_on: bool = false;
+pub static mut message_dontfuckwithme: bool = false;
+static mut message_nottobefuckedwith: bool = false;
+const fn new_hu_textline_t() -> hu_textline_t {
+    hu_textline_t {
         x: 0,
         y: 0,
         f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
         sc: 0,
-        l: [0; 81],
-        len: 0,
+        l: String::new(),
         needsupdate: 0,
-    },
-    lm: 0,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
-    laston: 0,
-}; 4];
-static mut message_on: boolean = 0;
-#[no_mangle]
-pub static mut message_dontfuckwithme: boolean = 0;
-static mut message_nottobefuckedwith: boolean = 0;
+    }
+}
 static mut w_message: hu_stext_t = hu_stext_t {
-    l: [hu_textline_t {
-        x: 0,
-        y: 0,
-        f: ::core::ptr::null::<*mut patch_t>() as *mut *mut patch_t,
-        sc: 0,
-        l: [0; 81],
-        len: 0,
-        needsupdate: 0,
-    }; 4],
+    l: [
+        new_hu_textline_t(),
+        new_hu_textline_t(),
+        new_hu_textline_t(),
+        new_hu_textline_t(),
+    ],
     h: 0,
     cl: 0,
-    on: ::core::ptr::null::<boolean>() as *mut boolean,
-    laston: 0,
+    on: ::core::ptr::null::<bool>() as *mut bool,
+    laston: false,
 };
-static mut message_counter: ::core::ffi::c_int = 0;
-static mut headsupactive: boolean = false_0 as boolean;
-#[no_mangle]
-pub static mut mapnames: [*mut ::core::ffi::c_char; 45] = [
-    HUSTR_E1M1.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E1M2.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E1M3.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E1M4.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E1M5.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E1M6.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E1M7.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E1M8.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E1M9.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M1.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M2.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M3.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M4.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M5.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M6.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M7.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M8.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E2M9.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M1.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M2.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M3.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M4.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M5.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M6.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M7.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M8.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E3M9.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M1.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M2.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M3.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M4.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M5.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M6.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M7.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M8.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_E4M9.as_ptr() as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"NEWLEVEL\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+static mut message_counter: i32 = 0;
+static mut headsupactive: bool = false;
+pub static mapnames: [&str; 45] = [
+    HUSTR_E1M1,
+    HUSTR_E1M2,
+    HUSTR_E1M3,
+    HUSTR_E1M4,
+    HUSTR_E1M5,
+    HUSTR_E1M6,
+    HUSTR_E1M7,
+    HUSTR_E1M8,
+    HUSTR_E1M9,
+    HUSTR_E2M1,
+    HUSTR_E2M2,
+    HUSTR_E2M3,
+    HUSTR_E2M4,
+    HUSTR_E2M5,
+    HUSTR_E2M6,
+    HUSTR_E2M7,
+    HUSTR_E2M8,
+    HUSTR_E2M9,
+    HUSTR_E3M1,
+    HUSTR_E3M2,
+    HUSTR_E3M3,
+    HUSTR_E3M4,
+    HUSTR_E3M5,
+    HUSTR_E3M6,
+    HUSTR_E3M7,
+    HUSTR_E3M8,
+    HUSTR_E3M9,
+    HUSTR_E4M1,
+    HUSTR_E4M2,
+    HUSTR_E4M3,
+    HUSTR_E4M4,
+    HUSTR_E4M5,
+    HUSTR_E4M6,
+    HUSTR_E4M7,
+    HUSTR_E4M8,
+    HUSTR_E4M9,
+    "NEWLEVEL",
+    "NEWLEVEL",
+    "NEWLEVEL",
+    "NEWLEVEL",
+    "NEWLEVEL",
+    "NEWLEVEL",
+    "NEWLEVEL",
+    "NEWLEVEL",
+    "NEWLEVEL",
 ];
-#[no_mangle]
-pub static mut mapnames_commercial: [*mut ::core::ffi::c_char; 96] = [
-    HUSTR_1.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_2.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_3.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_4.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_5.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_6.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_7.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_8.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_9.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_10.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_11.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_12.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_13.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_14.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_15.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_16.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_17.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_18.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_19.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_20.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_21.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_22.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_23.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_24.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_25.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_26.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_27.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_28.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_29.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_30.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_31.as_ptr() as *mut ::core::ffi::c_char,
-    HUSTR_32.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_1.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_2.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_3.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_4.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_5.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_6.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_7.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_8.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_9.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_10.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_11.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_12.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_13.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_14.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_15.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_16.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_17.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_18.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_19.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_20.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_21.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_22.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_23.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_24.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_25.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_26.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_27.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_28.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_29.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_30.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_31.as_ptr() as *mut ::core::ffi::c_char,
-    PHUSTR_32.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_1.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_2.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_3.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_4.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_5.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_6.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_7.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_8.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_9.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_10.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_11.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_12.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_13.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_14.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_15.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_16.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_17.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_18.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_19.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_20.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_21.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_22.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_23.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_24.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_25.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_26.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_27.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_28.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_29.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_30.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_31.as_ptr() as *mut ::core::ffi::c_char,
-    THUSTR_32.as_ptr() as *mut ::core::ffi::c_char,
+pub static mapnames_commercial: [&str; 96] = [
+    HUSTR_1,
+    HUSTR_2,
+    HUSTR_3,
+    HUSTR_4,
+    HUSTR_5,
+    HUSTR_6,
+    HUSTR_7,
+    HUSTR_8,
+    HUSTR_9,
+    HUSTR_10,
+    HUSTR_11,
+    HUSTR_12,
+    HUSTR_13,
+    HUSTR_14,
+    HUSTR_15,
+    HUSTR_16,
+    HUSTR_17,
+    HUSTR_18,
+    HUSTR_19,
+    HUSTR_20,
+    HUSTR_21,
+    HUSTR_22,
+    HUSTR_23,
+    HUSTR_24,
+    HUSTR_25,
+    HUSTR_26,
+    HUSTR_27,
+    HUSTR_28,
+    HUSTR_29,
+    HUSTR_30,
+    HUSTR_31,
+    HUSTR_32,
+    PHUSTR_1,
+    PHUSTR_2,
+    PHUSTR_3,
+    PHUSTR_4,
+    PHUSTR_5,
+    PHUSTR_6,
+    PHUSTR_7,
+    PHUSTR_8,
+    PHUSTR_9,
+    PHUSTR_10,
+    PHUSTR_11,
+    PHUSTR_12,
+    PHUSTR_13,
+    PHUSTR_14,
+    PHUSTR_15,
+    PHUSTR_16,
+    PHUSTR_17,
+    PHUSTR_18,
+    PHUSTR_19,
+    PHUSTR_20,
+    PHUSTR_21,
+    PHUSTR_22,
+    PHUSTR_23,
+    PHUSTR_24,
+    PHUSTR_25,
+    PHUSTR_26,
+    PHUSTR_27,
+    PHUSTR_28,
+    PHUSTR_29,
+    PHUSTR_30,
+    PHUSTR_31,
+    PHUSTR_32,
+    THUSTR_1,
+    THUSTR_2,
+    THUSTR_3,
+    THUSTR_4,
+    THUSTR_5,
+    THUSTR_6,
+    THUSTR_7,
+    THUSTR_8,
+    THUSTR_9,
+    THUSTR_10,
+    THUSTR_11,
+    THUSTR_12,
+    THUSTR_13,
+    THUSTR_14,
+    THUSTR_15,
+    THUSTR_16,
+    THUSTR_17,
+    THUSTR_18,
+    THUSTR_19,
+    THUSTR_20,
+    THUSTR_21,
+    THUSTR_22,
+    THUSTR_23,
+    THUSTR_24,
+    THUSTR_25,
+    THUSTR_26,
+    THUSTR_27,
+    THUSTR_28,
+    THUSTR_29,
+    THUSTR_30,
+    THUSTR_31,
+    THUSTR_32,
 ];
-#[no_mangle]
-pub unsafe extern "C" fn HU_Init() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
+pub unsafe fn HU_Init() {
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
     let mut buffer: [::core::ffi::c_char; 9] = [0; 9];
     j = HU_FONTSTART;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < HU_FONTSIZE {
         let fresh0 = j;
         j = j + 1;
@@ -2817,29 +1917,28 @@ pub unsafe extern "C" fn HU_Init() {
             fresh0,
         );
         hu_font[i as usize] = W_CacheLumpName(
-            &raw mut buffer as *mut ::core::ffi::c_char,
-            PU_STATIC as ::core::ffi::c_int,
+            &wad_name8_to_string(&raw mut buffer as *mut ::core::ffi::c_char),
+            PU_STATIC as i32,
         ) as *mut patch_t;
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn HU_Stop() {
-    headsupactive = false_0 as boolean;
+    headsupactive = false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Start() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut s: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    if headsupactive != 0 {
+pub unsafe fn HU_Start() {
+    let mut i: i32 = 0;
+    let mut s: &str = "";
+    if headsupactive {
         HU_Stop();
     }
     plr = (&raw mut players as *mut player_t).offset(consoleplayer as isize)
         as *mut player_t;
-    message_on = false_0 as boolean;
-    message_dontfuckwithme = false_0 as boolean;
-    message_nottobefuckedwith = false_0 as boolean;
-    chat_on = false_0 as boolean;
+    message_on = false;
+    message_dontfuckwithme = false;
+    message_nottobefuckedwith = false;
+    chat_on = false;
     HUlib_initSText(
         &raw mut w_message,
         HU_MSGX,
@@ -2852,97 +1951,90 @@ pub unsafe extern "C" fn HU_Start() {
     HUlib_initTextLine(
         &raw mut w_title,
         HU_TITLEX,
-        167 as ::core::ffi::c_int
-            - (*hu_font[0 as ::core::ffi::c_int as usize]).height as ::core::ffi::c_int,
+        167 as i32
+            - (*hu_font[0 as i32 as usize]).height as i32,
         &raw mut hu_font as *mut *mut patch_t,
         HU_FONTSTART,
     );
-    match if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    match if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
-    } else if gamemission as ::core::ffi::c_uint
-        == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
+    } else if gamemission as u32
+        == pack_hacx as i32 as u32
     {
-        doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom2 as i32 as u32
     } else {
-        gamemission as ::core::ffi::c_uint
+        gamemission as u32
     } {
         0 => {
-            s = mapnames[((gameepisode - 1 as ::core::ffi::c_int)
-                * 9 as ::core::ffi::c_int + gamemap - 1 as ::core::ffi::c_int) as usize];
+            s = mapnames[((gameepisode - 1 as i32)
+                * 9 as i32 + gamemap - 1 as i32) as usize];
         }
         1 => {
-            s = mapnames_commercial[(gamemap - 1 as ::core::ffi::c_int) as usize];
+            s = mapnames_commercial[(gamemap - 1 as i32) as usize];
         }
         3 => {
-            s = mapnames_commercial[(gamemap - 1 as ::core::ffi::c_int
-                + 32 as ::core::ffi::c_int) as usize];
+            s = mapnames_commercial[(gamemap - 1 as i32
+                + 32 as i32) as usize];
         }
         2 => {
-            s = mapnames_commercial[(gamemap - 1 as ::core::ffi::c_int
-                + 64 as ::core::ffi::c_int) as usize];
+            s = mapnames_commercial[(gamemap - 1 as i32
+                + 64 as i32) as usize];
         }
         _ => {
-            s = b"Unknown level\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            s = "Unknown level";
         }
     }
-    if gameversion as ::core::ffi::c_uint
-        == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gameversion as u32
+        == exe_chex as i32 as u32
     {
-        s = mapnames[(gamemap - 1 as ::core::ffi::c_int) as usize];
+        s = mapnames[(gamemap - 1 as i32) as usize];
     }
-    s = s;
-    while *s != 0 {
-        let fresh1 = s;
-        s = s.offset(1);
-        HUlib_addCharToTextLine(&raw mut w_title, *fresh1);
+    for b in s.bytes() {
+        HUlib_addCharToTextLine(&raw mut w_title, b as ::core::ffi::c_char);
     }
     HUlib_initIText(
         &raw mut w_chat,
         HU_INPUTX,
         HU_MSGY
             + HU_MSGHEIGHT
-                * ((*hu_font[0 as ::core::ffi::c_int as usize]).height
-                    as ::core::ffi::c_int + 1 as ::core::ffi::c_int),
+                * ((*hu_font[0 as i32 as usize]).height
+                    as i32 + 1 as i32),
         &raw mut hu_font as *mut *mut patch_t,
         HU_FONTSTART,
         &raw mut chat_on,
     );
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         HUlib_initIText(
             (&raw mut w_inputbuffer as *mut hu_itext_t).offset(i as isize)
                 as *mut hu_itext_t,
-            0 as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
+            0 as i32,
+            0 as i32,
             ::core::ptr::null_mut::<*mut patch_t>(),
-            0 as ::core::ffi::c_int,
+            0 as i32,
             &raw mut always_off,
         );
         i += 1;
     }
-    headsupactive = true_0 as boolean;
+    headsupactive = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Drawer() {
+pub unsafe fn HU_Drawer() {
     HUlib_drawSText(&raw mut w_message);
     HUlib_drawIText(&raw mut w_chat);
-    if automapactive != 0 {
+    if automapactive {
         HUlib_drawTextLine(&raw mut w_title, false_0 as boolean);
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Erase() {
+pub unsafe fn HU_Erase() {
     HUlib_eraseSText(&raw mut w_message);
     HUlib_eraseIText(&raw mut w_chat);
     HUlib_eraseTextLine(&raw mut w_title);
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Ticker() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut rc: ::core::ffi::c_int = 0;
+pub unsafe fn HU_Ticker() {
+    let mut i: i32 = 0;
+    let mut rc: i32 = 0;
     let mut c: ::core::ffi::c_char = 0;
     if message_counter != 0
         && {
@@ -2950,72 +2042,69 @@ pub unsafe extern "C" fn HU_Ticker() {
             message_counter == 0
         }
     {
-        message_on = false_0 as boolean;
-        message_nottobefuckedwith = false_0 as boolean;
+        message_on = false;
+        message_nottobefuckedwith = false;
     }
-    if showMessages != 0 || message_dontfuckwithme != 0 {
-        if !(*plr).message.is_null() && message_nottobefuckedwith == 0
-            || !(*plr).message.is_null() && message_dontfuckwithme != 0
+    if showMessages != 0 || message_dontfuckwithme {
+        if !(*plr).message.is_null() && !message_nottobefuckedwith
+            || !(*plr).message.is_null() && message_dontfuckwithme
         {
             HUlib_addMessageToSText(
                 &raw mut w_message,
                 ::core::ptr::null_mut::<::core::ffi::c_char>(),
-                (*plr).message,
+                ::std::ffi::CStr::from_ptr((*plr).message).to_str().unwrap(),
             );
             (*plr).message = ::core::ptr::null_mut::<::core::ffi::c_char>();
-            message_on = true_0 as boolean;
+            message_on = true;
             message_counter = HU_MSGTIMEOUT;
             message_nottobefuckedwith = message_dontfuckwithme;
-            message_dontfuckwithme = 0 as boolean;
+            message_dontfuckwithme = false;
         }
     }
-    if netgame != 0 {
-        i = 0 as ::core::ffi::c_int;
+    if netgame {
+        i = 0 as i32;
         while i < MAXPLAYERS {
             if !(playeringame[i as usize] == 0) {
                 if i != consoleplayer
                     && {
                         c = players[i as usize].cmd.chatchar as ::core::ffi::c_char;
-                        c as ::core::ffi::c_int != 0
+                        c as i32 != 0
                     }
                 {
-                    if c as ::core::ffi::c_int <= HU_BROADCAST {
+                    if c as i32 <= HU_BROADCAST {
                         chat_dest[i as usize] = c;
                     } else {
                         rc = HUlib_keyInIText(
                             (&raw mut w_inputbuffer as *mut hu_itext_t)
                                 .offset(i as isize) as *mut hu_itext_t,
-                            c as ::core::ffi::c_uchar,
-                        ) as ::core::ffi::c_int;
-                        if rc != 0 && c as ::core::ffi::c_int == KEY_ENTER {
-                            if w_inputbuffer[i as usize].l.len != 0
-                                && (chat_dest[i as usize] as ::core::ffi::c_int
-                                    == consoleplayer + 1 as ::core::ffi::c_int
-                                    || chat_dest[i as usize] as ::core::ffi::c_int
+                            c as u8,
+                        ) as i32;
+                        if rc != 0 && c as i32 == KEY_ENTER {
+                            if !w_inputbuffer[i as usize].l.l.is_empty()
+                                && (chat_dest[i as usize] as i32
+                                    == consoleplayer + 1 as i32
+                                    || chat_dest[i as usize] as i32
                                         == HU_BROADCAST)
                             {
                                 HUlib_addMessageToSText(
                                     &raw mut w_message,
                                     player_names[i as usize],
-                                    &raw mut (*(&raw mut w_inputbuffer as *mut hu_itext_t)
-                                        .offset(i as isize))
-                                        .l
-                                        .l as *mut ::core::ffi::c_char,
+                                    &w_inputbuffer[i as usize].l.l,
                                 );
-                                message_nottobefuckedwith = true_0 as boolean;
-                                message_on = true_0 as boolean;
+                                message_nottobefuckedwith = true;
+                                message_on = true;
                                 message_counter = HU_MSGTIMEOUT;
-                                if gamemode as ::core::ffi::c_uint
-                                    == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+                                if gamemode as u32
+                                    == commercial as i32 as u32
                                 {
                                     S_StartSound(
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                                        sfx_radio as ::core::ffi::c_int,
+                                        sfx_radio as i32,
                                     );
                                 } else {
                                     S_StartSound(
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
-                                        sfx_tink as ::core::ffi::c_int,
+                                        sfx_tink as i32,
                                     );
                                 }
                             }
@@ -3032,97 +2121,94 @@ pub unsafe extern "C" fn HU_Ticker() {
         }
     }
 }
-pub const QUEUESIZE: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
+pub const QUEUESIZE: i32 = 128 as i32;
 static mut chatchars: [::core::ffi::c_char; 128] = [0; 128];
-static mut head: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-static mut tail: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+static mut head: i32 = 0 as i32;
+static mut tail: i32 = 0 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn HU_queueChatChar(mut c: ::core::ffi::c_char) {
-    if head + 1 as ::core::ffi::c_int & QUEUESIZE - 1 as ::core::ffi::c_int == tail {
+    if head + 1 as i32 & QUEUESIZE - 1 as i32 == tail {
         (*plr).message = b"[Message unsent]\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char;
     } else {
         chatchars[head as usize] = c;
-        head = head + 1 as ::core::ffi::c_int & QUEUESIZE - 1 as ::core::ffi::c_int;
+        head = head + 1 as i32 & QUEUESIZE - 1 as i32;
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_dequeueChatChar() -> ::core::ffi::c_char {
+pub unsafe fn HU_dequeueChatChar() -> ::core::ffi::c_char {
     let mut c: ::core::ffi::c_char = 0;
     if head != tail {
         c = chatchars[tail as usize];
-        tail = tail + 1 as ::core::ffi::c_int & QUEUESIZE - 1 as ::core::ffi::c_int;
+        tail = tail + 1 as i32 & QUEUESIZE - 1 as i32;
     } else {
         c = 0 as ::core::ffi::c_char;
     }
     return c;
 }
-#[no_mangle]
-pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
+pub unsafe fn HU_Responder(mut ev: *mut event_t) -> bool {
     static mut lastmessage: [::core::ffi::c_char; 81] = [0; 81];
     let mut macromessage: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    let mut eatkey: boolean = false_0 as boolean;
-    static mut altdown: boolean = false_0 as boolean;
-    let mut c: ::core::ffi::c_uchar = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    let mut numplayers: ::core::ffi::c_int = 0;
-    static mut num_nobrainers: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    numplayers = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    let mut eatkey: bool = false;
+    static mut altdown: bool = false;
+    let mut c: u8 = 0;
+    let mut i: i32 = 0;
+    let mut numplayers: i32 = 0;
+    static mut num_nobrainers: i32 = 0 as i32;
+    numplayers = 0 as i32;
+    i = 0 as i32;
     while i < MAXPLAYERS {
         numplayers = (numplayers as boolean).wrapping_add(playeringame[i as usize])
-            as ::core::ffi::c_int as ::core::ffi::c_int;
+            as i32 as i32;
         i += 1;
     }
     if (*ev).data1 == KEY_RSHIFT {
-        return false_0 as boolean
+        return false
     } else if (*ev).data1 == KEY_RALT || (*ev).data1 == KEY_LALT {
-        altdown = ((*ev).type_0 as ::core::ffi::c_uint
-            == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint)
-            as ::core::ffi::c_int as boolean;
-        return false_0 as boolean;
+        altdown = (*ev).type_0 as u32
+            == ev_keydown as i32 as u32;
+        return false;
     }
-    if (*ev).type_0 as ::core::ffi::c_uint
-        != ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*ev).type_0 as u32
+        != ev_keydown as i32 as u32
     {
-        return false_0 as boolean;
+        return false;
     }
-    if chat_on == 0 {
+    if !chat_on {
         if (*ev).data1 == key_message_refresh {
-            message_on = true_0 as boolean;
+            message_on = true;
             message_counter = HU_MSGTIMEOUT;
-            eatkey = true_0 as boolean;
-        } else if netgame != 0 && (*ev).data2 == key_multi_msg {
-            chat_on = true_0 as boolean;
+            eatkey = true;
+        } else if netgame && (*ev).data2 == key_multi_msg {
+            chat_on = true;
             eatkey = chat_on;
             HUlib_resetIText(&raw mut w_chat);
             HU_queueChatChar(HU_BROADCAST as ::core::ffi::c_char);
-        } else if netgame != 0 && numplayers > 2 as ::core::ffi::c_int {
-            i = 0 as ::core::ffi::c_int;
+        } else if netgame && numplayers > 2 as i32 {
+            i = 0 as i32;
             while i < MAXPLAYERS {
                 if (*ev).data2 == key_multi_msgplayer[i as usize] {
                     if playeringame[i as usize] != 0 && i != consoleplayer {
-                        chat_on = true_0 as boolean;
+                        chat_on = true;
                         eatkey = chat_on;
                         HUlib_resetIText(&raw mut w_chat);
                         HU_queueChatChar(
-                            (i + 1 as ::core::ffi::c_int) as ::core::ffi::c_char,
+                            (i + 1 as i32) as ::core::ffi::c_char,
                         );
                         break;
                     } else if i == consoleplayer {
                         num_nobrainers += 1;
-                        if num_nobrainers < 3 as ::core::ffi::c_int {
+                        if num_nobrainers < 3 as i32 {
                             (*plr).message = b"You mumble to yourself\0" as *const u8
                                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-                        } else if num_nobrainers < 6 as ::core::ffi::c_int {
+                        } else if num_nobrainers < 6 as i32 {
                             (*plr).message = b"Who's there?\0" as *const u8
                                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-                        } else if num_nobrainers < 9 as ::core::ffi::c_int {
+                        } else if num_nobrainers < 9 as i32 {
                             (*plr).message = b"You scare yourself\0" as *const u8
                                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-                        } else if num_nobrainers < 32 as ::core::ffi::c_int {
+                        } else if num_nobrainers < 32 as i32 {
                             (*plr).message = b"You start to rave\0" as *const u8
                                 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
                         } else {
@@ -3134,10 +2220,10 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
                 i += 1;
             }
         }
-    } else if altdown != 0 {
-        c = ((*ev).data1 - '0' as i32) as ::core::ffi::c_uchar;
-        if c as ::core::ffi::c_int > 9 as ::core::ffi::c_int {
-            return false_0 as boolean;
+    } else if altdown {
+        c = ((*ev).data1 - '0' as i32) as u8;
+        if c as i32 > 9 as i32 {
+            return false;
         }
         macromessage = chat_macros[c as usize];
         HU_queueChatChar(KEY_ENTER as ::core::ffi::c_char);
@@ -3147,32 +2233,33 @@ pub unsafe extern "C" fn HU_Responder(mut ev: *mut event_t) -> boolean {
             HU_queueChatChar(*fresh2);
         }
         HU_queueChatChar(KEY_ENTER as ::core::ffi::c_char);
-        chat_on = false_0 as boolean;
+        chat_on = false;
         M_StringCopy(
             &raw mut lastmessage as *mut ::core::ffi::c_char,
             chat_macros[c as usize],
             ::core::mem::size_of::<[::core::ffi::c_char; 81]>() as size_t,
         );
         (*plr).message = &raw mut lastmessage as *mut ::core::ffi::c_char;
-        eatkey = true_0 as boolean;
+        eatkey = true;
     } else {
-        c = (*ev).data2 as ::core::ffi::c_uchar;
-        eatkey = HUlib_keyInIText(&raw mut w_chat, c);
-        if eatkey != 0 {
+        c = (*ev).data2 as u8;
+        eatkey = HUlib_keyInIText(&raw mut w_chat, c) != 0;
+        if eatkey {
             HU_queueChatChar(c as ::core::ffi::c_char);
         }
-        if c as ::core::ffi::c_int == KEY_ENTER {
-            chat_on = false_0 as boolean;
-            if w_chat.l.len != 0 {
+        if c as i32 == KEY_ENTER {
+            chat_on = false;
+            if !w_chat.l.l.is_empty() {
+                let w_chat_l_cstring = ::std::ffi::CString::new(w_chat.l.l.as_str()).unwrap();
                 M_StringCopy(
                     &raw mut lastmessage as *mut ::core::ffi::c_char,
-                    &raw mut w_chat.l.l as *mut ::core::ffi::c_char,
+                    w_chat_l_cstring.as_ptr(),
                     ::core::mem::size_of::<[::core::ffi::c_char; 81]>() as size_t,
                 );
                 (*plr).message = &raw mut lastmessage as *mut ::core::ffi::c_char;
             }
-        } else if c as ::core::ffi::c_int == KEY_ESCAPE {
-            chat_on = false_0 as boolean;
+        } else if c as i32 == KEY_ESCAPE {
+            chat_on = false;
         }
     }
     return eatkey;

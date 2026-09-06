@@ -1,73 +1,44 @@
-extern "C" {
-    fn strrchr(
-        __s: *const ::core::ffi::c_char,
-        __c: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_char;
-    fn strcasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-}
-pub type boolean = ::core::ffi::c_uint;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const DIR_SEPARATOR: ::core::ffi::c_int = '/' as i32;
-#[no_mangle]
-pub static mut myargc: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut myargv: *mut *mut ::core::ffi::c_char = ::core::ptr::null::<
-    *mut ::core::ffi::c_char,
->() as *mut *mut ::core::ffi::c_char;
-#[no_mangle]
-pub unsafe extern "C" fn M_CheckParmWithArgs(
-    mut check: *mut ::core::ffi::c_char,
-    mut num_args: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 1 as ::core::ffi::c_int;
-    while i < myargc - num_args {
-        if strcasecmp(check, *myargv.offset(i as isize)) == 0 {
+pub const DIR_SEPARATOR: char = '/';
+pub static mut myargv: Vec<::std::ffi::CString> = Vec::new();
+pub unsafe fn M_CheckParmWithArgs(
+    check: &str,
+    mut num_args: i32,
+) -> i32 {
+    let mut i: i32 = 1 as i32;
+    while i < myargv.len() as i32 - num_args {
+        if myargv[i as usize]
+            .to_str()
+            .map_or(false, |arg| arg.eq_ignore_ascii_case(check))
+        {
             return i;
         }
         i += 1;
     }
-    return 0 as ::core::ffi::c_int;
+    return 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_ParmExists(mut check: *mut ::core::ffi::c_char) -> boolean {
-    return (M_CheckParm(check) != 0 as ::core::ffi::c_int) as ::core::ffi::c_int
-        as boolean;
+pub unsafe fn M_ParmExists(check: &str) -> bool {
+    return M_CheckParm(check) != 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_CheckParm(
-    mut check: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    return M_CheckParmWithArgs(check, 0 as ::core::ffi::c_int);
+pub unsafe fn M_CheckParm(check: &str) -> i32 {
+    return M_CheckParmWithArgs(check, 0 as i32);
 }
-unsafe extern "C" fn LoadResponseFile(mut argv_index: ::core::ffi::c_int) {}
-#[no_mangle]
-pub unsafe extern "C" fn M_FindResponseFile() {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 1 as ::core::ffi::c_int;
-    while i < myargc {
-        if *(*myargv.offset(i as isize)).offset(0 as ::core::ffi::c_int as isize)
-            as ::core::ffi::c_int == '@' as i32
-        {
+unsafe fn LoadResponseFile(mut argv_index: i32) {}
+pub unsafe fn M_FindResponseFile() {
+    let mut i: i32 = 1 as i32;
+    while i < myargv.len() as i32 {
+        if myargv[i as usize].as_bytes().first() == Some(&b'@') {
             LoadResponseFile(i);
         }
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_GetExecutableName() -> *mut ::core::ffi::c_char {
-    let mut sep: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    sep = strrchr(*myargv.offset(0 as ::core::ffi::c_int as isize), DIR_SEPARATOR);
-    if sep.is_null() {
-        return *myargv.offset(0 as ::core::ffi::c_int as isize)
-    } else {
-        return sep.offset(1 as ::core::ffi::c_int as isize)
-    };
+pub unsafe fn M_GetExecutableName() -> &'static str {
+    let arg0 = myargv[0].to_str().unwrap();
+    match arg0.rfind(DIR_SEPARATOR) {
+        Some(pos) => &arg0[pos + 1..],
+        None => arg0,
+    }
 }

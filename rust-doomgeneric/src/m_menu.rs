@@ -1,11 +1,76 @@
+use crate::src::i_system::FILE;
+use crate::src::hu_lib::patch_t;
+use crate::src::d_event::event_t;
+use crate::src::p_mobj::{actionf_t};
+use crate::src::i_system::I_Error;
+use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::i_timer::I_WaitVBL;
+use crate::src::d_main::D_StartTitle;
+use crate::src::i_input::vanilla_keyboard_mapping;
+use crate::src::i_video::usegamma;
+use crate::src::r_main::R_SetViewSize;
+use crate::src::g_game::G_SaveGame;
+use crate::src::g_game::G_ScreenShot;
+use crate::src::m_controls::key_menu_activate;
+use crate::src::m_controls::key_menu_up;
+use crate::src::m_controls::key_menu_down;
+use crate::src::m_controls::key_menu_left;
+use crate::src::m_controls::key_menu_right;
+use crate::src::m_controls::key_menu_back;
+use crate::src::m_controls::key_menu_forward;
+use crate::src::m_controls::key_menu_confirm;
+use crate::src::m_controls::key_menu_abort;
+use crate::src::m_controls::key_menu_help;
+use crate::src::m_controls::key_menu_save;
+use crate::src::m_controls::key_menu_load;
+use crate::src::m_controls::key_menu_volume;
+use crate::src::m_controls::key_menu_detail;
+use crate::src::m_controls::key_menu_qsave;
+use crate::src::m_controls::key_menu_endgame;
+use crate::src::m_controls::key_menu_messages;
+use crate::src::m_controls::key_menu_qload;
+use crate::src::m_controls::key_menu_quit;
+use crate::src::m_controls::key_menu_gamma;
+use crate::src::m_controls::key_menu_incscreen;
+use crate::src::m_controls::key_menu_decscreen;
+use crate::src::m_controls::key_menu_screenshot;
+use crate::src::m_controls::joybmenu;
+use crate::src::s_sound::S_SetMusicVolume;
+use crate::src::s_sound::S_SetSfxVolume;
+use crate::src::d_main::devparm;
+use crate::src::hu_stuff::message_dontfuckwithme;
+use crate::src::hu_stuff::chat_on;
+use crate::src::g_game::G_LoadGame;
+use crate::src::g_game::G_DeferedInitNew;
+use crate::src::g_game::usergame;
+use crate::src::g_game::testcontrols;
+use crate::src::hu_stuff::hu_font;
+use crate::src::i_system::I_Quit;
+use crate::src::s_sound::sfxVolume;
+use crate::src::s_sound::musicVolume;
+use crate::src::g_game::gamestate;
+use crate::src::i_video::I_SetPalette;
+use crate::src::p_saveg::P_SaveGameFile;
+use crate::src::v_video::V_DrawPatchDirect;
+use crate::src::d_loop::gametic;
+use crate::src::g_game::demoplayback;
+use crate::src::doomstat::gamemission;
+use crate::src::am_map::automapactive;
+use crate::src::m_misc::M_StringCopy;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
+use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
+use crate::src::s_sound::S_StartSound;
+use crate::src::i_timer::I_GetTime;
+
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     fn __ctype_toupper_loc() -> *mut *const __int32_t;
-    fn toupper(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    fn toupper(__c: i32) -> i32;
     static mut stderr: *mut FILE;
-    fn fclose(__stream: *mut FILE) -> ::core::ffi::c_int;
+    fn fclose(__stream: *mut FILE) -> i32;
     fn fopen(
         __filename: *const ::core::ffi::c_char,
         __modes: *const ::core::ffi::c_char,
@@ -14,148 +79,32 @@ extern "C" {
         __stream: *mut FILE,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn fread(
         __ptr: *mut ::core::ffi::c_void,
         __size: size_t,
         __n: size_t,
         __stream: *mut FILE,
-    ) -> ::core::ffi::c_ulong;
+    ) -> u64;
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn I_GetTime() -> ::core::ffi::c_int;
-    fn I_WaitVBL(count: ::core::ffi::c_int);
-    static mut doom1_endmsg: [*mut ::core::ffi::c_char; 0];
-    static mut doom2_endmsg: [*mut ::core::ffi::c_char; 0];
-    fn D_StartTitle();
-    fn I_Quit();
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    fn I_SetPalette(palette: *mut byte);
-    static mut vanilla_keyboard_mapping: ::core::ffi::c_int;
-    static mut usegamma: ::core::ffi::c_int;
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
-    fn V_DrawPatchDirect(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        patch: *mut patch_t,
-    );
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn R_SetViewSize(blocks: ::core::ffi::c_int, detail_0: ::core::ffi::c_int);
-    fn G_DeferedInitNew(
-        skill: skill_t,
-        episode: ::core::ffi::c_int,
-        map: ::core::ffi::c_int,
-    );
-    fn G_LoadGame(name: *mut ::core::ffi::c_char);
-    fn G_SaveGame(slot: ::core::ffi::c_int, description: *mut ::core::ffi::c_char);
-    fn G_ScreenShot();
-    static mut key_menu_activate: ::core::ffi::c_int;
-    static mut key_menu_up: ::core::ffi::c_int;
-    static mut key_menu_down: ::core::ffi::c_int;
-    static mut key_menu_left: ::core::ffi::c_int;
-    static mut key_menu_right: ::core::ffi::c_int;
-    static mut key_menu_back: ::core::ffi::c_int;
-    static mut key_menu_forward: ::core::ffi::c_int;
-    static mut key_menu_confirm: ::core::ffi::c_int;
-    static mut key_menu_abort: ::core::ffi::c_int;
-    static mut key_menu_help: ::core::ffi::c_int;
-    static mut key_menu_save: ::core::ffi::c_int;
-    static mut key_menu_load: ::core::ffi::c_int;
-    static mut key_menu_volume: ::core::ffi::c_int;
-    static mut key_menu_detail: ::core::ffi::c_int;
-    static mut key_menu_qsave: ::core::ffi::c_int;
-    static mut key_menu_endgame: ::core::ffi::c_int;
-    static mut key_menu_messages: ::core::ffi::c_int;
-    static mut key_menu_qload: ::core::ffi::c_int;
-    static mut key_menu_quit: ::core::ffi::c_int;
-    static mut key_menu_gamma: ::core::ffi::c_int;
-    static mut key_menu_incscreen: ::core::ffi::c_int;
-    static mut key_menu_decscreen: ::core::ffi::c_int;
-    static mut key_menu_screenshot: ::core::ffi::c_int;
-    static mut joybmenu: ::core::ffi::c_int;
-    fn P_SaveGameFile(slot: ::core::ffi::c_int) -> *mut ::core::ffi::c_char;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    fn S_SetMusicVolume(volume: ::core::ffi::c_int);
-    fn S_SetSfxVolume(volume: ::core::ffi::c_int);
-    static mut gametic: ::core::ffi::c_int;
-    static mut devparm: boolean;
-    static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
-    static mut gameversion: GameVersion_t;
-    static mut netgame: boolean;
-    static mut sfxVolume: ::core::ffi::c_int;
-    static mut musicVolume: ::core::ffi::c_int;
-    static mut automapactive: boolean;
-    static mut testcontrols: boolean;
-    static mut consoleplayer: ::core::ffi::c_int;
-    static mut usergame: boolean;
-    static mut demoplayback: boolean;
-    static mut gamestate: gamestate_t;
-    static mut players: [player_t; 4];
-    static mut hu_font: [*mut patch_t; 63];
-    static mut message_dontfuckwithme: boolean;
-    static mut chat_on: boolean;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type __int32_t = i32;
-pub type __off_t = ::core::ffi::c_long;
-pub type __off64_t = ::core::ffi::c_long;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: ::core::ffi::c_int,
-    pub _IO_read_ptr: *mut ::core::ffi::c_char,
-    pub _IO_read_end: *mut ::core::ffi::c_char,
-    pub _IO_read_base: *mut ::core::ffi::c_char,
-    pub _IO_write_base: *mut ::core::ffi::c_char,
-    pub _IO_write_ptr: *mut ::core::ffi::c_char,
-    pub _IO_write_end: *mut ::core::ffi::c_char,
-    pub _IO_buf_base: *mut ::core::ffi::c_char,
-    pub _IO_buf_end: *mut ::core::ffi::c_char,
-    pub _IO_save_base: *mut ::core::ffi::c_char,
-    pub _IO_backup_base: *mut ::core::ffi::c_char,
-    pub _IO_save_end: *mut ::core::ffi::c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: ::core::ffi::c_int,
-    pub _flags2: ::core::ffi::c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: ::core::ffi::c_ushort,
-    pub _vtable_offset: ::core::ffi::c_schar,
-    pub _shortbuf: [::core::ffi::c_char; 1],
-    pub _lock: *mut ::core::ffi::c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut ::core::ffi::c_void,
-    pub __pad5: size_t,
-    pub _mode: ::core::ffi::c_int,
-    pub _unused2: [::core::ffi::c_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -166,13 +115,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -187,19 +136,19 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type skill_t = ::core::ffi::c_int;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type gamestate_t = ::core::ffi::c_uint;
+pub type gamestate_t = u32;
 pub const GS_DEMOSCREEN: gamestate_t = 3;
 pub const GS_FINALE: gamestate_t = 2;
 pub const GS_INTERMISSION: gamestate_t = 1;
 pub const GS_LEVEL: gamestate_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -211,45 +160,13 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -259,39 +176,15 @@ pub const PU_FREE: C2RustUnnamed = 4;
 pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -431,7 +324,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1400,18 +1293,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1550,190 +1432,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-pub type player_t = player_s;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMSFX: C2RustUnnamed_0 = 109;
 pub const sfx_radio: C2RustUnnamed_0 = 108;
 pub const sfx_skeatk: C2RustUnnamed_0 = 107;
@@ -1847,22 +1546,22 @@ pub const sfx_None: C2RustUnnamed_0 = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct menuitem_t {
-    pub status: ::core::ffi::c_short,
+    pub status: i16,
     pub name: [::core::ffi::c_char; 10],
-    pub routine: Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
+    pub routine: Option<unsafe extern "C" fn(i32) -> ()>,
     pub alphaKey: ::core::ffi::c_char,
 }
 pub type menu_t = menu_s;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct menu_s {
-    pub numitems: ::core::ffi::c_short,
+    pub numitems: i16,
     pub prevMenu: *mut menu_s,
     pub menuitems: *mut menuitem_t,
     pub routine: Option<unsafe extern "C" fn() -> ()>,
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub lastOn: ::core::ffi::c_short,
+    pub x: i16,
+    pub y: i16,
+    pub lastOn: i16,
 }
 pub const read2_end: C2RustUnnamed_6 = 1;
 pub const read1_end: C2RustUnnamed_5 = 1;
@@ -1883,32 +1582,32 @@ pub const ep_end: C2RustUnnamed_2 = 4;
 pub const main_end: C2RustUnnamed_1 = 6;
 pub const quitdoom: C2RustUnnamed_1 = 5;
 pub const readthis: C2RustUnnamed_1 = 4;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const savegame: C2RustUnnamed_1 = 3;
 pub const loadgame: C2RustUnnamed_1 = 2;
 pub const options: C2RustUnnamed_1 = 1;
 pub const newgame: C2RustUnnamed_1 = 0;
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const ep4: C2RustUnnamed_2 = 3;
 pub const ep3: C2RustUnnamed_2 = 2;
 pub const ep2: C2RustUnnamed_2 = 1;
-pub type C2RustUnnamed_3 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_3 = u32;
 pub const violence: C2RustUnnamed_3 = 3;
 pub const toorough: C2RustUnnamed_3 = 1;
 pub const killthings: C2RustUnnamed_3 = 0;
-pub type C2RustUnnamed_4 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_4 = u32;
 pub const soundvol: C2RustUnnamed_4 = 7;
 pub const option_empty2: C2RustUnnamed_4 = 6;
 pub const option_empty1: C2RustUnnamed_4 = 4;
 pub const endgame: C2RustUnnamed_4 = 0;
-pub type C2RustUnnamed_5 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_5 = u32;
 pub const rdthsempty1: C2RustUnnamed_5 = 0;
-pub type C2RustUnnamed_6 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_6 = u32;
 pub const rdthsempty2: C2RustUnnamed_6 = 0;
-pub type C2RustUnnamed_7 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_7 = u32;
 pub const sfx_empty2: C2RustUnnamed_7 = 3;
 pub const sfx_empty1: C2RustUnnamed_7 = 1;
-pub type C2RustUnnamed_8 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_8 = u32;
 pub const load6: C2RustUnnamed_8 = 5;
 pub const load5: C2RustUnnamed_8 = 4;
 pub const load4: C2RustUnnamed_8 = 3;
@@ -1918,124 +1617,88 @@ pub const load1: C2RustUnnamed_8 = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const KEY_ESCAPE: ::core::ffi::c_int = 27 as ::core::ffi::c_int;
-pub const KEY_ENTER: ::core::ffi::c_int = 13;
-pub const KEY_BACKSPACE: ::core::ffi::c_int = 127;
-pub const KEY_PAUSE: ::core::ffi::c_int = 0xff as ::core::ffi::c_int;
-pub const KEY_CAPSLOCK: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x3a as ::core::ffi::c_int;
-pub const KEY_NUMLOCK: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x45 as ::core::ffi::c_int;
-pub const KEY_SCRLCK: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x46 as ::core::ffi::c_int;
-pub const GAMMALVL0: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction OFF\0\0\0\0\0\0")
-};
-pub const GAMMALVL1: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction level 1\0\0")
-};
-pub const GAMMALVL2: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction level 2\0\0")
-};
-pub const GAMMALVL3: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction level 3\0\0")
-};
-pub const GAMMALVL4: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<
-        [u8; 26],
-        [::core::ffi::c_char; 26],
-    >(*b"Gamma correction level 4\0\0")
-};
-pub const EMPTYSTRING: [::core::ffi::c_char; 11] = unsafe {
-    ::core::mem::transmute::<[u8; 11], [::core::ffi::c_char; 11]>(*b"empty slot\0")
-};
-pub const NUM_QUITMESSAGES: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const HU_FONTSTART: ::core::ffi::c_int = '!' as i32;
-pub const HU_FONTEND: ::core::ffi::c_int = '_' as i32;
-pub const HU_FONTSIZE: ::core::ffi::c_int = HU_FONTEND - HU_FONTSTART
-    + 1 as ::core::ffi::c_int;
-pub const SAVESTRINGSIZE: ::core::ffi::c_int = 24 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const KEY_ESCAPE: i32 = 27 as i32;
+pub const KEY_ENTER: i32 = 13;
+pub const KEY_BACKSPACE: i32 = 127;
+pub const KEY_PAUSE: i32 = 0xff as i32;
+pub const KEY_CAPSLOCK: i32 = 0x80 as i32
+    + 0x3a as i32;
+pub const KEY_NUMLOCK: i32 = 0x80 as i32
+    + 0x45 as i32;
+pub const KEY_SCRLCK: i32 = 0x80 as i32
+    + 0x46 as i32;
+pub const GAMMALVL0: &str = "Gamma correction OFF\0";
+pub const GAMMALVL1: &str = "Gamma correction level 1\0";
+pub const GAMMALVL2: &str = "Gamma correction level 2\0";
+pub const GAMMALVL3: &str = "Gamma correction level 3\0";
+pub const GAMMALVL4: &str = "Gamma correction level 4\0";
+pub const EMPTYSTRING: &str = "empty slot\0";
+pub const NUM_QUITMESSAGES: i32 = 8 as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
+pub const HU_FONTSTART: i32 = '!' as i32;
+pub const HU_FONTEND: i32 = '_' as i32;
+pub const HU_FONTSIZE: i32 = HU_FONTEND - HU_FONTSTART
+    + 1 as i32;
+pub const SAVESTRINGSIZE: i32 = 24 as i32;
+pub static mut mouseSensitivity: i32 = 5 as i32;
+pub static mut showMessages: i32 = 1 as i32;
+pub static mut detailLevel: i32 = 0 as i32;
+pub static mut screenblocks: i32 = 10 as i32;
 #[no_mangle]
-pub static mut mouseSensitivity: ::core::ffi::c_int = 5 as ::core::ffi::c_int;
+pub static mut screenSize: i32 = 0;
 #[no_mangle]
-pub static mut showMessages: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
+pub static mut quickSaveSlot: i32 = 0;
 #[no_mangle]
-pub static mut detailLevel: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub static mut messageToPrint: i32 = 0;
+pub static mut messageString: String = String::new();
 #[no_mangle]
-pub static mut screenblocks: ::core::ffi::c_int = 10 as ::core::ffi::c_int;
+pub static mut messx: i32 = 0;
 #[no_mangle]
-pub static mut screenSize: ::core::ffi::c_int = 0;
+pub static mut messy: i32 = 0;
 #[no_mangle]
-pub static mut quickSaveSlot: ::core::ffi::c_int = 0;
+pub static mut messageLastMenuActive: i32 = 0;
 #[no_mangle]
-pub static mut messageToPrint: ::core::ffi::c_int = 0;
+pub static mut messageNeedsInput: bool = false;
 #[no_mangle]
-pub static mut messageString: *mut ::core::ffi::c_char = ::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char;
+pub static mut messageRoutine: Option<unsafe extern "C" fn(i32) -> ()> = None;
+pub static gammamsg: [&str; 5] = [GAMMALVL0, GAMMALVL1, GAMMALVL2, GAMMALVL3, GAMMALVL4];
 #[no_mangle]
-pub static mut messx: ::core::ffi::c_int = 0;
+pub static mut saveStringEnter: i32 = 0;
 #[no_mangle]
-pub static mut messy: ::core::ffi::c_int = 0;
+pub static mut saveSlot: i32 = 0;
 #[no_mangle]
-pub static mut messageLastMenuActive: ::core::ffi::c_int = 0;
+pub static mut saveCharIndex: i32 = 0;
 #[no_mangle]
-pub static mut messageNeedsInput: boolean = 0;
-#[no_mangle]
-pub static mut messageRoutine: Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()> = None;
-#[no_mangle]
-pub static mut gammamsg: [[::core::ffi::c_char; 26]; 5] = [
-    GAMMALVL0,
-    GAMMALVL1,
-    GAMMALVL2,
-    GAMMALVL3,
-    GAMMALVL4,
+pub static mut saveOldString: String = String::new();
+pub static mut inhelpscreens: bool = false;
+pub static mut menuactive: bool = false;
+pub const SKULLXOFF: i32 = -(32 as i32);
+pub const LINEHEIGHT: i32 = 16 as i32;
+pub static mut savegamestrings: [String; 10] = [
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
+    String::new(),
 ];
-#[no_mangle]
-pub static mut saveStringEnter: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut saveSlot: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut saveCharIndex: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut saveOldString: [::core::ffi::c_char; 24] = [0; 24];
-#[no_mangle]
-pub static mut inhelpscreens: boolean = 0;
-#[no_mangle]
-pub static mut menuactive: boolean = 0;
-pub const SKULLXOFF: ::core::ffi::c_int = -(32 as ::core::ffi::c_int);
-pub const LINEHEIGHT: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-#[no_mangle]
-pub static mut savegamestrings: [[::core::ffi::c_char; 24]; 10] = [[0; 24]; 10];
 #[no_mangle]
 pub static mut endstring: [::core::ffi::c_char; 160] = [0; 160];
 #[no_mangle]
-pub static mut itemOn: ::core::ffi::c_short = 0;
+pub static mut itemOn: i16 = 0;
 #[no_mangle]
-pub static mut skullAnimCounter: ::core::ffi::c_short = 0;
+pub static mut skullAnimCounter: i16 = 0;
 #[no_mangle]
-pub static mut whichSkull: ::core::ffi::c_short = 0;
+pub static mut whichSkull: i16 = 0;
 #[no_mangle]
-pub static mut skullName: [*mut ::core::ffi::c_char; 2] = [
-    b"M_SKULL1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"M_SKULL2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-];
+pub static skullName: [&str; 2] = ["M_SKULL1", "M_SKULL2"];
 #[no_mangle]
 pub static mut currentMenu: *mut menu_t = ::core::ptr::null::<menu_t>() as *mut menu_t;
 #[no_mangle]
@@ -2044,57 +1707,57 @@ pub static mut main_e: C2RustUnnamed_1 = newgame;
 pub static mut MainMenu: [menuitem_t; 6] = unsafe {
     [
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_NGAME\0\0\0"),
-            routine: Some(M_NewGame as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_NewGame as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'n' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_OPTION\0\0"),
-            routine: Some(M_Options as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_Options as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'o' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_LOADG\0\0\0"),
-            routine: Some(M_LoadGame as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_LoadGame as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'l' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_SAVEG\0\0\0"),
-            routine: Some(M_SaveGame as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_SaveGame as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 's' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_RDTHIS\0\0"),
-            routine: Some(M_ReadThis as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_ReadThis as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'r' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_QUITG\0\0\0"),
-            routine: Some(M_QuitDOOM as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_QuitDOOM as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'q' as i32 as ::core::ffi::c_char,
         },
     ]
@@ -2102,13 +1765,13 @@ pub static mut MainMenu: [menuitem_t; 6] = unsafe {
 #[no_mangle]
 pub static mut MainDef: menu_t = unsafe {
     menu_s {
-        numitems: main_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: main_end as i32 as i16,
         prevMenu: ::core::ptr::null::<menu_s>() as *mut menu_s,
         menuitems: &raw const MainMenu as *mut menuitem_t,
         routine: Some(M_DrawMainMenu as unsafe extern "C" fn() -> ()),
-        x: 97 as ::core::ffi::c_short,
-        y: 64 as ::core::ffi::c_short,
-        lastOn: 0 as ::core::ffi::c_short,
+        x: 97 as i16,
+        y: 64 as i16,
+        lastOn: 0 as i16,
     }
 };
 #[no_mangle]
@@ -2117,39 +1780,39 @@ pub static mut episodes_e: C2RustUnnamed_2 = ep1;
 pub static mut EpisodeMenu: [menuitem_t; 4] = unsafe {
     [
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_EPI1\0\0\0\0"),
-            routine: Some(M_Episode as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'k' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_EPI2\0\0\0\0"),
-            routine: Some(M_Episode as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 't' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_EPI3\0\0\0\0"),
-            routine: Some(M_Episode as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'i' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_EPI4\0\0\0\0"),
-            routine: Some(M_Episode as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 't' as i32 as ::core::ffi::c_char,
         },
     ]
@@ -2157,13 +1820,13 @@ pub static mut EpisodeMenu: [menuitem_t; 4] = unsafe {
 #[no_mangle]
 pub static mut EpiDef: menu_t = unsafe {
     menu_s {
-        numitems: ep_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: ep_end as i32 as i16,
         prevMenu: &raw const MainDef as *mut menu_s,
         menuitems: &raw const EpisodeMenu as *mut menuitem_t,
         routine: Some(M_DrawEpisode as unsafe extern "C" fn() -> ()),
-        x: 48 as ::core::ffi::c_short,
-        y: 63 as ::core::ffi::c_short,
-        lastOn: ep1 as ::core::ffi::c_int as ::core::ffi::c_short,
+        x: 48 as i16,
+        y: 63 as i16,
+        lastOn: ep1 as i32 as i16,
     }
 };
 #[no_mangle]
@@ -2172,57 +1835,57 @@ pub static mut newgame_e: C2RustUnnamed_3 = killthings;
 pub static mut NewGameMenu: [menuitem_t; 5] = unsafe {
     [
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_JKILL\0\0\0"),
             routine: Some(
-                M_ChooseSkill as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_ChooseSkill as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 'i' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_ROUGH\0\0\0"),
             routine: Some(
-                M_ChooseSkill as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_ChooseSkill as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 'h' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_HURT\0\0\0\0"),
             routine: Some(
-                M_ChooseSkill as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_ChooseSkill as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 'h' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_ULTRA\0\0\0"),
             routine: Some(
-                M_ChooseSkill as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_ChooseSkill as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 'u' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_NMARE\0\0\0"),
             routine: Some(
-                M_ChooseSkill as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_ChooseSkill as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 'n' as i32 as ::core::ffi::c_char,
         },
@@ -2231,13 +1894,13 @@ pub static mut NewGameMenu: [menuitem_t; 5] = unsafe {
 #[no_mangle]
 pub static mut NewDef: menu_t = unsafe {
     menu_s {
-        numitems: newg_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: newg_end as i32 as i16,
         prevMenu: &raw const EpiDef as *mut menu_s,
         menuitems: &raw const NewGameMenu as *mut menuitem_t,
         routine: Some(M_DrawNewGame as unsafe extern "C" fn() -> ()),
-        x: 48 as ::core::ffi::c_short,
-        y: 63 as ::core::ffi::c_short,
-        lastOn: hurtme as ::core::ffi::c_int as ::core::ffi::c_short,
+        x: 48 as i16,
+        y: 63 as i16,
+        lastOn: hurtme as i32 as i16,
     }
 };
 #[no_mangle]
@@ -2246,49 +1909,49 @@ pub static mut options_e: C2RustUnnamed_4 = endgame;
 pub static mut OptionsMenu: [menuitem_t; 8] = unsafe {
     [
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_ENDGAM\0\0"),
-            routine: Some(M_EndGame as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_EndGame as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'e' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_MESSG\0\0\0"),
             routine: Some(
-                M_ChangeMessages as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_ChangeMessages as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 'm' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_DETAIL\0\0"),
             routine: Some(
-                M_ChangeDetail as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_ChangeDetail as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 'g' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 2 as ::core::ffi::c_short,
+            status: 2 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_SCRNSZ\0\0"),
             routine: Some(
-                M_SizeDisplay as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_SizeDisplay as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 's' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: -(1 as ::core::ffi::c_int) as ::core::ffi::c_short,
+            status: -(1 as i32) as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
@@ -2297,18 +1960,18 @@ pub static mut OptionsMenu: [menuitem_t; 8] = unsafe {
             alphaKey: '\0' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 2 as ::core::ffi::c_short,
+            status: 2 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_MSENS\0\0\0"),
             routine: Some(
-                M_ChangeSensitivity as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_ChangeSensitivity as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 'm' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: -(1 as ::core::ffi::c_int) as ::core::ffi::c_short,
+            status: -(1 as i32) as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
@@ -2317,12 +1980,12 @@ pub static mut OptionsMenu: [menuitem_t; 8] = unsafe {
             alphaKey: '\0' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_SVOL\0\0\0\0"),
-            routine: Some(M_Sound as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_Sound as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 's' as i32 as ::core::ffi::c_char,
         },
     ]
@@ -2330,13 +1993,13 @@ pub static mut OptionsMenu: [menuitem_t; 8] = unsafe {
 #[no_mangle]
 pub static mut OptionsDef: menu_t = unsafe {
     menu_s {
-        numitems: opt_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: opt_end as i32 as i16,
         prevMenu: &raw const MainDef as *mut menu_s,
         menuitems: &raw const OptionsMenu as *mut menuitem_t,
         routine: Some(M_DrawOptions as unsafe extern "C" fn() -> ()),
-        x: 60 as ::core::ffi::c_short,
-        y: 37 as ::core::ffi::c_short,
-        lastOn: 0 as ::core::ffi::c_short,
+        x: 60 as i16,
+        y: 37 as i16,
+        lastOn: 0 as i16,
     }
 };
 #[no_mangle]
@@ -2345,12 +2008,12 @@ pub static mut read_e: C2RustUnnamed_5 = rdthsempty1;
 pub static mut ReadMenu1: [menuitem_t; 1] = unsafe {
     [
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
-            routine: Some(M_ReadThis2 as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_ReadThis2 as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 0 as ::core::ffi::c_char,
         },
     ]
@@ -2358,13 +2021,13 @@ pub static mut ReadMenu1: [menuitem_t; 1] = unsafe {
 #[no_mangle]
 pub static mut ReadDef1: menu_t = unsafe {
     menu_s {
-        numitems: read1_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: read1_end as i32 as i16,
         prevMenu: &raw const MainDef as *mut menu_s,
         menuitems: &raw const ReadMenu1 as *mut menuitem_t,
         routine: Some(M_DrawReadThis1 as unsafe extern "C" fn() -> ()),
-        x: 280 as ::core::ffi::c_short,
-        y: 185 as ::core::ffi::c_short,
-        lastOn: 0 as ::core::ffi::c_short,
+        x: 280 as i16,
+        y: 185 as i16,
+        lastOn: 0 as i16,
     }
 };
 #[no_mangle]
@@ -2373,13 +2036,13 @@ pub static mut read_e2: C2RustUnnamed_6 = rdthsempty2;
 pub static mut ReadMenu2: [menuitem_t; 1] = unsafe {
     [
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_FinishReadThis as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_FinishReadThis as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: 0 as ::core::ffi::c_char,
         },
@@ -2388,13 +2051,13 @@ pub static mut ReadMenu2: [menuitem_t; 1] = unsafe {
 #[no_mangle]
 pub static mut ReadDef2: menu_t = unsafe {
     menu_s {
-        numitems: read2_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: read2_end as i32 as i16,
         prevMenu: &raw const ReadDef1 as *mut menu_s,
         menuitems: &raw const ReadMenu2 as *mut menuitem_t,
         routine: Some(M_DrawReadThis2 as unsafe extern "C" fn() -> ()),
-        x: 330 as ::core::ffi::c_short,
-        y: 175 as ::core::ffi::c_short,
-        lastOn: 0 as ::core::ffi::c_short,
+        x: 330 as i16,
+        y: 175 as i16,
+        lastOn: 0 as i16,
     }
 };
 #[no_mangle]
@@ -2403,16 +2066,16 @@ pub static mut sound_e: C2RustUnnamed_7 = sfx_vol;
 pub static mut SoundMenu: [menuitem_t; 4] = unsafe {
     [
         menuitem_t {
-            status: 2 as ::core::ffi::c_short,
+            status: 2 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_SFXVOL\0\0"),
-            routine: Some(M_SfxVol as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_SfxVol as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 's' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: -(1 as ::core::ffi::c_int) as ::core::ffi::c_short,
+            status: -(1 as i32) as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
@@ -2421,16 +2084,16 @@ pub static mut SoundMenu: [menuitem_t; 4] = unsafe {
             alphaKey: '\0' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 2 as ::core::ffi::c_short,
+            status: 2 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"M_MUSVOL\0\0"),
-            routine: Some(M_MusicVol as unsafe extern "C" fn(::core::ffi::c_int) -> ()),
+            routine: Some(M_MusicVol as unsafe extern "C" fn(i32) -> ()),
             alphaKey: 'm' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: -(1 as ::core::ffi::c_int) as ::core::ffi::c_short,
+            status: -(1 as i32) as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
@@ -2443,13 +2106,13 @@ pub static mut SoundMenu: [menuitem_t; 4] = unsafe {
 #[no_mangle]
 pub static mut SoundDef: menu_t = unsafe {
     menu_s {
-        numitems: sound_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: sound_end as i32 as i16,
         prevMenu: &raw const OptionsDef as *mut menu_s,
         menuitems: &raw const SoundMenu as *mut menuitem_t,
         routine: Some(M_DrawSound as unsafe extern "C" fn() -> ()),
-        x: 80 as ::core::ffi::c_short,
-        y: 64 as ::core::ffi::c_short,
-        lastOn: 0 as ::core::ffi::c_short,
+        x: 80 as i16,
+        y: 64 as i16,
+        lastOn: 0 as i16,
     }
 };
 #[no_mangle]
@@ -2458,68 +2121,68 @@ pub static mut load_e: C2RustUnnamed_8 = load1;
 pub static mut LoadMenu: [menuitem_t; 6] = unsafe {
     [
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_LoadSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_LoadSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '1' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_LoadSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_LoadSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '2' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_LoadSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_LoadSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '3' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_LoadSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_LoadSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '4' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_LoadSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_LoadSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '5' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_LoadSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_LoadSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '6' as i32 as ::core::ffi::c_char,
         },
@@ -2528,81 +2191,81 @@ pub static mut LoadMenu: [menuitem_t; 6] = unsafe {
 #[no_mangle]
 pub static mut LoadDef: menu_t = unsafe {
     menu_s {
-        numitems: load_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: load_end as i32 as i16,
         prevMenu: &raw const MainDef as *mut menu_s,
         menuitems: &raw const LoadMenu as *mut menuitem_t,
         routine: Some(M_DrawLoad as unsafe extern "C" fn() -> ()),
-        x: 80 as ::core::ffi::c_short,
-        y: 54 as ::core::ffi::c_short,
-        lastOn: 0 as ::core::ffi::c_short,
+        x: 80 as i16,
+        y: 54 as i16,
+        lastOn: 0 as i16,
     }
 };
 #[no_mangle]
 pub static mut SaveMenu: [menuitem_t; 6] = unsafe {
     [
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_SaveSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_SaveSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '1' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_SaveSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_SaveSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '2' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_SaveSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_SaveSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '3' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_SaveSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_SaveSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '4' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_SaveSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_SaveSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '5' as i32 as ::core::ffi::c_char,
         },
         menuitem_t {
-            status: 1 as ::core::ffi::c_short,
+            status: 1 as i16,
             name: ::core::mem::transmute::<
                 [u8; 10],
                 [::core::ffi::c_char; 10],
             >(*b"\0\0\0\0\0\0\0\0\0\0"),
             routine: Some(
-                M_SaveSelect as unsafe extern "C" fn(::core::ffi::c_int) -> (),
+                M_SaveSelect as unsafe extern "C" fn(i32) -> (),
             ),
             alphaKey: '6' as i32 as ::core::ffi::c_char,
         },
@@ -2611,22 +2274,22 @@ pub static mut SaveMenu: [menuitem_t; 6] = unsafe {
 #[no_mangle]
 pub static mut SaveDef: menu_t = unsafe {
     menu_s {
-        numitems: load_end as ::core::ffi::c_int as ::core::ffi::c_short,
+        numitems: load_end as i32 as i16,
         prevMenu: &raw const MainDef as *mut menu_s,
         menuitems: &raw const SaveMenu as *mut menuitem_t,
         routine: Some(M_DrawSave as unsafe extern "C" fn() -> ()),
-        x: 80 as ::core::ffi::c_short,
-        y: 54 as ::core::ffi::c_short,
-        lastOn: 0 as ::core::ffi::c_short,
+        x: 80 as i16,
+        y: 54 as i16,
+        lastOn: 0 as i16,
     }
 };
 #[no_mangle]
 pub unsafe extern "C" fn M_ReadSaveStrings() {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut name: [::core::ffi::c_char; 256] = [0; 256];
-    i = 0 as ::core::ffi::c_int;
-    while i < load_end as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < load_end as i32 {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
             P_SaveGameFile(i),
@@ -2637,96 +2300,83 @@ pub unsafe extern "C" fn M_ReadSaveStrings() {
             b"rb\0" as *const u8 as *const ::core::ffi::c_char,
         ) as *mut FILE;
         if handle.is_null() {
-            M_StringCopy(
-                &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                    .offset(i as isize) as *mut ::core::ffi::c_char,
-                EMPTYSTRING.as_ptr(),
-                SAVESTRINGSIZE as size_t,
-            );
-            LoadMenu[i as usize].status = 0 as ::core::ffi::c_short;
+            savegamestrings[i as usize] = EMPTYSTRING.trim_end_matches('\0').to_string();
+            LoadMenu[i as usize].status = 0 as i16;
         } else {
+            let mut buf: [u8; 24] = [0; 24];
             fread(
-                (&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                    .offset(i as isize) as *mut [::core::ffi::c_char; 24]
-                    as *mut ::core::ffi::c_void,
+                buf.as_mut_ptr() as *mut ::core::ffi::c_void,
                 1 as size_t,
                 SAVESTRINGSIZE as size_t,
                 handle,
             );
+            let len = buf.iter().position(|&b| b == 0).unwrap_or(buf.len());
+            savegamestrings[i as usize] = String::from_utf8_lossy(&buf[..len]).into_owned();
             fclose(handle);
-            LoadMenu[i as usize].status = 1 as ::core::ffi::c_short;
+            LoadMenu[i as usize].status = 1 as i16;
         }
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawLoad() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     V_DrawPatchDirect(
-        72 as ::core::ffi::c_int,
-        28 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_LOADG\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        72 as i32,
+        28 as i32,
+        W_CacheLumpName("M_LOADG",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < load_end as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < load_end as i32 {
         M_DrawSaveLoadBorder(
-            LoadDef.x as ::core::ffi::c_int,
-            LoadDef.y as ::core::ffi::c_int + LINEHEIGHT * i,
+            LoadDef.x as i32,
+            LoadDef.y as i32 + LINEHEIGHT * i,
         );
         M_WriteText(
-            LoadDef.x as ::core::ffi::c_int,
-            LoadDef.y as ::core::ffi::c_int + LINEHEIGHT * i,
-            &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                .offset(i as isize) as *mut ::core::ffi::c_char,
+            LoadDef.x as i32,
+            LoadDef.y as i32 + LINEHEIGHT * i,
+            &savegamestrings[i as usize],
         );
         i += 1;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawSaveLoadBorder(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
+    mut x: i32,
+    mut y: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     V_DrawPatchDirect(
-        x - 8 as ::core::ffi::c_int,
-        y + 7 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_LSLEFT\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        x - 8 as i32,
+        y + 7 as i32,
+        W_CacheLumpName("M_LSLEFT",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < 24 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 24 as i32 {
         V_DrawPatchDirect(
             x,
-            y + 7 as ::core::ffi::c_int,
-            W_CacheLumpName(
-                b"M_LSCNTR\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                PU_CACHE as ::core::ffi::c_int,
+            y + 7 as i32,
+            W_CacheLumpName("M_LSCNTR",
+                PU_CACHE as i32,
             ) as *mut patch_t,
         );
-        x += 8 as ::core::ffi::c_int;
+        x += 8 as i32;
         i += 1;
     }
     V_DrawPatchDirect(
         x,
-        y + 7 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_LSRGHT\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        y + 7 as i32,
+        W_CacheLumpName("M_LSRGHT",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_LoadSelect(mut choice: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_LoadSelect(mut choice: i32) {
     let mut name: [::core::ffi::c_char; 256] = [0; 256];
     M_StringCopy(
         &raw mut name as *mut ::core::ffi::c_char,
@@ -2737,13 +2387,12 @@ pub unsafe extern "C" fn M_LoadSelect(mut choice: ::core::ffi::c_int) {
     M_ClearMenus();
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_LoadGame(mut choice: ::core::ffi::c_int) {
-    if netgame != 0 {
+pub unsafe extern "C" fn M_LoadGame(mut choice: i32) {
+    if netgame {
         M_StartMessage(
-            b"you can't do load while in a net game!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't do load while in a net game!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
@@ -2752,91 +2401,68 @@ pub unsafe extern "C" fn M_LoadGame(mut choice: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawSave() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     V_DrawPatchDirect(
-        72 as ::core::ffi::c_int,
-        28 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_SAVEG\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        72 as i32,
+        28 as i32,
+        W_CacheLumpName("M_SAVEG",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < load_end as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < load_end as i32 {
         M_DrawSaveLoadBorder(
-            LoadDef.x as ::core::ffi::c_int,
-            LoadDef.y as ::core::ffi::c_int + LINEHEIGHT * i,
+            LoadDef.x as i32,
+            LoadDef.y as i32 + LINEHEIGHT * i,
         );
         M_WriteText(
-            LoadDef.x as ::core::ffi::c_int,
-            LoadDef.y as ::core::ffi::c_int + LINEHEIGHT * i,
-            &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                .offset(i as isize) as *mut ::core::ffi::c_char,
+            LoadDef.x as i32,
+            LoadDef.y as i32 + LINEHEIGHT * i,
+            &savegamestrings[i as usize],
         );
         i += 1;
     }
     if saveStringEnter != 0 {
-        i = M_StringWidth(
-            &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-                .offset(saveSlot as isize) as *mut ::core::ffi::c_char,
-        );
+        i = M_StringWidth(&savegamestrings[saveSlot as usize]);
         M_WriteText(
-            LoadDef.x as ::core::ffi::c_int + i,
-            LoadDef.y as ::core::ffi::c_int + LINEHEIGHT * saveSlot,
-            b"_\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            LoadDef.x as i32 + i,
+            LoadDef.y as i32 + LINEHEIGHT * saveSlot,
+            "_",
         );
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DoSave(mut slot: ::core::ffi::c_int) {
-    G_SaveGame(
-        slot,
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(slot as isize) as *mut ::core::ffi::c_char,
-    );
+pub unsafe extern "C" fn M_DoSave(mut slot: i32) {
+    let name_cstring = ::std::ffi::CString::new(savegamestrings[slot as usize].as_str())
+        .unwrap();
+    G_SaveGame(slot, name_cstring.as_ptr() as *mut ::core::ffi::c_char);
     M_ClearMenus();
-    if quickSaveSlot == -(2 as ::core::ffi::c_int) {
+    if quickSaveSlot == -(2 as i32) {
         quickSaveSlot = slot;
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SaveSelect(mut choice: ::core::ffi::c_int) {
-    saveStringEnter = 1 as ::core::ffi::c_int;
+pub unsafe extern "C" fn M_SaveSelect(mut choice: i32) {
+    saveStringEnter = 1 as i32;
     saveSlot = choice;
-    M_StringCopy(
-        &raw mut saveOldString as *mut ::core::ffi::c_char,
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(choice as isize) as *mut ::core::ffi::c_char,
-        SAVESTRINGSIZE as size_t,
-    );
-    if strcmp(
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(choice as isize) as *mut ::core::ffi::c_char,
-        EMPTYSTRING.as_ptr(),
-    ) == 0
-    {
-        savegamestrings[choice as usize][0 as ::core::ffi::c_int as usize] = 0
-            as ::core::ffi::c_char;
+    saveOldString = savegamestrings[choice as usize].clone();
+    if savegamestrings[choice as usize] == EMPTYSTRING.trim_end_matches('\0') {
+        savegamestrings[choice as usize].clear();
     }
-    saveCharIndex = strlen(
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(choice as isize) as *mut ::core::ffi::c_char,
-    ) as ::core::ffi::c_int;
+    saveCharIndex = savegamestrings[choice as usize].len() as i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SaveGame(mut choice: ::core::ffi::c_int) {
-    if usergame == 0 {
+pub unsafe extern "C" fn M_SaveGame(mut choice: i32) {
+    if !usergame {
         M_StartMessage(
-            b"you can't save if you aren't playing!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't save if you aren't playing!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
-    if gamestate as ::core::ffi::c_uint
-        != GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamestate as u32
+        != GS_LEVEL as i32 as u32
     {
         return;
     }
@@ -2846,112 +2472,120 @@ pub unsafe extern "C" fn M_SaveGame(mut choice: ::core::ffi::c_int) {
 #[no_mangle]
 pub static mut tempstring: [::core::ffi::c_char; 80] = [0; 80];
 #[no_mangle]
-pub unsafe extern "C" fn M_QuickSaveResponse(mut key: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_QuickSaveResponse(mut key: i32) {
     if key == key_menu_confirm {
         M_DoSave(quickSaveSlot);
-        S_StartSound(NULL, sfx_swtchx as ::core::ffi::c_int);
+        S_StartSound(NULL, sfx_swtchx as i32);
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_QuickSave() {
-    if usergame == 0 {
-        S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
+    if !usergame {
+        S_StartSound(NULL, sfx_oof as i32);
         return;
     }
-    if gamestate as ::core::ffi::c_uint
-        != GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamestate as u32
+        != GS_LEVEL as i32 as u32
     {
         return;
     }
-    if quickSaveSlot < 0 as ::core::ffi::c_int {
+    if quickSaveSlot < 0 as i32 {
         M_StartControlPanel();
         M_ReadSaveStrings();
         M_SetupNextMenu(&raw mut SaveDef);
-        quickSaveSlot = -(2 as ::core::ffi::c_int);
+        quickSaveSlot = -(2 as i32);
         return;
     }
+    let quicksave_name_cstring = ::std::ffi::CString::new(
+        savegamestrings[quickSaveSlot as usize].as_str(),
+    )
+        .unwrap();
     snprintf(
         &raw mut tempstring as *mut ::core::ffi::c_char,
         80 as size_t,
         b"quicksave over your game named\n\n'%s'?\n\npress y or n.\0" as *const u8
             as *const ::core::ffi::c_char,
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(quickSaveSlot as isize) as *mut ::core::ffi::c_char,
+        quicksave_name_cstring.as_ptr(),
     );
     M_StartMessage(
-        &raw mut tempstring as *mut ::core::ffi::c_char,
+        ::std::ffi::CStr::from_ptr(&raw mut tempstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap(),
         ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
+            Option<unsafe extern "C" fn(i32) -> ()>,
             *mut ::core::ffi::c_void,
-        >(Some(M_QuickSaveResponse as unsafe extern "C" fn(::core::ffi::c_int) -> ())),
-        true_0 as boolean,
+        >(Some(M_QuickSaveResponse as unsafe extern "C" fn(i32) -> ())),
+        true,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_QuickLoadResponse(mut key: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_QuickLoadResponse(mut key: i32) {
     if key == key_menu_confirm {
         M_LoadSelect(quickSaveSlot);
-        S_StartSound(NULL, sfx_swtchx as ::core::ffi::c_int);
+        S_StartSound(NULL, sfx_swtchx as i32);
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_QuickLoad() {
-    if netgame != 0 {
+    if netgame {
         M_StartMessage(
-            b"you can't quickload during a netgame!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't quickload during a netgame!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
-    if quickSaveSlot < 0 as ::core::ffi::c_int {
+    if quickSaveSlot < 0 as i32 {
         M_StartMessage(
-            b"you haven't picked a quicksave slot yet!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you haven't picked a quicksave slot yet!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
+    let quickload_name_cstring = ::std::ffi::CString::new(
+        savegamestrings[quickSaveSlot as usize].as_str(),
+    )
+        .unwrap();
     snprintf(
         &raw mut tempstring as *mut ::core::ffi::c_char,
         80 as size_t,
         b"do you want to quickload the game named\n\n'%s'?\n\npress y or n.\0"
             as *const u8 as *const ::core::ffi::c_char,
-        &raw mut *(&raw mut savegamestrings as *mut [::core::ffi::c_char; 24])
-            .offset(quickSaveSlot as isize) as *mut ::core::ffi::c_char,
+        quickload_name_cstring.as_ptr(),
     );
     M_StartMessage(
-        &raw mut tempstring as *mut ::core::ffi::c_char,
+        ::std::ffi::CStr::from_ptr(&raw mut tempstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap(),
         ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
+            Option<unsafe extern "C" fn(i32) -> ()>,
             *mut ::core::ffi::c_void,
-        >(Some(M_QuickLoadResponse as unsafe extern "C" fn(::core::ffi::c_int) -> ())),
-        true_0 as boolean,
+        >(Some(M_QuickLoadResponse as unsafe extern "C" fn(i32) -> ())),
+        true,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawReadThis1() {
     let mut lumpname: *mut ::core::ffi::c_char = b"CREDIT\0" as *const u8
         as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    let mut skullx: ::core::ffi::c_int = 330 as ::core::ffi::c_int;
-    let mut skully: ::core::ffi::c_int = 175 as ::core::ffi::c_int;
-    inhelpscreens = true_0 as boolean;
-    match gameversion as ::core::ffi::c_uint {
+    let mut skullx: i32 = 330 as i32;
+    let mut skully: i32 = 175 as i32;
+    inhelpscreens = true;
+    match gameversion as u32 {
         1 | 2 | 3 | 4 | 5 => {
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == commercial as i32 as u32
             {
                 lumpname = b"HELP\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                skullx = 330 as ::core::ffi::c_int;
-                skully = 165 as ::core::ffi::c_int;
+                skullx = 330 as i32;
+                skully = 165 as i32;
             } else {
                 lumpname = b"HELP2\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                skullx = 280 as ::core::ffi::c_int;
-                skully = 185 as ::core::ffi::c_int;
+                skullx = 280 as i32;
+                skully = 185 as i32;
             }
         }
         6 | 9 => {
@@ -2963,66 +2597,62 @@ pub unsafe extern "C" fn M_DrawReadThis1() {
                 as *mut ::core::ffi::c_char;
         }
         _ => {
-            I_Error(
-                b"Unhandled game version\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-            );
+            I_Error("Unhandled game version");
         }
     }
     lumpname = lumpname;
     V_DrawPatchDirect(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        W_CacheLumpName(lumpname, PU_CACHE as ::core::ffi::c_int) as *mut patch_t,
+        0 as i32,
+        0 as i32,
+        W_CacheLumpName(
+            &wad_name8_to_string(lumpname),
+            PU_CACHE as i32,
+        ) as *mut patch_t,
     );
-    ReadDef1.x = skullx as ::core::ffi::c_short;
-    ReadDef1.y = skully as ::core::ffi::c_short;
+    ReadDef1.x = skullx as i16;
+    ReadDef1.y = skully as i16;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawReadThis2() {
-    inhelpscreens = true_0 as boolean;
+    inhelpscreens = true;
     V_DrawPatchDirect(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"HELP1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
+        W_CacheLumpName("HELP1",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawSound() {
     V_DrawPatchDirect(
-        60 as ::core::ffi::c_int,
-        38 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_SVOL\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        60 as i32,
+        38 as i32,
+        W_CacheLumpName("M_SVOL",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     M_DrawThermo(
-        SoundDef.x as ::core::ffi::c_int,
-        SoundDef.y as ::core::ffi::c_int
-            + LINEHEIGHT * (sfx_vol as ::core::ffi::c_int + 1 as ::core::ffi::c_int),
-        16 as ::core::ffi::c_int,
+        SoundDef.x as i32,
+        SoundDef.y as i32
+            + LINEHEIGHT * (sfx_vol as i32 + 1 as i32),
+        16 as i32,
         sfxVolume,
     );
     M_DrawThermo(
-        SoundDef.x as ::core::ffi::c_int,
-        SoundDef.y as ::core::ffi::c_int
-            + LINEHEIGHT * (music_vol as ::core::ffi::c_int + 1 as ::core::ffi::c_int),
-        16 as ::core::ffi::c_int,
+        SoundDef.x as i32,
+        SoundDef.y as i32
+            + LINEHEIGHT * (music_vol as i32 + 1 as i32),
+        16 as i32,
         musicVolume,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_Sound(mut choice: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_Sound(mut choice: i32) {
     M_SetupNextMenu(&raw mut SoundDef);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SfxVol(mut choice: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_SfxVol(mut choice: i32) {
     match choice {
         0 => {
             if sfxVolume != 0 {
@@ -3030,16 +2660,16 @@ pub unsafe extern "C" fn M_SfxVol(mut choice: ::core::ffi::c_int) {
             }
         }
         1 => {
-            if sfxVolume < 15 as ::core::ffi::c_int {
+            if sfxVolume < 15 as i32 {
                 sfxVolume += 1;
             }
         }
         _ => {}
     }
-    S_SetSfxVolume(sfxVolume * 8 as ::core::ffi::c_int);
+    S_SetSfxVolume(sfxVolume * 8 as i32);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_MusicVol(mut choice: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_MusicVol(mut choice: i32) {
     match choice {
         0 => {
             if musicVolume != 0 {
@@ -3047,62 +2677,55 @@ pub unsafe extern "C" fn M_MusicVol(mut choice: ::core::ffi::c_int) {
             }
         }
         1 => {
-            if musicVolume < 15 as ::core::ffi::c_int {
+            if musicVolume < 15 as i32 {
                 musicVolume += 1;
             }
         }
         _ => {}
     }
-    S_SetMusicVolume(musicVolume * 8 as ::core::ffi::c_int);
+    S_SetMusicVolume(musicVolume * 8 as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawMainMenu() {
     V_DrawPatchDirect(
-        94 as ::core::ffi::c_int,
-        2 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_DOOM\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        94 as i32,
+        2 as i32,
+        W_CacheLumpName("M_DOOM",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawNewGame() {
     V_DrawPatchDirect(
-        96 as ::core::ffi::c_int,
-        14 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_NEWG\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        96 as i32,
+        14 as i32,
+        W_CacheLumpName("M_NEWG",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     V_DrawPatchDirect(
-        54 as ::core::ffi::c_int,
-        38 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_SKILL\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        54 as i32,
+        38 as i32,
+        W_CacheLumpName("M_SKILL",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_NewGame(mut choice: ::core::ffi::c_int) {
-    if netgame != 0 && demoplayback == 0 {
+pub unsafe extern "C" fn M_NewGame(mut choice: i32) {
+    if netgame && !demoplayback {
         M_StartMessage(
-            b"you can't start a new game\nwhile in a network game.\n\npress a key.\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't start a new game\nwhile in a network game.\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        || gameversion as ::core::ffi::c_uint
-            == exe_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemode as u32
+        == commercial as i32 as u32
+        || gameversion as u32
+            == exe_chex as i32 as u32
     {
         M_SetupNextMenu(&raw mut NewDef);
     } else {
@@ -3110,136 +2733,124 @@ pub unsafe extern "C" fn M_NewGame(mut choice: ::core::ffi::c_int) {
     };
 }
 #[no_mangle]
-pub static mut epi: ::core::ffi::c_int = 0;
+pub static mut epi: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawEpisode() {
     V_DrawPatchDirect(
-        54 as ::core::ffi::c_int,
-        38 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_EPISOD\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        54 as i32,
+        38 as i32,
+        W_CacheLumpName("M_EPISOD",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_VerifyNightmare(mut key: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_VerifyNightmare(mut key: i32) {
     if key != key_menu_confirm {
         return;
     }
     G_DeferedInitNew(
-        nightmare as ::core::ffi::c_int as skill_t,
-        epi + 1 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        nightmare as i32 as skill_t,
+        epi + 1 as i32,
+        1 as i32,
     );
     M_ClearMenus();
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChooseSkill(mut choice: ::core::ffi::c_int) {
-    if choice == nightmare as ::core::ffi::c_int {
+pub unsafe extern "C" fn M_ChooseSkill(mut choice: i32) {
+    if choice == nightmare as i32 {
         M_StartMessage(
-            b"are you sure? this skill level\nisn't even remotely fair.\n\npress y or n.\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "are you sure? this skill level\nisn't even remotely fair.\n\npress y or n.",
             ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
+                Option<unsafe extern "C" fn(i32) -> ()>,
                 *mut ::core::ffi::c_void,
-            >(Some(M_VerifyNightmare as unsafe extern "C" fn(::core::ffi::c_int) -> ())),
-            true_0 as boolean,
+            >(Some(M_VerifyNightmare as unsafe extern "C" fn(i32) -> ())),
+            true,
         );
         return;
     }
     G_DeferedInitNew(
         choice as skill_t,
-        epi + 1 as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        epi + 1 as i32,
+        1 as i32,
     );
     M_ClearMenus();
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_Episode(mut choice: ::core::ffi::c_int) {
-    if gamemode as ::core::ffi::c_uint
-        == shareware as ::core::ffi::c_int as ::core::ffi::c_uint && choice != 0
+pub unsafe extern "C" fn M_Episode(mut choice: i32) {
+    if gamemode as u32
+        == shareware as i32 as u32 && choice != 0
     {
         M_StartMessage(
-            b"this is the shareware version of doom.\n\nyou need to order the entire trilogy.\n\npress a key.\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "this is the shareware version of doom.\n\nyou need to order the entire trilogy.\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         M_SetupNextMenu(&raw mut ReadDef1);
         return;
     }
-    if gamemode as ::core::ffi::c_uint
-        == registered as ::core::ffi::c_int as ::core::ffi::c_uint
-        && choice > 2 as ::core::ffi::c_int
+    if gamemode as u32
+        == registered as i32 as u32
+        && choice > 2 as i32
     {
         fprintf(
             stderr,
             b"M_Episode: 4th episode requires UltimateDOOM\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
-        choice = 0 as ::core::ffi::c_int;
+        choice = 0 as i32;
     }
     epi = choice;
     M_SetupNextMenu(&raw mut NewDef);
 }
-static mut detailNames: [*mut ::core::ffi::c_char; 2] = [
-    b"M_GDHIGH\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"M_GDLOW\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-];
-static mut msgNames: [*mut ::core::ffi::c_char; 2] = [
-    b"M_MSGOFF\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"M_MSGON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-];
+static detailNames: [&str; 2] = ["M_GDHIGH", "M_GDLOW"];
+static msgNames: [&str; 2] = ["M_MSGOFF", "M_MSGON"];
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawOptions() {
     V_DrawPatchDirect(
-        108 as ::core::ffi::c_int,
-        15 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_OPTTTL\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        108 as i32,
+        15 as i32,
+        W_CacheLumpName("M_OPTTTL",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     V_DrawPatchDirect(
-        OptionsDef.x as ::core::ffi::c_int + 175 as ::core::ffi::c_int,
-        OptionsDef.y as ::core::ffi::c_int + LINEHEIGHT * detail as ::core::ffi::c_int,
+        OptionsDef.x as i32 + 175 as i32,
+        OptionsDef.y as i32 + LINEHEIGHT * detail as i32,
         W_CacheLumpName(
             detailNames[detailLevel as usize],
-            PU_CACHE as ::core::ffi::c_int,
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     V_DrawPatchDirect(
-        OptionsDef.x as ::core::ffi::c_int + 120 as ::core::ffi::c_int,
-        OptionsDef.y as ::core::ffi::c_int + LINEHEIGHT * messages as ::core::ffi::c_int,
-        W_CacheLumpName(msgNames[showMessages as usize], PU_CACHE as ::core::ffi::c_int)
+        OptionsDef.x as i32 + 120 as i32,
+        OptionsDef.y as i32 + LINEHEIGHT * messages as i32,
+        W_CacheLumpName(msgNames[showMessages as usize], PU_CACHE as i32)
             as *mut patch_t,
     );
     M_DrawThermo(
-        OptionsDef.x as ::core::ffi::c_int,
-        OptionsDef.y as ::core::ffi::c_int
-            + LINEHEIGHT * (mousesens as ::core::ffi::c_int + 1 as ::core::ffi::c_int),
-        10 as ::core::ffi::c_int,
+        OptionsDef.x as i32,
+        OptionsDef.y as i32
+            + LINEHEIGHT * (mousesens as i32 + 1 as i32),
+        10 as i32,
         mouseSensitivity,
     );
     M_DrawThermo(
-        OptionsDef.x as ::core::ffi::c_int,
-        OptionsDef.y as ::core::ffi::c_int
-            + LINEHEIGHT * (scrnsize as ::core::ffi::c_int + 1 as ::core::ffi::c_int),
-        9 as ::core::ffi::c_int,
+        OptionsDef.x as i32,
+        OptionsDef.y as i32
+            + LINEHEIGHT * (scrnsize as i32 + 1 as i32),
+        9 as i32,
         screenSize,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_Options(mut choice: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_Options(mut choice: i32) {
     M_SetupNextMenu(&raw mut OptionsDef);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChangeMessages(mut choice: ::core::ffi::c_int) {
-    choice = 0 as ::core::ffi::c_int;
-    showMessages = 1 as ::core::ffi::c_int - showMessages;
+pub unsafe extern "C" fn M_ChangeMessages(mut choice: i32) {
+    choice = 0 as i32;
+    showMessages = 1 as i32 - showMessages;
     if showMessages == 0 {
         players[consoleplayer as usize].message = b"Messages OFF\0" as *const u8
             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -3247,10 +2858,10 @@ pub unsafe extern "C" fn M_ChangeMessages(mut choice: ::core::ffi::c_int) {
         players[consoleplayer as usize].message = b"Messages ON\0" as *const u8
             as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
-    message_dontfuckwithme = true_0 as boolean;
+    message_dontfuckwithme = true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_EndGameResponse(mut key: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_EndGameResponse(mut key: i32) {
     if key != key_menu_confirm {
         return;
     }
@@ -3259,144 +2870,142 @@ pub unsafe extern "C" fn M_EndGameResponse(mut key: ::core::ffi::c_int) {
     D_StartTitle();
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_EndGame(mut choice: ::core::ffi::c_int) {
-    choice = 0 as ::core::ffi::c_int;
-    if usergame == 0 {
-        S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
+pub unsafe extern "C" fn M_EndGame(mut choice: i32) {
+    choice = 0 as i32;
+    if !usergame {
+        S_StartSound(NULL, sfx_oof as i32);
         return;
     }
-    if netgame != 0 {
+    if netgame {
         M_StartMessage(
-            b"you can't end a netgame!\n\npress a key.\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "you can't end a netgame!\n\npress a key.",
             NULL,
-            false_0 as boolean,
+            false,
         );
         return;
     }
     M_StartMessage(
-        b"are you sure you want to end the game?\n\npress y or n.\0" as *const u8
-            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "are you sure you want to end the game?\n\npress y or n.",
         ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
+            Option<unsafe extern "C" fn(i32) -> ()>,
             *mut ::core::ffi::c_void,
-        >(Some(M_EndGameResponse as unsafe extern "C" fn(::core::ffi::c_int) -> ())),
-        true_0 as boolean,
+        >(Some(M_EndGameResponse as unsafe extern "C" fn(i32) -> ())),
+        true,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ReadThis(mut choice: ::core::ffi::c_int) {
-    choice = 0 as ::core::ffi::c_int;
+pub unsafe extern "C" fn M_ReadThis(mut choice: i32) {
+    choice = 0 as i32;
     M_SetupNextMenu(&raw mut ReadDef1);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ReadThis2(mut choice: ::core::ffi::c_int) {
-    if gameversion as ::core::ffi::c_uint
-        <= exe_doom_1_9 as ::core::ffi::c_int as ::core::ffi::c_uint
-        && gamemode as ::core::ffi::c_uint
-            != commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+pub unsafe extern "C" fn M_ReadThis2(mut choice: i32) {
+    if gameversion as u32
+        <= exe_doom_1_9 as i32 as u32
+        && gamemode as u32
+            != commercial as i32 as u32
     {
-        choice = 0 as ::core::ffi::c_int;
+        choice = 0 as i32;
         M_SetupNextMenu(&raw mut ReadDef2);
     } else {
-        M_FinishReadThis(0 as ::core::ffi::c_int);
+        M_FinishReadThis(0 as i32);
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_FinishReadThis(mut choice: ::core::ffi::c_int) {
-    choice = 0 as ::core::ffi::c_int;
+pub unsafe extern "C" fn M_FinishReadThis(mut choice: i32) {
+    choice = 0 as i32;
     M_SetupNextMenu(&raw mut MainDef);
 }
 #[no_mangle]
-pub static mut quitsounds: [::core::ffi::c_int; 8] = [
-    sfx_pldeth as ::core::ffi::c_int,
-    sfx_dmpain as ::core::ffi::c_int,
-    sfx_popain as ::core::ffi::c_int,
-    sfx_slop as ::core::ffi::c_int,
-    sfx_telept as ::core::ffi::c_int,
-    sfx_posit1 as ::core::ffi::c_int,
-    sfx_posit3 as ::core::ffi::c_int,
-    sfx_sgtatk as ::core::ffi::c_int,
+pub static mut quitsounds: [i32; 8] = [
+    sfx_pldeth as i32,
+    sfx_dmpain as i32,
+    sfx_popain as i32,
+    sfx_slop as i32,
+    sfx_telept as i32,
+    sfx_posit1 as i32,
+    sfx_posit3 as i32,
+    sfx_sgtatk as i32,
 ];
 #[no_mangle]
-pub static mut quitsounds2: [::core::ffi::c_int; 8] = [
-    sfx_vilact as ::core::ffi::c_int,
-    sfx_getpow as ::core::ffi::c_int,
-    sfx_boscub as ::core::ffi::c_int,
-    sfx_slop as ::core::ffi::c_int,
-    sfx_skeswg as ::core::ffi::c_int,
-    sfx_kntdth as ::core::ffi::c_int,
-    sfx_bspact as ::core::ffi::c_int,
-    sfx_sgtatk as ::core::ffi::c_int,
+pub static mut quitsounds2: [i32; 8] = [
+    sfx_vilact as i32,
+    sfx_getpow as i32,
+    sfx_boscub as i32,
+    sfx_slop as i32,
+    sfx_skeswg as i32,
+    sfx_kntdth as i32,
+    sfx_bspact as i32,
+    sfx_sgtatk as i32,
 ];
 #[no_mangle]
-pub unsafe extern "C" fn M_QuitResponse(mut key: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_QuitResponse(mut key: i32) {
     if key != key_menu_confirm {
         return;
     }
-    if netgame == 0 {
-        if gamemode as ::core::ffi::c_uint
-            == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    if !netgame {
+        if gamemode as u32
+            == commercial as i32 as u32
         {
             S_StartSound(
                 NULL,
-                quitsounds2[(gametic >> 2 as ::core::ffi::c_int
-                    & 7 as ::core::ffi::c_int) as usize],
+                quitsounds2[(gametic >> 2 as i32
+                    & 7 as i32) as usize],
             );
         } else {
             S_StartSound(
                 NULL,
-                quitsounds[(gametic >> 2 as ::core::ffi::c_int & 7 as ::core::ffi::c_int)
+                quitsounds[(gametic >> 2 as i32 & 7 as i32)
                     as usize],
             );
         }
-        I_WaitVBL(105 as ::core::ffi::c_int);
+        I_WaitVBL(105 as i32);
     }
     I_Quit();
 }
-unsafe extern "C" fn M_SelectEndMessage() -> *mut ::core::ffi::c_char {
-    let mut endmsg: *mut *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        *mut ::core::ffi::c_char,
-    >();
-    if (if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+unsafe fn M_SelectEndMessage() -> &'static str {
+    let endmsg: &'static [&'static str; 8] = if (if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
     } else {
-        (if gamemission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        (if gamemission as u32
+            == pack_hacx as i32 as u32
         {
-            doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom2 as i32 as u32
         } else {
-            gamemission as ::core::ffi::c_uint
+            gamemission as u32
         })
-    }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+    }) == doom as i32 as u32
     {
-        endmsg = &raw mut doom1_endmsg as *mut *mut ::core::ffi::c_char;
+        &doom1_endmsg
     } else {
-        endmsg = &raw mut doom2_endmsg as *mut *mut ::core::ffi::c_char;
-    }
-    return *endmsg.offset((gametic % NUM_QUITMESSAGES) as isize);
+        &doom2_endmsg
+    };
+    endmsg[(gametic % NUM_QUITMESSAGES) as usize]
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_QuitDOOM(mut choice: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_QuitDOOM(mut choice: i32) {
+    let endmsg_cstring = ::std::ffi::CString::new(M_SelectEndMessage()).unwrap();
     snprintf(
         &raw mut endstring as *mut ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 160]>() as size_t,
         b"%s\n\n(press y to quit to dos.)\0" as *const u8 as *const ::core::ffi::c_char,
-        M_SelectEndMessage(),
+        endmsg_cstring.as_ptr(),
     );
     M_StartMessage(
-        &raw mut endstring as *mut ::core::ffi::c_char,
+        ::std::ffi::CStr::from_ptr(&raw mut endstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap(),
         ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
+            Option<unsafe extern "C" fn(i32) -> ()>,
             *mut ::core::ffi::c_void,
-        >(Some(M_QuitResponse as unsafe extern "C" fn(::core::ffi::c_int) -> ())),
-        true_0 as boolean,
+        >(Some(M_QuitResponse as unsafe extern "C" fn(i32) -> ())),
+        true,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChangeSensitivity(mut choice: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_ChangeSensitivity(mut choice: i32) {
     match choice {
         0 => {
             if mouseSensitivity != 0 {
@@ -3404,7 +3013,7 @@ pub unsafe extern "C" fn M_ChangeSensitivity(mut choice: ::core::ffi::c_int) {
             }
         }
         1 => {
-            if mouseSensitivity < 9 as ::core::ffi::c_int {
+            if mouseSensitivity < 9 as i32 {
                 mouseSensitivity += 1;
             }
         }
@@ -3412,9 +3021,9 @@ pub unsafe extern "C" fn M_ChangeSensitivity(mut choice: ::core::ffi::c_int) {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChangeDetail(mut choice: ::core::ffi::c_int) {
-    choice = 0 as ::core::ffi::c_int;
-    detailLevel = 1 as ::core::ffi::c_int - detailLevel;
+pub unsafe extern "C" fn M_ChangeDetail(mut choice: i32) {
+    choice = 0 as i32;
+    detailLevel = 1 as i32 - detailLevel;
     R_SetViewSize(screenblocks, detailLevel);
     if detailLevel == 0 {
         players[consoleplayer as usize].message = b"High detail\0" as *const u8
@@ -3425,16 +3034,16 @@ pub unsafe extern "C" fn M_ChangeDetail(mut choice: ::core::ffi::c_int) {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SizeDisplay(mut choice: ::core::ffi::c_int) {
+pub unsafe extern "C" fn M_SizeDisplay(mut choice: i32) {
     match choice {
         0 => {
-            if screenSize > 0 as ::core::ffi::c_int {
+            if screenSize > 0 as i32 {
                 screenblocks -= 1;
                 screenSize -= 1;
             }
         }
         1 => {
-            if screenSize < 8 as ::core::ffi::c_int {
+            if screenSize < 8 as i32 {
                 screenblocks += 1;
                 screenSize += 1;
             }
@@ -3445,221 +3054,140 @@ pub unsafe extern "C" fn M_SizeDisplay(mut choice: ::core::ffi::c_int) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawThermo(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
-    mut thermWidth: ::core::ffi::c_int,
-    mut thermDot: ::core::ffi::c_int,
+    mut x: i32,
+    mut y: i32,
+    mut thermWidth: i32,
+    mut thermDot: i32,
 ) {
-    let mut xx: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
+    let mut xx: i32 = 0;
+    let mut i: i32 = 0;
     xx = x;
     V_DrawPatchDirect(
         xx,
         y,
-        W_CacheLumpName(
-            b"M_THERML\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        W_CacheLumpName("M_THERML",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
-    xx += 8 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    xx += 8 as i32;
+    i = 0 as i32;
     while i < thermWidth {
         V_DrawPatchDirect(
             xx,
             y,
-            W_CacheLumpName(
-                b"M_THERMM\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                PU_CACHE as ::core::ffi::c_int,
+            W_CacheLumpName("M_THERMM",
+                PU_CACHE as i32,
             ) as *mut patch_t,
         );
-        xx += 8 as ::core::ffi::c_int;
+        xx += 8 as i32;
         i += 1;
     }
     V_DrawPatchDirect(
         xx,
         y,
-        W_CacheLumpName(
-            b"M_THERMR\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        W_CacheLumpName("M_THERMR",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
     V_DrawPatchDirect(
-        x + 8 as ::core::ffi::c_int + thermDot * 8 as ::core::ffi::c_int,
+        x + 8 as i32 + thermDot * 8 as i32,
         y,
-        W_CacheLumpName(
-            b"M_THERMO\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        W_CacheLumpName("M_THERMO",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawEmptyCell(
     mut menu: *mut menu_t,
-    mut item: ::core::ffi::c_int,
+    mut item: i32,
 ) {
     V_DrawPatchDirect(
-        (*menu).x as ::core::ffi::c_int - 10 as ::core::ffi::c_int,
-        (*menu).y as ::core::ffi::c_int + item * LINEHEIGHT - 1 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_CELL1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        (*menu).x as i32 - 10 as i32,
+        (*menu).y as i32 + item * LINEHEIGHT - 1 as i32,
+        W_CacheLumpName("M_CELL1",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawSelCell(
     mut menu: *mut menu_t,
-    mut item: ::core::ffi::c_int,
+    mut item: i32,
 ) {
     V_DrawPatchDirect(
-        (*menu).x as ::core::ffi::c_int - 10 as ::core::ffi::c_int,
-        (*menu).y as ::core::ffi::c_int + item * LINEHEIGHT - 1 as ::core::ffi::c_int,
-        W_CacheLumpName(
-            b"M_CELL2\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            PU_CACHE as ::core::ffi::c_int,
+        (*menu).x as i32 - 10 as i32,
+        (*menu).y as i32 + item * LINEHEIGHT - 1 as i32,
+        W_CacheLumpName("M_CELL2",
+            PU_CACHE as i32,
         ) as *mut patch_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StartMessage(
-    mut string: *mut ::core::ffi::c_char,
+pub unsafe fn M_StartMessage(
+    string: &str,
     mut routine: *mut ::core::ffi::c_void,
-    mut input: boolean,
+    mut input: bool,
 ) {
-    messageLastMenuActive = menuactive as ::core::ffi::c_int;
-    messageToPrint = 1 as ::core::ffi::c_int;
-    messageString = string;
+    messageLastMenuActive = menuactive as i32;
+    messageToPrint = 1 as i32;
+    messageString = string.to_string();
     messageRoutine = ::core::mem::transmute::<
         *mut ::core::ffi::c_void,
-        Option<unsafe extern "C" fn(::core::ffi::c_int) -> ()>,
+        Option<unsafe extern "C" fn(i32) -> ()>,
     >(routine);
     messageNeedsInput = input;
-    menuactive = true_0 as boolean;
+    menuactive = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_StopMessage() {
-    menuactive = messageLastMenuActive as boolean;
-    messageToPrint = 0 as ::core::ffi::c_int;
+    menuactive = messageLastMenuActive != 0;
+    messageToPrint = 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringWidth(
-    mut string: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    let mut i: size_t = 0;
-    let mut w: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    let mut c: ::core::ffi::c_int = 0;
-    i = 0 as size_t;
-    while i < strlen(string) {
-        c = ({
-            let mut __res: ::core::ffi::c_int = 0;
-            if ::core::mem::size_of::<::core::ffi::c_char>() as usize > 1 as usize {
-                if 0 != 0 {
-                    let mut __c: ::core::ffi::c_int = *string.offset(i as isize)
-                        as ::core::ffi::c_int;
-                    __res = (if __c < -(128 as ::core::ffi::c_int)
-                        || __c > 255 as ::core::ffi::c_int
-                    {
-                        __c as __int32_t
-                    } else {
-                        *(*__ctype_toupper_loc()).offset(__c as isize)
-                    }) as ::core::ffi::c_int;
-                } else {
-                    __res = toupper(*string.offset(i as isize) as ::core::ffi::c_int);
-                }
-            } else {
-                __res = *(*__ctype_toupper_loc())
-                    .offset(*string.offset(i as isize) as ::core::ffi::c_int as isize)
-                    as ::core::ffi::c_int;
-            }
-            __res
-        }) - HU_FONTSTART;
-        if c < 0 as ::core::ffi::c_int || c >= HU_FONTSIZE {
-            w += 4 as ::core::ffi::c_int;
+pub unsafe fn M_StringWidth(string: &str) -> i32 {
+    let mut w: i32 = 0 as i32;
+    let mut c: i32 = 0;
+    for b in string.bytes() {
+        c = toupper(b as i32) - HU_FONTSTART;
+        if c < 0 as i32 || c >= HU_FONTSIZE {
+            w += 4 as i32;
         } else {
-            w += (*hu_font[c as usize]).width as ::core::ffi::c_int;
+            w += (*hu_font[c as usize]).width as i32;
         }
-        i = i.wrapping_add(1);
     }
     return w;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StringHeight(
-    mut string: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    let mut i: size_t = 0;
-    let mut h: ::core::ffi::c_int = 0;
-    let mut height: ::core::ffi::c_int = (*hu_font[0 as ::core::ffi::c_int as usize])
-        .height as ::core::ffi::c_int;
+pub unsafe fn M_StringHeight(string: &str) -> i32 {
+    let mut h: i32 = 0;
+    let height: i32 = (*hu_font[0 as i32 as usize])
+        .height as i32;
     h = height;
-    i = 0 as size_t;
-    while i < strlen(string) {
-        if *string.offset(i as isize) as ::core::ffi::c_int == '\n' as i32 {
+    for b in string.bytes() {
+        if b == b'\n' {
             h += height;
         }
-        i = i.wrapping_add(1);
     }
     return h;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_WriteText(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
-    mut string: *mut ::core::ffi::c_char,
-) {
-    let mut w: ::core::ffi::c_int = 0;
-    let mut ch: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut c: ::core::ffi::c_int = 0;
-    let mut cx: ::core::ffi::c_int = 0;
-    let mut cy: ::core::ffi::c_int = 0;
-    ch = string;
+pub unsafe fn M_WriteText(x: i32, y: i32, string: &str) {
+    let mut w: i32 = 0;
+    let mut c: i32 = 0;
+    let mut cx: i32 = 0;
+    let mut cy: i32 = 0;
     cx = x;
     cy = y;
-    loop {
-        let fresh1 = ch;
-        ch = ch.offset(1);
-        c = *fresh1 as ::core::ffi::c_int;
-        if c == 0 {
-            break;
-        }
+    'outer: for b in string.bytes() {
+        c = b as i32;
         if c == '\n' as i32 {
             cx = x;
-            cy += 12 as ::core::ffi::c_int;
+            cy += 12 as i32;
         } else {
-            c = ({
-                let mut __res: ::core::ffi::c_int = 0;
-                if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize {
-                    if 0 != 0 {
-                        let mut __c: ::core::ffi::c_int = c;
-                        __res = (if __c < -(128 as ::core::ffi::c_int)
-                            || __c > 255 as ::core::ffi::c_int
-                        {
-                            __c as __int32_t
-                        } else {
-                            *(*__ctype_toupper_loc()).offset(__c as isize)
-                        }) as ::core::ffi::c_int;
-                    } else {
-                        __res = toupper(c);
-                    }
-                } else {
-                    __res = *(*__ctype_toupper_loc()).offset(c as isize)
-                        as ::core::ffi::c_int;
-                }
-                __res
-            }) - HU_FONTSTART;
-            if c < 0 as ::core::ffi::c_int || c >= HU_FONTSIZE {
-                cx += 4 as ::core::ffi::c_int;
+            c = toupper(c) - HU_FONTSTART;
+            if c < 0 as i32 || c >= HU_FONTSIZE {
+                cx += 4 as i32;
             } else {
-                w = (*hu_font[c as usize]).width as ::core::ffi::c_int;
+                w = (*hu_font[c as usize]).width as i32;
                 if cx + w > SCREENWIDTH {
-                    break;
+                    break 'outer;
                 }
                 V_DrawPatchDirect(cx, cy, hu_font[c as usize]);
                 cx += w;
@@ -3667,151 +3195,141 @@ pub unsafe extern "C" fn M_WriteText(
         }
     };
 }
-unsafe extern "C" fn IsNullKey(mut key: ::core::ffi::c_int) -> boolean {
-    return (key == KEY_PAUSE || key == KEY_CAPSLOCK || key == KEY_SCRLCK
-        || key == KEY_NUMLOCK) as ::core::ffi::c_int as boolean;
+unsafe extern "C" fn IsNullKey(mut key: i32) -> bool {
+    return key == KEY_PAUSE || key == KEY_CAPSLOCK || key == KEY_SCRLCK
+        || key == KEY_NUMLOCK;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
-    let mut ch: ::core::ffi::c_int = 0;
-    let mut key: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    static mut joywait: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    static mut mousewait: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    static mut mousey: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    static mut lasty: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    static mut mousex: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    static mut lastx: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-    if testcontrols != 0 {
-        if (*ev).type_0 as ::core::ffi::c_uint
-            == ev_quit as ::core::ffi::c_int as ::core::ffi::c_uint
-            || (*ev).type_0 as ::core::ffi::c_uint
-                == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+pub unsafe fn M_Responder(mut ev: *mut event_t) -> bool {
+    let mut ch: i32 = 0;
+    let mut key: i32 = 0;
+    let mut i: i32 = 0;
+    static mut joywait: i32 = 0 as i32;
+    static mut mousewait: i32 = 0 as i32;
+    static mut mousey: i32 = 0 as i32;
+    static mut lasty: i32 = 0 as i32;
+    static mut mousex: i32 = 0 as i32;
+    static mut lastx: i32 = 0 as i32;
+    if testcontrols {
+        if (*ev).type_0 as u32
+            == ev_quit as i32 as u32
+            || (*ev).type_0 as u32
+                == ev_keydown as i32 as u32
                 && ((*ev).data1 == key_menu_activate || (*ev).data1 == key_menu_quit)
         {
             I_Quit();
-            return true_0 as boolean;
+            return true;
         }
-        return false_0 as boolean;
+        return false;
     }
-    if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_quit as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*ev).type_0 as u32
+        == ev_quit as i32 as u32
     {
-        if menuactive != 0 && messageToPrint != 0
+        if menuactive && messageToPrint != 0
             && messageRoutine
-                == Some(M_QuitResponse as unsafe extern "C" fn(::core::ffi::c_int) -> ())
+                == Some(M_QuitResponse as unsafe extern "C" fn(i32) -> ())
         {
             M_QuitResponse(key_menu_confirm);
         } else {
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            M_QuitDOOM(0 as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_swtchn as i32);
+            M_QuitDOOM(0 as i32);
         }
-        return true_0 as boolean;
+        return true;
     }
-    ch = 0 as ::core::ffi::c_int;
-    key = -(1 as ::core::ffi::c_int);
-    if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_joystick as ::core::ffi::c_int as ::core::ffi::c_uint
+    ch = 0 as i32;
+    key = -(1 as i32);
+    if (*ev).type_0 as u32
+        == ev_joystick as i32 as u32
         && joywait < I_GetTime()
     {
-        if (*ev).data3 < 0 as ::core::ffi::c_int {
+        if (*ev).data3 < 0 as i32 {
             key = key_menu_up;
-            joywait = I_GetTime() + 5 as ::core::ffi::c_int;
-        } else if (*ev).data3 > 0 as ::core::ffi::c_int {
+            joywait = I_GetTime() + 5 as i32;
+        } else if (*ev).data3 > 0 as i32 {
             key = key_menu_down;
-            joywait = I_GetTime() + 5 as ::core::ffi::c_int;
+            joywait = I_GetTime() + 5 as i32;
         }
-        if (*ev).data2 < 0 as ::core::ffi::c_int {
+        if (*ev).data2 < 0 as i32 {
             key = key_menu_left;
-            joywait = I_GetTime() + 2 as ::core::ffi::c_int;
-        } else if (*ev).data2 > 0 as ::core::ffi::c_int {
+            joywait = I_GetTime() + 2 as i32;
+        } else if (*ev).data2 > 0 as i32 {
             key = key_menu_right;
-            joywait = I_GetTime() + 2 as ::core::ffi::c_int;
+            joywait = I_GetTime() + 2 as i32;
         }
-        if (*ev).data1 & 1 as ::core::ffi::c_int != 0 {
+        if (*ev).data1 & 1 as i32 != 0 {
             key = key_menu_forward;
-            joywait = I_GetTime() + 5 as ::core::ffi::c_int;
+            joywait = I_GetTime() + 5 as i32;
         }
-        if (*ev).data1 & 2 as ::core::ffi::c_int != 0 {
+        if (*ev).data1 & 2 as i32 != 0 {
             key = key_menu_back;
-            joywait = I_GetTime() + 5 as ::core::ffi::c_int;
+            joywait = I_GetTime() + 5 as i32;
         }
-        if joybmenu >= 0 as ::core::ffi::c_int
-            && (*ev).data1 & (1 as ::core::ffi::c_int) << joybmenu
-                != 0 as ::core::ffi::c_int
+        if joybmenu >= 0 as i32
+            && (*ev).data1 & (1 as i32) << joybmenu
+                != 0 as i32
         {
             key = key_menu_activate;
-            joywait = I_GetTime() + 5 as ::core::ffi::c_int;
+            joywait = I_GetTime() + 5 as i32;
         }
-    } else if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_mouse as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (*ev).type_0 as u32
+        == ev_mouse as i32 as u32
         && mousewait < I_GetTime()
     {
         mousey += (*ev).data3;
-        if mousey < lasty - 30 as ::core::ffi::c_int {
+        if mousey < lasty - 30 as i32 {
             key = key_menu_down;
-            mousewait = I_GetTime() + 5 as ::core::ffi::c_int;
-            lasty -= 30 as ::core::ffi::c_int;
+            mousewait = I_GetTime() + 5 as i32;
+            lasty -= 30 as i32;
             mousey = lasty;
-        } else if mousey > lasty + 30 as ::core::ffi::c_int {
+        } else if mousey > lasty + 30 as i32 {
             key = key_menu_up;
-            mousewait = I_GetTime() + 5 as ::core::ffi::c_int;
-            lasty += 30 as ::core::ffi::c_int;
+            mousewait = I_GetTime() + 5 as i32;
+            lasty += 30 as i32;
             mousey = lasty;
         }
         mousex += (*ev).data2;
-        if mousex < lastx - 30 as ::core::ffi::c_int {
+        if mousex < lastx - 30 as i32 {
             key = key_menu_left;
-            mousewait = I_GetTime() + 5 as ::core::ffi::c_int;
-            lastx -= 30 as ::core::ffi::c_int;
+            mousewait = I_GetTime() + 5 as i32;
+            lastx -= 30 as i32;
             mousex = lastx;
-        } else if mousex > lastx + 30 as ::core::ffi::c_int {
+        } else if mousex > lastx + 30 as i32 {
             key = key_menu_right;
-            mousewait = I_GetTime() + 5 as ::core::ffi::c_int;
-            lastx += 30 as ::core::ffi::c_int;
+            mousewait = I_GetTime() + 5 as i32;
+            lastx += 30 as i32;
             mousex = lastx;
         }
-        if (*ev).data1 & 1 as ::core::ffi::c_int != 0 {
+        if (*ev).data1 & 1 as i32 != 0 {
             key = key_menu_forward;
-            mousewait = I_GetTime() + 15 as ::core::ffi::c_int;
+            mousewait = I_GetTime() + 15 as i32;
         }
-        if (*ev).data1 & 2 as ::core::ffi::c_int != 0 {
+        if (*ev).data1 & 2 as i32 != 0 {
             key = key_menu_back;
-            mousewait = I_GetTime() + 15 as ::core::ffi::c_int;
+            mousewait = I_GetTime() + 15 as i32;
         }
-    } else if (*ev).type_0 as ::core::ffi::c_uint
-        == ev_keydown as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (*ev).type_0 as u32
+        == ev_keydown as i32 as u32
     {
         key = (*ev).data1;
         ch = (*ev).data2;
     }
-    if key == -(1 as ::core::ffi::c_int) {
-        return false_0 as boolean;
+    if key == -(1 as i32) {
+        return false;
     }
     if saveStringEnter != 0 {
         match key {
             KEY_BACKSPACE => {
-                if saveCharIndex > 0 as ::core::ffi::c_int {
+                if saveCharIndex > 0 as i32 {
                     saveCharIndex -= 1;
-                    savegamestrings[saveSlot as usize][saveCharIndex as usize] = 0
-                        as ::core::ffi::c_char;
+                    savegamestrings[saveSlot as usize].truncate(saveCharIndex as usize);
                 }
             }
             KEY_ESCAPE => {
-                saveStringEnter = 0 as ::core::ffi::c_int;
-                M_StringCopy(
-                    &raw mut *(&raw mut savegamestrings
-                        as *mut [::core::ffi::c_char; 24])
-                        .offset(saveSlot as isize) as *mut ::core::ffi::c_char,
-                    &raw mut saveOldString as *mut ::core::ffi::c_char,
-                    SAVESTRINGSIZE as size_t,
-                );
+                saveStringEnter = 0 as i32;
+                savegamestrings[saveSlot as usize] = saveOldString.clone();
             }
             KEY_ENTER => {
-                saveStringEnter = 0 as ::core::ffi::c_int;
-                if savegamestrings[saveSlot as usize][0 as ::core::ffi::c_int as usize]
-                    != 0
-                {
+                saveStringEnter = 0 as i32;
+                if !savegamestrings[saveSlot as usize].is_empty() {
                     M_DoSave(saveSlot);
                 }
             }
@@ -3820,363 +3338,305 @@ pub unsafe extern "C" fn M_Responder(mut ev: *mut event_t) -> boolean {
                     ch = key;
                 }
                 ch = ({
-                    let mut __res: ::core::ffi::c_int = 0;
-                    if ::core::mem::size_of::<::core::ffi::c_int>() as usize > 1 as usize
+                    let mut __res: i32 = 0;
+                    if ::core::mem::size_of::<i32>() as usize > 1 as usize
                     {
                         if 0 != 0 {
-                            let mut __c: ::core::ffi::c_int = ch;
-                            __res = (if __c < -(128 as ::core::ffi::c_int)
-                                || __c > 255 as ::core::ffi::c_int
+                            let mut __c: i32 = ch;
+                            __res = (if __c < -(128 as i32)
+                                || __c > 255 as i32
                             {
                                 __c as __int32_t
                             } else {
                                 *(*__ctype_toupper_loc()).offset(__c as isize)
-                            }) as ::core::ffi::c_int;
+                            }) as i32;
                         } else {
                             __res = toupper(ch);
                         }
                     } else {
                         __res = *(*__ctype_toupper_loc()).offset(ch as isize)
-                            as ::core::ffi::c_int;
+                            as i32;
                     }
                     __res
                 });
                 if !(ch != ' ' as i32
-                    && (ch - HU_FONTSTART < 0 as ::core::ffi::c_int
+                    && (ch - HU_FONTSTART < 0 as i32
                         || ch - HU_FONTSTART >= HU_FONTSIZE))
                 {
-                    if ch >= 32 as ::core::ffi::c_int && ch <= 127 as ::core::ffi::c_int
-                        && saveCharIndex < SAVESTRINGSIZE - 1 as ::core::ffi::c_int
-                        && M_StringWidth(
-                            &raw mut *(&raw mut savegamestrings
-                                as *mut [::core::ffi::c_char; 24])
-                                .offset(saveSlot as isize) as *mut ::core::ffi::c_char,
-                        )
-                            < (SAVESTRINGSIZE - 2 as ::core::ffi::c_int)
-                                * 8 as ::core::ffi::c_int
+                    if ch >= 32 as i32 && ch <= 127 as i32
+                        && saveCharIndex < SAVESTRINGSIZE - 1 as i32
+                        && M_StringWidth(&savegamestrings[saveSlot as usize])
+                            < (SAVESTRINGSIZE - 2 as i32)
+                                * 8 as i32
                     {
-                        let fresh0 = saveCharIndex;
-                        saveCharIndex = saveCharIndex + 1;
-                        savegamestrings[saveSlot as usize][fresh0 as usize] = ch
-                            as ::core::ffi::c_char;
-                        savegamestrings[saveSlot as usize][saveCharIndex as usize] = 0
-                            as ::core::ffi::c_char;
+                        saveCharIndex += 1;
+                        savegamestrings[saveSlot as usize].push(ch as u8 as char);
                     }
                 }
             }
         }
-        return true_0 as boolean;
+        return true;
     }
     if messageToPrint != 0 {
-        if messageNeedsInput != 0 {
+        if messageNeedsInput {
             if key != ' ' as i32 && key != KEY_ESCAPE && key != key_menu_confirm
                 && key != key_menu_abort
             {
-                return false_0 as boolean;
+                return false;
             }
         }
-        menuactive = messageLastMenuActive as boolean;
-        messageToPrint = 0 as ::core::ffi::c_int;
+        menuactive = messageLastMenuActive != 0;
+        messageToPrint = 0 as i32;
         if messageRoutine.is_some() {
             messageRoutine.expect("non-null function pointer")(key);
         }
-        menuactive = false_0 as boolean;
-        S_StartSound(NULL, sfx_swtchx as ::core::ffi::c_int);
-        return true_0 as boolean;
+        menuactive = false;
+        S_StartSound(NULL, sfx_swtchx as i32);
+        return true;
     }
-    if devparm != 0 && key == key_menu_help
-        || key != 0 as ::core::ffi::c_int && key == key_menu_screenshot
+    if devparm && key == key_menu_help
+        || key != 0 as i32 && key == key_menu_screenshot
     {
         G_ScreenShot();
-        return true_0 as boolean;
+        return true;
     }
-    if menuactive == 0 {
+    if !menuactive {
         if key == key_menu_decscreen {
-            if automapactive != 0 || chat_on != 0 {
-                return false_0 as boolean;
+            if automapactive || chat_on {
+                return false;
             }
-            M_SizeDisplay(0 as ::core::ffi::c_int);
-            S_StartSound(NULL, sfx_stnmov as ::core::ffi::c_int);
-            return true_0 as boolean;
+            M_SizeDisplay(0 as i32);
+            S_StartSound(NULL, sfx_stnmov as i32);
+            return true;
         } else if key == key_menu_incscreen {
-            if automapactive != 0 || chat_on != 0 {
-                return false_0 as boolean;
+            if automapactive || chat_on {
+                return false;
             }
-            M_SizeDisplay(1 as ::core::ffi::c_int);
-            S_StartSound(NULL, sfx_stnmov as ::core::ffi::c_int);
-            return true_0 as boolean;
+            M_SizeDisplay(1 as i32);
+            S_StartSound(NULL, sfx_stnmov as i32);
+            return true;
         } else if key == key_menu_help {
             M_StartControlPanel();
-            if gamemode as ::core::ffi::c_uint
-                == retail as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == retail as i32 as u32
             {
                 currentMenu = &raw mut ReadDef2;
             } else {
                 currentMenu = &raw mut ReadDef1;
             }
-            itemOn = 0 as ::core::ffi::c_short;
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            return true_0 as boolean;
+            itemOn = 0 as i16;
+            S_StartSound(NULL, sfx_swtchn as i32);
+            return true;
         } else if key == key_menu_save {
             M_StartControlPanel();
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            M_SaveGame(0 as ::core::ffi::c_int);
-            return true_0 as boolean;
+            S_StartSound(NULL, sfx_swtchn as i32);
+            M_SaveGame(0 as i32);
+            return true;
         } else if key == key_menu_load {
             M_StartControlPanel();
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            M_LoadGame(0 as ::core::ffi::c_int);
-            return true_0 as boolean;
+            S_StartSound(NULL, sfx_swtchn as i32);
+            M_LoadGame(0 as i32);
+            return true;
         } else if key == key_menu_volume {
             M_StartControlPanel();
             currentMenu = &raw mut SoundDef;
-            itemOn = sfx_vol as ::core::ffi::c_int as ::core::ffi::c_short;
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            return true_0 as boolean;
+            itemOn = sfx_vol as i32 as i16;
+            S_StartSound(NULL, sfx_swtchn as i32);
+            return true;
         } else if key == key_menu_detail {
-            M_ChangeDetail(0 as ::core::ffi::c_int);
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            return true_0 as boolean;
+            M_ChangeDetail(0 as i32);
+            S_StartSound(NULL, sfx_swtchn as i32);
+            return true;
         } else if key == key_menu_qsave {
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_swtchn as i32);
             M_QuickSave();
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_endgame {
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            M_EndGame(0 as ::core::ffi::c_int);
-            return true_0 as boolean;
+            S_StartSound(NULL, sfx_swtchn as i32);
+            M_EndGame(0 as i32);
+            return true;
         } else if key == key_menu_messages {
-            M_ChangeMessages(0 as ::core::ffi::c_int);
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            return true_0 as boolean;
+            M_ChangeMessages(0 as i32);
+            S_StartSound(NULL, sfx_swtchn as i32);
+            return true;
         } else if key == key_menu_qload {
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_swtchn as i32);
             M_QuickLoad();
-            return true_0 as boolean;
+            return true;
         } else if key == key_menu_quit {
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            M_QuitDOOM(0 as ::core::ffi::c_int);
-            return true_0 as boolean;
+            S_StartSound(NULL, sfx_swtchn as i32);
+            M_QuitDOOM(0 as i32);
+            return true;
         } else if key == key_menu_gamma {
             usegamma += 1;
-            if usegamma > 4 as ::core::ffi::c_int {
-                usegamma = 0 as ::core::ffi::c_int;
+            if usegamma > 4 as i32 {
+                usegamma = 0 as i32;
             }
-            players[consoleplayer as usize].message = &raw mut *(&raw mut gammamsg
-                as *mut [::core::ffi::c_char; 26])
-                .offset(usegamma as isize) as *mut ::core::ffi::c_char;
+            players[consoleplayer as usize].message = gammamsg[usegamma as usize]
+                .as_ptr() as *mut ::core::ffi::c_char;
             I_SetPalette(
-                W_CacheLumpName(
-                    b"PLAYPAL\0" as *const u8 as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char,
-                    PU_CACHE as ::core::ffi::c_int,
+                W_CacheLumpName("PLAYPAL",
+                    PU_CACHE as i32,
                 ) as *mut byte,
             );
-            return true_0 as boolean;
+            return true;
         }
     }
-    if menuactive == 0 {
+    if !menuactive {
         if key == key_menu_activate {
             M_StartControlPanel();
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
-            return true_0 as boolean;
+            S_StartSound(NULL, sfx_swtchn as i32);
+            return true;
         }
-        return false_0 as boolean;
+        return false;
     }
     if key == key_menu_down {
         loop {
-            if itemOn as ::core::ffi::c_int + 1 as ::core::ffi::c_int
-                > (*currentMenu).numitems as ::core::ffi::c_int - 1 as ::core::ffi::c_int
+            if itemOn as i32 + 1 as i32
+                > (*currentMenu).numitems as i32 - 1 as i32
             {
-                itemOn = 0 as ::core::ffi::c_short;
+                itemOn = 0 as i16;
             } else {
                 itemOn += 1;
             }
-            S_StartSound(NULL, sfx_pstop as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_pstop as i32);
             if !((*(*currentMenu).menuitems.offset(itemOn as isize)).status
-                as ::core::ffi::c_int == -(1 as ::core::ffi::c_int))
+                as i32 == -(1 as i32))
             {
                 break;
             }
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_up {
         loop {
             if itemOn == 0 {
-                itemOn = ((*currentMenu).numitems as ::core::ffi::c_int
-                    - 1 as ::core::ffi::c_int) as ::core::ffi::c_short;
+                itemOn = ((*currentMenu).numitems as i32
+                    - 1 as i32) as i16;
             } else {
                 itemOn -= 1;
             }
-            S_StartSound(NULL, sfx_pstop as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_pstop as i32);
             if !((*(*currentMenu).menuitems.offset(itemOn as isize)).status
-                as ::core::ffi::c_int == -(1 as ::core::ffi::c_int))
+                as i32 == -(1 as i32))
             {
                 break;
             }
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_left {
         if (*(*currentMenu).menuitems.offset(itemOn as isize)).routine.is_some()
             && (*(*currentMenu).menuitems.offset(itemOn as isize)).status
-                as ::core::ffi::c_int == 2 as ::core::ffi::c_int
+                as i32 == 2 as i32
         {
-            S_StartSound(NULL, sfx_stnmov as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_stnmov as i32);
             (*(*currentMenu).menuitems.offset(itemOn as isize))
                 .routine
-                .expect("non-null function pointer")(0 as ::core::ffi::c_int);
+                .expect("non-null function pointer")(0 as i32);
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_right {
         if (*(*currentMenu).menuitems.offset(itemOn as isize)).routine.is_some()
             && (*(*currentMenu).menuitems.offset(itemOn as isize)).status
-                as ::core::ffi::c_int == 2 as ::core::ffi::c_int
+                as i32 == 2 as i32
         {
-            S_StartSound(NULL, sfx_stnmov as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_stnmov as i32);
             (*(*currentMenu).menuitems.offset(itemOn as isize))
                 .routine
-                .expect("non-null function pointer")(1 as ::core::ffi::c_int);
+                .expect("non-null function pointer")(1 as i32);
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_forward {
         if (*(*currentMenu).menuitems.offset(itemOn as isize)).routine.is_some()
             && (*(*currentMenu).menuitems.offset(itemOn as isize)).status
-                as ::core::ffi::c_int != 0
+                as i32 != 0
         {
             (*currentMenu).lastOn = itemOn;
             if (*(*currentMenu).menuitems.offset(itemOn as isize)).status
-                as ::core::ffi::c_int == 2 as ::core::ffi::c_int
+                as i32 == 2 as i32
             {
                 (*(*currentMenu).menuitems.offset(itemOn as isize))
                     .routine
-                    .expect("non-null function pointer")(1 as ::core::ffi::c_int);
-                S_StartSound(NULL, sfx_stnmov as ::core::ffi::c_int);
+                    .expect("non-null function pointer")(1 as i32);
+                S_StartSound(NULL, sfx_stnmov as i32);
             } else {
                 (*(*currentMenu).menuitems.offset(itemOn as isize))
                     .routine
-                    .expect("non-null function pointer")(itemOn as ::core::ffi::c_int);
-                S_StartSound(NULL, sfx_pistol as ::core::ffi::c_int);
+                    .expect("non-null function pointer")(itemOn as i32);
+                S_StartSound(NULL, sfx_pistol as i32);
             }
         }
-        return true_0 as boolean;
+        return true;
     } else if key == key_menu_activate {
         (*currentMenu).lastOn = itemOn;
         M_ClearMenus();
-        S_StartSound(NULL, sfx_swtchx as ::core::ffi::c_int);
-        return true_0 as boolean;
+        S_StartSound(NULL, sfx_swtchx as i32);
+        return true;
     } else if key == key_menu_back {
         (*currentMenu).lastOn = itemOn;
         if !(*currentMenu).prevMenu.is_null() {
             currentMenu = (*currentMenu).prevMenu as *mut menu_t;
             itemOn = (*currentMenu).lastOn;
-            S_StartSound(NULL, sfx_swtchn as ::core::ffi::c_int);
+            S_StartSound(NULL, sfx_swtchn as i32);
         }
-        return true_0 as boolean;
-    } else if ch != 0 as ::core::ffi::c_int || IsNullKey(key) != 0 {
-        i = itemOn as ::core::ffi::c_int + 1 as ::core::ffi::c_int;
-        while i < (*currentMenu).numitems as ::core::ffi::c_int {
+        return true;
+    } else if ch != 0 as i32 || IsNullKey(key) {
+        i = itemOn as i32 + 1 as i32;
+        while i < (*currentMenu).numitems as i32 {
             if (*(*currentMenu).menuitems.offset(i as isize)).alphaKey
-                as ::core::ffi::c_int == ch
+                as i32 == ch
             {
-                itemOn = i as ::core::ffi::c_short;
-                S_StartSound(NULL, sfx_pstop as ::core::ffi::c_int);
-                return true_0 as boolean;
+                itemOn = i as i16;
+                S_StartSound(NULL, sfx_pstop as i32);
+                return true;
             }
             i += 1;
         }
-        i = 0 as ::core::ffi::c_int;
-        while i <= itemOn as ::core::ffi::c_int {
+        i = 0 as i32;
+        while i <= itemOn as i32 {
             if (*(*currentMenu).menuitems.offset(i as isize)).alphaKey
-                as ::core::ffi::c_int == ch
+                as i32 == ch
             {
-                itemOn = i as ::core::ffi::c_short;
-                S_StartSound(NULL, sfx_pstop as ::core::ffi::c_int);
-                return true_0 as boolean;
+                itemOn = i as i16;
+                S_StartSound(NULL, sfx_pstop as i32);
+                return true;
             }
             i += 1;
         }
     }
-    return false_0 as boolean;
+    return false;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_StartControlPanel() {
-    if menuactive != 0 {
+pub unsafe fn M_StartControlPanel() {
+    if menuactive {
         return;
     }
-    menuactive = 1 as boolean;
+    menuactive = true;
     currentMenu = &raw mut MainDef;
     itemOn = (*currentMenu).lastOn;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_Drawer() {
-    static mut x: ::core::ffi::c_short = 0;
-    static mut y: ::core::ffi::c_short = 0;
-    let mut i: ::core::ffi::c_uint = 0;
-    let mut max: ::core::ffi::c_uint = 0;
-    let mut string: [::core::ffi::c_char; 80] = [0; 80];
+pub unsafe fn M_Drawer() {
+    static mut x: i16 = 0;
+    static mut y: i16 = 0;
+    let mut i: u32 = 0;
+    let mut max: u32 = 0;
     let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
         ::core::ffi::c_char,
     >();
-    let mut start: ::core::ffi::c_int = 0;
-    inhelpscreens = false_0 as boolean;
+    inhelpscreens = false;
     if messageToPrint != 0 {
-        start = 0 as ::core::ffi::c_int;
-        y = (SCREENHEIGHT / 2 as ::core::ffi::c_int
-            - M_StringHeight(messageString) / 2 as ::core::ffi::c_int)
-            as ::core::ffi::c_short;
-        while *messageString.offset(start as isize) as ::core::ffi::c_int != '\0' as i32
-        {
-            let mut foundnewline: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-            i = 0 as ::core::ffi::c_uint;
-            while (i as size_t) < strlen(messageString.offset(start as isize)) {
-                if *messageString
-                    .offset((start as ::core::ffi::c_uint).wrapping_add(i) as isize)
-                    as ::core::ffi::c_int == '\n' as i32
-                {
-                    M_StringCopy(
-                        &raw mut string as *mut ::core::ffi::c_char,
-                        messageString.offset(start as isize),
-                        ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
-                    );
-                    if (i as usize)
-                        < ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as usize
-                    {
-                        string[i as usize] = '\0' as i32 as ::core::ffi::c_char;
-                    }
-                    foundnewline = 1 as ::core::ffi::c_int;
-                    start = (start as ::core::ffi::c_uint)
-                        .wrapping_add(i.wrapping_add(1 as ::core::ffi::c_uint))
-                        as ::core::ffi::c_int as ::core::ffi::c_int;
-                    break;
-                } else {
-                    i = i.wrapping_add(1);
-                }
-            }
-            if foundnewline == 0 {
-                M_StringCopy(
-                    &raw mut string as *mut ::core::ffi::c_char,
-                    messageString.offset(start as isize),
-                    ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
-                );
-                start = (start as size_t)
-                    .wrapping_add(strlen(&raw mut string as *mut ::core::ffi::c_char))
-                    as ::core::ffi::c_int as ::core::ffi::c_int;
-            }
-            x = (SCREENWIDTH / 2 as ::core::ffi::c_int
-                - M_StringWidth(&raw mut string as *mut ::core::ffi::c_char)
-                    / 2 as ::core::ffi::c_int) as ::core::ffi::c_short;
-            M_WriteText(
-                x as ::core::ffi::c_int,
-                y as ::core::ffi::c_int,
-                &raw mut string as *mut ::core::ffi::c_char,
-            );
-            y = (y as ::core::ffi::c_int
-                + (*hu_font[0 as ::core::ffi::c_int as usize]).height
-                    as ::core::ffi::c_int) as ::core::ffi::c_short;
+        y = (SCREENHEIGHT / 2 as i32
+            - M_StringHeight(&messageString) / 2 as i32) as i16;
+        for line in messageString.split('\n') {
+            let line = if line.len() > 79 { &line[..79] } else { line };
+            x = (SCREENWIDTH / 2 as i32
+                - M_StringWidth(line) / 2 as i32) as i16;
+            M_WriteText(x as i32, y as i32, line);
+            y = (y as i32
+                + (*hu_font[0 as i32 as usize]).height
+                    as i32) as i16;
         }
         return;
     }
-    if menuactive == 0 {
+    if !menuactive {
         return;
     }
     if (*currentMenu).routine.is_some() {
@@ -4187,32 +3647,35 @@ pub unsafe extern "C" fn M_Drawer() {
     }
     x = (*currentMenu).x;
     y = (*currentMenu).y;
-    max = (*currentMenu).numitems as ::core::ffi::c_uint;
-    i = 0 as ::core::ffi::c_uint;
+    max = (*currentMenu).numitems as u32;
+    i = 0 as u32;
     while i < max {
         name = &raw mut (*(*currentMenu).menuitems.offset(i as isize)).name
             as *mut ::core::ffi::c_char;
-        if *name.offset(0 as ::core::ffi::c_int as isize) != 0 {
+        if *name.offset(0 as i32 as isize) != 0 {
             V_DrawPatchDirect(
-                x as ::core::ffi::c_int,
-                y as ::core::ffi::c_int,
-                W_CacheLumpName(name, PU_CACHE as ::core::ffi::c_int) as *mut patch_t,
+                x as i32,
+                y as i32,
+                W_CacheLumpName(
+                    &wad_name8_to_string(name),
+                    PU_CACHE as i32,
+                ) as *mut patch_t,
             );
         }
-        y = (y as ::core::ffi::c_int + LINEHEIGHT) as ::core::ffi::c_short;
+        y = (y as i32 + LINEHEIGHT) as i16;
         i = i.wrapping_add(1);
     }
     V_DrawPatchDirect(
-        x as ::core::ffi::c_int + SKULLXOFF,
-        (*currentMenu).y as ::core::ffi::c_int - 5 as ::core::ffi::c_int
-            + itemOn as ::core::ffi::c_int * LINEHEIGHT,
-        W_CacheLumpName(skullName[whichSkull as usize], PU_CACHE as ::core::ffi::c_int)
+        x as i32 + SKULLXOFF,
+        (*currentMenu).y as i32 - 5 as i32
+            + itemOn as i32 * LINEHEIGHT,
+        W_CacheLumpName(skullName[whichSkull as usize], PU_CACHE as i32)
             as *mut patch_t,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ClearMenus() {
-    menuactive = 0 as boolean;
+    menuactive = false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SetupNextMenu(mut menudef: *mut menu_t) {
@@ -4222,38 +3685,37 @@ pub unsafe extern "C" fn M_SetupNextMenu(mut menudef: *mut menu_t) {
 #[no_mangle]
 pub unsafe extern "C" fn M_Ticker() {
     skullAnimCounter -= 1;
-    if skullAnimCounter as ::core::ffi::c_int <= 0 as ::core::ffi::c_int {
-        whichSkull = (whichSkull as ::core::ffi::c_int ^ 1 as ::core::ffi::c_int)
-            as ::core::ffi::c_short;
-        skullAnimCounter = 8 as ::core::ffi::c_short;
+    if skullAnimCounter as i32 <= 0 as i32 {
+        whichSkull = (whichSkull as i32 ^ 1 as i32)
+            as i16;
+        skullAnimCounter = 8 as i16;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_Init() {
+pub unsafe fn M_Init() {
     currentMenu = &raw mut MainDef;
-    menuactive = 0 as boolean;
+    menuactive = false;
     itemOn = (*currentMenu).lastOn;
-    whichSkull = 0 as ::core::ffi::c_short;
-    skullAnimCounter = 10 as ::core::ffi::c_short;
-    screenSize = screenblocks - 3 as ::core::ffi::c_int;
-    messageToPrint = 0 as ::core::ffi::c_int;
-    messageString = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    messageLastMenuActive = menuactive as ::core::ffi::c_int;
-    quickSaveSlot = -(1 as ::core::ffi::c_int);
-    match gamemode as ::core::ffi::c_uint {
+    whichSkull = 0 as i16;
+    skullAnimCounter = 10 as i16;
+    screenSize = screenblocks - 3 as i32;
+    messageToPrint = 0 as i32;
+    messageString = String::new();
+    messageLastMenuActive = menuactive as i32;
+    quickSaveSlot = -(1 as i32);
+    match gamemode as u32 {
         2 => {
-            MainMenu[readthis as ::core::ffi::c_int as usize] = MainMenu[quitdoom
-                as ::core::ffi::c_int as usize];
+            MainMenu[readthis as i32 as usize] = MainMenu[quitdoom
+                as i32 as usize];
             MainDef.numitems -= 1;
-            MainDef.y = (MainDef.y as ::core::ffi::c_int + 8 as ::core::ffi::c_int)
-                as ::core::ffi::c_short;
+            MainDef.y = (MainDef.y as i32 + 8 as i32)
+                as i16;
             NewDef.prevMenu = &raw mut MainDef as *mut menu_s;
         }
         0 => {}
         1 | 3 | _ => {}
     }
-    if (gameversion as ::core::ffi::c_uint)
-        < exe_ultimate as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (gameversion as u32)
+        < exe_ultimate as i32 as u32
     {
         EpiDef.numitems -= 1;
     }

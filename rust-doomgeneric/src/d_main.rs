@@ -1,14 +1,162 @@
+use crate::src::w_file::wad_file_t;
+use crate::src::hu_lib::patch_t;
+use crate::src::d_event::event_t;
+use crate::src::d_player::{player_t, PST_LIVE};
+use crate::src::p_mobj::{actionf_t};
+use crate::src::i_system::I_Error;
+use crate::src::m_argv::{myargv, M_CheckParm, M_CheckParmWithArgs};
+use crate::src::m_config::M_BindVariable;
+use crate::src::m_misc::M_StringEndsWith;
+use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_CheckNumForName};
+use crate::src::i_timer::I_InitTimer;
+use crate::src::d_loop::D_StartGameLoop;
+use crate::src::doomstat::gamedescription;
+use crate::src::g_game::nodrawers;
+use crate::src::g_game::testcontrols_mousespeed;
+use crate::src::g_game::displayplayer;
+use crate::src::i_sound::I_InitSound;
+use crate::src::i_sound::I_InitMusic;
+use crate::src::i_sound::I_BindSoundVariables;
+use crate::src::d_iwad::D_FindIWAD;
+use crate::src::d_iwad::D_SaveGameIWADName;
+use crate::src::w_main::W_ParseCommandLine;
+use crate::src::w_wad::W_GenerateHashTable;
+use crate::src::w_wad::W_CheckCorrectIWAD;
+use crate::src::s_sound::S_UpdateSounds;
+use crate::src::s_sound::snd_channels;
+use crate::src::v_video::V_DrawMouseSpeedBox;
+use crate::src::d_event::D_PopEvent;
+use crate::src::f_finale::F_Drawer;
+use crate::src::f_wipe::wipe_StartScreen;
+use crate::src::f_wipe::wipe_EndScreen;
+use crate::src::f_wipe::wipe_ScreenWipe;
+use crate::src::m_config::M_SetConfigDir;
+use crate::src::m_config::M_SetConfigFilenames;
+use crate::src::m_config::M_GetSaveGameDir;
+use crate::src::m_controls::M_BindBaseControls;
+use crate::src::m_controls::M_BindWeaponControls;
+use crate::src::m_controls::M_BindMapControls;
+use crate::src::m_controls::M_BindMenuControls;
+use crate::src::m_controls::M_BindChatControls;
+use crate::src::m_controls::M_ApplyPlatformDefaults;
+use crate::src::m_menu::M_Responder;
+use crate::src::m_menu::M_Drawer;
+use crate::src::i_endoom::I_Endoom;
+use crate::src::i_joystick::I_InitJoystick;
+use crate::src::i_joystick::I_BindJoystickVariables;
+use crate::src::i_system::I_PrintStartupBanner;
+use crate::src::i_system::I_PrintBanner;
+use crate::src::i_system::I_PrintDivider;
+use crate::src::i_video::I_GraphicsCheckCommandLine;
+use crate::src::i_video::I_UpdateNoBlit;
+use crate::src::i_video::I_FinishUpdate;
+use crate::src::i_video::I_SetWindowTitle;
+use crate::src::i_video::I_CheckIsScreensaver;
+use crate::src::i_video::I_SetGrabMouseCallback;
+use crate::src::i_video::I_DisplayFPSDots;
+use crate::src::i_video::I_BindVideoVariables;
+use crate::src::i_video::I_StartFrame;
+use crate::src::i_video::I_EnableLoadingDisk;
+use crate::src::i_video::screenvisible;
+use crate::src::g_game::G_InitNew;
+use crate::src::g_game::G_DeferedPlayDemo;
+use crate::src::g_game::G_RecordDemo;
+use crate::src::g_game::G_BeginRecording;
+use crate::src::g_game::G_TimeDemo;
+use crate::src::g_game::G_Responder;
+use crate::src::g_game::vanilla_savegame_limit;
+use crate::src::g_game::vanilla_demo_limit;
+use crate::src::hu_stuff::HU_Drawer;
+use crate::src::hu_stuff::HU_Erase;
+use crate::src::hu_stuff::chat_macros;
+use crate::src::wi_stuff::WI_Drawer;
+use crate::src::st_stuff::ST_Drawer;
+use crate::src::am_map::AM_Drawer;
+use crate::src::r_main::R_RenderPlayerView;
+use crate::src::r_draw::R_DrawViewBorder;
+use crate::src::m_menu::inhelpscreens;
+use crate::src::d_net::D_ConnectNetGame;
+use crate::src::g_game::forwardmove;
+use crate::src::g_game::sidemove;
+use crate::src::d_loop::NetUpdate;
+use crate::src::doomstat::modifiedgame;
+use crate::src::dummy::drone;
+use crate::src::g_game::G_LoadGame;
+use crate::src::g_game::G_VanillaVersionCode;
+use crate::src::g_game::gameaction;
+use crate::src::g_game::paused;
+use crate::src::g_game::usergame;
+use crate::src::g_game::demorecording;
+use crate::src::g_game::singledemo;
+use crate::src::g_game::testcontrols;
+use crate::src::i_timer::I_Sleep;
+use crate::src::i_video::screensaver_mode;
+use crate::src::m_controls::key_multi_msgplayer;
+use crate::src::m_menu::mouseSensitivity;
+use crate::src::m_menu::showMessages;
+use crate::src::m_menu::detailLevel;
+use crate::src::m_menu::screenblocks;
+use crate::src::m_menu::menuactive;
+use crate::src::r_draw::R_FillBackScreen;
+use crate::src::r_draw::scaledviewwidth;
+use crate::src::r_draw::viewwindowx;
+use crate::src::r_draw::viewwindowy;
+use crate::src::r_main::R_ExecuteSetViewSize;
+use crate::src::r_main::setsizeneeded;
+use crate::src::s_sound::S_StartMusic;
+use crate::src::s_sound::sfxVolume;
+use crate::src::s_sound::musicVolume;
+use crate::src::w_wad::W_AddFile;
+use crate::src::w_wad::numlumps;
+use crate::src::g_game::gamestate;
+use crate::src::g_game::timelimit;
+use crate::src::g_game::viewactive;
+use crate::src::i_system::I_AtExit;
+use crate::src::i_video::I_SetPalette;
+use crate::src::p_saveg::P_SaveGameFile;
+use crate::src::v_video::V_DrawPatchDirect;
+use crate::src::v_video::V_RestoreBuffer;
+use crate::src::d_loop::gametic;
+use crate::src::w_wad::lumpinfo;
+use crate::src::g_game::demoplayback;
+use crate::src::r_draw::viewheight;
+use crate::src::doomstat::gamemission;
+use crate::src::am_map::automapactive;
+use crate::src::m_misc::M_StringCopy;
+use crate::src::g_game::deathmatch;
+use crate::src::m_misc::M_snprintf;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
+use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
+use crate::src::d_loop::TryRunTics;
+use crate::src::d_net::D_CheckNetGame;
+use crate::src::hu_stuff::HU_Init;
+use crate::src::i_video::I_InitGraphics;
+use crate::src::m_config::M_LoadDefaults;
+use crate::src::m_menu::M_Init;
+use crate::src::p_setup::P_Init;
+use crate::src::r_main::R_Init;
+use crate::src::s_sound::S_Init;
+use crate::src::st_stuff::ST_Init;
+use crate::src::v_video::V_Init;
+use crate::src::z_zone::Z_Init;
+use crate::src::i_timer::I_GetTime;
+use crate::src::v_video::V_DrawPatch;
+use crate::src::z_zone::Z_Malloc;
+
 extern "C" {
-    fn __ctype_b_loc() -> *mut *const ::core::ffi::c_ushort;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn __ctype_b_loc() -> *mut *const u16;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn snprintf(
         __s: *mut ::core::ffi::c_char,
         __maxlen: size_t,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
-    fn atoi(__nptr: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn exit(__status: ::core::ffi::c_int) -> !;
+    ) -> i32;
+    fn atoi(__nptr: *const ::core::ffi::c_char) -> i32;
+    fn exit(__status: i32) -> !;
     fn memmove(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
@@ -17,219 +165,23 @@ extern "C" {
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
     fn strcasecmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strncasecmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
         __n: size_t,
-    ) -> ::core::ffi::c_int;
-    fn I_GetTime() -> ::core::ffi::c_int;
-    fn I_Sleep(ms: ::core::ffi::c_int);
-    fn I_InitTimer();
-    fn NetUpdate();
-    fn TryRunTics();
-    fn D_StartGameLoop();
-    static mut gametic: ::core::ffi::c_int;
-    static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
-    static mut gameversion: GameVersion_t;
-    static mut gamedescription: *mut ::core::ffi::c_char;
-    static mut modifiedgame: boolean;
-    static mut timelimit: ::core::ffi::c_int;
-    static mut netgame: boolean;
-    static mut deathmatch: ::core::ffi::c_int;
-    static mut sfxVolume: ::core::ffi::c_int;
-    static mut musicVolume: ::core::ffi::c_int;
-    static mut automapactive: boolean;
-    static mut menuactive: boolean;
-    static mut paused: boolean;
-    static mut viewactive: boolean;
-    static mut nodrawers: boolean;
-    static mut testcontrols: boolean;
-    static mut testcontrols_mousespeed: ::core::ffi::c_int;
-    static mut consoleplayer: ::core::ffi::c_int;
-    static mut displayplayer: ::core::ffi::c_int;
-    static mut usergame: boolean;
-    static mut demoplayback: boolean;
-    static mut demorecording: boolean;
-    static mut singledemo: boolean;
-    static mut gamestate: gamestate_t;
-    static mut players: [player_t; 4];
-    static mut mouseSensitivity: ::core::ffi::c_int;
-    fn I_InitSound(use_sfx_prefix: boolean);
-    fn I_InitMusic();
-    fn I_BindSoundVariables();
-    fn D_FindIWAD(
-        mask: ::core::ffi::c_int,
-        mission: *mut GameMission_t,
-    ) -> *mut ::core::ffi::c_char;
-    fn D_SaveGameIWADName(gamemission_0: GameMission_t) -> *mut ::core::ffi::c_char;
-    fn Z_Init();
-    fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_ParseCommandLine() -> boolean;
-    static mut lumpinfo: *mut lumpinfo_t;
-    static mut numlumps: ::core::ffi::c_uint;
-    fn W_AddFile(filename: *mut ::core::ffi::c_char) -> *mut wad_file_t;
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn W_CacheLumpName(
-        name: *mut ::core::ffi::c_char,
-        tag: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_void;
-    fn W_GenerateHashTable();
-    fn W_CheckCorrectIWAD(mission: GameMission_t);
-    fn S_Init(sfxVolume_0: ::core::ffi::c_int, musicVolume_0: ::core::ffi::c_int);
-    fn S_StartMusic(music_id: ::core::ffi::c_int);
-    fn S_UpdateSounds(listener: *mut mobj_t);
-    static mut snd_channels: ::core::ffi::c_int;
-    fn V_Init();
-    fn V_DrawPatch(x: ::core::ffi::c_int, y: ::core::ffi::c_int, patch: *mut patch_t);
-    fn V_DrawPatchDirect(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        patch: *mut patch_t,
-    );
-    fn V_RestoreBuffer();
-    fn V_DrawMouseSpeedBox(speed: ::core::ffi::c_int);
-    fn D_PopEvent() -> *mut event_t;
-    fn F_Drawer();
-    fn wipe_StartScreen(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn wipe_EndScreen(
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn wipe_ScreenWipe(
-        wipeno: ::core::ffi::c_int,
-        x: ::core::ffi::c_int,
-        y: ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
-        ticks: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    static mut myargc: ::core::ffi::c_int;
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn M_LoadDefaults();
+    ) -> i32;
     fn M_SaveDefaults();
-    fn M_SetConfigDir(dir: *mut ::core::ffi::c_char);
-    fn M_BindVariable(
-        name: *mut ::core::ffi::c_char,
-        variable: *mut ::core::ffi::c_void,
-    );
-    fn M_SetConfigFilenames(
-        main_config: *mut ::core::ffi::c_char,
-        extra_config: *mut ::core::ffi::c_char,
-    );
-    fn M_GetSaveGameDir(iwadname: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
-    static mut key_multi_msgplayer: [::core::ffi::c_int; 8];
-    fn M_BindBaseControls();
-    fn M_BindWeaponControls();
-    fn M_BindMapControls();
-    fn M_BindMenuControls();
-    fn M_BindChatControls(num_players: ::core::ffi::c_uint);
-    fn M_ApplyPlatformDefaults();
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
-    fn M_StringEndsWith(
-        s: *const ::core::ffi::c_char,
-        suffix: *const ::core::ffi::c_char,
-    ) -> boolean;
-    fn M_snprintf(
-        buf: *mut ::core::ffi::c_char,
-        buf_len: size_t,
-        s: *const ::core::ffi::c_char,
-        ...
-    ) -> ::core::ffi::c_int;
-    fn M_Responder(ev: *mut event_t) -> boolean;
-    fn M_Drawer();
-    fn M_Init();
-    static mut detailLevel: ::core::ffi::c_int;
-    static mut screenblocks: ::core::ffi::c_int;
-    fn P_SaveGameFile(slot: ::core::ffi::c_int) -> *mut ::core::ffi::c_char;
-    fn I_Endoom(data: *mut byte);
-    fn I_InitJoystick();
-    fn I_BindJoystickVariables();
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    fn I_AtExit(func: atexit_func_t, run_if_error: boolean);
-    fn I_PrintStartupBanner(gamedescription_0: *mut ::core::ffi::c_char);
-    fn I_PrintBanner(text: *mut ::core::ffi::c_char);
-    fn I_PrintDivider();
-    fn I_InitGraphics();
-    fn I_GraphicsCheckCommandLine();
-    fn I_SetPalette(palette: *mut byte);
-    fn I_UpdateNoBlit();
-    fn I_FinishUpdate();
-    fn I_SetWindowTitle(title_0: *mut ::core::ffi::c_char);
-    fn I_CheckIsScreensaver();
-    fn I_SetGrabMouseCallback(func: grabmouse_callback_t);
-    fn I_DisplayFPSDots(dots_on: boolean);
-    fn I_BindVideoVariables();
-    fn I_StartFrame();
-    fn I_EnableLoadingDisk();
-    static mut screenvisible: boolean;
-    static mut screensaver_mode: boolean;
-    fn G_InitNew(skill: skill_t, episode: ::core::ffi::c_int, map: ::core::ffi::c_int);
-    fn G_DeferedPlayDemo(demo: *mut ::core::ffi::c_char);
-    fn G_LoadGame(name: *mut ::core::ffi::c_char);
-    fn G_RecordDemo(name: *mut ::core::ffi::c_char);
-    fn G_BeginRecording();
-    fn G_TimeDemo(name: *mut ::core::ffi::c_char);
     fn G_CheckDemoStatus() -> boolean;
-    fn G_Responder(ev: *mut event_t) -> boolean;
-    fn G_VanillaVersionCode() -> ::core::ffi::c_int;
-    static mut vanilla_savegame_limit: ::core::ffi::c_int;
-    static mut vanilla_demo_limit: ::core::ffi::c_int;
-    fn HU_Init();
-    fn HU_Drawer();
-    fn HU_Erase();
-    static mut chat_macros: [*mut ::core::ffi::c_char; 10];
-    fn WI_Drawer();
-    fn ST_Drawer(fullscreen: boolean, refresh: boolean);
-    fn ST_Init();
-    fn AM_Drawer();
-    static mut drone: boolean;
-    fn P_Init();
-    static mut scaledviewwidth: ::core::ffi::c_int;
-    static mut viewheight: ::core::ffi::c_int;
-    static mut viewwindowx: ::core::ffi::c_int;
-    static mut viewwindowy: ::core::ffi::c_int;
-    fn R_RenderPlayerView(player: *mut player_t);
-    fn R_Init();
-    fn R_FillBackScreen();
-    fn R_DrawViewBorder();
     fn StatDump();
-    static mut gameaction: gameaction_t;
-    static mut inhelpscreens: boolean;
-    fn D_ConnectNetGame();
-    fn D_CheckNetGame();
-    static mut setsizeneeded: boolean;
-    static mut showMessages: ::core::ffi::c_int;
-    fn R_ExecuteSetViewSize();
 }
 pub type __uint8_t = u8;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const _ISalnum: C2RustUnnamed = 8;
 pub const _ISpunct: C2RustUnnamed = 4;
 pub const _IScntrl: C2RustUnnamed = 2;
@@ -244,9 +196,9 @@ pub const _ISlower: C2RustUnnamed = 512;
 pub const _ISupper: C2RustUnnamed = 256;
 pub type size_t = usize;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -257,13 +209,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -278,19 +230,19 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type skill_t = ::core::ffi::c_int;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type gamestate_t = ::core::ffi::c_uint;
+pub type gamestate_t = u32;
 pub const GS_DEMOSCREEN: gamestate_t = 3;
 pub const GS_FINALE: gamestate_t = 2;
 pub const GS_INTERMISSION: gamestate_t = 1;
 pub const GS_LEVEL: gamestate_t = 0;
-pub type gameaction_t = ::core::ffi::c_uint;
+pub type gameaction_t = u32;
 pub const ga_screenshot: gameaction_t = 9;
 pub const ga_worlddone: gameaction_t = 8;
 pub const ga_victory: gameaction_t = 7;
@@ -301,7 +253,7 @@ pub const ga_loadgame: gameaction_t = 3;
 pub const ga_newgame: gameaction_t = 2;
 pub const ga_loadlevel: gameaction_t = 1;
 pub const ga_nothing: gameaction_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -313,53 +265,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -499,7 +413,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1468,18 +1382,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1618,190 +1521,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-pub type player_t = player_s;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMMUSIC: C2RustUnnamed_0 = 68;
 pub const mus_dm2int: C2RustUnnamed_0 = 67;
 pub const mus_dm2ttl: C2RustUnnamed_0 = 66;
@@ -1871,7 +1591,7 @@ pub const mus_e1m3: C2RustUnnamed_0 = 3;
 pub const mus_e1m2: C2RustUnnamed_0 = 2;
 pub const mus_e1m1: C2RustUnnamed_0 = 1;
 pub const mus_None: C2RustUnnamed_0 = 0;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed_1 = 9;
 pub const PU_CACHE: C2RustUnnamed_1 = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed_1 = 7;
@@ -1881,66 +1601,13 @@ pub const PU_FREE: C2RustUnnamed_1 = 4;
 pub const PU_MUSIC: C2RustUnnamed_1 = 3;
 pub const PU_SOUND: C2RustUnnamed_1 = 2;
 pub const PU_STATIC: C2RustUnnamed_1 = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _wad_file_s {
-    pub file_class: *mut wad_file_class_t,
-    pub mapped: *mut byte,
-    pub length: ::core::ffi::c_uint,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct wad_file_class_t {
-    pub OpenFile: Option<
-        unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
-    >,
-    pub CloseFile: Option<unsafe extern "C" fn(*mut wad_file_t) -> ()>,
-    pub Read: Option<
-        unsafe extern "C" fn(
-            *mut wad_file_t,
-            ::core::ffi::c_uint,
-            *mut ::core::ffi::c_void,
-            size_t,
-        ) -> size_t,
-    >,
-}
-pub type wad_file_t = _wad_file_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct lumpinfo_s {
-    pub name: [::core::ffi::c_char; 8],
-    pub wad_file: *mut wad_file_t,
-    pub position: ::core::ffi::c_int,
-    pub size: ::core::ffi::c_int,
-    pub cache: *mut ::core::ffi::c_void,
-    pub next: *mut lumpinfo_t,
-}
-pub type lumpinfo_t = lumpinfo_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct patch_t {
-    pub width: ::core::ffi::c_short,
-    pub height: ::core::ffi::c_short,
-    pub leftoffset: ::core::ffi::c_short,
-    pub topoffset: ::core::ffi::c_short,
-    pub columnofs: [::core::ffi::c_int; 8],
-}
-pub type evtype_t = ::core::ffi::c_uint;
+pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
 pub const ev_mouse: evtype_t = 2;
 pub const ev_keyup: evtype_t = 1;
 pub const ev_keydown: evtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct event_t {
-    pub type_0: evtype_t,
-    pub data1: ::core::ffi::c_int,
-    pub data2: ::core::ffi::c_int,
-    pub data3: ::core::ffi::c_int,
-    pub data4: ::core::ffi::c_int,
-}
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const wipe_NUMWIPES: C2RustUnnamed_2 = 2;
 pub const wipe_Melt: C2RustUnnamed_2 = 1;
 pub const wipe_ColorXForm: C2RustUnnamed_2 = 0;
@@ -1950,7 +1617,7 @@ pub type grabmouse_callback_t = Option<unsafe extern "C" fn() -> boolean>;
 #[repr(C)]
 pub struct C2RustUnnamed_3 {
     pub name: *mut ::core::ffi::c_char,
-    pub mission: ::core::ffi::c_int,
+    pub mission: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -1965,23 +1632,22 @@ pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
 pub const PACKAGE_STRING: [::core::ffi::c_char; 17] = unsafe {
     ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"Doom Generic 0.1\0")
 };
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const TICRATE: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const TICRATE: i32 = 35 as i32;
+pub const MAXPLAYERS: i32 = 4 as i32;
 pub const D_DEVSTR: [::core::ffi::c_char; 22] = unsafe {
     ::core::mem::transmute::<
         [u8; 22],
         [::core::ffi::c_char; 22],
     >(*b"Development mode ON.\n\0")
 };
-pub const HUSTR_KEYGREEN: ::core::ffi::c_int = 'g' as i32;
-pub const HUSTR_KEYINDIGO: ::core::ffi::c_int = 'i' as i32;
-pub const HUSTR_KEYBROWN: ::core::ffi::c_int = 'b' as i32;
-pub const HUSTR_KEYRED: ::core::ffi::c_int = 'r' as i32;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-#[no_mangle]
+pub const HUSTR_KEYGREEN: i32 = 'g' as i32;
+pub const HUSTR_KEYINDIGO: i32 = 'i' as i32;
+pub const HUSTR_KEYBROWN: i32 = 'b' as i32;
+pub const HUSTR_KEYRED: i32 = 'r' as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
 pub static mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
@@ -1989,42 +1655,32 @@ pub static mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null::<
 pub static mut iwadfile: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
-#[no_mangle]
-pub static mut devparm: boolean = 0;
-#[no_mangle]
-pub static mut nomonsters: boolean = 0;
-#[no_mangle]
-pub static mut respawnparm: boolean = 0;
-#[no_mangle]
-pub static mut fastparm: boolean = 0;
-#[no_mangle]
+pub static mut devparm: bool = false;
+pub static mut nomonsters: bool = false;
+pub static mut respawnparm: bool = false;
+pub static mut fastparm: bool = false;
 pub static mut startskill: skill_t = sk_baby;
+pub static mut startepisode: i32 = 0;
+pub static mut startmap: i32 = 0;
+pub static mut autostart: bool = false;
+pub static mut startloadgame: i32 = 0;
+pub static mut advancedemo: bool = false;
 #[no_mangle]
-pub static mut startepisode: ::core::ffi::c_int = 0;
+pub static mut storedemo: bool = false;
 #[no_mangle]
-pub static mut startmap: ::core::ffi::c_int = 0;
+pub static mut bfgedition: bool = false;
 #[no_mangle]
-pub static mut autostart: boolean = 0;
-#[no_mangle]
-pub static mut startloadgame: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut advancedemo: boolean = 0;
-#[no_mangle]
-pub static mut storedemo: boolean = 0;
-#[no_mangle]
-pub static mut bfgedition: boolean = 0;
-#[no_mangle]
-pub static mut main_loop_started: boolean = false_0 as boolean;
+pub static mut main_loop_started: bool = false;
 #[no_mangle]
 pub static mut wadfile: [::core::ffi::c_char; 1024] = [0; 1024];
 #[no_mangle]
 pub static mut mapdir: [::core::ffi::c_char; 1024] = [0; 1024];
 #[no_mangle]
-pub static mut show_endoom: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
+pub static mut show_endoom: i32 = 1 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn D_ProcessEvents() {
     let mut ev: *mut event_t = ::core::ptr::null_mut::<event_t>();
-    if storedemo != 0 {
+    if storedemo {
         return;
     }
     loop {
@@ -2032,75 +1688,72 @@ pub unsafe extern "C" fn D_ProcessEvents() {
         if ev.is_null() {
             break;
         }
-        if M_Responder(ev) != 0 {
+        if M_Responder(ev) {
             continue;
         }
         G_Responder(ev);
     };
 }
-#[no_mangle]
 pub static mut wipegamestate: gamestate_t = GS_DEMOSCREEN;
 #[no_mangle]
 pub unsafe extern "C" fn D_Display() {
-    static mut viewactivestate: boolean = false_0 as boolean;
-    static mut menuactivestate: boolean = false_0 as boolean;
-    static mut inhelpscreensstate: boolean = false_0 as boolean;
-    static mut fullscreen: boolean = false_0 as boolean;
+    static mut viewactivestate: bool = false;
+    static mut menuactivestate: bool = false;
+    static mut inhelpscreensstate: bool = false;
+    static mut fullscreen: bool = false;
     static mut oldgamestate: gamestate_t = 4294967295 as gamestate_t;
-    static mut borderdrawcount: ::core::ffi::c_int = 0;
-    let mut nowtime: ::core::ffi::c_int = 0;
-    let mut tics: ::core::ffi::c_int = 0;
-    let mut wipestart: ::core::ffi::c_int = 0;
-    let mut y: ::core::ffi::c_int = 0;
+    static mut borderdrawcount: i32 = 0;
+    let mut nowtime: i32 = 0;
+    let mut tics: i32 = 0;
+    let mut wipestart: i32 = 0;
+    let mut y: i32 = 0;
     let mut done: boolean = 0;
     let mut wipe: boolean = 0;
     let mut redrawsbar: boolean = 0;
-    if nodrawers != 0 {
+    if nodrawers {
         return;
     }
     redrawsbar = false_0 as boolean;
-    if setsizeneeded != 0 {
+    if setsizeneeded {
         R_ExecuteSetViewSize();
         oldgamestate = 4294967295 as gamestate_t;
-        borderdrawcount = 3 as ::core::ffi::c_int;
+        borderdrawcount = 3 as i32;
     }
-    if gamestate as ::core::ffi::c_uint != wipegamestate as ::core::ffi::c_uint {
+    if gamestate as u32 != wipegamestate as u32 {
         wipe = true_0 as boolean;
         wipe_StartScreen(
-            0 as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
+            0 as i32,
+            0 as i32,
             SCREENWIDTH,
             SCREENHEIGHT,
         );
     } else {
         wipe = false_0 as boolean;
     }
-    if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && gametic != 0
+    if gamestate as u32
+        == GS_LEVEL as i32 as u32 && gametic != 0
     {
         HU_Erase();
     }
-    match gamestate as ::core::ffi::c_uint {
+    match gamestate as u32 {
         0 => {
             if !(gametic == 0) {
-                if automapactive != 0 {
+                if automapactive {
                     AM_Drawer();
                 }
                 if wipe != 0
-                    || viewheight != 200 as ::core::ffi::c_int && fullscreen != 0
+                    || viewheight != 200 as i32 && fullscreen
                 {
                     redrawsbar = true_0 as boolean;
                 }
-                if inhelpscreensstate != 0 && inhelpscreens == 0 {
+                if inhelpscreensstate && !inhelpscreens {
                     redrawsbar = true_0 as boolean;
                 }
                 ST_Drawer(
-                    (viewheight == 200 as ::core::ffi::c_int) as ::core::ffi::c_int
-                        as boolean,
-                    redrawsbar,
+                    viewheight == 200 as i32,
+                    redrawsbar != 0,
                 );
-                fullscreen = (viewheight == 200 as ::core::ffi::c_int)
-                    as ::core::ffi::c_int as boolean;
+                fullscreen = viewheight == 200 as i32;
             }
         }
         1 => {
@@ -2115,8 +1768,8 @@ pub unsafe extern "C" fn D_Display() {
         _ => {}
     }
     I_UpdateNoBlit();
-    if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && automapactive == 0
+    if gamestate as u32
+        == GS_LEVEL as i32 as u32 && !automapactive
         && gametic != 0
     {
         R_RenderPlayerView(
@@ -2124,44 +1777,42 @@ pub unsafe extern "C" fn D_Display() {
                 as *mut player_t,
         );
     }
-    if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && gametic != 0
+    if gamestate as u32
+        == GS_LEVEL as i32 as u32 && gametic != 0
     {
         HU_Drawer();
     }
-    if gamestate as ::core::ffi::c_uint != oldgamestate as ::core::ffi::c_uint
-        && gamestate as ::core::ffi::c_uint
-            != GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamestate as u32 != oldgamestate as u32
+        && gamestate as u32
+            != GS_LEVEL as i32 as u32
     {
         I_SetPalette(
-            W_CacheLumpName(
-                b"PLAYPAL\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                PU_CACHE as ::core::ffi::c_int,
+            W_CacheLumpName("PLAYPAL",
+                PU_CACHE as i32,
             ) as *mut byte,
         );
     }
-    if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
-        && oldgamestate as ::core::ffi::c_uint
-            != GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamestate as u32
+        == GS_LEVEL as i32 as u32
+        && oldgamestate as u32
+            != GS_LEVEL as i32 as u32
     {
-        viewactivestate = false_0 as boolean;
+        viewactivestate = false;
         R_FillBackScreen();
     }
-    if gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && automapactive == 0
-        && scaledviewwidth != 320 as ::core::ffi::c_int
+    if gamestate as u32
+        == GS_LEVEL as i32 as u32 && !automapactive
+        && scaledviewwidth != 320 as i32
     {
-        if menuactive != 0 || menuactivestate != 0 || viewactivestate == 0 {
-            borderdrawcount = 3 as ::core::ffi::c_int;
+        if menuactive || menuactivestate || !viewactivestate {
+            borderdrawcount = 3 as i32;
         }
         if borderdrawcount != 0 {
             R_DrawViewBorder();
             borderdrawcount -= 1;
         }
     }
-    if testcontrols != 0 {
+    if testcontrols {
         V_DrawMouseSpeedBox(testcontrols_mousespeed);
     }
     menuactivestate = menuactive;
@@ -2169,20 +1820,18 @@ pub unsafe extern "C" fn D_Display() {
     inhelpscreensstate = inhelpscreens;
     wipegamestate = gamestate;
     oldgamestate = wipegamestate;
-    if paused != 0 {
-        if automapactive != 0 {
-            y = 4 as ::core::ffi::c_int;
+    if paused {
+        if automapactive {
+            y = 4 as i32;
         } else {
-            y = viewwindowy + 4 as ::core::ffi::c_int;
+            y = viewwindowy + 4 as i32;
         }
         V_DrawPatchDirect(
             viewwindowx
-                + (scaledviewwidth - 68 as ::core::ffi::c_int) / 2 as ::core::ffi::c_int,
+                + (scaledviewwidth - 68 as i32) / 2 as i32,
             y,
-            W_CacheLumpName(
-                b"M_PAUSE\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                PU_CACHE as ::core::ffi::c_int,
+            W_CacheLumpName("M_PAUSE",
+                PU_CACHE as i32,
             ) as *mut patch_t,
         );
     }
@@ -2193,26 +1842,26 @@ pub unsafe extern "C" fn D_Display() {
         return;
     }
     wipe_EndScreen(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        0 as i32,
+        0 as i32,
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    wipestart = I_GetTime() - 1 as ::core::ffi::c_int;
+    wipestart = I_GetTime() - 1 as i32;
     loop {
         loop {
             nowtime = I_GetTime();
             tics = nowtime - wipestart;
-            I_Sleep(1 as ::core::ffi::c_int);
-            if !(tics <= 0 as ::core::ffi::c_int) {
+            I_Sleep(1 as i32);
+            if !(tics <= 0 as i32) {
                 break;
             }
         }
         wipestart = nowtime;
         done = wipe_ScreenWipe(
-            wipe_Melt as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
+            wipe_Melt as i32,
+            0 as i32,
+            0 as i32,
             SCREENWIDTH,
             SCREENHEIGHT,
             tics,
@@ -2227,7 +1876,7 @@ pub unsafe extern "C" fn D_Display() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_BindVariables() {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     M_ApplyPlatformDefaults();
     I_BindVideoVariables();
     I_BindJoystickVariables();
@@ -2236,63 +1885,43 @@ pub unsafe extern "C" fn D_BindVariables() {
     M_BindWeaponControls();
     M_BindMapControls();
     M_BindMenuControls();
-    M_BindChatControls(MAXPLAYERS as ::core::ffi::c_uint);
-    key_multi_msgplayer[0 as ::core::ffi::c_int as usize] = HUSTR_KEYGREEN;
-    key_multi_msgplayer[1 as ::core::ffi::c_int as usize] = HUSTR_KEYINDIGO;
-    key_multi_msgplayer[2 as ::core::ffi::c_int as usize] = HUSTR_KEYBROWN;
-    key_multi_msgplayer[3 as ::core::ffi::c_int as usize] = HUSTR_KEYRED;
-    M_BindVariable(
-        b"mouse_sensitivity\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindChatControls(MAXPLAYERS as u32);
+    key_multi_msgplayer[0 as i32 as usize] = HUSTR_KEYGREEN;
+    key_multi_msgplayer[1 as i32 as usize] = HUSTR_KEYINDIGO;
+    key_multi_msgplayer[2 as i32 as usize] = HUSTR_KEYBROWN;
+    key_multi_msgplayer[3 as i32 as usize] = HUSTR_KEYRED;
+    M_BindVariable("mouse_sensitivity",
         &raw mut mouseSensitivity as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"sfx_volume\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("sfx_volume",
         &raw mut sfxVolume as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"music_volume\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("music_volume",
         &raw mut musicVolume as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"show_messages\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("show_messages",
         &raw mut showMessages as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"screenblocks\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("screenblocks",
         &raw mut screenblocks as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"detaillevel\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("detaillevel",
         &raw mut detailLevel as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"snd_channels\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("snd_channels",
         &raw mut snd_channels as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"vanilla_savegame_limit\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("vanilla_savegame_limit",
         &raw mut vanilla_savegame_limit as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"vanilla_demo_limit\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("vanilla_demo_limit",
         &raw mut vanilla_demo_limit as *mut ::core::ffi::c_void,
     );
-    M_BindVariable(
-        b"show_endoom\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+    M_BindVariable("show_endoom",
         &raw mut show_endoom as *mut ::core::ffi::c_void,
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < 10 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 10 as i32 {
         let mut buf: [::core::ffi::c_char; 12] = [0; 12];
         M_snprintf(
             &raw mut buf as *mut ::core::ffi::c_char,
@@ -2301,7 +1930,9 @@ pub unsafe extern "C" fn D_BindVariables() {
             i,
         );
         M_BindVariable(
-            &raw mut buf as *mut ::core::ffi::c_char,
+            ::std::ffi::CStr::from_ptr(&raw mut buf as *mut ::core::ffi::c_char)
+                .to_str()
+                .unwrap(),
             (&raw mut chat_macros as *mut *mut ::core::ffi::c_char).offset(i as isize)
                 as *mut *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
         );
@@ -2310,42 +1941,42 @@ pub unsafe extern "C" fn D_BindVariables() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_GrabMouseCallback() -> boolean {
-    if drone != 0 {
+    if drone {
         return false_0 as boolean;
     }
-    if menuactive != 0 || paused != 0 {
+    if menuactive || paused {
         return false_0 as boolean;
     }
-    return (gamestate as ::core::ffi::c_uint
-        == GS_LEVEL as ::core::ffi::c_int as ::core::ffi::c_uint && demoplayback == 0
-        && advancedemo == 0) as ::core::ffi::c_int as boolean;
+    return (gamestate as u32
+        == GS_LEVEL as i32 as u32 && !demoplayback
+        && !advancedemo) as i32 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn doomgeneric_Tick() {
     I_StartFrame();
     TryRunTics();
     S_UpdateSounds(players[consoleplayer as usize].mo);
-    if screenvisible != 0 {
+    if screenvisible {
         D_Display();
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_DoomLoop() {
-    if bfgedition != 0
-        && (demorecording != 0
-            || gameaction as ::core::ffi::c_uint
-                == ga_playdemo as ::core::ffi::c_int as ::core::ffi::c_uint
-            || netgame != 0)
+    if bfgedition
+        && (demorecording
+            || gameaction as u32
+                == ga_playdemo as i32 as u32
+            || netgame)
     {
         printf(
             b" WARNING: You are playing using one of the Doom Classic\n IWAD files shipped with the Doom 3: BFG Edition. These are\n known to be incompatible with the regular IWAD files and\n may cause demos and network games to get out of sync.\n\0"
                 as *const u8 as *const ::core::ffi::c_char,
         );
     }
-    if demorecording != 0 {
+    if demorecording {
         G_BeginRecording();
     }
-    main_loop_started = true_0 as boolean;
+    main_loop_started = true;
     TryRunTics();
     I_SetWindowTitle(gamedescription);
     I_GraphicsCheckCommandLine();
@@ -2357,74 +1988,74 @@ pub unsafe extern "C" fn D_DoomLoop() {
     V_RestoreBuffer();
     R_ExecuteSetViewSize();
     D_StartGameLoop();
-    if testcontrols != 0 {
+    if testcontrols {
         wipegamestate = gamestate;
     }
     doomgeneric_Tick();
 }
 #[no_mangle]
-pub static mut demosequence: ::core::ffi::c_int = 0;
+pub static mut demosequence: i32 = 0;
 #[no_mangle]
-pub static mut pagetic: ::core::ffi::c_int = 0;
+pub static mut pagetic: i32 = 0;
 #[no_mangle]
 pub static mut pagename: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
 >() as *mut ::core::ffi::c_char;
-#[no_mangle]
-pub unsafe extern "C" fn D_PageTicker() {
+pub unsafe fn D_PageTicker() {
     pagetic -= 1;
-    if pagetic < 0 as ::core::ffi::c_int {
+    if pagetic < 0 as i32 {
         D_AdvanceDemo();
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_PageDrawer() {
     V_DrawPatch(
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        W_CacheLumpName(pagename, PU_CACHE as ::core::ffi::c_int) as *mut patch_t,
+        0 as i32,
+        0 as i32,
+        W_CacheLumpName(
+            &wad_name8_to_string(pagename),
+            PU_CACHE as i32,
+        ) as *mut patch_t,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_AdvanceDemo() {
-    advancedemo = true_0 as boolean;
+pub unsafe fn D_AdvanceDemo() {
+    advancedemo = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_DoAdvanceDemo() {
+pub unsafe fn D_DoAdvanceDemo() {
     players[consoleplayer as usize].playerstate = PST_LIVE;
-    advancedemo = false_0 as boolean;
-    usergame = false_0 as boolean;
-    paused = false_0 as boolean;
+    advancedemo = false;
+    usergame = false;
+    paused = false;
     gameaction = ga_nothing;
-    if gameversion as ::core::ffi::c_uint
-        == exe_ultimate as ::core::ffi::c_int as ::core::ffi::c_uint
-        || gameversion as ::core::ffi::c_uint
-            == exe_final as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gameversion as u32
+        == exe_ultimate as i32 as u32
+        || gameversion as u32
+            == exe_final as i32 as u32
     {
-        demosequence = (demosequence + 1 as ::core::ffi::c_int)
-            % 7 as ::core::ffi::c_int;
+        demosequence = (demosequence + 1 as i32)
+            % 7 as i32;
     } else {
-        demosequence = (demosequence + 1 as ::core::ffi::c_int)
-            % 6 as ::core::ffi::c_int;
+        demosequence = (demosequence + 1 as i32)
+            % 6 as i32;
     }
     match demosequence {
         0 => {
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == commercial as i32 as u32
             {
-                pagetic = TICRATE * 11 as ::core::ffi::c_int;
+                pagetic = TICRATE * 11 as i32;
             } else {
-                pagetic = 170 as ::core::ffi::c_int;
+                pagetic = 170 as i32;
             }
             gamestate = GS_DEMOSCREEN;
             pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == commercial as i32 as u32
             {
-                S_StartMusic(mus_dm2ttl as ::core::ffi::c_int);
+                S_StartMusic(mus_dm2ttl as i32);
             } else {
-                S_StartMusic(mus_intro as ::core::ffi::c_int);
+                S_StartMusic(mus_intro as i32);
             }
         }
         1 => {
@@ -2434,7 +2065,7 @@ pub unsafe extern "C" fn D_DoAdvanceDemo() {
             );
         }
         2 => {
-            pagetic = 200 as ::core::ffi::c_int;
+            pagetic = 200 as i32;
             gamestate = GS_DEMOSCREEN;
             pagename = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
@@ -2447,17 +2078,17 @@ pub unsafe extern "C" fn D_DoAdvanceDemo() {
         }
         4 => {
             gamestate = GS_DEMOSCREEN;
-            if gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+            if gamemode as u32
+                == commercial as i32 as u32
             {
-                pagetic = TICRATE * 11 as ::core::ffi::c_int;
+                pagetic = TICRATE * 11 as i32;
                 pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartMusic(mus_dm2ttl as ::core::ffi::c_int);
+                S_StartMusic(mus_dm2ttl as i32);
             } else {
-                pagetic = 200 as ::core::ffi::c_int;
-                if gamemode as ::core::ffi::c_uint
-                    == retail as ::core::ffi::c_int as ::core::ffi::c_uint
+                pagetic = 200 as i32;
+                if gamemode as u32
+                    == retail as i32 as u32
                 {
                     pagename = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
@@ -2481,60 +2112,47 @@ pub unsafe extern "C" fn D_DoAdvanceDemo() {
         }
         _ => {}
     }
-    if bfgedition != 0
+    if bfgedition
         && strcasecmp(pagename, b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char)
             == 0
-        && W_CheckNumForName(
-            b"titlepic\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) < 0 as ::core::ffi::c_int
+        && W_CheckNumForName("titlepic",
+        ) < 0 as i32
     {
         pagename = b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_StartTitle() {
+pub unsafe fn D_StartTitle() {
     gameaction = ga_nothing;
-    demosequence = -(1 as ::core::ffi::c_int);
+    demosequence = -(1 as i32);
     D_AdvanceDemo();
 }
-static mut banners: [*mut ::core::ffi::c_char; 7] = [
-    b"                         DOOM 2: Hell on Earth v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                            DOOM Shareware Startup v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                            DOOM Registered Startup v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                          DOOM System Startup v%i.%i                          \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                         The Ultimate DOOM Startup v%i.%i                        \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                     DOOM 2: TNT - Evilution v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"                   DOOM 2: Plutonia Experiment v%i.%i                           \0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+static banners: [&str; 7] = [
+    "                         DOOM 2: Hell on Earth v%i.%i                           ",
+    "                            DOOM Shareware Startup v%i.%i                           ",
+    "                            DOOM Registered Startup v%i.%i                           ",
+    "                          DOOM System Startup v%i.%i                          ",
+    "                         The Ultimate DOOM Startup v%i.%i                        ",
+    "                     DOOM 2: TNT - Evilution v%i.%i                           ",
+    "                   DOOM 2: Plutonia Experiment v%i.%i                           ",
 ];
 unsafe extern "C" fn GetGameName(
     mut gamename: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut i: size_t = 0;
-    let mut deh_sub: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
     i = 0 as size_t;
-    while i
-        < (::core::mem::size_of::<[*mut ::core::ffi::c_char; 7]>() as usize)
-            .wrapping_div(::core::mem::size_of::<*mut ::core::ffi::c_char>() as usize)
-    {
-        deh_sub = banners[i as usize];
-        if deh_sub != banners[i as usize] {
+    while i < banners.len() as size_t {
+        let deh_sub_str: &str = banners[i as usize];
+        if deh_sub_str != banners[i as usize] {
+            let deh_sub_cstring = ::std::ffi::CString::new(deh_sub_str).unwrap();
+            let deh_sub: *mut ::core::ffi::c_char = deh_sub_cstring.as_ptr()
+                as *mut ::core::ffi::c_char;
             let mut gamename_size: size_t = 0;
-            let mut version: ::core::ffi::c_int = 0;
+            let mut version: i32 = 0;
             gamename_size = strlen(deh_sub).wrapping_add(10 as size_t);
             gamename = Z_Malloc(
-                gamename_size as ::core::ffi::c_int,
-                PU_STATIC as ::core::ffi::c_int,
+                gamename_size as i32,
+                PU_STATIC as i32,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
             ) as *mut ::core::ffi::c_char;
             version = G_VanillaVersionCode();
@@ -2542,36 +2160,36 @@ unsafe extern "C" fn GetGameName(
                 gamename,
                 gamename_size,
                 deh_sub,
-                version / 100 as ::core::ffi::c_int,
-                version % 100 as ::core::ffi::c_int,
+                version / 100 as i32,
+                version % 100 as i32,
             );
-            while *gamename.offset(0 as ::core::ffi::c_int as isize)
-                as ::core::ffi::c_int != '\0' as i32
+            while *gamename.offset(0 as i32 as isize)
+                as i32 != '\0' as i32
                 && *(*__ctype_b_loc())
                     .offset(
-                        *gamename.offset(0 as ::core::ffi::c_int as isize)
-                            as ::core::ffi::c_int as isize,
-                    ) as ::core::ffi::c_int
-                    & _ISspace as ::core::ffi::c_int as ::core::ffi::c_ushort
-                        as ::core::ffi::c_int != 0
+                        *gamename.offset(0 as i32 as isize)
+                            as i32 as isize,
+                    ) as i32
+                    & _ISspace as i32 as u16
+                        as i32 != 0
             {
                 memmove(
                     gamename as *mut ::core::ffi::c_void,
-                    gamename.offset(1 as ::core::ffi::c_int as isize)
+                    gamename.offset(1 as i32 as isize)
                         as *const ::core::ffi::c_void,
                     gamename_size.wrapping_sub(1 as size_t),
                 );
             }
-            while *gamename.offset(0 as ::core::ffi::c_int as isize)
-                as ::core::ffi::c_int != '\0' as i32
+            while *gamename.offset(0 as i32 as isize)
+                as i32 != '\0' as i32
                 && *(*__ctype_b_loc())
                     .offset(
                         *gamename
                             .offset(strlen(gamename).wrapping_sub(1 as size_t) as isize)
-                            as ::core::ffi::c_int as isize,
-                    ) as ::core::ffi::c_int
-                    & _ISspace as ::core::ffi::c_int as ::core::ffi::c_ushort
-                        as ::core::ffi::c_int != 0
+                            as i32 as isize,
+                    ) as i32
+                    & _ISspace as i32 as u16
+                        as i32 != 0
             {
                 *gamename.offset(strlen(gamename).wrapping_sub(1 as size_t) as isize) = '\0'
                     as i32 as ::core::ffi::c_char;
@@ -2583,25 +2201,25 @@ unsafe extern "C" fn GetGameName(
     return gamename;
 }
 unsafe extern "C" fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_char) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     static mut packs: [C2RustUnnamed_3; 3] = [
         C2RustUnnamed_3 {
             name: b"doom2\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
-            mission: doom2 as ::core::ffi::c_int,
+            mission: doom2 as i32,
         },
         C2RustUnnamed_3 {
             name: b"tnt\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
-            mission: pack_tnt as ::core::ffi::c_int,
+            mission: pack_tnt as i32,
         },
         C2RustUnnamed_3 {
             name: b"plutonia\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
-            mission: pack_plut as ::core::ffi::c_int,
+            mission: pack_plut as i32,
         },
     ];
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while (i as usize)
         < (::core::mem::size_of::<[C2RustUnnamed_3; 3]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_3>() as usize)
@@ -2613,7 +2231,7 @@ unsafe extern "C" fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_ch
         i += 1;
     }
     printf(b"Valid mission packs are:\n\0" as *const u8 as *const ::core::ffi::c_char);
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while (i as usize)
         < (::core::mem::size_of::<[C2RustUnnamed_3; 3]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_3>() as usize)
@@ -2624,19 +2242,18 @@ unsafe extern "C" fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_ch
         );
         i += 1;
     }
-    I_Error(
-        b"Unknown mission pack name: %s\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        pack_name,
-    );
+    I_Error(&format!(
+        "Unknown mission pack name: {}",
+        ::std::ffi::CStr::from_ptr(pack_name).to_str().unwrap(),
+    ));
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_IdentifyVersion() {
-    if gamemission as ::core::ffi::c_uint
-        == none as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gamemission as u32
+        == none as i32 as u32
     {
-        let mut i: ::core::ffi::c_uint = 0;
-        i = 0 as ::core::ffi::c_uint;
+        let mut i: u32 = 0;
+        i = 0 as u32;
         while i < numlumps {
             if strncasecmp(
                 &raw mut (*lumpinfo.offset(i as isize)).name as *mut ::core::ffi::c_char,
@@ -2658,106 +2275,92 @@ pub unsafe extern "C" fn D_IdentifyVersion() {
                 i = i.wrapping_add(1);
             }
         }
-        if gamemission as ::core::ffi::c_uint
-            == none as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gamemission as u32
+            == none as i32 as u32
         {
-            I_Error(
-                b"Unknown or invalid IWAD file.\0" as *const u8
-                    as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            );
+            I_Error("Unknown or invalid IWAD file.");
         }
     }
-    if (if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
     } else {
-        (if gamemission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        (if gamemission as u32
+            == pack_hacx as i32 as u32
         {
-            doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom2 as i32 as u32
         } else {
-            gamemission as ::core::ffi::c_uint
+            gamemission as u32
         })
-    }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+    }) == doom as i32 as u32
     {
-        if W_CheckNumForName(
-            b"E4M1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) > 0 as ::core::ffi::c_int
+        if W_CheckNumForName("E4M1",
+        ) > 0 as i32
         {
             gamemode = retail;
-        } else if W_CheckNumForName(
-            b"E3M1\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) > 0 as ::core::ffi::c_int
+        } else if W_CheckNumForName("E3M1",
+        ) > 0 as i32
         {
             gamemode = registered;
         } else {
             gamemode = shareware;
         }
     } else {
-        let mut p: ::core::ffi::c_int = 0;
+        let mut p: i32 = 0;
         gamemode = commercial;
-        p = M_CheckParmWithArgs(
-            b"-pack\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            1 as ::core::ffi::c_int,
-        );
-        if p > 0 as ::core::ffi::c_int {
+        p = M_CheckParmWithArgs("-pack", 1 as i32);
+        if p > 0 as i32 {
             SetMissionForPackName(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
             );
         }
     };
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_SetGameDescription() {
-    let mut is_freedoom: boolean = (W_CheckNumForName(
-        b"FREEDOOM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) >= 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
-    let mut is_freedm: boolean = (W_CheckNumForName(
-        b"FREEDM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) >= 0 as ::core::ffi::c_int) as ::core::ffi::c_int as boolean;
+    let mut is_freedoom: boolean = (W_CheckNumForName("FREEDOOM",
+    ) >= 0 as i32) as i32 as boolean;
+    let mut is_freedm: boolean = (W_CheckNumForName("FREEDM",
+    ) >= 0 as i32) as i32 as boolean;
     gamedescription = b"Unknown\0" as *const u8 as *const ::core::ffi::c_char
         as *mut ::core::ffi::c_char;
-    if (if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
     } else {
-        (if gamemission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        (if gamemission as u32
+            == pack_hacx as i32 as u32
         {
-            doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom2 as i32 as u32
         } else {
-            gamemission as ::core::ffi::c_uint
+            gamemission as u32
         })
-    }) == doom as ::core::ffi::c_int as ::core::ffi::c_uint
+    }) == doom as i32 as u32
     {
         if is_freedoom != 0 {
             gamedescription = GetGameName(
                 b"Freedoom: Phase 1\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
-        } else if gamemode as ::core::ffi::c_uint
-            == retail as ::core::ffi::c_int as ::core::ffi::c_uint
+        } else if gamemode as u32
+            == retail as i32 as u32
         {
             gamedescription = GetGameName(
                 b"The Ultimate DOOM\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
-        } else if gamemode as ::core::ffi::c_uint
-            == registered as ::core::ffi::c_int as ::core::ffi::c_uint
+        } else if gamemode as u32
+            == registered as i32 as u32
         {
             gamedescription = GetGameName(
                 b"DOOM Registered\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
-        } else if gamemode as ::core::ffi::c_uint
-            == shareware as ::core::ffi::c_int as ::core::ffi::c_uint
+        } else if gamemode as u32
+            == shareware as i32 as u32
         {
             gamedescription = GetGameName(
                 b"DOOM Shareware\0" as *const u8 as *const ::core::ffi::c_char
@@ -2776,55 +2379,55 @@ pub unsafe extern "C" fn D_SetGameDescription() {
                     as *mut ::core::ffi::c_char,
             );
         }
-    } else if (if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
     } else {
-        (if gamemission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        (if gamemission as u32
+            == pack_hacx as i32 as u32
         {
-            doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom2 as i32 as u32
         } else {
-            gamemission as ::core::ffi::c_uint
+            gamemission as u32
         })
-    }) == doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+    }) == doom2 as i32 as u32
     {
         gamedescription = GetGameName(
             b"DOOM 2: Hell on Earth\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
-    } else if (if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
     } else {
-        (if gamemission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        (if gamemission as u32
+            == pack_hacx as i32 as u32
         {
-            doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom2 as i32 as u32
         } else {
-            gamemission as ::core::ffi::c_uint
+            gamemission as u32
         })
-    }) == pack_plut as ::core::ffi::c_int as ::core::ffi::c_uint
+    }) == pack_plut as i32 as u32
     {
         gamedescription = GetGameName(
             b"DOOM 2: Plutonia Experiment\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
-    } else if (if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (if gamemission as u32
+        == pack_chex as i32 as u32
     {
-        doom as ::core::ffi::c_int as ::core::ffi::c_uint
+        doom as i32 as u32
     } else {
-        (if gamemission as ::core::ffi::c_uint
-            == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+        (if gamemission as u32
+            == pack_hacx as i32 as u32
         {
-            doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+            doom2 as i32 as u32
         } else {
-            gamemission as ::core::ffi::c_uint
+            gamemission as u32
         })
-    }) == pack_tnt as ::core::ffi::c_int as ::core::ffi::c_uint
+    }) == pack_tnt as i32 as u32
     {
         gamedescription = GetGameName(
             b"DOOM 2: TNT - Evilution\0" as *const u8 as *const ::core::ffi::c_char
@@ -2834,36 +2437,30 @@ pub unsafe extern "C" fn D_SetGameDescription() {
 }
 #[no_mangle]
 pub static mut title: [::core::ffi::c_char; 128] = [0; 128];
-unsafe extern "C" fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> boolean {
+unsafe extern "C" fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> bool {
     let mut handle: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     printf(b" adding %s\n\0" as *const u8 as *const ::core::ffi::c_char, filename);
     handle = W_AddFile(filename);
-    return (handle != NULL as *mut wad_file_t) as ::core::ffi::c_int as boolean;
+    return handle != NULL as *mut wad_file_t;
 }
-static mut copyright_banners: [*mut ::core::ffi::c_char; 3] = [
-    b"===========================================================================\nATTENTION:  This version of DOOM has been modified.  If you would like to\nget a copy of the original game, call 1-800-IDGAMES or see the readme file.\n        You will not receive technical support for modified games.\n                      press enter to continue\n===========================================================================\n\0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"===========================================================================\n                 Commercial product - do not distribute!\n         Please report software piracy to the SPA: 1-800-388-PIR8\n===========================================================================\n\0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    b"===========================================================================\n                                Shareware!\n===========================================================================\n\0"
-        as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+static copyright_banners: [&str; 3] = [
+    "===========================================================================\nATTENTION:  This version of DOOM has been modified.  If you would like to\nget a copy of the original game, call 1-800-IDGAMES or see the readme file.\n        You will not receive technical support for modified games.\n                      press enter to continue\n===========================================================================\n",
+    "===========================================================================\n                 Commercial product - do not distribute!\n         Please report software piracy to the SPA: 1-800-388-PIR8\n===========================================================================\n",
+    "===========================================================================\n                                Shareware!\n===========================================================================\n",
 ];
 #[no_mangle]
 pub unsafe extern "C" fn PrintDehackedBanners() {
     let mut i: size_t = 0;
     i = 0 as size_t;
-    while i
-        < (::core::mem::size_of::<[*mut ::core::ffi::c_char; 3]>() as usize)
-            .wrapping_div(::core::mem::size_of::<*mut ::core::ffi::c_char>() as usize)
-    {
-        let mut deh_s: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-            ::core::ffi::c_char,
-        >();
-        deh_s = copyright_banners[i as usize];
-        if deh_s != copyright_banners[i as usize] {
+    while i < copyright_banners.len() as size_t {
+        let deh_s_str: &str = copyright_banners[i as usize];
+        if deh_s_str != copyright_banners[i as usize] {
+            let deh_s_cstring = ::std::ffi::CString::new(deh_s_str).unwrap();
+            let deh_s: *mut ::core::ffi::c_char = deh_s_cstring.as_ptr()
+                as *mut ::core::ffi::c_char;
             printf(b"%s\0" as *const u8 as *const ::core::ffi::c_char, deh_s);
             if *deh_s.offset(strlen(deh_s).wrapping_sub(1 as size_t) as isize)
-                as ::core::ffi::c_int != '\n' as i32
+                as i32 != '\n' as i32
             {
                 printf(b"\n\0" as *const u8 as *const ::core::ffi::c_char);
             }
@@ -2943,18 +2540,14 @@ static mut gameversions: [C2RustUnnamed_4; 10] = [
     },
 ];
 unsafe extern "C" fn InitGameVersion() {
-    let mut p: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    p = M_CheckParmWithArgs(
-        b"-gameversion\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    let mut p: i32 = 0;
+    let mut i: i32 = 0;
+    p = M_CheckParmWithArgs("-gameversion", 1 as i32);
     if p != 0 {
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while !gameversions[i as usize].description.is_null() {
             if strcmp(
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as i32) as usize].as_ptr(),
                 gameversions[i as usize].cmdline,
             ) == 0
             {
@@ -2969,7 +2562,7 @@ unsafe extern "C" fn InitGameVersion() {
                 b"Supported game versions:\n\0" as *const u8
                     as *const ::core::ffi::c_char,
             );
-            i = 0 as ::core::ffi::c_int;
+            i = 0 as i32;
             while !gameversions[i as usize].description.is_null() {
                 printf(
                     b"\t%s (%s)\n\0" as *const u8 as *const ::core::ffi::c_char,
@@ -2978,67 +2571,66 @@ unsafe extern "C" fn InitGameVersion() {
                 );
                 i += 1;
             }
-            I_Error(
-                b"Unknown game version '%s'\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
-            );
+            I_Error(&format!(
+                "Unknown game version '{}'",
+                myargv[(p + 1 as i32) as usize].to_str().unwrap(),
+            ));
         }
-    } else if gamemission as ::core::ffi::c_uint
-        == pack_chex as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if gamemission as u32
+        == pack_chex as i32 as u32
     {
         gameversion = exe_chex;
-    } else if gamemission as ::core::ffi::c_uint
-        == pack_hacx as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if gamemission as u32
+        == pack_hacx as i32 as u32
     {
         gameversion = exe_hacx;
-    } else if gamemode as ::core::ffi::c_uint
-        == shareware as ::core::ffi::c_int as ::core::ffi::c_uint
-        || gamemode as ::core::ffi::c_uint
-            == registered as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if gamemode as u32
+        == shareware as i32 as u32
+        || gamemode as u32
+            == registered as i32 as u32
     {
         gameversion = exe_doom_1_9;
-    } else if gamemode as ::core::ffi::c_uint
-        == retail as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if gamemode as u32
+        == retail as i32 as u32
     {
         gameversion = exe_ultimate;
-    } else if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if gamemode as u32
+        == commercial as i32 as u32
     {
-        if gamemission as ::core::ffi::c_uint
-            == doom2 as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gamemission as u32
+            == doom2 as i32 as u32
         {
             gameversion = exe_doom_1_9;
         } else {
             gameversion = exe_final;
         }
     }
-    if (gameversion as ::core::ffi::c_uint)
-        < exe_ultimate as ::core::ffi::c_int as ::core::ffi::c_uint
-        && gamemode as ::core::ffi::c_uint
-            == retail as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (gameversion as u32)
+        < exe_ultimate as i32 as u32
+        && gamemode as u32
+            == retail as i32 as u32
     {
         gamemode = registered;
     }
-    if (gameversion as ::core::ffi::c_uint)
-        < exe_final as ::core::ffi::c_int as ::core::ffi::c_uint
-        && gamemode as ::core::ffi::c_uint
-            == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        && (gamemission as ::core::ffi::c_uint
-            == pack_tnt as ::core::ffi::c_int as ::core::ffi::c_uint
-            || gamemission as ::core::ffi::c_uint
-                == pack_plut as ::core::ffi::c_int as ::core::ffi::c_uint)
+    if (gameversion as u32)
+        < exe_final as i32 as u32
+        && gamemode as u32
+            == commercial as i32 as u32
+        && (gamemission as u32
+            == pack_tnt as i32 as u32
+            || gamemission as u32
+                == pack_plut as i32 as u32)
     {
         gamemission = doom2;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn PrintGameVersion() {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while !gameversions[i as usize].description.is_null() {
-        if gameversions[i as usize].version as ::core::ffi::c_uint
-            == gameversion as ::core::ffi::c_uint
+        if gameversions[i as usize].version as u32
+            == gameversion as u32
         {
             printf(
                 b"Emulating the behavior of the '%s' executable.\n\0" as *const u8
@@ -3053,101 +2645,70 @@ pub unsafe extern "C" fn PrintGameVersion() {
 }
 unsafe extern "C" fn D_Endoom() {
     let mut endoom: *mut byte = ::core::ptr::null_mut::<byte>();
-    if show_endoom == 0 || main_loop_started == 0 || screensaver_mode != 0
-        || M_CheckParm(
-            b"-testcontrols\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) > 0 as ::core::ffi::c_int
+    if show_endoom == 0 || !main_loop_started || screensaver_mode
+        || M_CheckParm("-testcontrols") > 0 as i32
     {
         return;
     }
-    endoom = W_CacheLumpName(
-        b"ENDOOM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        PU_STATIC as ::core::ffi::c_int,
+    endoom = W_CacheLumpName("ENDOOM",
+        PU_STATIC as i32,
     ) as *mut byte;
     I_Endoom(endoom);
-    exit(0 as ::core::ffi::c_int);
+    exit(0 as i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_DoomMain() {
-    let mut p: ::core::ffi::c_int = 0;
+pub unsafe fn D_DoomMain() {
+    let mut p: i32 = 0;
     let mut file: [::core::ffi::c_char; 256] = [0; 256];
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
-    I_AtExit(Some(D_Endoom as unsafe extern "C" fn() -> ()), false_0 as boolean);
+    I_AtExit(Some(D_Endoom as unsafe extern "C" fn() -> ()), false);
     I_PrintBanner(PACKAGE_STRING.as_ptr() as *mut ::core::ffi::c_char);
     printf(
         b"Z_Init: Init zone memory allocation daemon. \n\0" as *const u8
             as *const ::core::ffi::c_char,
     );
     Z_Init();
-    nomonsters = M_CheckParm(
-        b"-nomonsters\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) as boolean;
-    respawnparm = M_CheckParm(
-        b"-respawn\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) as boolean;
-    fastparm = M_CheckParm(
-        b"-fast\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    ) as boolean;
-    devparm = M_CheckParm(
-        b"-devparm\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) as boolean;
+    nomonsters = M_CheckParm("-nomonsters") != 0;
+    respawnparm = M_CheckParm("-respawn") != 0;
+    fastparm = M_CheckParm("-fast") != 0;
+    devparm = M_CheckParm("-devparm") != 0;
     I_DisplayFPSDots(devparm);
-    if M_CheckParm(
-        b"-deathmatch\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) != 0
-    {
-        deathmatch = 1 as ::core::ffi::c_int;
+    if M_CheckParm("-deathmatch") != 0 {
+        deathmatch = 1 as i32;
     }
-    if M_CheckParm(
-        b"-altdeath\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) != 0
-    {
-        deathmatch = 2 as ::core::ffi::c_int;
+    if M_CheckParm("-altdeath") != 0 {
+        deathmatch = 2 as i32;
     }
-    if devparm != 0 {
+    if devparm {
         printf(D_DEVSTR.as_ptr());
     }
     M_SetConfigDir(::core::ptr::null_mut::<::core::ffi::c_char>());
-    p = M_CheckParm(
-        b"-turbo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    );
+    p = M_CheckParm("-turbo");
     if p != 0 {
-        let mut scale: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-        extern "C" {
-            static mut forwardmove: [::core::ffi::c_int; 2];
+        let mut scale: i32 = 200 as i32;
+        if p < myargv.len() as i32 - 1 as i32 {
+            scale = atoi(
+                myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
+            );
         }
-        extern "C" {
-            static mut sidemove: [::core::ffi::c_int; 2];
+        if scale < 10 as i32 {
+            scale = 10 as i32;
         }
-        if p < myargc - 1 as ::core::ffi::c_int {
-            scale = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
-        }
-        if scale < 10 as ::core::ffi::c_int {
-            scale = 10 as ::core::ffi::c_int;
-        }
-        if scale > 400 as ::core::ffi::c_int {
-            scale = 400 as ::core::ffi::c_int;
+        if scale > 400 as i32 {
+            scale = 400 as i32;
         }
         printf(
             b"turbo scale: %i%%\n\0" as *const u8 as *const ::core::ffi::c_char,
             scale,
         );
-        forwardmove[0 as ::core::ffi::c_int as usize] = forwardmove[0
-            as ::core::ffi::c_int as usize] * scale / 100 as ::core::ffi::c_int;
-        forwardmove[1 as ::core::ffi::c_int as usize] = forwardmove[1
-            as ::core::ffi::c_int as usize] * scale / 100 as ::core::ffi::c_int;
-        sidemove[0 as ::core::ffi::c_int as usize] = sidemove[0 as ::core::ffi::c_int
-            as usize] * scale / 100 as ::core::ffi::c_int;
-        sidemove[1 as ::core::ffi::c_int as usize] = sidemove[1 as ::core::ffi::c_int
-            as usize] * scale / 100 as ::core::ffi::c_int;
+        forwardmove[0 as i32 as usize] = forwardmove[0
+            as i32 as usize] * scale / 100 as i32;
+        forwardmove[1 as i32 as usize] = forwardmove[1
+            as i32 as usize] * scale / 100 as i32;
+        sidemove[0 as i32 as usize] = sidemove[0 as i32
+            as usize] * scale / 100 as i32;
+        sidemove[1 as i32 as usize] = sidemove[1 as i32
+            as usize] * scale / 100 as i32;
     }
     printf(b"V_Init: allocate screens.\n\0" as *const u8 as *const ::core::ffi::c_char);
     V_Init();
@@ -3163,61 +2724,51 @@ pub unsafe extern "C" fn D_DoomMain() {
     );
     D_BindVariables();
     M_LoadDefaults();
-    I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false_0 as boolean);
+    I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
     iwadfile = D_FindIWAD(
-        (1 as ::core::ffi::c_int) << doom as ::core::ffi::c_int
-            | (1 as ::core::ffi::c_int) << doom2 as ::core::ffi::c_int
-            | (1 as ::core::ffi::c_int) << pack_tnt as ::core::ffi::c_int
-            | (1 as ::core::ffi::c_int) << pack_plut as ::core::ffi::c_int
-            | (1 as ::core::ffi::c_int) << pack_chex as ::core::ffi::c_int
-            | (1 as ::core::ffi::c_int) << pack_hacx as ::core::ffi::c_int,
+        (1 as i32) << doom as i32
+            | (1 as i32) << doom2 as i32
+            | (1 as i32) << pack_tnt as i32
+            | (1 as i32) << pack_plut as i32
+            | (1 as i32) << pack_chex as i32
+            | (1 as i32) << pack_hacx as i32,
         &raw mut gamemission,
     );
     if iwadfile.is_null() {
         I_Error(
-            b"Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n\0"
-                as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n",
         );
     }
-    modifiedgame = false_0 as boolean;
+    modifiedgame = false;
     printf(b"W_Init: Init WADfiles.\n\0" as *const u8 as *const ::core::ffi::c_char);
     D_AddFile(iwadfile);
     W_CheckCorrectIWAD(doom);
     D_IdentifyVersion();
     InitGameVersion();
-    if W_CheckNumForName(
-        b"dmenupic\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) >= 0 as ::core::ffi::c_int
+    if W_CheckNumForName("dmenupic",
+    ) >= 0 as i32
     {
         printf(
             b"BFG Edition: Using workarounds as needed.\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
-        bfgedition = true_0 as boolean;
+        bfgedition = true;
     }
     modifiedgame = W_ParseCommandLine();
-    p = M_CheckParmWithArgs(
-        b"-playdemo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p == 0 {
-        p = M_CheckParmWithArgs(
-            b"-timedemo\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            1 as ::core::ffi::c_int,
-        );
+        p = M_CheckParmWithArgs("-timedemo", 1 as i32);
     }
     if p != 0 {
         if M_StringEndsWith(
-            *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
-            b".lmp\0" as *const u8 as *const ::core::ffi::c_char,
-        ) != 0
+            myargv[(p + 1 as i32) as usize].to_str().unwrap(),
+            ".lmp",
+        )
         {
             M_StringCopy(
                 &raw mut file as *mut ::core::ffi::c_char,
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
             );
         } else {
@@ -3225,21 +2776,23 @@ pub unsafe extern "C" fn D_DoomMain() {
                 &raw mut file as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
                 b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
             );
         }
-        if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) != 0 {
+        if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
                 &raw mut (*lumpinfo
-                    .offset(numlumps.wrapping_sub(1 as ::core::ffi::c_uint) as isize))
+                    .offset(numlumps.wrapping_sub(1 as u32) as isize))
                     .name as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         } else {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
-                *myargv.offset((p + 1 as ::core::ffi::c_int) as isize),
+                myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         }
@@ -3253,12 +2806,12 @@ pub unsafe extern "C" fn D_DoomMain() {
             Option<unsafe extern "C" fn() -> boolean>,
             atexit_func_t,
         >(Some(G_CheckDemoStatus as unsafe extern "C" fn() -> boolean)),
-        true_0 as boolean,
+        true,
     );
     W_GenerateHashTable();
     D_SetGameDescription();
     savegamedir = M_GetSaveGameDir(D_SaveGameIWADName(gamemission));
-    if modifiedgame != 0 {
+    if modifiedgame {
         let mut name: [[::core::ffi::c_char; 8]; 23] = [
             ::core::mem::transmute::<
                 [u8; 8],
@@ -3338,43 +2891,34 @@ pub unsafe extern "C" fn D_DoomMain() {
             ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"cybra1\0\0"),
             ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"spida1d1"),
         ];
-        let mut i: ::core::ffi::c_int = 0;
-        if gamemode as ::core::ffi::c_uint
-            == shareware as ::core::ffi::c_int as ::core::ffi::c_uint
+        let mut i: i32 = 0;
+        if gamemode as u32
+            == shareware as i32 as u32
         {
-            I_Error(
-                b"\nYou cannot -file with the shareware version. Register!\0"
-                    as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-            );
+            I_Error("\nYou cannot -file with the shareware version. Register!");
         }
-        if gamemode as ::core::ffi::c_uint
-            == registered as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gamemode as u32
+            == registered as i32 as u32
         {
-            i = 0 as ::core::ffi::c_int;
-            while i < 23 as ::core::ffi::c_int {
+            i = 0 as i32;
+            while i < 23 as i32 {
                 if W_CheckNumForName(
-                    &raw mut *(&raw mut name as *mut [::core::ffi::c_char; 8])
-                        .offset(i as isize) as *mut ::core::ffi::c_char,
-                ) < 0 as ::core::ffi::c_int
+                    &wad_name8_to_string(
+                        &raw mut *(&raw mut name as *mut [::core::ffi::c_char; 8])
+                            .offset(i as isize) as *mut ::core::ffi::c_char,
+                    ),
+                ) < 0 as i32
                 {
-                    I_Error(
-                        b"\nThis is not the registered version.\0" as *const u8
-                            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                    );
+                    I_Error("\nThis is not the registered version.");
                 }
                 i += 1;
             }
         }
     }
-    if W_CheckNumForName(
-        b"SS_START\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) >= 0 as ::core::ffi::c_int
-        || W_CheckNumForName(
-            b"FF_END\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) >= 0 as ::core::ffi::c_int
+    if W_CheckNumForName("SS_START",
+    ) >= 0 as i32
+        || W_CheckNumForName("FF_END",
+        ) >= 0 as i32
     {
         I_PrintDivider();
         printf(
@@ -3384,14 +2928,10 @@ pub unsafe extern "C" fn D_DoomMain() {
     }
     I_PrintStartupBanner(gamedescription);
     PrintDehackedBanners();
-    if W_CheckNumForName(
-        b"FREEDOOM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) >= 0 as ::core::ffi::c_int
-        && W_CheckNumForName(
-            b"FREEDM\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) < 0 as ::core::ffi::c_int
+    if W_CheckNumForName("FREEDOOM",
+    ) >= 0 as i32
+        && W_CheckNumForName("FREEDM",
+        ) < 0 as i32
     {
         printf(
             b" WARNING: You are playing using one of the Freedoom IWAD\n files, which might not work in this port. See this page\n for more information on how to play using Freedoom:\n   http://www.chocolate-doom.org/wiki/index.php/Freedoom\n\0"
@@ -3406,93 +2946,74 @@ pub unsafe extern "C" fn D_DoomMain() {
     I_CheckIsScreensaver();
     I_InitTimer();
     I_InitJoystick();
-    I_InitSound(true_0 as boolean);
+    I_InitSound(true);
     I_InitMusic();
     D_ConnectNetGame();
     startskill = sk_medium;
-    startepisode = 1 as ::core::ffi::c_int;
-    startmap = 1 as ::core::ffi::c_int;
-    autostart = false_0 as boolean;
-    p = M_CheckParmWithArgs(
-        b"-skill\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    startepisode = 1 as i32;
+    startmap = 1 as i32;
+    autostart = false;
+    p = M_CheckParmWithArgs("-skill", 1 as i32);
     if p != 0 {
-        startskill = (*(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize))
-            .offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int - '1' as i32)
-            as skill_t;
-        autostart = true_0 as boolean;
+        startskill = (myargv[(p + 1 as i32) as usize].as_bytes().first().copied().unwrap_or(0)
+            as i32 - '1' as i32) as skill_t;
+        autostart = true;
     }
-    p = M_CheckParmWithArgs(
-        b"-episode\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-episode", 1 as i32);
     if p != 0 {
-        startepisode = *(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize))
-            .offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int - '0' as i32;
-        startmap = 1 as ::core::ffi::c_int;
-        autostart = true_0 as boolean;
+        startepisode = myargv[(p + 1 as i32) as usize].as_bytes().first().copied().unwrap_or(0)
+            as i32 - '0' as i32;
+        startmap = 1 as i32;
+        autostart = true;
     }
-    timelimit = 0 as ::core::ffi::c_int;
-    p = M_CheckParmWithArgs(
-        b"-timer\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    timelimit = 0 as i32;
+    p = M_CheckParmWithArgs("-timer", 1 as i32);
     if p != 0 {
-        timelimit = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+        timelimit = atoi(
+            myargv[(p + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
     }
-    p = M_CheckParm(
-        b"-avg\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    );
+    p = M_CheckParm("-avg");
     if p != 0 {
-        timelimit = 20 as ::core::ffi::c_int;
+        timelimit = 20 as i32;
     }
-    p = M_CheckParmWithArgs(
-        b"-warp\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-warp", 1 as i32);
     if p != 0 {
-        if gamemode as ::core::ffi::c_uint
-            == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+        if gamemode as u32
+            == commercial as i32 as u32
         {
-            startmap = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+            startmap = atoi(
+                myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char,
+            );
         } else {
-            startepisode = *(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize))
-                .offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int
-                - '0' as i32;
-            if (p + 2 as ::core::ffi::c_int) < myargc {
-                startmap = *(*myargv.offset((p + 2 as ::core::ffi::c_int) as isize))
-                    .offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int
-                    - '0' as i32;
+            startepisode = myargv[(p + 1 as i32) as usize].as_bytes().first().copied().unwrap_or(0)
+                as i32 - '0' as i32;
+            if (p + 2 as i32) < myargv.len() as i32 {
+                startmap = myargv[(p + 2 as i32) as usize].as_bytes().first().copied().unwrap_or(0)
+                    as i32 - '0' as i32;
             } else {
-                startmap = 1 as ::core::ffi::c_int;
+                startmap = 1 as i32;
             }
         }
-        autostart = true_0 as boolean;
+        autostart = true;
     }
-    p = M_CheckParm(
-        b"-testcontrols\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    );
-    if p > 0 as ::core::ffi::c_int {
-        startepisode = 1 as ::core::ffi::c_int;
-        startmap = 1 as ::core::ffi::c_int;
-        autostart = true_0 as boolean;
-        testcontrols = true_0 as boolean;
+    p = M_CheckParm("-testcontrols");
+    if p > 0 as i32 {
+        startepisode = 1 as i32;
+        startmap = 1 as i32;
+        autostart = true;
+        testcontrols = true;
     }
-    p = M_CheckParmWithArgs(
-        b"-loadgame\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-loadgame", 1 as i32);
     if p != 0 {
-        startloadgame = atoi(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
+        startloadgame = atoi(
+            myargv[(p + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
     } else {
-        startloadgame = -(1 as ::core::ffi::c_int);
+        startloadgame = -(1 as i32);
     }
     printf(
         b"M_Init: Init miscellaneous info.\n\0" as *const u8
@@ -3509,7 +3030,7 @@ pub unsafe extern "C" fn D_DoomMain() {
     );
     P_Init();
     printf(b"S_Init: Setting up sound.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    S_Init(sfxVolume * 8 as ::core::ffi::c_int, musicVolume * 8 as ::core::ffi::c_int);
+    S_Init(sfxVolume * 8 as i32, musicVolume * 8 as i32);
     printf(
         b"D_CheckNetGame: Checking network game status.\n\0" as *const u8
             as *const ::core::ffi::c_char,
@@ -3523,58 +3044,42 @@ pub unsafe extern "C" fn D_DoomMain() {
     HU_Init();
     printf(b"ST_Init: Init status bar.\n\0" as *const u8 as *const ::core::ffi::c_char);
     ST_Init();
-    if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
-        && W_CheckNumForName(
-            b"map01\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) < 0 as ::core::ffi::c_int
+    if gamemode as u32
+        == commercial as i32 as u32
+        && W_CheckNumForName("map01",
+        ) < 0 as i32
     {
-        storedemo = true_0 as boolean;
+        storedemo = true;
     }
-    if M_CheckParmWithArgs(
-        b"-statdump\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    ) != 0
-    {
-        I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true_0 as boolean);
+    if M_CheckParmWithArgs("-statdump", 1 as i32) != 0 {
+        I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true);
         printf(
             b"External statistics registered.\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
     }
-    p = M_CheckParmWithArgs(
-        b"-record\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-record", 1 as i32);
     if p != 0 {
-        G_RecordDemo(*myargv.offset((p + 1 as ::core::ffi::c_int) as isize));
-        autostart = true_0 as boolean;
+        G_RecordDemo(
+            myargv[(p + 1 as i32) as usize].as_ptr()
+                as *mut ::core::ffi::c_char,
+        );
+        autostart = true;
     }
-    p = M_CheckParmWithArgs(
-        b"-playdemo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p != 0 {
-        singledemo = true_0 as boolean;
+        singledemo = true;
         G_DeferedPlayDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop();
         return;
     }
-    p = M_CheckParmWithArgs(
-        b"-timedemo\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    p = M_CheckParmWithArgs("-timedemo", 1 as i32);
     if p != 0 {
         G_TimeDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop();
         return;
     }
-    if startloadgame >= 0 as ::core::ffi::c_int {
+    if startloadgame >= 0 as i32 {
         M_StringCopy(
             &raw mut file as *mut ::core::ffi::c_char,
             P_SaveGameFile(startloadgame),
@@ -3582,10 +3087,10 @@ pub unsafe extern "C" fn D_DoomMain() {
         );
         G_LoadGame(&raw mut file as *mut ::core::ffi::c_char);
     }
-    if gameaction as ::core::ffi::c_uint
-        != ga_loadgame as ::core::ffi::c_int as ::core::ffi::c_uint
+    if gameaction as u32
+        != ga_loadgame as i32 as u32
     {
-        if autostart != 0 || netgame != 0 {
+        if autostart || netgame {
             G_InitNew(startskill, startepisode, startmap);
         } else {
             D_StartTitle();

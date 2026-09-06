@@ -1,78 +1,29 @@
+use crate::src::i_system::FILE;
+use crate::src::p_spec::{plat_t};
+use crate::src::p_mobj::{thinker_t, sector_t, line_t, actionf_t};
+use crate::src::d_player::{player_t};
+use crate::src::p_mobj::{mobj_t};
+use crate::src::p_spec::P_FindLowestCeilingSurrounding;
+use crate::src::p_floor::T_MovePlane;
+use crate::src::p_spec::P_FindSectorFromLineTag;
+use crate::src::p_tick::P_RemoveThinker;
+use crate::src::p_setup::sides;
+use crate::src::p_tick::P_AddThinker;
+use crate::src::p_setup::sectors;
+use crate::src::s_sound::S_StartSound;
+use crate::src::z_zone::Z_Malloc;
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
     static mut stderr: *mut FILE;
     fn fprintf(
         __stream: *mut FILE,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
-    fn Z_Malloc(
-        size: ::core::ffi::c_int,
-        tag: ::core::ffi::c_int,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
-    static mut sectors: *mut sector_t;
-    static mut sides: *mut side_t;
-    fn P_AddThinker(thinker: *mut thinker_t);
-    fn P_RemoveThinker(thinker: *mut thinker_t);
-    fn P_FindLowestCeilingSurrounding(sec: *mut sector_t) -> fixed_t;
-    fn P_FindSectorFromLineTag(
-        line: *mut line_t,
-        start: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn T_PlatRaise(plat: *mut plat_t);
-    fn T_MovePlane(
-        sector: *mut sector_t,
-        speed: fixed_t,
-        dest: fixed_t,
-        crush: boolean,
-        floorOrCeiling: ::core::ffi::c_int,
-        direction: ::core::ffi::c_int,
-    ) -> result_e;
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
-pub type __off_t = ::core::ffi::c_long;
-pub type __off64_t = ::core::ffi::c_long;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: ::core::ffi::c_int,
-    pub _IO_read_ptr: *mut ::core::ffi::c_char,
-    pub _IO_read_end: *mut ::core::ffi::c_char,
-    pub _IO_read_base: *mut ::core::ffi::c_char,
-    pub _IO_write_base: *mut ::core::ffi::c_char,
-    pub _IO_write_ptr: *mut ::core::ffi::c_char,
-    pub _IO_write_end: *mut ::core::ffi::c_char,
-    pub _IO_buf_base: *mut ::core::ffi::c_char,
-    pub _IO_buf_end: *mut ::core::ffi::c_char,
-    pub _IO_save_base: *mut ::core::ffi::c_char,
-    pub _IO_backup_base: *mut ::core::ffi::c_char,
-    pub _IO_save_end: *mut ::core::ffi::c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: ::core::ffi::c_int,
-    pub _flags2: ::core::ffi::c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: ::core::ffi::c_ushort,
-    pub _vtable_offset: ::core::ffi::c_schar,
-    pub _shortbuf: [::core::ffi::c_char; 1],
-    pub _lock: *mut ::core::ffi::c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut ::core::ffi::c_void,
-    pub __pad5: size_t,
-    pub _mode: ::core::ffi::c_int,
-    pub _unused2: [::core::ffi::c_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
 pub const PU_CACHE: C2RustUnnamed = 8;
 pub const PU_PURGELEVEL: C2RustUnnamed = 7;
@@ -83,9 +34,9 @@ pub const PU_MUSIC: C2RustUnnamed = 3;
 pub const PU_SOUND: C2RustUnnamed = 2;
 pub const PU_STATIC: C2RustUnnamed = 1;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const NUMCARDS: C2RustUnnamed_0 = 6;
 pub const it_redskull: C2RustUnnamed_0 = 5;
 pub const it_yellowskull: C2RustUnnamed_0 = 4;
@@ -93,7 +44,7 @@ pub const it_blueskull: C2RustUnnamed_0 = 3;
 pub const it_redcard: C2RustUnnamed_0 = 2;
 pub const it_yellowcard: C2RustUnnamed_0 = 1;
 pub const it_bluecard: C2RustUnnamed_0 = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -105,39 +56,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -277,7 +204,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1246,18 +1173,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1396,242 +1312,18 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-pub type line_t = line_s;
-pub type player_t = player_s;
-pub type plat_e = ::core::ffi::c_uint;
+pub type plat_e = u32;
 pub const in_stasis: plat_e = 3;
 pub const waiting: plat_e = 2;
 pub const down: plat_e = 1;
 pub const up: plat_e = 0;
-pub type plattype_e = ::core::ffi::c_uint;
+pub type plattype_e = u32;
 pub const blazeDWUS: plattype_e = 4;
 pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct plat_t {
-    pub thinker: thinker_t,
-    pub sector: *mut sector_t,
-    pub speed: fixed_t,
-    pub low: fixed_t,
-    pub high: fixed_t,
-    pub wait: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
-    pub status: plat_e,
-    pub oldstatus: plat_e,
-    pub crush: boolean,
-    pub tag: ::core::ffi::c_int,
-    pub type_0: plattype_e,
-}
-pub type vldoor_e = ::core::ffi::c_uint;
+pub type vldoor_e = u32;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
 pub const vld_blazeRaise: vldoor_e = 5;
@@ -1648,12 +1340,12 @@ pub struct vldoor_t {
     pub sector: *mut sector_t,
     pub topheight: fixed_t,
     pub speed: fixed_t,
-    pub direction: ::core::ffi::c_int,
-    pub topwait: ::core::ffi::c_int,
-    pub topcountdown: ::core::ffi::c_int,
+    pub direction: i32,
+    pub topwait: i32,
+    pub topcountdown: i32,
 }
 pub const pastdest: result_e = 2;
-pub type result_e = ::core::ffi::c_uint;
+pub type result_e = u32;
 pub const crushed: result_e = 1;
 pub const ok: result_e = 0;
 pub const sfx_doropn: C2RustUnnamed_1 = 20;
@@ -1661,7 +1353,7 @@ pub const sfx_bdcls: C2RustUnnamed_1 = 89;
 pub const sfx_dorcls: C2RustUnnamed_1 = 21;
 pub const sfx_bdopn: C2RustUnnamed_1 = 88;
 pub const sfx_oof: C2RustUnnamed_1 = 34;
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const NUMSFX: C2RustUnnamed_1 = 109;
 pub const sfx_radio: C2RustUnnamed_1 = 108;
 pub const sfx_skeatk: C2RustUnnamed_1 = 107;
@@ -1770,11 +1462,11 @@ pub const sfx_None: C2RustUnnamed_1 = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const TICRATE: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const VDOORWAIT: ::core::ffi::c_int = 150 as ::core::ffi::c_int;
+pub const false_0: i32 = 0 as i32;
+pub const TICRATE: i32 = 35 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const VDOORWAIT: i32 = 150 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
     let mut res: result_e = ok;
@@ -1782,29 +1474,29 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
         0 => {
             (*door).topcountdown -= 1;
             if (*door).topcountdown == 0 {
-                match (*door).type_0 as ::core::ffi::c_uint {
+                match (*door).type_0 as u32 {
                     5 => {
-                        (*door).direction = -(1 as ::core::ffi::c_int);
+                        (*door).direction = -(1 as i32);
                         S_StartSound(
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_bdcls as ::core::ffi::c_int,
+                            sfx_bdcls as i32,
                         );
                     }
                     0 => {
-                        (*door).direction = -(1 as ::core::ffi::c_int);
+                        (*door).direction = -(1 as i32);
                         S_StartSound(
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_dorcls as ::core::ffi::c_int,
+                            sfx_dorcls as i32,
                         );
                     }
                     1 => {
-                        (*door).direction = 1 as ::core::ffi::c_int;
+                        (*door).direction = 1 as i32;
                         S_StartSound(
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_doropn as ::core::ffi::c_int,
+                            sfx_doropn as i32,
                         );
                     }
                     _ => {}
@@ -1814,14 +1506,14 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
         2 => {
             (*door).topcountdown -= 1;
             if (*door).topcountdown == 0 {
-                match (*door).type_0 as ::core::ffi::c_uint {
+                match (*door).type_0 as u32 {
                     4 => {
-                        (*door).direction = 1 as ::core::ffi::c_int;
+                        (*door).direction = 1 as i32;
                         (*door).type_0 = vld_normal;
                         S_StartSound(
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_doropn as ::core::ffi::c_int,
+                            sfx_doropn as i32,
                         );
                     }
                     _ => {}
@@ -1833,21 +1525,21 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
                 (*door).sector,
                 (*door).speed,
                 (*(*door).sector).floorheight,
-                false_0 as boolean,
-                1 as ::core::ffi::c_int,
+                false,
+                1 as i32,
                 (*door).direction,
             );
-            if res as ::core::ffi::c_uint
-                == pastdest as ::core::ffi::c_int as ::core::ffi::c_uint
+            if res as u32
+                == pastdest as i32 as u32
             {
-                match (*door).type_0 as ::core::ffi::c_uint {
+                match (*door).type_0 as u32 {
                     5 | 7 => {
                         (*(*door).sector).specialdata = NULL;
                         P_RemoveThinker(&raw mut (*door).thinker);
                         S_StartSound(
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_bdcls as ::core::ffi::c_int,
+                            sfx_bdcls as i32,
                         );
                     }
                     0 | 2 => {
@@ -1855,22 +1547,22 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
                         P_RemoveThinker(&raw mut (*door).thinker);
                     }
                     1 => {
-                        (*door).direction = 0 as ::core::ffi::c_int;
-                        (*door).topcountdown = TICRATE * 30 as ::core::ffi::c_int;
+                        (*door).direction = 0 as i32;
+                        (*door).topcountdown = TICRATE * 30 as i32;
                     }
                     _ => {}
                 }
-            } else if res as ::core::ffi::c_uint
-                == crushed as ::core::ffi::c_int as ::core::ffi::c_uint
+            } else if res as u32
+                == crushed as i32 as u32
             {
-                match (*door).type_0 as ::core::ffi::c_uint {
+                match (*door).type_0 as u32 {
                     7 | 2 => {}
                     _ => {
-                        (*door).direction = 1 as ::core::ffi::c_int;
+                        (*door).direction = 1 as i32;
                         S_StartSound(
                             &raw mut (*(*door).sector).soundorg
                                 as *mut ::core::ffi::c_void,
-                            sfx_doropn as ::core::ffi::c_int,
+                            sfx_doropn as i32,
                         );
                     }
                 }
@@ -1881,16 +1573,16 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
                 (*door).sector,
                 (*door).speed,
                 (*door).topheight,
-                false_0 as boolean,
-                1 as ::core::ffi::c_int,
+                false,
+                1 as i32,
                 (*door).direction,
             );
-            if res as ::core::ffi::c_uint
-                == pastdest as ::core::ffi::c_int as ::core::ffi::c_uint
+            if res as u32
+                == pastdest as i32 as u32
             {
-                match (*door).type_0 as ::core::ffi::c_uint {
+                match (*door).type_0 as u32 {
                     5 | 0 => {
-                        (*door).direction = 0 as ::core::ffi::c_int;
+                        (*door).direction = 0 as i32;
                         (*door).topcountdown = (*door).topwait;
                     }
                     1 | 6 | 3 => {
@@ -1904,88 +1596,86 @@ pub unsafe extern "C" fn T_VerticalDoor(mut door: *mut vldoor_t) {
         _ => {}
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoLockedDoor(
+pub unsafe fn EV_DoLockedDoor(
     mut line: *mut line_t,
     mut type_0: vldoor_e,
     mut thing: *mut mobj_t,
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     p = (*thing).player as *mut player_t;
     if p.is_null() {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
-    match (*line).special as ::core::ffi::c_int {
+    match (*line).special as i32 {
         99 | 133 => {
             if p.is_null() {
-                return 0 as ::core::ffi::c_int;
+                return 0 as i32;
             }
-            if (*p).cards[it_bluecard as ::core::ffi::c_int as usize] == 0
-                && (*p).cards[it_blueskull as ::core::ffi::c_int as usize] == 0
+            if !(*p).cards[it_bluecard as i32 as usize]
+                && !(*p).cards[it_blueskull as i32 as usize]
             {
                 (*p).message = b"You need a blue key to activate this object\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
-                return 0 as ::core::ffi::c_int;
+                S_StartSound(NULL, sfx_oof as i32);
+                return 0 as i32;
             }
         }
         134 | 135 => {
             if p.is_null() {
-                return 0 as ::core::ffi::c_int;
+                return 0 as i32;
             }
-            if (*p).cards[it_redcard as ::core::ffi::c_int as usize] == 0
-                && (*p).cards[it_redskull as ::core::ffi::c_int as usize] == 0
+            if !(*p).cards[it_redcard as i32 as usize]
+                && !(*p).cards[it_redskull as i32 as usize]
             {
                 (*p).message = b"You need a red key to activate this object\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
-                return 0 as ::core::ffi::c_int;
+                S_StartSound(NULL, sfx_oof as i32);
+                return 0 as i32;
             }
         }
         136 | 137 => {
             if p.is_null() {
-                return 0 as ::core::ffi::c_int;
+                return 0 as i32;
             }
-            if (*p).cards[it_yellowcard as ::core::ffi::c_int as usize] == 0
-                && (*p).cards[it_yellowskull as ::core::ffi::c_int as usize] == 0
+            if !(*p).cards[it_yellowcard as i32 as usize]
+                && !(*p).cards[it_yellowskull as i32 as usize]
             {
                 (*p).message = b"You need a yellow key to activate this object\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
-                return 0 as ::core::ffi::c_int;
+                S_StartSound(NULL, sfx_oof as i32);
+                return 0 as i32;
             }
         }
         _ => {}
     }
     return EV_DoDoor(line, type_0);
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_DoDoor(
+pub unsafe fn EV_DoDoor(
     mut line: *mut line_t,
     mut type_0: vldoor_e,
-) -> ::core::ffi::c_int {
-    let mut secnum: ::core::ffi::c_int = 0;
-    let mut rtn: ::core::ffi::c_int = 0;
+) -> i32 {
+    let mut secnum: i32 = 0;
+    let mut rtn: i32 = 0;
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
-    secnum = -(1 as ::core::ffi::c_int);
-    rtn = 0 as ::core::ffi::c_int;
+    secnum = -(1 as i32);
+    rtn = 0 as i32;
     loop {
         secnum = P_FindSectorFromLineTag(line, secnum);
-        if !(secnum >= 0 as ::core::ffi::c_int) {
+        if !(secnum >= 0 as i32) {
             break;
         }
         sec = sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
-        rtn = 1 as ::core::ffi::c_int;
+        rtn = 1 as i32;
         door = Z_Malloc(
-            ::core::mem::size_of::<vldoor_t>() as ::core::ffi::c_int,
-            PU_LEVSPEC as ::core::ffi::c_int,
+            ::core::mem::size_of::<vldoor_t>() as i32,
+            PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut vldoor_t;
         P_AddThinker(&raw mut (*door).thinker);
@@ -1997,57 +1687,57 @@ pub unsafe extern "C" fn EV_DoDoor(
         (*door).sector = sec;
         (*door).type_0 = type_0;
         (*door).topwait = VDOORWAIT;
-        (*door).speed = (FRACUNIT * 2 as ::core::ffi::c_int) as fixed_t;
-        match type_0 as ::core::ffi::c_uint {
+        (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
+        match type_0 as u32 {
             7 => {
                 (*door).topheight = P_FindLowestCeilingSurrounding(sec);
-                (*door).topheight -= 4 as ::core::ffi::c_int * FRACUNIT;
-                (*door).direction = -(1 as ::core::ffi::c_int);
-                (*door).speed = (FRACUNIT * 2 as ::core::ffi::c_int
-                    * 4 as ::core::ffi::c_int) as fixed_t;
+                (*door).topheight -= 4 as i32 * FRACUNIT;
+                (*door).direction = -(1 as i32);
+                (*door).speed = (FRACUNIT * 2 as i32
+                    * 4 as i32) as fixed_t;
                 S_StartSound(
                     &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
-                    sfx_bdcls as ::core::ffi::c_int,
+                    sfx_bdcls as i32,
                 );
             }
             2 => {
                 (*door).topheight = P_FindLowestCeilingSurrounding(sec);
-                (*door).topheight -= 4 as ::core::ffi::c_int * FRACUNIT;
-                (*door).direction = -(1 as ::core::ffi::c_int);
+                (*door).topheight -= 4 as i32 * FRACUNIT;
+                (*door).direction = -(1 as i32);
                 S_StartSound(
                     &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
-                    sfx_dorcls as ::core::ffi::c_int,
+                    sfx_dorcls as i32,
                 );
             }
             1 => {
                 (*door).topheight = (*sec).ceilingheight;
-                (*door).direction = -(1 as ::core::ffi::c_int);
+                (*door).direction = -(1 as i32);
                 S_StartSound(
                     &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
-                    sfx_dorcls as ::core::ffi::c_int,
+                    sfx_dorcls as i32,
                 );
             }
             5 | 6 => {
-                (*door).direction = 1 as ::core::ffi::c_int;
+                (*door).direction = 1 as i32;
                 (*door).topheight = P_FindLowestCeilingSurrounding(sec);
-                (*door).topheight -= 4 as ::core::ffi::c_int * FRACUNIT;
-                (*door).speed = (FRACUNIT * 2 as ::core::ffi::c_int
-                    * 4 as ::core::ffi::c_int) as fixed_t;
+                (*door).topheight -= 4 as i32 * FRACUNIT;
+                (*door).speed = (FRACUNIT * 2 as i32
+                    * 4 as i32) as fixed_t;
                 if (*door).topheight != (*sec).ceilingheight {
                     S_StartSound(
                         &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
-                        sfx_bdopn as ::core::ffi::c_int,
+                        sfx_bdopn as i32,
                     );
                 }
             }
             0 | 3 => {
-                (*door).direction = 1 as ::core::ffi::c_int;
+                (*door).direction = 1 as i32;
                 (*door).topheight = P_FindLowestCeilingSurrounding(sec);
-                (*door).topheight -= 4 as ::core::ffi::c_int * FRACUNIT;
+                (*door).topheight -= 4 as i32 * FRACUNIT;
                 if (*door).topheight != (*sec).ceilingheight {
                     S_StartSound(
                         &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
-                        sfx_doropn as ::core::ffi::c_int,
+                        sfx_doropn as i32,
                     );
                 }
             }
@@ -2056,26 +1746,25 @@ pub unsafe extern "C" fn EV_DoDoor(
     }
     return rtn;
 }
-#[no_mangle]
-pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
+pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
-    let mut side: ::core::ffi::c_int = 0;
-    side = 0 as ::core::ffi::c_int;
+    let mut side: i32 = 0;
+    side = 0 as i32;
     player = (*thing).player as *mut player_t;
-    match (*line).special as ::core::ffi::c_int {
+    match (*line).special as i32 {
         26 | 32 => {
             if player.is_null() {
                 return;
             }
-            if (*player).cards[it_bluecard as ::core::ffi::c_int as usize] == 0
-                && (*player).cards[it_blueskull as ::core::ffi::c_int as usize] == 0
+            if !(*player).cards[it_bluecard as i32 as usize]
+                && !(*player).cards[it_blueskull as i32 as usize]
             {
                 (*player).message = b"You need a blue key to open this door\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
+                S_StartSound(NULL, sfx_oof as i32);
                 return;
             }
         }
@@ -2083,13 +1772,13 @@ pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut 
             if player.is_null() {
                 return;
             }
-            if (*player).cards[it_yellowcard as ::core::ffi::c_int as usize] == 0
-                && (*player).cards[it_yellowskull as ::core::ffi::c_int as usize] == 0
+            if !(*player).cards[it_yellowcard as i32 as usize]
+                && !(*player).cards[it_yellowskull as i32 as usize]
             {
                 (*player).message = b"You need a yellow key to open this door\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
+                S_StartSound(NULL, sfx_oof as i32);
                 return;
             }
         }
@@ -2097,27 +1786,27 @@ pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut 
             if player.is_null() {
                 return;
             }
-            if (*player).cards[it_redcard as ::core::ffi::c_int as usize] == 0
-                && (*player).cards[it_redskull as ::core::ffi::c_int as usize] == 0
+            if !(*player).cards[it_redcard as i32 as usize]
+                && !(*player).cards[it_redskull as i32 as usize]
             {
                 (*player).message = b"You need a red key to open this door\0"
                     as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartSound(NULL, sfx_oof as ::core::ffi::c_int);
+                S_StartSound(NULL, sfx_oof as i32);
                 return;
             }
         }
         _ => {}
     }
     sec = (*sides
-        .offset((*line).sidenum[(side ^ 1 as ::core::ffi::c_int) as usize] as isize))
+        .offset((*line).sidenum[(side ^ 1 as i32) as usize] as isize))
         .sector;
     if !(*sec).specialdata.is_null() {
         door = (*sec).specialdata as *mut vldoor_t;
-        match (*line).special as ::core::ffi::c_int {
+        match (*line).special as i32 {
             1 | 26 | 27 | 28 | 117 => {
-                if (*door).direction == -(1 as ::core::ffi::c_int) {
-                    (*door).direction = 1 as ::core::ffi::c_int;
+                if (*door).direction == -(1 as i32) {
+                    (*door).direction = 1 as i32;
                 } else {
                     if (*thing).player.is_null() {
                         return;
@@ -2132,7 +1821,7 @@ pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut 
                             ),
                         )
                     {
-                        (*door).direction = -(1 as ::core::ffi::c_int);
+                        (*door).direction = -(1 as i32);
                     } else if (*door).thinker.function.acp1
                         == ::core::mem::transmute::<
                             Option<unsafe extern "C" fn(*mut plat_t) -> ()>,
@@ -2141,14 +1830,14 @@ pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut 
                     {
                         let mut plat: *mut plat_t = ::core::ptr::null_mut::<plat_t>();
                         plat = door as *mut plat_t;
-                        (*plat).wait = -(1 as ::core::ffi::c_int);
+                        (*plat).wait = -(1 as i32);
                     } else {
                         fprintf(
                             stderr,
                             b"EV_VerticalDoor: Tried to close something that wasn't a door.\n\0"
                                 as *const u8 as *const ::core::ffi::c_char,
                         );
-                        (*door).direction = -(1 as ::core::ffi::c_int);
+                        (*door).direction = -(1 as i32);
                     }
                 }
                 return;
@@ -2156,29 +1845,29 @@ pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut 
             _ => {}
         }
     }
-    match (*line).special as ::core::ffi::c_int {
+    match (*line).special as i32 {
         117 | 118 => {
             S_StartSound(
                 &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
-                sfx_bdopn as ::core::ffi::c_int,
+                sfx_bdopn as i32,
             );
         }
         1 | 31 => {
             S_StartSound(
                 &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
-                sfx_doropn as ::core::ffi::c_int,
+                sfx_doropn as i32,
             );
         }
         _ => {
             S_StartSound(
                 &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
-                sfx_doropn as ::core::ffi::c_int,
+                sfx_doropn as i32,
             );
         }
     }
     door = Z_Malloc(
-        ::core::mem::size_of::<vldoor_t>() as ::core::ffi::c_int,
-        PU_LEVSPEC as ::core::ffi::c_int,
+        ::core::mem::size_of::<vldoor_t>() as i32,
+        PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut vldoor_t;
     P_AddThinker(&raw mut (*door).thinker);
@@ -2188,78 +1877,76 @@ pub unsafe extern "C" fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut 
         actionf_p1,
     >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()));
     (*door).sector = sec;
-    (*door).direction = 1 as ::core::ffi::c_int;
-    (*door).speed = (FRACUNIT * 2 as ::core::ffi::c_int) as fixed_t;
+    (*door).direction = 1 as i32;
+    (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
     (*door).topwait = VDOORWAIT;
-    match (*line).special as ::core::ffi::c_int {
+    match (*line).special as i32 {
         1 | 26 | 27 | 28 => {
             (*door).type_0 = vld_normal;
         }
         31 | 32 | 33 | 34 => {
             (*door).type_0 = vld_open;
-            (*line).special = 0 as ::core::ffi::c_short;
+            (*line).special = 0 as i16;
         }
         117 => {
             (*door).type_0 = vld_blazeRaise;
-            (*door).speed = (FRACUNIT * 2 as ::core::ffi::c_int
-                * 4 as ::core::ffi::c_int) as fixed_t;
+            (*door).speed = (FRACUNIT * 2 as i32
+                * 4 as i32) as fixed_t;
         }
         118 => {
             (*door).type_0 = vld_blazeOpen;
-            (*line).special = 0 as ::core::ffi::c_short;
-            (*door).speed = (FRACUNIT * 2 as ::core::ffi::c_int
-                * 4 as ::core::ffi::c_int) as fixed_t;
+            (*line).special = 0 as i16;
+            (*door).speed = (FRACUNIT * 2 as i32
+                * 4 as i32) as fixed_t;
         }
         _ => {}
     }
     (*door).topheight = P_FindLowestCeilingSurrounding(sec);
-    (*door).topheight -= 4 as ::core::ffi::c_int * FRACUNIT;
+    (*door).topheight -= 4 as i32 * FRACUNIT;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
+pub unsafe fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
     door = Z_Malloc(
-        ::core::mem::size_of::<vldoor_t>() as ::core::ffi::c_int,
-        PU_LEVSPEC as ::core::ffi::c_int,
+        ::core::mem::size_of::<vldoor_t>() as i32,
+        PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut vldoor_t;
     P_AddThinker(&raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
-    (*sec).special = 0 as ::core::ffi::c_short;
+    (*sec).special = 0 as i16;
     (*door).thinker.function.acp1 = ::core::mem::transmute::<
         Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
         actionf_p1,
     >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()));
     (*door).sector = sec;
-    (*door).direction = 0 as ::core::ffi::c_int;
+    (*door).direction = 0 as i32;
     (*door).type_0 = vld_normal;
-    (*door).speed = (FRACUNIT * 2 as ::core::ffi::c_int) as fixed_t;
-    (*door).topcountdown = 30 as ::core::ffi::c_int * TICRATE;
+    (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
+    (*door).topcountdown = 30 as i32 * TICRATE;
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SpawnDoorRaiseIn5Mins(
+pub unsafe fn P_SpawnDoorRaiseIn5Mins(
     mut sec: *mut sector_t,
-    mut secnum: ::core::ffi::c_int,
+    mut secnum: i32,
 ) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
     door = Z_Malloc(
-        ::core::mem::size_of::<vldoor_t>() as ::core::ffi::c_int,
-        PU_LEVSPEC as ::core::ffi::c_int,
+        ::core::mem::size_of::<vldoor_t>() as i32,
+        PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut vldoor_t;
     P_AddThinker(&raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
-    (*sec).special = 0 as ::core::ffi::c_short;
+    (*sec).special = 0 as i16;
     (*door).thinker.function.acp1 = ::core::mem::transmute::<
         Option<unsafe extern "C" fn(*mut vldoor_t) -> ()>,
         actionf_p1,
     >(Some(T_VerticalDoor as unsafe extern "C" fn(*mut vldoor_t) -> ()));
     (*door).sector = sec;
-    (*door).direction = 2 as ::core::ffi::c_int;
+    (*door).direction = 2 as i32;
     (*door).type_0 = vld_raiseIn5Mins;
-    (*door).speed = (FRACUNIT * 2 as ::core::ffi::c_int) as fixed_t;
+    (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
     (*door).topheight = P_FindLowestCeilingSurrounding(sec);
-    (*door).topheight -= 4 as ::core::ffi::c_int * FRACUNIT;
+    (*door).topheight -= 4 as i32 * FRACUNIT;
     (*door).topwait = VDOORWAIT;
-    (*door).topcountdown = 5 as ::core::ffi::c_int * 60 as ::core::ffi::c_int * TICRATE;
+    (*door).topcountdown = 5 as i32 * 60 as i32 * TICRATE;
 }

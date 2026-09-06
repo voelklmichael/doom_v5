@@ -1,54 +1,52 @@
+use crate::src::d_loop::{net_connect_data_t, net_gamesettings_t, loop_interface_t};
+use crate::src::p_mobj::{actionf_t};
+use crate::src::d_player::{player_t};
+use crate::src::d_ticcmd::{ticcmd_t};
+use crate::src::m_argv::M_CheckParm;
+use crate::src::w_wad::W_CheckNumForName;
+use crate::src::d_main::D_DoAdvanceDemo;
+use crate::src::g_game::G_Ticker;
+use crate::src::d_loop::D_RegisterLoopCallbacks;
+use crate::src::d_loop::D_InitNetGame;
+use crate::src::d_loop::D_StartNetGame;
+use crate::src::d_main::startskill;
+use crate::src::d_main::startepisode;
+use crate::src::d_main::startmap;
+use crate::src::d_main::startloadgame;
+use crate::src::d_main::autostart;
+use crate::src::g_game::lowres_turn;
+use crate::src::w_checksum::W_Checksum;
+use crate::src::d_main::advancedemo;
+use crate::src::d_main::respawnparm;
+use crate::src::g_game::demorecording;
+use crate::src::r_main::viewangleoffset;
+use crate::src::d_main::nomonsters;
+use crate::src::d_main::fastparm;
+use crate::src::g_game::timelimit;
+use crate::src::g_game::demoplayback;
+use crate::src::doomstat::gamemission;
+use crate::src::m_misc::M_StringCopy;
+use crate::src::g_game::deathmatch;
+use crate::src::g_game::playeringame;
+use crate::src::doomstat::gameversion;
+use crate::src::g_game::netgame;
+use crate::src::g_game::consoleplayer;
+use crate::src::g_game::players;
+use crate::src::doomstat::gamemode;
+
 extern "C" {
-    pub type subsector_s;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn D_ProcessEvents();
-    fn D_DoAdvanceDemo();
-    fn M_CheckParm(check: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
     fn M_Ticker();
-    fn M_StringCopy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        dest_size: size_t,
-    ) -> boolean;
     fn G_CheckDemoStatus() -> boolean;
-    fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: ::core::ffi::c_int);
-    fn G_Ticker();
-    fn D_RegisterLoopCallbacks(i: *mut loop_interface_t);
-    fn D_InitNetGame(connect_data: *mut net_connect_data_t) -> boolean;
-    fn D_StartNetGame(
-        settings: *mut net_gamesettings_t,
-        callback: netgame_startup_callback_t,
-    );
-    static mut nomonsters: boolean;
-    static mut respawnparm: boolean;
-    static mut fastparm: boolean;
-    static mut gamemode: GameMode_t;
-    static mut gamemission: GameMission_t;
-    static mut gameversion: GameVersion_t;
-    static mut startskill: skill_t;
-    static mut startepisode: ::core::ffi::c_int;
-    static mut startmap: ::core::ffi::c_int;
-    static mut startloadgame: ::core::ffi::c_int;
-    static mut autostart: boolean;
-    static mut timelimit: ::core::ffi::c_int;
-    static mut netgame: boolean;
-    static mut deathmatch: ::core::ffi::c_int;
-    static mut viewangleoffset: ::core::ffi::c_int;
-    static mut consoleplayer: ::core::ffi::c_int;
-    static mut demoplayback: boolean;
-    static mut demorecording: boolean;
-    static mut lowres_turn: boolean;
-    static mut players: [player_t; 4];
-    static mut playeringame: [boolean; 4];
-    fn W_Checksum(digest: *mut byte);
-    fn W_CheckNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
+    fn G_BuildTiccmd(cmd: *mut ticcmd_t, maketic: i32);
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -59,13 +57,13 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = ::core::ffi::c_uint;
+pub type GameVersion_t = u32;
 pub const exe_strife_1_31: GameVersion_t = 13;
 pub const exe_strife_1_2: GameVersion_t = 12;
 pub const exe_hexen_1_1: GameVersion_t = 11;
@@ -80,14 +78,14 @@ pub const exe_doom_1_8: GameVersion_t = 3;
 pub const exe_doom_1_7: GameVersion_t = 2;
 pub const exe_doom_1_666: GameVersion_t = 1;
 pub const exe_doom_1_2: GameVersion_t = 0;
-pub type skill_t = ::core::ffi::c_int;
+pub type skill_t = i32;
 pub const sk_nightmare: skill_t = 4;
 pub const sk_hard: skill_t = 3;
 pub const sk_medium: skill_t = 2;
 pub const sk_easy: skill_t = 1;
 pub const sk_baby: skill_t = 0;
 pub const sk_noitems: skill_t = -1;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -99,102 +97,19 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
 pub type sha1_digest_t = [byte; 20];
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct net_connect_data_t {
-    pub gamemode: ::core::ffi::c_int,
-    pub gamemission: ::core::ffi::c_int,
-    pub lowres_turn: ::core::ffi::c_int,
-    pub drone: ::core::ffi::c_int,
-    pub max_players: ::core::ffi::c_int,
-    pub is_freedoom: ::core::ffi::c_int,
-    pub wad_sha1sum: sha1_digest_t,
-    pub deh_sha1sum: sha1_digest_t,
-    pub player_class: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct net_gamesettings_t {
-    pub ticdup: ::core::ffi::c_int,
-    pub extratics: ::core::ffi::c_int,
-    pub deathmatch: ::core::ffi::c_int,
-    pub episode: ::core::ffi::c_int,
-    pub nomonsters: ::core::ffi::c_int,
-    pub fast_monsters: ::core::ffi::c_int,
-    pub respawn_monsters: ::core::ffi::c_int,
-    pub map: ::core::ffi::c_int,
-    pub skill: ::core::ffi::c_int,
-    pub gameversion: ::core::ffi::c_int,
-    pub lowres_turn: ::core::ffi::c_int,
-    pub new_sync: ::core::ffi::c_int,
-    pub timelimit: ::core::ffi::c_int,
-    pub loadgame: ::core::ffi::c_int,
-    pub random: ::core::ffi::c_int,
-    pub num_players: ::core::ffi::c_int,
-    pub consoleplayer: ::core::ffi::c_int,
-    pub player_classes: [::core::ffi::c_int; 8],
-}
 pub type netgame_startup_callback_t = Option<
-    unsafe extern "C" fn(::core::ffi::c_int, ::core::ffi::c_int) -> boolean,
+    unsafe extern "C" fn(i32, i32) -> boolean,
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct loop_interface_t {
-    pub ProcessEvents: Option<unsafe extern "C" fn() -> ()>,
-    pub BuildTiccmd: Option<
-        unsafe extern "C" fn(*mut ticcmd_t, ::core::ffi::c_int) -> (),
-    >,
-    pub RunTic: Option<unsafe extern "C" fn(*mut ticcmd_t, *mut boolean) -> ()>,
-    pub RunMenu: Option<unsafe extern "C" fn() -> ()>,
-}
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -334,7 +249,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1303,18 +1218,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1453,163 +1357,40 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-pub type player_t = player_s;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const MAXPLAYERS: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const ANG270: ::core::ffi::c_uint = 0xc0000000 as ::core::ffi::c_uint;
-#[no_mangle]
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const MAXPLAYERS: i32 = 4 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const ANG270: u32 = 0xc0000000 as u32;
 pub static mut netcmds: *mut ticcmd_t = ::core::ptr::null::<ticcmd_t>() as *mut ticcmd_t;
 unsafe extern "C" fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
-    let mut player_num: ::core::ffi::c_uint = 0;
+    let mut player_num: u32 = 0;
     player_num = player.offset_from(&raw mut players as *mut player_t)
-        as ::core::ffi::c_long as ::core::ffi::c_uint;
+        as i64 as u32;
     M_StringCopy(
         &raw mut exitmsg as *mut ::core::ffi::c_char,
         b"Player 1 left the game\0" as *const u8 as *const ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
     );
-    exitmsg[7 as ::core::ffi::c_int as usize] = (exitmsg[7 as ::core::ffi::c_int
-        as usize] as ::core::ffi::c_uint)
+    exitmsg[7 as i32 as usize] = (exitmsg[7 as i32
+        as usize] as u32)
         .wrapping_add(player_num) as ::core::ffi::c_char as ::core::ffi::c_char;
     playeringame[player_num as usize] = false_0 as boolean;
     players[consoleplayer as usize].message = &raw mut exitmsg
         as *mut ::core::ffi::c_char;
-    if demorecording != 0 {
+    if demorecording {
         G_CheckDemoStatus();
     }
 }
 unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
-    extern "C" {
-        static mut advancedemo: boolean;
-    }
-    let mut i: ::core::ffi::c_uint = 0;
-    i = 0 as ::core::ffi::c_uint;
-    while i < MAXPLAYERS as ::core::ffi::c_uint {
-        if demoplayback == 0 && playeringame[i as usize] != 0
+    let mut i: u32 = 0;
+    i = 0 as u32;
+    while i < MAXPLAYERS as u32 {
+        if !demoplayback && playeringame[i as usize] != 0
             && *ingame.offset(i as isize) == 0
         {
             PlayerQuitGame(
@@ -1619,7 +1400,7 @@ unsafe extern "C" fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
         i = i.wrapping_add(1);
     }
     netcmds = cmds;
-    if advancedemo != 0 {
+    if advancedemo {
         D_DoAdvanceDemo();
     }
     G_Ticker();
@@ -1629,35 +1410,35 @@ static mut doom_loop_interface: loop_interface_t = unsafe {
         ProcessEvents: Some(D_ProcessEvents as unsafe extern "C" fn() -> ()),
         BuildTiccmd: Some(
             G_BuildTiccmd
-                as unsafe extern "C" fn(*mut ticcmd_t, ::core::ffi::c_int) -> (),
+                as unsafe extern "C" fn(*mut ticcmd_t, i32) -> (),
         ),
         RunTic: Some(RunTic as unsafe extern "C" fn(*mut ticcmd_t, *mut boolean) -> ()),
         RunMenu: Some(M_Ticker as unsafe extern "C" fn() -> ()),
     }
 };
 unsafe extern "C" fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
-    let mut i: ::core::ffi::c_uint = 0;
+    let mut i: u32 = 0;
     deathmatch = (*settings).deathmatch;
     startepisode = (*settings).episode;
     startmap = (*settings).map;
     startskill = (*settings).skill as skill_t;
     startloadgame = (*settings).loadgame;
-    lowres_turn = (*settings).lowres_turn as boolean;
-    nomonsters = (*settings).nomonsters as boolean;
-    fastparm = (*settings).fast_monsters as boolean;
-    respawnparm = (*settings).respawn_monsters as boolean;
+    lowres_turn = (*settings).lowres_turn != 0;
+    nomonsters = (*settings).nomonsters != 0;
+    fastparm = (*settings).fast_monsters != 0;
+    respawnparm = (*settings).respawn_monsters != 0;
     timelimit = (*settings).timelimit;
     consoleplayer = (*settings).consoleplayer;
-    if lowres_turn != 0 {
+    if lowres_turn {
         printf(
             b"NOTE: Turning resolution is reduced; this is probably because there is a client recording a Vanilla demo.\n\0"
                 as *const u8 as *const ::core::ffi::c_char,
         );
     }
-    i = 0 as ::core::ffi::c_uint;
-    while i < MAXPLAYERS as ::core::ffi::c_uint {
-        playeringame[i as usize] = (i < (*settings).num_players as ::core::ffi::c_uint)
-            as ::core::ffi::c_int as boolean;
+    i = 0 as u32;
+    while i < MAXPLAYERS as u32 {
+        playeringame[i as usize] = (i < (*settings).num_players as u32)
+            as i32 as boolean;
         i = i.wrapping_add(1);
     }
 }
@@ -1665,58 +1446,36 @@ unsafe extern "C" fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
     (*settings).deathmatch = deathmatch;
     (*settings).episode = startepisode;
     (*settings).map = startmap;
-    (*settings).skill = startskill as ::core::ffi::c_int;
+    (*settings).skill = startskill as i32;
     (*settings).loadgame = startloadgame;
-    (*settings).gameversion = gameversion as ::core::ffi::c_int;
-    (*settings).nomonsters = nomonsters as ::core::ffi::c_int;
-    (*settings).fast_monsters = fastparm as ::core::ffi::c_int;
-    (*settings).respawn_monsters = respawnparm as ::core::ffi::c_int;
+    (*settings).gameversion = gameversion as i32;
+    (*settings).nomonsters = nomonsters as i32;
+    (*settings).fast_monsters = fastparm as i32;
+    (*settings).respawn_monsters = respawnparm as i32;
     (*settings).timelimit = timelimit;
-    (*settings).lowres_turn = (M_CheckParm(
-        b"-record\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-        && M_CheckParm(
-            b"-longtics\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    (*settings).lowres_turn = (M_CheckParm("-record") > 0 as i32
+        && M_CheckParm("-longtics") == 0 as i32) as i32;
 }
 unsafe extern "C" fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
     (*connect_data).max_players = MAXPLAYERS;
     (*connect_data).drone = false_0;
-    if M_CheckParm(
-        b"-left\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-    {
+    if M_CheckParm("-left") > 0 as i32 {
         viewangleoffset = ANG90;
         (*connect_data).drone = true_0;
     }
-    if M_CheckParm(
-        b"-right\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-    {
-        viewangleoffset = ANG270 as ::core::ffi::c_int;
+    if M_CheckParm("-right") > 0 as i32 {
+        viewangleoffset = ANG270 as i32;
         (*connect_data).drone = true_0;
     }
-    (*connect_data).gamemode = gamemode as ::core::ffi::c_int;
-    (*connect_data).gamemission = gamemission as ::core::ffi::c_int;
-    (*connect_data).lowres_turn = (M_CheckParm(
-        b"-record\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-        && M_CheckParm(
-            b"-longtics\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        ) == 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    (*connect_data).gamemode = gamemode as i32;
+    (*connect_data).gamemission = gamemission as i32;
+    (*connect_data).lowres_turn = (M_CheckParm("-record") > 0 as i32
+        && M_CheckParm("-longtics") == 0 as i32) as i32;
     W_Checksum(&raw mut (*connect_data).wad_sha1sum as *mut byte);
-    (*connect_data).is_freedoom = (W_CheckNumForName(
-        b"FREEDOOM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) >= 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+    (*connect_data).is_freedoom = (W_CheckNumForName("FREEDOOM")
+        >= 0 as i32) as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_ConnectNetGame() {
+pub unsafe fn D_ConnectNetGame() {
     let mut connect_data: net_connect_data_t = net_connect_data_t {
         gamemode: 0,
         gamemission: 0,
@@ -1730,16 +1489,11 @@ pub unsafe extern "C" fn D_ConnectNetGame() {
     };
     InitConnectData(&raw mut connect_data);
     netgame = D_InitNetGame(&raw mut connect_data);
-    if M_CheckParm(
-        b"-solo-net\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    ) > 0 as ::core::ffi::c_int
-    {
-        netgame = true_0 as boolean;
+    if M_CheckParm("-solo-net") > 0 as i32 {
+        netgame = true;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_CheckNetGame() {
+pub unsafe fn D_CheckNetGame() {
     let mut settings: net_gamesettings_t = net_gamesettings_t {
         ticdup: 0,
         extratics: 0,
@@ -1760,8 +1514,8 @@ pub unsafe extern "C" fn D_CheckNetGame() {
         consoleplayer: 0,
         player_classes: [0; 8],
     };
-    if netgame != 0 {
-        autostart = true_0 as boolean;
+    if netgame {
+        autostart = true;
     }
     D_RegisterLoopCallbacks(&raw mut doom_loop_interface);
     SaveGameSettings(&raw mut settings);
@@ -1770,23 +1524,20 @@ pub unsafe extern "C" fn D_CheckNetGame() {
     printf(
         b"startskill %i  deathmatch: %i  startmap: %i  startepisode: %i\n\0" as *const u8
             as *const ::core::ffi::c_char,
-        startskill as ::core::ffi::c_int,
+        startskill as i32,
         deathmatch,
         startmap,
         startepisode,
     );
     printf(
         b"player %i of %i (%i nodes)\n\0" as *const u8 as *const ::core::ffi::c_char,
-        consoleplayer + 1 as ::core::ffi::c_int,
+        consoleplayer + 1 as i32,
         settings.num_players,
         settings.num_players,
     );
-    if timelimit > 0 as ::core::ffi::c_int && deathmatch != 0 {
-        if timelimit == 20 as ::core::ffi::c_int
-            && M_CheckParm(
-                b"-avg\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-            ) != 0
+    if timelimit > 0 as i32 && deathmatch != 0 {
+        if timelimit == 20 as i32
+            && M_CheckParm("-avg") != 0
         {
             printf(
                 b"Austin Virtual Gaming: Levels will end after 20 minutes\n\0"
@@ -1798,7 +1549,7 @@ pub unsafe extern "C" fn D_CheckNetGame() {
                     as *const ::core::ffi::c_char,
                 timelimit,
             );
-            if timelimit > 1 as ::core::ffi::c_int {
+            if timelimit > 1 as i32 {
                 printf(b"s\0" as *const u8 as *const ::core::ffi::c_char);
             }
             printf(b".\n\0" as *const u8 as *const ::core::ffi::c_char);

@@ -1,54 +1,35 @@
-extern "C" {
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    static mut sides: *mut side_t;
-    fn R_TextureNumForName(name: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn EV_DoDonut(line: *mut line_t) -> ::core::ffi::c_int;
-    fn EV_LightTurnOn(line: *mut line_t, bright: ::core::ffi::c_int);
-    fn EV_DoPlat(
-        line: *mut line_t,
-        type_0: plattype_e,
-        amount: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn EV_VerticalDoor(line: *mut line_t, thing: *mut mobj_t);
-    fn EV_DoDoor(line: *mut line_t, type_0: vldoor_e) -> ::core::ffi::c_int;
-    fn EV_DoLockedDoor(
-        line: *mut line_t,
-        type_0: vldoor_e,
-        thing: *mut mobj_t,
-    ) -> ::core::ffi::c_int;
-    fn EV_DoCeiling(line: *mut line_t, type_0: ceiling_e) -> ::core::ffi::c_int;
-    fn EV_BuildStairs(line: *mut line_t, type_0: stair_e) -> ::core::ffi::c_int;
-    fn EV_DoFloor(line: *mut line_t, floortype: floor_e) -> ::core::ffi::c_int;
-    fn G_ExitLevel();
-    fn G_SecretExitLevel();
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    static mut gamemode: GameMode_t;
-}
+use crate::src::p_spec::{button_t};
+use crate::src::p_mobj::{degenmobj_t, line_t, actionf_t};
+use crate::src::p_mobj::{mobj_t};
+use crate::src::i_system::I_Error;
+use crate::src::p_doors::EV_DoLockedDoor;
+use crate::src::g_game::G_SecretExitLevel;
+use crate::src::p_ceilng::EV_DoCeiling;
+use crate::src::p_floor::EV_BuildStairs;
+use crate::src::p_lights::EV_LightTurnOn;
+use crate::src::p_plats::EV_DoPlat;
+use crate::src::g_game::G_ExitLevel;
+use crate::src::p_doors::EV_DoDoor;
+use crate::src::p_floor::EV_DoFloor;
+use crate::src::p_setup::sides;
+use crate::src::doomstat::gamemode;
+use crate::src::s_sound::S_StartSound;
+use crate::src::p_doors::EV_VerticalDoor;
+use crate::src::p_spec::EV_DoDonut;
+use crate::src::r_data::R_TextureNumForName;
+
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -60,39 +41,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -232,7 +189,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1201,18 +1158,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1351,215 +1297,13 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-pub type line_t = line_s;
-pub type bwhere_e = ::core::ffi::c_uint;
+pub type bwhere_e = u32;
 pub const bottom: bwhere_e = 2;
 pub const middle: bwhere_e = 1;
 pub const top: bwhere_e = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct button_t {
-    pub line: *mut line_t,
-    pub where_0: bwhere_e,
-    pub btexture: ::core::ffi::c_int,
-    pub btimer: ::core::ffi::c_int,
-    pub soundorg: *mut degenmobj_t,
-}
 pub const sfx_swtchx: C2RustUnnamed = 24;
 pub const sfx_swtchn: C2RustUnnamed = 23;
-pub type vldoor_e = ::core::ffi::c_uint;
+pub type vldoor_e = u32;
 pub const vld_blazeClose: vldoor_e = 7;
 pub const vld_blazeOpen: vldoor_e = 6;
 pub const vld_blazeRaise: vldoor_e = 5;
@@ -1568,7 +1312,7 @@ pub const vld_open: vldoor_e = 3;
 pub const vld_close: vldoor_e = 2;
 pub const vld_close30ThenOpen: vldoor_e = 1;
 pub const vld_normal: vldoor_e = 0;
-pub type floor_e = ::core::ffi::c_uint;
+pub type floor_e = u32;
 pub const raiseFloor512: floor_e = 12;
 pub const donutRaise: floor_e = 11;
 pub const raiseFloorTurbo: floor_e = 10;
@@ -1582,20 +1326,20 @@ pub const raiseFloor: floor_e = 3;
 pub const turboLower: floor_e = 2;
 pub const lowerFloorToLowest: floor_e = 1;
 pub const lowerFloor: floor_e = 0;
-pub type plattype_e = ::core::ffi::c_uint;
+pub type plattype_e = u32;
 pub const blazeDWUS: plattype_e = 4;
 pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-pub type ceiling_e = ::core::ffi::c_uint;
+pub type ceiling_e = u32;
 pub const silentCrushAndRaise: ceiling_e = 5;
 pub const fastCrushAndRaise: ceiling_e = 4;
 pub const crushAndRaise: ceiling_e = 3;
 pub const lowerAndCrush: ceiling_e = 2;
 pub const raiseToHighest: ceiling_e = 1;
 pub const lowerToFloor: ceiling_e = 0;
-pub type stair_e = ::core::ffi::c_uint;
+pub type stair_e = u32;
 pub const turbo16: stair_e = 1;
 pub const build8: stair_e = 0;
 #[derive(Copy, Clone)]
@@ -1603,9 +1347,9 @@ pub const build8: stair_e = 0;
 pub struct switchlist_t {
     pub name1: [::core::ffi::c_char; 9],
     pub name2: [::core::ffi::c_char; 9],
-    pub episode: ::core::ffi::c_short,
+    pub episode: i16,
 }
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const NUMSFX: C2RustUnnamed = 109;
 pub const sfx_radio: C2RustUnnamed = 108;
 pub const sfx_skeatk: C2RustUnnamed = 107;
@@ -1714,12 +1458,12 @@ pub const sfx_sgcock: C2RustUnnamed = 3;
 pub const sfx_shotgn: C2RustUnnamed = 2;
 pub const sfx_pistol: C2RustUnnamed = 1;
 pub const sfx_None: C2RustUnnamed = 0;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const ML_SECRET: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
-pub const MAXSWITCHES: ::core::ffi::c_int = 50 as ::core::ffi::c_int;
-pub const MAXBUTTONS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const BUTTONTIME: ::core::ffi::c_int = 35 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const ML_SECRET: i32 = 32 as i32;
+pub const MAXSWITCHES: i32 = 50 as i32;
+pub const MAXBUTTONS: i32 = 16 as i32;
+pub const BUTTONTIME: i32 = 35 as i32;
 #[no_mangle]
 pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
     [
@@ -1732,7 +1476,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2BRCOM\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1743,7 +1487,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2BRN1\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1754,7 +1498,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2BRN2\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1765,7 +1509,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2BRNGN\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1776,7 +1520,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2BROWN\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1787,7 +1531,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2COMM\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1798,7 +1542,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2COMP\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1809,7 +1553,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2DIRT\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1820,7 +1564,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2EXIT\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1831,7 +1575,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2GRAY\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1842,7 +1586,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2GRAY1\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1853,7 +1597,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2METAL\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1864,7 +1608,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2PIPE\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1875,7 +1619,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2SLAD\0\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1886,7 +1630,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2STARG\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1897,7 +1641,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2STON1\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1908,7 +1652,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2STON2\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1919,7 +1663,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2STONE\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1930,7 +1674,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2STRTN\0"),
-            episode: 1 as ::core::ffi::c_short,
+            episode: 1 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1941,7 +1685,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2BLUE\0\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1952,7 +1696,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2CMT\0\0\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1963,7 +1707,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2GARG\0\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1974,7 +1718,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2GSTON\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1985,7 +1729,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2HOT\0\0\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -1996,7 +1740,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2LION\0\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2007,7 +1751,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2SATYR\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2018,7 +1762,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2SKIN\0\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2029,7 +1773,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2VINE\0\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2040,7 +1784,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2WOOD\0\0"),
-            episode: 2 as ::core::ffi::c_short,
+            episode: 2 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2051,7 +1795,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2PANEL\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2062,7 +1806,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2ROCK\0\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2073,7 +1817,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2MET2\0\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2084,7 +1828,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2WDMET\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2095,7 +1839,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2BRIK\0\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2106,7 +1850,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2MOD1\0\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2117,7 +1861,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2ZIM\0\0\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2128,7 +1872,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2STON6\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2139,7 +1883,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2TEK\0\0\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2150,7 +1894,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2MARB\0\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2161,7 +1905,7 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"SW2SKULL\0"),
-            episode: 3 as ::core::ffi::c_short,
+            episode: 3 as i16,
         },
         switchlist_t {
             name1: ::core::mem::transmute::<
@@ -2172,15 +1916,14 @@ pub static mut alphSwitchList: [switchlist_t; 41] = unsafe {
                 [u8; 9],
                 [::core::ffi::c_char; 9],
             >(*b"\0\0\0\0\0\0\0\0\0"),
-            episode: 0 as ::core::ffi::c_short,
+            episode: 0 as i16,
         },
     ]
 };
 #[no_mangle]
-pub static mut switchlist: [::core::ffi::c_int; 100] = [0; 100];
+pub static mut switchlist: [i32; 100] = [0; 100];
 #[no_mangle]
-pub static mut numswitches: ::core::ffi::c_int = 0;
-#[no_mangle]
+pub static mut numswitches: i32 = 0;
 pub static mut buttonlist: [button_t; 16] = [button_t {
     line: ::core::ptr::null::<line_t>() as *mut line_t,
     where_0: top,
@@ -2188,32 +1931,31 @@ pub static mut buttonlist: [button_t; 16] = [button_t {
     btimer: 0,
     soundorg: ::core::ptr::null::<degenmobj_t>() as *mut degenmobj_t,
 }; 16];
-#[no_mangle]
-pub unsafe extern "C" fn P_InitSwitchList() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut index: ::core::ffi::c_int = 0;
-    let mut episode: ::core::ffi::c_int = 0;
-    episode = 1 as ::core::ffi::c_int;
-    if gamemode as ::core::ffi::c_uint
-        == registered as ::core::ffi::c_int as ::core::ffi::c_uint
-        || gamemode as ::core::ffi::c_uint
-            == retail as ::core::ffi::c_int as ::core::ffi::c_uint
+pub unsafe fn P_InitSwitchList() {
+    let mut i: i32 = 0;
+    let mut index: i32 = 0;
+    let mut episode: i32 = 0;
+    episode = 1 as i32;
+    if gamemode as u32
+        == registered as i32 as u32
+        || gamemode as u32
+            == retail as i32 as u32
     {
-        episode = 2 as ::core::ffi::c_int;
-    } else if gamemode as ::core::ffi::c_uint
-        == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+        episode = 2 as i32;
+    } else if gamemode as u32
+        == commercial as i32 as u32
     {
-        episode = 3 as ::core::ffi::c_int;
+        episode = 3 as i32;
     }
-    index = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
+    index = 0 as i32;
+    i = 0 as i32;
     while i < MAXSWITCHES {
         if alphSwitchList[i as usize].episode == 0 {
-            numswitches = index / 2 as ::core::ffi::c_int;
-            switchlist[index as usize] = -(1 as ::core::ffi::c_int);
+            numswitches = index / 2 as i32;
+            switchlist[index as usize] = -(1 as i32);
             break;
         } else {
-            if alphSwitchList[i as usize].episode as ::core::ffi::c_int <= episode {
+            if alphSwitchList[i as usize].episode as i32 <= episode {
                 let fresh0 = index;
                 index = index + 1;
                 switchlist[fresh0 as usize] = R_TextureNumForName(
@@ -2237,18 +1979,18 @@ pub unsafe extern "C" fn P_InitSwitchList() {
 pub unsafe extern "C" fn P_StartButton(
     mut line: *mut line_t,
     mut w: bwhere_e,
-    mut texture: ::core::ffi::c_int,
-    mut time: ::core::ffi::c_int,
+    mut texture: i32,
+    mut time: i32,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < MAXBUTTONS {
         if buttonlist[i as usize].btimer != 0 && buttonlist[i as usize].line == line {
             return;
         }
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < MAXBUTTONS {
         if buttonlist[i as usize].btimer == 0 {
             buttonlist[i as usize].line = line;
@@ -2260,45 +2002,41 @@ pub unsafe extern "C" fn P_StartButton(
         }
         i += 1;
     }
-    I_Error(
-        b"P_StartButton: no button slots left!\0" as *const u8
-            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    );
+    I_Error("P_StartButton: no button slots left!");
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_ChangeSwitchTexture(
+pub unsafe fn P_ChangeSwitchTexture(
     mut line: *mut line_t,
-    mut useAgain: ::core::ffi::c_int,
+    mut useAgain: i32,
 ) {
-    let mut texTop: ::core::ffi::c_int = 0;
-    let mut texMid: ::core::ffi::c_int = 0;
-    let mut texBot: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    let mut sound: ::core::ffi::c_int = 0;
+    let mut texTop: i32 = 0;
+    let mut texMid: i32 = 0;
+    let mut texBot: i32 = 0;
+    let mut i: i32 = 0;
+    let mut sound: i32 = 0;
     if useAgain == 0 {
-        (*line).special = 0 as ::core::ffi::c_short;
+        (*line).special = 0 as i16;
     }
-    texTop = (*sides.offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
-        .toptexture as ::core::ffi::c_int;
-    texMid = (*sides.offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
-        .midtexture as ::core::ffi::c_int;
-    texBot = (*sides.offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
-        .bottomtexture as ::core::ffi::c_int;
-    sound = sfx_swtchn as ::core::ffi::c_int;
-    if (*line).special as ::core::ffi::c_int == 11 as ::core::ffi::c_int {
-        sound = sfx_swtchx as ::core::ffi::c_int;
+    texTop = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
+        .toptexture as i32;
+    texMid = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
+        .midtexture as i32;
+    texBot = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
+        .bottomtexture as i32;
+    sound = sfx_swtchn as i32;
+    if (*line).special as i32 == 11 as i32 {
+        sound = sfx_swtchx as i32;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < numswitches * 2 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < numswitches * 2 as i32 {
         if switchlist[i as usize] == texTop {
             S_StartSound(
                 (*(&raw mut buttonlist as *mut button_t)).soundorg
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
-                .toptexture = switchlist[(i ^ 1 as ::core::ffi::c_int) as usize]
-                as ::core::ffi::c_short;
+            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
+                .toptexture = switchlist[(i ^ 1 as i32) as usize]
+                as i16;
             if useAgain != 0 {
                 P_StartButton(line, top, switchlist[i as usize], BUTTONTIME);
             }
@@ -2309,9 +2047,9 @@ pub unsafe extern "C" fn P_ChangeSwitchTexture(
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
-                .midtexture = switchlist[(i ^ 1 as ::core::ffi::c_int) as usize]
-                as ::core::ffi::c_short;
+            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
+                .midtexture = switchlist[(i ^ 1 as i32) as usize]
+                as i16;
             if useAgain != 0 {
                 P_StartButton(line, middle, switchlist[i as usize], BUTTONTIME);
             }
@@ -2322,9 +2060,9 @@ pub unsafe extern "C" fn P_ChangeSwitchTexture(
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as ::core::ffi::c_int as usize] as isize))
-                .bottomtexture = switchlist[(i ^ 1 as ::core::ffi::c_int) as usize]
-                as ::core::ffi::c_short;
+            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize))
+                .bottomtexture = switchlist[(i ^ 1 as i32) as usize]
+                as i16;
             if useAgain != 0 {
                 P_StartButton(line, bottom, switchlist[i as usize], BUTTONTIME);
             }
@@ -2333,24 +2071,23 @@ pub unsafe extern "C" fn P_ChangeSwitchTexture(
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_UseSpecialLine(
+pub unsafe fn P_UseSpecialLine(
     mut thing: *mut mobj_t,
     mut line: *mut line_t,
-    mut side: ::core::ffi::c_int,
-) -> boolean {
+    mut side: i32,
+) -> bool {
     if side != 0 {
-        match (*line).special as ::core::ffi::c_int {
+        match (*line).special as i32 {
             124 => {}
-            _ => return false_0 as boolean,
+            _ => return false,
         }
     }
     if (*thing).player.is_null() {
-        if (*line).flags as ::core::ffi::c_int & ML_SECRET != 0 {
-            return false_0 as boolean;
+        if (*line).flags as i32 & ML_SECRET != 0 {
+            return false;
         }
         let mut current_block_6: u64;
-        match (*line).special as ::core::ffi::c_int {
+        match (*line).special as i32 {
             1 => {
                 current_block_6 = 3640593987805443782;
             }
@@ -2363,7 +2100,7 @@ pub unsafe extern "C" fn P_UseSpecialLine(
             34 => {
                 current_block_6 = 3514215265213398008;
             }
-            _ => return false_0 as boolean,
+            _ => return false,
         }
         match current_block_6 {
             12497116384748537712 => {
@@ -2377,7 +2114,7 @@ pub unsafe extern "C" fn P_UseSpecialLine(
         }
     }
     let mut current_block_108: u64;
-    match (*line).special as ::core::ffi::c_int {
+    match (*line).special as i32 {
         1 => {
             current_block_108 = 9599537275859496075;
         }
@@ -2410,149 +2147,149 @@ pub unsafe extern "C" fn P_UseSpecialLine(
         }
         7 => {
             if EV_BuildStairs(line, build8) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         9 => {
             if EV_DoDonut(line) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         11 => {
-            P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            P_ChangeSwitchTexture(line, 0 as i32);
             G_ExitLevel();
             current_block_108 = 16981061190961355901;
         }
         14 => {
-            if EV_DoPlat(line, raiseAndChange, 32 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            if EV_DoPlat(line, raiseAndChange, 32 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         15 => {
-            if EV_DoPlat(line, raiseAndChange, 24 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            if EV_DoPlat(line, raiseAndChange, 24 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         18 => {
             if EV_DoFloor(line, raiseFloorToNearest) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         20 => {
-            if EV_DoPlat(line, raiseToNearestAndChange, 0 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            if EV_DoPlat(line, raiseToNearestAndChange, 0 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         21 => {
-            if EV_DoPlat(line, downWaitUpStay, 0 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            if EV_DoPlat(line, downWaitUpStay, 0 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         23 => {
             if EV_DoFloor(line, lowerFloorToLowest) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         29 => {
             if EV_DoDoor(line, vld_normal) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         41 => {
             if EV_DoCeiling(line, lowerToFloor) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         71 => {
             if EV_DoFloor(line, turboLower) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         49 => {
             if EV_DoCeiling(line, crushAndRaise) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         50 => {
             if EV_DoDoor(line, vld_close) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         51 => {
-            P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            P_ChangeSwitchTexture(line, 0 as i32);
             G_SecretExitLevel();
             current_block_108 = 16981061190961355901;
         }
         55 => {
             if EV_DoFloor(line, raiseFloorCrush) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         101 => {
             if EV_DoFloor(line, raiseFloor) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         102 => {
             if EV_DoFloor(line, lowerFloor) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         103 => {
             if EV_DoDoor(line, vld_open) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         111 => {
             if EV_DoDoor(line, vld_blazeRaise) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         112 => {
             if EV_DoDoor(line, vld_blazeOpen) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         113 => {
             if EV_DoDoor(line, vld_blazeClose) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         122 => {
-            if EV_DoPlat(line, blazeDWUS, 0 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+            if EV_DoPlat(line, blazeDWUS, 0 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         127 => {
             if EV_BuildStairs(line, turbo16) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         131 => {
             if EV_DoFloor(line, raiseFloorTurbo) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
@@ -2564,121 +2301,121 @@ pub unsafe extern "C" fn P_UseSpecialLine(
         }
         140 => {
             if EV_DoFloor(line, raiseFloor512) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         42 => {
             if EV_DoDoor(line, vld_close) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         43 => {
             if EV_DoCeiling(line, lowerToFloor) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         45 => {
             if EV_DoFloor(line, lowerFloor) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         60 => {
             if EV_DoFloor(line, lowerFloorToLowest) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         61 => {
             if EV_DoDoor(line, vld_open) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         62 => {
-            if EV_DoPlat(line, downWaitUpStay, 1 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+            if EV_DoPlat(line, downWaitUpStay, 1 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         63 => {
             if EV_DoDoor(line, vld_normal) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         64 => {
             if EV_DoFloor(line, raiseFloor) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         66 => {
-            if EV_DoPlat(line, raiseAndChange, 24 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+            if EV_DoPlat(line, raiseAndChange, 24 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         67 => {
-            if EV_DoPlat(line, raiseAndChange, 32 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+            if EV_DoPlat(line, raiseAndChange, 32 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         65 => {
             if EV_DoFloor(line, raiseFloorCrush) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         68 => {
-            if EV_DoPlat(line, raiseToNearestAndChange, 0 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+            if EV_DoPlat(line, raiseToNearestAndChange, 0 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         69 => {
             if EV_DoFloor(line, raiseFloorToNearest) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         70 => {
             if EV_DoFloor(line, turboLower) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         114 => {
             if EV_DoDoor(line, vld_blazeRaise) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         115 => {
             if EV_DoDoor(line, vld_blazeOpen) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         116 => {
             if EV_DoDoor(line, vld_blazeClose) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         123 => {
-            if EV_DoPlat(line, blazeDWUS, 0 as ::core::ffi::c_int) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+            if EV_DoPlat(line, blazeDWUS, 0 as i32) != 0 {
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         132 => {
             if EV_DoFloor(line, raiseFloorTurbo) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
@@ -2689,13 +2426,13 @@ pub unsafe extern "C" fn P_UseSpecialLine(
             current_block_108 = 16848555411549253182;
         }
         138 => {
-            EV_LightTurnOn(line, 255 as ::core::ffi::c_int);
-            P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+            EV_LightTurnOn(line, 255 as i32);
+            P_ChangeSwitchTexture(line, 1 as i32);
             current_block_108 = 16981061190961355901;
         }
         139 => {
-            EV_LightTurnOn(line, 35 as ::core::ffi::c_int);
-            P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+            EV_LightTurnOn(line, 35 as i32);
+            P_ChangeSwitchTexture(line, 1 as i32);
             current_block_108 = 16981061190961355901;
         }
         _ => {
@@ -2708,13 +2445,13 @@ pub unsafe extern "C" fn P_UseSpecialLine(
         }
         6707790765423050264 => {
             if EV_DoLockedDoor(line, vld_blazeOpen, thing) != 0 {
-                P_ChangeSwitchTexture(line, 0 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         16848555411549253182 => {
             if EV_DoLockedDoor(line, vld_blazeOpen, thing) != 0 {
-                P_ChangeSwitchTexture(line, 1 as ::core::ffi::c_int);
+                P_ChangeSwitchTexture(line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
@@ -2768,5 +2505,5 @@ pub unsafe extern "C" fn P_UseSpecialLine(
         }
         _ => {}
     }
-    return true_0 as boolean;
+    return true;
 }

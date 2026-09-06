@@ -1,50 +1,37 @@
-extern "C" {
-    fn P_Random() -> ::core::ffi::c_int;
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
-    static mut states: [state_t; 967];
-    static mut weaponinfo: [weaponinfo_t; 9];
-    fn R_PointToAngle2(x1: fixed_t, y1: fixed_t, x2: fixed_t, y2: fixed_t) -> angle_t;
-    fn P_SpawnMobj(
-        x: fixed_t,
-        y: fixed_t,
-        z: fixed_t,
-        type_0: mobjtype_t,
-    ) -> *mut mobj_t;
-    fn P_SetMobjState(mobj: *mut mobj_t, state: statenum_t) -> boolean;
-    fn P_SpawnPlayerMissile(source: *mut mobj_t, type_0: mobjtype_t);
-    fn P_NoiseAlert(target: *mut mobj_t, emmiter: *mut mobj_t);
-    static mut linetarget: *mut mobj_t;
-    fn P_AimLineAttack(t1: *mut mobj_t, angle: angle_t, distance: fixed_t) -> fixed_t;
-    fn P_LineAttack(
-        t1: *mut mobj_t,
-        angle: angle_t,
-        distance: fixed_t,
-        slope: fixed_t,
-        damage: ::core::ffi::c_int,
-    );
-    fn P_DamageMobj(
-        target: *mut mobj_t,
-        inflictor: *mut mobj_t,
-        source: *mut mobj_t,
-        damage: ::core::ffi::c_int,
-    );
-    fn S_StartSound(origin: *mut ::core::ffi::c_void, sound_id: ::core::ffi::c_int);
-    static mut gamemode: GameMode_t;
-    static mut leveltime: ::core::ffi::c_int;
-}
+use crate::src::d_items::weaponinfo;
+use crate::src::p_mobj::{state_t, actionf_t};
+use crate::src::d_player::{player_t, PST_DEAD};
+use crate::src::p_mobj::{mobj_t, pspdef_t};
+use crate::src::p_mobj::P_SpawnPlayerMissile;
+use crate::src::p_enemy::P_NoiseAlert;
+use crate::src::p_map::P_LineAttack;
+use crate::src::p_map::linetarget;
+use crate::src::p_map::P_AimLineAttack;
+use crate::src::p_inter::P_DamageMobj;
+use crate::src::p_mobj::P_SetMobjState;
+use crate::src::p_mobj::P_SpawnMobj;
+use crate::src::info::states;
+use crate::src::r_main::R_PointToAngle2;
+use crate::src::m_random::P_Random;
+use crate::src::p_tick::leveltime;
+use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
+use crate::src::m_fixed::FixedMul;
+use crate::src::doomstat::gamemode;
+use crate::src::s_sound::S_StartSound;
+
+
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -56,14 +43,14 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type ammotype_t = ::core::ffi::c_uint;
+pub type ammotype_t = u32;
 pub const am_noammo: ammotype_t = 5;
 pub const NUMAMMO: ammotype_t = 4;
 pub const am_misl: ammotype_t = 3;
 pub const am_cell: ammotype_t = 2;
 pub const am_shell: ammotype_t = 1;
 pub const am_clip: ammotype_t = 0;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type C2RustUnnamed = u32;
 pub const NUMPOWERS: C2RustUnnamed = 6;
 pub const pw_infrared: C2RustUnnamed = 5;
 pub const pw_allmap: C2RustUnnamed = 4;
@@ -71,7 +58,7 @@ pub const pw_ironfeet: C2RustUnnamed = 3;
 pub const pw_invisibility: C2RustUnnamed = 2;
 pub const pw_strength: C2RustUnnamed = 1;
 pub const pw_invulnerability: C2RustUnnamed = 0;
-pub type C2RustUnnamed_0 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_0 = u32;
 pub const BTS_SAVESHIFT: C2RustUnnamed_0 = 2;
 pub const BTS_SAVEMASK: C2RustUnnamed_0 = 28;
 pub const BTS_SAVEGAME: C2RustUnnamed_0 = 2;
@@ -83,39 +70,15 @@ pub const BT_SPECIALMASK: C2RustUnnamed_0 = 3;
 pub const BT_SPECIAL: C2RustUnnamed_0 = 128;
 pub const BT_USE: C2RustUnnamed_0 = 2;
 pub const BT_ATTACK: C2RustUnnamed_0 = 1;
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -255,7 +218,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1224,18 +1187,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1374,34 +1326,7 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-pub type C2RustUnnamed_1 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_1 = u32;
 pub const MF_TRANSSHIFT: C2RustUnnamed_1 = 26;
 pub const MF_TRANSLATION: C2RustUnnamed_1 = 201326592;
 pub const MF_NOTDMATCH: C2RustUnnamed_1 = 33554432;
@@ -1430,192 +1355,12 @@ pub const MF_NOSECTOR: C2RustUnnamed_1 = 8;
 pub const MF_SHOOTABLE: C2RustUnnamed_1 = 4;
 pub const MF_SOLID: C2RustUnnamed_1 = 2;
 pub const MF_SPECIAL: C2RustUnnamed_1 = 1;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct weaponinfo_t {
-    pub ammo: ammotype_t,
-    pub upstate: ::core::ffi::c_int,
-    pub downstate: ::core::ffi::c_int,
-    pub readystate: ::core::ffi::c_int,
-    pub atkstate: ::core::ffi::c_int,
-    pub flashstate: ::core::ffi::c_int,
-}
-pub type C2RustUnnamed_2 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_2 = u32;
 pub const NUMPSPRITES: C2RustUnnamed_2 = 2;
 pub const ps_flash: C2RustUnnamed_2 = 1;
 pub const ps_weapon: C2RustUnnamed_2 = 0;
-pub type player_t = player_s;
 pub const sfx_sawup: C2RustUnnamed_3 = 10;
-pub type C2RustUnnamed_3 = ::core::ffi::c_uint;
+pub type C2RustUnnamed_3 = u32;
 pub const NUMSFX: C2RustUnnamed_3 = 109;
 pub const sfx_radio: C2RustUnnamed_3 = 108;
 pub const sfx_skeatk: C2RustUnnamed_3 = 107;
@@ -1728,23 +1473,23 @@ pub const sfx_None: C2RustUnnamed_3 = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const DEH_DEFAULT_BFG_CELLS_PER_SHOT: ::core::ffi::c_int = 40 as ::core::ffi::c_int;
-pub const deh_bfg_cells_per_shot: ::core::ffi::c_int = DEH_DEFAULT_BFG_CELLS_PER_SHOT;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const FINEANGLES: ::core::ffi::c_int = 8192 as ::core::ffi::c_int;
-pub const FINEMASK: ::core::ffi::c_int = FINEANGLES - 1 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const ANG180: ::core::ffi::c_uint = 0x80000000 as ::core::ffi::c_uint;
-pub const MELEERANGE: ::core::ffi::c_int = 64 as ::core::ffi::c_int * FRACUNIT;
-pub const MISSILERANGE: ::core::ffi::c_int = 32 as ::core::ffi::c_int
-    * 64 as ::core::ffi::c_int * FRACUNIT;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const DEH_DEFAULT_BFG_CELLS_PER_SHOT: i32 = 40 as i32;
+pub const deh_bfg_cells_per_shot: i32 = DEH_DEFAULT_BFG_CELLS_PER_SHOT;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const FINEANGLES: i32 = 8192 as i32;
+pub const FINEMASK: i32 = FINEANGLES - 1 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const ANG180: u32 = 0x80000000 as u32;
+pub const MELEERANGE: i32 = 64 as i32 * FRACUNIT;
+pub const MISSILERANGE: i32 = 32 as i32
+    * 64 as i32 * FRACUNIT;
 #[no_mangle]
 pub unsafe extern "C" fn P_SetPsprite(
     mut player: *mut player_t,
-    mut position: ::core::ffi::c_int,
+    mut position: i32,
     mut stnum: statenum_t,
 ) {
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
@@ -1792,129 +1537,127 @@ pub static mut swingy: fixed_t = 0;
 #[no_mangle]
 pub unsafe extern "C" fn P_CalcSwing(mut player: *mut player_t) {
     let mut swing: fixed_t = 0;
-    let mut angle: ::core::ffi::c_int = 0;
+    let mut angle: i32 = 0;
     swing = (*player).bob;
-    angle = FINEANGLES / 70 as ::core::ffi::c_int * leveltime & FINEMASK;
+    angle = FINEANGLES / 70 as i32 * leveltime & FINEMASK;
     swingx = FixedMul(swing, finesine[angle as usize]);
-    angle = FINEANGLES / 70 as ::core::ffi::c_int * leveltime
-        + FINEANGLES / 2 as ::core::ffi::c_int & FINEMASK;
+    angle = FINEANGLES / 70 as i32 * leveltime
+        + FINEANGLES / 2 as i32 & FINEMASK;
     swingy = -FixedMul(swingx, finesine[angle as usize]);
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_BringUpWeapon(mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;
-    if (*player).pendingweapon as ::core::ffi::c_uint
-        == wp_nochange as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).pendingweapon as u32
+        == wp_nochange as i32 as u32
     {
         (*player).pendingweapon = (*player).readyweapon;
     }
-    if (*player).pendingweapon as ::core::ffi::c_uint
-        == wp_chainsaw as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).pendingweapon as u32
+        == wp_chainsaw as i32 as u32
     {
         S_StartSound(
             (*player).mo as *mut ::core::ffi::c_void,
-            sfx_sawup as ::core::ffi::c_int,
+            sfx_sawup as i32,
         );
     }
     newstate = weaponinfo[(*player).pendingweapon as usize].upstate as statenum_t;
     (*player).pendingweapon = wp_nochange;
-    (*player).psprites[ps_weapon as ::core::ffi::c_int as usize].sy = (128
-        as ::core::ffi::c_int * FRACUNIT) as fixed_t;
-    P_SetPsprite(player, ps_weapon as ::core::ffi::c_int, newstate);
+    (*player).psprites[ps_weapon as i32 as usize].sy = (128
+        as i32 * FRACUNIT) as fixed_t;
+    P_SetPsprite(player, ps_weapon as i32, newstate);
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_CheckAmmo(mut player: *mut player_t) -> boolean {
+pub unsafe extern "C" fn P_CheckAmmo(mut player: *mut player_t) -> bool {
     let mut ammo: ammotype_t = am_clip;
-    let mut count: ::core::ffi::c_int = 0;
+    let mut count: i32 = 0;
     ammo = weaponinfo[(*player).readyweapon as usize].ammo;
-    if (*player).readyweapon as ::core::ffi::c_uint
-        == wp_bfg as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).readyweapon as u32
+        == wp_bfg as i32 as u32
     {
         count = deh_bfg_cells_per_shot;
-    } else if (*player).readyweapon as ::core::ffi::c_uint
-        == wp_supershotgun as ::core::ffi::c_int as ::core::ffi::c_uint
+    } else if (*player).readyweapon as u32
+        == wp_supershotgun as i32 as u32
     {
-        count = 2 as ::core::ffi::c_int;
+        count = 2 as i32;
     } else {
-        count = 1 as ::core::ffi::c_int;
+        count = 1 as i32;
     }
-    if ammo as ::core::ffi::c_uint
-        == am_noammo as ::core::ffi::c_int as ::core::ffi::c_uint
+    if ammo as u32
+        == am_noammo as i32 as u32
         || (*player).ammo[ammo as usize] >= count
     {
-        return true_0 as boolean;
+        return true;
     }
     loop {
-        if (*player).weaponowned[wp_plasma as ::core::ffi::c_int as usize] != 0
-            && (*player).ammo[am_cell as ::core::ffi::c_int as usize] != 0
-            && gamemode as ::core::ffi::c_uint
-                != shareware as ::core::ffi::c_int as ::core::ffi::c_uint
+        if (*player).weaponowned[wp_plasma as i32 as usize]
+            && (*player).ammo[am_cell as i32 as usize] != 0
+            && gamemode as u32
+                != shareware as i32 as u32
         {
             (*player).pendingweapon = wp_plasma;
-        } else if (*player).weaponowned[wp_supershotgun as ::core::ffi::c_int as usize]
-            != 0
-            && (*player).ammo[am_shell as ::core::ffi::c_int as usize]
-                > 2 as ::core::ffi::c_int
-            && gamemode as ::core::ffi::c_uint
-                == commercial as ::core::ffi::c_int as ::core::ffi::c_uint
+        } else if (*player).weaponowned[wp_supershotgun as i32 as usize]
+            && (*player).ammo[am_shell as i32 as usize]
+                > 2 as i32
+            && gamemode as u32
+                == commercial as i32 as u32
         {
             (*player).pendingweapon = wp_supershotgun;
-        } else if (*player).weaponowned[wp_chaingun as ::core::ffi::c_int as usize] != 0
-            && (*player).ammo[am_clip as ::core::ffi::c_int as usize] != 0
+        } else if (*player).weaponowned[wp_chaingun as i32 as usize]
+            && (*player).ammo[am_clip as i32 as usize] != 0
         {
             (*player).pendingweapon = wp_chaingun;
-        } else if (*player).weaponowned[wp_shotgun as ::core::ffi::c_int as usize] != 0
-            && (*player).ammo[am_shell as ::core::ffi::c_int as usize] != 0
+        } else if (*player).weaponowned[wp_shotgun as i32 as usize]
+            && (*player).ammo[am_shell as i32 as usize] != 0
         {
             (*player).pendingweapon = wp_shotgun;
-        } else if (*player).ammo[am_clip as ::core::ffi::c_int as usize] != 0 {
+        } else if (*player).ammo[am_clip as i32 as usize] != 0 {
             (*player).pendingweapon = wp_pistol;
-        } else if (*player).weaponowned[wp_chainsaw as ::core::ffi::c_int as usize] != 0
+        } else if (*player).weaponowned[wp_chainsaw as i32 as usize]
         {
             (*player).pendingweapon = wp_chainsaw;
-        } else if (*player).weaponowned[wp_missile as ::core::ffi::c_int as usize] != 0
-            && (*player).ammo[am_misl as ::core::ffi::c_int as usize] != 0
+        } else if (*player).weaponowned[wp_missile as i32 as usize]
+            && (*player).ammo[am_misl as i32 as usize] != 0
         {
             (*player).pendingweapon = wp_missile;
-        } else if (*player).weaponowned[wp_bfg as ::core::ffi::c_int as usize] != 0
-            && (*player).ammo[am_cell as ::core::ffi::c_int as usize]
-                > 40 as ::core::ffi::c_int
-            && gamemode as ::core::ffi::c_uint
-                != shareware as ::core::ffi::c_int as ::core::ffi::c_uint
+        } else if (*player).weaponowned[wp_bfg as i32 as usize]
+            && (*player).ammo[am_cell as i32 as usize]
+                > 40 as i32
+            && gamemode as u32
+                != shareware as i32 as u32
         {
             (*player).pendingweapon = wp_bfg;
         } else {
             (*player).pendingweapon = wp_fist;
         }
-        if !((*player).pendingweapon as ::core::ffi::c_uint
-            == wp_nochange as ::core::ffi::c_int as ::core::ffi::c_uint)
+        if !((*player).pendingweapon as u32
+            == wp_nochange as i32 as u32)
         {
             break;
         }
     }
     P_SetPsprite(
         player,
-        ps_weapon as ::core::ffi::c_int,
+        ps_weapon as i32,
         weaponinfo[(*player).readyweapon as usize].downstate as statenum_t,
     );
-    return false_0 as boolean;
+    return false;
 }
 #[no_mangle]
 pub unsafe extern "C" fn P_FireWeapon(mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;
-    if P_CheckAmmo(player) == 0 {
+    if !P_CheckAmmo(player) {
         return;
     }
     P_SetMobjState((*player).mo, S_PLAY_ATK1);
     newstate = weaponinfo[(*player).readyweapon as usize].atkstate as statenum_t;
-    P_SetPsprite(player, ps_weapon as ::core::ffi::c_int, newstate);
+    P_SetPsprite(player, ps_weapon as i32, newstate);
     P_NoiseAlert((*player).mo, (*player).mo);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_DropWeapon(mut player: *mut player_t) {
+pub unsafe fn P_DropWeapon(mut player: *mut player_t) {
     P_SetPsprite(
         player,
-        ps_weapon as ::core::ffi::c_int,
+        ps_weapon as i32,
         weaponinfo[(*player).readyweapon as usize].downstate as statenum_t,
     );
 }
@@ -1924,42 +1667,42 @@ pub unsafe extern "C" fn A_WeaponReady(
     mut psp: *mut pspdef_t,
 ) {
     let mut newstate: statenum_t = S_NULL;
-    let mut angle: ::core::ffi::c_int = 0;
+    let mut angle: i32 = 0;
     if (*(*player).mo).state
         == (&raw mut states as *mut state_t)
-            .offset(S_PLAY_ATK1 as ::core::ffi::c_int as isize) as *mut state_t
+            .offset(S_PLAY_ATK1 as i32 as isize) as *mut state_t
         || (*(*player).mo).state
             == (&raw mut states as *mut state_t)
-                .offset(S_PLAY_ATK2 as ::core::ffi::c_int as isize) as *mut state_t
+                .offset(S_PLAY_ATK2 as i32 as isize) as *mut state_t
     {
         P_SetMobjState((*player).mo, S_PLAY);
     }
-    if (*player).readyweapon as ::core::ffi::c_uint
-        == wp_chainsaw as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).readyweapon as u32
+        == wp_chainsaw as i32 as u32
         && (*psp).state
             == (&raw mut states as *mut state_t)
-                .offset(S_SAW as ::core::ffi::c_int as isize) as *mut state_t
+                .offset(S_SAW as i32 as isize) as *mut state_t
     {
         S_StartSound(
             (*player).mo as *mut ::core::ffi::c_void,
-            sfx_sawidl as ::core::ffi::c_int,
+            sfx_sawidl as i32,
         );
     }
-    if (*player).pendingweapon as ::core::ffi::c_uint
-        != wp_nochange as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).pendingweapon as u32
+        != wp_nochange as i32 as u32
         || (*player).health == 0
     {
         newstate = weaponinfo[(*player).readyweapon as usize].downstate as statenum_t;
-        P_SetPsprite(player, ps_weapon as ::core::ffi::c_int, newstate);
+        P_SetPsprite(player, ps_weapon as i32, newstate);
         return;
     }
-    if (*player).cmd.buttons as ::core::ffi::c_int & BT_ATTACK as ::core::ffi::c_int != 0
+    if (*player).cmd.buttons as i32 & BT_ATTACK as i32 != 0
     {
         if (*player).attackdown == 0
-            || (*player).readyweapon as ::core::ffi::c_uint
-                != wp_missile as ::core::ffi::c_int as ::core::ffi::c_uint
-                && (*player).readyweapon as ::core::ffi::c_uint
-                    != wp_bfg as ::core::ffi::c_int as ::core::ffi::c_uint
+            || (*player).readyweapon as u32
+                != wp_missile as i32 as u32
+                && (*player).readyweapon as u32
+                    != wp_bfg as i32 as u32
         {
             (*player).attackdown = true_0;
             P_FireWeapon(player);
@@ -1968,23 +1711,23 @@ pub unsafe extern "C" fn A_WeaponReady(
     } else {
         (*player).attackdown = false_0;
     }
-    angle = 128 as ::core::ffi::c_int * leveltime & FINEMASK;
+    angle = 128 as i32 * leveltime & FINEMASK;
     (*psp).sx = FRACUNIT + FixedMul((*player).bob, *finecosine.offset(angle as isize));
-    angle &= FINEANGLES / 2 as ::core::ffi::c_int - 1 as ::core::ffi::c_int;
+    angle &= FINEANGLES / 2 as i32 - 1 as i32;
     (*psp).sy = 32 as fixed_t * FRACUNIT
         + FixedMul((*player).bob, finesine[angle as usize]);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_ReFire(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    if (*player).cmd.buttons as ::core::ffi::c_int & BT_ATTACK as ::core::ffi::c_int != 0
-        && (*player).pendingweapon as ::core::ffi::c_uint
-            == wp_nochange as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).cmd.buttons as i32 & BT_ATTACK as i32 != 0
+        && (*player).pendingweapon as u32
+            == wp_nochange as i32 as u32
         && (*player).health != 0
     {
         (*player).refire += 1;
         P_FireWeapon(player);
     } else {
-        (*player).refire = 0 as ::core::ffi::c_int;
+        (*player).refire = 0 as i32;
         P_CheckAmmo(player);
     };
 }
@@ -1997,18 +1740,18 @@ pub unsafe extern "C" fn A_CheckReload(
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Lower(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    (*psp).sy += FRACUNIT * 6 as ::core::ffi::c_int;
-    if (*psp).sy < 128 as ::core::ffi::c_int * FRACUNIT {
+    (*psp).sy += FRACUNIT * 6 as i32;
+    if (*psp).sy < 128 as i32 * FRACUNIT {
         return;
     }
-    if (*player).playerstate as ::core::ffi::c_uint
-        == PST_DEAD as ::core::ffi::c_int as ::core::ffi::c_uint
+    if (*player).playerstate as u32
+        == PST_DEAD as i32 as u32
     {
-        (*psp).sy = (128 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+        (*psp).sy = (128 as i32 * FRACUNIT) as fixed_t;
         return;
     }
     if (*player).health == 0 {
-        P_SetPsprite(player, ps_weapon as ::core::ffi::c_int, S_NULL);
+        P_SetPsprite(player, ps_weapon as i32, S_NULL);
         return;
     }
     (*player).readyweapon = (*player).pendingweapon;
@@ -2017,42 +1760,42 @@ pub unsafe extern "C" fn A_Lower(mut player: *mut player_t, mut psp: *mut pspdef
 #[no_mangle]
 pub unsafe extern "C" fn A_Raise(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut newstate: statenum_t = S_NULL;
-    (*psp).sy -= FRACUNIT * 6 as ::core::ffi::c_int;
-    if (*psp).sy > 32 as ::core::ffi::c_int * FRACUNIT {
+    (*psp).sy -= FRACUNIT * 6 as i32;
+    if (*psp).sy > 32 as i32 * FRACUNIT {
         return;
     }
-    (*psp).sy = (32 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+    (*psp).sy = (32 as i32 * FRACUNIT) as fixed_t;
     newstate = weaponinfo[(*player).readyweapon as usize].readystate as statenum_t;
-    P_SetPsprite(player, ps_weapon as ::core::ffi::c_int, newstate);
+    P_SetPsprite(player, ps_weapon as i32, newstate);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_GunFlash(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     P_SetMobjState((*player).mo, S_PLAY_ATK2);
     P_SetPsprite(
         player,
-        ps_flash as ::core::ffi::c_int,
+        ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut angle: angle_t = 0;
-    let mut damage: ::core::ffi::c_int = 0;
-    let mut slope: ::core::ffi::c_int = 0;
-    damage = (P_Random() % 10 as ::core::ffi::c_int + 1 as ::core::ffi::c_int)
-        << 1 as ::core::ffi::c_int;
-    if (*player).powers[pw_strength as ::core::ffi::c_int as usize] != 0 {
-        damage *= 10 as ::core::ffi::c_int;
+    let mut damage: i32 = 0;
+    let mut slope: i32 = 0;
+    damage = (P_Random() % 10 as i32 + 1 as i32)
+        << 1 as i32;
+    if (*player).powers[pw_strength as i32 as usize] != 0 {
+        damage *= 10 as i32;
     }
     angle = (*(*player).mo).angle;
     angle = angle
-        .wrapping_add((P_Random() - P_Random() << 18 as ::core::ffi::c_int) as angle_t);
-    slope = P_AimLineAttack((*player).mo, angle, MELEERANGE) as ::core::ffi::c_int;
+        .wrapping_add((P_Random() - P_Random() << 18 as i32) as angle_t);
+    slope = P_AimLineAttack((*player).mo, angle, MELEERANGE) as i32;
     P_LineAttack((*player).mo, angle, MELEERANGE, slope as fixed_t, damage);
     if !linetarget.is_null() {
         S_StartSound(
             (*player).mo as *mut ::core::ffi::c_void,
-            sfx_punch as ::core::ffi::c_int,
+            sfx_punch as i32,
         );
         (*(*player).mo).angle = R_PointToAngle2(
             (*(*player).mo).x,
@@ -2065,15 +1808,15 @@ pub unsafe extern "C" fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef
 #[no_mangle]
 pub unsafe extern "C" fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut angle: angle_t = 0;
-    let mut damage: ::core::ffi::c_int = 0;
-    let mut slope: ::core::ffi::c_int = 0;
-    damage = 2 as ::core::ffi::c_int
-        * (P_Random() % 10 as ::core::ffi::c_int + 1 as ::core::ffi::c_int);
+    let mut damage: i32 = 0;
+    let mut slope: i32 = 0;
+    damage = 2 as i32
+        * (P_Random() % 10 as i32 + 1 as i32);
     angle = (*(*player).mo).angle;
     angle = angle
-        .wrapping_add((P_Random() - P_Random() << 18 as ::core::ffi::c_int) as angle_t);
+        .wrapping_add((P_Random() - P_Random() << 18 as i32) as angle_t);
     slope = P_AimLineAttack((*player).mo, angle, MELEERANGE + 1 as fixed_t)
-        as ::core::ffi::c_int;
+        as i32;
     P_LineAttack(
         (*player).mo,
         angle,
@@ -2084,13 +1827,13 @@ pub unsafe extern "C" fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t
     if linetarget.is_null() {
         S_StartSound(
             (*player).mo as *mut ::core::ffi::c_void,
-            sfx_sawful as ::core::ffi::c_int,
+            sfx_sawful as i32,
         );
         return;
     }
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_sawhit as ::core::ffi::c_int,
+        sfx_sawhit as i32,
     );
     angle = R_PointToAngle2(
         (*(*player).mo).x,
@@ -2099,37 +1842,37 @@ pub unsafe extern "C" fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t
         (*linetarget).y,
     );
     if angle.wrapping_sub((*(*player).mo).angle) > ANG180 {
-        if (angle.wrapping_sub((*(*player).mo).angle) as ::core::ffi::c_int)
-            < -ANG90 / 20 as ::core::ffi::c_int
+        if (angle.wrapping_sub((*(*player).mo).angle) as i32)
+            < -ANG90 / 20 as i32
         {
             (*(*player).mo).angle = angle
-                .wrapping_add((ANG90 / 21 as ::core::ffi::c_int) as angle_t);
+                .wrapping_add((ANG90 / 21 as i32) as angle_t);
         } else {
             (*(*player).mo).angle = (*(*player).mo)
                 .angle
-                .wrapping_sub((ANG90 / 20 as ::core::ffi::c_int) as angle_t);
+                .wrapping_sub((ANG90 / 20 as i32) as angle_t);
         }
     } else if angle.wrapping_sub((*(*player).mo).angle)
-        > (ANG90 / 20 as ::core::ffi::c_int) as angle_t
+        > (ANG90 / 20 as i32) as angle_t
     {
         (*(*player).mo).angle = angle
-            .wrapping_sub((ANG90 / 21 as ::core::ffi::c_int) as angle_t);
+            .wrapping_sub((ANG90 / 21 as i32) as angle_t);
     } else {
         (*(*player).mo).angle = (*(*player).mo)
             .angle
-            .wrapping_add((ANG90 / 20 as ::core::ffi::c_int) as angle_t);
+            .wrapping_add((ANG90 / 20 as i32) as angle_t);
     }
-    (*(*player).mo).flags |= MF_JUSTATTACKED as ::core::ffi::c_int;
+    (*(*player).mo).flags |= MF_JUSTATTACKED as i32;
 }
 unsafe extern "C" fn DecreaseAmmo(
     mut player: *mut player_t,
-    mut ammonum: ::core::ffi::c_int,
-    mut amount: ::core::ffi::c_int,
+    mut ammonum: i32,
+    mut amount: i32,
 ) {
-    if ammonum < NUMAMMO as ::core::ffi::c_int {
+    if ammonum < NUMAMMO as i32 {
         (*player).ammo[ammonum as usize] -= amount;
     } else {
-        (*player).maxammo[(ammonum - NUMAMMO as ::core::ffi::c_int) as usize] -= amount;
+        (*player).maxammo[(ammonum - NUMAMMO as i32) as usize] -= amount;
     };
 }
 #[no_mangle]
@@ -2139,8 +1882,8 @@ pub unsafe extern "C" fn A_FireMissile(
 ) {
     DecreaseAmmo(
         player,
-        weaponinfo[(*player).readyweapon as usize].ammo as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        weaponinfo[(*player).readyweapon as usize].ammo as i32,
+        1 as i32,
     );
     P_SpawnPlayerMissile((*player).mo, MT_ROCKET);
 }
@@ -2148,7 +1891,7 @@ pub unsafe extern "C" fn A_FireMissile(
 pub unsafe extern "C" fn A_FireBFG(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     DecreaseAmmo(
         player,
-        weaponinfo[(*player).readyweapon as usize].ammo as ::core::ffi::c_int,
+        weaponinfo[(*player).readyweapon as usize].ammo as i32,
         deh_bfg_cells_per_shot,
     );
     P_SpawnPlayerMissile((*player).mo, MT_BFG);
@@ -2160,18 +1903,17 @@ pub unsafe extern "C" fn A_FirePlasma(
 ) {
     DecreaseAmmo(
         player,
-        weaponinfo[(*player).readyweapon as usize].ammo as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        weaponinfo[(*player).readyweapon as usize].ammo as i32,
+        1 as i32,
     );
     P_SetPsprite(
         player,
-        ps_flash as ::core::ffi::c_int,
+        ps_flash as i32,
         (weaponinfo[(*player).readyweapon as usize].flashstate
-            + (P_Random() & 1 as ::core::ffi::c_int)) as statenum_t,
+            + (P_Random() & 1 as i32)) as statenum_t,
     );
     P_SpawnPlayerMissile((*player).mo, MT_PLASMA);
 }
-#[no_mangle]
 pub static mut bulletslope: fixed_t = 0;
 #[no_mangle]
 pub unsafe extern "C" fn P_BulletSlope(mut mo: *mut mobj_t) {
@@ -2181,13 +1923,13 @@ pub unsafe extern "C" fn P_BulletSlope(mut mo: *mut mobj_t) {
     if linetarget.is_null() {
         an = an
             .wrapping_add(
-                ((1 as ::core::ffi::c_int) << 26 as ::core::ffi::c_int) as angle_t,
+                ((1 as i32) << 26 as i32) as angle_t,
             );
         bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         if linetarget.is_null() {
             an = an
                 .wrapping_sub(
-                    ((2 as ::core::ffi::c_int) << 26 as ::core::ffi::c_int) as angle_t,
+                    ((2 as i32) << 26 as i32) as angle_t,
                 );
             bulletslope = P_AimLineAttack(
                 mo,
@@ -2198,16 +1940,16 @@ pub unsafe extern "C" fn P_BulletSlope(mut mo: *mut mobj_t) {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn P_GunShot(mut mo: *mut mobj_t, mut accurate: boolean) {
+pub unsafe extern "C" fn P_GunShot(mut mo: *mut mobj_t, mut accurate: bool) {
     let mut angle: angle_t = 0;
-    let mut damage: ::core::ffi::c_int = 0;
-    damage = 5 as ::core::ffi::c_int
-        * (P_Random() % 3 as ::core::ffi::c_int + 1 as ::core::ffi::c_int);
+    let mut damage: i32 = 0;
+    damage = 5 as i32
+        * (P_Random() % 3 as i32 + 1 as i32);
     angle = (*mo).angle;
-    if accurate == 0 {
+    if !accurate {
         angle = angle
             .wrapping_add(
-                (P_Random() - P_Random() << 18 as ::core::ffi::c_int) as angle_t,
+                (P_Random() - P_Random() << 18 as i32) as angle_t,
             );
     }
     P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
@@ -2219,47 +1961,47 @@ pub unsafe extern "C" fn A_FirePistol(
 ) {
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_pistol as ::core::ffi::c_int,
+        sfx_pistol as i32,
     );
     P_SetMobjState((*player).mo, S_PLAY_ATK2);
     DecreaseAmmo(
         player,
-        weaponinfo[(*player).readyweapon as usize].ammo as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        weaponinfo[(*player).readyweapon as usize].ammo as i32,
+        1 as i32,
     );
     P_SetPsprite(
         player,
-        ps_flash as ::core::ffi::c_int,
+        ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
     P_BulletSlope((*player).mo);
-    P_GunShot((*player).mo, ((*player).refire == 0) as ::core::ffi::c_int as boolean);
+    P_GunShot((*player).mo, (*player).refire == 0);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_FireShotgun(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_shotgn as ::core::ffi::c_int,
+        sfx_shotgn as i32,
     );
     P_SetMobjState((*player).mo, S_PLAY_ATK2);
     DecreaseAmmo(
         player,
-        weaponinfo[(*player).readyweapon as usize].ammo as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        weaponinfo[(*player).readyweapon as usize].ammo as i32,
+        1 as i32,
     );
     P_SetPsprite(
         player,
-        ps_flash as ::core::ffi::c_int,
+        ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
     P_BulletSlope((*player).mo);
-    i = 0 as ::core::ffi::c_int;
-    while i < 7 as ::core::ffi::c_int {
-        P_GunShot((*player).mo, false_0 as boolean);
+    i = 0 as i32;
+    while i < 7 as i32 {
+        P_GunShot((*player).mo, false);
         i += 1;
     }
 }
@@ -2268,33 +2010,33 @@ pub unsafe extern "C" fn A_FireShotgun2(
     mut player: *mut player_t,
     mut psp: *mut pspdef_t,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     let mut angle: angle_t = 0;
-    let mut damage: ::core::ffi::c_int = 0;
+    let mut damage: i32 = 0;
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_dshtgn as ::core::ffi::c_int,
+        sfx_dshtgn as i32,
     );
     P_SetMobjState((*player).mo, S_PLAY_ATK2);
     DecreaseAmmo(
         player,
-        weaponinfo[(*player).readyweapon as usize].ammo as ::core::ffi::c_int,
-        2 as ::core::ffi::c_int,
+        weaponinfo[(*player).readyweapon as usize].ammo as i32,
+        2 as i32,
     );
     P_SetPsprite(
         player,
-        ps_flash as ::core::ffi::c_int,
+        ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
     P_BulletSlope((*player).mo);
-    i = 0 as ::core::ffi::c_int;
-    while i < 20 as ::core::ffi::c_int {
-        damage = 5 as ::core::ffi::c_int
-            * (P_Random() % 3 as ::core::ffi::c_int + 1 as ::core::ffi::c_int);
+    i = 0 as i32;
+    while i < 20 as i32 {
+        damage = 5 as i32
+            * (P_Random() % 3 as i32 + 1 as i32);
         angle = (*(*player).mo).angle;
         angle = angle
             .wrapping_add(
-                (P_Random() - P_Random() << 19 as ::core::ffi::c_int) as angle_t,
+                (P_Random() - P_Random() << 19 as i32) as angle_t,
             );
         P_LineAttack(
             (*player).mo,
@@ -2302,7 +2044,7 @@ pub unsafe extern "C" fn A_FireShotgun2(
             MISSILERANGE,
             bulletslope
                 + ((P_Random() as fixed_t - P_Random() as fixed_t)
-                    << 5 as ::core::ffi::c_int),
+                    << 5 as i32),
             damage,
         );
         i += 1;
@@ -2312,7 +2054,7 @@ pub unsafe extern "C" fn A_FireShotgun2(
 pub unsafe extern "C" fn A_FireCGun(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_pistol as ::core::ffi::c_int,
+        sfx_pistol as i32,
     );
     if (*player).ammo[weaponinfo[(*player).readyweapon as usize].ammo as usize] == 0 {
         return;
@@ -2320,47 +2062,47 @@ pub unsafe extern "C" fn A_FireCGun(mut player: *mut player_t, mut psp: *mut psp
     P_SetMobjState((*player).mo, S_PLAY_ATK2);
     DecreaseAmmo(
         player,
-        weaponinfo[(*player).readyweapon as usize].ammo as ::core::ffi::c_int,
-        1 as ::core::ffi::c_int,
+        weaponinfo[(*player).readyweapon as usize].ammo as i32,
+        1 as i32,
     );
     P_SetPsprite(
         player,
-        ps_flash as ::core::ffi::c_int,
+        ps_flash as i32,
         (*psp)
             .state
             .offset(weaponinfo[(*player).readyweapon as usize].flashstate as isize)
             .offset_from(
                 (&raw mut states as *mut state_t)
-                    .offset(S_CHAIN1 as ::core::ffi::c_int as isize) as *mut state_t,
-            ) as ::core::ffi::c_long as statenum_t,
+                    .offset(S_CHAIN1 as i32 as isize) as *mut state_t,
+            ) as i64 as statenum_t,
     );
     P_BulletSlope((*player).mo);
-    P_GunShot((*player).mo, ((*player).refire == 0) as ::core::ffi::c_int as boolean);
+    P_GunShot((*player).mo, (*player).refire == 0);
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Light0(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    (*player).extralight = 0 as ::core::ffi::c_int;
+    (*player).extralight = 0 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Light1(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    (*player).extralight = 1 as ::core::ffi::c_int;
+    (*player).extralight = 1 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_Light2(mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    (*player).extralight = 2 as ::core::ffi::c_int;
+    (*player).extralight = 2 as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn A_BFGSpray(mut mo: *mut mobj_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut damage: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut damage: i32 = 0;
     let mut an: angle_t = 0;
-    i = 0 as ::core::ffi::c_int;
-    while i < 40 as ::core::ffi::c_int {
+    i = 0 as i32;
+    while i < 40 as i32 {
         an = (*mo)
             .angle
-            .wrapping_sub((ANG90 / 2 as ::core::ffi::c_int) as angle_t)
-            .wrapping_add((ANG90 / 40 as ::core::ffi::c_int * i) as angle_t);
+            .wrapping_sub((ANG90 / 2 as i32) as angle_t)
+            .wrapping_add((ANG90 / 40 as i32 * i) as angle_t);
         P_AimLineAttack(
             (*mo).target as *mut mobj_t,
             an,
@@ -2370,14 +2112,14 @@ pub unsafe extern "C" fn A_BFGSpray(mut mo: *mut mobj_t) {
             P_SpawnMobj(
                 (*linetarget).x,
                 (*linetarget).y,
-                (*linetarget).z + ((*linetarget).height >> 2 as ::core::ffi::c_int),
+                (*linetarget).z + ((*linetarget).height >> 2 as i32),
                 MT_EXTRABFG,
             );
-            damage = 0 as ::core::ffi::c_int;
-            j = 0 as ::core::ffi::c_int;
-            while j < 15 as ::core::ffi::c_int {
+            damage = 0 as i32;
+            j = 0 as i32;
+            while j < 15 as i32 {
                 damage
-                    += (P_Random() & 7 as ::core::ffi::c_int) + 1 as ::core::ffi::c_int;
+                    += (P_Random() & 7 as i32) + 1 as i32;
                 j += 1;
             }
             P_DamageMobj(
@@ -2394,32 +2136,30 @@ pub unsafe extern "C" fn A_BFGSpray(mut mo: *mut mobj_t) {
 pub unsafe extern "C" fn A_BFGsound(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     S_StartSound(
         (*player).mo as *mut ::core::ffi::c_void,
-        sfx_bfg as ::core::ffi::c_int,
+        sfx_bfg as i32,
     );
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_SetupPsprites(mut player: *mut player_t) {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMPSPRITES as ::core::ffi::c_int {
+pub unsafe fn P_SetupPsprites(mut player: *mut player_t) {
+    let mut i: i32 = 0;
+    i = 0 as i32;
+    while i < NUMPSPRITES as i32 {
         (*player).psprites[i as usize].state = ::core::ptr::null_mut::<state_t>();
         i += 1;
     }
     (*player).pendingweapon = (*player).readyweapon;
     P_BringUpWeapon(player);
 }
-#[no_mangle]
-pub unsafe extern "C" fn P_MovePsprites(mut player: *mut player_t) {
-    let mut i: ::core::ffi::c_int = 0;
+pub unsafe fn P_MovePsprites(mut player: *mut player_t) {
+    let mut i: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
     let mut state: *mut state_t = ::core::ptr::null_mut::<state_t>();
     psp = (&raw mut (*player).psprites as *mut pspdef_t)
-        .offset(0 as ::core::ffi::c_int as isize) as *mut pspdef_t;
-    i = 0 as ::core::ffi::c_int;
-    while i < NUMPSPRITES as ::core::ffi::c_int {
+        .offset(0 as i32 as isize) as *mut pspdef_t;
+    i = 0 as i32;
+    while i < NUMPSPRITES as i32 {
         state = (*psp).state;
         if !state.is_null() {
-            if (*psp).tics != -(1 as ::core::ffi::c_int) {
+            if (*psp).tics != -(1 as i32) {
                 (*psp).tics -= 1;
                 if (*psp).tics == 0 {
                     P_SetPsprite(player, i, (*(*psp).state).nextstate);
@@ -2429,10 +2169,10 @@ pub unsafe extern "C" fn P_MovePsprites(mut player: *mut player_t) {
         i += 1;
         psp = psp.offset(1);
     }
-    (*player).psprites[ps_flash as ::core::ffi::c_int as usize].sx = (*player)
-        .psprites[ps_weapon as ::core::ffi::c_int as usize]
+    (*player).psprites[ps_flash as i32 as usize].sx = (*player)
+        .psprites[ps_weapon as i32 as usize]
         .sx;
-    (*player).psprites[ps_flash as ::core::ffi::c_int as usize].sy = (*player)
-        .psprites[ps_weapon as ::core::ffi::c_int as usize]
+    (*player).psprites[ps_flash as i32 as usize].sy = (*player)
+        .psprites[ps_weapon as i32 as usize]
         .sy;
 }

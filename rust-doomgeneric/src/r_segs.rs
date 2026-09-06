@@ -1,82 +1,68 @@
+use crate::src::r_data::column_t;
+use crate::src::r_defs::drawseg_t;
+use crate::src::p_mobj::{actionf_t};
+use crate::src::i_system::I_Error;
+use crate::src::r_main::R_PointToDist;
+use crate::src::r_main::R_ScaleFromGlobalAngle;
+use crate::src::r_bsp::curline;
+use crate::src::r_bsp::sidedef;
+use crate::src::r_bsp::linedef;
+use crate::src::r_bsp::frontsector;
+use crate::src::r_bsp::backsector;
+use crate::src::r_plane::lastopening;
+use crate::src::r_plane::floorclip;
+use crate::src::r_plane::ceilingclip;
+use crate::src::r_plane::R_CheckPlane;
+use crate::src::r_things::negonearray;
+use crate::src::r_things::mfloorclip;
+use crate::src::r_things::mceilingclip;
+use crate::src::r_things::spryscale;
+use crate::src::r_things::sprtopscreen;
+use crate::src::r_things::R_DrawMaskedColumn;
+use crate::src::r_data::R_GetColumn;
+use crate::src::r_data::textureheight;
+use crate::src::r_data::texturetranslation;
+use crate::src::r_main::centeryfrac;
+use crate::src::r_main::xtoviewangle;
+use crate::src::r_main::scalelight;
+use crate::src::r_plane::floorplane;
+use crate::src::r_plane::ceilingplane;
+use crate::src::r_things::screenheightarray;
+use crate::src::r_bsp::drawsegs;
+use crate::src::r_bsp::ds_p;
+use crate::src::r_draw::dc_colormap;
+use crate::src::r_draw::dc_x;
+use crate::src::r_draw::dc_yl;
+use crate::src::r_draw::dc_yh;
+use crate::src::r_draw::dc_iscale;
+use crate::src::r_draw::dc_texturemid;
+use crate::src::r_draw::dc_source;
+use crate::src::r_main::fixedcolormap;
+use crate::src::r_main::viewangle;
+use crate::src::r_main::extralight;
+use crate::src::r_main::colfunc;
+use crate::src::tables::finetangent;
+use crate::src::r_main::viewz;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_draw::viewheight;
+use crate::src::r_sky::skyflatnum;
+use crate::src::tables::finesine;
+use crate::src::m_fixed::FixedMul;
+
 extern "C" {
-    fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
+    fn abs(__x: i32) -> i32;
     fn memcpy(
         __dest: *mut ::core::ffi::c_void,
         __src: *const ::core::ffi::c_void,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    static finesine: [fixed_t; 10240];
-    static finetangent: [fixed_t; 4096];
-    static mut skyflatnum: ::core::ffi::c_int;
-    static mut textureheight: *mut fixed_t;
-    static mut viewwidth: ::core::ffi::c_int;
-    static mut viewheight: ::core::ffi::c_int;
-    static mut texturetranslation: *mut ::core::ffi::c_int;
-    static mut viewz: fixed_t;
-    static mut viewangle: angle_t;
-    static mut xtoviewangle: [angle_t; 321];
-    static mut floorplane: *mut visplane_t;
-    static mut ceilingplane: *mut visplane_t;
-    fn R_GetColumn(tex: ::core::ffi::c_int, col: ::core::ffi::c_int) -> *mut byte;
-    static mut centeryfrac: fixed_t;
-    static mut scalelight: [[*mut lighttable_t; 48]; 16];
-    static mut extralight: ::core::ffi::c_int;
-    static mut fixedcolormap: *mut lighttable_t;
-    static mut colfunc: Option<unsafe extern "C" fn() -> ()>;
-    fn R_PointToDist(x: fixed_t, y: fixed_t) -> fixed_t;
-    fn R_ScaleFromGlobalAngle(visangle: angle_t) -> fixed_t;
-    static mut curline: *mut seg_t;
-    static mut sidedef: *mut side_t;
-    static mut linedef: *mut line_t;
-    static mut frontsector: *mut sector_t;
-    static mut backsector: *mut sector_t;
-    static mut drawsegs: [drawseg_t; 256];
-    static mut ds_p: *mut drawseg_t;
-    static mut lastopening: *mut ::core::ffi::c_short;
-    static mut floorclip: [::core::ffi::c_short; 320];
-    static mut ceilingclip: [::core::ffi::c_short; 320];
-    fn R_CheckPlane(
-        pl: *mut visplane_t,
-        start: ::core::ffi::c_int,
-        stop: ::core::ffi::c_int,
-    ) -> *mut visplane_t;
-    static mut negonearray: [::core::ffi::c_short; 320];
-    static mut screenheightarray: [::core::ffi::c_short; 320];
-    static mut mfloorclip: *mut ::core::ffi::c_short;
-    static mut mceilingclip: *mut ::core::ffi::c_short;
-    static mut spryscale: fixed_t;
-    static mut sprtopscreen: fixed_t;
-    fn R_DrawMaskedColumn(column: *mut column_t);
-    static mut dc_colormap: *mut lighttable_t;
-    static mut dc_x: ::core::ffi::c_int;
-    static mut dc_yl: ::core::ffi::c_int;
-    static mut dc_yh: ::core::ffi::c_int;
-    static mut dc_iscale: fixed_t;
-    static mut dc_texturemid: fixed_t;
-    static mut dc_source: *mut byte;
 }
 pub type size_t = usize;
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -88,39 +74,15 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type fixed_t = ::core::ffi::c_int;
-pub type angle_t = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -260,7 +222,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1229,18 +1191,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1379,301 +1330,54 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct post_t {
-    pub topdelta: byte,
-    pub length: byte,
-}
-pub type column_t = post_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-pub type line_t = line_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct seg_t {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub offset: fixed_t,
-    pub angle: angle_t,
-    pub sidedef: *mut side_t,
-    pub linedef: *mut line_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-}
 pub type lighttable_t = byte;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct drawseg_s {
-    pub curline: *mut seg_t,
-    pub x1: ::core::ffi::c_int,
-    pub x2: ::core::ffi::c_int,
-    pub scale1: fixed_t,
-    pub scale2: fixed_t,
-    pub scalestep: fixed_t,
-    pub silhouette: ::core::ffi::c_int,
-    pub bsilheight: fixed_t,
-    pub tsilheight: fixed_t,
-    pub sprtopclip: *mut ::core::ffi::c_short,
-    pub sprbottomclip: *mut ::core::ffi::c_short,
-    pub maskedtexturecol: *mut ::core::ffi::c_short,
-}
-pub type drawseg_t = drawseg_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct visplane_t {
-    pub height: fixed_t,
-    pub picnum: ::core::ffi::c_int,
-    pub lightlevel: ::core::ffi::c_int,
-    pub minx: ::core::ffi::c_int,
-    pub maxx: ::core::ffi::c_int,
-    pub pad1: byte,
-    pub top: [byte; 320],
-    pub pad2: byte,
-    pub pad3: byte,
-    pub bottom: [byte; 320],
-    pub pad4: byte,
-}
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const SHRT_MAX: ::core::ffi::c_int = __SHRT_MAX__;
-pub const INT_MAX: ::core::ffi::c_int = __INT_MAX__;
-pub const INT_MIN: ::core::ffi::c_int = -__INT_MAX__ - 1 as ::core::ffi::c_int;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;
+pub const SHRT_MAX: i32 = __SHRT_MAX__;
+pub const INT_MAX: i32 = __INT_MAX__;
+pub const INT_MIN: i32 = -__INT_MAX__ - 1 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const ML_DONTPEGTOP: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
-pub const ML_DONTPEGBOTTOM: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const ML_MAPPED: ::core::ffi::c_int = 256 as ::core::ffi::c_int;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const ANG180: ::core::ffi::c_uint = 0x80000000 as ::core::ffi::c_uint;
-pub const SIL_BOTTOM: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const SIL_TOP: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const SIL_BOTH: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const MAXDRAWSEGS: ::core::ffi::c_int = 256 as ::core::ffi::c_int;
-pub const LIGHTLEVELS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const LIGHTSEGSHIFT: ::core::ffi::c_int = 4 as ::core::ffi::c_int;
-pub const MAXLIGHTSCALE: ::core::ffi::c_int = 48 as ::core::ffi::c_int;
-pub const LIGHTSCALESHIFT: ::core::ffi::c_int = 12 as ::core::ffi::c_int;
+pub const ML_DONTPEGTOP: i32 = 8 as i32;
+pub const ML_DONTPEGBOTTOM: i32 = 16 as i32;
+pub const ML_MAPPED: i32 = 256 as i32;
+pub const FRACBITS: i32 = 16 as i32;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const ANG180: u32 = 0x80000000 as u32;
+pub const SIL_BOTTOM: i32 = 1 as i32;
+pub const SIL_TOP: i32 = 2 as i32;
+pub const SIL_BOTH: i32 = 3 as i32;
+pub const MAXDRAWSEGS: i32 = 256 as i32;
+pub const LIGHTLEVELS: i32 = 16 as i32;
+pub const LIGHTSEGSHIFT: i32 = 4 as i32;
+pub const MAXLIGHTSCALE: i32 = 48 as i32;
+pub const LIGHTSCALESHIFT: i32 = 12 as i32;
 #[no_mangle]
-pub static mut segtextured: boolean = 0;
+pub static mut segtextured: bool = false;
 #[no_mangle]
-pub static mut markfloor: boolean = 0;
+pub static mut markfloor: bool = false;
 #[no_mangle]
-pub static mut markceiling: boolean = 0;
+pub static mut markceiling: bool = false;
 #[no_mangle]
-pub static mut maskedtexture: boolean = 0;
+pub static mut maskedtexture: bool = false;
 #[no_mangle]
-pub static mut toptexture: ::core::ffi::c_int = 0;
+pub static mut toptexture: i32 = 0;
 #[no_mangle]
-pub static mut bottomtexture: ::core::ffi::c_int = 0;
+pub static mut bottomtexture: i32 = 0;
 #[no_mangle]
-pub static mut midtexture: ::core::ffi::c_int = 0;
-#[no_mangle]
+pub static mut midtexture: i32 = 0;
 pub static mut rw_normalangle: angle_t = 0;
+pub static mut rw_angle1: i32 = 0;
 #[no_mangle]
-pub static mut rw_angle1: ::core::ffi::c_int = 0;
+pub static mut rw_x: i32 = 0;
 #[no_mangle]
-pub static mut rw_x: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut rw_stopx: ::core::ffi::c_int = 0;
+pub static mut rw_stopx: i32 = 0;
 #[no_mangle]
 pub static mut rw_centerangle: angle_t = 0;
 #[no_mangle]
 pub static mut rw_offset: fixed_t = 0;
-#[no_mangle]
 pub static mut rw_distance: fixed_t = 0;
 #[no_mangle]
 pub static mut rw_scale: fixed_t = 0;
@@ -1686,13 +1390,13 @@ pub static mut rw_toptexturemid: fixed_t = 0;
 #[no_mangle]
 pub static mut rw_bottomtexturemid: fixed_t = 0;
 #[no_mangle]
-pub static mut worldtop: ::core::ffi::c_int = 0;
+pub static mut worldtop: i32 = 0;
 #[no_mangle]
-pub static mut worldbottom: ::core::ffi::c_int = 0;
+pub static mut worldbottom: i32 = 0;
 #[no_mangle]
-pub static mut worldhigh: ::core::ffi::c_int = 0;
+pub static mut worldhigh: i32 = 0;
 #[no_mangle]
-pub static mut worldlow: ::core::ffi::c_int = 0;
+pub static mut worldlow: i32 = 0;
 #[no_mangle]
 pub static mut pixhigh: fixed_t = 0;
 #[no_mangle]
@@ -1709,41 +1413,39 @@ pub static mut topstep: fixed_t = 0;
 pub static mut bottomfrac: fixed_t = 0;
 #[no_mangle]
 pub static mut bottomstep: fixed_t = 0;
-#[no_mangle]
 pub static mut walllights: *mut *mut lighttable_t = ::core::ptr::null::<
     *mut lighttable_t,
 >() as *mut *mut lighttable_t;
 #[no_mangle]
-pub static mut maskedtexturecol: *mut ::core::ffi::c_short = ::core::ptr::null::<
-    ::core::ffi::c_short,
->() as *mut ::core::ffi::c_short;
-#[no_mangle]
-pub unsafe extern "C" fn R_RenderMaskedSegRange(
+pub static mut maskedtexturecol: *mut i16 = ::core::ptr::null::<
+    i16,
+>() as *mut i16;
+pub unsafe fn R_RenderMaskedSegRange(
     mut ds: *mut drawseg_t,
-    mut x1: ::core::ffi::c_int,
-    mut x2: ::core::ffi::c_int,
+    mut x1: i32,
+    mut x2: i32,
 ) {
-    let mut index: ::core::ffi::c_uint = 0;
+    let mut index: u32 = 0;
     let mut col: *mut column_t = ::core::ptr::null_mut::<column_t>();
-    let mut lightnum: ::core::ffi::c_int = 0;
-    let mut texnum: ::core::ffi::c_int = 0;
+    let mut lightnum: i32 = 0;
+    let mut texnum: i32 = 0;
     curline = (*ds).curline;
     frontsector = (*curline).frontsector;
     backsector = (*curline).backsector;
     texnum = *texturetranslation.offset((*(*curline).sidedef).midtexture as isize);
-    lightnum = ((*frontsector).lightlevel as ::core::ffi::c_int >> LIGHTSEGSHIFT)
+    lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT)
         + extralight;
     if (*(*curline).v1).y == (*(*curline).v2).y {
         lightnum -= 1;
     } else if (*(*curline).v1).x == (*(*curline).v2).x {
         lightnum += 1;
     }
-    if lightnum < 0 as ::core::ffi::c_int {
+    if lightnum < 0 as i32 {
         walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
-            .offset(0 as ::core::ffi::c_int as isize) as *mut *mut lighttable_t;
+            .offset(0 as i32 as isize) as *mut *mut lighttable_t;
     } else if lightnum >= LIGHTLEVELS {
         walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
-            .offset((LIGHTLEVELS - 1 as ::core::ffi::c_int) as isize)
+            .offset((LIGHTLEVELS - 1 as i32) as isize)
             as *mut *mut lighttable_t;
     } else {
         walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
@@ -1754,7 +1456,7 @@ pub unsafe extern "C" fn R_RenderMaskedSegRange(
     spryscale = (*ds).scale1 + (x1 as fixed_t - (*ds).x1 as fixed_t) * rw_scalestep;
     mfloorclip = (*ds).sprbottomclip;
     mceilingclip = (*ds).sprtopclip;
-    if (*(*curline).linedef).flags as ::core::ffi::c_int & ML_DONTPEGBOTTOM != 0 {
+    if (*(*curline).linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
         dc_texturemid = if (*frontsector).floorheight > (*backsector).floorheight {
             (*frontsector).floorheight
         } else {
@@ -1775,115 +1477,115 @@ pub unsafe extern "C" fn R_RenderMaskedSegRange(
     }
     dc_x = x1;
     while dc_x <= x2 {
-        if *maskedtexturecol.offset(dc_x as isize) as ::core::ffi::c_int != SHRT_MAX {
+        if *maskedtexturecol.offset(dc_x as isize) as i32 != SHRT_MAX {
             if fixedcolormap.is_null() {
-                index = (spryscale >> LIGHTSCALESHIFT) as ::core::ffi::c_uint;
-                if index >= MAXLIGHTSCALE as ::core::ffi::c_uint {
-                    index = (MAXLIGHTSCALE - 1 as ::core::ffi::c_int)
-                        as ::core::ffi::c_uint;
+                index = (spryscale >> LIGHTSCALESHIFT) as u32;
+                if index >= MAXLIGHTSCALE as u32 {
+                    index = (MAXLIGHTSCALE - 1 as i32)
+                        as u32;
                 }
                 dc_colormap = *walllights.offset(index as isize);
             }
             sprtopscreen = centeryfrac - FixedMul(dc_texturemid, spryscale);
-            dc_iscale = (0xffffffff as ::core::ffi::c_uint)
-                .wrapping_div(spryscale as ::core::ffi::c_uint) as fixed_t;
+            dc_iscale = (0xffffffff as u32)
+                .wrapping_div(spryscale as u32) as fixed_t;
             col = R_GetColumn(
                     texnum,
-                    *maskedtexturecol.offset(dc_x as isize) as ::core::ffi::c_int,
+                    *maskedtexturecol.offset(dc_x as isize) as i32,
                 )
-                .offset(-(3 as ::core::ffi::c_int as isize)) as *mut column_t;
+                .offset(-(3 as i32 as isize)) as *mut column_t;
             R_DrawMaskedColumn(col);
-            *maskedtexturecol.offset(dc_x as isize) = SHRT_MAX as ::core::ffi::c_short;
+            *maskedtexturecol.offset(dc_x as isize) = SHRT_MAX as i16;
         }
         spryscale += rw_scalestep;
         dc_x += 1;
     }
 }
-pub const HEIGHTBITS: ::core::ffi::c_int = 12 as ::core::ffi::c_int;
-pub const HEIGHTUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << HEIGHTBITS;
+pub const HEIGHTBITS: i32 = 12 as i32;
+pub const HEIGHTUNIT: i32 = (1 as i32) << HEIGHTBITS;
 #[no_mangle]
 pub unsafe extern "C" fn R_RenderSegLoop() {
     let mut angle: angle_t = 0;
-    let mut index: ::core::ffi::c_uint = 0;
-    let mut yl: ::core::ffi::c_int = 0;
-    let mut yh: ::core::ffi::c_int = 0;
-    let mut mid: ::core::ffi::c_int = 0;
+    let mut index: u32 = 0;
+    let mut yl: i32 = 0;
+    let mut yh: i32 = 0;
+    let mut mid: i32 = 0;
     let mut texturecolumn: fixed_t = 0;
-    let mut top: ::core::ffi::c_int = 0;
-    let mut bottom: ::core::ffi::c_int = 0;
+    let mut top: i32 = 0;
+    let mut bottom: i32 = 0;
     while rw_x < rw_stopx {
-        yl = topfrac as ::core::ffi::c_int + HEIGHTUNIT - 1 as ::core::ffi::c_int
+        yl = topfrac as i32 + HEIGHTUNIT - 1 as i32
             >> HEIGHTBITS;
         if yl
-            < ceilingclip[rw_x as usize] as ::core::ffi::c_int + 1 as ::core::ffi::c_int
+            < ceilingclip[rw_x as usize] as i32 + 1 as i32
         {
-            yl = ceilingclip[rw_x as usize] as ::core::ffi::c_int
-                + 1 as ::core::ffi::c_int;
+            yl = ceilingclip[rw_x as usize] as i32
+                + 1 as i32;
         }
-        if markceiling != 0 {
-            top = ceilingclip[rw_x as usize] as ::core::ffi::c_int
-                + 1 as ::core::ffi::c_int;
-            bottom = yl - 1 as ::core::ffi::c_int;
-            if bottom >= floorclip[rw_x as usize] as ::core::ffi::c_int {
-                bottom = floorclip[rw_x as usize] as ::core::ffi::c_int
-                    - 1 as ::core::ffi::c_int;
+        if markceiling {
+            top = ceilingclip[rw_x as usize] as i32
+                + 1 as i32;
+            bottom = yl - 1 as i32;
+            if bottom >= floorclip[rw_x as usize] as i32 {
+                bottom = floorclip[rw_x as usize] as i32
+                    - 1 as i32;
             }
             if top <= bottom {
                 (*ceilingplane).top[rw_x as usize] = top as byte;
                 (*ceilingplane).bottom[rw_x as usize] = bottom as byte;
             }
         }
-        yh = (bottomfrac >> HEIGHTBITS) as ::core::ffi::c_int;
-        if yh >= floorclip[rw_x as usize] as ::core::ffi::c_int {
-            yh = floorclip[rw_x as usize] as ::core::ffi::c_int
-                - 1 as ::core::ffi::c_int;
+        yh = (bottomfrac >> HEIGHTBITS) as i32;
+        if yh >= floorclip[rw_x as usize] as i32 {
+            yh = floorclip[rw_x as usize] as i32
+                - 1 as i32;
         }
-        if markfloor != 0 {
-            top = yh + 1 as ::core::ffi::c_int;
-            bottom = floorclip[rw_x as usize] as ::core::ffi::c_int
-                - 1 as ::core::ffi::c_int;
-            if top <= ceilingclip[rw_x as usize] as ::core::ffi::c_int {
-                top = ceilingclip[rw_x as usize] as ::core::ffi::c_int
-                    + 1 as ::core::ffi::c_int;
+        if markfloor {
+            top = yh + 1 as i32;
+            bottom = floorclip[rw_x as usize] as i32
+                - 1 as i32;
+            if top <= ceilingclip[rw_x as usize] as i32 {
+                top = ceilingclip[rw_x as usize] as i32
+                    + 1 as i32;
             }
             if top <= bottom {
                 (*floorplane).top[rw_x as usize] = top as byte;
                 (*floorplane).bottom[rw_x as usize] = bottom as byte;
             }
         }
-        if segtextured != 0 {
+        if segtextured {
             angle = rw_centerangle.wrapping_add(xtoviewangle[rw_x as usize])
                 >> ANGLETOFINESHIFT;
             texturecolumn = rw_offset
                 - FixedMul(finetangent[angle as usize], rw_distance);
             texturecolumn >>= FRACBITS;
-            index = (rw_scale >> LIGHTSCALESHIFT) as ::core::ffi::c_uint;
-            if index >= MAXLIGHTSCALE as ::core::ffi::c_uint {
-                index = (MAXLIGHTSCALE - 1 as ::core::ffi::c_int) as ::core::ffi::c_uint;
+            index = (rw_scale >> LIGHTSCALESHIFT) as u32;
+            if index >= MAXLIGHTSCALE as u32 {
+                index = (MAXLIGHTSCALE - 1 as i32) as u32;
             }
             dc_colormap = *walllights.offset(index as isize);
             dc_x = rw_x;
-            dc_iscale = (0xffffffff as ::core::ffi::c_uint)
-                .wrapping_div(rw_scale as ::core::ffi::c_uint) as fixed_t;
+            dc_iscale = (0xffffffff as u32)
+                .wrapping_div(rw_scale as u32) as fixed_t;
         } else {
-            texturecolumn = 0 as ::core::ffi::c_int as fixed_t;
+            texturecolumn = 0 as i32 as fixed_t;
         }
         if midtexture != 0 {
             dc_yl = yl;
             dc_yh = yh;
             dc_texturemid = rw_midtexturemid;
-            dc_source = R_GetColumn(midtexture, texturecolumn as ::core::ffi::c_int);
+            dc_source = R_GetColumn(midtexture, texturecolumn as i32);
             colfunc.expect("non-null function pointer")();
-            ceilingclip[rw_x as usize] = viewheight as ::core::ffi::c_short;
-            floorclip[rw_x as usize] = -(1 as ::core::ffi::c_int)
-                as ::core::ffi::c_short;
+            ceilingclip[rw_x as usize] = viewheight as i16;
+            floorclip[rw_x as usize] = -(1 as i32)
+                as i16;
         } else {
             if toptexture != 0 {
-                mid = (pixhigh >> HEIGHTBITS) as ::core::ffi::c_int;
+                mid = (pixhigh >> HEIGHTBITS) as i32;
                 pixhigh += pixhighstep;
-                if mid >= floorclip[rw_x as usize] as ::core::ffi::c_int {
-                    mid = floorclip[rw_x as usize] as ::core::ffi::c_int
-                        - 1 as ::core::ffi::c_int;
+                if mid >= floorclip[rw_x as usize] as i32 {
+                    mid = floorclip[rw_x as usize] as i32
+                        - 1 as i32;
                 }
                 if mid >= yl {
                     dc_yl = yl;
@@ -1891,25 +1593,25 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
                     dc_texturemid = rw_toptexturemid;
                     dc_source = R_GetColumn(
                         toptexture,
-                        texturecolumn as ::core::ffi::c_int,
+                        texturecolumn as i32,
                     );
                     colfunc.expect("non-null function pointer")();
-                    ceilingclip[rw_x as usize] = mid as ::core::ffi::c_short;
+                    ceilingclip[rw_x as usize] = mid as i16;
                 } else {
-                    ceilingclip[rw_x as usize] = (yl - 1 as ::core::ffi::c_int)
-                        as ::core::ffi::c_short;
+                    ceilingclip[rw_x as usize] = (yl - 1 as i32)
+                        as i16;
                 }
-            } else if markceiling != 0 {
-                ceilingclip[rw_x as usize] = (yl - 1 as ::core::ffi::c_int)
-                    as ::core::ffi::c_short;
+            } else if markceiling {
+                ceilingclip[rw_x as usize] = (yl - 1 as i32)
+                    as i16;
             }
             if bottomtexture != 0 {
-                mid = pixlow as ::core::ffi::c_int + HEIGHTUNIT - 1 as ::core::ffi::c_int
+                mid = pixlow as i32 + HEIGHTUNIT - 1 as i32
                     >> HEIGHTBITS;
                 pixlow += pixlowstep;
-                if mid <= ceilingclip[rw_x as usize] as ::core::ffi::c_int {
-                    mid = ceilingclip[rw_x as usize] as ::core::ffi::c_int
-                        + 1 as ::core::ffi::c_int;
+                if mid <= ceilingclip[rw_x as usize] as i32 {
+                    mid = ceilingclip[rw_x as usize] as i32
+                        + 1 as i32;
                 }
                 if mid <= yh {
                     dc_yl = mid;
@@ -1917,21 +1619,21 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
                     dc_texturemid = rw_bottomtexturemid;
                     dc_source = R_GetColumn(
                         bottomtexture,
-                        texturecolumn as ::core::ffi::c_int,
+                        texturecolumn as i32,
                     );
                     colfunc.expect("non-null function pointer")();
-                    floorclip[rw_x as usize] = mid as ::core::ffi::c_short;
+                    floorclip[rw_x as usize] = mid as i16;
                 } else {
-                    floorclip[rw_x as usize] = (yh + 1 as ::core::ffi::c_int)
-                        as ::core::ffi::c_short;
+                    floorclip[rw_x as usize] = (yh + 1 as i32)
+                        as i16;
                 }
-            } else if markfloor != 0 {
-                floorclip[rw_x as usize] = (yh + 1 as ::core::ffi::c_int)
-                    as ::core::ffi::c_short;
+            } else if markfloor {
+                floorclip[rw_x as usize] = (yh + 1 as i32)
+                    as i16;
             }
-            if maskedtexture != 0 {
+            if maskedtexture {
                 *maskedtexturecol.offset(rw_x as isize) = texturecolumn
-                    as ::core::ffi::c_short;
+                    as i16;
             }
         }
         rw_scale += rw_scalestep;
@@ -1940,17 +1642,16 @@ pub unsafe extern "C" fn R_RenderSegLoop() {
         rw_x += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_StoreWallRange(
-    mut start: ::core::ffi::c_int,
-    mut stop: ::core::ffi::c_int,
+pub unsafe fn R_StoreWallRange(
+    mut start: i32,
+    mut stop: i32,
 ) {
     let mut hyp: fixed_t = 0;
     let mut sineval: fixed_t = 0;
     let mut distangle: angle_t = 0;
     let mut offsetangle: angle_t = 0;
     let mut vtop: fixed_t = 0;
-    let mut lightnum: ::core::ffi::c_int = 0;
+    let mut lightnum: i32 = 0;
     if ds_p
         == (&raw mut drawsegs as *mut drawseg_t).offset(MAXDRAWSEGS as isize)
             as *mut drawseg_t
@@ -1958,20 +1659,15 @@ pub unsafe extern "C" fn R_StoreWallRange(
         return;
     }
     if start >= viewwidth || start > stop {
-        I_Error(
-            b"Bad R_RenderWallRange: %i to %i\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            start,
-            stop,
-        );
+        I_Error(&format!("Bad R_RenderWallRange: {} to {}", start, stop));
     }
     sidedef = (*curline).sidedef;
     linedef = (*curline).linedef;
-    (*linedef).flags = ((*linedef).flags as ::core::ffi::c_int | ML_MAPPED)
-        as ::core::ffi::c_short;
+    (*linedef).flags = ((*linedef).flags as i32 | ML_MAPPED)
+        as i16;
     rw_normalangle = (*curline).angle.wrapping_add(ANG90 as angle_t);
     offsetangle = abs(
-        rw_normalangle.wrapping_sub(rw_angle1 as angle_t) as ::core::ffi::c_int,
+        rw_normalangle.wrapping_sub(rw_angle1 as angle_t) as i32,
     ) as angle_t;
     if offsetangle > ANG90 as angle_t {
         offsetangle = ANG90 as angle_t;
@@ -1984,7 +1680,7 @@ pub unsafe extern "C" fn R_StoreWallRange(
     (*ds_p).x1 = rw_x;
     (*ds_p).x2 = stop;
     (*ds_p).curline = curline;
-    rw_stopx = stop + 1 as ::core::ffi::c_int;
+    rw_stopx = stop + 1 as i32;
     rw_scale = R_ScaleFromGlobalAngle(
         viewangle.wrapping_add(xtoviewangle[start as usize]),
     );
@@ -1993,24 +1689,24 @@ pub unsafe extern "C" fn R_StoreWallRange(
         (*ds_p).scale2 = R_ScaleFromGlobalAngle(
             viewangle.wrapping_add(xtoviewangle[stop as usize]),
         );
-        rw_scalestep = (((*ds_p).scale2 as ::core::ffi::c_int
-            - rw_scale as ::core::ffi::c_int) / (stop - start)) as fixed_t;
+        rw_scalestep = (((*ds_p).scale2 as i32
+            - rw_scale as i32) / (stop - start)) as fixed_t;
         (*ds_p).scalestep = rw_scalestep;
     } else {
         (*ds_p).scale2 = (*ds_p).scale1;
     }
-    worldtop = ((*frontsector).ceilingheight - viewz) as ::core::ffi::c_int;
-    worldbottom = ((*frontsector).floorheight - viewz) as ::core::ffi::c_int;
-    maskedtexture = 0 as boolean;
-    bottomtexture = maskedtexture as ::core::ffi::c_int;
+    worldtop = ((*frontsector).ceilingheight - viewz) as i32;
+    worldbottom = ((*frontsector).floorheight - viewz) as i32;
+    maskedtexture = false;
+    bottomtexture = maskedtexture as i32;
     toptexture = bottomtexture;
     midtexture = toptexture;
-    (*ds_p).maskedtexturecol = ::core::ptr::null_mut::<::core::ffi::c_short>();
+    (*ds_p).maskedtexturecol = ::core::ptr::null_mut::<i16>();
     if backsector.is_null() {
         midtexture = *texturetranslation.offset((*sidedef).midtexture as isize);
-        markceiling = true_0 as boolean;
+        markceiling = true;
         markfloor = markceiling;
-        if (*linedef).flags as ::core::ffi::c_int & ML_DONTPEGBOTTOM != 0 {
+        if (*linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
             vtop = (*frontsector).floorheight
                 + *textureheight.offset((*sidedef).midtexture as isize);
             rw_midtexturemid = vtop - viewz;
@@ -2019,14 +1715,14 @@ pub unsafe extern "C" fn R_StoreWallRange(
         }
         rw_midtexturemid += (*sidedef).rowoffset;
         (*ds_p).silhouette = SIL_BOTH;
-        (*ds_p).sprtopclip = &raw mut screenheightarray as *mut ::core::ffi::c_short;
-        (*ds_p).sprbottomclip = &raw mut negonearray as *mut ::core::ffi::c_short;
+        (*ds_p).sprtopclip = &raw mut screenheightarray as *mut i16;
+        (*ds_p).sprbottomclip = &raw mut negonearray as *mut i16;
         (*ds_p).bsilheight = INT_MAX as fixed_t;
         (*ds_p).tsilheight = INT_MIN as fixed_t;
     } else {
-        (*ds_p).sprbottomclip = ::core::ptr::null_mut::<::core::ffi::c_short>();
+        (*ds_p).sprbottomclip = ::core::ptr::null_mut::<i16>();
         (*ds_p).sprtopclip = (*ds_p).sprbottomclip;
-        (*ds_p).silhouette = 0 as ::core::ffi::c_int;
+        (*ds_p).silhouette = 0 as i32;
         if (*frontsector).floorheight > (*backsector).floorheight {
             (*ds_p).silhouette = SIL_BOTTOM;
             (*ds_p).bsilheight = (*frontsector).floorheight;
@@ -2042,51 +1738,51 @@ pub unsafe extern "C" fn R_StoreWallRange(
             (*ds_p).tsilheight = INT_MIN as fixed_t;
         }
         if (*backsector).ceilingheight <= (*frontsector).floorheight {
-            (*ds_p).sprbottomclip = &raw mut negonearray as *mut ::core::ffi::c_short;
+            (*ds_p).sprbottomclip = &raw mut negonearray as *mut i16;
             (*ds_p).bsilheight = INT_MAX as fixed_t;
             (*ds_p).silhouette |= SIL_BOTTOM;
         }
         if (*backsector).floorheight >= (*frontsector).ceilingheight {
-            (*ds_p).sprtopclip = &raw mut screenheightarray as *mut ::core::ffi::c_short;
+            (*ds_p).sprtopclip = &raw mut screenheightarray as *mut i16;
             (*ds_p).tsilheight = INT_MIN as fixed_t;
             (*ds_p).silhouette |= SIL_TOP;
         }
-        worldhigh = ((*backsector).ceilingheight - viewz) as ::core::ffi::c_int;
-        worldlow = ((*backsector).floorheight - viewz) as ::core::ffi::c_int;
-        if (*frontsector).ceilingpic as ::core::ffi::c_int == skyflatnum
-            && (*backsector).ceilingpic as ::core::ffi::c_int == skyflatnum
+        worldhigh = ((*backsector).ceilingheight - viewz) as i32;
+        worldlow = ((*backsector).floorheight - viewz) as i32;
+        if (*frontsector).ceilingpic as i32 == skyflatnum
+            && (*backsector).ceilingpic as i32 == skyflatnum
         {
             worldtop = worldhigh;
         }
         if worldlow != worldbottom
-            || (*backsector).floorpic as ::core::ffi::c_int
-                != (*frontsector).floorpic as ::core::ffi::c_int
-            || (*backsector).lightlevel as ::core::ffi::c_int
-                != (*frontsector).lightlevel as ::core::ffi::c_int
+            || (*backsector).floorpic as i32
+                != (*frontsector).floorpic as i32
+            || (*backsector).lightlevel as i32
+                != (*frontsector).lightlevel as i32
         {
-            markfloor = true_0 as boolean;
+            markfloor = true;
         } else {
-            markfloor = false_0 as boolean;
+            markfloor = false;
         }
         if worldhigh != worldtop
-            || (*backsector).ceilingpic as ::core::ffi::c_int
-                != (*frontsector).ceilingpic as ::core::ffi::c_int
-            || (*backsector).lightlevel as ::core::ffi::c_int
-                != (*frontsector).lightlevel as ::core::ffi::c_int
+            || (*backsector).ceilingpic as i32
+                != (*frontsector).ceilingpic as i32
+            || (*backsector).lightlevel as i32
+                != (*frontsector).lightlevel as i32
         {
-            markceiling = true_0 as boolean;
+            markceiling = true;
         } else {
-            markceiling = false_0 as boolean;
+            markceiling = false;
         }
         if (*backsector).ceilingheight <= (*frontsector).floorheight
             || (*backsector).floorheight >= (*frontsector).ceilingheight
         {
-            markfloor = true_0 as boolean;
+            markfloor = true;
             markceiling = markfloor;
         }
         if worldhigh < worldtop {
             toptexture = *texturetranslation.offset((*sidedef).toptexture as isize);
-            if (*linedef).flags as ::core::ffi::c_int & ML_DONTPEGTOP != 0 {
+            if (*linedef).flags as i32 & ML_DONTPEGTOP != 0 {
                 rw_toptexturemid = worldtop as fixed_t;
             } else {
                 vtop = (*backsector).ceilingheight
@@ -2097,7 +1793,7 @@ pub unsafe extern "C" fn R_StoreWallRange(
         if worldlow > worldbottom {
             bottomtexture = *texturetranslation
                 .offset((*sidedef).bottomtexture as isize);
-            if (*linedef).flags as ::core::ffi::c_int & ML_DONTPEGBOTTOM != 0 {
+            if (*linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
                 rw_bottomtexturemid = worldtop as fixed_t;
             } else {
                 rw_bottomtexturemid = worldlow as fixed_t;
@@ -2106,14 +1802,14 @@ pub unsafe extern "C" fn R_StoreWallRange(
         rw_toptexturemid += (*sidedef).rowoffset;
         rw_bottomtexturemid += (*sidedef).rowoffset;
         if (*sidedef).midtexture != 0 {
-            maskedtexture = true_0 as boolean;
+            maskedtexture = true;
             maskedtexturecol = lastopening.offset(-(rw_x as isize));
             (*ds_p).maskedtexturecol = maskedtexturecol;
             lastopening = lastopening.offset((rw_stopx - rw_x) as isize);
         }
     }
-    segtextured = (midtexture | toptexture | bottomtexture) as boolean | maskedtexture;
-    if segtextured != 0 {
+    segtextured = (midtexture | toptexture | bottomtexture) != 0 || maskedtexture;
+    if segtextured {
         offsetangle = rw_normalangle.wrapping_sub(rw_angle1 as angle_t);
         if offsetangle > ANG180 {
             offsetangle = offsetangle.wrapping_neg();
@@ -2131,21 +1827,21 @@ pub unsafe extern "C" fn R_StoreWallRange(
             .wrapping_add(viewangle)
             .wrapping_sub(rw_normalangle);
         if fixedcolormap.is_null() {
-            lightnum = ((*frontsector).lightlevel as ::core::ffi::c_int >> LIGHTSEGSHIFT)
+            lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT)
                 + extralight;
             if (*(*curline).v1).y == (*(*curline).v2).y {
                 lightnum -= 1;
             } else if (*(*curline).v1).x == (*(*curline).v2).x {
                 lightnum += 1;
             }
-            if lightnum < 0 as ::core::ffi::c_int {
+            if lightnum < 0 as i32 {
                 walllights = &raw mut *(&raw mut scalelight
                     as *mut [*mut lighttable_t; 48])
-                    .offset(0 as ::core::ffi::c_int as isize) as *mut *mut lighttable_t;
+                    .offset(0 as i32 as isize) as *mut *mut lighttable_t;
             } else if lightnum >= LIGHTLEVELS {
                 walllights = &raw mut *(&raw mut scalelight
                     as *mut [*mut lighttable_t; 48])
-                    .offset((LIGHTLEVELS - 1 as ::core::ffi::c_int) as isize)
+                    .offset((LIGHTLEVELS - 1 as i32) as isize)
                     as *mut *mut lighttable_t;
             } else {
                 walllights = &raw mut *(&raw mut scalelight
@@ -2155,79 +1851,79 @@ pub unsafe extern "C" fn R_StoreWallRange(
         }
     }
     if (*frontsector).floorheight >= viewz {
-        markfloor = false_0 as boolean;
+        markfloor = false;
     }
     if (*frontsector).ceilingheight <= viewz
-        && (*frontsector).ceilingpic as ::core::ffi::c_int != skyflatnum
+        && (*frontsector).ceilingpic as i32 != skyflatnum
     {
-        markceiling = false_0 as boolean;
+        markceiling = false;
     }
-    worldtop >>= 4 as ::core::ffi::c_int;
-    worldbottom >>= 4 as ::core::ffi::c_int;
+    worldtop >>= 4 as i32;
+    worldbottom >>= 4 as i32;
     topstep = -FixedMul(rw_scalestep, worldtop as fixed_t);
-    topfrac = (centeryfrac >> 4 as ::core::ffi::c_int)
+    topfrac = (centeryfrac >> 4 as i32)
         - FixedMul(worldtop as fixed_t, rw_scale);
     bottomstep = -FixedMul(rw_scalestep, worldbottom as fixed_t);
-    bottomfrac = (centeryfrac >> 4 as ::core::ffi::c_int)
+    bottomfrac = (centeryfrac >> 4 as i32)
         - FixedMul(worldbottom as fixed_t, rw_scale);
     if !backsector.is_null() {
-        worldhigh >>= 4 as ::core::ffi::c_int;
-        worldlow >>= 4 as ::core::ffi::c_int;
+        worldhigh >>= 4 as i32;
+        worldlow >>= 4 as i32;
         if worldhigh < worldtop {
-            pixhigh = (centeryfrac >> 4 as ::core::ffi::c_int)
+            pixhigh = (centeryfrac >> 4 as i32)
                 - FixedMul(worldhigh as fixed_t, rw_scale);
             pixhighstep = -FixedMul(rw_scalestep, worldhigh as fixed_t);
         }
         if worldlow > worldbottom {
-            pixlow = (centeryfrac >> 4 as ::core::ffi::c_int)
+            pixlow = (centeryfrac >> 4 as i32)
                 - FixedMul(worldlow as fixed_t, rw_scale);
             pixlowstep = -FixedMul(rw_scalestep, worldlow as fixed_t);
         }
     }
-    if markceiling != 0 {
+    if markceiling {
         ceilingplane = R_CheckPlane(
             ceilingplane,
             rw_x,
-            rw_stopx - 1 as ::core::ffi::c_int,
+            rw_stopx - 1 as i32,
         );
     }
-    if markfloor != 0 {
-        floorplane = R_CheckPlane(floorplane, rw_x, rw_stopx - 1 as ::core::ffi::c_int);
+    if markfloor {
+        floorplane = R_CheckPlane(floorplane, rw_x, rw_stopx - 1 as i32);
     }
     R_RenderSegLoop();
-    if ((*ds_p).silhouette & SIL_TOP != 0 || maskedtexture != 0)
+    if ((*ds_p).silhouette & SIL_TOP != 0 || maskedtexture)
         && (*ds_p).sprtopclip.is_null()
     {
         memcpy(
             lastopening as *mut ::core::ffi::c_void,
-            (&raw mut ceilingclip as *mut ::core::ffi::c_short).offset(start as isize)
+            (&raw mut ceilingclip as *mut i16).offset(start as isize)
                 as *const ::core::ffi::c_void,
-            (2 as ::core::ffi::c_int * (rw_stopx - start)) as size_t,
+            (2 as i32 * (rw_stopx - start)) as size_t,
         );
         (*ds_p).sprtopclip = lastopening.offset(-(start as isize));
         lastopening = lastopening.offset((rw_stopx - start) as isize);
     }
-    if ((*ds_p).silhouette & SIL_BOTTOM != 0 || maskedtexture != 0)
+    if ((*ds_p).silhouette & SIL_BOTTOM != 0 || maskedtexture)
         && (*ds_p).sprbottomclip.is_null()
     {
         memcpy(
             lastopening as *mut ::core::ffi::c_void,
-            (&raw mut floorclip as *mut ::core::ffi::c_short).offset(start as isize)
+            (&raw mut floorclip as *mut i16).offset(start as isize)
                 as *const ::core::ffi::c_void,
-            (2 as ::core::ffi::c_int * (rw_stopx - start)) as size_t,
+            (2 as i32 * (rw_stopx - start)) as size_t,
         );
         (*ds_p).sprbottomclip = lastopening.offset(-(start as isize));
         lastopening = lastopening.offset((rw_stopx - start) as isize);
     }
-    if maskedtexture != 0 && (*ds_p).silhouette & SIL_TOP == 0 {
+    if maskedtexture && (*ds_p).silhouette & SIL_TOP == 0 {
         (*ds_p).silhouette |= SIL_TOP;
         (*ds_p).tsilheight = INT_MIN as fixed_t;
     }
-    if maskedtexture != 0 && (*ds_p).silhouette & SIL_BOTTOM == 0 {
+    if maskedtexture && (*ds_p).silhouette & SIL_BOTTOM == 0 {
         (*ds_p).silhouette |= SIL_BOTTOM;
         (*ds_p).bsilheight = INT_MAX as fixed_t;
     }
     ds_p = ds_p.offset(1);
 }
-pub const __SHRT_MAX__: ::core::ffi::c_int = 32767 as ::core::ffi::c_int;
-pub const __INT_MAX__: ::core::ffi::c_int = 2147483647 as ::core::ffi::c_int;
+pub const __SHRT_MAX__: i32 = 32767 as i32;
+pub const __INT_MAX__: i32 = 2147483647 as i32;

@@ -1,33 +1,11 @@
+use crate::src::i_system::I_Error;
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_misc::M_FileExists;
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
-    fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
-    fn free(__ptr: *mut ::core::ffi::c_void);
-    fn strcmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
-    fn strrchr(
-        __s: *const ::core::ffi::c_char,
-        __c: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_char;
-    fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn strcasecmp(
-        __s1: *const ::core::ffi::c_char,
-        __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn M_FileExists(file: *mut ::core::ffi::c_char) -> boolean;
-    fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
 }
 pub type size_t = usize;
-pub type boolean = ::core::ffi::c_uint;
-pub type GameMission_t = ::core::ffi::c_uint;
+pub type GameMission_t = u32;
 pub const none: GameMission_t = 9;
 pub const strife: GameMission_t = 8;
 pub const hexen: GameMission_t = 7;
@@ -38,453 +16,282 @@ pub const pack_plut: GameMission_t = 3;
 pub const pack_tnt: GameMission_t = 2;
 pub const doom2: GameMission_t = 1;
 pub const doom: GameMission_t = 0;
-pub type GameMode_t = ::core::ffi::c_uint;
+pub type GameMode_t = u32;
 pub const indetermined: GameMode_t = 4;
 pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
 #[derive(Copy, Clone)]
-#[repr(C)]
 pub struct iwad_t {
-    pub name: *mut ::core::ffi::c_char,
+    pub name: &'static str,
     pub mission: GameMission_t,
     pub mode: GameMode_t,
-    pub description: *mut ::core::ffi::c_char,
+    pub description: &'static str,
 }
-pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
-    ::core::ffi::c_void,
->();
-pub const FILES_DIR: [::core::ffi::c_char; 2] = unsafe {
-    ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b".\0")
-};
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const DIR_SEPARATOR: ::core::ffi::c_int = '/' as i32;
-pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
-    ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
-};
-static mut iwads: [iwad_t; 14] = [
+pub const FILES_DIR: &str = ".";
+pub const DIR_SEPARATOR: char = '/';
+pub const DIR_SEPARATOR_S: &str = "/";
+static iwads: [iwad_t; 14] = [
     iwad_t {
-        name: b"doom2.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "doom2.wad",
         mission: doom2,
         mode: commercial,
-        description: b"Doom II\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Doom II",
     },
     iwad_t {
-        name: b"plutonia.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "plutonia.wad",
         mission: pack_plut,
         mode: commercial,
-        description: b"Final Doom: Plutonia Experiment\0" as *const u8
-            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        description: "Final Doom: Plutonia Experiment",
     },
     iwad_t {
-        name: b"tnt.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "tnt.wad",
         mission: pack_tnt,
         mode: commercial,
-        description: b"Final Doom: TNT: Evilution\0" as *const u8
-            as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        description: "Final Doom: TNT: Evilution",
     },
     iwad_t {
-        name: b"doom.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "doom.wad",
         mission: doom,
         mode: retail,
-        description: b"Doom\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Doom",
     },
     iwad_t {
-        name: b"doom1.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "doom1.wad",
         mission: doom,
         mode: shareware,
-        description: b"Doom Shareware\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Doom Shareware",
     },
     iwad_t {
-        name: b"chex.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chex.wad",
         mission: pack_chex,
         mode: shareware,
-        description: b"Chex Quest\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Chex Quest",
     },
     iwad_t {
-        name: b"hacx.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "hacx.wad",
         mission: pack_hacx,
         mode: commercial,
-        description: b"Hacx\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Hacx",
     },
     iwad_t {
-        name: b"freedm.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "freedm.wad",
         mission: doom2,
         mode: commercial,
-        description: b"FreeDM\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "FreeDM",
     },
     iwad_t {
-        name: b"freedoom2.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "freedoom2.wad",
         mission: doom2,
         mode: commercial,
-        description: b"Freedoom: Phase 2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Freedoom: Phase 2",
     },
     iwad_t {
-        name: b"freedoom1.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "freedoom1.wad",
         mission: doom,
         mode: retail,
-        description: b"Freedoom: Phase 1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Freedoom: Phase 1",
     },
     iwad_t {
-        name: b"heretic.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "heretic.wad",
         mission: heretic,
         mode: retail,
-        description: b"Heretic\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Heretic",
     },
     iwad_t {
-        name: b"heretic1.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "heretic1.wad",
         mission: heretic,
         mode: shareware,
-        description: b"Heretic Shareware\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Heretic Shareware",
     },
     iwad_t {
-        name: b"hexen.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "hexen.wad",
         mission: hexen,
         mode: commercial,
-        description: b"Hexen\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Hexen",
     },
     iwad_t {
-        name: b"strife1.wad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "strife1.wad",
         mission: strife,
         mode: commercial,
-        description: b"Strife\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        description: "Strife",
     },
 ];
-pub const MAX_IWAD_DIRS: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-static mut iwad_dirs_built: boolean = false_0 as boolean;
-static mut iwad_dirs: [*mut ::core::ffi::c_char; 128] = [::core::ptr::null::<
-    ::core::ffi::c_char,
->() as *mut ::core::ffi::c_char; 128];
-static mut num_iwad_dirs: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-unsafe extern "C" fn AddIWADDir(mut dir: *mut ::core::ffi::c_char) {
-    if num_iwad_dirs < MAX_IWAD_DIRS {
-        iwad_dirs[num_iwad_dirs as usize] = dir;
-        num_iwad_dirs += 1;
-    }
+pub const MAX_IWAD_DIRS: i32 = 128 as i32;
+static mut iwad_dirs_built: bool = false;
+static mut iwad_dirs: Vec<String> = Vec::new();
+
+unsafe fn file_exists(path: &str) -> bool {
+    let path_cstring = ::std::ffi::CString::new(path).unwrap();
+    M_FileExists(path_cstring.as_ptr() as *mut ::core::ffi::c_char)
 }
-unsafe extern "C" fn DirIsFile(
-    mut path: *mut ::core::ffi::c_char,
-    mut filename: *mut ::core::ffi::c_char,
-) -> boolean {
-    let mut path_len: size_t = 0;
-    let mut filename_len: size_t = 0;
-    path_len = strlen(path);
-    filename_len = strlen(filename);
-    return (path_len >= filename_len.wrapping_add(1 as size_t)
-        && *path
-            .offset(
-                path_len.wrapping_sub(filename_len).wrapping_sub(1 as size_t) as isize,
-            ) as ::core::ffi::c_int == DIR_SEPARATOR
-        && strcasecmp(
-            path.offset(path_len.wrapping_sub(filename_len) as isize)
-                as *mut ::core::ffi::c_char,
-            filename,
-        ) == 0) as ::core::ffi::c_int as boolean;
+unsafe fn add_iwad_dir(dir: &str) {
+    iwad_dirs.push(dir.to_string());
 }
-unsafe extern "C" fn CheckDirectoryHasIWAD(
-    mut dir: *mut ::core::ffi::c_char,
-    mut iwadname: *mut ::core::ffi::c_char,
-) -> *mut ::core::ffi::c_char {
-    let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    if DirIsFile(dir, iwadname) != 0 && M_FileExists(dir) != 0 {
-        return strdup(dir);
+fn dir_is_file(path: &str, filename: &str) -> bool {
+    path.len() >= filename.len() + 1
+        && path.as_bytes()[path.len() - filename.len() - 1] == DIR_SEPARATOR as u8
+        && path[path.len() - filename.len()..].eq_ignore_ascii_case(filename)
+}
+unsafe fn check_directory_has_iwad(dir: &str, iwadname: &str) -> Option<String> {
+    if dir_is_file(dir, iwadname) && file_exists(dir) {
+        return Some(dir.to_string());
     }
-    if strcmp(dir, b".\0" as *const u8 as *const ::core::ffi::c_char) == 0 {
-        filename = strdup(iwadname);
+    let filename = if dir == "." {
+        iwadname.to_string()
     } else {
-        filename = M_StringJoin(dir, DIR_SEPARATOR_S.as_ptr(), iwadname, NULL);
-    }
+        format!("{}{}{}", dir, DIR_SEPARATOR_S, iwadname)
+    };
+    let filename_cstring = ::std::ffi::CString::new(filename.as_str()).unwrap();
     printf(
         b"Trying IWAD file:%s\n\0" as *const u8 as *const ::core::ffi::c_char,
-        filename,
+        filename_cstring.as_ptr(),
     );
-    if M_FileExists(filename) != 0 {
-        return filename;
-    }
-    free(filename as *mut ::core::ffi::c_void);
-    return ::core::ptr::null_mut::<::core::ffi::c_char>();
+    if file_exists(&filename) { Some(filename) } else { None }
 }
-unsafe extern "C" fn SearchDirectoryForIWAD(
-    mut dir: *mut ::core::ffi::c_char,
-    mut mask: ::core::ffi::c_int,
-    mut mission: *mut GameMission_t,
-) -> *mut ::core::ffi::c_char {
-    let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut i: size_t = 0;
-    i = 0 as size_t;
-    while i
-        < (::core::mem::size_of::<[iwad_t; 14]>() as usize)
-            .wrapping_div(::core::mem::size_of::<iwad_t>() as usize)
-    {
-        if !((1 as ::core::ffi::c_int)
-            << iwads[i as usize].mission as ::core::ffi::c_uint & mask
-            == 0 as ::core::ffi::c_int)
-        {
-            filename = CheckDirectoryHasIWAD(dir, iwads[i as usize].name);
-            if !filename.is_null() {
-                *mission = iwads[i as usize].mission;
-                return filename;
-            }
+unsafe fn search_directory_for_iwad(
+    dir: &str,
+    mask: i32,
+    mission: *mut GameMission_t,
+) -> Option<String> {
+    for iwad in iwads.iter() {
+        if (1 as i32) << iwad.mission & mask == 0 as i32 {
+            continue;
         }
-        i = i.wrapping_add(1);
-    }
-    return ::core::ptr::null_mut::<::core::ffi::c_char>();
-}
-unsafe extern "C" fn IdentifyIWADByName(
-    mut name: *mut ::core::ffi::c_char,
-    mut mask: ::core::ffi::c_int,
-) -> GameMission_t {
-    let mut i: size_t = 0;
-    let mut mission: GameMission_t = doom;
-    let mut p: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    p = strrchr(name, DIR_SEPARATOR);
-    if !p.is_null() {
-        name = p.offset(1 as ::core::ffi::c_int as isize);
-    }
-    mission = none;
-    i = 0 as size_t;
-    while i
-        < (::core::mem::size_of::<[iwad_t; 14]>() as usize)
-            .wrapping_div(::core::mem::size_of::<iwad_t>() as usize)
-    {
-        if !((1 as ::core::ffi::c_int)
-            << iwads[i as usize].mission as ::core::ffi::c_uint & mask
-            == 0 as ::core::ffi::c_int)
-        {
-            if strcasecmp(name, iwads[i as usize].name) == 0 {
-                mission = iwads[i as usize].mission;
-                break;
-            }
+        if let Some(filename) = check_directory_has_iwad(dir, iwad.name) {
+            *mission = iwad.mission;
+            return Some(filename);
         }
-        i = i.wrapping_add(1);
     }
-    return mission;
+    None
 }
-unsafe extern "C" fn BuildIWADDirList() {
-    AddIWADDir(FILES_DIR.as_ptr() as *mut ::core::ffi::c_char);
-    iwad_dirs_built = true_0 as boolean;
+fn identify_iwad_by_name(name: &str, mask: i32) -> GameMission_t {
+    let name = match name.rfind(DIR_SEPARATOR) {
+        Some(pos) => &name[pos + 1..],
+        None => name,
+    };
+    for iwad in iwads.iter() {
+        if (1 as i32) << iwad.mission & mask == 0 as i32 {
+            continue;
+        }
+        if name.eq_ignore_ascii_case(iwad.name) {
+            return iwad.mission;
+        }
+    }
+    none
+}
+unsafe fn build_iwad_dir_list() {
+    add_iwad_dir(FILES_DIR);
+    iwad_dirs_built = true;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_FindWADByName(
     mut name: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
-    let mut path: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut i: ::core::ffi::c_int = 0;
-    if M_FileExists(name) != 0 {
+    let name_str = ::std::ffi::CStr::from_ptr(name).to_str().unwrap();
+    if file_exists(name_str) {
         return name;
     }
-    BuildIWADDirList();
-    i = 0 as ::core::ffi::c_int;
-    while i < num_iwad_dirs {
-        if DirIsFile(iwad_dirs[i as usize], name) != 0
-            && M_FileExists(iwad_dirs[i as usize]) != 0
-        {
-            return strdup(iwad_dirs[i as usize]);
+    build_iwad_dir_list();
+    for dir in iwad_dirs.iter() {
+        if dir_is_file(dir, name_str) && file_exists(dir) {
+            return ::std::ffi::CString::new(dir.as_str()).unwrap().into_raw();
         }
-        path = M_StringJoin(iwad_dirs[i as usize], DIR_SEPARATOR_S.as_ptr(), name, NULL);
-        if M_FileExists(path) != 0 {
-            return path;
+        let path = format!("{}{}{}", dir, DIR_SEPARATOR_S, name_str);
+        if file_exists(&path) {
+            return ::std::ffi::CString::new(path).unwrap().into_raw();
         }
-        free(path as *mut ::core::ffi::c_void);
-        i += 1;
     }
-    return ::core::ptr::null_mut::<::core::ffi::c_char>();
+    ::core::ptr::null_mut::<::core::ffi::c_char>()
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_TryFindWADByName(
+pub unsafe fn D_TryFindWADByName(
     mut filename: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    result = D_FindWADByName(filename);
-    if !result.is_null() { return result } else { return filename };
+    let result = D_FindWADByName(filename);
+    if !result.is_null() { result } else { filename }
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_FindIWAD(
-    mut mask: ::core::ffi::c_int,
+pub unsafe fn D_FindIWAD(
+    mut mask: i32,
     mut mission: *mut GameMission_t,
 ) -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut iwadfile: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut iwadparm: ::core::ffi::c_int = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    iwadparm = M_CheckParmWithArgs(
-        b"-iwad\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    let iwadparm = M_CheckParmWithArgs("-iwad", 1 as i32);
     if iwadparm != 0 {
-        iwadfile = *myargv.offset((iwadparm + 1 as ::core::ffi::c_int) as isize);
-        result = D_FindWADByName(iwadfile);
+        let iwadfile = myargv[(iwadparm + 1 as i32) as usize].as_ptr()
+            as *mut ::core::ffi::c_char;
+        let result = D_FindWADByName(iwadfile);
         if result.is_null() {
-            I_Error(
-                b"IWAD file '%s' not found!\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char,
-                iwadfile,
-            );
+            I_Error(&format!(
+                "IWAD file '{}' not found!",
+                myargv[(iwadparm + 1 as i32) as usize].to_str().unwrap(),
+            ));
         }
-        *mission = IdentifyIWADByName(result, mask);
+        *mission = identify_iwad_by_name(
+            ::std::ffi::CStr::from_ptr(result).to_str().unwrap(),
+            mask,
+        );
+        result
     } else {
         printf(
             b"-iwad not specified, trying a few iwad names\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
-        result = ::core::ptr::null_mut::<::core::ffi::c_char>();
-        BuildIWADDirList();
-        i = 0 as ::core::ffi::c_int;
-        while result.is_null() && i < num_iwad_dirs {
-            result = SearchDirectoryForIWAD(iwad_dirs[i as usize], mask, mission);
-            i += 1;
+        build_iwad_dir_list();
+        for dir in iwad_dirs.iter() {
+            if let Some(found) = search_directory_for_iwad(dir, mask, mission) {
+                return ::std::ffi::CString::new(found).unwrap().into_raw();
+            }
         }
+        ::core::ptr::null_mut::<::core::ffi::c_char>()
     }
-    return result;
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_FindAllIWADs(
-    mut mask: ::core::ffi::c_int,
+    mut mask: i32,
 ) -> *mut *const iwad_t {
-    let mut result: *mut *const iwad_t = ::core::ptr::null_mut::<*const iwad_t>();
-    let mut result_len: ::core::ffi::c_int = 0;
-    let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
-        ::core::ffi::c_char,
-    >();
-    let mut i: ::core::ffi::c_int = 0;
-    result = malloc(
-        (::core::mem::size_of::<*mut iwad_t>() as size_t)
-            .wrapping_mul(
-                (::core::mem::size_of::<[iwad_t; 14]>() as size_t)
-                    .wrapping_div(::core::mem::size_of::<iwad_t>() as size_t)
-                    .wrapping_add(1 as size_t),
-            ),
-    ) as *mut *const iwad_t;
-    result_len = 0 as ::core::ffi::c_int;
-    i = 0 as ::core::ffi::c_int;
-    while (i as usize)
-        < (::core::mem::size_of::<[iwad_t; 14]>() as usize)
-            .wrapping_div(::core::mem::size_of::<iwad_t>() as usize)
-    {
-        if !((1 as ::core::ffi::c_int)
-            << iwads[i as usize].mission as ::core::ffi::c_uint & mask
-            == 0 as ::core::ffi::c_int)
-        {
-            filename = D_FindWADByName(iwads[i as usize].name);
-            if !filename.is_null() {
-                let ref mut fresh0 = *result.offset(result_len as isize);
-                *fresh0 = (&raw const iwads as *const iwad_t).offset(i as isize)
-                    as *const iwad_t;
-                result_len += 1;
-            }
+    let mut result: Vec<*const iwad_t> = Vec::new();
+    for iwad in iwads.iter() {
+        if (1 as i32) << iwad.mission & mask == 0 as i32 {
+            continue;
         }
-        i += 1;
+        let name = ::std::ffi::CString::new(iwad.name).unwrap();
+        if !D_FindWADByName(name.as_ptr() as *mut ::core::ffi::c_char).is_null() {
+            result.push(iwad as *const iwad_t);
+        }
     }
-    let ref mut fresh1 = *result.offset(result_len as isize);
-    *fresh1 = ::core::ptr::null::<iwad_t>();
-    return result;
+    result.push(::core::ptr::null());
+    Box::leak(result.into_boxed_slice()).as_mut_ptr()
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_SaveGameIWADName(
+pub unsafe fn D_SaveGameIWADName(
     mut gamemission: GameMission_t,
 ) -> *mut ::core::ffi::c_char {
-    let mut i: size_t = 0;
-    i = 0 as size_t;
-    while i
-        < (::core::mem::size_of::<[iwad_t; 14]>() as usize)
-            .wrapping_div(::core::mem::size_of::<iwad_t>() as usize)
-    {
-        if gamemission as ::core::ffi::c_uint
-            == iwads[i as usize].mission as ::core::ffi::c_uint
-        {
-            return iwads[i as usize].name;
+    for iwad in iwads.iter() {
+        if gamemission == iwad.mission {
+            return ::std::ffi::CString::new(iwad.name).unwrap().into_raw();
         }
-        i = i.wrapping_add(1);
     }
-    return b"unknown.wad\0" as *const u8 as *const ::core::ffi::c_char
-        as *mut ::core::ffi::c_char;
+    ::std::ffi::CString::new("unknown.wad").unwrap().into_raw()
 }
 #[no_mangle]
 pub unsafe extern "C" fn D_SuggestIWADName(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
 ) -> *mut ::core::ffi::c_char {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
-    while (i as usize)
-        < (::core::mem::size_of::<[iwad_t; 14]>() as usize)
-            .wrapping_div(::core::mem::size_of::<iwad_t>() as usize)
-    {
-        if iwads[i as usize].mission as ::core::ffi::c_uint
-            == mission as ::core::ffi::c_uint
-            && iwads[i as usize].mode as ::core::ffi::c_uint
-                == mode as ::core::ffi::c_uint
-        {
-            return iwads[i as usize].name;
+    for iwad in iwads.iter() {
+        if iwad.mission == mission && iwad.mode == mode {
+            return ::std::ffi::CString::new(iwad.name).unwrap().into_raw();
         }
-        i += 1;
     }
-    return b"unknown.wad\0" as *const u8 as *const ::core::ffi::c_char
-        as *mut ::core::ffi::c_char;
+    ::std::ffi::CString::new("unknown.wad").unwrap().into_raw()
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_SuggestGameName(
+pub unsafe fn D_SuggestGameName(
     mut mission: GameMission_t,
     mut mode: GameMode_t,
 ) -> *mut ::core::ffi::c_char {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
-    while (i as usize)
-        < (::core::mem::size_of::<[iwad_t; 14]>() as usize)
-            .wrapping_div(::core::mem::size_of::<iwad_t>() as usize)
-    {
-        if iwads[i as usize].mission as ::core::ffi::c_uint
-            == mission as ::core::ffi::c_uint
-            && (mode as ::core::ffi::c_uint
-                == indetermined as ::core::ffi::c_int as ::core::ffi::c_uint
-                || iwads[i as usize].mode as ::core::ffi::c_uint
-                    == mode as ::core::ffi::c_uint)
-        {
-            return iwads[i as usize].description;
+    for iwad in iwads.iter() {
+        if iwad.mission == mission && (mode == indetermined || iwad.mode == mode) {
+            return ::std::ffi::CString::new(iwad.description).unwrap().into_raw();
         }
-        i += 1;
     }
-    return b"Unknown game?\0" as *const u8 as *const ::core::ffi::c_char
-        as *mut ::core::ffi::c_char;
+    ::std::ffi::CString::new("Unknown game?").unwrap().into_raw()
 }

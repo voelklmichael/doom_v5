@@ -15,104 +15,103 @@ extern "C" {
     pub type _XrmHashBucketRec;
     pub type _XPrivate;
     static mut DG_ScreenBuffer: *mut pixel_t;
-    fn doomgeneric_Create(argc: ::core::ffi::c_int, argv: *mut *mut ::core::ffi::c_char);
     fn doomgeneric_Tick();
     fn __ctype_tolower_loc() -> *mut *const __int32_t;
-    fn tolower(__c: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    fn tolower(__c: i32) -> i32;
     fn memset(
         __s: *mut ::core::ffi::c_void,
-        __c: ::core::ffi::c_int,
+        __c: i32,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
     fn strlen(__s: *const ::core::ffi::c_char) -> size_t;
-    fn usleep(__useconds: __useconds_t) -> ::core::ffi::c_int;
+    fn usleep(__useconds: __useconds_t) -> i32;
     fn gettimeofday(
         __tv: *mut timeval,
         __tz: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn XCreateImage(
         _: *mut Display,
         _: *mut Visual,
-        _: ::core::ffi::c_uint,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_int,
+        _: u32,
+        _: i32,
+        _: i32,
         _: *mut ::core::ffi::c_char,
-        _: ::core::ffi::c_uint,
-        _: ::core::ffi::c_uint,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_int,
+        _: u32,
+        _: u32,
+        _: i32,
+        _: i32,
     ) -> *mut XImage;
     fn XOpenDisplay(_: *const ::core::ffi::c_char) -> *mut Display;
     fn XCreateGC(
         _: *mut Display,
         _: Drawable,
-        _: ::core::ffi::c_ulong,
+        _: u64,
         _: *mut XGCValues,
     ) -> GC;
     fn XCreateSimpleWindow(
         _: *mut Display,
         _: Window,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_uint,
-        _: ::core::ffi::c_uint,
-        _: ::core::ffi::c_uint,
-        _: ::core::ffi::c_ulong,
-        _: ::core::ffi::c_ulong,
+        _: i32,
+        _: i32,
+        _: u32,
+        _: u32,
+        _: u32,
+        _: u64,
+        _: u64,
     ) -> Window;
     fn XChangeProperty(
         _: *mut Display,
         _: Window,
         _: Atom,
         _: Atom,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_int,
-        _: *const ::core::ffi::c_uchar,
-        _: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn XMapWindow(_: *mut Display, _: Window) -> ::core::ffi::c_int;
-    fn XNextEvent(_: *mut Display, _: *mut XEvent) -> ::core::ffi::c_int;
-    fn XPending(_: *mut Display) -> ::core::ffi::c_int;
+        _: i32,
+        _: i32,
+        _: *const u8,
+        _: i32,
+    ) -> i32;
+    fn XMapWindow(_: *mut Display, _: Window) -> i32;
+    fn XNextEvent(_: *mut Display, _: *mut XEvent) -> i32;
+    fn XPending(_: *mut Display) -> i32;
     fn XPutImage(
         _: *mut Display,
         _: Drawable,
         _: GC,
         _: *mut XImage,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_uint,
-        _: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        _: i32,
+        _: i32,
+        _: i32,
+        _: i32,
+        _: u32,
+        _: u32,
+    ) -> i32;
     fn XSelectInput(
         _: *mut Display,
         _: Window,
-        _: ::core::ffi::c_long,
-    ) -> ::core::ffi::c_int;
+        _: i64,
+    ) -> i32;
     fn XSetForeground(
         _: *mut Display,
         _: GC,
-        _: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        _: u64,
+    ) -> i32;
     fn XkbKeycodeToKeysym(
         _: *mut Display,
         _: KeyCode,
-        _: ::core::ffi::c_int,
-        _: ::core::ffi::c_int,
+        _: i32,
+        _: i32,
     ) -> KeySym;
     fn XkbSetDetectableAutoRepeat(
         _: *mut Display,
-        _: ::core::ffi::c_int,
-        _: *mut ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        _: i32,
+        _: *mut i32,
+    ) -> i32;
 }
 pub type size_t = usize;
 pub type __int32_t = i32;
 pub type __uint32_t = u32;
-pub type __time_t = ::core::ffi::c_long;
-pub type __useconds_t = ::core::ffi::c_uint;
-pub type __suseconds_t = ::core::ffi::c_long;
+pub type __time_t = i64;
+pub type __useconds_t = u32;
+pub type __suseconds_t = i64;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct timeval {
@@ -125,21 +124,21 @@ pub type XImage = _XImage;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _XImage {
-    pub width: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub xoffset: ::core::ffi::c_int,
-    pub format: ::core::ffi::c_int,
+    pub width: i32,
+    pub height: i32,
+    pub xoffset: i32,
+    pub format: i32,
     pub data: *mut ::core::ffi::c_char,
-    pub byte_order: ::core::ffi::c_int,
-    pub bitmap_unit: ::core::ffi::c_int,
-    pub bitmap_bit_order: ::core::ffi::c_int,
-    pub bitmap_pad: ::core::ffi::c_int,
-    pub depth: ::core::ffi::c_int,
-    pub bytes_per_line: ::core::ffi::c_int,
-    pub bits_per_pixel: ::core::ffi::c_int,
-    pub red_mask: ::core::ffi::c_ulong,
-    pub green_mask: ::core::ffi::c_ulong,
-    pub blue_mask: ::core::ffi::c_ulong,
+    pub byte_order: i32,
+    pub bitmap_unit: i32,
+    pub bitmap_bit_order: i32,
+    pub bitmap_pad: i32,
+    pub depth: i32,
+    pub bytes_per_line: i32,
+    pub bits_per_pixel: i32,
+    pub red_mask: u64,
+    pub green_mask: u64,
+    pub blue_mask: u64,
     pub obdata: XPointer,
     pub f: funcs,
 }
@@ -150,43 +149,43 @@ pub struct funcs {
         unsafe extern "C" fn(
             *mut _XDisplay,
             *mut Visual,
-            ::core::ffi::c_uint,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
+            u32,
+            i32,
+            i32,
             *mut ::core::ffi::c_char,
-            ::core::ffi::c_uint,
-            ::core::ffi::c_uint,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
+            u32,
+            u32,
+            i32,
+            i32,
         ) -> *mut _XImage,
     >,
-    pub destroy_image: Option<unsafe extern "C" fn(*mut _XImage) -> ::core::ffi::c_int>,
+    pub destroy_image: Option<unsafe extern "C" fn(*mut _XImage) -> i32>,
     pub get_pixel: Option<
         unsafe extern "C" fn(
             *mut _XImage,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
-        ) -> ::core::ffi::c_ulong,
+            i32,
+            i32,
+        ) -> u64,
     >,
     pub put_pixel: Option<
         unsafe extern "C" fn(
             *mut _XImage,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
-            ::core::ffi::c_ulong,
-        ) -> ::core::ffi::c_int,
+            i32,
+            i32,
+            u64,
+        ) -> i32,
     >,
     pub sub_image: Option<
         unsafe extern "C" fn(
             *mut _XImage,
-            ::core::ffi::c_int,
-            ::core::ffi::c_int,
-            ::core::ffi::c_uint,
-            ::core::ffi::c_uint,
+            i32,
+            i32,
+            u32,
+            u32,
         ) -> *mut _XImage,
     >,
     pub add_pixel: Option<
-        unsafe extern "C" fn(*mut _XImage, ::core::ffi::c_long) -> ::core::ffi::c_int,
+        unsafe extern "C" fn(*mut _XImage, i64) -> i32,
     >,
 }
 #[derive(Copy, Clone)]
@@ -194,21 +193,21 @@ pub struct funcs {
 pub struct Visual {
     pub ext_data: *mut XExtData,
     pub visualid: VisualID,
-    pub class: ::core::ffi::c_int,
-    pub red_mask: ::core::ffi::c_ulong,
-    pub green_mask: ::core::ffi::c_ulong,
-    pub blue_mask: ::core::ffi::c_ulong,
-    pub bits_per_rgb: ::core::ffi::c_int,
-    pub map_entries: ::core::ffi::c_int,
+    pub class: i32,
+    pub red_mask: u64,
+    pub green_mask: u64,
+    pub blue_mask: u64,
+    pub bits_per_rgb: i32,
+    pub map_entries: i32,
 }
-pub type VisualID = ::core::ffi::c_ulong;
+pub type VisualID = u64;
 pub type XExtData = _XExtData;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _XExtData {
-    pub number: ::core::ffi::c_int,
+    pub number: i32,
     pub next: *mut _XExtData,
-    pub free_private: Option<unsafe extern "C" fn(*mut _XExtData) -> ::core::ffi::c_int>,
+    pub free_private: Option<unsafe extern "C" fn(*mut _XExtData) -> i32>,
     pub private_data: XPointer,
 }
 pub type XPointer = *mut ::core::ffi::c_char;
@@ -218,32 +217,32 @@ pub struct Screen {
     pub ext_data: *mut XExtData,
     pub display: *mut _XDisplay,
     pub root: Window,
-    pub width: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mwidth: ::core::ffi::c_int,
-    pub mheight: ::core::ffi::c_int,
-    pub ndepths: ::core::ffi::c_int,
+    pub width: i32,
+    pub height: i32,
+    pub mwidth: i32,
+    pub mheight: i32,
+    pub ndepths: i32,
     pub depths: *mut Depth,
-    pub root_depth: ::core::ffi::c_int,
+    pub root_depth: i32,
     pub root_visual: *mut Visual,
     pub default_gc: GC,
     pub cmap: Colormap,
-    pub white_pixel: ::core::ffi::c_ulong,
-    pub black_pixel: ::core::ffi::c_ulong,
-    pub max_maps: ::core::ffi::c_int,
-    pub min_maps: ::core::ffi::c_int,
-    pub backing_store: ::core::ffi::c_int,
-    pub save_unders: ::core::ffi::c_int,
-    pub root_input_mask: ::core::ffi::c_long,
+    pub white_pixel: u64,
+    pub black_pixel: u64,
+    pub max_maps: i32,
+    pub min_maps: i32,
+    pub backing_store: i32,
+    pub save_unders: i32,
+    pub root_input_mask: i64,
 }
 pub type Colormap = XID;
-pub type XID = ::core::ffi::c_ulong;
+pub type XID = u64;
 pub type GC = *mut _XGC;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Depth {
-    pub depth: ::core::ffi::c_int,
-    pub nvisuals: ::core::ffi::c_int,
+    pub depth: i32,
+    pub nvisuals: i32,
     pub visuals: *mut Visual,
 }
 pub type Window = XID;
@@ -253,63 +252,63 @@ pub type _XPrivDisplay = *mut C2RustUnnamed;
 pub struct C2RustUnnamed {
     pub ext_data: *mut XExtData,
     pub private1: *mut _XPrivate,
-    pub fd: ::core::ffi::c_int,
-    pub private2: ::core::ffi::c_int,
-    pub proto_major_version: ::core::ffi::c_int,
-    pub proto_minor_version: ::core::ffi::c_int,
+    pub fd: i32,
+    pub private2: i32,
+    pub proto_major_version: i32,
+    pub proto_minor_version: i32,
     pub vendor: *mut ::core::ffi::c_char,
     pub private3: XID,
     pub private4: XID,
     pub private5: XID,
-    pub private6: ::core::ffi::c_int,
+    pub private6: i32,
     pub resource_alloc: Option<unsafe extern "C" fn(*mut _XDisplay) -> XID>,
-    pub byte_order: ::core::ffi::c_int,
-    pub bitmap_unit: ::core::ffi::c_int,
-    pub bitmap_pad: ::core::ffi::c_int,
-    pub bitmap_bit_order: ::core::ffi::c_int,
-    pub nformats: ::core::ffi::c_int,
+    pub byte_order: i32,
+    pub bitmap_unit: i32,
+    pub bitmap_pad: i32,
+    pub bitmap_bit_order: i32,
+    pub nformats: i32,
     pub pixmap_format: *mut ScreenFormat,
-    pub private8: ::core::ffi::c_int,
-    pub release: ::core::ffi::c_int,
+    pub private8: i32,
+    pub release: i32,
     pub private9: *mut _XPrivate,
     pub private10: *mut _XPrivate,
-    pub qlen: ::core::ffi::c_int,
-    pub last_request_read: ::core::ffi::c_ulong,
-    pub request: ::core::ffi::c_ulong,
+    pub qlen: i32,
+    pub last_request_read: u64,
+    pub request: u64,
     pub private11: XPointer,
     pub private12: XPointer,
     pub private13: XPointer,
     pub private14: XPointer,
-    pub max_request_size: ::core::ffi::c_uint,
+    pub max_request_size: u32,
     pub db: *mut _XrmHashBucketRec,
-    pub private15: Option<unsafe extern "C" fn(*mut _XDisplay) -> ::core::ffi::c_int>,
+    pub private15: Option<unsafe extern "C" fn(*mut _XDisplay) -> i32>,
     pub display_name: *mut ::core::ffi::c_char,
-    pub default_screen: ::core::ffi::c_int,
-    pub nscreens: ::core::ffi::c_int,
+    pub default_screen: i32,
+    pub nscreens: i32,
     pub screens: *mut Screen,
-    pub motion_buffer: ::core::ffi::c_ulong,
-    pub private16: ::core::ffi::c_ulong,
-    pub min_keycode: ::core::ffi::c_int,
-    pub max_keycode: ::core::ffi::c_int,
+    pub motion_buffer: u64,
+    pub private16: u64,
+    pub min_keycode: i32,
+    pub max_keycode: i32,
     pub private17: XPointer,
     pub private18: XPointer,
-    pub private19: ::core::ffi::c_int,
+    pub private19: i32,
     pub xdefaults: *mut ::core::ffi::c_char,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct ScreenFormat {
     pub ext_data: *mut XExtData,
-    pub depth: ::core::ffi::c_int,
-    pub bits_per_pixel: ::core::ffi::c_int,
-    pub scanline_pad: ::core::ffi::c_int,
+    pub depth: i32,
+    pub bits_per_pixel: i32,
+    pub scanline_pad: i32,
 }
 pub type Display = _XDisplay;
 pub type XEvent = _XEvent;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub union _XEvent {
-    pub type_0: ::core::ffi::c_int,
+    pub type_0: i32,
     pub xany: XAnyEvent,
     pub xkey: XKeyEvent,
     pub xbutton: XButtonEvent,
@@ -343,36 +342,36 @@ pub union _XEvent {
     pub xkeymap: XKeymapEvent,
     pub xgeneric: XGenericEvent,
     pub xcookie: XGenericEventCookie,
-    pub pad: [::core::ffi::c_long; 24],
+    pub pad: [i64; 24],
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XGenericEventCookie {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
-    pub extension: ::core::ffi::c_int,
-    pub evtype: ::core::ffi::c_int,
-    pub cookie: ::core::ffi::c_uint,
+    pub extension: i32,
+    pub evtype: i32,
+    pub cookie: u32,
     pub data: *mut ::core::ffi::c_void,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XGenericEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
-    pub extension: ::core::ffi::c_int,
-    pub evtype: ::core::ffi::c_int,
+    pub extension: i32,
+    pub evtype: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XKeymapEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub key_vector: [::core::ffi::c_char; 32],
@@ -380,64 +379,64 @@ pub struct XKeymapEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XErrorEvent {
-    pub type_0: ::core::ffi::c_int,
+    pub type_0: i32,
     pub display: *mut Display,
     pub resourceid: XID,
-    pub serial: ::core::ffi::c_ulong,
-    pub error_code: ::core::ffi::c_uchar,
-    pub request_code: ::core::ffi::c_uchar,
-    pub minor_code: ::core::ffi::c_uchar,
+    pub serial: u64,
+    pub error_code: u8,
+    pub request_code: u8,
+    pub minor_code: u8,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XMappingEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
-    pub request: ::core::ffi::c_int,
-    pub first_keycode: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
+    pub request: i32,
+    pub first_keycode: i32,
+    pub count: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XClientMessageEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub message_type: Atom,
-    pub format: ::core::ffi::c_int,
+    pub format: i32,
     pub data: C2RustUnnamed_0,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub union C2RustUnnamed_0 {
     pub b: [::core::ffi::c_char; 20],
-    pub s: [::core::ffi::c_short; 10],
-    pub l: [::core::ffi::c_long; 5],
+    pub s: [i16; 10],
+    pub l: [i64; 5],
 }
-pub type Atom = ::core::ffi::c_ulong;
+pub type Atom = u64;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XColormapEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub colormap: Colormap,
-    pub new: ::core::ffi::c_int,
-    pub state: ::core::ffi::c_int,
+    pub new: i32,
+    pub state: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XSelectionEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub requestor: Window,
     pub selection: Atom,
@@ -445,13 +444,13 @@ pub struct XSelectionEvent {
     pub property: Atom,
     pub time: Time,
 }
-pub type Time = ::core::ffi::c_ulong;
+pub type Time = u64;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XSelectionRequestEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub owner: Window,
     pub requestor: Window,
@@ -463,9 +462,9 @@ pub struct XSelectionRequestEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XSelectionClearEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub selection: Atom,
@@ -474,115 +473,115 @@ pub struct XSelectionClearEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XPropertyEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub atom: Atom,
     pub time: Time,
-    pub state: ::core::ffi::c_int,
+    pub state: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XCirculateRequestEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub parent: Window,
     pub window: Window,
-    pub place: ::core::ffi::c_int,
+    pub place: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XCirculateEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub place: ::core::ffi::c_int,
+    pub place: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XConfigureRequestEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub parent: Window,
     pub window: Window,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub width: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub border_width: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
+    pub width: i32,
+    pub height: i32,
+    pub border_width: i32,
     pub above: Window,
-    pub detail: ::core::ffi::c_int,
-    pub value_mask: ::core::ffi::c_ulong,
+    pub detail: i32,
+    pub value_mask: u64,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XResizeRequestEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
-    pub width: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
+    pub width: i32,
+    pub height: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XGravityEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XConfigureEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub width: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub border_width: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
+    pub width: i32,
+    pub height: i32,
+    pub border_width: i32,
     pub above: Window,
-    pub override_redirect: ::core::ffi::c_int,
+    pub override_redirect: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XReparentEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
     pub parent: Window,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub override_redirect: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
+    pub override_redirect: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XMapRequestEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub parent: Window,
     pub window: Window,
@@ -590,31 +589,31 @@ pub struct XMapRequestEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XMapEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub override_redirect: ::core::ffi::c_int,
+    pub override_redirect: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XUnmapEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub from_configure: ::core::ffi::c_int,
+    pub from_configure: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XDestroyWindowEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
@@ -622,194 +621,194 @@ pub struct XDestroyWindowEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XCreateWindowEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub parent: Window,
     pub window: Window,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub width: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub border_width: ::core::ffi::c_int,
-    pub override_redirect: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
+    pub width: i32,
+    pub height: i32,
+    pub border_width: i32,
+    pub override_redirect: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XVisibilityEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
-    pub state: ::core::ffi::c_int,
+    pub state: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XNoExposeEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub drawable: Drawable,
-    pub major_code: ::core::ffi::c_int,
-    pub minor_code: ::core::ffi::c_int,
+    pub major_code: i32,
+    pub minor_code: i32,
 }
 pub type Drawable = XID;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XGraphicsExposeEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub drawable: Drawable,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub width: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
-    pub major_code: ::core::ffi::c_int,
-    pub minor_code: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
+    pub width: i32,
+    pub height: i32,
+    pub count: i32,
+    pub major_code: i32,
+    pub minor_code: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XExposeEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub width: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
+    pub width: i32,
+    pub height: i32,
+    pub count: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XFocusChangeEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
-    pub mode: ::core::ffi::c_int,
-    pub detail: ::core::ffi::c_int,
+    pub mode: i32,
+    pub detail: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XCrossingEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub root: Window,
     pub subwindow: Window,
     pub time: Time,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub x_root: ::core::ffi::c_int,
-    pub y_root: ::core::ffi::c_int,
-    pub mode: ::core::ffi::c_int,
-    pub detail: ::core::ffi::c_int,
-    pub same_screen: ::core::ffi::c_int,
-    pub focus: ::core::ffi::c_int,
-    pub state: ::core::ffi::c_uint,
+    pub x: i32,
+    pub y: i32,
+    pub x_root: i32,
+    pub y_root: i32,
+    pub mode: i32,
+    pub detail: i32,
+    pub same_screen: i32,
+    pub focus: i32,
+    pub state: u32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XMotionEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub root: Window,
     pub subwindow: Window,
     pub time: Time,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub x_root: ::core::ffi::c_int,
-    pub y_root: ::core::ffi::c_int,
-    pub state: ::core::ffi::c_uint,
+    pub x: i32,
+    pub y: i32,
+    pub x_root: i32,
+    pub y_root: i32,
+    pub state: u32,
     pub is_hint: ::core::ffi::c_char,
-    pub same_screen: ::core::ffi::c_int,
+    pub same_screen: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XButtonEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub root: Window,
     pub subwindow: Window,
     pub time: Time,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub x_root: ::core::ffi::c_int,
-    pub y_root: ::core::ffi::c_int,
-    pub state: ::core::ffi::c_uint,
-    pub button: ::core::ffi::c_uint,
-    pub same_screen: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
+    pub x_root: i32,
+    pub y_root: i32,
+    pub state: u32,
+    pub button: u32,
+    pub same_screen: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XKeyEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
     pub root: Window,
     pub subwindow: Window,
     pub time: Time,
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub x_root: ::core::ffi::c_int,
-    pub y_root: ::core::ffi::c_int,
-    pub state: ::core::ffi::c_uint,
-    pub keycode: ::core::ffi::c_uint,
-    pub same_screen: ::core::ffi::c_int,
+    pub x: i32,
+    pub y: i32,
+    pub x_root: i32,
+    pub y_root: i32,
+    pub state: u32,
+    pub keycode: u32,
+    pub same_screen: i32,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XAnyEvent {
-    pub type_0: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_ulong,
-    pub send_event: ::core::ffi::c_int,
+    pub type_0: i32,
+    pub serial: u64,
+    pub send_event: i32,
     pub display: *mut Display,
     pub window: Window,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct XGCValues {
-    pub function: ::core::ffi::c_int,
-    pub plane_mask: ::core::ffi::c_ulong,
-    pub foreground: ::core::ffi::c_ulong,
-    pub background: ::core::ffi::c_ulong,
-    pub line_width: ::core::ffi::c_int,
-    pub line_style: ::core::ffi::c_int,
-    pub cap_style: ::core::ffi::c_int,
-    pub join_style: ::core::ffi::c_int,
-    pub fill_style: ::core::ffi::c_int,
-    pub fill_rule: ::core::ffi::c_int,
-    pub arc_mode: ::core::ffi::c_int,
+    pub function: i32,
+    pub plane_mask: u64,
+    pub foreground: u64,
+    pub background: u64,
+    pub line_width: i32,
+    pub line_style: i32,
+    pub cap_style: i32,
+    pub join_style: i32,
+    pub fill_style: i32,
+    pub fill_rule: i32,
+    pub arc_mode: i32,
     pub tile: Pixmap,
     pub stipple: Pixmap,
-    pub ts_x_origin: ::core::ffi::c_int,
-    pub ts_y_origin: ::core::ffi::c_int,
+    pub ts_x_origin: i32,
+    pub ts_y_origin: i32,
     pub font: Font,
-    pub subwindow_mode: ::core::ffi::c_int,
-    pub graphics_exposures: ::core::ffi::c_int,
-    pub clip_x_origin: ::core::ffi::c_int,
-    pub clip_y_origin: ::core::ffi::c_int,
+    pub subwindow_mode: i32,
+    pub graphics_exposures: i32,
+    pub clip_x_origin: i32,
+    pub clip_y_origin: i32,
     pub clip_mask: Pixmap,
-    pub dash_offset: ::core::ffi::c_int,
+    pub dash_offset: i32,
     pub dashes: ::core::ffi::c_char,
 }
 pub type Pixmap = XID;
@@ -818,168 +817,168 @@ pub type Font = XID;
 #[repr(C)]
 pub struct XSetWindowAttributes {
     pub background_pixmap: Pixmap,
-    pub background_pixel: ::core::ffi::c_ulong,
+    pub background_pixel: u64,
     pub border_pixmap: Pixmap,
-    pub border_pixel: ::core::ffi::c_ulong,
-    pub bit_gravity: ::core::ffi::c_int,
-    pub win_gravity: ::core::ffi::c_int,
-    pub backing_store: ::core::ffi::c_int,
-    pub backing_planes: ::core::ffi::c_ulong,
-    pub backing_pixel: ::core::ffi::c_ulong,
-    pub save_under: ::core::ffi::c_int,
-    pub event_mask: ::core::ffi::c_long,
-    pub do_not_propagate_mask: ::core::ffi::c_long,
-    pub override_redirect: ::core::ffi::c_int,
+    pub border_pixel: u64,
+    pub bit_gravity: i32,
+    pub win_gravity: i32,
+    pub backing_store: i32,
+    pub backing_planes: u64,
+    pub backing_pixel: u64,
+    pub save_under: i32,
+    pub event_mask: i64,
+    pub do_not_propagate_mask: i64,
+    pub override_redirect: i32,
     pub colormap: Colormap,
     pub cursor: Cursor,
 }
 pub type Cursor = XID;
 pub type KeySym = XID;
-pub type KeyCode = ::core::ffi::c_uchar;
+pub type KeyCode = u8;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct timezone {
-    pub tz_minuteswest: ::core::ffi::c_int,
-    pub tz_dsttime: ::core::ffi::c_int,
+    pub tz_minuteswest: i32,
+    pub tz_dsttime: i32,
 }
-pub const KEY_RIGHTARROW: ::core::ffi::c_int = 0xae as ::core::ffi::c_int;
-pub const KEY_LEFTARROW: ::core::ffi::c_int = 0xac as ::core::ffi::c_int;
-pub const KEY_UPARROW: ::core::ffi::c_int = 0xad as ::core::ffi::c_int;
-pub const KEY_DOWNARROW: ::core::ffi::c_int = 0xaf as ::core::ffi::c_int;
-pub const KEY_USE: ::core::ffi::c_int = 0xa2 as ::core::ffi::c_int;
-pub const KEY_FIRE: ::core::ffi::c_int = 0xa3 as ::core::ffi::c_int;
-pub const KEY_ESCAPE: ::core::ffi::c_int = 27 as ::core::ffi::c_int;
-pub const KEY_ENTER: ::core::ffi::c_int = 13 as ::core::ffi::c_int;
-pub const KEY_RSHIFT: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x36 as ::core::ffi::c_int;
-pub const DOOMGENERIC_RESX: ::core::ffi::c_int = 640 as ::core::ffi::c_int;
-pub const DOOMGENERIC_RESY: ::core::ffi::c_int = 400 as ::core::ffi::c_int;
-pub const KeyPressMask: ::core::ffi::c_long = (1 as ::core::ffi::c_long)
-    << 0 as ::core::ffi::c_int;
-pub const KeyReleaseMask: ::core::ffi::c_long = (1 as ::core::ffi::c_long)
-    << 1 as ::core::ffi::c_int;
-pub const ExposureMask: ::core::ffi::c_long = (1 as ::core::ffi::c_long)
-    << 15 as ::core::ffi::c_int;
-pub const StructureNotifyMask: ::core::ffi::c_long = (1 as ::core::ffi::c_long)
-    << 17 as ::core::ffi::c_int;
-pub const KeyPress: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
-pub const KeyRelease: ::core::ffi::c_int = 3 as ::core::ffi::c_int;
-pub const MapNotify: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const PropModeReplace: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
-pub const ZPixmap: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
+pub const KEY_RIGHTARROW: i32 = 0xae as i32;
+pub const KEY_LEFTARROW: i32 = 0xac as i32;
+pub const KEY_UPARROW: i32 = 0xad as i32;
+pub const KEY_DOWNARROW: i32 = 0xaf as i32;
+pub const KEY_USE: i32 = 0xa2 as i32;
+pub const KEY_FIRE: i32 = 0xa3 as i32;
+pub const KEY_ESCAPE: i32 = 27 as i32;
+pub const KEY_ENTER: i32 = 13 as i32;
+pub const KEY_RSHIFT: i32 = 0x80 as i32
+    + 0x36 as i32;
+pub const DOOMGENERIC_RESX: i32 = 640 as i32;
+pub const DOOMGENERIC_RESY: i32 = 400 as i32;
+pub const KeyPressMask: i64 = (1 as i64)
+    << 0 as i32;
+pub const KeyReleaseMask: i64 = (1 as i64)
+    << 1 as i32;
+pub const ExposureMask: i64 = (1 as i64)
+    << 15 as i32;
+pub const StructureNotifyMask: i64 = (1 as i64)
+    << 17 as i32;
+pub const KeyPress: i32 = 2 as i32;
+pub const KeyRelease: i32 = 3 as i32;
+pub const MapNotify: i32 = 19 as i32;
+pub const PropModeReplace: i32 = 0 as i32;
+pub const ZPixmap: i32 = 2 as i32;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const XK_Return: ::core::ffi::c_uint = 65293 as ::core::ffi::c_uint;
-pub const XK_Escape: ::core::ffi::c_uint = 65307 as ::core::ffi::c_uint;
-pub const XK_Left: ::core::ffi::c_uint = 65361 as ::core::ffi::c_uint;
-pub const XK_Up: ::core::ffi::c_uint = 65362 as ::core::ffi::c_uint;
-pub const XK_Right: ::core::ffi::c_uint = 65363 as ::core::ffi::c_uint;
-pub const XK_Down: ::core::ffi::c_uint = 65364 as ::core::ffi::c_uint;
-pub const XK_Shift_L: ::core::ffi::c_uint = 65505 as ::core::ffi::c_uint;
-pub const XK_Shift_R: ::core::ffi::c_uint = 65506 as ::core::ffi::c_uint;
-pub const XK_Control_L: ::core::ffi::c_uint = 65507 as ::core::ffi::c_uint;
-pub const XK_Control_R: ::core::ffi::c_uint = 65508 as ::core::ffi::c_uint;
-pub const XK_space: ::core::ffi::c_uint = 32 as ::core::ffi::c_uint;
-pub const XA_STRING: Atom = 31 as ::core::ffi::c_int as Atom;
-pub const XA_WM_NAME: Atom = 39 as ::core::ffi::c_int as Atom;
+pub const XK_Return: u32 = 65293 as u32;
+pub const XK_Escape: u32 = 65307 as u32;
+pub const XK_Left: u32 = 65361 as u32;
+pub const XK_Up: u32 = 65362 as u32;
+pub const XK_Right: u32 = 65363 as u32;
+pub const XK_Down: u32 = 65364 as u32;
+pub const XK_Shift_L: u32 = 65505 as u32;
+pub const XK_Shift_R: u32 = 65506 as u32;
+pub const XK_Control_L: u32 = 65507 as u32;
+pub const XK_Control_R: u32 = 65508 as u32;
+pub const XK_space: u32 = 32 as u32;
+pub const XA_STRING: Atom = 31 as i32 as Atom;
+pub const XA_WM_NAME: Atom = 39 as i32 as Atom;
 static mut s_Display: *mut Display = ::core::ptr::null::<Display>() as *mut Display;
 static mut s_Window: Window = 0 as Window;
-static mut s_Screen: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+static mut s_Screen: i32 = 0 as i32;
 static mut s_Gc: GC = ::core::ptr::null::<_XGC>() as *mut _XGC;
 static mut s_Image: *mut XImage = ::core::ptr::null::<XImage>() as *mut XImage;
-pub const KEYQUEUE_SIZE: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-static mut s_KeyQueue: [::core::ffi::c_ushort; 16] = [0; 16];
-static mut s_KeyQueueWriteIndex: ::core::ffi::c_uint = 0 as ::core::ffi::c_uint;
-static mut s_KeyQueueReadIndex: ::core::ffi::c_uint = 0 as ::core::ffi::c_uint;
+pub const KEYQUEUE_SIZE: i32 = 16 as i32;
+static mut s_KeyQueue: [u16; 16] = [0; 16];
+static mut s_KeyQueueWriteIndex: u32 = 0 as u32;
+static mut s_KeyQueueReadIndex: u32 = 0 as u32;
 unsafe extern "C" fn convertToDoomKey(
-    mut key: ::core::ffi::c_uint,
-) -> ::core::ffi::c_uchar {
+    mut key: u32,
+) -> u8 {
     match key {
         65293 => {
-            key = KEY_ENTER as ::core::ffi::c_uint;
+            key = KEY_ENTER as u32;
         }
         65307 => {
-            key = KEY_ESCAPE as ::core::ffi::c_uint;
+            key = KEY_ESCAPE as u32;
         }
         65361 => {
-            key = KEY_LEFTARROW as ::core::ffi::c_uint;
+            key = KEY_LEFTARROW as u32;
         }
         65363 => {
-            key = KEY_RIGHTARROW as ::core::ffi::c_uint;
+            key = KEY_RIGHTARROW as u32;
         }
         65362 => {
-            key = KEY_UPARROW as ::core::ffi::c_uint;
+            key = KEY_UPARROW as u32;
         }
         65364 => {
-            key = KEY_DOWNARROW as ::core::ffi::c_uint;
+            key = KEY_DOWNARROW as u32;
         }
         65507 | 65508 => {
-            key = KEY_FIRE as ::core::ffi::c_uint;
+            key = KEY_FIRE as u32;
         }
         32 => {
-            key = KEY_USE as ::core::ffi::c_uint;
+            key = KEY_USE as u32;
         }
         65505 | 65506 => {
-            key = KEY_RSHIFT as ::core::ffi::c_uint;
+            key = KEY_RSHIFT as u32;
         }
         _ => {
             key = ({
-                let mut __res: ::core::ffi::c_int = 0;
-                if ::core::mem::size_of::<::core::ffi::c_uint>() as usize > 1 as usize {
+                let mut __res: i32 = 0;
+                if ::core::mem::size_of::<u32>() as usize > 1 as usize {
                     if 0 != 0 {
-                        let mut __c: ::core::ffi::c_int = key as ::core::ffi::c_int;
-                        __res = (if __c < -(128 as ::core::ffi::c_int)
-                            || __c > 255 as ::core::ffi::c_int
+                        let mut __c: i32 = key as i32;
+                        __res = (if __c < -(128 as i32)
+                            || __c > 255 as i32
                         {
                             __c as __int32_t
                         } else {
                             *(*__ctype_tolower_loc()).offset(__c as isize)
-                        }) as ::core::ffi::c_int;
+                        }) as i32;
                     } else {
-                        __res = tolower(key as ::core::ffi::c_int);
+                        __res = tolower(key as i32);
                     }
                 } else {
                     __res = *(*__ctype_tolower_loc())
-                        .offset(key as ::core::ffi::c_int as isize)
-                        as ::core::ffi::c_int;
+                        .offset(key as i32 as isize)
+                        as i32;
                 }
                 __res
-            }) as ::core::ffi::c_uint;
+            }) as u32;
         }
     }
-    return key as ::core::ffi::c_uchar;
+    return key as u8;
 }
 unsafe extern "C" fn addKeyToQueue(
-    mut pressed: ::core::ffi::c_int,
-    mut keyCode: ::core::ffi::c_uint,
+    mut pressed: i32,
+    mut keyCode: u32,
 ) {
-    let mut key: ::core::ffi::c_uchar = convertToDoomKey(keyCode);
-    let mut keyData: ::core::ffi::c_ushort = (pressed << 8 as ::core::ffi::c_int
-        | key as ::core::ffi::c_int) as ::core::ffi::c_ushort;
+    let mut key: u8 = convertToDoomKey(keyCode);
+    let mut keyData: u16 = (pressed << 8 as i32
+        | key as i32) as u16;
     s_KeyQueue[s_KeyQueueWriteIndex as usize] = keyData;
     s_KeyQueueWriteIndex = s_KeyQueueWriteIndex.wrapping_add(1);
     s_KeyQueueWriteIndex = s_KeyQueueWriteIndex
-        .wrapping_rem(KEYQUEUE_SIZE as ::core::ffi::c_uint);
+        .wrapping_rem(KEYQUEUE_SIZE as u32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn DG_Init() {
     memset(
-        &raw mut s_KeyQueue as *mut ::core::ffi::c_ushort as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        &raw mut s_KeyQueue as *mut u16 as *mut ::core::ffi::c_void,
+        0 as i32,
         (KEYQUEUE_SIZE as size_t)
-            .wrapping_mul(::core::mem::size_of::<::core::ffi::c_ushort>() as size_t),
+            .wrapping_mul(::core::mem::size_of::<u16>() as size_t),
     );
     s_Display = XOpenDisplay(::core::ptr::null::<::core::ffi::c_char>());
     s_Screen = (*(s_Display as _XPrivDisplay)).default_screen;
-    let mut blackColor: ::core::ffi::c_int = (*(*(s_Display as _XPrivDisplay))
+    let mut blackColor: i32 = (*(*(s_Display as _XPrivDisplay))
         .screens
         .offset(s_Screen as isize))
-        .black_pixel as ::core::ffi::c_int;
-    let mut whiteColor: ::core::ffi::c_int = (*(*(s_Display as _XPrivDisplay))
+        .black_pixel as i32;
+    let mut whiteColor: i32 = (*(*(s_Display as _XPrivDisplay))
         .screens
         .offset(s_Screen as isize))
-        .white_pixel as ::core::ffi::c_int;
+        .white_pixel as i32;
     let mut attr: XSetWindowAttributes = XSetWindowAttributes {
         background_pixmap: 0,
         background_pixel: 0,
@@ -999,7 +998,7 @@ pub unsafe extern "C" fn DG_Init() {
     };
     memset(
         &raw mut attr as *mut ::core::ffi::c_void,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         ::core::mem::size_of::<XSetWindowAttributes>() as size_t,
     );
     attr.event_mask = ExposureMask | KeyPressMask;
@@ -1007,7 +1006,7 @@ pub unsafe extern "C" fn DG_Init() {
         .screens
         .offset(s_Screen as isize))
         .black_pixel;
-    let mut depth: ::core::ffi::c_int = (*(*(s_Display as _XPrivDisplay))
+    let mut depth: i32 = (*(*(s_Display as _XPrivDisplay))
         .screens
         .offset(s_Screen as isize))
         .root_depth;
@@ -1017,13 +1016,13 @@ pub unsafe extern "C" fn DG_Init() {
             .screens
             .offset((*(s_Display as _XPrivDisplay)).default_screen as isize))
             .root,
-        0 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
-        DOOMGENERIC_RESX as ::core::ffi::c_uint,
-        DOOMGENERIC_RESY as ::core::ffi::c_uint,
-        0 as ::core::ffi::c_uint,
-        blackColor as ::core::ffi::c_ulong,
-        blackColor as ::core::ffi::c_ulong,
+        0 as i32,
+        0 as i32,
+        DOOMGENERIC_RESX as u32,
+        DOOMGENERIC_RESY as u32,
+        0 as u32,
+        blackColor as u64,
+        blackColor as u64,
     );
     XSelectInput(
         s_Display,
@@ -1034,14 +1033,14 @@ pub unsafe extern "C" fn DG_Init() {
     s_Gc = XCreateGC(
         s_Display,
         s_Window as Drawable,
-        0 as ::core::ffi::c_ulong,
+        0 as u64,
         ::core::ptr::null_mut::<XGCValues>(),
     );
-    XSetForeground(s_Display, s_Gc, whiteColor as ::core::ffi::c_ulong);
+    XSetForeground(s_Display, s_Gc, whiteColor as u64);
     XkbSetDetectableAutoRepeat(
         s_Display,
-        1 as ::core::ffi::c_int,
-        ::core::ptr::null_mut::<::core::ffi::c_int>(),
+        1 as i32,
+        ::core::ptr::null_mut::<i32>(),
     );
     loop {
         let mut e: XEvent = _XEvent { type_0: 0 };
@@ -1053,38 +1052,38 @@ pub unsafe extern "C" fn DG_Init() {
     s_Image = XCreateImage(
         s_Display,
         (*(*(s_Display as _XPrivDisplay)).screens.offset(s_Screen as isize)).root_visual,
-        depth as ::core::ffi::c_uint,
+        depth as u32,
         ZPixmap,
-        0 as ::core::ffi::c_int,
+        0 as i32,
         DG_ScreenBuffer as *mut ::core::ffi::c_char,
-        DOOMGENERIC_RESX as ::core::ffi::c_uint,
-        DOOMGENERIC_RESX as ::core::ffi::c_uint,
-        32 as ::core::ffi::c_int,
-        0 as ::core::ffi::c_int,
+        DOOMGENERIC_RESX as u32,
+        DOOMGENERIC_RESX as u32,
+        32 as i32,
+        0 as i32,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn DG_DrawFrame() {
     if !s_Display.is_null() {
-        while XPending(s_Display) > 0 as ::core::ffi::c_int {
+        while XPending(s_Display) > 0 as i32 {
             let mut e: XEvent = _XEvent { type_0: 0 };
             XNextEvent(s_Display, &raw mut e);
             if e.type_0 == KeyPress {
                 let mut sym: KeySym = XkbKeycodeToKeysym(
                     s_Display,
                     e.xkey.keycode as KeyCode,
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
+                    0 as i32,
+                    0 as i32,
                 );
-                addKeyToQueue(1 as ::core::ffi::c_int, sym as ::core::ffi::c_uint);
+                addKeyToQueue(1 as i32, sym as u32);
             } else if e.type_0 == KeyRelease {
                 let mut sym_0: KeySym = XkbKeycodeToKeysym(
                     s_Display,
                     e.xkey.keycode as KeyCode,
-                    0 as ::core::ffi::c_int,
-                    0 as ::core::ffi::c_int,
+                    0 as i32,
+                    0 as i32,
                 );
-                addKeyToQueue(0 as ::core::ffi::c_int, sym_0 as ::core::ffi::c_uint);
+                addKeyToQueue(0 as i32, sym_0 as u32);
             }
         }
         XPutImage(
@@ -1092,12 +1091,12 @@ pub unsafe extern "C" fn DG_DrawFrame() {
             s_Window as Drawable,
             s_Gc,
             s_Image,
-            0 as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
-            0 as ::core::ffi::c_int,
-            DOOMGENERIC_RESX as ::core::ffi::c_uint,
-            DOOMGENERIC_RESY as ::core::ffi::c_uint,
+            0 as i32,
+            0 as i32,
+            0 as i32,
+            0 as i32,
+            DOOMGENERIC_RESX as u32,
+            DOOMGENERIC_RESY as u32,
         );
     }
 }
@@ -1118,21 +1117,21 @@ pub unsafe extern "C" fn DG_GetTicksMs() -> uint32_t {
 }
 #[no_mangle]
 pub unsafe extern "C" fn DG_GetKey(
-    mut pressed: *mut ::core::ffi::c_int,
-    mut doomKey: *mut ::core::ffi::c_uchar,
-) -> ::core::ffi::c_int {
+    mut pressed: *mut i32,
+    mut doomKey: *mut u8,
+) -> i32 {
     if s_KeyQueueReadIndex == s_KeyQueueWriteIndex {
-        return 0 as ::core::ffi::c_int
+        return 0 as i32
     } else {
-        let mut keyData: ::core::ffi::c_ushort = s_KeyQueue[s_KeyQueueReadIndex
+        let mut keyData: u16 = s_KeyQueue[s_KeyQueueReadIndex
             as usize];
         s_KeyQueueReadIndex = s_KeyQueueReadIndex.wrapping_add(1);
         s_KeyQueueReadIndex = s_KeyQueueReadIndex
-            .wrapping_rem(KEYQUEUE_SIZE as ::core::ffi::c_uint);
-        *pressed = keyData as ::core::ffi::c_int >> 8 as ::core::ffi::c_int;
-        *doomKey = (keyData as ::core::ffi::c_int & 0xff as ::core::ffi::c_int)
-            as ::core::ffi::c_uchar;
-        return 1 as ::core::ffi::c_int;
+            .wrapping_rem(KEYQUEUE_SIZE as u32);
+        *pressed = keyData as i32 >> 8 as i32;
+        *doomKey = (keyData as i32 & 0xff as i32)
+            as u8;
+        return 1 as i32;
     };
 }
 #[no_mangle]
@@ -1143,41 +1142,20 @@ pub unsafe extern "C" fn DG_SetWindowTitle(mut title: *const ::core::ffi::c_char
             s_Window,
             XA_WM_NAME,
             XA_STRING,
-            8 as ::core::ffi::c_int,
+            8 as i32,
             PropModeReplace,
-            title as *const ::core::ffi::c_uchar,
-            strlen(title) as ::core::ffi::c_int,
+            title as *const u8,
+            strlen(title) as i32,
         );
     }
 }
-unsafe fn main_0(
-    mut argc: ::core::ffi::c_int,
-    mut argv: *mut *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    doomgeneric_Create(argc, argv);
-    loop {
-        doomgeneric_Tick();
-    };
-}
 pub fn main() {
-    let mut args_strings: Vec<Vec<u8>> = ::std::env::args()
-        .map(|arg| {
-            ::std::ffi::CString::new(arg)
-                .expect("Failed to convert argument into CString.")
-                .into_bytes_with_nul()
-        })
-        .collect();
-    let mut args_ptrs: Vec<*mut ::core::ffi::c_char> = args_strings
-        .iter_mut()
-        .map(|arg| arg.as_mut_ptr() as *mut ::core::ffi::c_char)
-        .chain(::core::iter::once(::core::ptr::null_mut()))
-        .collect();
     unsafe {
-        ::std::process::exit(
-            main_0(
-                (args_ptrs.len() - 1) as ::core::ffi::c_int,
-                args_ptrs.as_mut_ptr() as *mut *mut ::core::ffi::c_char,
-            ) as i32,
-        )
+        ::rust_doomgeneric::src::doomgeneric::doomgeneric_Create(
+            ::std::env::args().collect(),
+        );
+        loop {
+            doomgeneric_Tick();
+        }
     }
 }

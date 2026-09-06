@@ -1,43 +1,47 @@
+use crate::src::r_defs::{node_t, seg_t};
+use crate::src::p_mobj::{subsector_t, actionf_t};
+use crate::src::d_player::{player_t};
+use crate::src::tables::SlopeDiv;
+use crate::src::r_segs::walllights;
+use crate::src::r_data::R_InitData;
+use crate::src::r_segs::rw_distance;
+use crate::src::r_segs::rw_normalangle;
+use crate::src::r_bsp::R_ClearClipSegs;
+use crate::src::r_bsp::R_ClearDrawSegs;
+use crate::src::r_bsp::R_RenderBSPNode;
+use crate::src::r_plane::yslope;
+use crate::src::r_plane::distscale;
+use crate::src::r_plane::R_InitPlanes;
+use crate::src::r_plane::R_ClearPlanes;
+use crate::src::r_things::pspritescale;
+use crate::src::r_things::R_ClearSprites;
+use crate::src::r_draw::R_InitBuffer;
+use crate::src::r_draw::R_InitTranslationTables;
+use crate::src::r_sky::R_InitSkyMap;
+use crate::src::d_loop::NetUpdate;
+use crate::src::m_menu::detailLevel;
+use crate::src::m_menu::screenblocks;
+use crate::src::p_setup::numnodes;
+use crate::src::r_draw::scaledviewwidth;
+use crate::src::r_things::pspriteiscale;
+use crate::src::r_things::screenheightarray;
+use crate::src::tables::tantoangle;
+use crate::src::p_setup::subsectors;
+use crate::src::p_setup::nodes;
+use crate::src::tables::finetangent;
+use crate::src::r_data::colormaps;
+use crate::src::r_draw::viewwidth;
+use crate::src::r_draw::viewheight;
+use crate::src::m_fixed::FixedDiv;
+use crate::src::tables::finecosine;
+use crate::src::tables::finesine;
+use crate::src::m_fixed::FixedMul;
+use crate::src::r_plane::R_DrawPlanes;
+use crate::src::r_things::R_DrawMasked;
+
 extern "C" {
-    fn abs(__x: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
-    fn NetUpdate();
-    fn FixedMul(a: fixed_t, b: fixed_t) -> fixed_t;
-    fn FixedDiv(a: fixed_t, b: fixed_t) -> fixed_t;
-    static mut detailLevel: ::core::ffi::c_int;
-    static mut screenblocks: ::core::ffi::c_int;
-    static finesine: [fixed_t; 10240];
-    static mut finecosine: *const fixed_t;
-    static finetangent: [fixed_t; 4096];
-    static tantoangle: [angle_t; 2049];
-    fn SlopeDiv(
-        num: ::core::ffi::c_uint,
-        den: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
-    static mut walllights: *mut *mut lighttable_t;
-    fn R_InitData();
-    static mut colormaps: *mut lighttable_t;
-    static mut viewwidth: ::core::ffi::c_int;
-    static mut scaledviewwidth: ::core::ffi::c_int;
-    static mut viewheight: ::core::ffi::c_int;
-    static mut subsectors: *mut subsector_t;
-    static mut numnodes: ::core::ffi::c_int;
-    static mut nodes: *mut node_t;
-    static mut rw_distance: fixed_t;
-    static mut rw_normalangle: angle_t;
-    fn R_ClearClipSegs();
-    fn R_ClearDrawSegs();
-    fn R_RenderBSPNode(bspnum: ::core::ffi::c_int);
-    static mut yslope: [fixed_t; 200];
-    static mut distscale: [fixed_t; 320];
-    fn R_InitPlanes();
-    fn R_ClearPlanes();
-    fn R_DrawPlanes();
-    static mut screenheightarray: [::core::ffi::c_short; 320];
-    static mut pspritescale: fixed_t;
-    static mut pspriteiscale: fixed_t;
-    fn R_ClearSprites();
-    fn R_DrawMasked();
+    fn abs(__x: i32) -> i32;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn R_DrawColumn();
     fn R_DrawColumnLow();
     fn R_DrawFuzzColumn();
@@ -46,15 +50,12 @@ extern "C" {
     fn R_DrawTranslatedColumnLow();
     fn R_DrawSpan();
     fn R_DrawSpanLow();
-    fn R_InitBuffer(width: ::core::ffi::c_int, height: ::core::ffi::c_int);
-    fn R_InitTranslationTables();
-    fn R_InitSkyMap();
 }
 pub type __uint8_t = u8;
 pub type uint8_t = __uint8_t;
-pub type boolean = ::core::ffi::c_uint;
+pub type boolean = u32;
 pub type byte = uint8_t;
-pub type weapontype_t = ::core::ffi::c_uint;
+pub type weapontype_t = u32;
 pub const wp_nochange: weapontype_t = 10;
 pub const NUMWEAPONS: weapontype_t = 9;
 pub const wp_supershotgun: weapontype_t = 8;
@@ -66,58 +67,20 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct ticcmd_t {
-    pub forwardmove: ::core::ffi::c_schar,
-    pub sidemove: ::core::ffi::c_schar,
-    pub angleturn: ::core::ffi::c_short,
-    pub chatchar: byte,
-    pub buttons: byte,
-    pub consistancy: byte,
-    pub buttons2: byte,
-    pub inventory: ::core::ffi::c_int,
-    pub lookfly: byte,
-    pub arti: byte,
-}
-pub type fixed_t = ::core::ffi::c_int;
-pub type C2RustUnnamed = ::core::ffi::c_uint;
+pub type fixed_t = i32;
+pub type C2RustUnnamed = u32;
 pub const BOXRIGHT: C2RustUnnamed = 3;
 pub const BOXLEFT: C2RustUnnamed = 2;
 pub const BOXBOTTOM: C2RustUnnamed = 1;
 pub const BOXTOP: C2RustUnnamed = 0;
-pub type angle_t = ::core::ffi::c_uint;
+pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
     unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void) -> (),
 >;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union actionf_t {
-    pub acv: actionf_v,
-    pub acp1: actionf_p1,
-    pub acp2: actionf_p2,
-}
 pub type think_t = actionf_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct thinker_s {
-    pub prev: *mut thinker_s,
-    pub next: *mut thinker_s,
-    pub function: think_t,
-}
-pub type thinker_t = thinker_s;
-#[derive(Copy, Clone)]
-#[repr(C, packed)]
-pub struct mapthing_t {
-    pub x: ::core::ffi::c_short,
-    pub y: ::core::ffi::c_short,
-    pub angle: ::core::ffi::c_short,
-    pub type_0: ::core::ffi::c_short,
-    pub options: ::core::ffi::c_short,
-}
-pub type spritenum_t = ::core::ffi::c_uint;
+pub type spritenum_t = u32;
 pub const NUMSPRITES: spritenum_t = 138;
 pub const SPR_TLP2: spritenum_t = 137;
 pub const SPR_TLMP: spritenum_t = 136;
@@ -257,7 +220,7 @@ pub const SPR_PISG: spritenum_t = 3;
 pub const SPR_PUNG: spritenum_t = 2;
 pub const SPR_SHTG: spritenum_t = 1;
 pub const SPR_TROO: spritenum_t = 0;
-pub type statenum_t = ::core::ffi::c_uint;
+pub type statenum_t = u32;
 pub const NUMSTATES: statenum_t = 967;
 pub const S_TECH2LAMP4: statenum_t = 966;
 pub const S_TECH2LAMP3: statenum_t = 965;
@@ -1226,18 +1189,7 @@ pub const S_PUNCHDOWN: statenum_t = 3;
 pub const S_PUNCH: statenum_t = 2;
 pub const S_LIGHTDONE: statenum_t = 1;
 pub const S_NULL: statenum_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct state_t {
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub tics: ::core::ffi::c_int,
-    pub action: actionf_t,
-    pub nextstate: statenum_t,
-    pub misc1: ::core::ffi::c_int,
-    pub misc2: ::core::ffi::c_int,
-}
-pub type mobjtype_t = ::core::ffi::c_uint;
+pub type mobjtype_t = u32;
 pub const NUMMOBJTYPES: mobjtype_t = 137;
 pub const MT_MISC86: mobjtype_t = 136;
 pub const MT_MISC85: mobjtype_t = 135;
@@ -1376,286 +1328,49 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobjinfo_t {
-    pub doomednum: ::core::ffi::c_int,
-    pub spawnstate: ::core::ffi::c_int,
-    pub spawnhealth: ::core::ffi::c_int,
-    pub seestate: ::core::ffi::c_int,
-    pub seesound: ::core::ffi::c_int,
-    pub reactiontime: ::core::ffi::c_int,
-    pub attacksound: ::core::ffi::c_int,
-    pub painstate: ::core::ffi::c_int,
-    pub painchance: ::core::ffi::c_int,
-    pub painsound: ::core::ffi::c_int,
-    pub meleestate: ::core::ffi::c_int,
-    pub missilestate: ::core::ffi::c_int,
-    pub deathstate: ::core::ffi::c_int,
-    pub xdeathstate: ::core::ffi::c_int,
-    pub deathsound: ::core::ffi::c_int,
-    pub speed: ::core::ffi::c_int,
-    pub radius: ::core::ffi::c_int,
-    pub height: ::core::ffi::c_int,
-    pub mass: ::core::ffi::c_int,
-    pub damage: ::core::ffi::c_int,
-    pub activesound: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
-    pub raisestate: ::core::ffi::c_int,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct mobj_s {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-    pub snext: *mut mobj_s,
-    pub sprev: *mut mobj_s,
-    pub angle: angle_t,
-    pub sprite: spritenum_t,
-    pub frame: ::core::ffi::c_int,
-    pub bnext: *mut mobj_s,
-    pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
-    pub floorz: fixed_t,
-    pub ceilingz: fixed_t,
-    pub radius: fixed_t,
-    pub height: fixed_t,
-    pub momx: fixed_t,
-    pub momy: fixed_t,
-    pub momz: fixed_t,
-    pub validcount: ::core::ffi::c_int,
-    pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
-    pub tics: ::core::ffi::c_int,
-    pub state: *mut state_t,
-    pub flags: ::core::ffi::c_int,
-    pub health: ::core::ffi::c_int,
-    pub movedir: ::core::ffi::c_int,
-    pub movecount: ::core::ffi::c_int,
-    pub target: *mut mobj_s,
-    pub reactiontime: ::core::ffi::c_int,
-    pub threshold: ::core::ffi::c_int,
-    pub player: *mut player_s,
-    pub lastlook: ::core::ffi::c_int,
-    pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct player_s {
-    pub mo: *mut mobj_t,
-    pub playerstate: playerstate_t,
-    pub cmd: ticcmd_t,
-    pub viewz: fixed_t,
-    pub viewheight: fixed_t,
-    pub deltaviewheight: fixed_t,
-    pub bob: fixed_t,
-    pub health: ::core::ffi::c_int,
-    pub armorpoints: ::core::ffi::c_int,
-    pub armortype: ::core::ffi::c_int,
-    pub powers: [::core::ffi::c_int; 6],
-    pub cards: [boolean; 6],
-    pub backpack: boolean,
-    pub frags: [::core::ffi::c_int; 4],
-    pub readyweapon: weapontype_t,
-    pub pendingweapon: weapontype_t,
-    pub weaponowned: [boolean; 9],
-    pub ammo: [::core::ffi::c_int; 4],
-    pub maxammo: [::core::ffi::c_int; 4],
-    pub attackdown: ::core::ffi::c_int,
-    pub usedown: ::core::ffi::c_int,
-    pub cheats: ::core::ffi::c_int,
-    pub refire: ::core::ffi::c_int,
-    pub killcount: ::core::ffi::c_int,
-    pub itemcount: ::core::ffi::c_int,
-    pub secretcount: ::core::ffi::c_int,
-    pub message: *mut ::core::ffi::c_char,
-    pub damagecount: ::core::ffi::c_int,
-    pub bonuscount: ::core::ffi::c_int,
-    pub attacker: *mut mobj_t,
-    pub extralight: ::core::ffi::c_int,
-    pub fixedcolormap: ::core::ffi::c_int,
-    pub colormap: ::core::ffi::c_int,
-    pub psprites: [pspdef_t; 2],
-    pub didsecret: boolean,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pspdef_t {
-    pub state: *mut state_t,
-    pub tics: ::core::ffi::c_int,
-    pub sx: fixed_t,
-    pub sy: fixed_t,
-}
-pub type mobj_t = mobj_s;
-pub type playerstate_t = ::core::ffi::c_uint;
-pub const PST_REBORN: playerstate_t = 2;
-pub const PST_DEAD: playerstate_t = 1;
-pub const PST_LIVE: playerstate_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct subsector_s {
-    pub sector: *mut sector_t,
-    pub numlines: ::core::ffi::c_short,
-    pub firstline: ::core::ffi::c_short,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct sector_t {
-    pub floorheight: fixed_t,
-    pub ceilingheight: fixed_t,
-    pub floorpic: ::core::ffi::c_short,
-    pub ceilingpic: ::core::ffi::c_short,
-    pub lightlevel: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub soundtraversed: ::core::ffi::c_int,
-    pub soundtarget: *mut mobj_t,
-    pub blockbox: [::core::ffi::c_int; 4],
-    pub soundorg: degenmobj_t,
-    pub validcount: ::core::ffi::c_int,
-    pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
-    pub linecount: ::core::ffi::c_int,
-    pub lines: *mut *mut line_s,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub flags: ::core::ffi::c_short,
-    pub special: ::core::ffi::c_short,
-    pub tag: ::core::ffi::c_short,
-    pub sidenum: [::core::ffi::c_short; 2],
-    pub bbox: [fixed_t; 4],
-    pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-    pub validcount: ::core::ffi::c_int,
-    pub specialdata: *mut ::core::ffi::c_void,
-}
-pub type slopetype_t = ::core::ffi::c_uint;
-pub const ST_NEGATIVE: slopetype_t = 3;
-pub const ST_POSITIVE: slopetype_t = 2;
-pub const ST_VERTICAL: slopetype_t = 1;
-pub const ST_HORIZONTAL: slopetype_t = 0;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct vertex_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct degenmobj_t {
-    pub thinker: thinker_t,
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub z: fixed_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct side_t {
-    pub textureoffset: fixed_t,
-    pub rowoffset: fixed_t,
-    pub toptexture: ::core::ffi::c_short,
-    pub bottomtexture: ::core::ffi::c_short,
-    pub midtexture: ::core::ffi::c_short,
-    pub sector: *mut sector_t,
-}
-pub type line_t = line_s;
-pub type subsector_t = subsector_s;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct seg_t {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
-    pub offset: fixed_t,
-    pub angle: angle_t,
-    pub sidedef: *mut side_t,
-    pub linedef: *mut line_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct node_t {
-    pub x: fixed_t,
-    pub y: fixed_t,
-    pub dx: fixed_t,
-    pub dy: fixed_t,
-    pub bbox: [[fixed_t; 4]; 2],
-    pub children: [::core::ffi::c_ushort; 2],
-}
 pub type lighttable_t = byte;
-pub type player_t = player_s;
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-pub const FINEANGLES: ::core::ffi::c_int = 8192 as ::core::ffi::c_int;
-pub const ANGLETOFINESHIFT: ::core::ffi::c_int = 19 as ::core::ffi::c_int;
-pub const ANG90: ::core::ffi::c_int = 0x40000000 as ::core::ffi::c_int;
-pub const ANG180: ::core::ffi::c_uint = 0x80000000 as ::core::ffi::c_uint;
-pub const ANG270: ::core::ffi::c_uint = 0xc0000000 as ::core::ffi::c_uint;
-pub const SLOPEBITS: ::core::ffi::c_int = 11 as ::core::ffi::c_int;
-pub const DBITS: ::core::ffi::c_int = FRACBITS - SLOPEBITS;
-pub const NF_SUBSECTOR: ::core::ffi::c_int = 0x8000 as ::core::ffi::c_int;
-pub const SCREENWIDTH: ::core::ffi::c_int = 320 as ::core::ffi::c_int;
-pub const SCREENHEIGHT: ::core::ffi::c_int = 200 as ::core::ffi::c_int;
-pub const FIELDOFVIEW: ::core::ffi::c_int = 2048 as ::core::ffi::c_int;
-#[no_mangle]
-pub static mut viewangleoffset: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut validcount: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-#[no_mangle]
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub const FINEANGLES: i32 = 8192 as i32;
+pub const ANGLETOFINESHIFT: i32 = 19 as i32;
+pub const ANG90: i32 = 0x40000000 as i32;
+pub const ANG180: u32 = 0x80000000 as u32;
+pub const ANG270: u32 = 0xc0000000 as u32;
+pub const SLOPEBITS: i32 = 11 as i32;
+pub const DBITS: i32 = FRACBITS - SLOPEBITS;
+pub const NF_SUBSECTOR: i32 = 0x8000 as i32;
+pub const SCREENWIDTH: i32 = 320 as i32;
+pub const SCREENHEIGHT: i32 = 200 as i32;
+pub const FIELDOFVIEW: i32 = 2048 as i32;
+pub static mut viewangleoffset: i32 = 0;
+pub static mut validcount: i32 = 1 as i32;
 pub static mut fixedcolormap: *mut lighttable_t = ::core::ptr::null::<lighttable_t>()
     as *mut lighttable_t;
 #[no_mangle]
-pub static mut centerx: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut centery: ::core::ffi::c_int = 0;
-#[no_mangle]
+pub static mut centerx: i32 = 0;
+pub static mut centery: i32 = 0;
 pub static mut centerxfrac: fixed_t = 0;
-#[no_mangle]
 pub static mut centeryfrac: fixed_t = 0;
-#[no_mangle]
 pub static mut projection: fixed_t = 0;
 #[no_mangle]
-pub static mut framecount: ::core::ffi::c_int = 0;
+pub static mut framecount: i32 = 0;
+pub static mut sscount: i32 = 0;
 #[no_mangle]
-pub static mut sscount: ::core::ffi::c_int = 0;
+pub static mut linecount: i32 = 0;
 #[no_mangle]
-pub static mut linecount: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut loopcount: ::core::ffi::c_int = 0;
-#[no_mangle]
+pub static mut loopcount: i32 = 0;
 pub static mut viewx: fixed_t = 0;
-#[no_mangle]
 pub static mut viewy: fixed_t = 0;
-#[no_mangle]
 pub static mut viewz: fixed_t = 0;
-#[no_mangle]
 pub static mut viewangle: angle_t = 0;
-#[no_mangle]
 pub static mut viewcos: fixed_t = 0;
-#[no_mangle]
 pub static mut viewsin: fixed_t = 0;
-#[no_mangle]
 pub static mut viewplayer: *mut player_t = ::core::ptr::null::<player_t>()
     as *mut player_t;
-#[no_mangle]
-pub static mut detailshift: ::core::ffi::c_int = 0;
-#[no_mangle]
+pub static mut detailshift: i32 = 0;
 pub static mut clipangle: angle_t = 0;
-#[no_mangle]
-pub static mut viewangletox: [::core::ffi::c_int; 4096] = [0; 4096];
-#[no_mangle]
+pub static mut viewangletox: [i32; 4096] = [0; 4096];
 pub static mut xtoviewangle: [angle_t; 321] = [0; 321];
-#[no_mangle]
 pub static mut scalelight: [[*mut lighttable_t; 48]; 16] = [[::core::ptr::null::<
     lighttable_t,
 >() as *mut lighttable_t; 48]; 16];
@@ -1663,88 +1378,79 @@ pub static mut scalelight: [[*mut lighttable_t; 48]; 16] = [[::core::ptr::null::
 pub static mut scalelightfixed: [*mut lighttable_t; 48] = [::core::ptr::null::<
     lighttable_t,
 >() as *mut lighttable_t; 48];
-#[no_mangle]
 pub static mut zlight: [[*mut lighttable_t; 128]; 16] = [[::core::ptr::null::<
     lighttable_t,
 >() as *mut lighttable_t; 128]; 16];
-#[no_mangle]
-pub static mut extralight: ::core::ffi::c_int = 0;
-#[no_mangle]
+pub static mut extralight: i32 = 0;
 pub static mut colfunc: Option<unsafe extern "C" fn() -> ()> = None;
-#[no_mangle]
 pub static mut basecolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-#[no_mangle]
 pub static mut fuzzcolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-#[no_mangle]
 pub static mut transcolfunc: Option<unsafe extern "C" fn() -> ()> = None;
-#[no_mangle]
 pub static mut spanfunc: Option<unsafe extern "C" fn() -> ()> = None;
 #[no_mangle]
 pub unsafe extern "C" fn R_AddPointToBox(
-    mut x: ::core::ffi::c_int,
-    mut y: ::core::ffi::c_int,
+    mut x: i32,
+    mut y: i32,
     mut box_0: *mut fixed_t,
 ) {
-    if x < *box_0.offset(BOXLEFT as ::core::ffi::c_int as isize) {
-        *box_0.offset(BOXLEFT as ::core::ffi::c_int as isize) = x as fixed_t;
+    if x < *box_0.offset(BOXLEFT as i32 as isize) {
+        *box_0.offset(BOXLEFT as i32 as isize) = x as fixed_t;
     }
-    if x > *box_0.offset(BOXRIGHT as ::core::ffi::c_int as isize) {
-        *box_0.offset(BOXRIGHT as ::core::ffi::c_int as isize) = x as fixed_t;
+    if x > *box_0.offset(BOXRIGHT as i32 as isize) {
+        *box_0.offset(BOXRIGHT as i32 as isize) = x as fixed_t;
     }
-    if y < *box_0.offset(BOXBOTTOM as ::core::ffi::c_int as isize) {
-        *box_0.offset(BOXBOTTOM as ::core::ffi::c_int as isize) = y as fixed_t;
+    if y < *box_0.offset(BOXBOTTOM as i32 as isize) {
+        *box_0.offset(BOXBOTTOM as i32 as isize) = y as fixed_t;
     }
-    if y > *box_0.offset(BOXTOP as ::core::ffi::c_int as isize) {
-        *box_0.offset(BOXTOP as ::core::ffi::c_int as isize) = y as fixed_t;
+    if y > *box_0.offset(BOXTOP as i32 as isize) {
+        *box_0.offset(BOXTOP as i32 as isize) = y as fixed_t;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointOnSide(
+pub unsafe fn R_PointOnSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut node: *mut node_t,
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut left: fixed_t = 0;
     let mut right: fixed_t = 0;
     if (*node).dx == 0 {
         if x <= (*node).x {
-            return ((*node).dy > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return ((*node).dy > 0 as i32) as i32;
         }
-        return ((*node).dy < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return ((*node).dy < 0 as i32) as i32;
     }
     if (*node).dy == 0 {
         if y <= (*node).y {
-            return ((*node).dx < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return ((*node).dx < 0 as i32) as i32;
         }
-        return ((*node).dx > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return ((*node).dx > 0 as i32) as i32;
     }
     dx = x - (*node).x;
     dy = y - (*node).y;
-    if ((*node).dy ^ (*node).dx ^ dx ^ dy) as ::core::ffi::c_uint
-        & 0x80000000 as ::core::ffi::c_uint != 0
+    if ((*node).dy ^ (*node).dx ^ dx ^ dy) as u32
+        & 0x80000000 as u32 != 0
     {
-        if ((*node).dy ^ dx) as ::core::ffi::c_uint & 0x80000000 as ::core::ffi::c_uint
+        if ((*node).dy ^ dx) as u32 & 0x80000000 as u32
             != 0
         {
-            return 1 as ::core::ffi::c_int;
+            return 1 as i32;
         }
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
     left = FixedMul((*node).dy >> FRACBITS, dx);
     right = FixedMul(dy, (*node).dx >> FRACBITS);
     if right < left {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
-    return 1 as ::core::ffi::c_int;
+    return 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointOnSegSide(
+pub unsafe fn R_PointOnSegSide(
     mut x: fixed_t,
     mut y: fixed_t,
     mut line: *mut seg_t,
-) -> ::core::ffi::c_int {
+) -> i32 {
     let mut lx: fixed_t = 0;
     let mut ly: fixed_t = 0;
     let mut ldx: fixed_t = 0;
@@ -1759,53 +1465,52 @@ pub unsafe extern "C" fn R_PointOnSegSide(
     ldy = (*(*line).v2).y - ly;
     if ldx == 0 {
         if x <= lx {
-            return (ldy > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return (ldy > 0 as i32) as i32;
         }
-        return (ldy < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return (ldy < 0 as i32) as i32;
     }
     if ldy == 0 {
         if y <= ly {
-            return (ldx < 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+            return (ldx < 0 as i32) as i32;
         }
-        return (ldx > 0 as ::core::ffi::c_int) as ::core::ffi::c_int;
+        return (ldx > 0 as i32) as i32;
     }
     dx = x - lx;
     dy = y - ly;
-    if (ldy ^ ldx ^ dx ^ dy) as ::core::ffi::c_uint & 0x80000000 as ::core::ffi::c_uint
+    if (ldy ^ ldx ^ dx ^ dy) as u32 & 0x80000000 as u32
         != 0
     {
-        if (ldy ^ dx) as ::core::ffi::c_uint & 0x80000000 as ::core::ffi::c_uint != 0 {
-            return 1 as ::core::ffi::c_int;
+        if (ldy ^ dx) as u32 & 0x80000000 as u32 != 0 {
+            return 1 as i32;
         }
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
     left = FixedMul(ldy >> FRACBITS, dx);
     right = FixedMul(dy, ldx >> FRACBITS);
     if right < left {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
-    return 1 as ::core::ffi::c_int;
+    return 1 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle_t {
+pub unsafe fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle_t {
     x -= viewx;
     y -= viewy;
     if x == 0 && y == 0 {
         return 0 as angle_t;
     }
-    if x >= 0 as ::core::ffi::c_int {
-        if y >= 0 as ::core::ffi::c_int {
+    if x >= 0 as i32 {
+        if y >= 0 as i32 {
             if x > y {
                 return tantoangle[SlopeDiv(
-                    y as ::core::ffi::c_uint,
-                    x as ::core::ffi::c_uint,
+                    y as u32,
+                    x as u32,
                 ) as usize]
             } else {
-                return ((ANG90 - 1 as ::core::ffi::c_int) as angle_t)
+                return ((ANG90 - 1 as i32) as angle_t)
                     .wrapping_sub(
                         tantoangle[SlopeDiv(
-                            x as ::core::ffi::c_uint,
-                            y as ::core::ffi::c_uint,
+                            x as u32,
+                            y as u32,
                         ) as usize],
                     )
             }
@@ -1813,38 +1518,38 @@ pub unsafe extern "C" fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle
             y = -y;
             if x > y {
                 return tantoangle[SlopeDiv(
-                        y as ::core::ffi::c_uint,
-                        x as ::core::ffi::c_uint,
+                        y as u32,
+                        x as u32,
                     ) as usize]
                     .wrapping_neg()
             } else {
                 return ANG270
                     .wrapping_add(
                         tantoangle[SlopeDiv(
-                            x as ::core::ffi::c_uint,
-                            y as ::core::ffi::c_uint,
+                            x as u32,
+                            y as u32,
                         ) as usize],
                     )
             }
         }
     } else {
         x = -x;
-        if y >= 0 as ::core::ffi::c_int {
+        if y >= 0 as i32 {
             if x > y {
                 return ANG180
                     .wrapping_sub(1 as angle_t)
                     .wrapping_sub(
                         tantoangle[SlopeDiv(
-                            y as ::core::ffi::c_uint,
-                            x as ::core::ffi::c_uint,
+                            y as u32,
+                            x as u32,
                         ) as usize],
                     )
             } else {
                 return (ANG90 as angle_t)
                     .wrapping_add(
                         tantoangle[SlopeDiv(
-                            x as ::core::ffi::c_uint,
-                            y as ::core::ffi::c_uint,
+                            x as u32,
+                            y as u32,
                         ) as usize],
                     )
             }
@@ -1854,8 +1559,8 @@ pub unsafe extern "C" fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle
                 return ANG180
                     .wrapping_add(
                         tantoangle[SlopeDiv(
-                            y as ::core::ffi::c_uint,
-                            x as ::core::ffi::c_uint,
+                            y as u32,
+                            x as u32,
                         ) as usize],
                     )
             } else {
@@ -1863,16 +1568,15 @@ pub unsafe extern "C" fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle
                     .wrapping_sub(1 as angle_t)
                     .wrapping_sub(
                         tantoangle[SlopeDiv(
-                            x as ::core::ffi::c_uint,
-                            y as ::core::ffi::c_uint,
+                            x as u32,
+                            y as u32,
                         ) as usize],
                     )
             }
         }
     };
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointToAngle2(
+pub unsafe fn R_PointToAngle2(
     mut x1: fixed_t,
     mut y1: fixed_t,
     mut x2: fixed_t,
@@ -1882,57 +1586,55 @@ pub unsafe extern "C" fn R_PointToAngle2(
     viewy = y1;
     return R_PointToAngle(x2, y2);
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
-    let mut angle: ::core::ffi::c_int = 0;
+pub unsafe fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
+    let mut angle: i32 = 0;
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut temp: fixed_t = 0;
     let mut dist: fixed_t = 0;
     let mut frac: fixed_t = 0;
-    dx = abs(x as ::core::ffi::c_int - viewx as ::core::ffi::c_int) as fixed_t;
-    dy = abs(y as ::core::ffi::c_int - viewy as ::core::ffi::c_int) as fixed_t;
+    dx = abs(x as i32 - viewx as i32) as fixed_t;
+    dy = abs(y as i32 - viewy as i32) as fixed_t;
     if dy > dx {
         temp = dx;
         dx = dy;
         dy = temp;
     }
-    if dx != 0 as ::core::ffi::c_int {
+    if dx != 0 as i32 {
         frac = FixedDiv(dy, dx);
     } else {
-        frac = 0 as ::core::ffi::c_int as fixed_t;
+        frac = 0 as i32 as fixed_t;
     }
     angle = (tantoangle[(frac >> DBITS) as usize].wrapping_add(ANG90 as angle_t)
-        >> ANGLETOFINESHIFT) as ::core::ffi::c_int;
+        >> ANGLETOFINESHIFT) as i32;
     dist = FixedDiv(dx, finesine[angle as usize]);
     return dist;
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_InitPointToAngle() {}
-#[no_mangle]
-pub unsafe extern "C" fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
+pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
     let mut scale: fixed_t = 0;
     let mut anglea: angle_t = 0;
     let mut angleb: angle_t = 0;
-    let mut sinea: ::core::ffi::c_int = 0;
-    let mut sineb: ::core::ffi::c_int = 0;
+    let mut sinea: i32 = 0;
+    let mut sineb: i32 = 0;
     let mut num: fixed_t = 0;
-    let mut den: ::core::ffi::c_int = 0;
+    let mut den: i32 = 0;
     anglea = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(viewangle));
     angleb = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(rw_normalangle));
-    sinea = finesine[(anglea >> ANGLETOFINESHIFT) as usize] as ::core::ffi::c_int;
-    sineb = finesine[(angleb >> ANGLETOFINESHIFT) as usize] as ::core::ffi::c_int;
+    sinea = finesine[(anglea >> ANGLETOFINESHIFT) as usize] as i32;
+    sineb = finesine[(angleb >> ANGLETOFINESHIFT) as usize] as i32;
     num = FixedMul(projection, sineb as fixed_t) << detailshift;
-    den = FixedMul(rw_distance, sinea as fixed_t) as ::core::ffi::c_int;
-    if den > num >> 16 as ::core::ffi::c_int {
+    den = FixedMul(rw_distance, sinea as fixed_t) as i32;
+    if den > num >> 16 as i32 {
         scale = FixedDiv(num, den as fixed_t);
-        if scale > 64 as ::core::ffi::c_int * FRACUNIT {
-            scale = (64 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
-        } else if scale < 256 as ::core::ffi::c_int {
-            scale = 256 as ::core::ffi::c_int as fixed_t;
+        if scale > 64 as i32 * FRACUNIT {
+            scale = (64 as i32 * FRACUNIT) as fixed_t;
+        } else if scale < 256 as i32 {
+            scale = 256 as i32 as fixed_t;
         }
     } else {
-        scale = (64 as ::core::ffi::c_int * FRACUNIT) as fixed_t;
+        scale = (64 as i32 * FRACUNIT) as fixed_t;
     }
     return scale;
 }
@@ -1940,125 +1642,122 @@ pub unsafe extern "C" fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_
 pub unsafe extern "C" fn R_InitTables() {}
 #[no_mangle]
 pub unsafe extern "C" fn R_InitTextureMapping() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut x: ::core::ffi::c_int = 0;
-    let mut t: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
+    let mut x: i32 = 0;
+    let mut t: i32 = 0;
     let mut focallength: fixed_t = 0;
     focallength = FixedDiv(
         centerxfrac,
-        finetangent[(FINEANGLES / 4 as ::core::ffi::c_int
-            + FIELDOFVIEW / 2 as ::core::ffi::c_int) as usize],
+        finetangent[(FINEANGLES / 4 as i32
+            + FIELDOFVIEW / 2 as i32) as usize],
     );
-    i = 0 as ::core::ffi::c_int;
-    while i < FINEANGLES / 2 as ::core::ffi::c_int {
-        if finetangent[i as usize] > FRACUNIT * 2 as ::core::ffi::c_int {
-            t = -(1 as ::core::ffi::c_int);
-        } else if finetangent[i as usize] < -FRACUNIT * 2 as ::core::ffi::c_int {
-            t = viewwidth + 1 as ::core::ffi::c_int;
+    i = 0 as i32;
+    while i < FINEANGLES / 2 as i32 {
+        if finetangent[i as usize] > FRACUNIT * 2 as i32 {
+            t = -(1 as i32);
+        } else if finetangent[i as usize] < -FRACUNIT * 2 as i32 {
+            t = viewwidth + 1 as i32;
         } else {
-            t = FixedMul(finetangent[i as usize], focallength) as ::core::ffi::c_int;
-            t = centerxfrac as ::core::ffi::c_int - t + FRACUNIT
-                - 1 as ::core::ffi::c_int >> FRACBITS;
-            if t < -(1 as ::core::ffi::c_int) {
-                t = -(1 as ::core::ffi::c_int);
-            } else if t > viewwidth + 1 as ::core::ffi::c_int {
-                t = viewwidth + 1 as ::core::ffi::c_int;
+            t = FixedMul(finetangent[i as usize], focallength) as i32;
+            t = centerxfrac as i32 - t + FRACUNIT
+                - 1 as i32 >> FRACBITS;
+            if t < -(1 as i32) {
+                t = -(1 as i32);
+            } else if t > viewwidth + 1 as i32 {
+                t = viewwidth + 1 as i32;
             }
         }
         viewangletox[i as usize] = t;
         i += 1;
     }
-    x = 0 as ::core::ffi::c_int;
+    x = 0 as i32;
     while x <= viewwidth {
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while viewangletox[i as usize] > x {
             i += 1;
         }
         xtoviewangle[x as usize] = ((i << ANGLETOFINESHIFT) - ANG90) as angle_t;
         x += 1;
     }
-    i = 0 as ::core::ffi::c_int;
-    while i < FINEANGLES / 2 as ::core::ffi::c_int {
-        t = FixedMul(finetangent[i as usize], focallength) as ::core::ffi::c_int;
+    i = 0 as i32;
+    while i < FINEANGLES / 2 as i32 {
+        t = FixedMul(finetangent[i as usize], focallength) as i32;
         t = centerx - t;
-        if viewangletox[i as usize] == -(1 as ::core::ffi::c_int) {
-            viewangletox[i as usize] = 0 as ::core::ffi::c_int;
-        } else if viewangletox[i as usize] == viewwidth + 1 as ::core::ffi::c_int {
+        if viewangletox[i as usize] == -(1 as i32) {
+            viewangletox[i as usize] = 0 as i32;
+        } else if viewangletox[i as usize] == viewwidth + 1 as i32 {
             viewangletox[i as usize] = viewwidth;
         }
         i += 1;
     }
-    clipangle = xtoviewangle[0 as ::core::ffi::c_int as usize];
+    clipangle = xtoviewangle[0 as i32 as usize];
 }
-pub const DISTMAP: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
+pub const DISTMAP: i32 = 2 as i32;
 #[no_mangle]
 pub unsafe extern "C" fn R_InitLightTables() {
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut level: ::core::ffi::c_int = 0;
-    let mut startmap: ::core::ffi::c_int = 0;
-    let mut scale: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut level: i32 = 0;
+    let mut startmap: i32 = 0;
+    let mut scale: i32 = 0;
+    i = 0 as i32;
     while i < LIGHTLEVELS {
-        startmap = (LIGHTLEVELS - 1 as ::core::ffi::c_int - i) * 2 as ::core::ffi::c_int
+        startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32
             * NUMCOLORMAPS / LIGHTLEVELS;
-        j = 0 as ::core::ffi::c_int;
+        j = 0 as i32;
         while j < MAXLIGHTZ {
             scale = FixedDiv(
                 SCREENWIDTH / 2 as fixed_t * FRACUNIT,
                 (j as fixed_t + 1 as fixed_t) << LIGHTZSHIFT,
-            ) as ::core::ffi::c_int;
+            ) as i32;
             scale >>= LIGHTSCALESHIFT;
             level = startmap - scale / DISTMAP;
-            if level < 0 as ::core::ffi::c_int {
-                level = 0 as ::core::ffi::c_int;
+            if level < 0 as i32 {
+                level = 0 as i32;
             }
             if level >= NUMCOLORMAPS {
-                level = NUMCOLORMAPS - 1 as ::core::ffi::c_int;
+                level = NUMCOLORMAPS - 1 as i32;
             }
             zlight[i as usize][j as usize] = colormaps
-                .offset((level * 256 as ::core::ffi::c_int) as isize);
+                .offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;
     }
 }
+pub static mut setsizeneeded: bool = false;
 #[no_mangle]
-pub static mut setsizeneeded: boolean = 0;
+pub static mut setblocks: i32 = 0;
 #[no_mangle]
-pub static mut setblocks: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut setdetail: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_SetViewSize(
-    mut blocks: ::core::ffi::c_int,
-    mut detail: ::core::ffi::c_int,
+pub static mut setdetail: i32 = 0;
+pub unsafe fn R_SetViewSize(
+    mut blocks: i32,
+    mut detail: i32,
 ) {
-    setsizeneeded = true_0 as boolean;
+    setsizeneeded = true;
     setblocks = blocks;
     setdetail = detail;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_ExecuteSetViewSize() {
+pub unsafe fn R_ExecuteSetViewSize() {
     let mut cosadj: fixed_t = 0;
     let mut dy: fixed_t = 0;
-    let mut i: ::core::ffi::c_int = 0;
-    let mut j: ::core::ffi::c_int = 0;
-    let mut level: ::core::ffi::c_int = 0;
-    let mut startmap: ::core::ffi::c_int = 0;
-    setsizeneeded = false_0 as boolean;
-    if setblocks == 11 as ::core::ffi::c_int {
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut level: i32 = 0;
+    let mut startmap: i32 = 0;
+    setsizeneeded = false;
+    if setblocks == 11 as i32 {
         scaledviewwidth = SCREENWIDTH;
         viewheight = SCREENHEIGHT;
     } else {
-        scaledviewwidth = setblocks * 32 as ::core::ffi::c_int;
-        viewheight = setblocks * 168 as ::core::ffi::c_int / 10 as ::core::ffi::c_int
-            & !(7 as ::core::ffi::c_int);
+        scaledviewwidth = setblocks * 32 as i32;
+        viewheight = setblocks * 168 as i32 / 10 as i32
+            & !(7 as i32);
     }
     detailshift = setdetail;
     viewwidth = scaledviewwidth >> detailshift;
-    centery = viewheight / 2 as ::core::ffi::c_int;
-    centerx = viewwidth / 2 as ::core::ffi::c_int;
+    centery = viewheight / 2 as i32;
+    centerx = viewwidth / 2 as i32;
     centerxfrac = (centerx << FRACBITS) as fixed_t;
     centeryfrac = (centery << FRACBITS) as fixed_t;
     projection = centerxfrac;
@@ -2087,53 +1786,52 @@ pub unsafe extern "C" fn R_ExecuteSetViewSize() {
     R_InitTextureMapping();
     pspritescale = (FRACUNIT * viewwidth / SCREENWIDTH) as fixed_t;
     pspriteiscale = (FRACUNIT * SCREENWIDTH / viewwidth) as fixed_t;
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < viewwidth {
-        screenheightarray[i as usize] = viewheight as ::core::ffi::c_short;
+        screenheightarray[i as usize] = viewheight as i16;
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < viewheight {
-        dy = (((i - viewheight / 2 as ::core::ffi::c_int) << FRACBITS)
-            + FRACUNIT / 2 as ::core::ffi::c_int) as fixed_t;
-        dy = abs(dy as ::core::ffi::c_int) as fixed_t;
+        dy = (((i - viewheight / 2 as i32) << FRACBITS)
+            + FRACUNIT / 2 as i32) as fixed_t;
+        dy = abs(dy as i32) as fixed_t;
         yslope[i as usize] = FixedDiv(
             ((viewwidth as fixed_t) << detailshift) / 2 as fixed_t * FRACUNIT,
             dy,
         );
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < viewwidth {
         cosadj = abs(
             *finecosine.offset((xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize)
-                as ::core::ffi::c_int,
+                as i32,
         ) as fixed_t;
         distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
         i += 1;
     }
-    i = 0 as ::core::ffi::c_int;
+    i = 0 as i32;
     while i < LIGHTLEVELS {
-        startmap = (LIGHTLEVELS - 1 as ::core::ffi::c_int - i) * 2 as ::core::ffi::c_int
+        startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32
             * NUMCOLORMAPS / LIGHTLEVELS;
-        j = 0 as ::core::ffi::c_int;
+        j = 0 as i32;
         while j < MAXLIGHTSCALE {
             level = startmap - j * SCREENWIDTH / (viewwidth << detailshift) / DISTMAP;
-            if level < 0 as ::core::ffi::c_int {
-                level = 0 as ::core::ffi::c_int;
+            if level < 0 as i32 {
+                level = 0 as i32;
             }
             if level >= NUMCOLORMAPS {
-                level = NUMCOLORMAPS - 1 as ::core::ffi::c_int;
+                level = NUMCOLORMAPS - 1 as i32;
             }
             scalelight[i as usize][j as usize] = colormaps
-                .offset((level * 256 as ::core::ffi::c_int) as isize);
+                .offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_Init() {
+pub unsafe fn R_Init() {
     R_InitData();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitPointToAngle();
@@ -2148,30 +1846,29 @@ pub unsafe extern "C" fn R_Init() {
     R_InitSkyMap();
     R_InitTranslationTables();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    framecount = 0 as ::core::ffi::c_int;
+    framecount = 0 as i32;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_PointInSubsector(
+pub unsafe fn R_PointInSubsector(
     mut x: fixed_t,
     mut y: fixed_t,
 ) -> *mut subsector_t {
     let mut node: *mut node_t = ::core::ptr::null_mut::<node_t>();
-    let mut side: ::core::ffi::c_int = 0;
-    let mut nodenum: ::core::ffi::c_int = 0;
+    let mut side: i32 = 0;
+    let mut nodenum: i32 = 0;
     if numnodes == 0 {
         return subsectors;
     }
-    nodenum = numnodes - 1 as ::core::ffi::c_int;
+    nodenum = numnodes - 1 as i32;
     while nodenum & NF_SUBSECTOR == 0 {
         node = nodes.offset(nodenum as isize) as *mut node_t;
         side = R_PointOnSide(x, y, node);
-        nodenum = (*node).children[side as usize] as ::core::ffi::c_int;
+        nodenum = (*node).children[side as usize] as i32;
     }
     return subsectors.offset((nodenum & !NF_SUBSECTOR) as isize) as *mut subsector_t;
 }
 #[no_mangle]
 pub unsafe extern "C" fn R_SetupFrame(mut player: *mut player_t) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: i32 = 0;
     viewplayer = player;
     viewx = (*(*player).mo).x;
     viewy = (*(*player).mo).y;
@@ -2180,16 +1877,16 @@ pub unsafe extern "C" fn R_SetupFrame(mut player: *mut player_t) {
     viewz = (*player).viewz;
     viewsin = finesine[(viewangle >> ANGLETOFINESHIFT) as usize];
     viewcos = *finecosine.offset((viewangle >> ANGLETOFINESHIFT) as isize);
-    sscount = 0 as ::core::ffi::c_int;
+    sscount = 0 as i32;
     if (*player).fixedcolormap != 0 {
         fixedcolormap = colormaps
             .offset(
-                (((*player).fixedcolormap * 256 as ::core::ffi::c_int) as usize)
+                (((*player).fixedcolormap * 256 as i32) as usize)
                     .wrapping_mul(::core::mem::size_of::<lighttable_t>() as usize)
                     as isize,
             );
         walllights = &raw mut scalelightfixed as *mut *mut lighttable_t;
-        i = 0 as ::core::ffi::c_int;
+        i = 0 as i32;
         while i < MAXLIGHTSCALE {
             scalelightfixed[i as usize] = fixedcolormap;
             i += 1;
@@ -2200,26 +1897,25 @@ pub unsafe extern "C" fn R_SetupFrame(mut player: *mut player_t) {
     framecount += 1;
     validcount += 1;
 }
-#[no_mangle]
-pub unsafe extern "C" fn R_RenderPlayerView(mut player: *mut player_t) {
+pub unsafe fn R_RenderPlayerView(mut player: *mut player_t) {
     R_SetupFrame(player);
     R_ClearClipSegs();
     R_ClearDrawSegs();
     R_ClearPlanes();
     R_ClearSprites();
     NetUpdate();
-    R_RenderBSPNode(numnodes - 1 as ::core::ffi::c_int);
+    R_RenderBSPNode(numnodes - 1 as i32);
     NetUpdate();
     R_DrawPlanes();
     NetUpdate();
     R_DrawMasked();
     NetUpdate();
 }
-pub const LIGHTLEVELS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const MAXLIGHTSCALE: ::core::ffi::c_int = 48 as ::core::ffi::c_int;
-pub const LIGHTSCALESHIFT: ::core::ffi::c_int = 12 as ::core::ffi::c_int;
-pub const MAXLIGHTZ: ::core::ffi::c_int = 128 as ::core::ffi::c_int;
-pub const LIGHTZSHIFT: ::core::ffi::c_int = 20 as ::core::ffi::c_int;
-pub const NUMCOLORMAPS: ::core::ffi::c_int = 32 as ::core::ffi::c_int;
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+pub const LIGHTLEVELS: i32 = 16 as i32;
+pub const MAXLIGHTSCALE: i32 = 48 as i32;
+pub const LIGHTSCALESHIFT: i32 = 12 as i32;
+pub const MAXLIGHTZ: i32 = 128 as i32;
+pub const LIGHTZSHIFT: i32 = 20 as i32;
+pub const NUMCOLORMAPS: i32 = 32 as i32;
+pub const true_0: i32 = 1 as i32;
+pub const false_0: i32 = 0 as i32;

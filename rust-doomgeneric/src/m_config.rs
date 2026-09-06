@@ -1,29 +1,25 @@
+use crate::src::i_system::I_Error;
+use crate::src::m_argv::{myargv, M_CheckParmWithArgs};
+use crate::src::m_misc::M_MakeDirectory;
+use crate::src::m_misc::M_StringJoin;
+
 extern "C" {
-    fn printf(__format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printf(__format: *const ::core::ffi::c_char, ...) -> i32;
     fn sscanf(
         __s: *const ::core::ffi::c_char,
         __format: *const ::core::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
-    fn atof(__nptr: *const ::core::ffi::c_char) -> ::core::ffi::c_double;
+    ) -> i32;
+    fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
     fn malloc(__size: size_t) -> *mut ::core::ffi::c_void;
     fn strcmp(
         __s1: *const ::core::ffi::c_char,
         __s2: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+    ) -> i32;
     fn strdup(__s: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
-    fn I_Error(error: *mut ::core::ffi::c_char, ...);
-    static mut myargv: *mut *mut ::core::ffi::c_char;
-    fn M_CheckParmWithArgs(
-        check: *mut ::core::ffi::c_char,
-        num_args: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn M_MakeDirectory(dir: *mut ::core::ffi::c_char);
-    fn M_StringJoin(s: *const ::core::ffi::c_char, ...) -> *mut ::core::ffi::c_char;
 }
 pub type size_t = usize;
-pub type boolean = ::core::ffi::c_uint;
-pub type default_type_t = ::core::ffi::c_uint;
+pub type default_type_t = u32;
 pub const DEFAULT_KEY: default_type_t = 4;
 pub const DEFAULT_FLOAT: default_type_t = 3;
 pub const DEFAULT_STRING: default_type_t = 2;
@@ -32,86 +28,84 @@ pub const DEFAULT_INT: default_type_t = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct default_t {
-    pub name: *mut ::core::ffi::c_char,
+    pub name: &'static str,
     pub location: *mut ::core::ffi::c_void,
     pub type_0: default_type_t,
-    pub untranslated: ::core::ffi::c_int,
-    pub original_translated: ::core::ffi::c_int,
-    pub bound: boolean,
+    pub untranslated: i32,
+    pub original_translated: i32,
+    pub bound: bool,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct default_collection_t {
     pub defaults: *mut default_t,
-    pub numdefaults: ::core::ffi::c_int,
+    pub numdefaults: i32,
     pub filename: *mut ::core::ffi::c_char,
 }
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();
-pub const true_0: ::core::ffi::c_int = 1 as ::core::ffi::c_int;
-pub const false_0: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
 pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] = unsafe {
     ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0")
 };
-pub const KEY_RIGHTARROW: ::core::ffi::c_int = 0xae as ::core::ffi::c_int;
-pub const KEY_LEFTARROW: ::core::ffi::c_int = 0xac as ::core::ffi::c_int;
-pub const KEY_UPARROW: ::core::ffi::c_int = 0xad as ::core::ffi::c_int;
-pub const KEY_DOWNARROW: ::core::ffi::c_int = 0xaf as ::core::ffi::c_int;
-pub const KEY_F1: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x3b as ::core::ffi::c_int;
-pub const KEY_F2: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x3c as ::core::ffi::c_int;
-pub const KEY_F3: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x3d as ::core::ffi::c_int;
-pub const KEY_F4: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x3e as ::core::ffi::c_int;
-pub const KEY_F5: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x3f as ::core::ffi::c_int;
-pub const KEY_F6: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x40 as ::core::ffi::c_int;
-pub const KEY_F7: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x41 as ::core::ffi::c_int;
-pub const KEY_F8: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x42 as ::core::ffi::c_int;
-pub const KEY_F9: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x43 as ::core::ffi::c_int;
-pub const KEY_F10: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x44 as ::core::ffi::c_int;
-pub const KEY_F11: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x57 as ::core::ffi::c_int;
-pub const KEY_F12: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x58 as ::core::ffi::c_int;
-pub const KEY_BACKSPACE: ::core::ffi::c_int = 0x7f as ::core::ffi::c_int;
-pub const KEY_PAUSE: ::core::ffi::c_int = 0xff as ::core::ffi::c_int;
-pub const KEY_MINUS: ::core::ffi::c_int = 0x2d as ::core::ffi::c_int;
-pub const KEY_RSHIFT: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x36 as ::core::ffi::c_int;
-pub const KEY_RCTRL: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x1d as ::core::ffi::c_int;
-pub const KEY_RALT: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x38 as ::core::ffi::c_int;
-pub const KEY_CAPSLOCK: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x3a as ::core::ffi::c_int;
-pub const KEY_SCRLCK: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x46 as ::core::ffi::c_int;
-pub const KEY_PRTSCR: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x59 as ::core::ffi::c_int;
-pub const KEY_HOME: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x47 as ::core::ffi::c_int;
-pub const KEY_END: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x4f as ::core::ffi::c_int;
-pub const KEY_PGUP: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x49 as ::core::ffi::c_int;
-pub const KEY_PGDN: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x51 as ::core::ffi::c_int;
-pub const KEY_INS: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x52 as ::core::ffi::c_int;
-pub const KEY_DEL: ::core::ffi::c_int = 0x80 as ::core::ffi::c_int
-    + 0x53 as ::core::ffi::c_int;
-pub const KEYP_5: ::core::ffi::c_int = '5' as i32;
-pub const KEYP_PLUS: ::core::ffi::c_int = '+' as i32;
-pub const KEYP_MULTIPLY: ::core::ffi::c_int = '*' as i32;
+pub const KEY_RIGHTARROW: i32 = 0xae as i32;
+pub const KEY_LEFTARROW: i32 = 0xac as i32;
+pub const KEY_UPARROW: i32 = 0xad as i32;
+pub const KEY_DOWNARROW: i32 = 0xaf as i32;
+pub const KEY_F1: i32 = 0x80 as i32
+    + 0x3b as i32;
+pub const KEY_F2: i32 = 0x80 as i32
+    + 0x3c as i32;
+pub const KEY_F3: i32 = 0x80 as i32
+    + 0x3d as i32;
+pub const KEY_F4: i32 = 0x80 as i32
+    + 0x3e as i32;
+pub const KEY_F5: i32 = 0x80 as i32
+    + 0x3f as i32;
+pub const KEY_F6: i32 = 0x80 as i32
+    + 0x40 as i32;
+pub const KEY_F7: i32 = 0x80 as i32
+    + 0x41 as i32;
+pub const KEY_F8: i32 = 0x80 as i32
+    + 0x42 as i32;
+pub const KEY_F9: i32 = 0x80 as i32
+    + 0x43 as i32;
+pub const KEY_F10: i32 = 0x80 as i32
+    + 0x44 as i32;
+pub const KEY_F11: i32 = 0x80 as i32
+    + 0x57 as i32;
+pub const KEY_F12: i32 = 0x80 as i32
+    + 0x58 as i32;
+pub const KEY_BACKSPACE: i32 = 0x7f as i32;
+pub const KEY_PAUSE: i32 = 0xff as i32;
+pub const KEY_MINUS: i32 = 0x2d as i32;
+pub const KEY_RSHIFT: i32 = 0x80 as i32
+    + 0x36 as i32;
+pub const KEY_RCTRL: i32 = 0x80 as i32
+    + 0x1d as i32;
+pub const KEY_RALT: i32 = 0x80 as i32
+    + 0x38 as i32;
+pub const KEY_CAPSLOCK: i32 = 0x80 as i32
+    + 0x3a as i32;
+pub const KEY_SCRLCK: i32 = 0x80 as i32
+    + 0x46 as i32;
+pub const KEY_PRTSCR: i32 = 0x80 as i32
+    + 0x59 as i32;
+pub const KEY_HOME: i32 = 0x80 as i32
+    + 0x47 as i32;
+pub const KEY_END: i32 = 0x80 as i32
+    + 0x4f as i32;
+pub const KEY_PGUP: i32 = 0x80 as i32
+    + 0x49 as i32;
+pub const KEY_PGDN: i32 = 0x80 as i32
+    + 0x51 as i32;
+pub const KEY_INS: i32 = 0x80 as i32
+    + 0x52 as i32;
+pub const KEY_DEL: i32 = 0x80 as i32
+    + 0x53 as i32;
+pub const KEYP_5: i32 = '5' as i32;
+pub const KEYP_PLUS: i32 = '+' as i32;
+pub const KEYP_MULTIPLY: i32 = '*' as i32;
 #[no_mangle]
 pub static mut configdir: *mut ::core::ffi::c_char = ::core::ptr::null::<
     ::core::ffi::c_char,
@@ -124,688 +118,612 @@ static mut default_extra_config: *mut ::core::ffi::c_char = ::core::ptr::null::<
 >() as *mut ::core::ffi::c_char;
 static mut doom_defaults_list: [default_t; 76] = [
     default_t {
-        name: b"mouse_sensitivity\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouse_sensitivity",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"sfx_volume\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "sfx_volume",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"music_volume\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "music_volume",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"show_talk\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "show_talk",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"voice_volume\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "voice_volume",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"show_messages\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "show_messages",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_right\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_right",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_left\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_left",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_up\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_up",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_down\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_down",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_strafeleft\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_strafeleft",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_straferight\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_straferight",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_useHealth\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_useHealth",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_jump\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_jump",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_flyup\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_flyup",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_flydown\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_flydown",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_flycenter\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_flycenter",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_lookup\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_lookup",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_lookdown\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_lookdown",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_lookcenter\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_lookcenter",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invquery\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invquery",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_mission\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_mission",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invPop\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invPop",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invKey\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invKey",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invHome\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invHome",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invEnd\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invEnd",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invleft\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invleft",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invright\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invright",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invLeft\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invLeft",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invRight\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invRight",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_useartifact\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_useartifact",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invUse\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invUse",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_invDrop\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_invDrop",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_lookUp\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_lookUp",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_lookDown\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_lookDown",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_fire\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_fire",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_use\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_use",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_strafe\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_strafe",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_speed\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_speed",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"use_mouse\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "use_mouse",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_fire\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_fire",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_strafe\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_strafe",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_forward\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_forward",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_jump\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_jump",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"use_joystick\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "use_joystick",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_fire\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_fire",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_strafe\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_strafe",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_use\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_use",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_speed\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_speed",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_jump\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_jump",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"screenblocks\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "screenblocks",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"screensize\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "screensize",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"detaillevel\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "detaillevel",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_channels\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_channels",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_musicdevice\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_musicdevice",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_sfxdevice\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_sfxdevice",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_sbport\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_sbport",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_sbirq\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_sbirq",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_sbdma\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_sbdma",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_mport\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_mport",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"usegamma\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "usegamma",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"savedir\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "savedir",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"messageson\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "messageson",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"back_flat\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "back_flat",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"nickname\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "nickname",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro0\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro0",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro1",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro2",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro3\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro3",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro4\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro4",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro5\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro5",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro6\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro6",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro7\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro7",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro8\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro8",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"chatmacro9\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "chatmacro9",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"comport\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "comport",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
 ];
 static mut doom_defaults: default_collection_t = default_collection_t {
@@ -815,1075 +733,956 @@ static mut doom_defaults: default_collection_t = default_collection_t {
 };
 static mut extra_defaults_list: [default_t; 119] = [
     default_t {
-        name: b"graphical_startup\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "graphical_startup",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"autoadjust_video_settings\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "autoadjust_video_settings",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"fullscreen\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "fullscreen",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"aspect_ratio_correct\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "aspect_ratio_correct",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"startup_delay\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "startup_delay",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"screen_width\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "screen_width",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"screen_height\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "screen_height",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"screen_bpp\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "screen_bpp",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"grabmouse\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "grabmouse",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"novert\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "novert",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouse_acceleration\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouse_acceleration",
         location: NULL,
         type_0: DEFAULT_FLOAT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouse_threshold\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouse_threshold",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_samplerate\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_samplerate",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_cachesize\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_cachesize",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_maxslicetime_ms\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_maxslicetime_ms",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"snd_musiccmd\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "snd_musiccmd",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"opl_io_port\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "opl_io_port",
         location: NULL,
         type_0: DEFAULT_INT_HEX,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"show_endoom\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "show_endoom",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"png_screenshots\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "png_screenshots",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"vanilla_savegame_limit\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "vanilla_savegame_limit",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"vanilla_demo_limit\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "vanilla_demo_limit",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"vanilla_keyboard_mapping\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "vanilla_keyboard_mapping",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"video_driver\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "video_driver",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"window_position\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "window_position",
         location: NULL,
         type_0: DEFAULT_STRING,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_index\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_index",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_x_axis\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_x_axis",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_x_invert\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_x_invert",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_y_axis\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_y_axis",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_y_invert\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_y_invert",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_strafe_axis\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_strafe_axis",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_strafe_invert\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_strafe_invert",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button0\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button0",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button1",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button2",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button3\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button3",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button4\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button4",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button5\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button5",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button6\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button6",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button7\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button7",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button8\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button8",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joystick_physical_button9\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joystick_physical_button9",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_strafeleft\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_strafeleft",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_straferight\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_straferight",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_menu_activate\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_menu_activate",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_prevweapon\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_prevweapon",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"joyb_nextweapon\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "joyb_nextweapon",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_strafeleft\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_strafeleft",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_straferight\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_straferight",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_use\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_use",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_backward\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_backward",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_prevweapon\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_prevweapon",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"mouseb_nextweapon\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "mouseb_nextweapon",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"dclick_use\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "dclick_use",
         location: NULL,
         type_0: DEFAULT_INT,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_pause\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_pause",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_activate\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_activate",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_up\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_up",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_down\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_down",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_left\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_left",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_right\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_right",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_back\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_back",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_forward\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_forward",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_confirm\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_confirm",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_abort\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_abort",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_help\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_help",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_save\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_save",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_load\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_load",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_volume\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_volume",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_detail\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_detail",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_qsave\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_qsave",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_endgame\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_endgame",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_messages\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_messages",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_qload\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_qload",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_quit\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_quit",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_gamma\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_gamma",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_spy\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_spy",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_incscreen\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_incscreen",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_decscreen\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_decscreen",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_menu_screenshot\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_menu_screenshot",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_toggle\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_toggle",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_north\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_north",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_south\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_south",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_east\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_east",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_west\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_west",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_zoomin\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_zoomin",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_zoomout\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_zoomout",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_maxzoom\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_maxzoom",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_follow\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_follow",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_grid\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_grid",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_mark\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_mark",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_map_clearmark\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_map_clearmark",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_weapon1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_weapon1",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_weapon2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_weapon2",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_weapon3\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_weapon3",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_weapon4\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_weapon4",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_weapon5\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_weapon5",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_weapon6\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_weapon6",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_weapon7\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_weapon7",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_weapon8\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_weapon8",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_prevweapon\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_prevweapon",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_nextweapon\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_nextweapon",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_arti_all\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_arti_all",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_arti_health\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_arti_health",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_arti_poisonbag\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_arti_poisonbag",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_arti_blastradius\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_arti_blastradius",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_arti_teleport\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_arti_teleport",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_arti_teleportother\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_arti_teleportother",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_arti_egg\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_arti_egg",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_arti_invulnerability\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_arti_invulnerability",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_message_refresh\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_message_refresh",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_demo_quit\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_demo_quit",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msg\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msg",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msgplayer1\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msgplayer1",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msgplayer2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msgplayer2",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msgplayer3\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msgplayer3",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msgplayer4\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msgplayer4",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msgplayer5\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msgplayer5",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msgplayer6\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msgplayer6",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msgplayer7\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msgplayer7",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
     default_t {
-        name: b"key_multi_msgplayer8\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
+        name: "key_multi_msgplayer8",
         location: NULL,
         type_0: DEFAULT_KEY,
-        untranslated: 0 as ::core::ffi::c_int,
-        original_translated: 0 as ::core::ffi::c_int,
-        bound: false_0 as boolean,
+        untranslated: 0 as i32,
+        original_translated: 0 as i32,
+        bound: false,
     },
 ];
 static mut extra_defaults: default_collection_t = default_collection_t {
@@ -1891,23 +1690,23 @@ static mut extra_defaults: default_collection_t = default_collection_t {
     numdefaults: 0,
     filename: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
 };
-unsafe extern "C" fn SearchCollection(
+unsafe fn SearchCollection(
     mut collection: *mut default_collection_t,
-    mut name: *mut ::core::ffi::c_char,
+    name: &str,
 ) -> *mut default_t {
-    let mut i: ::core::ffi::c_int = 0;
-    i = 0 as ::core::ffi::c_int;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < (*collection).numdefaults {
-        if strcmp(name, (*(*collection).defaults.offset(i as isize)).name) == 0 {
+        if (*(*collection).defaults.offset(i as isize)).name == name {
             return (*collection).defaults.offset(i as isize) as *mut default_t;
         }
         i += 1;
     }
     return ::core::ptr::null_mut::<default_t>();
 }
-static mut scantokey: [::core::ffi::c_int; 128] = [
-    0 as ::core::ffi::c_int,
-    27 as ::core::ffi::c_int,
+static mut scantokey: [i32; 128] = [
+    0 as i32,
+    27 as i32,
     '1' as i32,
     '2' as i32,
     '3' as i32,
@@ -1921,7 +1720,7 @@ static mut scantokey: [::core::ffi::c_int; 128] = [
     '-' as i32,
     '=' as i32,
     KEY_BACKSPACE,
-    9 as ::core::ffi::c_int,
+    9 as i32,
     'q' as i32,
     'w' as i32,
     'e' as i32,
@@ -1934,7 +1733,7 @@ static mut scantokey: [::core::ffi::c_int; 128] = [
     'p' as i32,
     '[' as i32,
     ']' as i32,
-    13 as ::core::ffi::c_int,
+    13 as i32,
     KEY_RCTRL,
     'a' as i32,
     's' as i32,
@@ -1990,63 +1789,63 @@ static mut scantokey: [::core::ffi::c_int; 128] = [
     KEY_PGDN,
     KEY_INS,
     KEY_DEL,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
+    0 as i32,
+    0 as i32,
+    0 as i32,
     KEY_F11,
     KEY_F12,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
-    0 as ::core::ffi::c_int,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
+    0 as i32,
     KEY_PRTSCR,
-    0 as ::core::ffi::c_int,
+    0 as i32,
 ];
 unsafe extern "C" fn SaveDefaultCollection(mut collection: *mut default_collection_t) {}
 unsafe extern "C" fn ParseIntParameter(
     mut strparm: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
-    let mut parm: ::core::ffi::c_int = 0;
-    if *strparm.offset(0 as ::core::ffi::c_int as isize) as ::core::ffi::c_int
+) -> i32 {
+    let mut parm: i32 = 0;
+    if *strparm.offset(0 as i32 as isize) as i32
         == '0' as i32
-        && *strparm.offset(1 as ::core::ffi::c_int as isize) as ::core::ffi::c_int
+        && *strparm.offset(1 as i32 as isize) as i32
             == 'x' as i32
     {
         sscanf(
-            strparm.offset(2 as ::core::ffi::c_int as isize),
+            strparm.offset(2 as i32 as isize),
             b"%x\0" as *const u8 as *const ::core::ffi::c_char,
             &raw mut parm,
         );
@@ -2063,37 +1862,36 @@ unsafe extern "C" fn SetVariable(
     mut def: *mut default_t,
     mut value: *mut ::core::ffi::c_char,
 ) {
-    let mut intparm: ::core::ffi::c_int = 0;
-    match (*def).type_0 as ::core::ffi::c_uint {
+    let mut intparm: i32 = 0;
+    match (*def).type_0 as u32 {
         2 => {
             let ref mut fresh0 = *((*def).location as *mut *mut ::core::ffi::c_char);
             *fresh0 = strdup(value);
         }
         0 | 1 => {
-            *((*def).location as *mut ::core::ffi::c_int) = ParseIntParameter(value);
+            *((*def).location as *mut i32) = ParseIntParameter(value);
         }
         4 => {
             intparm = ParseIntParameter(value);
             (*def).untranslated = intparm;
-            if intparm >= 0 as ::core::ffi::c_int && intparm < 128 as ::core::ffi::c_int
+            if intparm >= 0 as i32 && intparm < 128 as i32
             {
                 intparm = scantokey[intparm as usize];
             } else {
-                intparm = 0 as ::core::ffi::c_int;
+                intparm = 0 as i32;
             }
             (*def).original_translated = intparm;
-            *((*def).location as *mut ::core::ffi::c_int) = intparm;
+            *((*def).location as *mut i32) = intparm;
         }
         3 => {
-            *((*def).location as *mut ::core::ffi::c_float) = atof(value)
-                as ::core::ffi::c_float;
+            *((*def).location as *mut f32) = atof(value)
+                as f32;
         }
         _ => {}
     };
 }
 unsafe extern "C" fn LoadDefaultCollection(mut collection: *mut default_collection_t) {}
-#[no_mangle]
-pub unsafe extern "C" fn M_SetConfigFilenames(
+pub unsafe fn M_SetConfigFilenames(
     mut main_config: *mut ::core::ffi::c_char,
     mut extra_config: *mut ::core::ffi::c_char,
 ) {
@@ -2124,16 +1922,12 @@ pub unsafe extern "C" fn M_SaveDefaultsAlternate(
     doom_defaults.filename = orig_main;
     extra_defaults.filename = orig_extra;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_LoadDefaults() {
-    let mut i: ::core::ffi::c_int = 0;
-    i = M_CheckParmWithArgs(
-        b"-config\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+pub unsafe fn M_LoadDefaults() {
+    let mut i: i32 = 0;
+    i = M_CheckParmWithArgs("-config", 1 as i32);
     if i != 0 {
-        doom_defaults.filename = *myargv.offset((i + 1 as ::core::ffi::c_int) as isize);
+        doom_defaults.filename = myargv[(i + 1 as i32) as usize]
+            .as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"\tdefault file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
             doom_defaults.filename,
@@ -2145,13 +1939,10 @@ pub unsafe extern "C" fn M_LoadDefaults() {
         b"saving config in %s\n\0" as *const u8 as *const ::core::ffi::c_char,
         doom_defaults.filename,
     );
-    i = M_CheckParmWithArgs(
-        b"-extraconfig\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        1 as ::core::ffi::c_int,
-    );
+    i = M_CheckParmWithArgs("-extraconfig", 1 as i32);
     if i != 0 {
-        extra_defaults.filename = *myargv.offset((i + 1 as ::core::ffi::c_int) as isize);
+        extra_defaults.filename = myargv[(i + 1 as i32) as usize]
+            .as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"        extra configuration file: %s\n\0" as *const u8
                 as *const ::core::ffi::c_char,
@@ -2163,107 +1954,83 @@ pub unsafe extern "C" fn M_LoadDefaults() {
     LoadDefaultCollection(&raw mut doom_defaults);
     LoadDefaultCollection(&raw mut extra_defaults);
 }
-unsafe extern "C" fn GetDefaultForName(
-    mut name: *mut ::core::ffi::c_char,
-) -> *mut default_t {
+unsafe fn GetDefaultForName(name: &str) -> *mut default_t {
     let mut result: *mut default_t = ::core::ptr::null_mut::<default_t>();
     result = SearchCollection(&raw mut doom_defaults, name);
     if result.is_null() {
         result = SearchCollection(&raw mut extra_defaults, name);
     }
     if result.is_null() {
-        I_Error(
-            b"Unknown configuration variable: '%s'\0" as *const u8
-                as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            name,
-        );
+        I_Error(&format!("Unknown configuration variable: '{}'", name));
     }
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_BindVariable(
-    mut name: *mut ::core::ffi::c_char,
-    mut location: *mut ::core::ffi::c_void,
-) {
+pub unsafe fn M_BindVariable(name: &str, mut location: *mut ::core::ffi::c_void) {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
     (*variable).location = location;
-    (*variable).bound = true_0 as boolean;
+    (*variable).bound = true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_SetVariable(
-    mut name: *mut ::core::ffi::c_char,
-    mut value: *mut ::core::ffi::c_char,
-) -> boolean {
+pub unsafe fn M_SetVariable(name: &str, mut value: *mut ::core::ffi::c_char) -> bool {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || (*variable).bound == 0 {
-        return false_0 as boolean;
+    if variable.is_null() || !(*variable).bound {
+        return false;
     }
     SetVariable(variable, value);
-    return true_0 as boolean;
+    return true;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_GetIntVariable(
-    mut name: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+pub unsafe fn M_GetIntVariable(name: &str) -> i32 {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || (*variable).bound == 0
-        || (*variable).type_0 as ::core::ffi::c_uint
-            != DEFAULT_INT as ::core::ffi::c_int as ::core::ffi::c_uint
-            && (*variable).type_0 as ::core::ffi::c_uint
-                != DEFAULT_INT_HEX as ::core::ffi::c_int as ::core::ffi::c_uint
+    if variable.is_null() || !(*variable).bound
+        || (*variable).type_0 as u32
+            != DEFAULT_INT as i32 as u32
+            && (*variable).type_0 as u32
+                != DEFAULT_INT_HEX as i32 as u32
     {
-        return 0 as ::core::ffi::c_int;
+        return 0 as i32;
     }
-    return *((*variable).location as *mut ::core::ffi::c_int);
+    return *((*variable).location as *mut i32);
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_GetStrVariable(
-    mut name: *mut ::core::ffi::c_char,
-) -> *const ::core::ffi::c_char {
+pub unsafe fn M_GetStrVariable(name: &str) -> *const ::core::ffi::c_char {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || (*variable).bound == 0
-        || (*variable).type_0 as ::core::ffi::c_uint
-            != DEFAULT_STRING as ::core::ffi::c_int as ::core::ffi::c_uint
+    if variable.is_null() || !(*variable).bound
+        || (*variable).type_0 as u32
+            != DEFAULT_STRING as i32 as u32
     {
         return ::core::ptr::null::<::core::ffi::c_char>();
     }
     return *((*variable).location as *mut *const ::core::ffi::c_char);
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_GetFloatVariable(
-    mut name: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_float {
+pub unsafe fn M_GetFloatVariable(name: &str) -> f32 {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(name);
-    if variable.is_null() || (*variable).bound == 0
-        || (*variable).type_0 as ::core::ffi::c_uint
-            != DEFAULT_FLOAT as ::core::ffi::c_int as ::core::ffi::c_uint
+    if variable.is_null() || !(*variable).bound
+        || (*variable).type_0 as u32
+            != DEFAULT_FLOAT as i32 as u32
     {
-        return 0 as ::core::ffi::c_int as ::core::ffi::c_float;
+        return 0 as i32 as f32;
     }
-    return *((*variable).location as *mut ::core::ffi::c_float);
+    return *((*variable).location as *mut f32);
 }
 unsafe extern "C" fn GetDefaultConfigDir() -> *mut ::core::ffi::c_char {
     let mut result: *mut ::core::ffi::c_char = malloc(2 as size_t)
         as *mut ::core::ffi::c_char;
-    *result.offset(0 as ::core::ffi::c_int as isize) = '.' as i32 as ::core::ffi::c_char;
-    *result.offset(1 as ::core::ffi::c_int as isize) = '\0' as i32
+    *result.offset(0 as i32 as isize) = '.' as i32 as ::core::ffi::c_char;
+    *result.offset(1 as i32 as isize) = '\0' as i32
         as ::core::ffi::c_char;
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_SetConfigDir(mut dir: *mut ::core::ffi::c_char) {
+pub unsafe fn M_SetConfigDir(mut dir: *mut ::core::ffi::c_char) {
     if !dir.is_null() {
         configdir = dir;
     } else {
         configdir = GetDefaultConfigDir();
     }
     if strcmp(configdir, b"\0" as *const u8 as *const ::core::ffi::c_char)
-        != 0 as ::core::ffi::c_int
+        != 0 as i32
     {
         printf(
             b"Using %s for configuration and saves\n\0" as *const u8
@@ -2273,8 +2040,7 @@ pub unsafe extern "C" fn M_SetConfigDir(mut dir: *mut ::core::ffi::c_char) {
     }
     M_MakeDirectory(configdir);
 }
-#[no_mangle]
-pub unsafe extern "C" fn M_GetSaveGameDir(
+pub unsafe fn M_GetSaveGameDir(
     mut iwadname: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<
@@ -2302,14 +2068,14 @@ unsafe extern "C" fn run_static_initializers() {
         defaults: &raw mut doom_defaults_list as *mut default_t,
         numdefaults: (::core::mem::size_of::<[default_t; 76]>() as usize)
             .wrapping_div(::core::mem::size_of::<default_t>() as usize)
-            as ::core::ffi::c_int,
+            as i32,
         filename: ::core::ptr::null_mut::<::core::ffi::c_char>(),
     };
     extra_defaults = default_collection_t {
         defaults: &raw mut extra_defaults_list as *mut default_t,
         numdefaults: (::core::mem::size_of::<[default_t; 119]>() as usize)
             .wrapping_div(::core::mem::size_of::<default_t>() as usize)
-            as ::core::ffi::c_int,
+            as i32,
         filename: ::core::ptr::null_mut::<::core::ffi::c_char>(),
     };
 }

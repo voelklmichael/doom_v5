@@ -1,12 +1,8 @@
-pub const FRACBITS: ::core::ffi::c_int = 16 as ::core::ffi::c_int;
-pub const FRACUNIT: ::core::ffi::c_int = (1 as ::core::ffi::c_int) << FRACBITS;
-#[no_mangle]
-pub static mut skyflatnum: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut skytexture: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub static mut skytexturemid: ::core::ffi::c_int = 0;
-#[no_mangle]
-pub unsafe extern "C" fn R_InitSkyMap() {
-    skytexturemid = 100 as ::core::ffi::c_int * FRACUNIT;
+pub const FRACBITS: i32 = 16 as i32;
+pub const FRACUNIT: i32 = (1 as i32) << FRACBITS;
+pub static mut skyflatnum: i32 = 0;
+pub static mut skytexture: i32 = 0;
+pub static mut skytexturemid: i32 = 0;
+pub unsafe fn R_InitSkyMap() {
+    skytexturemid = 100 as i32 * FRACUNIT;
 }
