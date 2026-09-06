@@ -14,11 +14,11 @@ pub struct _wad_file_s {
 #[repr(C)]
 pub struct wad_file_class_t {
     pub OpenFile: Option<
-        unsafe extern "C" fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
+        unsafe fn(*mut ::core::ffi::c_char) -> *mut wad_file_t,
     >,
-    pub CloseFile: Option<unsafe extern "C" fn(*mut wad_file_t) -> ()>,
+    pub CloseFile: Option<unsafe fn(*mut wad_file_t) -> ()>,
     pub Read: Option<
-        unsafe extern "C" fn(
+        unsafe fn(
             *mut wad_file_t,
             u32,
             *mut ::core::ffi::c_void,

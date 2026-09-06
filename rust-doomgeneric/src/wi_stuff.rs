@@ -1052,7 +1052,7 @@ pub const ANIM_LEVEL: animenum_t = 2;
 pub const ANIM_RANDOM: animenum_t = 1;
 pub const ANIM_ALWAYS: animenum_t = 0;
 pub type load_callback_t = Option<
-    unsafe extern "C" fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
+    unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
 >;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
@@ -2085,10 +2085,7 @@ pub unsafe fn WI_End() {
         WI_loadUnloadData(
             Some(
                 WI_unloadCallback
-                    as unsafe extern "C" fn(
-                        *mut ::core::ffi::c_char,
-                        *mut *mut patch_t,
-                    ) -> (),
+                    as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
             ),
         );
     }
@@ -2930,7 +2927,7 @@ pub unsafe fn WI_Ticker() {
         _ => {}
     };
 }
-unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
+unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut name: [::core::ffi::c_char; 9] = [0; 9];
@@ -3267,7 +3264,7 @@ unsafe extern "C" fn WI_loadUnloadData(mut callback: load_callback_t) {
             "non-null function pointer",
         )(&raw mut name as *mut ::core::ffi::c_char, &raw mut background);
 }
-unsafe extern "C" fn WI_loadCallback(
+unsafe fn WI_loadCallback(
     mut name: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
@@ -3299,10 +3296,7 @@ pub unsafe extern "C" fn WI_loadData() {
     WI_loadUnloadData(
         Some(
             WI_loadCallback
-                as unsafe extern "C" fn(
-                    *mut ::core::ffi::c_char,
-                    *mut *mut patch_t,
-                ) -> (),
+                as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
         ),
     );
     star = W_CacheLumpName("STFST01",
@@ -3312,7 +3306,7 @@ pub unsafe extern "C" fn WI_loadData() {
         PU_STATIC as i32,
     ) as *mut patch_t;
 }
-unsafe extern "C" fn WI_unloadCallback(
+unsafe fn WI_unloadCallback(
     mut name: *mut ::core::ffi::c_char,
     mut variable: *mut *mut patch_t,
 ) {
