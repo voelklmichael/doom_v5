@@ -42,7 +42,6 @@ pub struct vldoor_t {
     pub topwait: i32,
     pub topcountdown: i32,
 }
-pub const FRACBITS: i32 = 16 as i32;
 pub const VDOORWAIT: i32 = 150 as i32;
 pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
     let mut res: result_e = ok;

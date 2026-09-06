@@ -35,6 +35,7 @@ use libc::{memcpy, memset};
 use libc::strncasecmp;
 use libc::printf;
 use crate::src::doomdef::NULL;
+use crate::src::m_fixed::FRACBITS;
 
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
@@ -82,7 +83,6 @@ pub struct maptexture_t {
     pub patchcount: i16,
     pub patches: [mappatch_t; 1],
 }
-pub const FRACBITS: i32 = 16 as i32;
 pub static mut firstflat: i32 = 0;
 #[no_mangle]
 pub static mut lastflat: i32 = 0;

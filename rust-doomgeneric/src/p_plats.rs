@@ -34,7 +34,6 @@ pub const raiseToNearestAndChange: plattype_e = 3;
 pub const raiseAndChange: plattype_e = 2;
 pub const downWaitUpStay: plattype_e = 1;
 pub const perpetualRaise: plattype_e = 0;
-pub const FRACBITS: i32 = 16 as i32;
 pub const PLATWAIT: i32 = 3 as i32;
 pub const PLATSPEED: i32 = FRACUNIT;
 pub const MAXPLATS: i32 = 30 as i32;

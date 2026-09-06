@@ -64,6 +64,7 @@ use crate::src::m_fixed::INT_MAX;
 use crate::src::p_spec::ML_SECRET;
 use crate::src::p_spec::ML_MAPPED;
 use crate::src::p_maputl::MAPBLOCKUNITS;
+use crate::src::m_fixed::FRACBITS;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -100,7 +101,6 @@ pub struct islope_t {
     pub slp: fixed_t,
     pub islp: fixed_t,
 }
-pub const FRACBITS: i32 = 16 as i32;
 pub const ML_DONTDRAW: i32 = 128 as i32;
 pub const AM_MSGHEADER: i32 = (('a' as i32) << 24 as i32)
     + (('m' as i32) << 16 as i32);

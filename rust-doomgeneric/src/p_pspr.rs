@@ -39,13 +39,13 @@ use crate::src::tables::ANG180;
 use crate::src::tables::ANG90;
 use crate::src::tables::FINEMASK;
 use crate::src::p_enemy::MISSILERANGE;
+use crate::src::m_fixed::FRACBITS;
+use crate::src::tables::FINEANGLES;
+use crate::src::p_enemy::MELEERANGE;
 
 
 pub const DEH_DEFAULT_BFG_CELLS_PER_SHOT: i32 = 40 as i32;
 pub const deh_bfg_cells_per_shot: i32 = DEH_DEFAULT_BFG_CELLS_PER_SHOT;
-pub const FRACBITS: i32 = 16 as i32;
-pub const FINEANGLES: i32 = 8192;
-pub const MELEERANGE: i32 = 64 as i32 * FRACUNIT;
 #[no_mangle]
 pub unsafe extern "C" fn P_SetPsprite(
     mut player: *mut player_t,

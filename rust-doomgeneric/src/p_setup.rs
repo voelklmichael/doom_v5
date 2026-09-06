@@ -55,6 +55,7 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_maputl::MAPBLOCKSHIFT;
+use crate::src::m_fixed::FRACBITS;
 
 pub type C2RustUnnamed_1 = u32;
 pub const ML_BLOCKMAP: C2RustUnnamed_1 = 10;
@@ -131,7 +132,6 @@ pub struct mapnode_t {
     pub bbox: [[i16; 4]; 2],
     pub children: [u16; 2],
 }
-pub const FRACBITS: i32 = 16 as i32;
 pub static mut numvertexes: i32 = 0;
 pub static mut vertexes: *mut vertex_t = ::core::ptr::null::<vertex_t>()
     as *mut vertex_t;

@@ -67,10 +67,10 @@ use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_maputl::PT_ADDLINES;
 use crate::src::p_maputl::PT_ADDTHINGS;
 use crate::src::p_maputl::MAPBLOCKSHIFT;
+use crate::src::m_fixed::FRACBITS;
 
 pub const DEH_DEFAULT_SPECIES_INFIGHTING: i32 = 0 as i32;
 pub const deh_species_infighting: i32 = DEH_DEFAULT_SPECIES_INFIGHTING;
-pub const FRACBITS: i32 = 16 as i32;
 pub const ML_BLOCKING: i32 = 1 as i32;
 pub const ML_BLOCKMONSTERS: i32 = 2 as i32;
 pub const USERANGE: i32 = 64 as i32 * FRACUNIT;

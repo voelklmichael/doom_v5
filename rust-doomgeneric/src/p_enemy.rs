@@ -90,7 +90,6 @@ pub const DI_NORTHWEST: dirtype_t = 3;
 pub const DI_NORTH: dirtype_t = 2;
 pub const DI_NORTHEAST: dirtype_t = 1;
 pub const DI_EAST: dirtype_t = 0;
-pub const FRACBITS: i32 = 16 as i32;
 pub const ML_SOUNDBLOCK: i32 = 64 as i32;
 pub const MELEERANGE: i32 = 64 as i32 * FRACUNIT;
 pub const MISSILERANGE: i32 = 32 as i32

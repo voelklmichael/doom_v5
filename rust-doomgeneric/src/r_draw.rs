@@ -21,8 +21,8 @@ use libc::memcpy;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::SCREENHEIGHT;
+use crate::src::m_fixed::FRACBITS;
 
-pub const FRACBITS: i32 = 16 as i32;
 pub const SBARHEIGHT: i32 = 32 as i32;
 #[no_mangle]
 pub static mut viewimage: *mut byte = ::core::ptr::null::<byte>() as *mut byte;

@@ -77,6 +77,7 @@ use crate::src::r_main::MAXLIGHTSCALE;
 use crate::src::r_main::LIGHTSCALESHIFT;
 use crate::src::r_main::LIGHTSEGSHIFT;
 use crate::src::r_main::LIGHTLEVELS;
+use crate::src::m_fixed::FRACBITS;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -98,7 +99,6 @@ pub struct vissprite_s {
     pub mobjflags: i32,
 }
 pub type vissprite_t = vissprite_s;
-pub const FRACBITS: i32 = 16 as i32;
 pub const FF_FULLBRIGHT: i32 = 0x8000 as i32;
 pub const FF_FRAMEMASK: i32 = 0x7fff as i32;
 pub const MAXVISSPRITES: i32 = 128 as i32;
