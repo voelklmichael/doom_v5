@@ -22,6 +22,8 @@ use crate::src::s_sound::S_StartSound;
 use crate::src::p_mobj::MF_JUSTATTACKED;
 use crate::src::sounds::{sfx_bfg, sfx_dshtgn, sfx_pistol, sfx_punch, sfx_sawful, sfx_sawhit, sfx_sawidl, sfx_sawup, sfx_shotgn};
 use crate::src::d_ticcmd::BT_ATTACK;
+use crate::src::d_player::pw_strength;
+use crate::src::d_player::{NUMPSPRITES, ps_flash, ps_weapon};
 
 
 pub type __uint8_t = u8;
@@ -53,14 +55,6 @@ pub const am_misl: ammotype_t = 3;
 pub const am_cell: ammotype_t = 2;
 pub const am_shell: ammotype_t = 1;
 pub const am_clip: ammotype_t = 0;
-pub type C2RustUnnamed = u32;
-pub const NUMPOWERS: C2RustUnnamed = 6;
-pub const pw_infrared: C2RustUnnamed = 5;
-pub const pw_allmap: C2RustUnnamed = 4;
-pub const pw_ironfeet: C2RustUnnamed = 3;
-pub const pw_invisibility: C2RustUnnamed = 2;
-pub const pw_strength: C2RustUnnamed = 1;
-pub const pw_invulnerability: C2RustUnnamed = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
@@ -1317,10 +1311,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_2 = u32;
-pub const NUMPSPRITES: C2RustUnnamed_2 = 2;
-pub const ps_flash: C2RustUnnamed_2 = 1;
-pub const ps_weapon: C2RustUnnamed_2 = 0;
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<
     ::core::ffi::c_void,
 >();

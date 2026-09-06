@@ -1,5 +1,21 @@
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::p_mobj::{mobj_t, pspdef_t};
+pub type C2RustUnnamed_2 = u32;
+pub const NUMPSPRITES: C2RustUnnamed_2 = 2;
+pub const ps_flash: C2RustUnnamed_2 = 1;
+pub const ps_weapon: C2RustUnnamed_2 = 0;
+pub type C2RustUnnamed_3 = u32;
+pub const CF_NOMOMENTUM: C2RustUnnamed_3 = 4;
+pub const CF_GODMODE: C2RustUnnamed_3 = 2;
+pub const CF_NOCLIP: C2RustUnnamed_3 = 1;
+pub type C2RustUnnamed = u32;
+pub const NUMPOWERS: C2RustUnnamed = 6;
+pub const pw_infrared: C2RustUnnamed = 5;
+pub const pw_allmap: C2RustUnnamed = 4;
+pub const pw_ironfeet: C2RustUnnamed = 3;
+pub const pw_invisibility: C2RustUnnamed = 2;
+pub const pw_strength: C2RustUnnamed = 1;
+pub const pw_invulnerability: C2RustUnnamed = 0;
 
 pub type fixed_t = i32;
 pub type weapontype_t = u32;

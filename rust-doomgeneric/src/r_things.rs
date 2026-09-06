@@ -54,6 +54,8 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use crate::src::p_mobj::{MF_SHADOW, MF_TRANSLATION, MF_TRANSSHIFT};
+use crate::src::d_player::pw_invisibility;
+use crate::src::d_player::NUMPSPRITES;
 
 extern "C" {
     fn abs(__x: i32) -> i32;
@@ -90,14 +92,6 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed = u32;
-pub const NUMPOWERS: C2RustUnnamed = 6;
-pub const pw_infrared: C2RustUnnamed = 5;
-pub const pw_allmap: C2RustUnnamed = 4;
-pub const pw_ironfeet: C2RustUnnamed = 3;
-pub const pw_invisibility: C2RustUnnamed = 2;
-pub const pw_strength: C2RustUnnamed = 1;
-pub const pw_invulnerability: C2RustUnnamed = 0;
 pub type fixed_t = i32;
 pub type angle_t = u32;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
@@ -1375,10 +1369,6 @@ pub struct vissprite_s {
     pub mobjflags: i32,
 }
 pub type vissprite_t = vissprite_s;
-pub type C2RustUnnamed_2 = u32;
-pub const NUMPSPRITES: C2RustUnnamed_2 = 2;
-pub const ps_flash: C2RustUnnamed_2 = 1;
-pub const ps_weapon: C2RustUnnamed_2 = 0;
 pub const true_0: i32 = 1 as i32;
 pub const false_0: i32 = 0 as i32;
 pub const INT_MAX: i32 = __INT_MAX__;

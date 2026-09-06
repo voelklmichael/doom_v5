@@ -46,6 +46,7 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::g_game::players;
 use crate::src::v_video::V_DrawPatch;
 use crate::src::z_zone::PU_STATIC;
+use crate::src::d_player::{pw_allmap, pw_invisibility};
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -83,14 +84,6 @@ pub const wp_chaingun: weapontype_t = 3;
 pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
-pub type C2RustUnnamed_0 = u32;
-pub const NUMPOWERS: C2RustUnnamed_0 = 6;
-pub const pw_infrared: C2RustUnnamed_0 = 5;
-pub const pw_allmap: C2RustUnnamed_0 = 4;
-pub const pw_ironfeet: C2RustUnnamed_0 = 3;
-pub const pw_invisibility: C2RustUnnamed_0 = 2;
-pub const pw_strength: C2RustUnnamed_0 = 1;
-pub const pw_invulnerability: C2RustUnnamed_0 = 0;
 pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;

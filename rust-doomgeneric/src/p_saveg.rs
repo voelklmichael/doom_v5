@@ -36,6 +36,8 @@ use crate::src::m_misc::M_StringJoin;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVEL;
+use crate::src::d_player::NUMPOWERS;
+use crate::src::d_player::NUMPSPRITES;
 
 extern "C" {
     static mut stderr: *mut FILE;
@@ -125,14 +127,6 @@ pub const am_misl: C2RustUnnamed_1 = 3;
 pub const am_cell: C2RustUnnamed_1 = 2;
 pub const am_shell: C2RustUnnamed_1 = 1;
 pub const am_clip: C2RustUnnamed_1 = 0;
-pub type C2RustUnnamed_2 = u32;
-pub const NUMPOWERS: C2RustUnnamed_2 = 6;
-pub const pw_infrared: C2RustUnnamed_2 = 5;
-pub const pw_allmap: C2RustUnnamed_2 = 4;
-pub const pw_ironfeet: C2RustUnnamed_2 = 3;
-pub const pw_invisibility: C2RustUnnamed_2 = 2;
-pub const pw_strength: C2RustUnnamed_2 = 1;
-pub const pw_invulnerability: C2RustUnnamed_2 = 0;
 pub type actionf_v = Option<unsafe extern "C" fn() -> ()>;
 pub type actionf_p1 = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>;
 pub type actionf_p2 = Option<
@@ -1387,10 +1381,6 @@ pub const MT_VILE: mobjtype_t = 3;
 pub const MT_SHOTGUY: mobjtype_t = 2;
 pub const MT_POSSESSED: mobjtype_t = 1;
 pub const MT_PLAYER: mobjtype_t = 0;
-pub type C2RustUnnamed_3 = u32;
-pub const NUMPSPRITES: C2RustUnnamed_3 = 2;
-pub const ps_flash: C2RustUnnamed_3 = 1;
-pub const ps_weapon: C2RustUnnamed_3 = 0;
 pub type plat_e = u32;
 pub const in_stasis: plat_e = 3;
 pub const waiting: plat_e = 2;
