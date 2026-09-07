@@ -368,11 +368,9 @@ pub unsafe fn D_Display(state: &mut GameState) {
         && !state.am_map.automapactive
         && state.d_loop.gametic != 0
     {
-        R_RenderPlayerView(
-            (&raw mut state.g_game.players as *mut player_t)
-                .offset(state.g_game.displayplayer as isize)
-                as *mut player_t,
-        );
+        let displayplayer_mo = (&raw mut state.g_game.players as *mut player_t)
+            .offset(state.g_game.displayplayer as isize) as *mut player_t;
+        R_RenderPlayerView(state, displayplayer_mo);
     }
     if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && state.d_loop.gametic != 0

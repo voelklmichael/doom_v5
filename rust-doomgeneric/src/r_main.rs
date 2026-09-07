@@ -544,14 +544,14 @@ pub unsafe fn R_SetupFrame(mut player: *mut player_t) {
     unsafe { game_state() }.r_main.framecount += 1;
     unsafe { game_state() }.r_main.validcount += 1;
 }
-pub unsafe fn R_RenderPlayerView(mut player: *mut player_t) {
+pub unsafe fn R_RenderPlayerView(state: &mut GameState, mut player: *mut player_t) {
     R_SetupFrame(player);
     R_ClearClipSegs();
     R_ClearDrawSegs();
     R_ClearPlanes();
     R_ClearSprites();
     NetUpdate();
-    R_RenderBSPNode(unsafe { game_state() }.p_setup.numnodes - 1 as i32);
+    R_RenderBSPNode(state.p_setup.numnodes - 1 as i32);
     NetUpdate();
     R_DrawPlanes();
     NetUpdate();
