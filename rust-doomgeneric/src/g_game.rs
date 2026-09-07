@@ -1768,7 +1768,7 @@ pub unsafe fn G_DoLoadGame() {
     if unsafe { game_state() }.r_main.setsizeneeded {
         R_ExecuteSetViewSize(unsafe { game_state() });
     }
-    R_FillBackScreen();
+    R_FillBackScreen(unsafe { game_state() });
 }
 pub unsafe fn G_SaveGame(mut slot: i32, mut description: *mut ::core::ffi::c_char) {
     unsafe { game_state() }.g_game.savegameslot = slot;
@@ -1847,7 +1847,7 @@ pub unsafe fn G_DoSaveGame() {
     unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
         .message =
         b"game saved.\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    R_FillBackScreen();
+    R_FillBackScreen(unsafe { game_state() });
 }
 pub unsafe fn G_DeferedInitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     unsafe { game_state() }.g_game.d_skill = skill;

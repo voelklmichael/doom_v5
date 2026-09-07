@@ -3,6 +3,7 @@ use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
@@ -431,26 +432,26 @@ pub unsafe fn R_DrawSpanLow() {
         }
     }
 }
-pub unsafe fn R_InitBuffer(mut width: i32, mut height: i32) {
+pub unsafe fn R_InitBuffer(state: &mut GameState, mut width: i32, mut height: i32) {
     let mut i: i32 = 0;
-    unsafe { game_state() }.r_draw.viewwindowx = SCREENWIDTH - width >> 1 as i32;
+    state.r_draw.viewwindowx = SCREENWIDTH - width >> 1 as i32;
     i = 0 as i32;
     while i < width {
-        unsafe { game_state() }.r_draw.columnofs[i as usize] = unsafe { game_state() }.r_draw.viewwindowx + i;
+        state.r_draw.columnofs[i as usize] = state.r_draw.viewwindowx + i;
         i += 1;
     }
     if width == SCREENWIDTH {
-        unsafe { game_state() }.r_draw.viewwindowy = 0 as i32;
+        state.r_draw.viewwindowy = 0 as i32;
     } else {
-        unsafe { game_state() }.r_draw.viewwindowy = SCREENHEIGHT - SBARHEIGHT - height >> 1 as i32;
+        state.r_draw.viewwindowy = SCREENHEIGHT - SBARHEIGHT - height >> 1 as i32;
     }
     i = 0 as i32;
     while i < height {
-        unsafe { game_state() }.r_draw.ylookup[i as usize] = unsafe { game_state() }.i_video.I_VideoBuffer.offset(((i + unsafe { game_state() }.r_draw.viewwindowy) * SCREENWIDTH) as isize);
+        state.r_draw.ylookup[i as usize] = state.i_video.I_VideoBuffer.offset(((i + state.r_draw.viewwindowy) * SCREENWIDTH) as isize);
         i += 1;
     }
 }
-pub unsafe fn R_FillBackScreen() {
+pub unsafe fn R_FillBackScreen(state: &mut GameState) {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut x: i32 = 0;
@@ -461,31 +462,31 @@ pub unsafe fn R_FillBackScreen() {
     let mut name2: *mut ::core::ffi::c_char =
         b"GRNROCK\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    if unsafe { game_state() }.r_draw.scaledviewwidth == SCREENWIDTH {
-        if !unsafe { game_state() }.r_draw.background_buffer.is_null() {
+    if state.r_draw.scaledviewwidth == SCREENWIDTH {
+        if !state.r_draw.background_buffer.is_null() {
             Z_Free(
-                unsafe { &mut game_state().z_zone },
-                unsafe { game_state() }.r_draw.background_buffer as *mut ::core::ffi::c_void,
+                &mut state.z_zone,
+                state.r_draw.background_buffer as *mut ::core::ffi::c_void,
             );
-            unsafe { game_state() }.r_draw.background_buffer = ::core::ptr::null_mut::<byte>();
+            state.r_draw.background_buffer = ::core::ptr::null_mut::<byte>();
         }
         return;
     }
-    if unsafe { game_state() }.r_draw.background_buffer.is_null() {
-        unsafe { game_state() }.r_draw.background_buffer = Z_Malloc(
-            unsafe { &mut game_state().z_zone },
+    if state.r_draw.background_buffer.is_null() {
+        state.r_draw.background_buffer = Z_Malloc(
+            &mut state.z_zone,
             SCREENWIDTH * (SCREENHEIGHT - SBARHEIGHT),
             PU_STATIC as i32,
             NULL,
         ) as *mut byte;
     }
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         name = name2;
     } else {
         name = name1;
     }
     src = W_CacheLumpName(&wad_name8_to_string(name), PU_CACHE as i32) as *mut byte;
-    dest = unsafe { game_state() }.r_draw.background_buffer;
+    dest = state.r_draw.background_buffer;
     y = 0 as i32;
     while y < SCREENHEIGHT - SBARHEIGHT {
         x = 0 as i32;
@@ -508,109 +509,109 @@ pub unsafe fn R_FillBackScreen() {
         }
         y += 1;
     }
-    V_UseBuffer(unsafe { &mut game_state().v_video }, unsafe { game_state() }.r_draw.background_buffer);
+    V_UseBuffer(&mut state.v_video, state.r_draw.background_buffer);
     patch = W_CacheLumpName("brdr_t", PU_CACHE as i32) as *mut patch_t;
     x = 0 as i32;
-    while x < unsafe { game_state() }.r_draw.scaledviewwidth {
+    while x < state.r_draw.scaledviewwidth {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
-            unsafe { game_state() }.r_draw.viewwindowx + x,
-            unsafe { game_state() }.r_draw.viewwindowy - 8 as i32,
+            &mut state.v_video,
+            state.r_draw.viewwindowx + x,
+            state.r_draw.viewwindowy - 8 as i32,
             patch,
         );
         x += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_b", PU_CACHE as i32) as *mut patch_t;
     x = 0 as i32;
-    while x < unsafe { game_state() }.r_draw.scaledviewwidth {
+    while x < state.r_draw.scaledviewwidth {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
-            unsafe { game_state() }.r_draw.viewwindowx + x,
-            unsafe { game_state() }.r_draw.viewwindowy + unsafe { game_state() }.r_draw.viewheight,
+            &mut state.v_video,
+            state.r_draw.viewwindowx + x,
+            state.r_draw.viewwindowy + state.r_draw.viewheight,
             patch,
         );
         x += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_l", PU_CACHE as i32) as *mut patch_t;
     y = 0 as i32;
-    while y < unsafe { game_state() }.r_draw.viewheight {
+    while y < state.r_draw.viewheight {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
-            unsafe { game_state() }.r_draw.viewwindowx - 8 as i32,
-            unsafe { game_state() }.r_draw.viewwindowy + y,
+            &mut state.v_video,
+            state.r_draw.viewwindowx - 8 as i32,
+            state.r_draw.viewwindowy + y,
             patch,
         );
         y += 8 as i32;
     }
     patch = W_CacheLumpName("brdr_r", PU_CACHE as i32) as *mut patch_t;
     y = 0 as i32;
-    while y < unsafe { game_state() }.r_draw.viewheight {
+    while y < state.r_draw.viewheight {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
-            unsafe { game_state() }.r_draw.viewwindowx + unsafe { game_state() }.r_draw.scaledviewwidth,
-            unsafe { game_state() }.r_draw.viewwindowy + y,
+            &mut state.v_video,
+            state.r_draw.viewwindowx + state.r_draw.scaledviewwidth,
+            state.r_draw.viewwindowy + y,
             patch,
         );
         y += 8 as i32;
     }
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
-        unsafe { game_state() }.r_draw.viewwindowx - 8 as i32,
-        unsafe { game_state() }.r_draw.viewwindowy - 8 as i32,
+        &mut state.v_video,
+        state.r_draw.viewwindowx - 8 as i32,
+        state.r_draw.viewwindowy - 8 as i32,
         W_CacheLumpName("brdr_tl", PU_CACHE as i32) as *mut patch_t,
     );
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
-        unsafe { game_state() }.r_draw.viewwindowx + unsafe { game_state() }.r_draw.scaledviewwidth,
-        unsafe { game_state() }.r_draw.viewwindowy - 8 as i32,
+        &mut state.v_video,
+        state.r_draw.viewwindowx + state.r_draw.scaledviewwidth,
+        state.r_draw.viewwindowy - 8 as i32,
         W_CacheLumpName("brdr_tr", PU_CACHE as i32) as *mut patch_t,
     );
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
-        unsafe { game_state() }.r_draw.viewwindowx - 8 as i32,
-        unsafe { game_state() }.r_draw.viewwindowy + unsafe { game_state() }.r_draw.viewheight,
+        &mut state.v_video,
+        state.r_draw.viewwindowx - 8 as i32,
+        state.r_draw.viewwindowy + state.r_draw.viewheight,
         W_CacheLumpName("brdr_bl", PU_CACHE as i32) as *mut patch_t,
     );
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
-        unsafe { game_state() }.r_draw.viewwindowx + unsafe { game_state() }.r_draw.scaledviewwidth,
-        unsafe { game_state() }.r_draw.viewwindowy + unsafe { game_state() }.r_draw.viewheight,
+        &mut state.v_video,
+        state.r_draw.viewwindowx + state.r_draw.scaledviewwidth,
+        state.r_draw.viewwindowy + state.r_draw.viewheight,
         W_CacheLumpName("brdr_br", PU_CACHE as i32) as *mut patch_t,
     );
-    V_RestoreBuffer(unsafe { game_state() });
+    V_RestoreBuffer(state);
 }
-pub unsafe fn R_VideoErase(mut ofs: u32, mut count: i32) {
-    if !unsafe { game_state() }.r_draw.background_buffer.is_null() {
+pub unsafe fn R_VideoErase(state: &mut GameState, mut ofs: u32, mut count: i32) {
+    if !state.r_draw.background_buffer.is_null() {
         memcpy(
-            unsafe { game_state() }.i_video.I_VideoBuffer.offset(ofs as isize) as *mut ::core::ffi::c_void,
-            unsafe { game_state() }.r_draw.background_buffer.offset(ofs as isize) as *const ::core::ffi::c_void,
+            state.i_video.I_VideoBuffer.offset(ofs as isize) as *mut ::core::ffi::c_void,
+            state.r_draw.background_buffer.offset(ofs as isize) as *const ::core::ffi::c_void,
             count as size_t,
         );
     }
 }
-pub unsafe fn R_DrawViewBorder() {
+pub unsafe fn R_DrawViewBorder(state: &mut GameState) {
     let mut top: i32 = 0;
     let mut side: i32 = 0;
     let mut ofs: i32 = 0;
     let mut i: i32 = 0;
-    if unsafe { game_state() }.r_draw.scaledviewwidth == SCREENWIDTH {
+    if state.r_draw.scaledviewwidth == SCREENWIDTH {
         return;
     }
-    top = (SCREENHEIGHT - SBARHEIGHT - unsafe { game_state() }.r_draw.viewheight) / 2 as i32;
-    side = (SCREENWIDTH - unsafe { game_state() }.r_draw.scaledviewwidth) / 2 as i32;
-    R_VideoErase(0 as u32, top * SCREENWIDTH + side);
-    ofs = (unsafe { game_state() }.r_draw.viewheight + top) * SCREENWIDTH - side;
-    R_VideoErase(ofs as u32, top * SCREENWIDTH + side);
+    top = (SCREENHEIGHT - SBARHEIGHT - state.r_draw.viewheight) / 2 as i32;
+    side = (SCREENWIDTH - state.r_draw.scaledviewwidth) / 2 as i32;
+    R_VideoErase(state, 0 as u32, top * SCREENWIDTH + side);
+    ofs = (state.r_draw.viewheight + top) * SCREENWIDTH - side;
+    R_VideoErase(state, ofs as u32, top * SCREENWIDTH + side);
     ofs = top * SCREENWIDTH + SCREENWIDTH - side;
     side <<= 1 as i32;
     i = 1 as i32;
-    while i < unsafe { game_state() }.r_draw.viewheight {
-        R_VideoErase(ofs as u32, side);
+    while i < state.r_draw.viewheight {
+        R_VideoErase(state, ofs as u32, side);
         ofs += SCREENWIDTH;
         i += 1;
     }
     V_MarkRect(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         0 as i32,
         0 as i32,
         SCREENWIDTH,

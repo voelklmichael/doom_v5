@@ -388,7 +388,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         && state.d_main.d_display_oldgamestate as u32 != GS_LEVEL as i32 as u32
     {
         state.d_main.d_display_viewactivestate = false;
-        R_FillBackScreen();
+        R_FillBackScreen(state);
     }
     if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && !state.am_map.automapactive
@@ -398,7 +398,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
             state.d_main.d_display_borderdrawcount = 3 as i32;
         }
         if state.d_main.d_display_borderdrawcount != 0 {
-            R_DrawViewBorder();
+            R_DrawViewBorder(state);
             state.d_main.d_display_borderdrawcount -= 1;
         }
     }
