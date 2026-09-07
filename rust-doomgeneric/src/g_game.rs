@@ -263,7 +263,7 @@ impl GGameState {
                 message: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
                 damagecount: 0,
                 bonuscount: 0,
-                attacker: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
+                attacker: None,
                 extralight: 0,
                 fixedcolormap: 0,
                 colormap: 0,

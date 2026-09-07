@@ -336,17 +336,17 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
         {
             return true_0 as boolean;
         }
-        if !(*unsafe { game_state() }.p_map.tmthing).target.is_null()
-            && ((*(*unsafe { game_state() }.p_map.tmthing).target).type_0 as u32
-                == (*thing).type_0 as u32
-                || (*(*unsafe { game_state() }.p_map.tmthing).target).type_0 as u32
-                    == MT_KNIGHT as i32 as u32
+        let tm_target = (*unsafe { game_state() }.p_map.tmthing)
+            .target
+            .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id));
+        if tm_target.is_some()
+            && ((*tm_target.unwrap()).type_0 as u32 == (*thing).type_0 as u32
+                || (*tm_target.unwrap()).type_0 as u32 == MT_KNIGHT as i32 as u32
                     && (*thing).type_0 as u32 == MT_BRUISER as i32 as u32
-                || (*(*unsafe { game_state() }.p_map.tmthing).target).type_0 as u32
-                    == MT_BRUISER as i32 as u32
+                || (*tm_target.unwrap()).type_0 as u32 == MT_BRUISER as i32 as u32
                     && (*thing).type_0 as u32 == MT_KNIGHT as i32 as u32)
         {
-            if thing == (*unsafe { game_state() }.p_map.tmthing).target {
+            if Some(thing) == tm_target {
                 return true_0 as boolean;
             }
             if (*thing).type_0 as u32 != MT_PLAYER as i32 as u32 && deh_species_infighting == 0 {
@@ -361,7 +361,7 @@ pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
         P_DamageMobj(
             thing,
             unsafe { game_state() }.p_map.tmthing,
-            (*unsafe { game_state() }.p_map.tmthing).target as *mut mobj_t,
+            tm_target.unwrap_or(::core::ptr::null_mut()),
             damage,
         );
         return false_0 as boolean;

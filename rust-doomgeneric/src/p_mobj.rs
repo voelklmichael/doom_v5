@@ -467,13 +467,13 @@ pub struct mobj_s {
     pub health: i32,
     pub movedir: i32,
     pub movecount: i32,
-    pub target: *mut mobj_s,
+    pub target: Option<MobjId>,
     pub reactiontime: i32,
     pub threshold: i32,
     pub player: *mut player_s,
     pub lastlook: i32,
     pub spawnpoint: mapthing_t,
-    pub tracer: *mut mobj_s,
+    pub tracer: Option<MobjId>,
     pub id: MobjId,
 }
 #[derive(Copy, Clone)]
@@ -504,7 +504,7 @@ pub struct sector_t {
     pub special: i16,
     pub tag: i16,
     pub soundtraversed: i32,
-    pub soundtarget: *mut mobj_t,
+    pub soundtarget: Option<MobjId>,
     pub blockbox: [i32; 4],
     pub soundorg: degenmobj_t,
     pub validcount: i32,
@@ -724,10 +724,12 @@ pub unsafe fn P_ZMovement(mut mo: *mut mobj_t) {
         (*(*mo).player).deltaviewheight = VIEWHEIGHT - (*(*mo).player).viewheight >> 3 as i32;
     }
     (*mo).z += (*mo).momz;
-    if (*mo).flags & MF_FLOAT as i32 != 0 && !(*mo).target.is_null() {
+    let mo_target = (*mo).target.and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id));
+    if (*mo).flags & MF_FLOAT as i32 != 0 && mo_target.is_some() {
         if (*mo).flags & MF_SKULLFLY as i32 == 0 && (*mo).flags & MF_INFLOAT as i32 == 0 {
-            dist = P_AproxDistance((*mo).x - (*(*mo).target).x, (*mo).y - (*(*mo).target).y);
-            delta = (*(*mo).target).z + ((*mo).height >> 1 as i32) - (*mo).z;
+            let target = mo_target.unwrap();
+            dist = P_AproxDistance((*mo).x - (*target).x, (*mo).y - (*target).y);
+            delta = (*target).z + ((*mo).height >> 1 as i32) - (*mo).z;
             if delta < 0 as i32 && dist < -(delta as i32 * 3 as i32) {
                 (*mo).z -= FLOATSPEED;
             } else if delta > 0 as i32 && dist < delta as i32 * 3 as i32 {
@@ -1043,7 +1045,7 @@ impl PMobjState {
                 health: 0,
                 movedir: 0,
                 movecount: 0,
-                target: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+                target: None,
                 reactiontime: 0,
                 threshold: 0,
                 player: ::core::ptr::null::<player_s>() as *mut player_s,
@@ -1055,7 +1057,7 @@ impl PMobjState {
                     type_0: 0,
                     options: 0,
                 },
-                tracer: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+                tracer: None,
                 id: MobjId {
                     index: 0,
                     generation: 0,
@@ -1346,7 +1348,7 @@ pub unsafe fn P_SpawnMissile(
             (*(*th).info).seesound,
         );
     }
-    (*th).target = source as *mut mobj_s;
+    (*th).target = Some((*source).id);
     an = R_PointToAngle2((*source).x, (*source).y, (*dest).x, (*dest).y);
     if (*dest).flags & MF_SHADOW as i32 != 0 {
         an = an.wrapping_add(
@@ -1400,7 +1402,7 @@ pub unsafe fn P_SpawnPlayerMissile(mut source: *mut mobj_t, mut type_0: mobjtype
             (*(*th).info).seesound,
         );
     }
-    (*th).target = source as *mut mobj_s;
+    (*th).target = Some((*source).id);
     (*th).angle = an;
     (*th).momx = FixedMul(
         (*(*th).info).speed as fixed_t,

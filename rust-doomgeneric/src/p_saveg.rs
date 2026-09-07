@@ -298,7 +298,8 @@ unsafe fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     (*str).health = saveg_read32();
     (*str).movedir = saveg_read32();
     (*str).movecount = saveg_read32();
-    (*str).target = saveg_readp() as *mut mobj_s;
+    saveg_readp();
+    (*str).target = None;
     (*str).reactiontime = saveg_read32();
     (*str).threshold = saveg_read32();
     pl = saveg_read32();
@@ -312,7 +313,8 @@ unsafe fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     }
     (*str).lastlook = saveg_read32();
     saveg_read_mapthing_t(&raw mut (*str).spawnpoint);
-    (*str).tracer = saveg_readp() as *mut mobj_s;
+    saveg_readp();
+    (*str).tracer = None;
 }
 unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
@@ -343,7 +345,7 @@ unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     saveg_write32((*str).health);
     saveg_write32((*str).movedir);
     saveg_write32((*str).movecount);
-    saveg_writep((*str).target as *mut ::core::ffi::c_void);
+    saveg_writep(::core::ptr::null_mut::<::core::ffi::c_void>());
     saveg_write32((*str).reactiontime);
     saveg_write32((*str).threshold);
     if !(*str).player.is_null() {
@@ -359,7 +361,7 @@ unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     }
     saveg_write32((*str).lastlook);
     saveg_write_mapthing_t(&raw mut (*str).spawnpoint);
-    saveg_writep((*str).tracer as *mut ::core::ffi::c_void);
+    saveg_writep(::core::ptr::null_mut::<::core::ffi::c_void>());
 }
 unsafe fn saveg_read_ticcmd_t(mut str: *mut ticcmd_t) {
     (*str).forwardmove = saveg_read8() as i8;
@@ -454,7 +456,8 @@ unsafe fn saveg_read_player_t(mut str: *mut player_t) {
     (*str).message = saveg_readp() as *mut ::core::ffi::c_char;
     (*str).damagecount = saveg_read32();
     (*str).bonuscount = saveg_read32();
-    (*str).attacker = saveg_readp() as *mut mobj_t;
+    saveg_readp();
+    (*str).attacker = None;
     (*str).extralight = saveg_read32();
     (*str).fixedcolormap = saveg_read32();
     (*str).colormap = saveg_read32();
@@ -522,7 +525,7 @@ unsafe fn saveg_write_player_t(mut str: *mut player_t) {
     saveg_writep((*str).message as *mut ::core::ffi::c_void);
     saveg_write32((*str).damagecount);
     saveg_write32((*str).bonuscount);
-    saveg_writep((*str).attacker as *mut ::core::ffi::c_void);
+    saveg_writep(::core::ptr::null_mut::<::core::ffi::c_void>());
     saveg_write32((*str).extralight);
     saveg_write32((*str).fixedcolormap);
     saveg_write32((*str).colormap);
@@ -818,8 +821,7 @@ pub unsafe fn P_UnArchivePlayers() {
                 ::core::ptr::null_mut::<mobj_t>();
             unsafe { game_state() }.g_game.players[i as usize].message =
                 ::core::ptr::null_mut::<::core::ffi::c_char>();
-            unsafe { game_state() }.g_game.players[i as usize].attacker =
-                ::core::ptr::null_mut::<mobj_t>();
+            unsafe { game_state() }.g_game.players[i as usize].attacker = None;
         }
         i += 1;
     }
@@ -883,7 +885,7 @@ pub unsafe fn P_UnArchiveWorld() {
         (*sec).special = saveg_read16();
         (*sec).tag = saveg_read16();
         (*sec).specialdata = ::core::ptr::null_mut::<::core::ffi::c_void>();
-        (*sec).soundtarget = ::core::ptr::null_mut::<mobj_t>();
+        (*sec).soundtarget = None;
         i += 1;
     }
     i = 0 as i32;
@@ -959,8 +961,8 @@ pub unsafe fn P_UnArchiveThinkers() {
                 ) as *mut mobj_t;
                 saveg_read_mobj_t(mobj);
                 (*mobj).id = unsafe { game_state() }.p_mobj.register(mobj);
-                (*mobj).target = ::core::ptr::null_mut::<mobj_s>();
-                (*mobj).tracer = ::core::ptr::null_mut::<mobj_s>();
+                (*mobj).target = None;
+                (*mobj).tracer = None;
                 P_SetThingPosition(mobj);
                 (*mobj).info = (&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t)
                     .offset((*mobj).type_0 as isize)
