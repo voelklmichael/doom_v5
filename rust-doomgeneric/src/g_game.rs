@@ -1266,11 +1266,11 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
     };
 }
 pub unsafe fn G_InitPlayer(mut player: i32) {
-    G_PlayerReborn(player);
+    G_PlayerReborn(&mut unsafe { game_state() }.g_game, player);
 }
-pub unsafe fn G_PlayerFinishLevel(mut player: i32) {
+pub unsafe fn G_PlayerFinishLevel(state: &mut GGameState, mut player: i32) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
-    p = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t).offset(player as isize)
+    p = (&raw mut state.players as *mut player_t).offset(player as isize)
         as *mut player_t;
     memset(
         &raw mut (*p).powers as *mut i32 as *mut ::core::ffi::c_void,
@@ -1288,7 +1288,7 @@ pub unsafe fn G_PlayerFinishLevel(mut player: i32) {
     (*p).damagecount = 0 as i32;
     (*p).bonuscount = 0 as i32;
 }
-pub unsafe fn G_PlayerReborn(mut player: i32) {
+pub unsafe fn G_PlayerReborn(state: &mut GGameState, mut player: i32) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut i: i32 = 0;
     let mut frags: [i32; 4] = [0; 4];
@@ -1297,15 +1297,15 @@ pub unsafe fn G_PlayerReborn(mut player: i32) {
     let mut secretcount: i32 = 0;
     memcpy(
         &raw mut frags as *mut i32 as *mut ::core::ffi::c_void,
-        &raw mut (*(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+        &raw mut (*(&raw mut state.players as *mut player_t)
             .offset(player as isize))
         .frags as *mut i32 as *const ::core::ffi::c_void,
         ::core::mem::size_of::<[i32; 4]>() as size_t,
     );
-    killcount = unsafe { game_state() }.g_game.players[player as usize].killcount;
-    itemcount = unsafe { game_state() }.g_game.players[player as usize].itemcount;
-    secretcount = unsafe { game_state() }.g_game.players[player as usize].secretcount;
-    p = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t).offset(player as isize)
+    killcount = state.players[player as usize].killcount;
+    itemcount = state.players[player as usize].itemcount;
+    secretcount = state.players[player as usize].secretcount;
+    p = (&raw mut state.players as *mut player_t).offset(player as isize)
         as *mut player_t;
     memset(
         p as *mut ::core::ffi::c_void,
@@ -1313,15 +1313,15 @@ pub unsafe fn G_PlayerReborn(mut player: i32) {
         ::core::mem::size_of::<player_t>() as size_t,
     );
     memcpy(
-        &raw mut (*(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+        &raw mut (*(&raw mut state.players as *mut player_t)
             .offset(player as isize))
         .frags as *mut i32 as *mut ::core::ffi::c_void,
         &raw mut frags as *mut i32 as *const ::core::ffi::c_void,
         ::core::mem::size_of::<[i32; 4]>() as size_t,
     );
-    unsafe { game_state() }.g_game.players[player as usize].killcount = killcount;
-    unsafe { game_state() }.g_game.players[player as usize].itemcount = itemcount;
-    unsafe { game_state() }.g_game.players[player as usize].secretcount = secretcount;
+    state.players[player as usize].killcount = killcount;
+    state.players[player as usize].itemcount = itemcount;
+    state.players[player as usize].secretcount = secretcount;
     (*p).attackdown = true_0;
     (*p).usedown = (*p).attackdown;
     (*p).playerstate = PST_LIVE;
@@ -1548,7 +1548,7 @@ pub unsafe fn G_DoCompleted() {
     i = 0 as i32;
     while i < MAXPLAYERS {
         if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
-            G_PlayerFinishLevel(i);
+            G_PlayerFinishLevel(&mut unsafe { game_state() }.g_game, i);
         }
         i += 1;
     }

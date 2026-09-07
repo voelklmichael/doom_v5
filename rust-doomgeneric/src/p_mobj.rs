@@ -1150,7 +1150,7 @@ pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
     p = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
         .offset(((*mthing).type_0 as i32 - 1 as i32) as isize) as *mut player_t;
     if (*p).playerstate as u32 == PST_REBORN as i32 as u32 {
-        G_PlayerReborn((*mthing).type_0 as i32 - 1 as i32);
+        G_PlayerReborn(&mut unsafe { game_state() }.g_game, (*mthing).type_0 as i32 - 1 as i32);
     }
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
