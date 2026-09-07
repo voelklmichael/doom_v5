@@ -515,7 +515,7 @@ pub unsafe fn P_UseSpecialLine(
         }
         11 => {
             P_ChangeSwitchTexture(state, line, 0 as i32);
-            G_ExitLevel();
+            G_ExitLevel(unsafe { game_state() });
             current_block_108 = 16981061190961355901;
         }
         14 => {
@@ -610,7 +610,7 @@ pub unsafe fn P_UseSpecialLine(
         }
         51 => {
             P_ChangeSwitchTexture(state, line, 0 as i32);
-            G_SecretExitLevel();
+            G_SecretExitLevel(unsafe { game_state() });
             current_block_108 = 16981061190961355901;
         }
         55 => {

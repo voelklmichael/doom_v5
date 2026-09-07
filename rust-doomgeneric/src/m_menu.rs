@@ -849,7 +849,7 @@ pub unsafe extern "C" fn M_LoadSelect(mut choice: i32) {
         P_SaveGameFile(choice),
         ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
     );
-    G_LoadGame(&raw mut name as *mut ::core::ffi::c_char);
+    G_LoadGame(unsafe { game_state() }, &raw mut name as *mut ::core::ffi::c_char);
     M_ClearMenus();
 }
 #[no_mangle]
@@ -908,7 +908,7 @@ pub unsafe fn M_DoSave(mut slot: i32) {
         unsafe { game_state() }.m_menu.savegamestrings[slot as usize].as_str(),
     )
     .unwrap();
-    G_SaveGame(slot, name_cstring.as_ptr() as *mut ::core::ffi::c_char);
+    G_SaveGame(unsafe { game_state() }, slot, name_cstring.as_ptr() as *mut ::core::ffi::c_char);
     M_ClearMenus();
     if unsafe { game_state() }.m_menu.quickSaveSlot == -(2 as i32) {
         unsafe { game_state() }.m_menu.quickSaveSlot = slot;
@@ -1213,6 +1213,7 @@ pub unsafe extern "C" fn M_VerifyNightmare(mut key: i32) {
         return;
     }
     G_DeferedInitNew(
+        unsafe { game_state() },
         nightmare as i32 as skill_t,
         unsafe { game_state() }.m_menu.epi + 1 as i32,
         1 as i32,
@@ -1233,6 +1234,7 @@ pub unsafe extern "C" fn M_ChooseSkill(mut choice: i32) {
         return;
     }
     G_DeferedInitNew(
+        unsafe { game_state() },
         choice as skill_t,
         unsafe { game_state() }.m_menu.epi + 1 as i32,
         1 as i32,
@@ -1868,7 +1870,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     if unsafe { game_state() }.d_main.devparm && key == unsafe { game_state() }.m_controls.key_menu_help
         || key != 0 as i32 && key == unsafe { game_state() }.m_controls.key_menu_screenshot
     {
-        G_ScreenShot();
+        G_ScreenShot(unsafe { game_state() });
         return true;
     }
     if !unsafe { game_state() }.m_menu.menuactive {
