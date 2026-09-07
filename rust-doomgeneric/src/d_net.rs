@@ -19,7 +19,6 @@ use crate::src::doomdef::boolean;
 use crate::src::g_game::G_Ticker;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_misc::M_StringCopy;
-use crate::src::r_main::viewangleoffset;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::w_checksum::W_Checksum;
@@ -144,11 +143,11 @@ unsafe fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
     (*connect_data).max_players = MAXPLAYERS;
     (*connect_data).drone = false_0;
     if M_CheckParm("-left") > 0 as i32 {
-        viewangleoffset = ANG90;
+        unsafe { game_state() }.r_main.viewangleoffset = ANG90;
         (*connect_data).drone = true_0;
     }
     if M_CheckParm("-right") > 0 as i32 {
-        viewangleoffset = ANG270 as i32;
+        unsafe { game_state() }.r_main.viewangleoffset = ANG270 as i32;
         (*connect_data).drone = true_0;
     }
     (*connect_data).gamemode = unsafe { game_state() }.doomstat.gamemode as i32;

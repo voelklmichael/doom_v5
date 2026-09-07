@@ -17,7 +17,7 @@ use crate::src::p_setup::subsectors;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::r_bsp::NF_SUBSECTOR;
 use crate::src::r_defs::{node_t, seg_t};
-use crate::src::r_main::validcount;
+use crate::src::game_state::game_state;
 
 pub struct PSightState {
     sightzstart: fixed_t,
@@ -127,8 +127,8 @@ pub unsafe fn P_CrossSubsector(state: &mut PSightState, mut num: i32) -> bool {
     seg = segs.offset((*sub).firstline as isize) as *mut seg_t;
     while count != 0 {
         line = (*seg).linedef;
-        if !((*line).validcount == validcount) {
-            (*line).validcount = validcount;
+        if !((*line).validcount == unsafe { game_state() }.r_main.validcount) {
+            (*line).validcount = unsafe { game_state() }.r_main.validcount;
             v1 = (*line).v1;
             v2 = (*line).v2;
             s1 = P_DivlineSide((*v1).x, (*v1).y, &raw mut state.strace);
@@ -233,7 +233,7 @@ pub unsafe fn P_CheckSight(
         return false;
     }
     state.sightcounts[1 as i32 as usize] += 1;
-    validcount += 1;
+    unsafe { game_state() }.r_main.validcount += 1;
     state.sightzstart = (*t1).z + (*t1).height - ((*t1).height >> 2 as i32);
     state.topslope = (*t2).z + (*t2).height - state.sightzstart;
     state.bottomslope = (*t2).z - state.sightzstart;

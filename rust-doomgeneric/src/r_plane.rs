@@ -30,18 +30,6 @@ use crate::src::r_draw::ds_yfrac;
 use crate::src::r_draw::ds_ystep;
 use crate::src::r_draw::viewheight;
 use crate::src::r_draw::viewwidth;
-use crate::src::r_main::centerxfrac;
-use crate::src::r_main::colfunc;
-use crate::src::r_main::detailshift;
-use crate::src::r_main::extralight;
-use crate::src::r_main::fixedcolormap;
-use crate::src::r_main::spanfunc;
-use crate::src::r_main::viewangle;
-use crate::src::r_main::viewx;
-use crate::src::r_main::viewy;
-use crate::src::r_main::viewz;
-use crate::src::r_main::xtoviewangle;
-use crate::src::r_main::zlight;
 use crate::src::r_main::LIGHTLEVELS;
 use crate::src::r_main::LIGHTSEGSHIFT;
 use crate::src::r_main::LIGHTZSHIFT;
@@ -134,11 +122,11 @@ pub unsafe fn R_MapPlane(mut y: i32, mut x1: i32, mut x2: i32) {
         ds_ystep = cachedystep[y as usize];
     }
     length = FixedMul(distance, distscale[x1 as usize]);
-    angle = viewangle.wrapping_add(xtoviewangle[x1 as usize]) >> ANGLETOFINESHIFT;
-    ds_xfrac = viewx + FixedMul(finecosine[angle as isize], length);
-    ds_yfrac = -viewy - FixedMul(finesine[angle as usize], length);
-    if !fixedcolormap.is_null() {
-        ds_colormap = fixedcolormap;
+    angle = unsafe { game_state() }.r_main.viewangle.wrapping_add(unsafe { game_state() }.r_main.xtoviewangle[x1 as usize]) >> ANGLETOFINESHIFT;
+    ds_xfrac = unsafe { game_state() }.r_main.viewx + FixedMul(finecosine[angle as isize], length);
+    ds_yfrac = -unsafe { game_state() }.r_main.viewy - FixedMul(finesine[angle as usize], length);
+    if !unsafe { game_state() }.r_main.fixedcolormap.is_null() {
+        ds_colormap = unsafe { game_state() }.r_main.fixedcolormap;
     } else {
         index = (distance >> LIGHTZSHIFT) as u32;
         if index >= MAXLIGHTZ as u32 {
@@ -149,7 +137,7 @@ pub unsafe fn R_MapPlane(mut y: i32, mut x1: i32, mut x2: i32) {
     ds_y = y;
     ds_x1 = x1;
     ds_x2 = x2;
-    spanfunc.expect("non-null function pointer")();
+    unsafe { game_state() }.r_main.spanfunc.expect("non-null function pointer")();
 }
 pub unsafe fn R_ClearPlanes() {
     let mut i: i32 = 0;
@@ -167,9 +155,9 @@ pub unsafe fn R_ClearPlanes() {
         0 as i32,
         ::core::mem::size_of::<[fixed_t; 200]>() as size_t,
     );
-    angle = viewangle.wrapping_sub(ANG90 as angle_t) >> ANGLETOFINESHIFT;
-    basexscale = FixedDiv(finecosine[angle as isize], centerxfrac);
-    baseyscale = -FixedDiv(finesine[angle as usize], centerxfrac);
+    angle = unsafe { game_state() }.r_main.viewangle.wrapping_sub(ANG90 as angle_t) >> ANGLETOFINESHIFT;
+    basexscale = FixedDiv(finecosine[angle as isize], unsafe { game_state() }.r_main.centerxfrac);
+    baseyscale = -FixedDiv(finesine[angle as usize], unsafe { game_state() }.r_main.centerxfrac);
 }
 pub unsafe fn R_FindPlane(
     mut height: fixed_t,
@@ -312,7 +300,7 @@ pub unsafe fn R_DrawPlanes() {
     while pl < lastvisplane {
         if !((*pl).minx > (*pl).maxx) {
             if (*pl).picnum == unsafe { game_state() }.r_sky.skyflatnum {
-                dc_iscale = unsafe { game_state() }.r_things.pspriteiscale >> detailshift;
+                dc_iscale = unsafe { game_state() }.r_things.pspriteiscale >> unsafe { game_state() }.r_main.detailshift;
                 dc_colormap = colormaps;
                 dc_texturemid = unsafe { game_state() }.r_sky.skytexturemid as fixed_t;
                 x = (*pl).minx;
@@ -320,26 +308,26 @@ pub unsafe fn R_DrawPlanes() {
                     dc_yl = (*pl).top[x as usize] as i32;
                     dc_yh = (*pl).bottom[x as usize] as i32;
                     if dc_yl <= dc_yh {
-                        angle = (viewangle.wrapping_add(xtoviewangle[x as usize])
+                        angle = (unsafe { game_state() }.r_main.viewangle.wrapping_add(unsafe { game_state() }.r_main.xtoviewangle[x as usize])
                             >> ANGLETOSKYSHIFT) as i32;
                         dc_x = x;
                         dc_source = R_GetColumn(unsafe { game_state() }.r_sky.skytexture, angle);
-                        colfunc.expect("non-null function pointer")();
+                        unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
                     }
                     x += 1;
                 }
             } else {
                 lumpnum = firstflat + *flattranslation.offset((*pl).picnum as isize);
                 ds_source = W_CacheLumpNum(lumpnum, PU_STATIC as i32) as *mut byte;
-                planeheight = ((*pl).height as i32 - viewz as i32).abs() as fixed_t;
-                light = ((*pl).lightlevel >> LIGHTSEGSHIFT) + extralight;
+                planeheight = ((*pl).height as i32 - unsafe { game_state() }.r_main.viewz as i32).abs() as fixed_t;
+                light = ((*pl).lightlevel >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;
                 if light >= LIGHTLEVELS {
                     light = LIGHTLEVELS - 1 as i32;
                 }
                 if light < 0 as i32 {
                     light = 0 as i32;
                 }
-                planezlight = &raw mut *(&raw mut zlight as *mut [*mut lighttable_t; 128])
+                planezlight = &raw mut *(&raw mut unsafe { game_state() }.r_main.zlight as *mut [*mut lighttable_t; 128])
                     .offset(light as isize) as *mut *mut lighttable_t;
                 *(&raw mut (*pl).top as *mut byte).offset(((*pl).maxx + 1 as i32) as isize) =
                     0xff as byte;

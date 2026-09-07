@@ -10,7 +10,6 @@ use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::r_data::colormaps;
 use crate::src::r_defs::lighttable_t;
-use crate::src::r_main::centery;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::v_video::V_DrawPatch;
@@ -62,7 +61,7 @@ pub unsafe fn R_DrawColumn() {
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[dc_x as usize] as isize);
     fracstep = dc_iscale;
-    frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
+    frac = dc_texturemid + (dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
     loop {
         *dest = *dc_colormap
             .offset(*dc_source.offset((frac as i32 >> FRACBITS & 127 as i32) as isize) as isize)
@@ -94,7 +93,7 @@ pub unsafe fn R_DrawColumnLow() {
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
     dest2 = ylookup[dc_yl as usize].offset(columnofs[(x + 1 as i32) as usize] as isize);
     fracstep = dc_iscale;
-    frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
+    frac = dc_texturemid + (dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
     loop {
         *dest = *dc_colormap
             .offset(*dc_source.offset((frac as i32 >> FRACBITS & 127 as i32) as isize) as isize)
@@ -145,7 +144,7 @@ pub unsafe fn R_DrawFuzzColumn() {
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[dc_x as usize] as isize);
     fracstep = dc_iscale;
-    frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
+    frac = dc_texturemid + (dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
     loop {
         *dest = *colormaps.offset(
             (6 as i32 * 256 as i32 + *dest.offset(fuzzoffset[fuzzpos as usize] as isize) as i32)
@@ -191,7 +190,7 @@ pub unsafe fn R_DrawFuzzColumnLow() {
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
     dest2 = ylookup[dc_yl as usize].offset(columnofs[(x + 1 as i32) as usize] as isize);
     fracstep = dc_iscale;
-    frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
+    frac = dc_texturemid + (dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
     loop {
         *dest = *colormaps.offset(
             (6 as i32 * 256 as i32 + *dest.offset(fuzzoffset[fuzzpos as usize] as isize) as i32)
@@ -231,7 +230,7 @@ pub unsafe fn R_DrawTranslatedColumn() {
     }
     dest = ylookup[dc_yl as usize].offset(columnofs[dc_x as usize] as isize);
     fracstep = dc_iscale;
-    frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
+    frac = dc_texturemid + (dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
     loop {
         *dest = *dc_colormap.offset(
             *dc_translation.offset(*dc_source.offset((frac >> FRACBITS) as isize) as isize)
@@ -264,7 +263,7 @@ pub unsafe fn R_DrawTranslatedColumnLow() {
     dest = ylookup[dc_yl as usize].offset(columnofs[x as usize] as isize);
     dest2 = ylookup[dc_yl as usize].offset(columnofs[(x + 1 as i32) as usize] as isize);
     fracstep = dc_iscale;
-    frac = dc_texturemid + (dc_yl as fixed_t - centery as fixed_t) * fracstep;
+    frac = dc_texturemid + (dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
     loop {
         *dest = *dc_colormap.offset(
             *dc_translation.offset(*dc_source.offset((frac >> FRACBITS) as isize) as isize)

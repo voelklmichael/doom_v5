@@ -89,7 +89,6 @@ use crate::src::r_draw::viewwindowx;
 use crate::src::r_draw::viewwindowy;
 use crate::src::r_draw::R_DrawViewBorder;
 use crate::src::r_draw::R_FillBackScreen;
-use crate::src::r_main::setsizeneeded;
 use crate::src::r_main::R_ExecuteSetViewSize;
 use crate::src::r_main::R_Init;
 use crate::src::r_main::R_RenderPlayerView;
@@ -231,7 +230,7 @@ pub unsafe fn D_Display() {
         return;
     }
     redrawsbar = false;
-    if setsizeneeded {
+    if unsafe { game_state() }.r_main.setsizeneeded {
         R_ExecuteSetViewSize();
         oldgamestate = 4294967295 as gamestate_t;
         borderdrawcount = 3 as i32;

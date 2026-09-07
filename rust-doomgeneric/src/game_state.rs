@@ -45,6 +45,7 @@ use crate::src::p_spec::PSpecState;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_user::PUserState;
 use crate::src::r_sky::RSkyState;
+use crate::src::r_main::RMainState;
 use crate::src::r_things::RThingsState;
 use crate::src::sounds::SoundsState;
 use crate::src::st_lib::StLibState;
@@ -92,6 +93,7 @@ pub struct GameState {
     pub p_spec: PSpecState,
     pub p_switch: PSwitchState,
     pub p_user: PUserState,
+    pub r_main: RMainState,
     pub r_things: RThingsState,
     pub sounds: SoundsState,
     pub st_lib: StLibState,
@@ -142,6 +144,7 @@ impl GameState {
             p_spec: PSpecState::new(),
             p_switch: PSwitchState::new(),
             p_user: PUserState::new(),
+            r_main: RMainState::new(),
             r_things: RThingsState::new(),
             sounds: SoundsState::new(),
             st_lib: StLibState::new(),
