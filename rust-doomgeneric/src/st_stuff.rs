@@ -781,18 +781,24 @@ pub unsafe fn ST_updateFaceWidget() {
         }
     }
     if unsafe { game_state() }.st_stuff.st_updatefacewidget_priority < 8 as i32 {
-        if (*unsafe { game_state() }.st_stuff.plyr).damagecount != 0 && !(*unsafe { game_state() }.st_stuff.plyr).attacker.is_null() && (*unsafe { game_state() }.st_stuff.plyr).attacker != (*unsafe { game_state() }.st_stuff.plyr).mo
+        let plyr_attacker = (*unsafe { game_state() }.st_stuff.plyr)
+            .attacker
+            .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id));
+        if (*unsafe { game_state() }.st_stuff.plyr).damagecount != 0
+            && plyr_attacker.is_some()
+            && plyr_attacker != Some((*unsafe { game_state() }.st_stuff.plyr).mo)
         {
             unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 7 as i32;
             if (*unsafe { game_state() }.st_stuff.plyr).health - unsafe { game_state() }.st_stuff.st_oldhealth > ST_MUCHPAIN {
                 unsafe { game_state() }.st_stuff.st_facecount = ST_TURNCOUNT;
                 unsafe { game_state() }.st_stuff.st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
             } else {
+                let plyr_attacker = plyr_attacker.unwrap();
                 badguyangle = R_PointToAngle2(
                     (*(*unsafe { game_state() }.st_stuff.plyr).mo).x,
                     (*(*unsafe { game_state() }.st_stuff.plyr).mo).y,
-                    (*(*unsafe { game_state() }.st_stuff.plyr).attacker).x,
-                    (*(*unsafe { game_state() }.st_stuff.plyr).attacker).y,
+                    (*plyr_attacker).x,
+                    (*plyr_attacker).y,
                 );
                 if badguyangle > (*(*unsafe { game_state() }.st_stuff.plyr).mo).angle {
                     diffang = badguyangle.wrapping_sub((*(*unsafe { game_state() }.st_stuff.plyr).mo).angle);

@@ -28,7 +28,7 @@ use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::ONFLOORZ;
-use crate::src::p_mobj::{mobj_s, mobj_t};
+use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::{
     mobjtype_t, MT_CHAINGUN, MT_CLIP, MT_PLAYER, MT_SHOTGUN, MT_SKULL, MT_VILE,
 };
@@ -789,7 +789,11 @@ pub unsafe fn P_DamageMobj(
         if (*player).health < 0 as i32 {
             (*player).health = 0 as i32;
         }
-        (*player).attacker = source;
+        (*player).attacker = if source.is_null() {
+            None
+        } else {
+            Some((*source).id)
+        };
         (*player).damagecount += damage;
         if (*player).damagecount > 100 as i32 {
             (*player).damagecount = 100 as i32;
@@ -824,7 +828,7 @@ pub unsafe fn P_DamageMobj(
         && source != target
         && (*source).type_0 as u32 != MT_VILE as i32 as u32
     {
-        (*target).target = source as *mut mobj_s;
+        (*target).target = Some((*source).id);
         (*target).threshold = BASETHRESHOLD;
         if (*target).state
             == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset((*(*target).info).spawnstate as isize)

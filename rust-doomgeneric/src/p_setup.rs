@@ -62,7 +62,7 @@ pub const ZERO_SECTOR: sector_t = sector_t {
     special: 0,
     tag: 0,
     soundtraversed: 0,
-    soundtarget: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
+    soundtarget: None,
     blockbox: [0; 4],
     soundorg: degenmobj_t {
         thinker: thinker_s {

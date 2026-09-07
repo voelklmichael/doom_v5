@@ -1,6 +1,6 @@
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::m_fixed::fixed_t;
-use crate::src::p_mobj::{mobj_t, pspdef_t};
+use crate::src::p_mobj::{mobj_t, pspdef_t, MobjId};
 pub type ammotype_t = u32;
 pub const am_noammo: ammotype_t = 5;
 pub const NUMAMMO: ammotype_t = 4;
@@ -75,7 +75,7 @@ pub struct player_s {
     pub message: *mut ::core::ffi::c_char,
     pub damagecount: i32,
     pub bonuscount: i32,
-    pub attacker: *mut mobj_t,
+    pub attacker: Option<MobjId>,
     pub extralight: i32,
     pub fixedcolormap: i32,
     pub colormap: i32,

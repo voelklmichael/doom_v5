@@ -136,12 +136,16 @@ pub unsafe fn P_DeathThink(state: &mut PUserState, mut player: *mut player_t) {
     (*player).deltaviewheight = 0 as i32 as fixed_t;
     state.onground = (*(*player).mo).z <= (*(*player).mo).floorz;
     P_CalcHeight(state, player);
-    if !(*player).attacker.is_null() && (*player).attacker != (*player).mo {
+    let attacker = (*player)
+        .attacker
+        .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id));
+    if attacker.is_some() && attacker != Some((*player).mo) {
+        let attacker = attacker.unwrap();
         angle = R_PointToAngle2(
             (*(*player).mo).x,
             (*(*player).mo).y,
-            (*(*player).attacker).x,
-            (*(*player).attacker).y,
+            (*attacker).x,
+            (*attacker).y,
         );
         delta = angle.wrapping_sub((*(*player).mo).angle);
         if delta < ANG5 as angle_t || delta > -ANG5 as u32 {

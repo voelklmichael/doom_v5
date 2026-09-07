@@ -574,6 +574,10 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
     let mut j: i32 = 0;
     let mut damage: i32 = 0;
     let mut an: angle_t = 0;
+    let mo_target = (*mo)
+        .target
+        .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id))
+        .unwrap_or(::core::ptr::null_mut());
     i = 0 as i32;
     while i < 40 as i32 {
         an = (*mo)
@@ -581,7 +585,7 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
             .wrapping_sub((ANG90 / 2 as i32) as angle_t)
             .wrapping_add((ANG90 / 40 as i32 * i) as angle_t);
         P_AimLineAttack(
-            (*mo).target as *mut mobj_t,
+            mo_target,
             an,
             16 as fixed_t * 64 as fixed_t * FRACUNIT,
         );
@@ -601,8 +605,8 @@ pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
             }
             P_DamageMobj(
                 unsafe { game_state() }.p_map.linetarget,
-                (*mo).target as *mut mobj_t,
-                (*mo).target as *mut mobj_t,
+                mo_target,
+                mo_target,
                 damage,
             );
         }
