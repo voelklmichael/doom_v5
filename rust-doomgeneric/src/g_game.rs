@@ -1369,7 +1369,7 @@ pub unsafe fn G_CheckSpot(state: &mut GameState, mut playernum: i32, mut mthing:
         [(state.g_game.bodyqueslot % BODYQUESIZE) as usize] =
         state.g_game.players[playernum as usize].mo;
     state.g_game.bodyqueslot += 1;
-    ss = R_PointInSubsector(x, y);
+    ss = R_PointInSubsector(state, x, y);
     let mut xa: fixed_t = 0;
     let mut ya: fixed_t = 0;
     let mut an: i32 = 0;

@@ -435,7 +435,7 @@ pub unsafe fn P_SetThingPosition(mut thing: *mut mobj_t) {
     let mut blockx: i32 = 0;
     let mut blocky: i32 = 0;
     let mut link: *mut *mut mobj_t = ::core::ptr::null_mut::<*mut mobj_t>();
-    ss = R_PointInSubsector((*thing).x, (*thing).y);
+    ss = R_PointInSubsector(unsafe { game_state() }, (*thing).x, (*thing).y);
     (*thing).subsector = ss as *mut subsector_s;
     if (*thing).flags & MF_NOSECTOR as i32 == 0 {
         sec = unsafe { game_state() }.p_setup.sector_mut((*ss).sector);
