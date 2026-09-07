@@ -723,7 +723,7 @@ unsafe fn GetGameName(mut gamename: *mut ::core::ffi::c_char) -> *mut ::core::ff
                 PU_STATIC as i32,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
             ) as *mut ::core::ffi::c_char;
-            version = G_VanillaVersionCode();
+            version = G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat);
             M_snprintf(
                 gamename,
                 gamename_size,
@@ -1446,7 +1446,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
             P_SaveGameFile(state.d_main.startloadgame),
             ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
         );
-        G_LoadGame(&raw mut file as *mut ::core::ffi::c_char);
+        G_LoadGame(state, &raw mut file as *mut ::core::ffi::c_char);
     }
     if state.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
         if state.d_main.autostart || state.g_game.netgame {

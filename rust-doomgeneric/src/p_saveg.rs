@@ -717,7 +717,7 @@ pub unsafe fn P_WriteSaveGameHeader(mut description: *mut ::core::ffi::c_char) {
         &raw mut name as *mut ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
         b"version %i\0" as *const u8 as *const ::core::ffi::c_char,
-        G_VanillaVersionCode(),
+        G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat),
     );
     i = 0 as i32;
     while i < VERSIONSIZE {
@@ -762,7 +762,7 @@ pub unsafe fn P_ReadSaveGameHeader() -> bool {
         &raw mut vcheck as *mut ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
         b"version %i\0" as *const u8 as *const ::core::ffi::c_char,
-        G_VanillaVersionCode(),
+        G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat),
     );
     if strcmp(
         &raw mut read_vcheck as *mut ::core::ffi::c_char,

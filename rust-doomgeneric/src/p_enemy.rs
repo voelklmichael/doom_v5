@@ -1607,7 +1607,7 @@ pub unsafe fn A_BossDeath(id: MobjId) {
             _ => {}
         }
     }
-    G_ExitLevel();
+    G_ExitLevel(unsafe { game_state() });
 }
 pub unsafe fn A_Hoof(id: MobjId) {
     let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
@@ -1726,7 +1726,7 @@ pub unsafe fn A_BrainExplode(id: MobjId) {
 }
 pub unsafe fn A_BrainDie(id: MobjId) {
     let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
-    G_ExitLevel();
+    G_ExitLevel(unsafe { game_state() });
 }
 pub unsafe fn A_BrainSpit(id: MobjId) {
     let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();

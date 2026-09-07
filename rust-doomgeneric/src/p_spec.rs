@@ -693,7 +693,7 @@ pub unsafe fn P_CrossSpecialLine(mut linenum: i32, mut side: i32, mut thing: *mu
             (*line).special = 0 as i16;
         }
         52 => {
-            G_ExitLevel();
+            G_ExitLevel(unsafe { game_state() });
         }
         53 => {
             EV_DoPlat(
@@ -758,7 +758,7 @@ pub unsafe fn P_CrossSpecialLine(mut linenum: i32, mut side: i32, mut thing: *mu
             (*line).special = 0 as i16;
         }
         124 => {
-            G_SecretExitLevel();
+            G_SecretExitLevel(unsafe { game_state() });
         }
         125 => {
             if (*thing).player.is_null() {
@@ -1000,7 +1000,7 @@ pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
                 );
             }
             if (*player).health <= 10 as i32 {
-                G_ExitLevel();
+                G_ExitLevel(unsafe { game_state() });
             }
         }
         _ => {
@@ -1019,7 +1019,7 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
     if unsafe { game_state() }.p_spec.levelTimer {
         unsafe { game_state() }.p_spec.levelTimeCount -= 1;
         if unsafe { game_state() }.p_spec.levelTimeCount == 0 {
-            G_ExitLevel();
+            G_ExitLevel(unsafe { game_state() });
         }
     }
     anim = &raw mut unsafe { game_state() }.p_spec.anims as *mut anim_t;

@@ -727,7 +727,8 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
             }
             (*unsafe { game_state() }.st_stuff.plyr).message = b"Changing Level...\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-            G_DeferedInitNew(unsafe { game_state() }.g_game.gameskill, epsd, map);
+            let gameskill = unsafe { game_state() }.g_game.gameskill;
+            G_DeferedInitNew(unsafe { game_state() }, gameskill, epsd, map);
         }
     }
     return false;

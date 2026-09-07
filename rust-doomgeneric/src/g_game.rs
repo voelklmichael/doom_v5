@@ -37,7 +37,9 @@ use crate::src::doomdef::TICRATE;
 use crate::src::f_finale::F_Responder;
 use crate::src::f_finale::F_StartFinale;
 use crate::src::f_finale::F_Ticker;
+use crate::src::doomstat::DoomstatState;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_stuff::player_names;
 use crate::src::hu_stuff::HU_Responder;
 use crate::src::hu_stuff::HU_Ticker;
@@ -1500,8 +1502,8 @@ pub unsafe fn G_DoReborn(mut playernum: i32) {
         );
     };
 }
-pub unsafe fn G_ScreenShot() {
-    unsafe { game_state() }.g_game.gameaction = ga_screenshot;
+pub unsafe fn G_ScreenShot(state: &mut GameState) {
+    state.g_game.gameaction = ga_screenshot;
 }
 #[no_mangle]
 pub static pars: [[i32; 10]; 4] = [
@@ -1526,19 +1528,18 @@ pub static cpars: [i32; 32] = [
     420 as i32, 150 as i32, 210 as i32, 150 as i32, 240 as i32, 150 as i32, 180 as i32, 150 as i32,
     150 as i32, 300 as i32, 330 as i32, 420 as i32, 300 as i32, 180 as i32, 120 as i32, 30 as i32,
 ];
-pub unsafe fn G_ExitLevel() {
-    unsafe { game_state() }.g_game.secretexit = false;
-    unsafe { game_state() }.g_game.gameaction = ga_completed;
+pub unsafe fn G_ExitLevel(state: &mut GameState) {
+    state.g_game.secretexit = false;
+    state.g_game.gameaction = ga_completed;
 }
-pub unsafe fn G_SecretExitLevel() {
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32
-        && W_CheckNumForName("map31") < 0 as i32
+pub unsafe fn G_SecretExitLevel(state: &mut GameState) {
+    if state.doomstat.gamemode as u32 == commercial as u32 && W_CheckNumForName("map31") < 0 as i32
     {
-        unsafe { game_state() }.g_game.secretexit = false;
+        state.g_game.secretexit = false;
     } else {
-        unsafe { game_state() }.g_game.secretexit = true;
+        state.g_game.secretexit = true;
     }
-    unsafe { game_state() }.g_game.gameaction = ga_completed;
+    state.g_game.gameaction = ga_completed;
 }
 pub unsafe fn G_DoCompleted() {
     let mut i: i32 = 0;
@@ -1727,13 +1728,13 @@ pub unsafe fn G_DoWorldDone() {
     unsafe { game_state() }.g_game.gameaction = ga_nothing;
     unsafe { game_state() }.g_game.viewactive = true;
 }
-pub unsafe fn G_LoadGame(mut name: *mut ::core::ffi::c_char) {
+pub unsafe fn G_LoadGame(state: &mut GameState, mut name: *mut ::core::ffi::c_char) {
     M_StringCopy(
-        &raw mut unsafe { game_state() }.g_game.savename as *mut ::core::ffi::c_char,
+        &raw mut state.g_game.savename as *mut ::core::ffi::c_char,
         name,
         ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
     );
-    unsafe { game_state() }.g_game.gameaction = ga_loadgame;
+    state.g_game.gameaction = ga_loadgame;
 }
 pub unsafe fn G_DoLoadGame() {
     let mut savedleveltime: i32 = 0;
@@ -1770,14 +1771,14 @@ pub unsafe fn G_DoLoadGame() {
     }
     R_FillBackScreen(unsafe { game_state() });
 }
-pub unsafe fn G_SaveGame(mut slot: i32, mut description: *mut ::core::ffi::c_char) {
-    unsafe { game_state() }.g_game.savegameslot = slot;
+pub unsafe fn G_SaveGame(state: &mut GameState, mut slot: i32, mut description: *mut ::core::ffi::c_char) {
+    state.g_game.savegameslot = slot;
     M_StringCopy(
-        &raw mut unsafe { game_state() }.g_game.savedescription as *mut ::core::ffi::c_char,
+        &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char,
         description,
         ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
     );
-    unsafe { game_state() }.g_game.sendsave = true;
+    state.g_game.sendsave = true;
 }
 pub unsafe fn G_DoSaveGame() {
     let mut savegame_file: *mut ::core::ffi::c_char =
@@ -1849,11 +1850,11 @@ pub unsafe fn G_DoSaveGame() {
         b"game saved.\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     R_FillBackScreen(unsafe { game_state() });
 }
-pub unsafe fn G_DeferedInitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
-    unsafe { game_state() }.g_game.d_skill = skill;
-    unsafe { game_state() }.g_game.d_episode = episode;
-    unsafe { game_state() }.g_game.d_map = map;
-    unsafe { game_state() }.g_game.gameaction = ga_newgame;
+pub unsafe fn G_DeferedInitNew(state: &mut GameState, mut skill: skill_t, mut episode: i32, mut map: i32) {
+    state.g_game.d_skill = skill;
+    state.g_game.d_episode = episode;
+    state.g_game.d_map = map;
+    state.g_game.gameaction = ga_newgame;
 }
 pub unsafe fn G_DoNewGame() {
     unsafe { game_state() }.g_game.demoplayback = false;
@@ -2137,8 +2138,8 @@ pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
         .offset(maxsize as isize);
     unsafe { game_state() }.g_game.demorecording = true;
 }
-pub unsafe fn G_VanillaVersionCode() -> i32 {
-    match unsafe { game_state() }.doomstat.gameversion as u32 {
+pub unsafe fn G_VanillaVersionCode(state: &mut DoomstatState) -> i32 {
+    match state.gameversion as u32 {
         0 => {
             I_Error("Doom 1.2 does not have a version code!");
         }
@@ -2161,7 +2162,7 @@ pub unsafe fn G_BeginRecording() {
     } else {
         let fresh1 = unsafe { game_state() }.g_game.demo_p;
         unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-        *fresh1 = G_VanillaVersionCode() as byte;
+        *fresh1 = G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat) as byte;
     }
     let fresh2 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
@@ -2260,7 +2261,7 @@ pub unsafe fn G_DoPlayDemo() {
     let fresh24 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
     demoversion = *fresh24 as i32;
-    if demoversion == G_VanillaVersionCode() {
+    if demoversion == G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat) {
         unsafe { game_state() }.g_game.longtics = false;
     } else if demoversion == DOOM_191_VERSION {
         unsafe { game_state() }.g_game.longtics = true;
@@ -2270,7 +2271,7 @@ pub unsafe fn G_DoPlayDemo() {
         printf(
             message,
             demoversion,
-            G_VanillaVersionCode(),
+            G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat),
             DemoVersionDescription(demoversion),
         );
     }
