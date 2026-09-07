@@ -1,4 +1,5 @@
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
@@ -325,44 +326,47 @@ pub unsafe fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
     }
     return true;
 }
-pub unsafe fn R_Subsector(mut num: i32) {
+pub unsafe fn R_Subsector(state: &mut GameState, mut num: i32) {
     let mut count: i32 = 0;
     let mut line: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut sub: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
-    if num >= unsafe { game_state() }.p_setup.numsubsectors {
+    if num >= state.p_setup.numsubsectors {
         I_Error(&format!(
             "R_Subsector: ss {} with numss = {}",
-            num, unsafe { game_state() }.p_setup.numsubsectors
+            num, state.p_setup.numsubsectors
         ));
     }
-    unsafe { game_state() }.r_main.sscount += 1;
-    sub = unsafe { game_state() }
+    state.r_main.sscount += 1;
+    sub = state
         .p_setup
         .subsector_mut(SubsectorId(num as u32));
-    unsafe { game_state() }.r_bsp.frontsector = Some((*sub).sector);
+    state.r_bsp.frontsector = Some((*sub).sector);
     count = (*sub).numlines as i32;
-    line = unsafe { game_state() }.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
-    if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight < unsafe { game_state() }.r_main.viewz {
-        unsafe { game_state() }.r_plane.floorplane = R_FindPlane(
-            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight,
-            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorpic as i32,
-            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32,
+    line = state.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
+    let frontsector = state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap());
+    if (*frontsector).floorheight < state.r_main.viewz {
+        let (floorheight, floorpic, lightlevel) = (
+            (*frontsector).floorheight,
+            (*frontsector).floorpic as i32,
+            (*frontsector).lightlevel as i32,
         );
+        state.r_plane.floorplane = R_FindPlane(state, floorheight, floorpic, lightlevel);
     } else {
-        unsafe { game_state() }.r_plane.floorplane = ::core::ptr::null_mut::<visplane_t>();
+        state.r_plane.floorplane = ::core::ptr::null_mut::<visplane_t>();
     }
-    if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight > unsafe { game_state() }.r_main.viewz
-        || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+    if (*frontsector).ceilingheight > state.r_main.viewz
+        || (*frontsector).ceilingpic as i32 == state.r_sky.skyflatnum
     {
-        unsafe { game_state() }.r_plane.ceilingplane = R_FindPlane(
-            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight,
-            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32,
-            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32,
+        let (ceilingheight, ceilingpic, lightlevel) = (
+            (*frontsector).ceilingheight,
+            (*frontsector).ceilingpic as i32,
+            (*frontsector).lightlevel as i32,
         );
+        state.r_plane.ceilingplane = R_FindPlane(state, ceilingheight, ceilingpic, lightlevel);
     } else {
-        unsafe { game_state() }.r_plane.ceilingplane = ::core::ptr::null_mut::<visplane_t>();
+        state.r_plane.ceilingplane = ::core::ptr::null_mut::<visplane_t>();
     }
-    R_AddSprites(unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap()));
+    R_AddSprites(state, frontsector);
     loop {
         let fresh1 = count;
         count = count - 1;
@@ -378,9 +382,9 @@ pub unsafe fn R_RenderBSPNode(mut bspnum: i32) {
     let mut side: i32 = 0;
     if bspnum & NF_SUBSECTOR != 0 {
         if bspnum == -(1 as i32) {
-            R_Subsector(0 as i32);
+            R_Subsector(unsafe { game_state() }, 0 as i32);
         } else {
-            R_Subsector(bspnum & !NF_SUBSECTOR);
+            R_Subsector(unsafe { game_state() }, bspnum & !NF_SUBSECTOR);
         }
         return;
     }

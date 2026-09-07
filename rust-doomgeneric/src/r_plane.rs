@@ -156,17 +156,18 @@ pub unsafe fn R_ClearPlanes() {
     unsafe { game_state() }.r_plane.baseyscale = -FixedDiv(finesine[angle as usize], unsafe { game_state() }.r_main.centerxfrac);
 }
 pub unsafe fn R_FindPlane(
+    state: &mut GameState,
     mut height: fixed_t,
     mut picnum: i32,
     mut lightlevel: i32,
 ) -> *mut visplane_t {
     let mut check: *mut visplane_t = ::core::ptr::null_mut::<visplane_t>();
-    if picnum == unsafe { game_state() }.r_sky.skyflatnum {
+    if picnum == state.r_sky.skyflatnum {
         height = 0 as i32 as fixed_t;
         lightlevel = 0 as i32;
     }
-    check = &raw mut unsafe { game_state() }.r_plane.visplanes as *mut visplane_t;
-    while check < unsafe { game_state() }.r_plane.lastvisplane {
+    check = &raw mut state.r_plane.visplanes as *mut visplane_t;
+    while check < state.r_plane.lastvisplane {
         if height == (*check).height
             && picnum == (*check).picnum
             && lightlevel == (*check).lightlevel
@@ -175,14 +176,14 @@ pub unsafe fn R_FindPlane(
         }
         check = check.offset(1);
     }
-    if check < unsafe { game_state() }.r_plane.lastvisplane {
+    if check < state.r_plane.lastvisplane {
         return check;
     }
-    if unsafe { game_state() }.r_plane.lastvisplane.offset_from(&raw mut unsafe { game_state() }.r_plane.visplanes as *mut visplane_t) as i64 == MAXVISPLANES as i64
+    if state.r_plane.lastvisplane.offset_from(&raw mut state.r_plane.visplanes as *mut visplane_t) as i64 == MAXVISPLANES as i64
     {
         I_Error("R_FindPlane: no more visplanes");
     }
-    unsafe { game_state() }.r_plane.lastvisplane = unsafe { game_state() }.r_plane.lastvisplane.offset(1);
+    state.r_plane.lastvisplane = state.r_plane.lastvisplane.offset(1);
     (*check).height = height;
     (*check).picnum = picnum;
     (*check).lightlevel = lightlevel;
