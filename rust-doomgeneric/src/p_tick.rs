@@ -57,7 +57,7 @@ pub unsafe fn P_RunThinkers() {
                 );
             }
             ThinkerFn::Paused | ThinkerFn::Unresolved => {}
-            ThinkerFn::Mobj(f) => f(currentthinker as *mut mobj_t),
+            ThinkerFn::Mobj(f) => f((*(currentthinker as *mut mobj_t)).id),
             ThinkerFn::Ceiling(f) => f(currentthinker as *mut ceiling_t),
             ThinkerFn::Door(f) => f(currentthinker as *mut vldoor_t),
             ThinkerFn::Floor(f) => f(currentthinker as *mut floormove_t),

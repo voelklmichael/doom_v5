@@ -62,7 +62,7 @@ pub enum ThinkerFn {
     Paused,
     Removed,
     Unresolved,
-    Mobj(unsafe fn(*mut mobj_t)),
+    Mobj(unsafe fn(MobjId)),
     Ceiling(unsafe fn(*mut ceiling_t)),
     Door(unsafe fn(*mut vldoor_t)),
     Floor(unsafe fn(*mut floormove_t)),
@@ -829,7 +829,8 @@ pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) 
     (*mo).reactiontime = 18 as i32;
     P_RemoveMobj(state, mobj);
 }
-pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
+pub unsafe fn P_MobjThinker(id: MobjId) {
+    let mobj = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     if (*mobj).momx != 0 || (*mobj).momy != 0 || (*mobj).flags & MF_SKULLFLY as i32 != 0 {
         P_XYMovement(unsafe { &mut game_state().p_mobj }, mobj);
         if matches!((*mobj).thinker.function, ThinkerFn::Removed) {
