@@ -6,9 +6,6 @@ use crate::src::m_fixed::FixedDiv;
 use crate::src::m_fixed::FixedMul;
 use crate::src::r_bsp::drawsegs;
 use crate::src::r_bsp::ds_p;
-use crate::src::r_data::colormaps;
-use crate::src::r_data::firstflat;
-use crate::src::r_data::flattranslation;
 use crate::src::r_data::R_GetColumn;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::{drawseg_t, visplane_t};
@@ -283,7 +280,7 @@ pub unsafe fn R_DrawPlanes() {
         if !((*pl).minx > (*pl).maxx) {
             if (*pl).picnum == unsafe { game_state() }.r_sky.skyflatnum {
                 unsafe { game_state() }.r_draw.dc_iscale = unsafe { game_state() }.r_things.pspriteiscale >> unsafe { game_state() }.r_main.detailshift;
-                unsafe { game_state() }.r_draw.dc_colormap = colormaps;
+                unsafe { game_state() }.r_draw.dc_colormap = unsafe { game_state() }.r_data.colormaps;
                 unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_sky.skytexturemid as fixed_t;
                 x = (*pl).minx;
                 while x <= (*pl).maxx {
@@ -299,7 +296,7 @@ pub unsafe fn R_DrawPlanes() {
                     x += 1;
                 }
             } else {
-                lumpnum = firstflat + *flattranslation.offset((*pl).picnum as isize);
+                lumpnum = unsafe { game_state() }.r_data.firstflat + *unsafe { game_state() }.r_data.flattranslation.offset((*pl).picnum as isize);
                 unsafe { game_state() }.r_draw.ds_source = W_CacheLumpNum(lumpnum, PU_STATIC as i32) as *mut byte;
                 planeheight = ((*pl).height as i32 - unsafe { game_state() }.r_main.viewz as i32).abs() as fixed_t;
                 light = ((*pl).lightlevel >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;

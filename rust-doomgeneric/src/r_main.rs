@@ -14,7 +14,6 @@ use crate::src::r_bsp::R_ClearClipSegs;
 use crate::src::r_bsp::R_ClearDrawSegs;
 use crate::src::r_bsp::R_RenderBSPNode;
 use crate::src::r_bsp::NF_SUBSECTOR;
-use crate::src::r_data::colormaps;
 use crate::src::r_data::R_InitData;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::{node_t, seg_t};
@@ -389,7 +388,7 @@ pub unsafe fn R_InitLightTables() {
             if level >= NUMCOLORMAPS {
                 level = NUMCOLORMAPS - 1 as i32;
             }
-            unsafe { game_state() }.r_main.zlight[i as usize][j as usize] = colormaps.offset((level * 256 as i32) as isize);
+            unsafe { game_state() }.r_main.zlight[i as usize][j as usize] = unsafe { game_state() }.r_data.colormaps.offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;
@@ -474,7 +473,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
             if level >= NUMCOLORMAPS {
                 level = NUMCOLORMAPS - 1 as i32;
             }
-            unsafe { game_state() }.r_main.scalelight[i as usize][j as usize] = colormaps.offset((level * 256 as i32) as isize);
+            unsafe { game_state() }.r_main.scalelight[i as usize][j as usize] = unsafe { game_state() }.r_data.colormaps.offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;
@@ -525,7 +524,7 @@ pub unsafe fn R_SetupFrame(mut player: *mut player_t) {
     unsafe { game_state() }.r_main.viewcos = finecosine[(unsafe { game_state() }.r_main.viewangle >> ANGLETOFINESHIFT) as isize];
     unsafe { game_state() }.r_main.sscount = 0 as i32;
     if (*player).fixedcolormap != 0 {
-        unsafe { game_state() }.r_main.fixedcolormap = colormaps.offset(
+        unsafe { game_state() }.r_main.fixedcolormap = unsafe { game_state() }.r_data.colormaps.offset(
             (((*player).fixedcolormap * 256 as i32) as usize)
                 .wrapping_mul(::core::mem::size_of::<lighttable_t>() as usize) as isize,
         );

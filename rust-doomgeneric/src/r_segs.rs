@@ -14,8 +14,6 @@ use crate::src::r_bsp::frontsector;
 use crate::src::r_bsp::linedef;
 use crate::src::r_bsp::sidedef;
 use crate::src::r_data::column_t;
-use crate::src::r_data::textureheight;
-use crate::src::r_data::texturetranslation;
 use crate::src::r_data::R_GetColumn;
 use crate::src::r_defs::drawseg_t;
 use crate::src::r_defs::lighttable_t;
@@ -135,7 +133,7 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
     curline = (*ds).curline;
     frontsector = (*curline).frontsector;
     backsector = (*curline).backsector;
-    texnum = *texturetranslation.offset((*(*curline).sidedef).midtexture as isize);
+    texnum = *unsafe { game_state() }.r_data.texturetranslation.offset((*(*curline).sidedef).midtexture as isize);
     lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;
     if (*(*curline).v1).y == (*(*curline).v2).y {
         lightnum -= 1;
@@ -165,7 +163,7 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
         } else {
             (*backsector).floorheight
         };
-        unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_draw.dc_texturemid + *textureheight.offset(texnum as isize) - unsafe { game_state() }.r_main.viewz;
+        unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_draw.dc_texturemid + *unsafe { game_state() }.r_data.textureheight.offset(texnum as isize) - unsafe { game_state() }.r_main.viewz;
     } else {
         unsafe { game_state() }.r_draw.dc_texturemid = if (*frontsector).ceilingheight < (*backsector).ceilingheight {
             (*frontsector).ceilingheight
@@ -364,12 +362,12 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
     unsafe { game_state() }.r_segs.midtexture = unsafe { game_state() }.r_segs.toptexture;
     (*ds_p).maskedtexturecol = ::core::ptr::null_mut::<i16>();
     if backsector.is_null() {
-        unsafe { game_state() }.r_segs.midtexture = *texturetranslation.offset((*sidedef).midtexture as isize);
+        unsafe { game_state() }.r_segs.midtexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*sidedef).midtexture as isize);
         unsafe { game_state() }.r_segs.markceiling = true;
         unsafe { game_state() }.r_segs.markfloor = unsafe { game_state() }.r_segs.markceiling;
         if (*linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
             vtop =
-                (*frontsector).floorheight + *textureheight.offset((*sidedef).midtexture as isize);
+                (*frontsector).floorheight + *unsafe { game_state() }.r_data.textureheight.offset((*sidedef).midtexture as isize);
             unsafe { game_state() }.r_segs.rw_midtexturemid = vtop - unsafe { game_state() }.r_main.viewz;
         } else {
             unsafe { game_state() }.r_segs.rw_midtexturemid = unsafe { game_state() }.r_segs.worldtop as fixed_t;
@@ -441,17 +439,17 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
             unsafe { game_state() }.r_segs.markceiling = unsafe { game_state() }.r_segs.markfloor;
         }
         if unsafe { game_state() }.r_segs.worldhigh < unsafe { game_state() }.r_segs.worldtop {
-            unsafe { game_state() }.r_segs.toptexture = *texturetranslation.offset((*sidedef).toptexture as isize);
+            unsafe { game_state() }.r_segs.toptexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*sidedef).toptexture as isize);
             if (*linedef).flags as i32 & ML_DONTPEGTOP != 0 {
                 unsafe { game_state() }.r_segs.rw_toptexturemid = unsafe { game_state() }.r_segs.worldtop as fixed_t;
             } else {
                 vtop = (*backsector).ceilingheight
-                    + *textureheight.offset((*sidedef).toptexture as isize);
+                    + *unsafe { game_state() }.r_data.textureheight.offset((*sidedef).toptexture as isize);
                 unsafe { game_state() }.r_segs.rw_toptexturemid = vtop - unsafe { game_state() }.r_main.viewz;
             }
         }
         if unsafe { game_state() }.r_segs.worldlow > unsafe { game_state() }.r_segs.worldbottom {
-            unsafe { game_state() }.r_segs.bottomtexture = *texturetranslation.offset((*sidedef).bottomtexture as isize);
+            unsafe { game_state() }.r_segs.bottomtexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*sidedef).bottomtexture as isize);
             if (*linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
                 unsafe { game_state() }.r_segs.rw_bottomtexturemid = unsafe { game_state() }.r_segs.worldtop as fixed_t;
             } else {
