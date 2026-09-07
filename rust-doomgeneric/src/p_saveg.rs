@@ -958,6 +958,7 @@ pub unsafe fn P_UnArchiveThinkers() {
                     NULL,
                 ) as *mut mobj_t;
                 saveg_read_mobj_t(mobj);
+                (*mobj).id = unsafe { game_state() }.p_mobj.register(mobj);
                 (*mobj).target = ::core::ptr::null_mut::<mobj_s>();
                 (*mobj).tracer = ::core::ptr::null_mut::<mobj_s>();
                 P_SetThingPosition(mobj);
