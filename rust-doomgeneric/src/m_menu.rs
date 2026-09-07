@@ -37,8 +37,6 @@ use crate::src::m_misc::M_StringCopy;
 use crate::src::m_misc::__ctype_toupper_loc;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::r_main::R_SetViewSize;
-use crate::src::s_sound::musicVolume;
-use crate::src::s_sound::sfxVolume;
 use crate::src::s_sound::S_SetMusicVolume;
 use crate::src::s_sound::S_SetSfxVolume;
 use crate::src::s_sound::S_StartSound;
@@ -1104,14 +1102,14 @@ pub unsafe extern "C" fn M_DrawSound() {
         unsafe { game_state() }.m_menu.defs.SoundDef.y as i32
             + LINEHEIGHT * (sfx_vol as i32 + 1 as i32),
         16 as i32,
-        sfxVolume,
+        unsafe { game_state() }.s_sound.sfxVolume,
     );
     M_DrawThermo(
         unsafe { game_state() }.m_menu.defs.SoundDef.x as i32,
         unsafe { game_state() }.m_menu.defs.SoundDef.y as i32
             + LINEHEIGHT * (music_vol as i32 + 1 as i32),
         16 as i32,
-        musicVolume,
+        unsafe { game_state() }.s_sound.musicVolume,
     );
 }
 #[no_mangle]
@@ -1122,35 +1120,35 @@ pub unsafe extern "C" fn M_Sound(mut choice: i32) {
 pub unsafe extern "C" fn M_SfxVol(mut choice: i32) {
     match choice {
         0 => {
-            if sfxVolume != 0 {
-                sfxVolume -= 1;
+            if unsafe { game_state() }.s_sound.sfxVolume != 0 {
+                unsafe { game_state() }.s_sound.sfxVolume -= 1;
             }
         }
         1 => {
-            if sfxVolume < 15 as i32 {
-                sfxVolume += 1;
+            if unsafe { game_state() }.s_sound.sfxVolume < 15 as i32 {
+                unsafe { game_state() }.s_sound.sfxVolume += 1;
             }
         }
         _ => {}
     }
-    S_SetSfxVolume(sfxVolume * 8 as i32);
+    S_SetSfxVolume(unsafe { game_state() }.s_sound.sfxVolume * 8 as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_MusicVol(mut choice: i32) {
     match choice {
         0 => {
-            if musicVolume != 0 {
-                musicVolume -= 1;
+            if unsafe { game_state() }.s_sound.musicVolume != 0 {
+                unsafe { game_state() }.s_sound.musicVolume -= 1;
             }
         }
         1 => {
-            if musicVolume < 15 as i32 {
-                musicVolume += 1;
+            if unsafe { game_state() }.s_sound.musicVolume < 15 as i32 {
+                unsafe { game_state() }.s_sound.musicVolume += 1;
             }
         }
         _ => {}
     }
-    S_SetMusicVolume(musicVolume * 8 as i32);
+    S_SetMusicVolume(unsafe { game_state() }.s_sound.musicVolume * 8 as i32);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawMainMenu() {
