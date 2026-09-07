@@ -2,7 +2,6 @@ use crate::src::d_event::ev_keydown;
 use crate::src::d_event::event_t;
 use crate::src::d_event::{ga_nothing, ga_worlddone};
 use crate::src::d_event::{gamestate_t, GS_FINALE};
-use crate::src::d_main::wipegamestate;
 use crate::src::d_mode::exe_chex;
 use crate::src::d_mode::{commercial, retail};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx, pack_plut, pack_tnt, GameMission_t};
@@ -420,7 +419,7 @@ pub unsafe fn F_Ticker(state: &mut FFinaleState) {
     {
         state.finalecount = 0 as u32;
         state.finalestage = F_STAGE_ARTSCREEN;
-        wipegamestate = 4294967295 as gamestate_t;
+        unsafe { game_state() }.d_main.wipegamestate = 4294967295 as gamestate_t;
         if unsafe { game_state() }.g_game.gameepisode == 3 as i32 {
             S_StartMusic(unsafe { &mut game_state().sounds }, mus_bunny as i32);
         }
@@ -578,7 +577,7 @@ const INITIAL_CASTORDER: [castinfo_t; 18] = [
     },
 ];
 pub unsafe fn F_StartCast(state: &mut FFinaleState) {
-    wipegamestate = 4294967295 as gamestate_t;
+    unsafe { game_state() }.d_main.wipegamestate = 4294967295 as gamestate_t;
     state.castnum = 0 as i32;
     state.caststate = (&raw mut states as *mut state_t).offset(
         (*(&raw mut mobjinfo as *mut mobjinfo_t).offset(

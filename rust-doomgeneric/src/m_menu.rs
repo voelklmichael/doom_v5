@@ -8,7 +8,6 @@ use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 
 use crate::src::d_event::GS_LEVEL;
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse, ev_quit};
-use crate::src::d_main::devparm;
 use crate::src::d_mode::skill_t;
 use crate::src::d_mode::{commercial, registered, retail, shareware};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
@@ -1866,7 +1865,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
         return true;
     }
-    if devparm && key == unsafe { game_state() }.m_controls.key_menu_help
+    if unsafe { game_state() }.d_main.devparm && key == unsafe { game_state() }.m_controls.key_menu_help
         || key != 0 as i32 && key == unsafe { game_state() }.m_controls.key_menu_screenshot
     {
         G_ScreenShot();

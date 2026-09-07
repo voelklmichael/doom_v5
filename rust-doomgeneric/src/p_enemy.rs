@@ -1,4 +1,3 @@
-use crate::src::d_main::fastparm;
 use crate::src::d_mode::commercial;
 use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_easy, sk_nightmare};
@@ -611,7 +610,7 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
     }
     if (*actor).flags & MF_JUSTATTACKED as i32 != 0 {
         (*actor).flags &= !(MF_JUSTATTACKED as i32);
-        if unsafe { game_state() }.g_game.gameskill as i32 != sk_nightmare as i32 && !fastparm {
+        if unsafe { game_state() }.g_game.gameskill as i32 != sk_nightmare as i32 && !unsafe { game_state() }.d_main.fastparm {
             P_NewChaseDir(actor);
         }
         return;
@@ -629,7 +628,7 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
     }
     if (*(*actor).info).missilestate != 0 {
         if !((unsafe { game_state() }.g_game.gameskill as i32) < sk_nightmare as i32
-            && !fastparm
+            && !unsafe { game_state() }.d_main.fastparm
             && (*actor).movecount != 0)
         {
             if P_CheckMissileRange(actor) {
