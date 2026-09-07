@@ -11,6 +11,7 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
 use crate::src::g_game::G_WorldDone;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::m_random::M_Random;
@@ -861,37 +862,37 @@ static lnodes: [[point_t; 9]; 4] = [
     [point_t { x: 0, y: 0 }; 9],
 ];
 pub const SHOWNEXTLOCDELAY: i32 = 4;
-pub unsafe fn WI_slamBackground() {
+pub unsafe fn WI_slamBackground(state: &mut GameState) {
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         0 as i32,
         0 as i32,
-        unsafe { game_state() }.wi_stuff.background,
+        state.wi_stuff.background,
     );
 }
 pub unsafe fn WI_Responder(mut ev: *mut event_t) -> bool {
     return false;
 }
-pub unsafe fn WI_drawLF() {
+pub unsafe fn WI_drawLF(state: &mut GameState) {
     let mut y: i32 = WI_TITLEY;
-    if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32
-        || (*unsafe { game_state() }.wi_stuff.wbs).last < unsafe { game_state() }.wi_stuff.NUMCMAPS
+    if state.doomstat.gamemode as u32 != commercial as i32 as u32
+        || (*state.wi_stuff.wbs).last < state.wi_stuff.NUMCMAPS
     {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
-            (SCREENWIDTH - (**unsafe { game_state() }.wi_stuff.lnames.offset((*unsafe { game_state() }.wi_stuff.wbs).last as isize)).width as i32) / 2 as i32,
+            &mut state.v_video,
+            (SCREENWIDTH - (**state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).last as isize)).width as i32) / 2 as i32,
             y,
-            *unsafe { game_state() }.wi_stuff.lnames.offset((*unsafe { game_state() }.wi_stuff.wbs).last as isize),
+            *state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).last as isize),
         );
-        y += 5 as i32 * (**unsafe { game_state() }.wi_stuff.lnames.offset((*unsafe { game_state() }.wi_stuff.wbs).last as isize)).height as i32 / 4 as i32;
+        y += 5 as i32 * (**state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).last as isize)).height as i32 / 4 as i32;
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
-            (SCREENWIDTH - (*unsafe { game_state() }.wi_stuff.finished).width as i32) / 2 as i32,
+            &mut state.v_video,
+            (SCREENWIDTH - (*state.wi_stuff.finished).width as i32) / 2 as i32,
             y,
-            unsafe { game_state() }.wi_stuff.finished,
+            state.wi_stuff.finished,
         );
-    } else if !((*unsafe { game_state() }.wi_stuff.wbs).last == unsafe { game_state() }.wi_stuff.NUMCMAPS) {
-        if (*unsafe { game_state() }.wi_stuff.wbs).last > unsafe { game_state() }.wi_stuff.NUMCMAPS {
+    } else if !((*state.wi_stuff.wbs).last == state.wi_stuff.NUMCMAPS) {
+        if (*state.wi_stuff.wbs).last > state.wi_stuff.NUMCMAPS {
             let mut tmp: patch_t = patch_t {
                 width: SCREENWIDTH as i16,
                 height: SCREENHEIGHT as i16,
@@ -902,7 +903,7 @@ pub unsafe fn WI_drawLF() {
                 ],
             };
             V_DrawPatch(
-                unsafe { &mut game_state().v_video },
+                &mut state.v_video,
                 0 as i32,
                 y,
                 &raw mut tmp,
@@ -910,23 +911,23 @@ pub unsafe fn WI_drawLF() {
         }
     }
 }
-pub unsafe fn WI_drawEL() {
+pub unsafe fn WI_drawEL(state: &mut GameState) {
     let mut y: i32 = WI_TITLEY;
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
-        (SCREENWIDTH - (*unsafe { game_state() }.wi_stuff.entering).width as i32) / 2 as i32,
+        &mut state.v_video,
+        (SCREENWIDTH - (*state.wi_stuff.entering).width as i32) / 2 as i32,
         y,
-        unsafe { game_state() }.wi_stuff.entering,
+        state.wi_stuff.entering,
     );
-    y += 5 as i32 * (**unsafe { game_state() }.wi_stuff.lnames.offset((*unsafe { game_state() }.wi_stuff.wbs).next as isize)).height as i32 / 4 as i32;
+    y += 5 as i32 * (**state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).next as isize)).height as i32 / 4 as i32;
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
-        (SCREENWIDTH - (**unsafe { game_state() }.wi_stuff.lnames.offset((*unsafe { game_state() }.wi_stuff.wbs).next as isize)).width as i32) / 2 as i32,
+        &mut state.v_video,
+        (SCREENWIDTH - (**state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).next as isize)).width as i32) / 2 as i32,
         y,
-        *unsafe { game_state() }.wi_stuff.lnames.offset((*unsafe { game_state() }.wi_stuff.wbs).next as isize),
+        *state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).next as isize),
     );
 }
-pub unsafe fn WI_drawOnLnode(mut n: i32, mut c: *mut *mut patch_t) {
+pub unsafe fn WI_drawOnLnode(state: &mut GameState, mut n: i32, mut c: *mut *mut patch_t) {
     let mut i: i32 = 0;
     let mut left: i32 = 0;
     let mut top: i32 = 0;
@@ -936,9 +937,9 @@ pub unsafe fn WI_drawOnLnode(mut n: i32, mut c: *mut *mut patch_t) {
     i = 0 as i32;
     loop {
         left =
-            lnodes[(*unsafe { game_state() }.wi_stuff.wbs).epsd as usize][n as usize].x - (**c.offset(i as isize)).leftoffset as i32;
+            lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].x - (**c.offset(i as isize)).leftoffset as i32;
         top =
-            lnodes[(*unsafe { game_state() }.wi_stuff.wbs).epsd as usize][n as usize].y - (**c.offset(i as isize)).topoffset as i32;
+            lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].y - (**c.offset(i as isize)).topoffset as i32;
         right = left + (**c.offset(i as isize)).width as i32;
         bottom = top + (**c.offset(i as isize)).height as i32;
         if left >= 0 as i32 && right < SCREENWIDTH && top >= 0 as i32 && bottom < SCREENHEIGHT {
@@ -952,9 +953,9 @@ pub unsafe fn WI_drawOnLnode(mut n: i32, mut c: *mut *mut patch_t) {
     }
     if fits && i < 2 as i32 {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
-            lnodes[(*unsafe { game_state() }.wi_stuff.wbs).epsd as usize][n as usize].x,
-            lnodes[(*unsafe { game_state() }.wi_stuff.wbs).epsd as usize][n as usize].y,
+            &mut state.v_video,
+            lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].x,
+            lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].y,
             *c.offset(i as isize),
         );
     } else {
@@ -1042,22 +1043,22 @@ pub unsafe fn WI_updateAnimatedBack() {
         i += 1;
     }
 }
-pub unsafe fn WI_drawAnimatedBack() {
+pub unsafe fn WI_drawAnimatedBack(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         return;
     }
-    if (*unsafe { game_state() }.wi_stuff.wbs).epsd > 2 as i32 {
+    if (*state.wi_stuff.wbs).epsd > 2 as i32 {
         return;
     }
     i = 0 as i32;
-    while i < unsafe { game_state() }.wi_stuff.NUMANIMS[(*unsafe { game_state() }.wi_stuff.wbs).epsd as usize] {
-        a = (*(&raw mut unsafe { game_state() }.wi_stuff.anims as *mut *mut anim_t).offset((*unsafe { game_state() }.wi_stuff.wbs).epsd as isize)).offset(i as isize)
+    while i < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
+        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t).offset((*state.wi_stuff.wbs).epsd as isize)).offset(i as isize)
             as *mut anim_t;
         if (*a).ctr >= 0 as i32 {
             V_DrawPatch(
-                unsafe { &mut game_state().v_video },
+                &mut state.v_video,
                 (*a).loc.x,
                 (*a).loc.y,
                 (*a).p[(*a).ctr as usize],
@@ -1066,8 +1067,8 @@ pub unsafe fn WI_drawAnimatedBack() {
         i += 1;
     }
 }
-pub unsafe fn WI_drawNum(mut x: i32, mut y: i32, mut n: i32, mut digits: i32) -> i32 {
-    let mut fontwidth: i32 = (*unsafe { game_state() }.wi_stuff.num[0 as i32 as usize]).width as i32;
+pub unsafe fn WI_drawNum(state: &mut GameState, mut x: i32, mut y: i32, mut n: i32, mut digits: i32) -> i32 {
+    let mut fontwidth: i32 = (*state.wi_stuff.num[0 as i32 as usize]).width as i32;
     let mut neg: i32 = 0;
     let mut temp: i32 = 0;
     if digits < 0 as i32 {
@@ -1097,27 +1098,27 @@ pub unsafe fn WI_drawNum(mut x: i32, mut y: i32, mut n: i32, mut digits: i32) ->
         }
         x -= fontwidth;
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
+            &mut state.v_video,
             x,
             y,
-            unsafe { game_state() }.wi_stuff.num[(n % 10 as i32) as usize],
+            state.wi_stuff.num[(n % 10 as i32) as usize],
         );
         n /= 10 as i32;
     }
     if neg != 0 {
         x -= 8 as i32;
-        V_DrawPatch(unsafe { &mut game_state().v_video }, x, y, unsafe { game_state() }.wi_stuff.wiminus);
+        V_DrawPatch(&mut state.v_video, x, y, state.wi_stuff.wiminus);
     }
     return x;
 }
-pub unsafe fn WI_drawPercent(mut x: i32, mut y: i32, mut p_0: i32) {
+pub unsafe fn WI_drawPercent(state: &mut GameState, mut x: i32, mut y: i32, mut p_0: i32) {
     if p_0 < 0 as i32 {
         return;
     }
-    V_DrawPatch(unsafe { &mut game_state().v_video }, x, y, unsafe { game_state() }.wi_stuff.percent);
-    WI_drawNum(x, y, p_0, -(1 as i32));
+    V_DrawPatch(&mut state.v_video, x, y, state.wi_stuff.percent);
+    WI_drawNum(state, x, y, p_0, -(1 as i32));
 }
-pub unsafe fn WI_drawTime(mut x: i32, mut y: i32, mut t: i32) {
+pub unsafe fn WI_drawTime(state: &mut GameState, mut x: i32, mut y: i32, mut t: i32) {
     let mut div: i32 = 0;
     let mut n: i32 = 0;
     if t < 0 as i32 {
@@ -1127,10 +1128,10 @@ pub unsafe fn WI_drawTime(mut x: i32, mut y: i32, mut t: i32) {
         div = 1 as i32;
         loop {
             n = t / div % 60 as i32;
-            x = WI_drawNum(x, y, n, 2 as i32) - (*unsafe { game_state() }.wi_stuff.colon).width as i32;
+            x = WI_drawNum(state, x, y, n, 2 as i32) - (*state.wi_stuff.colon).width as i32;
             div *= 60 as i32;
             if div == 60 as i32 || t / div != 0 {
-                V_DrawPatch(unsafe { &mut game_state().v_video }, x, y, unsafe { game_state() }.wi_stuff.colon);
+                V_DrawPatch(&mut state.v_video, x, y, state.wi_stuff.colon);
             }
             if !(t / div != 0) {
                 break;
@@ -1138,10 +1139,10 @@ pub unsafe fn WI_drawTime(mut x: i32, mut y: i32, mut t: i32) {
         }
     } else {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
-            x - (*unsafe { game_state() }.wi_stuff.sucks).width as i32,
+            &mut state.v_video,
+            x - (*state.wi_stuff.sucks).width as i32,
             y,
-            unsafe { game_state() }.wi_stuff.sucks,
+            state.wi_stuff.sucks,
         );
     };
 }
@@ -1180,42 +1181,46 @@ pub unsafe fn WI_updateShowNextLoc() {
         unsafe { game_state() }.wi_stuff.snl_pointeron = (unsafe { game_state() }.wi_stuff.cnt & 31 as i32) < 20 as i32;
     };
 }
-pub unsafe fn WI_drawShowNextLoc() {
+pub unsafe fn WI_drawShowNextLoc(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut last: i32 = 0;
-    WI_slamBackground();
-    WI_drawAnimatedBack();
-    if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32 {
-        if (*unsafe { game_state() }.wi_stuff.wbs).epsd > 2 as i32 {
-            WI_drawEL();
+    WI_slamBackground(state);
+    WI_drawAnimatedBack(state);
+    if state.doomstat.gamemode as u32 != commercial as i32 as u32 {
+        if (*state.wi_stuff.wbs).epsd > 2 as i32 {
+            WI_drawEL(state);
             return;
         }
-        last = if (*unsafe { game_state() }.wi_stuff.wbs).last == 8 as i32 {
-            (*unsafe { game_state() }.wi_stuff.wbs).next - 1 as i32
+        last = if (*state.wi_stuff.wbs).last == 8 as i32 {
+            (*state.wi_stuff.wbs).next - 1 as i32
         } else {
-            (*unsafe { game_state() }.wi_stuff.wbs).last
+            (*state.wi_stuff.wbs).last
         };
         i = 0 as i32;
         while i <= last {
-            WI_drawOnLnode(i, &raw mut unsafe { game_state() }.wi_stuff.splat as *mut *mut patch_t);
+            let splat = &raw mut state.wi_stuff.splat as *mut *mut patch_t;
+            WI_drawOnLnode(state, i, splat);
             i += 1;
         }
-        if (*unsafe { game_state() }.wi_stuff.wbs).didsecret {
-            WI_drawOnLnode(8 as i32, &raw mut unsafe { game_state() }.wi_stuff.splat as *mut *mut patch_t);
+        if (*state.wi_stuff.wbs).didsecret {
+            let splat = &raw mut state.wi_stuff.splat as *mut *mut patch_t;
+            WI_drawOnLnode(state, 8 as i32, splat);
         }
-        if unsafe { game_state() }.wi_stuff.snl_pointeron {
-            WI_drawOnLnode((*unsafe { game_state() }.wi_stuff.wbs).next, &raw mut unsafe { game_state() }.wi_stuff.yah as *mut *mut patch_t);
+        if state.wi_stuff.snl_pointeron {
+            let next = (*state.wi_stuff.wbs).next;
+            let yah = &raw mut state.wi_stuff.yah as *mut *mut patch_t;
+            WI_drawOnLnode(state, next, yah);
         }
     }
-    if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32
-        || (*unsafe { game_state() }.wi_stuff.wbs).next != 30 as i32
+    if state.doomstat.gamemode as u32 != commercial as i32 as u32
+        || (*state.wi_stuff.wbs).next != 30 as i32
     {
-        WI_drawEL();
+        WI_drawEL(state);
     }
 }
-pub unsafe fn WI_drawNoState() {
-    unsafe { game_state() }.wi_stuff.snl_pointeron = true;
-    WI_drawShowNextLoc();
+pub unsafe fn WI_drawNoState(state: &mut GameState) {
+    state.wi_stuff.snl_pointeron = true;
+    WI_drawShowNextLoc(state);
 }
 pub unsafe fn WI_fragSum(mut playernum: i32) -> i32 {
     let mut i: i32 = 0;
@@ -1354,62 +1359,62 @@ pub unsafe fn WI_updateDeathmatchStats() {
         }
     }
 }
-pub unsafe fn WI_drawDeathmatchStats() {
+pub unsafe fn WI_drawDeathmatchStats(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut w: i32 = 0;
-    WI_slamBackground();
-    WI_drawAnimatedBack();
-    WI_drawLF();
+    WI_slamBackground(state);
+    WI_drawAnimatedBack(state);
+    WI_drawLF(state);
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
-        DM_TOTALSX - (*unsafe { game_state() }.wi_stuff.total).width as i32 / 2 as i32,
+        &mut state.v_video,
+        DM_TOTALSX - (*state.wi_stuff.total).width as i32 / 2 as i32,
         DM_MATRIXY - WI_SPACINGY + 10 as i32,
-        unsafe { game_state() }.wi_stuff.total,
+        state.wi_stuff.total,
     );
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         DM_KILLERSX,
         DM_KILLERSY,
-        unsafe { game_state() }.wi_stuff.killers,
+        state.wi_stuff.killers,
     );
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         DM_VICTIMSX,
         DM_VICTIMSY,
-        unsafe { game_state() }.wi_stuff.victims,
+        state.wi_stuff.victims,
     );
     x = DM_MATRIXX + DM_SPACINGX;
     y = DM_MATRIXY;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
+        if state.g_game.playeringame[i as usize] != 0 {
             V_DrawPatch(
-                unsafe { &mut game_state().v_video },
-                x - (*unsafe { game_state() }.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
+                &mut state.v_video,
+                x - (*state.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
                 DM_MATRIXY - WI_SPACINGY,
-                unsafe { game_state() }.wi_stuff.p[i as usize],
+                state.wi_stuff.p[i as usize],
             );
             V_DrawPatch(
-                unsafe { &mut game_state().v_video },
-                DM_MATRIXX - (*unsafe { game_state() }.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
+                &mut state.v_video,
+                DM_MATRIXX - (*state.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
                 y,
-                unsafe { game_state() }.wi_stuff.p[i as usize],
+                state.wi_stuff.p[i as usize],
             );
-            if i == unsafe { game_state() }.wi_stuff.me {
+            if i == state.wi_stuff.me {
                 V_DrawPatch(
-                    unsafe { &mut game_state().v_video },
-                    x - (*unsafe { game_state() }.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
+                    &mut state.v_video,
+                    x - (*state.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
                     DM_MATRIXY - WI_SPACINGY,
-                    unsafe { game_state() }.wi_stuff.bstar,
+                    state.wi_stuff.bstar,
                 );
                 V_DrawPatch(
-                    unsafe { &mut game_state().v_video },
-                    DM_MATRIXX - (*unsafe { game_state() }.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
+                    &mut state.v_video,
+                    DM_MATRIXX - (*state.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
                     y,
-                    unsafe { game_state() }.wi_stuff.star,
+                    state.wi_stuff.star,
                 );
             }
         }
@@ -1418,20 +1423,22 @@ pub unsafe fn WI_drawDeathmatchStats() {
         i += 1;
     }
     y = DM_MATRIXY + 10 as i32;
-    w = (*unsafe { game_state() }.wi_stuff.num[0 as i32 as usize]).width as i32;
+    w = (*state.wi_stuff.num[0 as i32 as usize]).width as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
         x = DM_MATRIXX + DM_SPACINGX;
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
+        if state.g_game.playeringame[i as usize] != 0 {
             j = 0 as i32;
             while j < MAXPLAYERS {
-                if unsafe { game_state() }.g_game.playeringame[j as usize] != 0 {
-                    WI_drawNum(x + w, y, unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize], 2 as i32);
+                if state.g_game.playeringame[j as usize] != 0 {
+                    let dm_frags = state.wi_stuff.dm_frags[i as usize][j as usize];
+                    WI_drawNum(state, x + w, y, dm_frags, 2 as i32);
                 }
                 x += DM_SPACINGX;
                 j += 1;
             }
-            WI_drawNum(DM_TOTALSX + w, y, unsafe { game_state() }.wi_stuff.dm_totals[i as usize], 2 as i32);
+            let dm_totals = state.wi_stuff.dm_totals[i as usize];
+            WI_drawNum(state, DM_TOTALSX + w, y, dm_totals, 2 as i32);
         }
         y += WI_SPACINGY;
         i += 1;
@@ -1633,84 +1640,88 @@ pub unsafe fn WI_updateNetgameStats() {
         }
     }
 }
-pub unsafe fn WI_drawNetgameStats() {
+pub unsafe fn WI_drawNetgameStats(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut x: i32 = 0;
     let mut y: i32 = 0;
-    let mut pwidth: i32 = (*unsafe { game_state() }.wi_stuff.percent).width as i32;
-    WI_slamBackground();
-    WI_drawAnimatedBack();
-    WI_drawLF();
+    let mut pwidth: i32 = (*state.wi_stuff.percent).width as i32;
+    WI_slamBackground(state);
+    WI_drawAnimatedBack(state);
+    WI_drawLF(state);
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         32 as i32
-            + (*unsafe { game_state() }.wi_stuff.star).width as i32 / 2 as i32
-            + 32 as i32 * (unsafe { game_state() }.wi_stuff.dofrags == 0) as i32
+            + (*state.wi_stuff.star).width as i32 / 2 as i32
+            + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32
             + NG_SPACINGX
-            - (*unsafe { game_state() }.wi_stuff.kills).width as i32,
+            - (*state.wi_stuff.kills).width as i32,
         NG_STATSY,
-        unsafe { game_state() }.wi_stuff.kills,
+        state.wi_stuff.kills,
     );
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         32 as i32
-            + (*unsafe { game_state() }.wi_stuff.star).width as i32 / 2 as i32
-            + 32 as i32 * (unsafe { game_state() }.wi_stuff.dofrags == 0) as i32
+            + (*state.wi_stuff.star).width as i32 / 2 as i32
+            + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32
             + 2 as i32 * NG_SPACINGX
-            - (*unsafe { game_state() }.wi_stuff.items).width as i32,
+            - (*state.wi_stuff.items).width as i32,
         NG_STATSY,
-        unsafe { game_state() }.wi_stuff.items,
+        state.wi_stuff.items,
     );
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         32 as i32
-            + (*unsafe { game_state() }.wi_stuff.star).width as i32 / 2 as i32
-            + 32 as i32 * (unsafe { game_state() }.wi_stuff.dofrags == 0) as i32
+            + (*state.wi_stuff.star).width as i32 / 2 as i32
+            + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32
             + 3 as i32 * NG_SPACINGX
-            - (*unsafe { game_state() }.wi_stuff.secret).width as i32,
+            - (*state.wi_stuff.secret).width as i32,
         NG_STATSY,
-        unsafe { game_state() }.wi_stuff.secret,
+        state.wi_stuff.secret,
     );
-    if unsafe { game_state() }.wi_stuff.dofrags != 0 {
+    if state.wi_stuff.dofrags != 0 {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
+            &mut state.v_video,
             32 as i32
-                + (*unsafe { game_state() }.wi_stuff.star).width as i32 / 2 as i32
-                + 32 as i32 * (unsafe { game_state() }.wi_stuff.dofrags == 0) as i32
+                + (*state.wi_stuff.star).width as i32 / 2 as i32
+                + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32
                 + 4 as i32 * NG_SPACINGX
-                - (*unsafe { game_state() }.wi_stuff.frags).width as i32,
+                - (*state.wi_stuff.frags).width as i32,
             NG_STATSY,
-            unsafe { game_state() }.wi_stuff.frags,
+            state.wi_stuff.frags,
         );
     }
-    y = NG_STATSY + (*unsafe { game_state() }.wi_stuff.kills).height as i32;
+    y = NG_STATSY + (*state.wi_stuff.kills).height as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
-            x = 32 as i32 + (*unsafe { game_state() }.wi_stuff.star).width as i32 / 2 as i32 + 32 as i32 * (unsafe { game_state() }.wi_stuff.dofrags == 0) as i32;
+        if !(state.g_game.playeringame[i as usize] == 0) {
+            x = 32 as i32 + (*state.wi_stuff.star).width as i32 / 2 as i32 + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32;
             V_DrawPatch(
-                unsafe { &mut game_state().v_video },
-                x - (*unsafe { game_state() }.wi_stuff.p[i as usize]).width as i32,
+                &mut state.v_video,
+                x - (*state.wi_stuff.p[i as usize]).width as i32,
                 y,
-                unsafe { game_state() }.wi_stuff.p[i as usize],
+                state.wi_stuff.p[i as usize],
             );
-            if i == unsafe { game_state() }.wi_stuff.me {
+            if i == state.wi_stuff.me {
                 V_DrawPatch(
-                    unsafe { &mut game_state().v_video },
-                    x - (*unsafe { game_state() }.wi_stuff.p[i as usize]).width as i32,
+                    &mut state.v_video,
+                    x - (*state.wi_stuff.p[i as usize]).width as i32,
                     y,
-                    unsafe { game_state() }.wi_stuff.star,
+                    state.wi_stuff.star,
                 );
             }
             x += NG_SPACINGX;
-            WI_drawPercent(x - pwidth, y + 10 as i32, unsafe { game_state() }.wi_stuff.cnt_kills[i as usize]);
+            let cnt_kills = state.wi_stuff.cnt_kills[i as usize];
+            WI_drawPercent(state, x - pwidth, y + 10 as i32, cnt_kills);
             x += NG_SPACINGX;
-            WI_drawPercent(x - pwidth, y + 10 as i32, unsafe { game_state() }.wi_stuff.cnt_items[i as usize]);
+            let cnt_items = state.wi_stuff.cnt_items[i as usize];
+            WI_drawPercent(state, x - pwidth, y + 10 as i32, cnt_items);
             x += NG_SPACINGX;
-            WI_drawPercent(x - pwidth, y + 10 as i32, unsafe { game_state() }.wi_stuff.cnt_secret[i as usize]);
+            let cnt_secret = state.wi_stuff.cnt_secret[i as usize];
+            WI_drawPercent(state, x - pwidth, y + 10 as i32, cnt_secret);
             x += NG_SPACINGX;
-            if unsafe { game_state() }.wi_stuff.dofrags != 0 {
-                WI_drawNum(x, y + 10 as i32, unsafe { game_state() }.wi_stuff.cnt_frags[i as usize], -(1 as i32));
+            if state.wi_stuff.dofrags != 0 {
+                let cnt_frags = state.wi_stuff.cnt_frags[i as usize];
+                WI_drawNum(state, x, y + 10 as i32, cnt_frags, -(1 as i32));
             }
             y += WI_SPACINGY;
         }
@@ -1856,60 +1867,53 @@ pub unsafe fn WI_updateStats() {
         }
     }
 }
-pub unsafe fn WI_drawStats() {
+pub unsafe fn WI_drawStats(state: &mut GameState) {
     let mut lh: i32 = 0;
-    lh = 3 as i32 * (*unsafe { game_state() }.wi_stuff.num[0 as i32 as usize]).height as i32 / 2 as i32;
-    WI_slamBackground();
-    WI_drawAnimatedBack();
-    WI_drawLF();
+    lh = 3 as i32 * (*state.wi_stuff.num[0 as i32 as usize]).height as i32 / 2 as i32;
+    WI_slamBackground(state);
+    WI_drawAnimatedBack(state);
+    WI_drawLF(state);
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         SP_STATSX,
         SP_STATSY,
-        unsafe { game_state() }.wi_stuff.kills,
+        state.wi_stuff.kills,
     );
-    WI_drawPercent(
-        SCREENWIDTH - SP_STATSX,
-        SP_STATSY,
-        unsafe { game_state() }.wi_stuff.cnt_kills[0 as i32 as usize],
-    );
+    let cnt_kills = state.wi_stuff.cnt_kills[0 as i32 as usize];
+    WI_drawPercent(state, SCREENWIDTH - SP_STATSX, SP_STATSY, cnt_kills);
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         SP_STATSX,
         SP_STATSY + lh,
-        unsafe { game_state() }.wi_stuff.items,
+        state.wi_stuff.items,
     );
-    WI_drawPercent(
-        SCREENWIDTH - SP_STATSX,
-        SP_STATSY + lh,
-        unsafe { game_state() }.wi_stuff.cnt_items[0 as i32 as usize],
-    );
+    let cnt_items = state.wi_stuff.cnt_items[0 as i32 as usize];
+    WI_drawPercent(state, SCREENWIDTH - SP_STATSX, SP_STATSY + lh, cnt_items);
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         SP_STATSX,
         SP_STATSY + 2 as i32 * lh,
-        unsafe { game_state() }.wi_stuff.sp_secret,
+        state.wi_stuff.sp_secret,
     );
-    WI_drawPercent(
-        SCREENWIDTH - SP_STATSX,
-        SP_STATSY + 2 as i32 * lh,
-        unsafe { game_state() }.wi_stuff.cnt_secret[0 as i32 as usize],
-    );
+    let cnt_secret = state.wi_stuff.cnt_secret[0 as i32 as usize];
+    WI_drawPercent(state, SCREENWIDTH - SP_STATSX, SP_STATSY + 2 as i32 * lh, cnt_secret);
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         SP_TIMEX,
         SP_TIMEY,
-        unsafe { game_state() }.wi_stuff.timepatch,
+        state.wi_stuff.timepatch,
     );
-    WI_drawTime(SCREENWIDTH / 2 as i32 - SP_TIMEX, SP_TIMEY, unsafe { game_state() }.wi_stuff.cnt_time);
-    if (*unsafe { game_state() }.wi_stuff.wbs).epsd < 3 as i32 {
+    let cnt_time = state.wi_stuff.cnt_time;
+    WI_drawTime(state, SCREENWIDTH / 2 as i32 - SP_TIMEX, SP_TIMEY, cnt_time);
+    if (*state.wi_stuff.wbs).epsd < 3 as i32 {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
+            &mut state.v_video,
             SCREENWIDTH / 2 as i32 + SP_TIMEX,
             SP_TIMEY,
-            unsafe { game_state() }.wi_stuff.par,
+            state.wi_stuff.par,
         );
-        WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, unsafe { game_state() }.wi_stuff.cnt_par);
+        let cnt_par = state.wi_stuff.cnt_par;
+        WI_drawTime(state, SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
     }
 }
 pub unsafe fn WI_checkForAccelerate() {
@@ -2231,22 +2235,22 @@ unsafe fn WI_unloadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *m
     W_ReleaseLumpName(&wad_name8_to_string(name));
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
-pub unsafe fn WI_Drawer() {
-    match unsafe { game_state() }.wi_stuff.state as i32 {
+pub unsafe fn WI_Drawer(state: &mut GameState) {
+    match state.wi_stuff.state as i32 {
         0 => {
-            if unsafe { game_state() }.g_game.deathmatch != 0 {
-                WI_drawDeathmatchStats();
-            } else if unsafe { game_state() }.g_game.netgame {
-                WI_drawNetgameStats();
+            if state.g_game.deathmatch != 0 {
+                WI_drawDeathmatchStats(state);
+            } else if state.g_game.netgame {
+                WI_drawNetgameStats(state);
             } else {
-                WI_drawStats();
+                WI_drawStats(state);
             }
         }
         1 => {
-            WI_drawShowNextLoc();
+            WI_drawShowNextLoc(state);
         }
         -1 => {
-            WI_drawNoState();
+            WI_drawNoState(state);
         }
         _ => {}
     };
