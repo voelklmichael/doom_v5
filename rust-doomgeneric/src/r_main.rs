@@ -548,13 +548,13 @@ pub unsafe fn R_RenderPlayerView(state: &mut GameState, mut player: *mut player_
     R_SetupFrame(player);
     R_ClearClipSegs(state);
     R_ClearDrawSegs(state);
-    R_ClearPlanes();
+    R_ClearPlanes(state);
     R_ClearSprites(state);
     NetUpdate(state);
     let root_bspnum = state.p_setup.numnodes - 1 as i32;
     R_RenderBSPNode(state, root_bspnum);
     NetUpdate(state);
-    R_DrawPlanes();
+    R_DrawPlanes(state);
     NetUpdate(state);
     R_DrawMasked(state);
     NetUpdate(state);
