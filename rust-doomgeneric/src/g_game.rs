@@ -1097,7 +1097,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
                 G_DoSaveGame(state);
             }
             5 => {
-                G_DoPlayDemo();
+                G_DoPlayDemo(state);
             }
             6 => {
                 G_DoCompleted(state);
@@ -2234,79 +2234,79 @@ unsafe fn DemoVersionDescription(mut version: i32) -> *mut ::core::ffi::c_char {
             .demo_version_description_resultbuf as *mut ::core::ffi::c_char;
     };
 }
-pub unsafe fn G_DoPlayDemo() {
+pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
     let mut skill: skill_t = sk_baby;
     let mut i: i32 = 0;
     let mut episode: i32 = 0;
     let mut map: i32 = 0;
     let mut demoversion: i32 = 0;
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
-    unsafe { game_state() }.g_game.demo_p = W_CacheLumpName(
-        &wad_name8_to_string(unsafe { game_state() }.g_game.defdemoname),
+    state.g_game.gameaction = ga_nothing;
+    state.g_game.demo_p = W_CacheLumpName(
+        &wad_name8_to_string(state.g_game.defdemoname),
         PU_STATIC as i32,
     ) as *mut byte;
-    unsafe { game_state() }.g_game.demobuffer = unsafe { game_state() }.g_game.demo_p;
-    let fresh24 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    state.g_game.demobuffer = state.g_game.demo_p;
+    let fresh24 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     demoversion = *fresh24 as i32;
-    if demoversion == G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat) {
-        unsafe { game_state() }.g_game.longtics = false;
+    if demoversion == G_VanillaVersionCode(&mut state.doomstat) {
+        state.g_game.longtics = false;
     } else if demoversion == DOOM_191_VERSION {
-        unsafe { game_state() }.g_game.longtics = true;
+        state.g_game.longtics = true;
     } else {
         let mut message: *mut ::core::ffi::c_char = b"Demo is from a different game version!\n(read %i, should be %i)\n\n*** You may need to upgrade your version of Doom to v1.9. ***\n    See: https://www.doomworld.com/classicdoom/info/patches.php\n    This appears to be %s.\0"
             as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         printf(
             message,
             demoversion,
-            G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat),
+            G_VanillaVersionCode(&mut state.doomstat),
             DemoVersionDescription(demoversion),
         );
     }
-    let fresh25 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    let fresh25 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     skill = *fresh25 as skill_t;
-    let fresh26 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    let fresh26 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     episode = *fresh26 as i32;
-    let fresh27 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    let fresh27 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     map = *fresh27 as i32;
-    let fresh28 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    unsafe { game_state() }.g_game.deathmatch = *fresh28 as i32;
-    let fresh29 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    unsafe { game_state() }.d_main.respawnparm = *fresh29 != 0;
-    let fresh30 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    unsafe { game_state() }.d_main.fastparm = *fresh30 != 0;
-    let fresh31 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    unsafe { game_state() }.d_main.nomonsters = *fresh31 != 0;
-    let fresh32 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    unsafe { game_state() }.g_game.consoleplayer = *fresh32 as i32;
+    let fresh28 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    state.g_game.deathmatch = *fresh28 as i32;
+    let fresh29 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    state.d_main.respawnparm = *fresh29 != 0;
+    let fresh30 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    state.d_main.fastparm = *fresh30 != 0;
+    let fresh31 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    state.d_main.nomonsters = *fresh31 != 0;
+    let fresh32 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    state.g_game.consoleplayer = *fresh32 as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        let fresh33 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-        unsafe { game_state() }.g_game.playeringame[i as usize] = *fresh33 as boolean;
+        let fresh33 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
+        state.g_game.playeringame[i as usize] = *fresh33 as boolean;
         i += 1;
     }
-    if unsafe { game_state() }.g_game.playeringame[1 as i32 as usize] != 0
+    if state.g_game.playeringame[1 as i32 as usize] != 0
         || M_CheckParm("-solo-net") > 0 as i32
         || M_CheckParm("-netdemo") > 0 as i32
     {
-        unsafe { game_state() }.g_game.netgame = true;
-        unsafe { game_state() }.g_game.netdemo = true;
+        state.g_game.netgame = true;
+        state.g_game.netdemo = true;
     }
-    unsafe { game_state() }.g_game.precache = false;
+    state.g_game.precache = false;
     G_InitNew(skill, episode, map);
-    unsafe { game_state() }.g_game.precache = true;
-    unsafe { game_state() }.g_game.starttime = I_GetTime(unsafe { &mut game_state().i_timer });
-    unsafe { game_state() }.g_game.usergame = false;
-    unsafe { game_state() }.g_game.demoplayback = true;
+    state.g_game.precache = true;
+    state.g_game.starttime = I_GetTime(&mut state.i_timer);
+    state.g_game.usergame = false;
+    state.g_game.demoplayback = true;
 }
 pub unsafe fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
     unsafe { game_state() }.g_game.nodrawers = M_CheckParm("-nodraw") != 0;
