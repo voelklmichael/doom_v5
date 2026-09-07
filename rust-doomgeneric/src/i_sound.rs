@@ -3,7 +3,7 @@ use crate::src::m_config::M_BindVariable;
 
 use crate::src::doomdef::boolean;
 use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::sounds::sfxinfo_t;
 pub type snddevice_t = u32;
 pub const SNDDEVICE_CD: snddevice_t = 10;
@@ -124,14 +124,14 @@ unsafe fn InitSfxModule(state: &mut ISoundState, mut use_sfx_prefix: bool) {
         i += 1;
     }
 }
-pub unsafe fn I_InitSound(state: &mut ISoundState, mut use_sfx_prefix: bool) {
+pub unsafe fn I_InitSound(state: &mut GameState, mut use_sfx_prefix: bool) {
     let mut nosound: bool = false;
     let mut nosfx: bool = false;
     nosound = M_CheckParm("-nosound") > 0 as i32;
     nosfx = M_CheckParm("-nosfx") > 0 as i32;
-    if !nosound && !unsafe { game_state() }.i_video.screensaver_mode {
+    if !nosound && !state.i_video.screensaver_mode {
         if !nosfx {
-            InitSfxModule(state, use_sfx_prefix);
+            InitSfxModule(&mut state.i_sound, use_sfx_prefix);
         }
     }
 }
@@ -313,7 +313,7 @@ pub unsafe fn I_MusicIsPlaying(state: &mut ISoundState) -> bool {
         return false;
     };
 }
-pub unsafe fn I_BindSoundVariables(state: &mut ISoundState) {
+pub unsafe fn I_BindSoundVariables(state: &mut GameState) {
     extern "C" {
         static mut use_libsamplerate: i32;
     }
@@ -321,53 +321,53 @@ pub unsafe fn I_BindSoundVariables(state: &mut ISoundState) {
         static mut libsamplerate_scale: f32;
     }
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_musicdevice",
-        &raw mut state.snd_musicdevice as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_musicdevice as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_sfxdevice",
-        &raw mut state.snd_sfxdevice as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_sfxdevice as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_sbport",
-        &raw mut state.snd_sbport as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_sbport as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_sbirq",
-        &raw mut state.snd_sbirq as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_sbirq as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_sbdma",
-        &raw mut state.snd_sbdma as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_sbdma as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_mport",
-        &raw mut state.snd_mport as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_mport as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_maxslicetime_ms",
-        &raw mut state.snd_maxslicetime_ms as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_maxslicetime_ms as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_musiccmd",
-        &raw mut state.snd_musiccmd as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_musiccmd as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_samplerate",
-        &raw mut state.snd_samplerate as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_samplerate as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_cachesize",
-        &raw mut state.snd_cachesize as *mut ::core::ffi::c_void,
+        &raw mut state.i_sound.snd_cachesize as *mut ::core::ffi::c_void,
     );
 }

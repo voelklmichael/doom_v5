@@ -459,7 +459,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
 pub unsafe fn D_BindVariables() {
     let mut i: i32 = 0;
     I_BindJoystickVariables(unsafe { &mut game_state().i_joystick });
-    I_BindSoundVariables(unsafe { &mut game_state().i_sound });
+    I_BindSoundVariables(unsafe { game_state() });
     M_BindBaseControls();
     M_BindWeaponControls();
     M_BindMapControls();
@@ -1305,7 +1305,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         I_PrintDivider();
     }
     printf(b"I_Init: Setting up machine state.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    I_InitSound(&mut state.i_sound, true);
+    I_InitSound(state, true);
     I_InitMusic(&mut state.i_sound);
     D_ConnectNetGame();
     state.d_main.startskill = sk_medium;
