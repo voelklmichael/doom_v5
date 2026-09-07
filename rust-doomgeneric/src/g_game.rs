@@ -85,9 +85,6 @@ use crate::src::p_saveg::P_UnArchiveThinkers;
 use crate::src::p_saveg::P_UnArchiveWorld;
 use crate::src::p_saveg::P_WriteSaveGameEOF;
 use crate::src::p_saveg::P_WriteSaveGameHeader;
-use crate::src::p_setup::deathmatch_p;
-use crate::src::p_setup::deathmatchstarts;
-use crate::src::p_setup::playerstarts;
 use crate::src::p_setup::P_SetupLevel;
 use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_Ticker;
@@ -1437,7 +1434,7 @@ pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
     let mut j: i32 = 0;
     let mut selections: i32 = 0;
     selections =
-        deathmatch_p.offset_from(&raw mut deathmatchstarts as *mut mapthing_t) as i64 as i32;
+        unsafe { game_state() }.p_setup.deathmatch_p.offset_from(&raw mut unsafe { game_state() }.p_setup.deathmatchstarts as *mut mapthing_t) as i64 as i32;
     if selections < 4 as i32 {
         I_Error(&format!("Only {} deathmatch spots, 4 required", selections));
     }
@@ -1446,11 +1443,11 @@ pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
         i = P_Random(unsafe { &mut game_state().m_random }) % selections;
         if G_CheckSpot(
             playernum,
-            (&raw mut deathmatchstarts as *mut mapthing_t).offset(i as isize) as *mut mapthing_t,
+            (&raw mut unsafe { game_state() }.p_setup.deathmatchstarts as *mut mapthing_t).offset(i as isize) as *mut mapthing_t,
         ) {
-            deathmatchstarts[i as usize].type_0 = (playernum + 1 as i32) as i16;
+            unsafe { game_state() }.p_setup.deathmatchstarts[i as usize].type_0 = (playernum + 1 as i32) as i16;
             P_SpawnPlayer(
-                (&raw mut deathmatchstarts as *mut mapthing_t).offset(i as isize)
+                (&raw mut unsafe { game_state() }.p_setup.deathmatchstarts as *mut mapthing_t).offset(i as isize)
                     as *mut mapthing_t,
             );
             return;
@@ -1458,7 +1455,7 @@ pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
         j += 1;
     }
     P_SpawnPlayer(
-        (&raw mut playerstarts as *mut mapthing_t).offset(playernum as isize) as *mut mapthing_t,
+        (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize) as *mut mapthing_t,
     );
 }
 pub unsafe fn G_DoReborn(mut playernum: i32) {
@@ -1474,11 +1471,11 @@ pub unsafe fn G_DoReborn(mut playernum: i32) {
         }
         if G_CheckSpot(
             playernum,
-            (&raw mut playerstarts as *mut mapthing_t).offset(playernum as isize)
+            (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
                 as *mut mapthing_t,
         ) {
             P_SpawnPlayer(
-                (&raw mut playerstarts as *mut mapthing_t).offset(playernum as isize)
+                (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
                     as *mut mapthing_t,
             );
             return;
@@ -1487,20 +1484,20 @@ pub unsafe fn G_DoReborn(mut playernum: i32) {
         while i < MAXPLAYERS {
             if G_CheckSpot(
                 playernum,
-                (&raw mut playerstarts as *mut mapthing_t).offset(i as isize) as *mut mapthing_t,
+                (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(i as isize) as *mut mapthing_t,
             ) {
-                playerstarts[i as usize].type_0 = (playernum + 1 as i32) as i16;
+                unsafe { game_state() }.p_setup.playerstarts[i as usize].type_0 = (playernum + 1 as i32) as i16;
                 P_SpawnPlayer(
-                    (&raw mut playerstarts as *mut mapthing_t).offset(i as isize)
+                    (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(i as isize)
                         as *mut mapthing_t,
                 );
-                playerstarts[i as usize].type_0 = (i + 1 as i32) as i16;
+                unsafe { game_state() }.p_setup.playerstarts[i as usize].type_0 = (i + 1 as i32) as i16;
                 return;
             }
             i += 1;
         }
         P_SpawnPlayer(
-            (&raw mut playerstarts as *mut mapthing_t).offset(playernum as isize)
+            (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
                 as *mut mapthing_t,
         );
     };

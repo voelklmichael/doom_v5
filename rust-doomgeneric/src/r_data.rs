@@ -9,10 +9,6 @@ use crate::src::m_misc::M_StringCopy;
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::thinker_t;
 use crate::src::p_mobj::ThinkerFn;
-use crate::src::p_setup::numsectors;
-use crate::src::p_setup::numsides;
-use crate::src::p_setup::sectors;
-use crate::src::p_setup::sides;
 use crate::src::p_tick::thinkercap;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::spriteframe_t;
@@ -721,10 +717,10 @@ pub unsafe fn R_PrecacheLevel() {
         numflats as size_t,
     );
     i = 0 as i32;
-    while i < numsectors {
-        *flatpresent.offset((*sectors.offset(i as isize)).floorpic as isize) =
+    while i < unsafe { game_state() }.p_setup.numsectors {
+        *flatpresent.offset((*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).floorpic as isize) =
             1 as ::core::ffi::c_char;
-        *flatpresent.offset((*sectors.offset(i as isize)).ceilingpic as isize) =
+        *flatpresent.offset((*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).ceilingpic as isize) =
             1 as ::core::ffi::c_char;
         i += 1;
     }
@@ -754,12 +750,12 @@ pub unsafe fn R_PrecacheLevel() {
         numtextures as size_t,
     );
     i = 0 as i32;
-    while i < numsides {
-        *texturepresent.offset((*sides.offset(i as isize)).toptexture as isize) =
+    while i < unsafe { game_state() }.p_setup.numsides {
+        *texturepresent.offset((*unsafe { game_state() }.p_setup.sides.offset(i as isize)).toptexture as isize) =
             1 as ::core::ffi::c_char;
-        *texturepresent.offset((*sides.offset(i as isize)).midtexture as isize) =
+        *texturepresent.offset((*unsafe { game_state() }.p_setup.sides.offset(i as isize)).midtexture as isize) =
             1 as ::core::ffi::c_char;
-        *texturepresent.offset((*sides.offset(i as isize)).bottomtexture as isize) =
+        *texturepresent.offset((*unsafe { game_state() }.p_setup.sides.offset(i as isize)).bottomtexture as isize) =
             1 as ::core::ffi::c_char;
         i += 1;
     }

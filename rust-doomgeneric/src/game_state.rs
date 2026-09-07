@@ -41,6 +41,7 @@ use crate::src::p_mobj::PMobjState;
 use crate::src::p_plats::PPlatsState;
 use crate::src::p_pspr::PPsprState;
 use crate::src::p_saveg::PSavegState;
+use crate::src::p_setup::PSetupState;
 use crate::src::p_sight::PSightState;
 use crate::src::p_spec::PSpecState;
 use crate::src::p_switch::PSwitchState;
@@ -93,6 +94,7 @@ pub struct GameState {
     pub p_plats: PPlatsState,
     pub p_pspr: PPsprState,
     pub p_saveg: PSavegState,
+    pub p_setup: PSetupState,
     pub p_sight: PSightState,
     pub p_spec: PSpecState,
     pub p_switch: PSwitchState,
@@ -147,6 +149,7 @@ impl GameState {
             p_plats: PPlatsState::new(),
             p_pspr: PPsprState::new(),
             p_saveg: PSavegState::new(),
+            p_setup: PSetupState::new(),
             p_sight: PSightState::new(),
             p_spec: PSpecState::new(),
             p_switch: PSwitchState::new(),

@@ -30,9 +30,6 @@ use crate::src::p_maputl::P_AproxDistance;
 use crate::src::p_maputl::P_SetThingPosition;
 use crate::src::p_maputl::P_UnsetThingPosition;
 use crate::src::p_pspr::P_SetupPsprites;
-use crate::src::p_setup::deathmatch_p;
-use crate::src::p_setup::deathmatchstarts;
-use crate::src::p_setup::playerstarts;
 use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
 use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_AddThinker;
@@ -1119,16 +1116,16 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
     if (*mthing).type_0 as i32 == 11 as i32 {
-        if deathmatch_p
-            < (&raw mut deathmatchstarts as *mut mapthing_t).offset(10 as i32 as isize)
+        if unsafe { game_state() }.p_setup.deathmatch_p
+            < (&raw mut unsafe { game_state() }.p_setup.deathmatchstarts as *mut mapthing_t).offset(10 as i32 as isize)
                 as *mut mapthing_t
         {
             memcpy(
-                deathmatch_p as *mut ::core::ffi::c_void,
+                unsafe { game_state() }.p_setup.deathmatch_p as *mut ::core::ffi::c_void,
                 mthing as *const ::core::ffi::c_void,
                 ::core::mem::size_of::<mapthing_t>() as size_t,
             );
-            deathmatch_p = deathmatch_p.offset(1);
+            unsafe { game_state() }.p_setup.deathmatch_p = unsafe { game_state() }.p_setup.deathmatch_p.offset(1);
         }
         return;
     }
@@ -1136,7 +1133,7 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
         return;
     }
     if (*mthing).type_0 as i32 <= 4 as i32 {
-        playerstarts[((*mthing).type_0 as i32 - 1 as i32) as usize] = *mthing;
+        unsafe { game_state() }.p_setup.playerstarts[((*mthing).type_0 as i32 - 1 as i32) as usize] = *mthing;
         if unsafe { game_state() }.g_game.deathmatch == 0 {
             P_SpawnPlayer(mthing);
         }

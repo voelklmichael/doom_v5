@@ -14,15 +14,6 @@ use crate::src::m_fixed::INT_MAX;
 use crate::src::p_mobj::{line_t, mapthing_t, sector_t, subsector_s, subsector_t};
 use crate::src::p_mobj::{mobj_s, mobj_t};
 use crate::src::p_mobj::{MF_NOBLOCKMAP, MF_NOSECTOR};
-use crate::src::p_setup::blocklinks;
-use crate::src::p_setup::blockmap;
-use crate::src::p_setup::blockmaplump;
-use crate::src::p_setup::bmapheight;
-use crate::src::p_setup::bmaporgx;
-use crate::src::p_setup::bmaporgy;
-use crate::src::p_setup::bmapwidth;
-use crate::src::p_setup::lines;
-use crate::src::p_setup::playerstarts;
 use crate::src::r_main::R_PointInSubsector;
 
 pub struct PMaputlState {
@@ -61,7 +52,7 @@ impl PMaputlState {
             },
             earlyout: false,
             ptflags: 0,
-            intercepts_overrun: unsafe {
+            intercepts_overrun: {
                 [
                     intercepts_overrun_t {
                         len: 4 as i32,
@@ -145,8 +136,9 @@ impl PMaputlState {
                     },
                     intercepts_overrun_t {
                         len: 40 as i32,
-                        addr: &raw const playerstarts as *mut [mapthing_t; 4]
-                            as *mut ::core::ffi::c_void,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
                         int16_array: true,
                     },
                     intercepts_overrun_t {
@@ -156,7 +148,9 @@ impl PMaputlState {
                     },
                     intercepts_overrun_t {
                         len: 4 as i32,
-                        addr: &raw const bmapwidth as *mut i32 as *mut ::core::ffi::c_void,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
                         int16_array: false,
                     },
                     intercepts_overrun_t {
@@ -166,12 +160,16 @@ impl PMaputlState {
                     },
                     intercepts_overrun_t {
                         len: 4 as i32,
-                        addr: &raw const bmaporgx as *mut fixed_t as *mut ::core::ffi::c_void,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
                         int16_array: false,
                     },
                     intercepts_overrun_t {
                         len: 4 as i32,
-                        addr: &raw const bmaporgy as *mut fixed_t as *mut ::core::ffi::c_void,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
                         int16_array: false,
                     },
                     intercepts_overrun_t {
@@ -181,7 +179,9 @@ impl PMaputlState {
                     },
                     intercepts_overrun_t {
                         len: 4 as i32,
-                        addr: &raw const bmapheight as *mut i32 as *mut ::core::ffi::c_void,
+                        // Patched once, after GameState reaches its final 'static address,
+                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        addr: NULL,
                         int16_array: false,
                     },
                     intercepts_overrun_t {
@@ -416,11 +416,11 @@ pub unsafe fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
         if !(*thing).bprev.is_null() {
             (*(*thing).bprev).bnext = (*thing).bnext;
         } else {
-            blockx = ((*thing).x - bmaporgx >> MAPBLOCKSHIFT) as i32;
-            blocky = ((*thing).y - bmaporgy >> MAPBLOCKSHIFT) as i32;
-            if blockx >= 0 as i32 && blockx < bmapwidth && blocky >= 0 as i32 && blocky < bmapheight
+            blockx = ((*thing).x - unsafe { game_state() }.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
+            blocky = ((*thing).y - unsafe { game_state() }.p_setup.bmaporgy >> MAPBLOCKSHIFT) as i32;
+            if blockx >= 0 as i32 && blockx < unsafe { game_state() }.p_setup.bmapwidth && blocky >= 0 as i32 && blocky < unsafe { game_state() }.p_setup.bmapheight
             {
-                let ref mut fresh1 = *blocklinks.offset((blocky * bmapwidth + blockx) as isize);
+                let ref mut fresh1 = *unsafe { game_state() }.p_setup.blocklinks.offset((blocky * unsafe { game_state() }.p_setup.bmapwidth + blockx) as isize);
                 *fresh1 = (*thing).bnext as *mut mobj_t;
             }
         }
@@ -444,10 +444,10 @@ pub unsafe fn P_SetThingPosition(mut thing: *mut mobj_t) {
         (*sec).thinglist = thing;
     }
     if (*thing).flags & MF_NOBLOCKMAP as i32 == 0 {
-        blockx = ((*thing).x - bmaporgx >> MAPBLOCKSHIFT) as i32;
-        blocky = ((*thing).y - bmaporgy >> MAPBLOCKSHIFT) as i32;
-        if blockx >= 0 as i32 && blockx < bmapwidth && blocky >= 0 as i32 && blocky < bmapheight {
-            link = blocklinks.offset((blocky * bmapwidth + blockx) as isize) as *mut *mut mobj_t;
+        blockx = ((*thing).x - unsafe { game_state() }.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
+        blocky = ((*thing).y - unsafe { game_state() }.p_setup.bmaporgy >> MAPBLOCKSHIFT) as i32;
+        if blockx >= 0 as i32 && blockx < unsafe { game_state() }.p_setup.bmapwidth && blocky >= 0 as i32 && blocky < unsafe { game_state() }.p_setup.bmapheight {
+            link = unsafe { game_state() }.p_setup.blocklinks.offset((blocky * unsafe { game_state() }.p_setup.bmapwidth + blockx) as isize) as *mut *mut mobj_t;
             (*thing).bprev = ::core::ptr::null_mut::<mobj_s>();
             (*thing).bnext = *link as *mut mobj_s;
             if !(*link).is_null() {
@@ -468,14 +468,14 @@ pub unsafe fn P_BlockLinesIterator(
     let mut offset: i32 = 0;
     let mut list: *mut i16 = ::core::ptr::null_mut::<i16>();
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    if x < 0 as i32 || y < 0 as i32 || x >= bmapwidth || y >= bmapheight {
+    if x < 0 as i32 || y < 0 as i32 || x >= unsafe { game_state() }.p_setup.bmapwidth || y >= unsafe { game_state() }.p_setup.bmapheight {
         return true;
     }
-    offset = y * bmapwidth + x;
-    offset = *blockmap.offset(offset as isize) as i32;
-    list = blockmaplump.offset(offset as isize);
+    offset = y * unsafe { game_state() }.p_setup.bmapwidth + x;
+    offset = *unsafe { game_state() }.p_setup.blockmap.offset(offset as isize) as i32;
+    list = unsafe { game_state() }.p_setup.blockmaplump.offset(offset as isize);
     while *list as i32 != -(1 as i32) {
-        ld = lines.offset(*list as isize) as *mut line_t;
+        ld = unsafe { game_state() }.p_setup.lines.offset(*list as isize) as *mut line_t;
         if !((*ld).validcount == unsafe { game_state() }.r_main.validcount) {
             (*ld).validcount = unsafe { game_state() }.r_main.validcount;
             if func.expect("non-null function pointer")(ld) == 0 {
@@ -492,10 +492,10 @@ pub unsafe fn P_BlockThingsIterator(
     mut func: Option<unsafe extern "C" fn(*mut mobj_t) -> boolean>,
 ) -> bool {
     let mut mobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    if x < 0 as i32 || y < 0 as i32 || x >= bmapwidth || y >= bmapheight {
+    if x < 0 as i32 || y < 0 as i32 || x >= unsafe { game_state() }.p_setup.bmapwidth || y >= unsafe { game_state() }.p_setup.bmapheight {
         return true;
     }
-    mobj = *blocklinks.offset((y * bmapwidth + x) as isize);
+    mobj = *unsafe { game_state() }.p_setup.blocklinks.offset((y * unsafe { game_state() }.p_setup.bmapwidth + x) as isize);
     while !mobj.is_null() {
         if func.expect("non-null function pointer")(mobj) == 0 {
             return false;
@@ -678,6 +678,16 @@ pub unsafe fn fixup_intercepts_overrun(gs: &mut GameState) {
         &raw mut gs.p_maputl.openrange as *mut fixed_t as *mut ::core::ffi::c_void;
     gs.p_maputl.intercepts_overrun[10].addr =
         &raw mut gs.p_pspr.bulletslope as *mut fixed_t as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[14].addr =
+        &raw mut gs.p_setup.playerstarts as *mut [mapthing_t; 4] as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[16].addr =
+        &raw mut gs.p_setup.bmapwidth as *mut i32 as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[18].addr =
+        &raw mut gs.p_setup.bmaporgx as *mut fixed_t as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[19].addr =
+        &raw mut gs.p_setup.bmaporgy as *mut fixed_t as *mut ::core::ffi::c_void;
+    gs.p_maputl.intercepts_overrun[21].addr =
+        &raw mut gs.p_setup.bmapheight as *mut i32 as *mut ::core::ffi::c_void;
 }
 unsafe fn InterceptsMemoryOverrun(mut location: i32, mut value: i32) {
     let mut i: i32 = 0;
@@ -743,22 +753,22 @@ pub unsafe fn P_PathTraverse(
     unsafe { game_state() }.r_main.validcount += 1;
     unsafe { game_state() }.p_maputl.intercept_p =
         &raw mut unsafe { game_state() }.p_maputl.intercepts as *mut intercept_t;
-    if x1 as i32 - bmaporgx as i32 & MAPBLOCKSIZE - 1 as i32 == 0 as i32 {
+    if x1 as i32 - unsafe { game_state() }.p_setup.bmaporgx as i32 & MAPBLOCKSIZE - 1 as i32 == 0 as i32 {
         x1 += FRACUNIT;
     }
-    if y1 as i32 - bmaporgy as i32 & MAPBLOCKSIZE - 1 as i32 == 0 as i32 {
+    if y1 as i32 - unsafe { game_state() }.p_setup.bmaporgy as i32 & MAPBLOCKSIZE - 1 as i32 == 0 as i32 {
         y1 += FRACUNIT;
     }
     unsafe { game_state() }.p_maputl.trace.x = x1;
     unsafe { game_state() }.p_maputl.trace.y = y1;
     unsafe { game_state() }.p_maputl.trace.dx = x2 - x1;
     unsafe { game_state() }.p_maputl.trace.dy = y2 - y1;
-    x1 -= bmaporgx;
-    y1 -= bmaporgy;
+    x1 -= unsafe { game_state() }.p_setup.bmaporgx;
+    y1 -= unsafe { game_state() }.p_setup.bmaporgy;
     xt1 = x1 >> MAPBLOCKSHIFT;
     yt1 = y1 >> MAPBLOCKSHIFT;
-    x2 -= bmaporgx;
-    y2 -= bmaporgy;
+    x2 -= unsafe { game_state() }.p_setup.bmaporgx;
+    y2 -= unsafe { game_state() }.p_setup.bmaporgy;
     xt2 = x2 >> MAPBLOCKSHIFT;
     yt2 = y2 >> MAPBLOCKSHIFT;
     if xt2 > xt1 {

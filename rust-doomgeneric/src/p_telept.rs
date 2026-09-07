@@ -8,8 +8,6 @@ use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::MF_MISSILE;
 use crate::src::p_mobj::{line_t, sector_t, thinker_t};
 use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG};
-use crate::src::p_setup::numsectors;
-use crate::src::p_setup::sectors;
 use crate::src::p_tick::thinkercap;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::sfx_telept;
@@ -35,8 +33,8 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
     }
     tag = (*line).tag as i32;
     i = 0 as i32;
-    while i < numsectors {
-        if (*sectors.offset(i as isize)).tag as i32 == tag {
+    while i < unsafe { game_state() }.p_setup.numsectors {
+        if (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).tag as i32 == tag {
             thinker = thinkercap.next as *mut thinker_t;
             thinker = thinkercap.next as *mut thinker_t;
             while thinker != &raw mut thinkercap {
@@ -44,7 +42,7 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
                     m = thinker as *mut mobj_t;
                     if !((*m).type_0 as u32 != MT_TELEPORTMAN as i32 as u32) {
                         sector = (*(*m).subsector).sector;
-                        if !(sector.offset_from(sectors) as i64 != i as i64) {
+                        if !(sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 != i as i64) {
                             oldx = (*thing).x;
                             oldy = (*thing).y;
                             oldz = (*thing).z;

@@ -46,9 +46,6 @@ use crate::src::p_mobj::{
     MF_AMBUSH, MF_CORPSE, MF_FLOAT, MF_INFLOAT, MF_JUSTATTACKED, MF_JUSTHIT, MF_SHADOW,
     MF_SHOOTABLE, MF_SKULLFLY, MF_SOLID,
 };
-use crate::src::p_setup::bmaporgx;
-use crate::src::p_setup::bmaporgy;
-use crate::src::p_setup::sides;
 use crate::src::p_sight::P_CheckSight;
 use crate::src::p_switch::P_UseSpecialLine;
 use crate::src::p_tick::thinkercap;
@@ -152,10 +149,10 @@ pub unsafe fn P_RecursiveSound(mut sec: *mut sector_t, mut soundblocks: i32) {
         if !((*check).flags as i32 & ML_TWOSIDED == 0) {
             P_LineOpening(check);
             if !(unsafe { game_state() }.p_maputl.openrange <= 0 as i32) {
-                if (*sides.offset((*check).sidenum[0 as i32 as usize] as isize)).sector == sec {
-                    other = (*sides.offset((*check).sidenum[1 as i32 as usize] as isize)).sector;
+                if (*unsafe { game_state() }.p_setup.sides.offset((*check).sidenum[0 as i32 as usize] as isize)).sector == sec {
+                    other = (*unsafe { game_state() }.p_setup.sides.offset((*check).sidenum[1 as i32 as usize] as isize)).sector;
                 } else {
-                    other = (*sides.offset((*check).sidenum[0 as i32 as usize] as isize)).sector;
+                    other = (*unsafe { game_state() }.p_setup.sides.offset((*check).sidenum[0 as i32 as usize] as isize)).sector;
                 }
                 if (*check).flags as i32 & ML_SOUNDBLOCK != 0 {
                     if soundblocks == 0 {
@@ -1031,17 +1028,17 @@ pub unsafe fn A_VileChase(mut actor: *mut mobj_t) {
         unsafe { game_state() }.p_enemy.viletryy =
             (*actor).y + (*(*actor).info).speed as fixed_t * yspeed[(*actor).movedir as usize];
         xl = unsafe { game_state() }.p_enemy.viletryx as i32
-            - bmaporgx as i32
+            - unsafe { game_state() }.p_setup.bmaporgx as i32
             - 32 as i32 * FRACUNIT * 2 as i32
             >> MAPBLOCKSHIFT;
-        xh = unsafe { game_state() }.p_enemy.viletryx as i32 - bmaporgx as i32
+        xh = unsafe { game_state() }.p_enemy.viletryx as i32 - unsafe { game_state() }.p_setup.bmaporgx as i32
             + 32 as i32 * FRACUNIT * 2 as i32
             >> MAPBLOCKSHIFT;
         yl = unsafe { game_state() }.p_enemy.viletryy as i32
-            - bmaporgy as i32
+            - unsafe { game_state() }.p_setup.bmaporgy as i32
             - 32 as i32 * FRACUNIT * 2 as i32
             >> MAPBLOCKSHIFT;
-        yh = unsafe { game_state() }.p_enemy.viletryy as i32 - bmaporgy as i32
+        yh = unsafe { game_state() }.p_enemy.viletryy as i32 - unsafe { game_state() }.p_setup.bmaporgy as i32
             + 32 as i32 * FRACUNIT * 2 as i32
             >> MAPBLOCKSHIFT;
         unsafe { game_state() }.p_enemy.vileobj = actor;

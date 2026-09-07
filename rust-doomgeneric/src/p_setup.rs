@@ -48,6 +48,113 @@ use crate::src::z_zone::{PU_LEVEL, PU_PURGELEVEL, PU_STATIC};
 use libc::memset;
 use libc::snprintf;
 
+pub struct PSetupState {
+    pub numvertexes: i32,
+    pub vertexes: *mut vertex_t,
+    pub numsegs: i32,
+    pub segs: *mut seg_t,
+    pub numsectors: i32,
+    pub sectors: *mut sector_t,
+    pub numsubsectors: i32,
+    pub subsectors: *mut subsector_t,
+    pub numnodes: i32,
+    pub nodes: *mut node_t,
+    pub numlines: i32,
+    pub lines: *mut line_t,
+    pub numsides: i32,
+    pub sides: *mut side_t,
+    pub totallines: i32,
+    pub bmapwidth: i32,
+    pub bmapheight: i32,
+    pub blockmap: *mut i16,
+    pub blockmaplump: *mut i16,
+    pub bmaporgx: fixed_t,
+    pub bmaporgy: fixed_t,
+    pub blocklinks: *mut *mut mobj_t,
+    pub rejectmatrix: *mut byte,
+    pub deathmatchstarts: [mapthing_t; 10],
+    pub deathmatch_p: *mut mapthing_t,
+    pub playerstarts: [mapthing_t; 4],
+    pub getsectoratnulladdress_null_sector_is_initialized: bool,
+    pub getsectoratnulladdress_null_sector: sector_t,
+}
+
+impl PSetupState {
+    pub const fn new() -> Self {
+        PSetupState {
+            numvertexes: 0,
+            vertexes: ::core::ptr::null::<vertex_t>() as *mut vertex_t,
+            numsegs: 0,
+            segs: ::core::ptr::null::<seg_t>() as *mut seg_t,
+            numsectors: 0,
+            sectors: ::core::ptr::null::<sector_t>() as *mut sector_t,
+            numsubsectors: 0,
+            subsectors: 
+        ::core::ptr::null::<subsector_t>() as *mut subsector_t,
+            numnodes: 0,
+            nodes: ::core::ptr::null::<node_t>() as *mut node_t,
+            numlines: 0,
+            lines: ::core::ptr::null::<line_t>() as *mut line_t,
+            numsides: 0,
+            sides: ::core::ptr::null::<side_t>() as *mut side_t,
+            totallines: 0,
+            bmapwidth: 0,
+            bmapheight: 0,
+            blockmap: ::core::ptr::null::<i16>() as *mut i16,
+            blockmaplump: ::core::ptr::null::<i16>() as *mut i16,
+            bmaporgx: 0,
+            bmaporgy: 0,
+            blocklinks: 
+        ::core::ptr::null::<*mut mobj_t>() as *mut *mut mobj_t,
+            rejectmatrix: ::core::ptr::null::<byte>() as *mut byte,
+            deathmatchstarts: [mapthing_t {
+        x: 0,
+        y: 0,
+        angle: 0,
+        type_0: 0,
+        options: 0,
+    }; 10],
+            deathmatch_p: ::core::ptr::null::<mapthing_t>() as *mut mapthing_t,
+            playerstarts: [mapthing_t {
+        x: 0,
+        y: 0,
+        angle: 0,
+        type_0: 0,
+        options: 0,
+    }; 4],
+            getsectoratnulladdress_null_sector_is_initialized: false,
+            getsectoratnulladdress_null_sector: sector_t {
+        floorheight: 0,
+        ceilingheight: 0,
+        floorpic: 0,
+        ceilingpic: 0,
+        lightlevel: 0,
+        special: 0,
+        tag: 0,
+        soundtraversed: 0,
+        soundtarget: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
+        blockbox: [0; 4],
+        soundorg: degenmobj_t {
+            thinker: thinker_s {
+                prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
+                next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
+                function: ThinkerFn::Paused,
+            },
+            x: 0,
+            y: 0,
+            z: 0,
+        },
+        validcount: 0,
+        thinglist: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
+        specialdata: ::core::ptr::null::<::core::ffi::c_void>() as *mut ::core::ffi::c_void,
+        linecount: 0,
+        lines: ::core::ptr::null::<*mut line_s>() as *mut *mut line_s,
+    },
+        }
+    }
+}
+
+
 pub type C2RustUnnamed_1 = u32;
 pub const ML_BLOCKMAP: C2RustUnnamed_1 = 10;
 pub const ML_REJECT: C2RustUnnamed_1 = 9;
@@ -123,65 +230,24 @@ pub struct mapnode_t {
     pub bbox: [[i16; 4]; 2],
     pub children: [u16; 2],
 }
-pub static mut numvertexes: i32 = 0;
-pub static mut vertexes: *mut vertex_t = ::core::ptr::null::<vertex_t>() as *mut vertex_t;
-#[no_mangle]
-pub static mut numsegs: i32 = 0;
-pub static mut segs: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
-pub static mut numsectors: i32 = 0;
-pub static mut sectors: *mut sector_t = ::core::ptr::null::<sector_t>() as *mut sector_t;
-pub static mut numsubsectors: i32 = 0;
-pub static mut subsectors: *mut subsector_t =
-    ::core::ptr::null::<subsector_t>() as *mut subsector_t;
-pub static mut numnodes: i32 = 0;
-pub static mut nodes: *mut node_t = ::core::ptr::null::<node_t>() as *mut node_t;
-pub static mut numlines: i32 = 0;
-pub static mut lines: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
-pub static mut numsides: i32 = 0;
-pub static mut sides: *mut side_t = ::core::ptr::null::<side_t>() as *mut side_t;
-static mut totallines: i32 = 0;
-pub static mut bmapwidth: i32 = 0;
-pub static mut bmapheight: i32 = 0;
-pub static mut blockmap: *mut i16 = ::core::ptr::null::<i16>() as *mut i16;
-pub static mut blockmaplump: *mut i16 = ::core::ptr::null::<i16>() as *mut i16;
-pub static mut bmaporgx: fixed_t = 0;
-pub static mut bmaporgy: fixed_t = 0;
-pub static mut blocklinks: *mut *mut mobj_t =
-    ::core::ptr::null::<*mut mobj_t>() as *mut *mut mobj_t;
-pub static mut rejectmatrix: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-pub static mut deathmatchstarts: [mapthing_t; 10] = [mapthing_t {
-    x: 0,
-    y: 0,
-    angle: 0,
-    type_0: 0,
-    options: 0,
-}; 10];
-pub static mut deathmatch_p: *mut mapthing_t = ::core::ptr::null::<mapthing_t>() as *mut mapthing_t;
-pub static mut playerstarts: [mapthing_t; 4] = [mapthing_t {
-    x: 0,
-    y: 0,
-    angle: 0,
-    type_0: 0,
-    options: 0,
-}; 4];
 pub unsafe fn P_LoadVertexes(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut ml: *mut mapvertex_t = ::core::ptr::null_mut::<mapvertex_t>();
     let mut li: *mut vertex_t = ::core::ptr::null_mut::<vertex_t>();
-    numvertexes = (W_LumpLength(lump as u32) as usize)
+    unsafe { game_state() }.p_setup.numvertexes = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapvertex_t>() as usize) as i32;
-    vertexes = Z_Malloc(
+    unsafe { game_state() }.p_setup.vertexes = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (numvertexes as usize).wrapping_mul(::core::mem::size_of::<vertex_t>() as usize) as i32,
+        (unsafe { game_state() }.p_setup.numvertexes as usize).wrapping_mul(::core::mem::size_of::<vertex_t>() as usize) as i32,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut vertex_t;
     data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
     ml = data as *mut mapvertex_t;
-    li = vertexes;
+    li = unsafe { game_state() }.p_setup.vertexes;
     i = 0 as i32;
-    while i < numvertexes {
+    while i < unsafe { game_state() }.p_setup.numvertexes {
         (*li).x = (((*ml).x as i32) << FRACBITS) as fixed_t;
         (*li).y = (((*ml).y as i32) << FRACBITS) as fixed_t;
         i += 1;
@@ -191,53 +257,25 @@ pub unsafe fn P_LoadVertexes(mut lump: i32) {
     W_ReleaseLumpNum(lump);
 }
 pub unsafe fn GetSectorAtNullAddress() -> *mut sector_t {
-    static mut null_sector_is_initialized: bool = false;
-    static mut null_sector: sector_t = sector_t {
-        floorheight: 0,
-        ceilingheight: 0,
-        floorpic: 0,
-        ceilingpic: 0,
-        lightlevel: 0,
-        special: 0,
-        tag: 0,
-        soundtraversed: 0,
-        soundtarget: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
-        blockbox: [0; 4],
-        soundorg: degenmobj_t {
-            thinker: thinker_s {
-                prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-                next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-                function: ThinkerFn::Paused,
-            },
-            x: 0,
-            y: 0,
-            z: 0,
-        },
-        validcount: 0,
-        thinglist: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
-        specialdata: ::core::ptr::null::<::core::ffi::c_void>() as *mut ::core::ffi::c_void,
-        linecount: 0,
-        lines: ::core::ptr::null::<*mut line_s>() as *mut *mut line_s,
-    };
-    if !null_sector_is_initialized {
+    if !unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector_is_initialized {
         memset(
-            &raw mut null_sector as *mut ::core::ffi::c_void,
+            &raw mut unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector as *mut ::core::ffi::c_void,
             0 as i32,
             ::core::mem::size_of::<sector_t>() as size_t,
         );
         I_GetMemoryValue(
             0 as u32,
-            &raw mut null_sector.floorheight as *mut ::core::ffi::c_void,
+            &raw mut unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector.floorheight as *mut ::core::ffi::c_void,
             4 as i32,
         );
         I_GetMemoryValue(
             4 as u32,
-            &raw mut null_sector.ceilingheight as *mut ::core::ffi::c_void,
+            &raw mut unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector.ceilingheight as *mut ::core::ffi::c_void,
             4 as i32,
         );
-        null_sector_is_initialized = true;
+        unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector_is_initialized = true;
     }
-    return &raw mut null_sector;
+    return &raw mut unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector;
 }
 pub unsafe fn P_LoadSegs(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -248,42 +286,42 @@ pub unsafe fn P_LoadSegs(mut lump: i32) {
     let mut linedef: i32 = 0;
     let mut side: i32 = 0;
     let mut sidenum: i32 = 0;
-    numsegs = (W_LumpLength(lump as u32) as usize)
+    unsafe { game_state() }.p_setup.numsegs = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapseg_t>() as usize) as i32;
-    segs = Z_Malloc(
+    unsafe { game_state() }.p_setup.segs = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (numsegs as usize).wrapping_mul(::core::mem::size_of::<seg_t>() as usize) as i32,
+        (unsafe { game_state() }.p_setup.numsegs as usize).wrapping_mul(::core::mem::size_of::<seg_t>() as usize) as i32,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut seg_t;
     memset(
-        segs as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.p_setup.segs as *mut ::core::ffi::c_void,
         0 as i32,
-        (numsegs as size_t).wrapping_mul(::core::mem::size_of::<seg_t>() as size_t),
+        (unsafe { game_state() }.p_setup.numsegs as size_t).wrapping_mul(::core::mem::size_of::<seg_t>() as size_t),
     );
     data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
     ml = data as *mut mapseg_t;
-    li = segs;
+    li = unsafe { game_state() }.p_setup.segs;
     i = 0 as i32;
-    while i < numsegs {
-        (*li).v1 = vertexes.offset((*ml).v1 as isize) as *mut vertex_t;
-        (*li).v2 = vertexes.offset((*ml).v2 as isize) as *mut vertex_t;
+    while i < unsafe { game_state() }.p_setup.numsegs {
+        (*li).v1 = unsafe { game_state() }.p_setup.vertexes.offset((*ml).v1 as isize) as *mut vertex_t;
+        (*li).v2 = unsafe { game_state() }.p_setup.vertexes.offset((*ml).v2 as isize) as *mut vertex_t;
         (*li).angle = (((*ml).angle as i32) << 16 as i32) as angle_t;
         (*li).offset = (((*ml).offset as i32) << 16 as i32) as fixed_t;
         linedef = (*ml).linedef as i32;
-        ldef = lines.offset(linedef as isize) as *mut line_t;
+        ldef = unsafe { game_state() }.p_setup.lines.offset(linedef as isize) as *mut line_t;
         (*li).linedef = ldef;
         side = (*ml).side as i32;
-        (*li).sidedef = sides
+        (*li).sidedef = unsafe { game_state() }.p_setup.sides
             .offset(*(&raw mut (*ldef).sidenum as *mut i16).offset(side as isize) as isize)
             as *mut side_t;
-        (*li).frontsector = (*sides.offset((*ldef).sidenum[side as usize] as isize)).sector;
+        (*li).frontsector = (*unsafe { game_state() }.p_setup.sides.offset((*ldef).sidenum[side as usize] as isize)).sector;
         if (*ldef).flags as i32 & ML_TWOSIDED != 0 {
             sidenum = (*ldef).sidenum[(side ^ 1 as i32) as usize] as i32;
-            if sidenum < 0 as i32 || sidenum >= numsides {
+            if sidenum < 0 as i32 || sidenum >= unsafe { game_state() }.p_setup.numsides {
                 (*li).backsector = GetSectorAtNullAddress();
             } else {
-                (*li).backsector = (*sides.offset(sidenum as isize)).sector;
+                (*li).backsector = (*unsafe { game_state() }.p_setup.sides.offset(sidenum as isize)).sector;
             }
         } else {
             (*li).backsector = ::core::ptr::null_mut::<sector_t>();
@@ -299,11 +337,11 @@ pub unsafe fn P_LoadSubsectors(mut lump: i32) {
     let mut i: i32 = 0;
     let mut ms: *mut mapsubsector_t = ::core::ptr::null_mut::<mapsubsector_t>();
     let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
-    numsubsectors = (W_LumpLength(lump as u32) as usize)
+    unsafe { game_state() }.p_setup.numsubsectors = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapsubsector_t>() as usize) as i32;
-    subsectors = Z_Malloc(
+    unsafe { game_state() }.p_setup.subsectors = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (numsubsectors as usize).wrapping_mul(::core::mem::size_of::<subsector_t>() as usize)
+        (unsafe { game_state() }.p_setup.numsubsectors as usize).wrapping_mul(::core::mem::size_of::<subsector_t>() as usize)
             as i32,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -311,13 +349,13 @@ pub unsafe fn P_LoadSubsectors(mut lump: i32) {
     data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
     ms = data as *mut mapsubsector_t;
     memset(
-        subsectors as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.p_setup.subsectors as *mut ::core::ffi::c_void,
         0 as i32,
-        (numsubsectors as size_t).wrapping_mul(::core::mem::size_of::<subsector_t>() as size_t),
+        (unsafe { game_state() }.p_setup.numsubsectors as size_t).wrapping_mul(::core::mem::size_of::<subsector_t>() as size_t),
     );
-    ss = subsectors;
+    ss = unsafe { game_state() }.p_setup.subsectors;
     i = 0 as i32;
-    while i < numsubsectors {
+    while i < unsafe { game_state() }.p_setup.numsubsectors {
         (*ss).numlines = (*ms).numsegs;
         (*ss).firstline = (*ms).firstseg;
         i += 1;
@@ -331,24 +369,24 @@ pub unsafe fn P_LoadSectors(mut lump: i32) {
     let mut i: i32 = 0;
     let mut ms: *mut mapsector_t = ::core::ptr::null_mut::<mapsector_t>();
     let mut ss: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    numsectors = (W_LumpLength(lump as u32) as usize)
+    unsafe { game_state() }.p_setup.numsectors = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapsector_t>() as usize) as i32;
-    sectors = Z_Malloc(
+    unsafe { game_state() }.p_setup.sectors = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (numsectors as usize).wrapping_mul(::core::mem::size_of::<sector_t>() as usize) as i32,
+        (unsafe { game_state() }.p_setup.numsectors as usize).wrapping_mul(::core::mem::size_of::<sector_t>() as usize) as i32,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut sector_t;
     memset(
-        sectors as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.p_setup.sectors as *mut ::core::ffi::c_void,
         0 as i32,
-        (numsectors as size_t).wrapping_mul(::core::mem::size_of::<sector_t>() as size_t),
+        (unsafe { game_state() }.p_setup.numsectors as size_t).wrapping_mul(::core::mem::size_of::<sector_t>() as size_t),
     );
     data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
     ms = data as *mut mapsector_t;
-    ss = sectors;
+    ss = unsafe { game_state() }.p_setup.sectors;
     i = 0 as i32;
-    while i < numsectors {
+    while i < unsafe { game_state() }.p_setup.numsectors {
         (*ss).floorheight = (((*ms).floorheight as i32) << FRACBITS) as fixed_t;
         (*ss).ceilingheight = (((*ms).ceilingheight as i32) << FRACBITS) as fixed_t;
         (*ss).floorpic =
@@ -372,19 +410,19 @@ pub unsafe fn P_LoadNodes(mut lump: i32) {
     let mut k: i32 = 0;
     let mut mn: *mut mapnode_t = ::core::ptr::null_mut::<mapnode_t>();
     let mut no: *mut node_t = ::core::ptr::null_mut::<node_t>();
-    numnodes = (W_LumpLength(lump as u32) as usize)
+    unsafe { game_state() }.p_setup.numnodes = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapnode_t>() as usize) as i32;
-    nodes = Z_Malloc(
+    unsafe { game_state() }.p_setup.nodes = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (numnodes as usize).wrapping_mul(::core::mem::size_of::<node_t>() as usize) as i32,
+        (unsafe { game_state() }.p_setup.numnodes as usize).wrapping_mul(::core::mem::size_of::<node_t>() as usize) as i32,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut node_t;
     data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
     mn = data as *mut mapnode_t;
-    no = nodes;
+    no = unsafe { game_state() }.p_setup.nodes;
     i = 0 as i32;
-    while i < numnodes {
+    while i < unsafe { game_state() }.p_setup.numnodes {
         (*no).x = (((*mn).x as i32) << FRACBITS) as fixed_t;
         (*no).y = (((*mn).y as i32) << FRACBITS) as fixed_t;
         (*no).dx = (((*mn).dx as i32) << FRACBITS) as fixed_t;
@@ -530,30 +568,30 @@ pub unsafe fn P_LoadLineDefs(mut lump: i32) {
     let mut ld: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut v1: *mut vertex_t = ::core::ptr::null_mut::<vertex_t>();
     let mut v2: *mut vertex_t = ::core::ptr::null_mut::<vertex_t>();
-    numlines = (W_LumpLength(lump as u32) as usize)
+    unsafe { game_state() }.p_setup.numlines = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<maplinedef_t>() as usize) as i32;
-    lines = Z_Malloc(
+    unsafe { game_state() }.p_setup.lines = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (numlines as usize).wrapping_mul(::core::mem::size_of::<line_t>() as usize) as i32,
+        (unsafe { game_state() }.p_setup.numlines as usize).wrapping_mul(::core::mem::size_of::<line_t>() as usize) as i32,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut line_t;
     memset(
-        lines as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.p_setup.lines as *mut ::core::ffi::c_void,
         0 as i32,
-        (numlines as size_t).wrapping_mul(::core::mem::size_of::<line_t>() as size_t),
+        (unsafe { game_state() }.p_setup.numlines as size_t).wrapping_mul(::core::mem::size_of::<line_t>() as size_t),
     );
     data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
     mld = data as *mut maplinedef_t;
-    ld = lines;
+    ld = unsafe { game_state() }.p_setup.lines;
     i = 0 as i32;
-    while i < numlines {
+    while i < unsafe { game_state() }.p_setup.numlines {
         (*ld).flags = (*mld).flags;
         (*ld).special = (*mld).special;
         (*ld).tag = (*mld).tag;
-        (*ld).v1 = vertexes.offset((*mld).v1 as isize) as *mut vertex_t;
+        (*ld).v1 = unsafe { game_state() }.p_setup.vertexes.offset((*mld).v1 as isize) as *mut vertex_t;
         v1 = (*ld).v1;
-        (*ld).v2 = vertexes.offset((*mld).v2 as isize) as *mut vertex_t;
+        (*ld).v2 = unsafe { game_state() }.p_setup.vertexes.offset((*mld).v2 as isize) as *mut vertex_t;
         v2 = (*ld).v2;
         (*ld).dx = (*v2).x - (*v1).x;
         (*ld).dy = (*v2).y - (*v1).y;
@@ -583,12 +621,12 @@ pub unsafe fn P_LoadLineDefs(mut lump: i32) {
         (*ld).sidenum[0 as i32 as usize] = (*mld).sidenum[0 as i32 as usize];
         (*ld).sidenum[1 as i32 as usize] = (*mld).sidenum[1 as i32 as usize];
         if (*ld).sidenum[0 as i32 as usize] as i32 != -(1 as i32) {
-            (*ld).frontsector = (*sides.offset((*ld).sidenum[0 as i32 as usize] as isize)).sector;
+            (*ld).frontsector = (*unsafe { game_state() }.p_setup.sides.offset((*ld).sidenum[0 as i32 as usize] as isize)).sector;
         } else {
             (*ld).frontsector = ::core::ptr::null_mut::<sector_t>();
         }
         if (*ld).sidenum[1 as i32 as usize] as i32 != -(1 as i32) {
-            (*ld).backsector = (*sides.offset((*ld).sidenum[1 as i32 as usize] as isize)).sector;
+            (*ld).backsector = (*unsafe { game_state() }.p_setup.sides.offset((*ld).sidenum[1 as i32 as usize] as isize)).sector;
         } else {
             (*ld).backsector = ::core::ptr::null_mut::<sector_t>();
         }
@@ -603,24 +641,24 @@ pub unsafe fn P_LoadSideDefs(mut lump: i32) {
     let mut i: i32 = 0;
     let mut msd: *mut mapsidedef_t = ::core::ptr::null_mut::<mapsidedef_t>();
     let mut sd: *mut side_t = ::core::ptr::null_mut::<side_t>();
-    numsides = (W_LumpLength(lump as u32) as usize)
+    unsafe { game_state() }.p_setup.numsides = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapsidedef_t>() as usize) as i32;
-    sides = Z_Malloc(
+    unsafe { game_state() }.p_setup.sides = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (numsides as usize).wrapping_mul(::core::mem::size_of::<side_t>() as usize) as i32,
+        (unsafe { game_state() }.p_setup.numsides as usize).wrapping_mul(::core::mem::size_of::<side_t>() as usize) as i32,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut side_t;
     memset(
-        sides as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.p_setup.sides as *mut ::core::ffi::c_void,
         0 as i32,
-        (numsides as size_t).wrapping_mul(::core::mem::size_of::<side_t>() as size_t),
+        (unsafe { game_state() }.p_setup.numsides as size_t).wrapping_mul(::core::mem::size_of::<side_t>() as size_t),
     );
     data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
     msd = data as *mut mapsidedef_t;
-    sd = sides;
+    sd = unsafe { game_state() }.p_setup.sides;
     i = 0 as i32;
-    while i < numsides {
+    while i < unsafe { game_state() }.p_setup.numsides {
         (*sd).textureoffset = (((*msd).textureoffset as i32) << FRACBITS) as fixed_t;
         (*sd).rowoffset = (((*msd).rowoffset as i32) << FRACBITS) as fixed_t;
         (*sd).toptexture =
@@ -629,7 +667,7 @@ pub unsafe fn P_LoadSideDefs(mut lump: i32) {
             R_TextureNumForName(&raw mut (*msd).bottomtexture as *mut ::core::ffi::c_char) as i16;
         (*sd).midtexture =
             R_TextureNumForName(&raw mut (*msd).midtexture as *mut ::core::ffi::c_char) as i16;
-        (*sd).sector = sectors.offset((*msd).sector as isize) as *mut sector_t;
+        (*sd).sector = unsafe { game_state() }.p_setup.sectors.offset((*msd).sector as isize) as *mut sector_t;
         i += 1;
         msd = msd.offset(1);
         sd = sd.offset(1);
@@ -642,34 +680,34 @@ pub unsafe fn P_LoadBlockMap(mut lump: i32) {
     let mut lumplen: i32 = 0;
     lumplen = W_LumpLength(lump as u32);
     count = lumplen / 2 as i32;
-    blockmaplump = Z_Malloc(
+    unsafe { game_state() }.p_setup.blockmaplump = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         lumplen,
         PU_LEVEL as i32,
         NULL,
     ) as *mut i16;
-    W_ReadLump(lump as u32, blockmaplump as *mut ::core::ffi::c_void);
-    blockmap = blockmaplump.offset(4 as i32 as isize);
+    W_ReadLump(lump as u32, unsafe { game_state() }.p_setup.blockmaplump as *mut ::core::ffi::c_void);
+    unsafe { game_state() }.p_setup.blockmap = unsafe { game_state() }.p_setup.blockmaplump.offset(4 as i32 as isize);
     i = 0 as i32;
     while i < count {
-        *blockmaplump.offset(i as isize) = *blockmaplump.offset(i as isize);
+        *unsafe { game_state() }.p_setup.blockmaplump.offset(i as isize) = *unsafe { game_state() }.p_setup.blockmaplump.offset(i as isize);
         i += 1;
     }
-    bmaporgx = ((*blockmaplump.offset(0 as i32 as isize) as i32) << FRACBITS) as fixed_t;
-    bmaporgy = ((*blockmaplump.offset(1 as i32 as isize) as i32) << FRACBITS) as fixed_t;
-    bmapwidth = *blockmaplump.offset(2 as i32 as isize) as i32;
-    bmapheight = *blockmaplump.offset(3 as i32 as isize) as i32;
+    unsafe { game_state() }.p_setup.bmaporgx = ((*unsafe { game_state() }.p_setup.blockmaplump.offset(0 as i32 as isize) as i32) << FRACBITS) as fixed_t;
+    unsafe { game_state() }.p_setup.bmaporgy = ((*unsafe { game_state() }.p_setup.blockmaplump.offset(1 as i32 as isize) as i32) << FRACBITS) as fixed_t;
+    unsafe { game_state() }.p_setup.bmapwidth = *unsafe { game_state() }.p_setup.blockmaplump.offset(2 as i32 as isize) as i32;
+    unsafe { game_state() }.p_setup.bmapheight = *unsafe { game_state() }.p_setup.blockmaplump.offset(3 as i32 as isize) as i32;
     count = (::core::mem::size_of::<*mut mobj_t>() as usize)
-        .wrapping_mul(bmapwidth as usize)
-        .wrapping_mul(bmapheight as usize) as i32;
-    blocklinks = Z_Malloc(
+        .wrapping_mul(unsafe { game_state() }.p_setup.bmapwidth as usize)
+        .wrapping_mul(unsafe { game_state() }.p_setup.bmapheight as usize) as i32;
+    unsafe { game_state() }.p_setup.blocklinks = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         count,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut mobj_t;
     memset(
-        blocklinks as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.p_setup.blocklinks as *mut ::core::ffi::c_void,
         0 as i32,
         count as size_t,
     );
@@ -684,44 +722,44 @@ pub unsafe fn P_GroupLines() {
     let mut seg: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut bbox: [fixed_t; 4] = [0; 4];
     let mut block: i32 = 0;
-    ss = subsectors;
+    ss = unsafe { game_state() }.p_setup.subsectors;
     i = 0 as i32;
-    while i < numsubsectors {
-        seg = segs.offset((*ss).firstline as isize) as *mut seg_t;
+    while i < unsafe { game_state() }.p_setup.numsubsectors {
+        seg = unsafe { game_state() }.p_setup.segs.offset((*ss).firstline as isize) as *mut seg_t;
         (*ss).sector = (*(*seg).sidedef).sector;
         i += 1;
         ss = ss.offset(1);
     }
-    li = lines;
-    totallines = 0 as i32;
+    li = unsafe { game_state() }.p_setup.lines;
+    unsafe { game_state() }.p_setup.totallines = 0 as i32;
     i = 0 as i32;
-    while i < numlines {
-        totallines += 1;
+    while i < unsafe { game_state() }.p_setup.numlines {
+        unsafe { game_state() }.p_setup.totallines += 1;
         (*(*li).frontsector).linecount += 1;
         if !(*li).backsector.is_null() && (*li).backsector != (*li).frontsector {
             (*(*li).backsector).linecount += 1;
-            totallines += 1;
+            unsafe { game_state() }.p_setup.totallines += 1;
         }
         i += 1;
         li = li.offset(1);
     }
     linebuffer = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (totallines as usize).wrapping_mul(::core::mem::size_of::<*mut line_t>() as usize) as i32,
+        (unsafe { game_state() }.p_setup.totallines as usize).wrapping_mul(::core::mem::size_of::<*mut line_t>() as usize) as i32,
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut *mut line_t;
     i = 0 as i32;
-    while i < numsectors {
-        let ref mut fresh0 = (*sectors.offset(i as isize)).lines;
+    while i < unsafe { game_state() }.p_setup.numsectors {
+        let ref mut fresh0 = (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).lines;
         *fresh0 = linebuffer as *mut *mut line_s;
-        linebuffer = linebuffer.offset((*sectors.offset(i as isize)).linecount as isize);
-        (*sectors.offset(i as isize)).linecount = 0 as i32;
+        linebuffer = linebuffer.offset((*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).linecount as isize);
+        (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).linecount = 0 as i32;
         i += 1;
     }
     i = 0 as i32;
-    while i < numlines {
-        li = lines.offset(i as isize) as *mut line_t;
+    while i < unsafe { game_state() }.p_setup.numlines {
+        li = unsafe { game_state() }.p_setup.lines.offset(i as isize) as *mut line_t;
         if !(*li).frontsector.is_null() {
             sector = (*li).frontsector;
             let ref mut fresh1 = *(*sector).lines.offset((*sector).linecount as isize);
@@ -736,9 +774,9 @@ pub unsafe fn P_GroupLines() {
         }
         i += 1;
     }
-    sector = sectors;
+    sector = unsafe { game_state() }.p_setup.sectors;
     i = 0 as i32;
-    while i < numsectors {
+    while i < unsafe { game_state() }.p_setup.numsectors {
         M_ClearBox(&raw mut bbox as *mut fixed_t);
         j = 0 as i32;
         while j < (*sector).linecount {
@@ -752,27 +790,27 @@ pub unsafe fn P_GroupLines() {
         (*sector).soundorg.y = ((bbox[BOXTOP as i32 as usize] + bbox[BOXBOTTOM as i32 as usize])
             / 2 as i32) as fixed_t;
         block =
-            bbox[BOXTOP as i32 as usize] - bmaporgy as i32 + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
-        block = if block >= bmapheight {
-            bmapheight - 1 as i32
+            bbox[BOXTOP as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgy as i32 + 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+        block = if block >= unsafe { game_state() }.p_setup.bmapheight {
+            unsafe { game_state() }.p_setup.bmapheight - 1 as i32
         } else {
             block
         };
         (*sector).blockbox[BOXTOP as i32 as usize] = block;
-        block = bbox[BOXBOTTOM as i32 as usize] - bmaporgy as i32 - 32 as i32 * FRACUNIT
+        block = bbox[BOXBOTTOM as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgy as i32 - 32 as i32 * FRACUNIT
             >> MAPBLOCKSHIFT;
         block = if block < 0 as i32 { 0 as i32 } else { block };
         (*sector).blockbox[BOXBOTTOM as i32 as usize] = block;
-        block = bbox[BOXRIGHT as i32 as usize] - bmaporgx as i32 + 32 as i32 * FRACUNIT
+        block = bbox[BOXRIGHT as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgx as i32 + 32 as i32 * FRACUNIT
             >> MAPBLOCKSHIFT;
-        block = if block >= bmapwidth {
-            bmapwidth - 1 as i32
+        block = if block >= unsafe { game_state() }.p_setup.bmapwidth {
+            unsafe { game_state() }.p_setup.bmapwidth - 1 as i32
         } else {
             block
         };
         (*sector).blockbox[BOXRIGHT as i32 as usize] = block;
         block =
-            bbox[BOXLEFT as i32 as usize] - bmaporgx as i32 - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
+            bbox[BOXLEFT as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgx as i32 - 32 as i32 * FRACUNIT >> MAPBLOCKSHIFT;
         block = if block < 0 as i32 { 0 as i32 } else { block };
         (*sector).blockbox[BOXLEFT as i32 as usize] = block;
         i += 1;
@@ -785,7 +823,7 @@ unsafe fn PadRejectArray(mut array: *mut byte, mut len: u32) {
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut padvalue: u32 = 0;
     let mut rejectpad: [u32; 4] = [
-        ((totallines * 4 as i32 + 3 as i32 & !(3 as i32)) + 24 as i32) as u32,
+        ((unsafe { game_state() }.p_setup.totallines * 4 as i32 + 3 as i32 & !(3 as i32)) + 24 as i32) as u32,
         0 as i32 as u32,
         50 as i32 as u32,
         0x1d4a11 as i32 as u32,
@@ -823,20 +861,20 @@ unsafe fn PadRejectArray(mut array: *mut byte, mut len: u32) {
 unsafe fn P_LoadReject(mut lumpnum: i32) {
     let mut minlength: i32 = 0;
     let mut lumplen: i32 = 0;
-    minlength = (numsectors * numsectors + 7 as i32) / 8 as i32;
+    minlength = (unsafe { game_state() }.p_setup.numsectors * unsafe { game_state() }.p_setup.numsectors + 7 as i32) / 8 as i32;
     lumplen = W_LumpLength(lumpnum as u32);
     if lumplen >= minlength {
-        rejectmatrix = W_CacheLumpNum(lumpnum, PU_LEVEL as i32) as *mut byte;
+        unsafe { game_state() }.p_setup.rejectmatrix = W_CacheLumpNum(lumpnum, PU_LEVEL as i32) as *mut byte;
     } else {
-        rejectmatrix = Z_Malloc(
+        unsafe { game_state() }.p_setup.rejectmatrix = Z_Malloc(
             unsafe { &mut game_state().z_zone },
             minlength,
             PU_LEVEL as i32,
-            &raw mut rejectmatrix as *mut ::core::ffi::c_void,
+            &raw mut unsafe { game_state() }.p_setup.rejectmatrix as *mut ::core::ffi::c_void,
         ) as *mut byte;
-        W_ReadLump(lumpnum as u32, rejectmatrix as *mut ::core::ffi::c_void);
+        W_ReadLump(lumpnum as u32, unsafe { game_state() }.p_setup.rejectmatrix as *mut ::core::ffi::c_void);
         PadRejectArray(
-            rejectmatrix.offset(lumplen as isize),
+            unsafe { game_state() }.p_setup.rejectmatrix.offset(lumplen as isize),
             (minlength - lumplen) as u32,
         );
     };
@@ -911,7 +949,7 @@ pub unsafe fn P_SetupLevel(
     P_GroupLines();
     P_LoadReject(lumpnum + ML_REJECT as i32);
     unsafe { game_state() }.g_game.bodyqueslot = 0 as i32;
-    deathmatch_p = &raw mut deathmatchstarts as *mut mapthing_t;
+    unsafe { game_state() }.p_setup.deathmatch_p = &raw mut unsafe { game_state() }.p_setup.deathmatchstarts as *mut mapthing_t;
     P_LoadThings(lumpnum + ML_THINGS as i32);
     if unsafe { game_state() }.g_game.deathmatch != 0 {
         i = 0 as i32;

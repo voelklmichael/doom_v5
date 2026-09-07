@@ -6,7 +6,6 @@ use crate::src::p_floor::T_MovePlane;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
-use crate::src::p_setup::sectors;
 use crate::src::p_spec::ceiling_t;
 use crate::src::p_spec::P_FindHighestCeilingSurrounding;
 use crate::src::p_spec::P_FindSectorFromLineTag;
@@ -186,7 +185,7 @@ pub unsafe fn EV_DoCeiling(
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }

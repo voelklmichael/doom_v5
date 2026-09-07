@@ -44,9 +44,6 @@ use crate::src::p_mobj::{
     MF_SKULLFLY, MF_SOLID, MF_SPECIAL, MF_TELEPORT,
 };
 use crate::src::p_mobj::{MT_BLOOD, MT_BRUISER, MT_CYBORG, MT_KNIGHT, MT_PLAYER, MT_SPIDER};
-use crate::src::p_setup::bmaporgx;
-use crate::src::p_setup::bmaporgy;
-use crate::src::p_setup::lines;
 use crate::src::p_sight::P_CheckSight;
 use crate::src::p_spec::P_CrossSpecialLine;
 use crate::src::p_spec::P_ShootSpecialLine;
@@ -200,17 +197,17 @@ pub unsafe fn P_TeleportMove(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixe
     unsafe { game_state() }.r_main.validcount += 1;
     unsafe { game_state() }.p_map.numspechit = 0 as i32;
     xl = unsafe { game_state() }.p_map.tmbbox[BOXLEFT as i32 as usize]
-        - bmaporgx as i32
+        - unsafe { game_state() }.p_setup.bmaporgx as i32
         - 32 as i32 * FRACUNIT
         >> MAPBLOCKSHIFT;
-    xh = unsafe { game_state() }.p_map.tmbbox[BOXRIGHT as i32 as usize] - bmaporgx as i32
+    xh = unsafe { game_state() }.p_map.tmbbox[BOXRIGHT as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgx as i32
         + 32 as i32 * FRACUNIT
         >> MAPBLOCKSHIFT;
     yl = unsafe { game_state() }.p_map.tmbbox[BOXBOTTOM as i32 as usize]
-        - bmaporgy as i32
+        - unsafe { game_state() }.p_setup.bmaporgy as i32
         - 32 as i32 * FRACUNIT
         >> MAPBLOCKSHIFT;
-    yh = unsafe { game_state() }.p_map.tmbbox[BOXTOP as i32 as usize] - bmaporgy as i32
+    yh = unsafe { game_state() }.p_map.tmbbox[BOXTOP as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgy as i32
         + 32 as i32 * FRACUNIT
         >> MAPBLOCKSHIFT;
     bx = xl;
@@ -408,17 +405,17 @@ pub unsafe fn P_CheckPosition(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fix
         return true;
     }
     xl = unsafe { game_state() }.p_map.tmbbox[BOXLEFT as i32 as usize]
-        - bmaporgx as i32
+        - unsafe { game_state() }.p_setup.bmaporgx as i32
         - 32 as i32 * FRACUNIT
         >> MAPBLOCKSHIFT;
-    xh = unsafe { game_state() }.p_map.tmbbox[BOXRIGHT as i32 as usize] - bmaporgx as i32
+    xh = unsafe { game_state() }.p_map.tmbbox[BOXRIGHT as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgx as i32
         + 32 as i32 * FRACUNIT
         >> MAPBLOCKSHIFT;
     yl = unsafe { game_state() }.p_map.tmbbox[BOXBOTTOM as i32 as usize]
-        - bmaporgy as i32
+        - unsafe { game_state() }.p_setup.bmaporgy as i32
         - 32 as i32 * FRACUNIT
         >> MAPBLOCKSHIFT;
-    yh = unsafe { game_state() }.p_map.tmbbox[BOXTOP as i32 as usize] - bmaporgy as i32
+    yh = unsafe { game_state() }.p_map.tmbbox[BOXTOP as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgy as i32
         + 32 as i32 * FRACUNIT
         >> MAPBLOCKSHIFT;
     bx = xl;
@@ -436,13 +433,13 @@ pub unsafe fn P_CheckPosition(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fix
         }
         bx += 1;
     }
-    xl = (unsafe { game_state() }.p_map.tmbbox[BOXLEFT as i32 as usize] - bmaporgx >> MAPBLOCKSHIFT)
+    xl = (unsafe { game_state() }.p_map.tmbbox[BOXLEFT as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgx >> MAPBLOCKSHIFT)
         as i32;
-    xh = (unsafe { game_state() }.p_map.tmbbox[BOXRIGHT as i32 as usize] - bmaporgx
+    xh = (unsafe { game_state() }.p_map.tmbbox[BOXRIGHT as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgx
         >> MAPBLOCKSHIFT) as i32;
-    yl = (unsafe { game_state() }.p_map.tmbbox[BOXBOTTOM as i32 as usize] - bmaporgy
+    yl = (unsafe { game_state() }.p_map.tmbbox[BOXBOTTOM as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgy
         >> MAPBLOCKSHIFT) as i32;
-    yh = (unsafe { game_state() }.p_map.tmbbox[BOXTOP as i32 as usize] - bmaporgy >> MAPBLOCKSHIFT)
+    yh = (unsafe { game_state() }.p_map.tmbbox[BOXTOP as i32 as usize] - unsafe { game_state() }.p_setup.bmaporgy >> MAPBLOCKSHIFT)
         as i32;
     bx = xl;
     while bx <= xh {
@@ -516,7 +513,7 @@ pub unsafe fn P_TryMove(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixed_t) 
             oldside = P_PointOnLineSide(oldx, oldy, ld);
             if side != oldside {
                 if (*ld).special != 0 {
-                    P_CrossSpecialLine(ld.offset_from(lines) as i64 as i32, oldside, thing);
+                    P_CrossSpecialLine(ld.offset_from(unsafe { game_state() }.p_setup.lines) as i64 as i32, oldside, thing);
                 }
             }
         }
@@ -1108,10 +1105,10 @@ pub unsafe fn P_RadiusAttack(mut spot: *mut mobj_t, mut source: *mut mobj_t, mut
     let mut yh: i32 = 0;
     let mut dist: fixed_t = 0;
     dist = (damage + 32 as i32 * FRACUNIT << FRACBITS) as fixed_t;
-    yh = ((*spot).y + dist - bmaporgy >> MAPBLOCKSHIFT) as i32;
-    yl = ((*spot).y - dist - bmaporgy >> MAPBLOCKSHIFT) as i32;
-    xh = ((*spot).x + dist - bmaporgx >> MAPBLOCKSHIFT) as i32;
-    xl = ((*spot).x - dist - bmaporgx >> MAPBLOCKSHIFT) as i32;
+    yh = ((*spot).y + dist - unsafe { game_state() }.p_setup.bmaporgy >> MAPBLOCKSHIFT) as i32;
+    yl = ((*spot).y - dist - unsafe { game_state() }.p_setup.bmaporgy >> MAPBLOCKSHIFT) as i32;
+    xh = ((*spot).x + dist - unsafe { game_state() }.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
+    xl = ((*spot).x - dist - unsafe { game_state() }.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
     unsafe { game_state() }.p_map.bombspot = spot;
     unsafe { game_state() }.p_map.bombsource = source;
     unsafe { game_state() }.p_map.bombdamage = damage;
@@ -1208,7 +1205,7 @@ unsafe fn SpechitOverrun(mut ld: *mut line_t) {
         }
     }
     addr = (unsafe { game_state() }.p_map.baseaddr as i64
-        + ld.offset_from(lines) as i64 * 0x3e as i64) as u32;
+        + ld.offset_from(unsafe { game_state() }.p_setup.lines) as i64 * 0x3e as i64) as u32;
     match unsafe { game_state() }.p_map.numspechit {
         9 | 10 | 11 | 12 => {
             unsafe { game_state() }.p_map.tmbbox
