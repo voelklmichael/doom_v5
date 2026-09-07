@@ -22,6 +22,59 @@ use libc::printf;
 use libc::{atoi, strcmp};
 use libc::{memcpy, memset};
 
+pub struct IVideoState {
+    pub s_Fb: FB_ScreenInfo,
+    pub fb_scaling: i32,
+    pub usemouse: i32,
+    pub colors: [color; 256],
+    pub I_VideoBuffer: *mut byte,
+    pub screensaver_mode: bool,
+    pub screenvisible: bool,
+    pub mouse_acceleration: f32,
+    pub mouse_threshold: i32,
+    pub usegamma: i32,
+}
+
+impl IVideoState {
+    pub const fn new() -> Self {
+        IVideoState {
+            s_Fb: FB_ScreenInfo {
+        xres: 0,
+        yres: 0,
+        xres_virtual: 0,
+        yres_virtual: 0,
+        bits_per_pixel: 0,
+        red: FB_BitField {
+            offset: 0,
+            length: 0,
+        },
+        green: FB_BitField {
+            offset: 0,
+            length: 0,
+        },
+        blue: FB_BitField {
+            offset: 0,
+            length: 0,
+        },
+        transp: FB_BitField {
+            offset: 0,
+            length: 0,
+        },
+    },
+            fb_scaling: 1,
+            usemouse: 0,
+            colors: [color { b_g_r_a: [0; 4] }; 256],
+            I_VideoBuffer: ::core::ptr::null::<byte>() as *mut byte,
+            screensaver_mode: false,
+            screenvisible: false,
+            mouse_acceleration: 2.0f32,
+            mouse_threshold: 10,
+            usegamma: 0,
+        }
+    }
+}
+
+
 extern "C" {
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn DG_DrawFrame();
@@ -65,40 +118,7 @@ pub struct col_t {
     pub g: byte,
     pub b: byte,
 }
-static mut s_Fb: FB_ScreenInfo = FB_ScreenInfo {
-    xres: 0,
-    yres: 0,
-    xres_virtual: 0,
-    yres_virtual: 0,
-    bits_per_pixel: 0,
-    red: FB_BitField {
-        offset: 0,
-        length: 0,
-    },
-    green: FB_BitField {
-        offset: 0,
-        length: 0,
-    },
-    blue: FB_BitField {
-        offset: 0,
-        length: 0,
-    },
-    transp: FB_BitField {
-        offset: 0,
-        length: 0,
-    },
-};
-#[no_mangle]
-pub static mut fb_scaling: i32 = 1;
-pub static mut usemouse: i32 = 0;
-static mut colors: [color; 256] = [color { b_g_r_a: [0; 4] }; 256];
-pub static mut I_VideoBuffer: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-pub static mut screensaver_mode: bool = false;
-pub static mut screenvisible: bool = false;
-pub static mut mouse_acceleration: f32 = 2.0f32;
-pub static mut mouse_threshold: i32 = 10;
-pub static mut usegamma: i32 = 0;
-static mut rgb565_palette: [uint16_t; 256] = [0; 256];
+static rgb565_palette: [uint16_t; 256] = [0; 256];
 pub unsafe fn cmap_to_rgb565(mut out: *mut uint16_t, mut in_0: *mut uint8_t, mut in_pixels: i32) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
@@ -108,14 +128,14 @@ pub unsafe fn cmap_to_rgb565(mut out: *mut uint16_t, mut in_0: *mut uint8_t, mut
     let mut b: uint16_t = 0;
     i = 0 as i32;
     while i < in_pixels {
-        c = colors[*in_0 as usize];
+        c = unsafe { game_state() }.i_video.colors[*in_0 as usize];
         r = (((c.r() as i32 >> 3 as i32) as uint16_t as i32) << 11 as i32) as uint16_t;
         g = (((c.g() as i32 >> 2 as i32) as uint16_t as i32) << 5 as i32) as uint16_t;
         b = (((c.b() as i32 >> 3 as i32) as uint16_t as i32) << 0 as i32) as uint16_t;
         *out = (r as i32 | g as i32 | b as i32) as uint16_t;
         in_0 = in_0.offset(1);
         j = 0 as i32;
-        while j < fb_scaling {
+        while j < unsafe { game_state() }.i_video.fb_scaling {
             out = out.offset(1);
             j += 1;
         }
@@ -129,23 +149,23 @@ pub unsafe fn cmap_to_fb(mut out: *mut uint8_t, mut in_0: *mut uint8_t, mut in_p
     let mut pix: uint32_t = 0;
     i = 0 as i32;
     while i < in_pixels {
-        c = colors[*in_0 as usize];
-        if s_Fb.bits_per_pixel == 16 as uint32_t {
+        c = unsafe { game_state() }.i_video.colors[*in_0 as usize];
+        if unsafe { game_state() }.i_video.s_Fb.bits_per_pixel == 16 as uint32_t {
             let mut p: uint16_t = ((c.r() as i32 & 0xf8 as i32) << 8 as i32
                 | (c.g() as i32 & 0xfc as i32) << 3 as i32
                 | c.b() as i32 >> 3 as i32) as uint16_t;
             k = 0 as i32;
-            while k < fb_scaling {
+            while k < unsafe { game_state() }.i_video.fb_scaling {
                 *(out as *mut uint16_t) = p;
                 out = out.offset(2 as i32 as isize);
                 k += 1;
             }
-        } else if s_Fb.bits_per_pixel == 32 as uint32_t {
-            pix = ((c.r() as i32) << s_Fb.red.offset
-                | (c.g() as i32) << s_Fb.green.offset
-                | (c.b() as i32) << s_Fb.blue.offset) as uint32_t;
+        } else if unsafe { game_state() }.i_video.s_Fb.bits_per_pixel == 32 as uint32_t {
+            pix = ((c.r() as i32) << unsafe { game_state() }.i_video.s_Fb.red.offset
+                | (c.g() as i32) << unsafe { game_state() }.i_video.s_Fb.green.offset
+                | (c.b() as i32) << unsafe { game_state() }.i_video.s_Fb.blue.offset) as uint32_t;
             k = 0 as i32;
-            while k < fb_scaling {
+            while k < unsafe { game_state() }.i_video.fb_scaling {
                 *(out as *mut uint32_t) = pix;
                 out = out.offset(4 as i32 as isize);
                 k += 1;
@@ -153,7 +173,7 @@ pub unsafe fn cmap_to_fb(mut out: *mut uint8_t, mut in_0: *mut uint8_t, mut in_p
         } else {
             I_Error(&format!(
                 "No idea how to convert {} bpp pixels",
-                s_Fb.bits_per_pixel
+                unsafe { game_state() }.i_video.s_Fb.bits_per_pixel
             ));
         }
         in_0 = in_0.offset(1);
@@ -165,14 +185,14 @@ pub unsafe fn I_InitGraphics() {
     let mut gfxmodeparm: i32 = 0;
     let mut mode: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     memset(
-        &raw mut s_Fb as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.i_video.s_Fb as *mut ::core::ffi::c_void,
         0 as i32,
         ::core::mem::size_of::<FB_ScreenInfo>() as size_t,
     );
-    s_Fb.xres = DOOMGENERIC_RESX as uint32_t;
-    s_Fb.yres = DOOMGENERIC_RESY as uint32_t;
-    s_Fb.xres_virtual = s_Fb.xres;
-    s_Fb.yres_virtual = s_Fb.yres;
+    unsafe { game_state() }.i_video.s_Fb.xres = DOOMGENERIC_RESX as uint32_t;
+    unsafe { game_state() }.i_video.s_Fb.yres = DOOMGENERIC_RESY as uint32_t;
+    unsafe { game_state() }.i_video.s_Fb.xres_virtual = unsafe { game_state() }.i_video.s_Fb.xres;
+    unsafe { game_state() }.i_video.s_Fb.yres_virtual = unsafe { game_state() }.i_video.s_Fb.yres;
     gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1 as i32);
     if gfxmodeparm != 0 {
         mode = unsafe { game_state() }.m_argv.myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr()
@@ -185,25 +205,25 @@ pub unsafe fn I_InitGraphics() {
         b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char,
     ) == 0 as i32
     {
-        s_Fb.bits_per_pixel = 32 as uint32_t;
-        s_Fb.blue.length = 8 as uint32_t;
-        s_Fb.green.length = 8 as uint32_t;
-        s_Fb.red.length = 8 as uint32_t;
-        s_Fb.transp.length = 8 as uint32_t;
-        s_Fb.blue.offset = 0 as uint32_t;
-        s_Fb.green.offset = 8 as uint32_t;
-        s_Fb.red.offset = 16 as uint32_t;
-        s_Fb.transp.offset = 24 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.bits_per_pixel = 32 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.blue.length = 8 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.green.length = 8 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.red.length = 8 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.transp.length = 8 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.blue.offset = 0 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.green.offset = 8 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.red.offset = 16 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.transp.offset = 24 as uint32_t;
     } else if strcmp(mode, b"rgb565\0" as *const u8 as *const ::core::ffi::c_char) == 0 as i32 {
-        s_Fb.bits_per_pixel = 16 as uint32_t;
-        s_Fb.blue.length = 5 as uint32_t;
-        s_Fb.green.length = 6 as uint32_t;
-        s_Fb.red.length = 5 as uint32_t;
-        s_Fb.transp.length = 0 as uint32_t;
-        s_Fb.blue.offset = 11 as uint32_t;
-        s_Fb.green.offset = 5 as uint32_t;
-        s_Fb.red.offset = 0 as uint32_t;
-        s_Fb.transp.offset = 16 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.bits_per_pixel = 16 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.blue.length = 5 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.green.length = 6 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.red.length = 5 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.transp.length = 0 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.blue.offset = 11 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.green.offset = 5 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.red.offset = 0 as uint32_t;
+        unsafe { game_state() }.i_video.s_Fb.transp.offset = 16 as uint32_t;
     } else {
         I_Error(&format!(
             "Unknown gfxmode value: {}\n",
@@ -213,23 +233,23 @@ pub unsafe fn I_InitGraphics() {
     printf(
         b"I_InitGraphics: framebuffer: x_res: %d, y_res: %d, x_virtual: %d, y_virtual: %d, bpp: %d\n\0"
             as *const u8 as *const ::core::ffi::c_char,
-        s_Fb.xres,
-        s_Fb.yres,
-        s_Fb.xres_virtual,
-        s_Fb.yres_virtual,
-        s_Fb.bits_per_pixel,
+        unsafe { game_state() }.i_video.s_Fb.xres,
+        unsafe { game_state() }.i_video.s_Fb.yres,
+        unsafe { game_state() }.i_video.s_Fb.xres_virtual,
+        unsafe { game_state() }.i_video.s_Fb.yres_virtual,
+        unsafe { game_state() }.i_video.s_Fb.bits_per_pixel,
     );
     printf(
         b"I_InitGraphics: framebuffer: RGBA: %d%d%d%d, red_off: %d, green_off: %d, blue_off: %d, transp_off: %d\n\0"
             as *const u8 as *const ::core::ffi::c_char,
-        s_Fb.red.length,
-        s_Fb.green.length,
-        s_Fb.blue.length,
-        s_Fb.transp.length,
-        s_Fb.red.offset,
-        s_Fb.green.offset,
-        s_Fb.blue.offset,
-        s_Fb.transp.offset,
+        unsafe { game_state() }.i_video.s_Fb.red.length,
+        unsafe { game_state() }.i_video.s_Fb.green.length,
+        unsafe { game_state() }.i_video.s_Fb.blue.length,
+        unsafe { game_state() }.i_video.s_Fb.transp.length,
+        unsafe { game_state() }.i_video.s_Fb.red.offset,
+        unsafe { game_state() }.i_video.s_Fb.green.offset,
+        unsafe { game_state() }.i_video.s_Fb.blue.offset,
+        unsafe { game_state() }.i_video.s_Fb.transp.offset,
     );
     printf(
         b"I_InitGraphics: DOOM screen size: w x h: %d x %d\n\0" as *const u8
@@ -243,34 +263,34 @@ pub unsafe fn I_InitGraphics() {
             unsafe { game_state() }.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
-        fb_scaling = i;
+        unsafe { game_state() }.i_video.fb_scaling = i;
         printf(
             b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8 as *const ::core::ffi::c_char,
-            fb_scaling,
+            unsafe { game_state() }.i_video.fb_scaling,
         );
     } else {
-        fb_scaling = s_Fb.xres.wrapping_div(SCREENWIDTH as uint32_t) as i32;
-        if s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) < fb_scaling as uint32_t {
-            fb_scaling = s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) as i32;
+        unsafe { game_state() }.i_video.fb_scaling = unsafe { game_state() }.i_video.s_Fb.xres.wrapping_div(SCREENWIDTH as uint32_t) as i32;
+        if unsafe { game_state() }.i_video.s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) < unsafe { game_state() }.i_video.fb_scaling as uint32_t {
+            unsafe { game_state() }.i_video.fb_scaling = unsafe { game_state() }.i_video.s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) as i32;
         }
         printf(
             b"I_InitGraphics: Auto-scaling factor: %d\n\0" as *const u8
                 as *const ::core::ffi::c_char,
-            fb_scaling,
+            unsafe { game_state() }.i_video.fb_scaling,
         );
     }
-    I_VideoBuffer = Z_Malloc(
+    unsafe { game_state() }.i_video.I_VideoBuffer = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         SCREENWIDTH * SCREENHEIGHT,
         PU_STATIC as i32,
         NULL,
     ) as *mut byte;
-    screenvisible = true;
+    unsafe { game_state() }.i_video.screenvisible = true;
 }
 pub unsafe fn I_ShutdownGraphics() {
     Z_Free(
         unsafe { &mut game_state().z_zone },
-        I_VideoBuffer as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.i_video.I_VideoBuffer as *mut ::core::ffi::c_void,
     );
 }
 pub unsafe fn I_StartTic() {
@@ -283,25 +303,25 @@ pub unsafe fn I_FinishUpdate() {
     let mut x_offset_end: i32 = 0;
     let mut line_in: *mut u8 = ::core::ptr::null_mut::<u8>();
     let mut line_out: *mut u8 = ::core::ptr::null_mut::<u8>();
-    y_offset = s_Fb
+    y_offset = unsafe { game_state() }.i_video.s_Fb
         .yres
-        .wrapping_sub((SCREENHEIGHT * fb_scaling) as uint32_t)
-        .wrapping_mul(s_Fb.bits_per_pixel)
+        .wrapping_sub((SCREENHEIGHT * unsafe { game_state() }.i_video.fb_scaling) as uint32_t)
+        .wrapping_mul(unsafe { game_state() }.i_video.s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
         .wrapping_div(2 as uint32_t) as i32;
-    x_offset = s_Fb
+    x_offset = unsafe { game_state() }.i_video.s_Fb
         .xres
-        .wrapping_sub((SCREENWIDTH * fb_scaling) as uint32_t)
-        .wrapping_mul(s_Fb.bits_per_pixel)
+        .wrapping_sub((SCREENWIDTH * unsafe { game_state() }.i_video.fb_scaling) as uint32_t)
+        .wrapping_mul(unsafe { game_state() }.i_video.s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
         .wrapping_div(2 as uint32_t) as i32;
-    x_offset_end = s_Fb
+    x_offset_end = unsafe { game_state() }.i_video.s_Fb
         .xres
-        .wrapping_sub((SCREENWIDTH * fb_scaling) as uint32_t)
-        .wrapping_mul(s_Fb.bits_per_pixel)
+        .wrapping_sub((SCREENWIDTH * unsafe { game_state() }.i_video.fb_scaling) as uint32_t)
+        .wrapping_mul(unsafe { game_state() }.i_video.s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
         .wrapping_sub(x_offset as uint32_t) as i32;
-    line_in = I_VideoBuffer as *mut u8;
+    line_in = unsafe { game_state() }.i_video.I_VideoBuffer as *mut u8;
     line_out = DG_ScreenBuffer as *mut u8;
     y = SCREENHEIGHT;
     loop {
@@ -312,7 +332,7 @@ pub unsafe fn I_FinishUpdate() {
         }
         let mut i: i32 = 0;
         i = 0 as i32;
-        while i < fb_scaling {
+        while i < unsafe { game_state() }.i_video.fb_scaling {
             line_out = line_out.offset(x_offset as isize);
             cmap_to_fb(
                 line_out as *mut ::core::ffi::c_void as *mut uint8_t,
@@ -320,8 +340,8 @@ pub unsafe fn I_FinishUpdate() {
                 SCREENWIDTH,
             );
             line_out = line_out.offset(
-                ((SCREENWIDTH * fb_scaling) as uint32_t)
-                    .wrapping_mul(s_Fb.bits_per_pixel.wrapping_div(8 as uint32_t))
+                ((SCREENWIDTH * unsafe { game_state() }.i_video.fb_scaling) as uint32_t)
+                    .wrapping_mul(unsafe { game_state() }.i_video.s_Fb.bits_per_pixel.wrapping_div(8 as uint32_t))
                     .wrapping_add(x_offset_end as uint32_t) as isize,
             );
             i += 1;
@@ -333,7 +353,7 @@ pub unsafe fn I_FinishUpdate() {
 pub unsafe fn I_ReadScreen(mut scr: *mut byte) {
     memcpy(
         scr as *mut ::core::ffi::c_void,
-        I_VideoBuffer as *const ::core::ffi::c_void,
+        unsafe { game_state() }.i_video.I_VideoBuffer as *const ::core::ffi::c_void,
         (SCREENWIDTH * SCREENHEIGHT) as size_t,
     );
 }
@@ -341,25 +361,25 @@ pub unsafe fn I_SetPalette(mut palette: *mut byte) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < 256 as i32 {
-        colors[i as usize].set_a(0 as uint32_t as uint32_t);
+        unsafe { game_state() }.i_video.colors[i as usize].set_a(0 as uint32_t as uint32_t);
         let mut rhs = {
             let fresh0 = palette;
             palette = palette.offset(1);
-            gammatable[usegamma as usize][*fresh0 as usize] as uint32_t
+            gammatable[unsafe { game_state() }.i_video.usegamma as usize][*fresh0 as usize] as uint32_t
         } as uint32_t;
-        colors[i as usize].set_r(rhs);
+        unsafe { game_state() }.i_video.colors[i as usize].set_r(rhs);
         let mut rhs_0 = {
             let fresh1 = palette;
             palette = palette.offset(1);
-            gammatable[usegamma as usize][*fresh1 as usize] as uint32_t
+            gammatable[unsafe { game_state() }.i_video.usegamma as usize][*fresh1 as usize] as uint32_t
         } as uint32_t;
-        colors[i as usize].set_g(rhs_0);
+        unsafe { game_state() }.i_video.colors[i as usize].set_g(rhs_0);
         let mut rhs_1 = {
             let fresh2 = palette;
             palette = palette.offset(1);
-            gammatable[usegamma as usize][*fresh2 as usize] as uint32_t
+            gammatable[unsafe { game_state() }.i_video.usegamma as usize][*fresh2 as usize] as uint32_t
         } as uint32_t;
-        colors[i as usize].set_b(rhs_1);
+        unsafe { game_state() }.i_video.colors[i as usize].set_b(rhs_1);
         i += 1;
     }
 }

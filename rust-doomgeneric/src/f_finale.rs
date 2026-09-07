@@ -14,7 +14,6 @@ use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::hu_stuff::HU_FONTSIZE;
 use crate::src::hu_stuff::HU_FONTSTART;
-use crate::src::i_video::I_VideoBuffer;
 use crate::src::info::mobjinfo;
 use crate::src::info::states;
 use crate::src::info::{S_NULL, S_PLAY_ATK1};
@@ -435,7 +434,7 @@ pub unsafe fn F_TextWrite(state: &mut FFinaleState) {
     let mut cx: i32 = 0;
     let mut cy: i32 = 0;
     src = W_CacheLumpName(state.finaleflat, PU_CACHE as i32) as *mut byte;
-    dest = I_VideoBuffer;
+    dest = unsafe { game_state() }.i_video.I_VideoBuffer;
     y = 0 as i32;
     while y < SCREENHEIGHT {
         x = 0 as i32;
@@ -891,7 +890,7 @@ pub unsafe fn F_DrawPatchCol(mut x: i32, mut patch: *mut patch_t, mut col: i32) 
     column = (patch as *mut byte)
         .offset(*(&raw const (*patch).columnofs as *const i32).offset(col as isize) as isize)
         as *mut column_t;
-    desttop = I_VideoBuffer.offset(x as isize);
+    desttop = unsafe { game_state() }.i_video.I_VideoBuffer.offset(x as isize);
     while (*column).topdelta as i32 != 0xff as i32 {
         source = (column as *mut byte).offset(3 as i32 as isize);
         dest = desttop.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);

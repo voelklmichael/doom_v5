@@ -5,11 +5,7 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
-use crate::src::i_video::mouse_acceleration;
-use crate::src::i_video::mouse_threshold;
-use crate::src::i_video::usemouse;
 use crate::src::i_video::I_GetPaletteIndex;
-use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_misc::M_FileExists;
@@ -73,7 +69,7 @@ pub unsafe fn V_MarkRect(
     mut width: i32,
     mut height: i32,
 ) {
-    if state.dest_screen == I_VideoBuffer {
+    if state.dest_screen == unsafe { game_state() }.i_video.I_VideoBuffer {
         M_AddToBox(
             &raw mut state.dirtybox as *mut fixed_t,
             x as fixed_t,
@@ -555,7 +551,7 @@ pub unsafe fn V_DrawFilledBox(mut x: i32, mut y: i32, mut w: i32, mut h: i32, mu
     let mut buf1: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut x1: i32 = 0;
     let mut y1: i32 = 0;
-    buf = I_VideoBuffer
+    buf = unsafe { game_state() }.i_video.I_VideoBuffer
         .offset((SCREENWIDTH * y) as isize)
         .offset(x as isize) as *mut uint8_t;
     y1 = 0 as i32;
@@ -575,7 +571,7 @@ pub unsafe fn V_DrawFilledBox(mut x: i32, mut y: i32, mut w: i32, mut h: i32, mu
 pub unsafe fn V_DrawHorizLine(mut x: i32, mut y: i32, mut w: i32, mut c: i32) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut x1: i32 = 0;
-    buf = I_VideoBuffer
+    buf = unsafe { game_state() }.i_video.I_VideoBuffer
         .offset((SCREENWIDTH * y) as isize)
         .offset(x as isize) as *mut uint8_t;
     x1 = 0 as i32;
@@ -589,7 +585,7 @@ pub unsafe fn V_DrawHorizLine(mut x: i32, mut y: i32, mut w: i32, mut c: i32) {
 pub unsafe fn V_DrawVertLine(mut x: i32, mut y: i32, mut h: i32, mut c: i32) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut y1: i32 = 0;
-    buf = I_VideoBuffer
+    buf = unsafe { game_state() }.i_video.I_VideoBuffer
         .offset((SCREENWIDTH * y) as isize)
         .offset(x as isize) as *mut uint8_t;
     y1 = 0 as i32;
@@ -616,7 +612,7 @@ pub unsafe fn V_UseBuffer(state: &mut VVideoState, mut buffer: *mut byte) {
     state.dest_screen = buffer;
 }
 pub unsafe fn V_RestoreBuffer(state: &mut VVideoState) {
-    state.dest_screen = I_VideoBuffer;
+    state.dest_screen = unsafe { game_state() }.i_video.I_VideoBuffer;
 }
 pub unsafe fn WritePCXfile(
     mut filename: *mut ::core::ffi::c_char,
@@ -722,7 +718,7 @@ pub unsafe fn V_ScreenShot(mut format: *mut ::core::ffi::c_char) {
     }
     WritePCXfile(
         &raw mut lbmname as *mut ::core::ffi::c_char,
-        I_VideoBuffer,
+        unsafe { game_state() }.i_video.I_VideoBuffer,
         SCREENWIDTH,
         SCREENHEIGHT,
         W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte,
@@ -748,7 +744,7 @@ pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
     black = I_GetPaletteIndex(0 as i32, 0 as i32, 0 as i32);
     yellow = I_GetPaletteIndex(0xff as i32, 0xff as i32, 0 as i32);
     white = I_GetPaletteIndex(0xff as i32, 0xff as i32, 0xff as i32);
-    if usemouse == 0 || fabs((mouse_acceleration - 1 as i32 as f32) as f64) < 0.01f64 {
+    if unsafe { game_state() }.i_video.usemouse == 0 || fabs((unsafe { game_state() }.i_video.mouse_acceleration - 1 as i32 as f32) as f64) < 0.01f64 {
         return;
     }
     box_x = SCREENWIDTH - MOUSE_SPEED_BOX_WIDTH - 10 as i32;
@@ -768,14 +764,14 @@ pub unsafe fn V_DrawMouseSpeedBox(mut speed: i32) {
         bordercolor,
     );
     redline_x = MOUSE_SPEED_BOX_WIDTH / 3 as i32;
-    if speed < mouse_threshold {
+    if speed < unsafe { game_state() }.i_video.mouse_threshold {
         original_speed = speed;
     } else {
-        original_speed = speed - mouse_threshold;
-        original_speed = (original_speed as f32 / mouse_acceleration) as i32;
-        original_speed += mouse_threshold;
+        original_speed = speed - unsafe { game_state() }.i_video.mouse_threshold;
+        original_speed = (original_speed as f32 / unsafe { game_state() }.i_video.mouse_acceleration) as i32;
+        original_speed += unsafe { game_state() }.i_video.mouse_threshold;
     }
-    linelen = original_speed * redline_x / mouse_threshold;
+    linelen = original_speed * redline_x / unsafe { game_state() }.i_video.mouse_threshold;
     if linelen > MOUSE_SPEED_BOX_WIDTH - 1 as i32 {
         linelen = MOUSE_SPEED_BOX_WIDTH - 1 as i32;
     }

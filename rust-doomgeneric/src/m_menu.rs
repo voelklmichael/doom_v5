@@ -25,7 +25,6 @@ use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::i_system::I_Quit;
 use crate::src::i_system::{fclose, fopen, fprintf, fread, stderr};
 use crate::src::i_timer::I_GetTime;
-use crate::src::i_video::usegamma;
 use crate::src::i_video::I_SetPalette;
 use crate::src::m_controls::KEY_BACKSPACE;
 use crate::src::m_controls::KEY_CAPSLOCK;
@@ -1938,13 +1937,13 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             M_QuitDOOM(0 as i32);
             return true;
         } else if key == unsafe { game_state() }.m_controls.key_menu_gamma {
-            usegamma += 1;
-            if usegamma > 4 as i32 {
-                usegamma = 0 as i32;
+            unsafe { game_state() }.i_video.usegamma += 1;
+            if unsafe { game_state() }.i_video.usegamma > 4 as i32 {
+                unsafe { game_state() }.i_video.usegamma = 0 as i32;
             }
             unsafe { game_state() }.g_game.players
                 [unsafe { game_state() }.g_game.consoleplayer as usize]
-                .message = gammamsg[usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
+                .message = gammamsg[unsafe { game_state() }.i_video.usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
             I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
             return true;
         }

@@ -10,7 +10,6 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::m_cheat::cht_CheckCheat;
 use crate::src::m_fixed::fixed_t;
@@ -649,7 +648,7 @@ pub unsafe fn AM_initVariables() {
         data4: 0,
     };
     unsafe { game_state() }.am_map.automapactive = true;
-    unsafe { game_state() }.am_map.fb = I_VideoBuffer;
+    unsafe { game_state() }.am_map.fb = unsafe { game_state() }.i_video.I_VideoBuffer;
     unsafe { game_state() }.am_map.f_oldloc.x = INT_MAX as fixed_t;
     unsafe { game_state() }.am_map.amclock = 0 as i32;
     unsafe { game_state() }.am_map.lightlev = 0 as i32;

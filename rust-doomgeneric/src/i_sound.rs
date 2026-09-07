@@ -1,4 +1,3 @@
-use crate::src::i_video::screensaver_mode;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_config::M_BindVariable;
 
@@ -130,7 +129,7 @@ pub unsafe fn I_InitSound(state: &mut ISoundState, mut use_sfx_prefix: bool) {
     let mut nosfx: bool = false;
     nosound = M_CheckParm("-nosound") > 0 as i32;
     nosfx = M_CheckParm("-nosfx") > 0 as i32;
-    if !nosound && !screensaver_mode {
+    if !nosound && !unsafe { game_state() }.i_video.screensaver_mode {
         if !nosfx {
             InitSfxModule(state, use_sfx_prefix);
         }
