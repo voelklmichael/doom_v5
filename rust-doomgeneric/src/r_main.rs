@@ -2,7 +2,6 @@ use crate::src::d_loop::NetUpdate;
 use crate::src::d_player::player_t;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
@@ -482,22 +481,22 @@ pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
         i += 1;
     }
 }
-pub unsafe fn R_Init() {
-    R_InitData(unsafe { game_state() });
+pub unsafe fn R_Init(state: &mut GameState) {
+    R_InitData(state);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     let (screenblocks, detail_level) = (
-        unsafe { game_state() }.m_menu.screenblocks,
-        unsafe { game_state() }.m_menu.detailLevel,
+        state.m_menu.screenblocks,
+        state.m_menu.detailLevel,
     );
-    R_SetViewSize(unsafe { game_state() }, screenblocks, detail_level);
+    R_SetViewSize(state, screenblocks, detail_level);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    R_InitLightTables(unsafe { game_state() });
+    R_InitLightTables(state);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitSkyMap();
     R_InitTranslationTables();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    unsafe { game_state() }.r_main.framecount = 0 as i32;
+    state.r_main.framecount = 0 as i32;
 }
 pub unsafe fn R_PointInSubsector(state: &mut GameState, mut x: fixed_t, mut y: fixed_t) -> *mut subsector_t {
     let mut node: *mut node_t = ::core::ptr::null_mut::<node_t>();
