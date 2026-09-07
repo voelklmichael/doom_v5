@@ -6,6 +6,7 @@ use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
 use crate::src::g_game::G_PlayerReborn;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_stuff::HU_Start;
 use crate::src::i_system::I_Error;
 use crate::src::info::{S_BLOOD2, S_BLOOD3, S_NULL, S_PLAY, S_PLAY_RUN1, S_PUFF3};
@@ -1132,7 +1133,7 @@ pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {
     (*mo).angle = (ANG45 * ((*mthing).angle as i32 / 45 as i32)) as angle_t;
     state.iquetail = state.iquetail + 1 as i32 & ITEMQUESIZE - 1 as i32;
 }
-pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
+pub unsafe fn P_SpawnPlayer(state: &mut GameState, mut mthing: *mut mapthing_t) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
@@ -1142,15 +1143,15 @@ pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
     if (*mthing).type_0 as i32 == 0 as i32 {
         return;
     }
-    if unsafe { game_state() }.g_game.playeringame[((*mthing).type_0 as i32 - 1 as i32) as usize]
+    if state.g_game.playeringame[((*mthing).type_0 as i32 - 1 as i32) as usize]
         == 0
     {
         return;
     }
-    p = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+    p = (&raw mut state.g_game.players as *mut player_t)
         .offset(((*mthing).type_0 as i32 - 1 as i32) as isize) as *mut player_t;
     if (*p).playerstate as u32 == PST_REBORN as i32 as u32 {
-        G_PlayerReborn(&mut unsafe { game_state() }.g_game, (*mthing).type_0 as i32 - 1 as i32);
+        G_PlayerReborn(&mut state.g_game, (*mthing).type_0 as i32 - 1 as i32);
     }
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
@@ -1172,14 +1173,14 @@ pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
     (*p).fixedcolormap = 0 as i32;
     (*p).viewheight = VIEWHEIGHT as fixed_t;
     P_SetupPsprites(p);
-    if unsafe { game_state() }.g_game.deathmatch != 0 {
+    if state.g_game.deathmatch != 0 {
         i = 0 as i32;
         while i < NUMCARDS as i32 {
             (*p).cards[i as usize] = true;
             i += 1;
         }
     }
-    if (*mthing).type_0 as i32 - 1 as i32 == unsafe { game_state() }.g_game.consoleplayer {
+    if (*mthing).type_0 as i32 - 1 as i32 == state.g_game.consoleplayer {
         ST_Start();
         HU_Start();
     }
@@ -1211,7 +1212,7 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     if (*mthing).type_0 as i32 <= 4 as i32 {
         unsafe { game_state() }.p_setup.playerstarts[((*mthing).type_0 as i32 - 1 as i32) as usize] = *mthing;
         if unsafe { game_state() }.g_game.deathmatch == 0 {
-            P_SpawnPlayer(mthing);
+            P_SpawnPlayer(unsafe { game_state() }, mthing);
         }
         return;
     }

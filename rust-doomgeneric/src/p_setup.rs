@@ -955,7 +955,7 @@ pub unsafe fn P_SetupLevel(
             if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
                 unsafe { game_state() }.g_game.players[i as usize].mo =
                     ::core::ptr::null_mut::<mobj_t>();
-                G_DeathMatchSpawnPlayer(i);
+                G_DeathMatchSpawnPlayer(unsafe { game_state() }, i);
             }
             i += 1;
         }
