@@ -358,18 +358,18 @@ pub unsafe fn P_InitPicAnims() {
         endname = &raw mut (*(&raw const animdefs as *mut animdef_t).offset(i as isize)).endname
             as *mut ::core::ffi::c_char;
         if animdefs[i as usize].istexture != 0 {
-            if R_CheckTextureNumForName(startname) == -(1 as i32) {
+            if R_CheckTextureNumForName(unsafe { &mut game_state().r_data }, startname) == -(1 as i32) {
                 current_block_13 = 12237857397564741460;
             } else {
-                (*unsafe { game_state() }.p_spec.lastanim).picnum = R_TextureNumForName(endname);
-                (*unsafe { game_state() }.p_spec.lastanim).basepic = R_TextureNumForName(startname);
+                (*unsafe { game_state() }.p_spec.lastanim).picnum = R_TextureNumForName(unsafe { &mut game_state().r_data }, endname);
+                (*unsafe { game_state() }.p_spec.lastanim).basepic = R_TextureNumForName(unsafe { &mut game_state().r_data }, startname);
                 current_block_13 = 11650488183268122163;
             }
         } else if W_CheckNumForName(&wad_name8_to_string(startname)) == -(1 as i32) {
             current_block_13 = 12237857397564741460;
         } else {
-            (*unsafe { game_state() }.p_spec.lastanim).picnum = R_FlatNumForName(endname);
-            (*unsafe { game_state() }.p_spec.lastanim).basepic = R_FlatNumForName(startname);
+            (*unsafe { game_state() }.p_spec.lastanim).picnum = R_FlatNumForName(unsafe { &mut game_state().r_data }, endname);
+            (*unsafe { game_state() }.p_spec.lastanim).basepic = R_FlatNumForName(unsafe { &mut game_state().r_data }, startname);
             current_block_13 = 11650488183268122163;
         }
         match current_block_13 {

@@ -845,6 +845,7 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
 pub unsafe fn G_DoLoadLevel() {
     let mut i: i32 = 0;
     unsafe { game_state() }.r_sky.skyflatnum = R_FlatNumForName(
+        unsafe { &mut game_state().r_data },
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     );
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32
@@ -864,7 +865,7 @@ pub unsafe fn G_DoLoadLevel() {
                 b"SKY3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         skytexturename = skytexturename;
-        unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(skytexturename);
+        unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(unsafe { &mut game_state().r_data }, skytexturename);
     }
     unsafe { game_state() }.g_game.levelstarttic = unsafe { game_state() }.d_loop.gametic;
     if unsafe { game_state() }.d_main.wipegamestate as u32 == GS_LEVEL as u32 {
@@ -1985,7 +1986,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
         }
     }
     skytexturename = skytexturename;
-    unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(skytexturename);
+    unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(unsafe { &mut game_state().r_data }, skytexturename);
     G_DoLoadLevel();
 }
 pub const DEMOMARKER: i32 = 0x80;

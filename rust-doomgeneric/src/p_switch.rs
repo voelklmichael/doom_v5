@@ -303,12 +303,14 @@ pub unsafe fn P_InitSwitchList(state: &mut PSwitchState) {
                 let fresh0 = index;
                 index = index + 1;
                 state.switchlist[fresh0 as usize] = R_TextureNumForName(
+                    unsafe { &mut game_state().r_data },
                     &raw mut (*(&raw const alphSwitchList as *mut switchlist_t).offset(i as isize))
                         .name1 as *mut ::core::ffi::c_char,
                 );
                 let fresh1 = index;
                 index = index + 1;
                 state.switchlist[fresh1 as usize] = R_TextureNumForName(
+                    unsafe { &mut game_state().r_data },
                     &raw mut (*(&raw const alphSwitchList as *mut switchlist_t).offset(i as isize))
                         .name2 as *mut ::core::ffi::c_char,
                 );

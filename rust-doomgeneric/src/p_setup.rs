@@ -383,9 +383,9 @@ pub unsafe fn P_LoadSectors(mut lump: i32) {
         let ss = &mut unsafe { game_state() }.p_setup.sectors[i as usize];
         ss.floorheight = (((*ms).floorheight as i32) << FRACBITS) as fixed_t;
         ss.ceilingheight = (((*ms).ceilingheight as i32) << FRACBITS) as fixed_t;
-        ss.floorpic = R_FlatNumForName(&raw mut (*ms).floorpic as *mut ::core::ffi::c_char) as i16;
+        ss.floorpic = R_FlatNumForName(unsafe { &mut game_state().r_data }, &raw mut (*ms).floorpic as *mut ::core::ffi::c_char) as i16;
         ss.ceilingpic =
-            R_FlatNumForName(&raw mut (*ms).ceilingpic as *mut ::core::ffi::c_char) as i16;
+            R_FlatNumForName(unsafe { &mut game_state().r_data }, &raw mut (*ms).ceilingpic as *mut ::core::ffi::c_char) as i16;
         ss.lightlevel = (*ms).lightlevel;
         ss.special = (*ms).special;
         ss.tag = (*ms).tag;
@@ -649,13 +649,18 @@ pub unsafe fn P_LoadSideDefs(mut lump: i32) {
         let sd = side_t {
             textureoffset: (((*msd).textureoffset as i32) << FRACBITS) as fixed_t,
             rowoffset: (((*msd).rowoffset as i32) << FRACBITS) as fixed_t,
-            toptexture: R_TextureNumForName(&raw mut (*msd).toptexture as *mut ::core::ffi::c_char)
-                as i16,
+            toptexture: R_TextureNumForName(
+                unsafe { &mut game_state().r_data },
+                &raw mut (*msd).toptexture as *mut ::core::ffi::c_char,
+            ) as i16,
             bottomtexture: R_TextureNumForName(
+                unsafe { &mut game_state().r_data },
                 &raw mut (*msd).bottomtexture as *mut ::core::ffi::c_char,
             ) as i16,
-            midtexture: R_TextureNumForName(&raw mut (*msd).midtexture as *mut ::core::ffi::c_char)
-                as i16,
+            midtexture: R_TextureNumForName(
+                unsafe { &mut game_state().r_data },
+                &raw mut (*msd).midtexture as *mut ::core::ffi::c_char,
+            ) as i16,
             sector: SectorId((*msd).sector as u32),
         };
         unsafe { game_state() }.p_setup.sides.push(sd);
