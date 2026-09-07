@@ -296,17 +296,17 @@ pub const HUSTR_KEYGREEN: i32 = 'g' as i32;
 pub const HUSTR_KEYINDIGO: i32 = 'i' as i32;
 pub const HUSTR_KEYBROWN: i32 = 'b' as i32;
 pub const HUSTR_KEYRED: i32 = 'r' as i32;
-pub unsafe fn D_ProcessEvents() {
+pub unsafe fn D_ProcessEvents(state: &mut GameState) {
     let mut ev: *mut event_t = ::core::ptr::null_mut::<event_t>();
-    if unsafe { game_state() }.d_main.storedemo {
+    if state.d_main.storedemo {
         return;
     }
     loop {
-        let Some( mut ev) = D_PopEvent(&mut game_state().d_event) else {break;};
+        let Some( mut ev) = D_PopEvent(&mut state.d_event) else {break;};
         if M_Responder(&mut ev) {
             continue;
         }
-        G_Responder(unsafe { game_state() }, ev);
+        G_Responder(state, ev);
     }
 }
 pub unsafe fn D_Display(state: &mut GameState) {
@@ -604,94 +604,94 @@ pub unsafe fn D_PageDrawer() {
 pub unsafe fn D_AdvanceDemo(state: &mut GameState) {
     state.d_main.advancedemo = true;
 }
-pub unsafe fn D_DoAdvanceDemo() {
-    unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
+pub unsafe fn D_DoAdvanceDemo(state: &mut GameState) {
+    state.g_game.players[state.g_game.consoleplayer as usize]
         .playerstate = PST_LIVE;
-    unsafe { game_state() }.d_main.advancedemo = false;
-    unsafe { game_state() }.g_game.usergame = false;
-    unsafe { game_state() }.g_game.paused = false;
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
-    if unsafe { game_state() }.doomstat.gameversion as u32 == exe_ultimate as i32 as u32
-        || unsafe { game_state() }.doomstat.gameversion as u32 == exe_final as i32 as u32
+    state.d_main.advancedemo = false;
+    state.g_game.usergame = false;
+    state.g_game.paused = false;
+    state.g_game.gameaction = ga_nothing;
+    if state.doomstat.gameversion as u32 == exe_ultimate as i32 as u32
+        || state.doomstat.gameversion as u32 == exe_final as i32 as u32
     {
-        unsafe { game_state() }.d_main.demosequence = (unsafe { game_state() }.d_main.demosequence + 1 as i32) % 7 as i32;
+        state.d_main.demosequence = (state.d_main.demosequence + 1 as i32) % 7 as i32;
     } else {
-        unsafe { game_state() }.d_main.demosequence = (unsafe { game_state() }.d_main.demosequence + 1 as i32) % 6 as i32;
+        state.d_main.demosequence = (state.d_main.demosequence + 1 as i32) % 6 as i32;
     }
-    match unsafe { game_state() }.d_main.demosequence {
+    match state.d_main.demosequence {
         0 => {
-            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                unsafe { game_state() }.d_main.pagetic = TICRATE * 11 as i32;
+            if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+                state.d_main.pagetic = TICRATE * 11 as i32;
             } else {
-                unsafe { game_state() }.d_main.pagetic = 170 as i32;
+                state.d_main.pagetic = 170 as i32;
             }
-            unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
-            unsafe { game_state() }.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
+            state.g_game.gamestate = GS_DEMOSCREEN;
+            state.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                S_StartMusic(unsafe { game_state() }, mus_dm2ttl as i32);
+            if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+                S_StartMusic(state, mus_dm2ttl as i32);
             } else {
-                S_StartMusic(unsafe { game_state() }, mus_intro as i32);
+                S_StartMusic(state, mus_intro as i32);
             }
         }
         1 => {
             G_DeferedPlayDemo(
-                unsafe { game_state() },
+                state,
                 b"demo1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         }
         2 => {
-            unsafe { game_state() }.d_main.pagetic = 200 as i32;
-            unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
-            unsafe { game_state() }.d_main.pagename =
+            state.d_main.pagetic = 200 as i32;
+            state.g_game.gamestate = GS_DEMOSCREEN;
+            state.d_main.pagename =
                 b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         3 => {
             G_DeferedPlayDemo(
-                unsafe { game_state() },
+                state,
                 b"demo2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         }
         4 => {
-            unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
-            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                unsafe { game_state() }.d_main.pagetic = TICRATE * 11 as i32;
-                unsafe { game_state() }.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
+            state.g_game.gamestate = GS_DEMOSCREEN;
+            if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+                state.d_main.pagetic = TICRATE * 11 as i32;
+                state.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartMusic(unsafe { game_state() }, mus_dm2ttl as i32);
+                S_StartMusic(state, mus_dm2ttl as i32);
             } else {
-                unsafe { game_state() }.d_main.pagetic = 200 as i32;
-                if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
-                    unsafe { game_state() }.d_main.pagename = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
+                state.d_main.pagetic = 200 as i32;
+                if state.doomstat.gamemode as u32 == retail as i32 as u32 {
+                    state.d_main.pagename = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 } else {
-                    unsafe { game_state() }.d_main.pagename = b"HELP2\0" as *const u8 as *const ::core::ffi::c_char
+                    state.d_main.pagename = b"HELP2\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 }
             }
         }
         5 => {
             G_DeferedPlayDemo(
-                unsafe { game_state() },
+                state,
                 b"demo3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         }
         6 => {
             G_DeferedPlayDemo(
-                unsafe { game_state() },
+                state,
                 b"demo4\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         }
         _ => {}
     }
-    if unsafe { game_state() }.d_main.bfgedition
+    if state.d_main.bfgedition
         && strcasecmp(
-            unsafe { game_state() }.d_main.pagename,
+            state.d_main.pagename,
             b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char,
         ) == 0
         && W_CheckNumForName("titlepic") < 0 as i32
     {
-        unsafe { game_state() }.d_main.pagename =
+        state.d_main.pagename =
             b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
 }
