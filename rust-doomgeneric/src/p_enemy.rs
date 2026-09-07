@@ -5,7 +5,6 @@ use crate::src::d_player::player_t;
 use crate::src::doomdef::boolean;
 use crate::src::g_game::G_ExitLevel;
 use crate::src::i_system::I_Error;
-use crate::src::info::mobjinfo;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_random::P_Random;
@@ -990,7 +989,7 @@ pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
     if (*(*thing).info).raisestate == S_NULL as i32 {
         return true_0 as boolean;
     }
-    maxdist = (*(*thing).info).radius + mobjinfo[MT_VILE as i32 as usize].radius;
+    maxdist = (*(*thing).info).radius + unsafe { game_state() }.info.mobjinfo[MT_VILE as i32 as usize].radius;
     if ((*thing).x as i32 - unsafe { game_state() }.p_enemy.viletryx as i32).abs() > maxdist
         || ((*thing).y as i32 - unsafe { game_state() }.p_enemy.viletryy as i32).abs() > maxdist
     {
@@ -1285,7 +1284,7 @@ pub unsafe fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
     }
     an = angle >> ANGLETOFINESHIFT;
     prestep = 4 as i32 * FRACUNIT
-        + 3 as i32 * ((*(*actor).info).radius + mobjinfo[MT_SKULL as i32 as usize].radius)
+        + 3 as i32 * ((*(*actor).info).radius + unsafe { game_state() }.info.mobjinfo[MT_SKULL as i32 as usize].radius)
             / 2 as i32;
     x = (*actor).x + FixedMul(prestep as fixed_t, finecosine[an as isize]);
     y = (*actor).y + FixedMul(prestep as fixed_t, finesine[an as usize]);

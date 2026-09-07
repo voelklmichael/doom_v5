@@ -47,8 +47,6 @@ use crate::src::i_system::I_Quit;
 use crate::src::i_system::FILE;
 use crate::src::i_system::{fclose, fopen, ftell};
 use crate::src::i_timer::I_GetTime;
-use crate::src::info::mobjinfo;
-use crate::src::info::states;
 use crate::src::info::{S_SARG_PAIN2, S_SARG_RUN1};
 use crate::src::m_argv::{M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_fixed::fixed_t;
@@ -1921,23 +1919,23 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     {
         i = S_SARG_RUN1 as i32;
         while i <= S_SARG_PAIN2 as i32 {
-            states[i as usize].tics >>= 1 as i32;
+            unsafe { game_state() }.info.states[i as usize].tics >>= 1 as i32;
             i += 1;
         }
-        mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
-        mobjinfo[MT_HEADSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
-        mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
+        unsafe { game_state() }.info.mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
+        unsafe { game_state() }.info.mobjinfo[MT_HEADSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
+        unsafe { game_state() }.info.mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
     } else if skill as i32 != sk_nightmare as i32
         && unsafe { game_state() }.g_game.gameskill as i32 == sk_nightmare as i32
     {
         i = S_SARG_RUN1 as i32;
         while i <= S_SARG_PAIN2 as i32 {
-            states[i as usize].tics <<= 1 as i32;
+            unsafe { game_state() }.info.states[i as usize].tics <<= 1 as i32;
             i += 1;
         }
-        mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 15 as i32 * FRACUNIT;
-        mobjinfo[MT_HEADSHOT as i32 as usize].speed = 10 as i32 * FRACUNIT;
-        mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 10 as i32 * FRACUNIT;
+        unsafe { game_state() }.info.mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 15 as i32 * FRACUNIT;
+        unsafe { game_state() }.info.mobjinfo[MT_HEADSHOT as i32 as usize].speed = 10 as i32 * FRACUNIT;
+        unsafe { game_state() }.info.mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 10 as i32 * FRACUNIT;
     }
     i = 0 as i32;
     while i < MAXPLAYERS {

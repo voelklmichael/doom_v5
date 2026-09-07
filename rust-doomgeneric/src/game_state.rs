@@ -29,6 +29,7 @@ use crate::src::i_sound::ISoundState;
 use crate::src::i_video::IVideoState;
 use crate::src::i_system::ISystemState;
 use crate::src::i_timer::ITimerState;
+use crate::src::info::InfoState;
 use crate::src::m_argv::MArgvState;
 use crate::src::m_config::MConfigState;
 use crate::src::m_controls::MControlsState;
@@ -89,6 +90,7 @@ pub struct GameState {
     pub i_video: IVideoState,
     pub i_system: ISystemState,
     pub i_timer: ITimerState,
+    pub info: InfoState,
     pub m_argv: MArgvState,
     pub m_config: MConfigState,
     pub m_controls: MControlsState,
@@ -151,6 +153,7 @@ impl GameState {
             i_video: IVideoState::new(),
             i_system: ISystemState::new(),
             i_timer: ITimerState::new(),
+            info: InfoState::new(),
             m_argv: MArgvState::new(),
             m_config: MConfigState::new(),
             m_controls: MControlsState::new(),

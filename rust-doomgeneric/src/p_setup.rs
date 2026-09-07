@@ -6,7 +6,6 @@ use crate::src::g_game::G_DeathMatchSpawnPlayer;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_GetMemoryValue;
 use crate::src::i_system::{fprintf, stderr};
-use crate::src::info::sprnames;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_bbox::M_ClearBox;
@@ -972,5 +971,5 @@ pub unsafe fn P_SetupLevel(
 pub unsafe fn P_Init() {
     P_InitSwitchList(unsafe { &mut game_state().p_switch });
     P_InitPicAnims();
-    R_InitSprites(&raw mut sprnames as *mut *mut ::core::ffi::c_char);
+    R_InitSprites(&raw mut unsafe { game_state() }.info.sprnames as *mut *mut ::core::ffi::c_char);
 }
