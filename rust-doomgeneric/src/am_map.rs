@@ -1405,7 +1405,7 @@ pub unsafe fn AM_drawThings(mut colors: i32, mut colorrange: i32) {
     let mut t: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numsectors {
-        t = (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).thinglist;
+        t = unsafe { game_state() }.p_setup.sectors[i as usize].thinglist;
         while !t.is_null() {
             AM_drawLineCharacter(
                 &raw const thintriangle_guy as *mut mline_t,

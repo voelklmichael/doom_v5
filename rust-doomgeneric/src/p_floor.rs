@@ -6,6 +6,7 @@ use crate::src::m_fixed::INT_MAX;
 use crate::src::p_map::P_ChangeSector;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
+use crate::src::p_setup::SectorId;
 use crate::src::p_spec::floormove_t;
 use crate::src::p_spec::getSector;
 use crate::src::p_spec::getSide;
@@ -154,8 +155,9 @@ pub unsafe fn T_MovePlane(
 }
 pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
     let mut res: result_e = ok;
+    let sec = unsafe { game_state() }.p_setup.sector_mut((*floor).sector);
     res = T_MovePlane(
-        (*floor).sector,
+        sec,
         (*floor).speed,
         (*floor).floordestheight,
         (*floor).crush,
@@ -165,25 +167,25 @@ pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
     if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
         S_StartSound(
             unsafe { &mut game_state().sounds },
-            &raw mut (*(*floor).sector).soundorg as *mut ::core::ffi::c_void,
+            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
             sfx_stnmov as i32,
         );
     }
     if res as u32 == pastdest as i32 as u32 {
-        (*(*floor).sector).specialdata = NULL;
+        (*sec).specialdata = NULL;
         if (*floor).direction == 1 as i32 {
             match (*floor).type_0 as u32 {
                 11 => {
-                    (*(*floor).sector).special = (*floor).newspecial as i16;
-                    (*(*floor).sector).floorpic = (*floor).texture;
+                    (*sec).special = (*floor).newspecial as i16;
+                    (*sec).floorpic = (*floor).texture;
                 }
                 _ => {}
             }
         } else if (*floor).direction == -(1 as i32) {
             match (*floor).type_0 as u32 {
                 6 => {
-                    (*(*floor).sector).special = (*floor).newspecial as i16;
-                    (*(*floor).sector).floorpic = (*floor).texture;
+                    (*sec).special = (*floor).newspecial as i16;
+                    (*sec).floorpic = (*floor).texture;
                 }
                 _ => {}
             }
@@ -191,7 +193,7 @@ pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
         P_RemoveThinker(&raw mut (*floor).thinker);
         S_StartSound(
             unsafe { &mut game_state().sounds },
-            &raw mut (*(*floor).sector).soundorg as *mut ::core::ffi::c_void,
+            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
             sfx_pstop as i32,
         );
     }
@@ -209,7 +211,7 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -229,21 +231,21 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
         match floortype as u32 {
             0 => {
                 (*floor).direction = -(1 as i32);
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindHighestFloorSurrounding(sec);
                 current_block_84 = 15514718523126015390;
             }
             1 => {
                 (*floor).direction = -(1 as i32);
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindLowestFloorSurrounding(sec);
                 current_block_84 = 15514718523126015390;
             }
             2 => {
                 (*floor).direction = -(1 as i32);
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = (FLOORSPEED * 4 as i32) as fixed_t;
                 (*floor).floordestheight = P_FindHighestFloorSurrounding(sec);
                 if (*floor).floordestheight != (*sec).floorheight {
@@ -260,40 +262,40 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
             }
             10 => {
                 (*floor).direction = 1 as i32;
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = (FLOORSPEED * 4 as i32) as fixed_t;
                 (*floor).floordestheight = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
                 current_block_84 = 15514718523126015390;
             }
             4 => {
                 (*floor).direction = 1 as i32;
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
                 current_block_84 = 15514718523126015390;
             }
             7 => {
                 (*floor).direction = 1 as i32;
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight =
-                    ((*(*floor).sector).floorheight as i32 + 24 as i32 * FRACUNIT) as fixed_t;
+                    ((*sec).floorheight as i32 + 24 as i32 * FRACUNIT) as fixed_t;
                 current_block_84 = 15514718523126015390;
             }
             12 => {
                 (*floor).direction = 1 as i32;
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight =
-                    ((*(*floor).sector).floorheight as i32 + 512 as i32 * FRACUNIT) as fixed_t;
+                    ((*sec).floorheight as i32 + 512 as i32 * FRACUNIT) as fixed_t;
                 current_block_84 = 15514718523126015390;
             }
             8 => {
                 (*floor).direction = 1 as i32;
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight =
-                    ((*(*floor).sector).floorheight as i32 + 24 as i32 * FRACUNIT) as fixed_t;
+                    ((*sec).floorheight as i32 + 24 as i32 * FRACUNIT) as fixed_t;
                 (*sec).floorpic = (*(*line).frontsector).floorpic;
                 (*sec).special = (*(*line).frontsector).special;
                 current_block_84 = 15514718523126015390;
@@ -302,7 +304,7 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
                 let mut minsize: i32 = INT_MAX;
                 let mut side: *mut side_t = ::core::ptr::null_mut::<side_t>();
                 (*floor).direction = 1 as i32;
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 i = 0 as i32;
                 while i < (*sec).linecount {
@@ -325,21 +327,19 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
                     i += 1;
                 }
                 (*floor).floordestheight =
-                    ((*(*floor).sector).floorheight as i32 + minsize) as fixed_t;
+                    ((*sec).floorheight as i32 + minsize) as fixed_t;
                 current_block_84 = 15514718523126015390;
             }
             6 => {
                 (*floor).direction = -(1 as i32);
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindLowestFloorSurrounding(sec);
                 (*floor).texture = (*sec).floorpic;
                 i = 0 as i32;
                 while i < (*sec).linecount {
                     if twoSided(secnum, i) != 0 {
-                        if (*getSide(secnum, i, 0 as i32)).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64
-                            == secnum as i64
-                        {
+                        if (*getSide(secnum, i, 0 as i32)).sector.0 == secnum as u32 {
                             sec = getSector(secnum, i, 1 as i32);
                             if (*sec).floorheight == (*floor).floordestheight {
                                 (*floor).texture = (*sec).floorpic;
@@ -366,7 +366,7 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
         match current_block_84 {
             7690836263840410806 => {
                 (*floor).direction = 1 as i32;
-                (*floor).sector = sec;
+                (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight = P_FindLowestCeilingSurrounding(sec);
                 if (*floor).floordestheight > (*sec).ceilingheight {
@@ -401,7 +401,7 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -416,7 +416,7 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
         (*sec).specialdata = floor as *mut ::core::ffi::c_void;
         (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
         (*floor).direction = 1 as i32;
-        (*floor).sector = sec;
+        (*floor).sector = SectorId(secnum as u32);
         match type_0 as u32 {
             0 => {
                 speed = (FLOORSPEED / 4 as i32) as fixed_t;
@@ -438,10 +438,10 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
             while i < (*sec).linecount {
                 if !((**(*sec).lines.offset(i as isize)).flags as i32 & ML_TWOSIDED == 0) {
                     tsec = (**(*sec).lines.offset(i as isize)).frontsector;
-                    newsecnum = tsec.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32;
+                    newsecnum = tsec.offset_from(unsafe { game_state() }.p_setup.sectors.as_mut_ptr()) as i64 as i32;
                     if !(secnum != newsecnum) {
                         tsec = (**(*sec).lines.offset(i as isize)).backsector;
-                        newsecnum = tsec.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32;
+                        newsecnum = tsec.offset_from(unsafe { game_state() }.p_setup.sectors.as_mut_ptr()) as i64 as i32;
                         if !((*tsec).floorpic as i32 != texture) {
                             height += stairsize as i32;
                             if (*tsec).specialdata.is_null() {
@@ -457,7 +457,7 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
                                 (*sec).specialdata = floor as *mut ::core::ffi::c_void;
                                 (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                                 (*floor).direction = 1 as i32;
-                                (*floor).sector = sec;
+                                (*floor).sector = SectorId(secnum as u32);
                                 (*floor).speed = speed;
                                 (*floor).floordestheight = height as fixed_t;
                                 ok_0 = 1 as i32;

@@ -190,9 +190,11 @@ pub unsafe fn P_TeleportMove(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixe
         x - (*unsafe { game_state() }.p_map.tmthing).radius;
     newsubsec = R_PointInSubsector(x, y);
     unsafe { game_state() }.p_map.ceilingline = ::core::ptr::null_mut::<line_t>();
-    unsafe { game_state() }.p_map.tmdropoffz = (*(*newsubsec).sector).floorheight;
+    unsafe { game_state() }.p_map.tmdropoffz =
+        (*unsafe { game_state() }.p_setup.sector_mut((*newsubsec).sector)).floorheight;
     unsafe { game_state() }.p_map.tmfloorz = unsafe { game_state() }.p_map.tmdropoffz;
-    unsafe { game_state() }.p_map.tmceilingz = (*(*newsubsec).sector).ceilingheight;
+    unsafe { game_state() }.p_map.tmceilingz =
+        (*unsafe { game_state() }.p_setup.sector_mut((*newsubsec).sector)).ceilingheight;
     unsafe { game_state() }.r_main.validcount += 1;
     unsafe { game_state() }.p_map.numspechit = 0 as i32;
     xl = unsafe { game_state() }.p_map.tmbbox[BOXLEFT as i32 as usize]
@@ -395,9 +397,11 @@ pub unsafe fn P_CheckPosition(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fix
         x - (*unsafe { game_state() }.p_map.tmthing).radius;
     newsubsec = R_PointInSubsector(x, y);
     unsafe { game_state() }.p_map.ceilingline = ::core::ptr::null_mut::<line_t>();
-    unsafe { game_state() }.p_map.tmdropoffz = (*(*newsubsec).sector).floorheight;
+    unsafe { game_state() }.p_map.tmdropoffz =
+        (*unsafe { game_state() }.p_setup.sector_mut((*newsubsec).sector)).floorheight;
     unsafe { game_state() }.p_map.tmfloorz = unsafe { game_state() }.p_map.tmdropoffz;
-    unsafe { game_state() }.p_map.tmceilingz = (*(*newsubsec).sector).ceilingheight;
+    unsafe { game_state() }.p_map.tmceilingz =
+        (*unsafe { game_state() }.p_setup.sector_mut((*newsubsec).sector)).ceilingheight;
     unsafe { game_state() }.r_main.validcount += 1;
     unsafe { game_state() }.p_map.numspechit = 0 as i32;
     if unsafe { game_state() }.p_map.tmflags & MF_NOCLIP as i32 != 0 {

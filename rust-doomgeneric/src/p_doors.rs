@@ -13,6 +13,7 @@ use crate::src::p_inter::{
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t, thinker_t};
+use crate::src::p_setup::SectorId;
 use crate::src::p_spec::plat_t;
 use crate::src::p_spec::P_FindLowestCeilingSurrounding;
 use crate::src::p_spec::P_FindSectorFromLineTag;
@@ -36,7 +37,7 @@ pub const vld_normal: vldoor_e = 0;
 pub struct vldoor_t {
     pub thinker: thinker_t,
     pub type_0: vldoor_e,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub topheight: fixed_t,
     pub speed: fixed_t,
     pub direction: i32,
@@ -46,6 +47,7 @@ pub struct vldoor_t {
 pub const VDOORWAIT: i32 = 150;
 pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
     let mut res: result_e = ok;
+    let sec = unsafe { game_state() }.p_setup.sector_mut((*door).sector);
     match (*door).direction {
         0 => {
             (*door).topcountdown -= 1;
@@ -55,7 +57,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                         (*door).direction = -(1 as i32);
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_bdcls as i32,
                         );
                     }
@@ -63,7 +65,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                         (*door).direction = -(1 as i32);
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_dorcls as i32,
                         );
                     }
@@ -71,7 +73,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                         (*door).direction = 1 as i32;
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
                         );
                     }
@@ -88,7 +90,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                         (*door).type_0 = vld_normal;
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
                         );
                     }
@@ -98,9 +100,9 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
         }
         -1 => {
             res = T_MovePlane(
-                (*door).sector,
+                sec,
                 (*door).speed,
-                (*(*door).sector).floorheight,
+                (*sec).floorheight,
                 false,
                 1 as i32,
                 (*door).direction,
@@ -108,16 +110,16 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
             if res as u32 == pastdest as i32 as u32 {
                 match (*door).type_0 as u32 {
                     5 | 7 => {
-                        (*(*door).sector).specialdata = NULL;
+                        (*sec).specialdata = NULL;
                         P_RemoveThinker(&raw mut (*door).thinker);
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_bdcls as i32,
                         );
                     }
                     0 | 2 => {
-                        (*(*door).sector).specialdata = NULL;
+                        (*sec).specialdata = NULL;
                         P_RemoveThinker(&raw mut (*door).thinker);
                     }
                     1 => {
@@ -133,7 +135,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                         (*door).direction = 1 as i32;
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
                         );
                     }
@@ -142,7 +144,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
         }
         1 => {
             res = T_MovePlane(
-                (*door).sector,
+                sec,
                 (*door).speed,
                 (*door).topheight,
                 false,
@@ -156,7 +158,7 @@ pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
                         (*door).topcountdown = (*door).topwait;
                     }
                     1 | 6 | 3 => {
-                        (*(*door).sector).specialdata = NULL;
+                        (*sec).specialdata = NULL;
                         P_RemoveThinker(&raw mut (*door).thinker);
                     }
                     _ => {}
@@ -232,7 +234,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -246,7 +248,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
         P_AddThinker(&raw mut (*door).thinker);
         (*sec).specialdata = door as *mut ::core::ffi::c_void;
         (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
-        (*door).sector = sec;
+        (*door).sector = SectorId(secnum as u32);
         (*door).type_0 = type_0;
         (*door).topwait = VDOORWAIT;
         (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
@@ -258,7 +260,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
                 (*door).speed = (FRACUNIT * 2 as i32 * 4 as i32) as fixed_t;
                 S_StartSound(
                     unsafe { &mut game_state().sounds },
-                    &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                    &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_bdcls as i32,
                 );
             }
@@ -268,7 +270,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
                 (*door).direction = -(1 as i32);
                 S_StartSound(
                     unsafe { &mut game_state().sounds },
-                    &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                    &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_dorcls as i32,
                 );
             }
@@ -277,7 +279,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
                 (*door).direction = -(1 as i32);
                 S_StartSound(
                     unsafe { &mut game_state().sounds },
-                    &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                    &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_dorcls as i32,
                 );
             }
@@ -289,7 +291,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
                 if (*door).topheight != (*sec).ceilingheight {
                     S_StartSound(
                         unsafe { &mut game_state().sounds },
-                        &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                        &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                         sfx_bdopn as i32,
                     );
                 }
@@ -301,7 +303,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
                 if (*door).topheight != (*sec).ceilingheight {
                     S_StartSound(
                         unsafe { &mut game_state().sounds },
-                        &raw mut (*(*door).sector).soundorg as *mut ::core::ffi::c_void,
+                        &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                         sfx_doropn as i32,
                     );
                 }
@@ -363,7 +365,10 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
         }
         _ => {}
     }
-    sec = (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[(side ^ 1 as i32) as usize] as isize)).sector;
+    let door_sector_id = unsafe { game_state() }.p_setup.sides
+        [(*line).sidenum[(side ^ 1 as i32) as usize] as usize]
+        .sector;
+    sec = unsafe { game_state() }.p_setup.sector_mut(door_sector_id);
     if !(*sec).specialdata.is_null() {
         door = (*sec).specialdata as *mut vldoor_t;
         match (*line).special as i32 {
@@ -427,7 +432,7 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
     P_AddThinker(&raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
     (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
-    (*door).sector = sec;
+    (*door).sector = door_sector_id;
     (*door).direction = 1 as i32;
     (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
     (*door).topwait = VDOORWAIT;
@@ -453,8 +458,9 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
     (*door).topheight = P_FindLowestCeilingSurrounding(sec);
     (*door).topheight -= 4 as i32 * FRACUNIT;
 }
-pub unsafe fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
+pub unsafe fn P_SpawnDoorCloseIn30(mut sector: SectorId) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
+    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
     door = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<vldoor_t>() as i32,
@@ -465,14 +471,15 @@ pub unsafe fn P_SpawnDoorCloseIn30(mut sec: *mut sector_t) {
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
     (*sec).special = 0 as i16;
     (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
-    (*door).sector = sec;
+    (*door).sector = sector;
     (*door).direction = 0 as i32;
     (*door).type_0 = vld_normal;
     (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
     (*door).topcountdown = 30 as i32 * TICRATE;
 }
-pub unsafe fn P_SpawnDoorRaiseIn5Mins(mut sec: *mut sector_t, mut secnum: i32) {
+pub unsafe fn P_SpawnDoorRaiseIn5Mins(mut sector: SectorId, mut secnum: i32) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
+    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
     door = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<vldoor_t>() as i32,
@@ -483,7 +490,7 @@ pub unsafe fn P_SpawnDoorRaiseIn5Mins(mut sec: *mut sector_t, mut secnum: i32) {
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
     (*sec).special = 0 as i16;
     (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
-    (*door).sector = sec;
+    (*door).sector = sector;
     (*door).direction = 2 as i32;
     (*door).type_0 = vld_raiseIn5Mins;
     (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;

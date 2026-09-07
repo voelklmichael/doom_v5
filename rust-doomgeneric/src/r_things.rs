@@ -746,7 +746,11 @@ pub unsafe fn R_DrawPlayerSprites() {
     let mut i: i32 = 0;
     let mut lightnum: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
-    lightnum = ((*(*(*(*unsafe { game_state() }.r_main.viewplayer).mo).subsector).sector).lightlevel as i32 >> LIGHTSEGSHIFT)
+    lightnum = ((*unsafe { game_state() }.p_setup.sector_mut(
+        (*(*(*unsafe { game_state() }.r_main.viewplayer).mo).subsector).sector,
+    ))
+    .lightlevel as i32
+        >> LIGHTSEGSHIFT)
         + unsafe { game_state() }.r_main.extralight;
     if lightnum < 0 as i32 {
         unsafe { game_state() }.r_things.spritelights =

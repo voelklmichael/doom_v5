@@ -406,7 +406,10 @@ pub unsafe fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
         if !(*thing).sprev.is_null() {
             (*(*thing).sprev).snext = (*thing).snext;
         } else {
-            (*(*(*thing).subsector).sector).thinglist = (*thing).snext as *mut mobj_t;
+            (*unsafe { game_state() }
+                .p_setup
+                .sector_mut((*(*thing).subsector).sector))
+            .thinglist = (*thing).snext as *mut mobj_t;
         }
     }
     if (*thing).flags & MF_NOBLOCKMAP as i32 == 0 {
@@ -435,7 +438,7 @@ pub unsafe fn P_SetThingPosition(mut thing: *mut mobj_t) {
     ss = R_PointInSubsector((*thing).x, (*thing).y);
     (*thing).subsector = ss as *mut subsector_s;
     if (*thing).flags & MF_NOSECTOR as i32 == 0 {
-        sec = (*ss).sector;
+        sec = unsafe { game_state() }.p_setup.sector_mut((*ss).sector);
         (*thing).sprev = ::core::ptr::null_mut::<mobj_s>();
         (*thing).snext = (*sec).thinglist as *mut mobj_s;
         if !(*sec).thinglist.is_null() {
