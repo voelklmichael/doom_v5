@@ -1,9 +1,6 @@
 use crate::src::d_player::player_t;
 use crate::src::d_player::pw_ironfeet;
 use crate::src::d_player::CF_GODMODE;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::timelimit;
-use crate::src::g_game::totalsecret;
 use crate::src::g_game::G_ExitLevel;
 use crate::src::g_game::G_SecretExitLevel;
 use crate::src::i_system::I_Error;
@@ -1243,9 +1240,12 @@ pub unsafe fn P_SpawnSpecials(
 ) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: i32 = 0;
-    if timelimit > 0 as i32 && deathmatch != 0 {
+    if unsafe { game_state() }.g_game.timelimit > 0 as i32
+        && unsafe { game_state() }.g_game.deathmatch != 0
+    {
         unsafe { game_state() }.p_spec.levelTimer = true;
-        unsafe { game_state() }.p_spec.levelTimeCount = timelimit * 60 as i32 * TICRATE;
+        unsafe { game_state() }.p_spec.levelTimeCount =
+            unsafe { game_state() }.g_game.timelimit * 60 as i32 * TICRATE;
     } else {
         unsafe { game_state() }.p_spec.levelTimer = false;
     }
@@ -1271,7 +1271,7 @@ pub unsafe fn P_SpawnSpecials(
                     P_SpawnGlowingLight(sector);
                 }
                 9 => {
-                    totalsecret += 1;
+                    unsafe { game_state() }.g_game.totalsecret += 1;
                 }
                 10 => {
                     P_SpawnDoorCloseIn30(sector);

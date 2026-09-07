@@ -16,15 +16,6 @@ use crate::src::d_mode::skill_t;
 use crate::src::d_player::player_t;
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::doomdef::boolean;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::demoplayback;
-use crate::src::g_game::demorecording;
-use crate::src::g_game::lowres_turn;
-use crate::src::g_game::netgame;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::players;
-use crate::src::g_game::timelimit;
 use crate::src::g_game::G_Ticker;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_misc::M_StringCopy;
@@ -62,7 +53,9 @@ impl DNetState {
 unsafe fn PlayerQuitGame(mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
     let mut player_num: u32 = 0;
-    player_num = player.offset_from(&raw mut players as *mut player_t) as i64 as u32;
+    player_num = player
+        .offset_from(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+        as i64 as u32;
     M_StringCopy(
         &raw mut exitmsg as *mut ::core::ffi::c_char,
         b"Player 1 left the game\0" as *const u8 as *const ::core::ffi::c_char,
@@ -70,9 +63,10 @@ unsafe fn PlayerQuitGame(mut player: *mut player_t) {
     );
     exitmsg[7 as i32 as usize] = (exitmsg[7 as i32 as usize] as u32).wrapping_add(player_num)
         as ::core::ffi::c_char as ::core::ffi::c_char;
-    playeringame[player_num as usize] = false_0 as boolean;
-    players[consoleplayer as usize].message = &raw mut exitmsg as *mut ::core::ffi::c_char;
-    if demorecording {
+    unsafe { game_state() }.g_game.playeringame[player_num as usize] = false_0 as boolean;
+    unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
+        .message = &raw mut exitmsg as *mut ::core::ffi::c_char;
+    if unsafe { game_state() }.g_game.demorecording {
         G_CheckDemoStatus();
     }
 }
@@ -80,8 +74,14 @@ unsafe fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
     let mut i: u32 = 0;
     i = 0 as u32;
     while i < MAXPLAYERS as u32 {
-        if !demoplayback && playeringame[i as usize] != 0 && *ingame.offset(i as isize) == 0 {
-            PlayerQuitGame((&raw mut players as *mut player_t).offset(i as isize) as *mut player_t);
+        if !unsafe { game_state() }.g_game.demoplayback
+            && unsafe { game_state() }.g_game.playeringame[i as usize] != 0
+            && *ingame.offset(i as isize) == 0
+        {
+            PlayerQuitGame(
+                (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                    .offset(i as isize) as *mut player_t,
+            );
         }
         i = i.wrapping_add(1);
     }
@@ -102,18 +102,18 @@ static mut doom_loop_interface: loop_interface_t = unsafe {
 };
 unsafe fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
     let mut i: u32 = 0;
-    deathmatch = (*settings).deathmatch;
+    unsafe { game_state() }.g_game.deathmatch = (*settings).deathmatch;
     startepisode = (*settings).episode;
     startmap = (*settings).map;
     startskill = (*settings).skill as skill_t;
     startloadgame = (*settings).loadgame;
-    lowres_turn = (*settings).lowres_turn != 0;
+    unsafe { game_state() }.g_game.lowres_turn = (*settings).lowres_turn != 0;
     nomonsters = (*settings).nomonsters != 0;
     fastparm = (*settings).fast_monsters != 0;
     respawnparm = (*settings).respawn_monsters != 0;
-    timelimit = (*settings).timelimit;
-    consoleplayer = (*settings).consoleplayer;
-    if lowres_turn {
+    unsafe { game_state() }.g_game.timelimit = (*settings).timelimit;
+    unsafe { game_state() }.g_game.consoleplayer = (*settings).consoleplayer;
+    if unsafe { game_state() }.g_game.lowres_turn {
         printf(
             b"NOTE: Turning resolution is reduced; this is probably because there is a client recording a Vanilla demo.\n\0"
                 as *const u8 as *const ::core::ffi::c_char,
@@ -121,12 +121,13 @@ unsafe fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
     }
     i = 0 as u32;
     while i < MAXPLAYERS as u32 {
-        playeringame[i as usize] = (i < (*settings).num_players as u32) as i32 as boolean;
+        unsafe { game_state() }.g_game.playeringame[i as usize] =
+            (i < (*settings).num_players as u32) as i32 as boolean;
         i = i.wrapping_add(1);
     }
 }
 unsafe fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
-    (*settings).deathmatch = deathmatch;
+    (*settings).deathmatch = unsafe { game_state() }.g_game.deathmatch;
     (*settings).episode = startepisode;
     (*settings).map = startmap;
     (*settings).skill = startskill as i32;
@@ -135,7 +136,7 @@ unsafe fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
     (*settings).nomonsters = nomonsters as i32;
     (*settings).fast_monsters = fastparm as i32;
     (*settings).respawn_monsters = respawnparm as i32;
-    (*settings).timelimit = timelimit;
+    (*settings).timelimit = unsafe { game_state() }.g_game.timelimit;
     (*settings).lowres_turn =
         (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
 }
@@ -173,9 +174,9 @@ pub unsafe fn D_ConnectNetGame() {
         player_class: 0,
     };
     InitConnectData(&raw mut connect_data);
-    netgame = D_InitNetGame(&raw mut connect_data);
+    unsafe { game_state() }.g_game.netgame = D_InitNetGame(&raw mut connect_data);
     if M_CheckParm("-solo-net") > 0 as i32 {
-        netgame = true;
+        unsafe { game_state() }.g_game.netgame = true;
     }
 }
 pub unsafe fn D_CheckNetGame() {
@@ -199,7 +200,7 @@ pub unsafe fn D_CheckNetGame() {
         consoleplayer: 0,
         player_classes: [0; 8],
     };
-    if netgame {
+    if unsafe { game_state() }.g_game.netgame {
         autostart = true;
     }
     D_RegisterLoopCallbacks(&raw mut doom_loop_interface);
@@ -210,18 +211,20 @@ pub unsafe fn D_CheckNetGame() {
         b"startskill %i  deathmatch: %i  startmap: %i  startepisode: %i\n\0" as *const u8
             as *const ::core::ffi::c_char,
         startskill as i32,
-        deathmatch,
+        unsafe { game_state() }.g_game.deathmatch,
         startmap,
         startepisode,
     );
     printf(
         b"player %i of %i (%i nodes)\n\0" as *const u8 as *const ::core::ffi::c_char,
-        consoleplayer + 1 as i32,
+        unsafe { game_state() }.g_game.consoleplayer + 1 as i32,
         settings.num_players,
         settings.num_players,
     );
-    if timelimit > 0 as i32 && deathmatch != 0 {
-        if timelimit == 20 as i32 && M_CheckParm("-avg") != 0 {
+    if unsafe { game_state() }.g_game.timelimit > 0 as i32
+        && unsafe { game_state() }.g_game.deathmatch != 0
+    {
+        if unsafe { game_state() }.g_game.timelimit == 20 as i32 && M_CheckParm("-avg") != 0 {
             printf(
                 b"Austin Virtual Gaming: Levels will end after 20 minutes\n\0" as *const u8
                     as *const ::core::ffi::c_char,
@@ -229,9 +232,9 @@ pub unsafe fn D_CheckNetGame() {
         } else {
             printf(
                 b"Levels will end after %d minute\0" as *const u8 as *const ::core::ffi::c_char,
-                timelimit,
+                unsafe { game_state() }.g_game.timelimit,
             );
-            if timelimit > 1 as i32 {
+            if unsafe { game_state() }.g_game.timelimit > 1 as i32 {
                 printf(b"s\0" as *const u8 as *const ::core::ffi::c_char);
             }
             printf(b".\n\0" as *const u8 as *const ::core::ffi::c_char);

@@ -6,11 +6,6 @@ use crate::src::d_player::{player_s, player_t, playerstate_t};
 use crate::src::d_player::{weapontype_t, NUMWEAPONS};
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::doomdef::boolean;
-use crate::src::g_game::gameepisode;
-use crate::src::g_game::gamemap;
-use crate::src::g_game::gameskill;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::players;
 use crate::src::g_game::G_VanillaVersionCode;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
@@ -316,8 +311,9 @@ unsafe fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     (*str).threshold = saveg_read32();
     pl = saveg_read32();
     if pl > 0 as i32 {
-        (*str).player = (&raw mut players as *mut player_t).offset((pl - 1 as i32) as isize)
-            as *mut player_t as *mut player_s;
+        (*str).player = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+            .offset((pl - 1 as i32) as isize) as *mut player_t
+            as *mut player_s;
         (*(*str).player).mo = str;
     } else {
         (*str).player = ::core::ptr::null_mut::<player_s>();
@@ -360,7 +356,11 @@ unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     saveg_write32((*str).threshold);
     if !(*str).player.is_null() {
         saveg_write32(
-            ((*str).player.offset_from(&raw mut players as *mut player_t) as i64 + 1 as i64) as i32,
+            ((*str)
+                .player
+                .offset_from(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                as i64
+                + 1 as i64) as i32,
         );
     } else {
         saveg_write32(0 as i32);
@@ -729,12 +729,12 @@ pub unsafe fn P_WriteSaveGameHeader(mut description: *mut ::core::ffi::c_char) {
         saveg_write8(name[i as usize] as byte);
         i += 1;
     }
-    saveg_write8(gameskill as byte);
-    saveg_write8(gameepisode as byte);
-    saveg_write8(gamemap as byte);
+    saveg_write8(unsafe { game_state() }.g_game.gameskill as byte);
+    saveg_write8(unsafe { game_state() }.g_game.gameepisode as byte);
+    saveg_write8(unsafe { game_state() }.g_game.gamemap as byte);
     i = 0 as i32;
     while i < MAXPLAYERS {
-        saveg_write8(playeringame[i as usize] as byte);
+        saveg_write8(unsafe { game_state() }.g_game.playeringame[i as usize] as byte);
         i += 1;
     }
     saveg_write8((leveltime >> 16 as i32 & 0xff as i32) as byte);
@@ -776,12 +776,12 @@ pub unsafe fn P_ReadSaveGameHeader() -> bool {
     {
         return false;
     }
-    gameskill = saveg_read8() as skill_t;
-    gameepisode = saveg_read8() as i32;
-    gamemap = saveg_read8() as i32;
+    unsafe { game_state() }.g_game.gameskill = saveg_read8() as skill_t;
+    unsafe { game_state() }.g_game.gameepisode = saveg_read8() as i32;
+    unsafe { game_state() }.g_game.gamemap = saveg_read8() as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        playeringame[i as usize] = saveg_read8() as boolean;
+        unsafe { game_state() }.g_game.playeringame[i as usize] = saveg_read8() as boolean;
         i += 1;
     }
     a = saveg_read8();
@@ -802,10 +802,11 @@ pub unsafe fn P_ArchivePlayers() {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if !(playeringame[i as usize] == 0) {
+        if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
             saveg_write_pad();
             saveg_write_player_t(
-                (&raw mut players as *mut player_t).offset(i as isize) as *mut player_t
+                (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                    .offset(i as isize) as *mut player_t,
             );
         }
         i += 1;
@@ -815,14 +816,18 @@ pub unsafe fn P_UnArchivePlayers() {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if !(playeringame[i as usize] == 0) {
+        if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
             saveg_read_pad();
             saveg_read_player_t(
-                (&raw mut players as *mut player_t).offset(i as isize) as *mut player_t
+                (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                    .offset(i as isize) as *mut player_t,
             );
-            players[i as usize].mo = ::core::ptr::null_mut::<mobj_t>();
-            players[i as usize].message = ::core::ptr::null_mut::<::core::ffi::c_char>();
-            players[i as usize].attacker = ::core::ptr::null_mut::<mobj_t>();
+            unsafe { game_state() }.g_game.players[i as usize].mo =
+                ::core::ptr::null_mut::<mobj_t>();
+            unsafe { game_state() }.g_game.players[i as usize].message =
+                ::core::ptr::null_mut::<::core::ffi::c_char>();
+            unsafe { game_state() }.g_game.players[i as usize].attacker =
+                ::core::ptr::null_mut::<mobj_t>();
         }
         i += 1;
     }

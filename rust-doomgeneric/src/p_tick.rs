@@ -1,11 +1,5 @@
 use crate::src::d_player::player_t;
 use crate::src::doomdef::MAXPLAYERS;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::demoplayback;
-use crate::src::g_game::netgame;
-use crate::src::g_game::paused;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::players;
 use crate::src::game_state::game_state;
 use crate::src::m_menu::menuactive;
 use crate::src::p_doors::vldoor_t;
@@ -66,19 +60,26 @@ pub unsafe fn P_RunThinkers() {
 }
 pub unsafe fn P_Ticker() {
     let mut i: i32 = 0;
-    if paused {
+    if unsafe { game_state() }.g_game.paused {
         return;
     }
-    if !netgame && menuactive && !demoplayback && players[consoleplayer as usize].viewz != 1 as i32
+    if !unsafe { game_state() }.g_game.netgame
+        && menuactive
+        && !unsafe { game_state() }.g_game.demoplayback
+        && unsafe { game_state() }.g_game.players
+            [unsafe { game_state() }.g_game.consoleplayer as usize]
+            .viewz
+            != 1 as i32
     {
         return;
     }
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if playeringame[i as usize] != 0 {
+        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
             P_PlayerThink(
                 unsafe { &mut game_state().p_user },
-                (&raw mut players as *mut player_t).offset(i as isize) as *mut player_t,
+                (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                    .offset(i as isize) as *mut player_t,
             );
         }
         i += 1;

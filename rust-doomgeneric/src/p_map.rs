@@ -2,7 +2,6 @@ use crate::src::d_player::player_t;
 use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
-use crate::src::g_game::gamemap;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::{fprintf, stderr};
@@ -161,7 +160,9 @@ pub unsafe extern "C" fn PIT_StompThing(mut thing: *mut mobj_t) -> boolean {
     if thing == unsafe { game_state() }.p_map.tmthing {
         return true_0 as boolean;
     }
-    if (*unsafe { game_state() }.p_map.tmthing).player.is_null() && gamemap != 30 as i32 {
+    if (*unsafe { game_state() }.p_map.tmthing).player.is_null()
+        && unsafe { game_state() }.g_game.gamemap != 30 as i32
+    {
         return false_0 as boolean;
     }
     P_DamageMobj(

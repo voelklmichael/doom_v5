@@ -5,15 +5,6 @@ use crate::src::d_player::CF_NOMOMENTUM;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::gameskill;
-use crate::src::g_game::netgame;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::players;
-use crate::src::g_game::respawnmonsters;
-use crate::src::g_game::totalitems;
-use crate::src::g_game::totalkills;
 use crate::src::g_game::G_PlayerReborn;
 use crate::src::game_state::game_state;
 use crate::src::hu_stuff::HU_Start;
@@ -862,7 +853,7 @@ pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
         if (*mobj).flags & MF_COUNTKILL as i32 == 0 {
             return;
         }
-        if !respawnmonsters {
+        if !unsafe { game_state() }.g_game.respawnmonsters {
             return;
         }
         (*mobj).movecount += 1;
@@ -907,7 +898,7 @@ pub unsafe fn P_SpawnMobj(
     (*mobj).height = (*info).height as fixed_t;
     (*mobj).flags = (*info).flags;
     (*mobj).health = (*info).spawnhealth;
-    if gameskill as i32 != sk_nightmare as i32 {
+    if unsafe { game_state() }.g_game.gameskill as i32 != sk_nightmare as i32 {
         (*mobj).reactiontime = (*info).reactiontime;
     }
     (*mobj).lastlook = P_Random(unsafe { &mut game_state().m_random }) % MAXPLAYERS;
@@ -1032,7 +1023,7 @@ pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut mthing: *mut mapthing_t = ::core::ptr::null_mut::<mapthing_t>();
     let mut i: i32 = 0;
-    if deathmatch != 2 as i32 {
+    if unsafe { game_state() }.g_game.deathmatch != 2 as i32 {
         return;
     }
     if state.iquehead == state.iquetail {
@@ -1079,11 +1070,13 @@ pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
     if (*mthing).type_0 as i32 == 0 as i32 {
         return;
     }
-    if playeringame[((*mthing).type_0 as i32 - 1 as i32) as usize] == 0 {
+    if unsafe { game_state() }.g_game.playeringame[((*mthing).type_0 as i32 - 1 as i32) as usize]
+        == 0
+    {
         return;
     }
-    p = (&raw mut players as *mut player_t).offset(((*mthing).type_0 as i32 - 1 as i32) as isize)
-        as *mut player_t;
+    p = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+        .offset(((*mthing).type_0 as i32 - 1 as i32) as isize) as *mut player_t;
     if (*p).playerstate as u32 == PST_REBORN as i32 as u32 {
         G_PlayerReborn((*mthing).type_0 as i32 - 1 as i32);
     }
@@ -1107,14 +1100,14 @@ pub unsafe fn P_SpawnPlayer(mut mthing: *mut mapthing_t) {
     (*p).fixedcolormap = 0 as i32;
     (*p).viewheight = VIEWHEIGHT as fixed_t;
     P_SetupPsprites(p);
-    if deathmatch != 0 {
+    if unsafe { game_state() }.g_game.deathmatch != 0 {
         i = 0 as i32;
         while i < NUMCARDS as i32 {
             (*p).cards[i as usize] = true;
             i += 1;
         }
     }
-    if (*mthing).type_0 as i32 - 1 as i32 == consoleplayer {
+    if (*mthing).type_0 as i32 - 1 as i32 == unsafe { game_state() }.g_game.consoleplayer {
         ST_Start();
         HU_Start();
     }
@@ -1145,20 +1138,20 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     }
     if (*mthing).type_0 as i32 <= 4 as i32 {
         playerstarts[((*mthing).type_0 as i32 - 1 as i32) as usize] = *mthing;
-        if deathmatch == 0 {
+        if unsafe { game_state() }.g_game.deathmatch == 0 {
             P_SpawnPlayer(mthing);
         }
         return;
     }
-    if !netgame && (*mthing).options as i32 & 16 as i32 != 0 {
+    if !unsafe { game_state() }.g_game.netgame && (*mthing).options as i32 & 16 as i32 != 0 {
         return;
     }
-    if gameskill as i32 == sk_baby as i32 {
+    if unsafe { game_state() }.g_game.gameskill as i32 == sk_baby as i32 {
         bit = 1 as i32;
-    } else if gameskill as i32 == sk_nightmare as i32 {
+    } else if unsafe { game_state() }.g_game.gameskill as i32 == sk_nightmare as i32 {
         bit = 4 as i32;
     } else {
-        bit = (1 as i32) << gameskill as i32 - 1 as i32;
+        bit = (1 as i32) << unsafe { game_state() }.g_game.gameskill as i32 - 1 as i32;
     }
     if (*mthing).options as i32 & bit == 0 {
         return;
@@ -1178,7 +1171,9 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
             (*mthing).y as i32,
         ));
     }
-    if deathmatch != 0 && mobjinfo[i as usize].flags & MF_NOTDMATCH as i32 != 0 {
+    if unsafe { game_state() }.g_game.deathmatch != 0
+        && mobjinfo[i as usize].flags & MF_NOTDMATCH as i32 != 0
+    {
         return;
     }
     if nomonsters && (i == MT_SKULL as i32 || mobjinfo[i as usize].flags & MF_COUNTKILL as i32 != 0)
@@ -1198,10 +1193,10 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
         (*mobj).tics = 1 as i32 + P_Random(unsafe { &mut game_state().m_random }) % (*mobj).tics;
     }
     if (*mobj).flags & MF_COUNTKILL as i32 != 0 {
-        totalkills += 1;
+        unsafe { game_state() }.g_game.totalkills += 1;
     }
     if (*mobj).flags & MF_COUNTITEM as i32 != 0 {
-        totalitems += 1;
+        unsafe { game_state() }.g_game.totalitems += 1;
     }
     (*mobj).angle = (ANG45 * ((*mthing).angle as i32 / 45 as i32)) as angle_t;
     if (*mthing).options as i32 & MTF_AMBUSH != 0 {

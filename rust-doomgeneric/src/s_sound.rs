@@ -1,7 +1,3 @@
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::gameepisode;
-use crate::src::g_game::gamemap;
-use crate::src::g_game::players;
 use crate::src::i_sound::I_GetSfxLumpNum;
 use crate::src::i_sound::I_MusicIsPlaying;
 use crate::src::i_sound::I_PauseSong;
@@ -137,7 +133,7 @@ pub unsafe fn S_Start(state: &mut SoundsState) {
     }
     mus_paused = false;
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-        mnum = mus_runnin as i32 + gamemap - 1 as i32;
+        mnum = mus_runnin as i32 + unsafe { game_state() }.g_game.gamemap - 1 as i32;
     } else {
         let mut spmus: [i32; 9] = [
             mus_e3m4 as i32,
@@ -150,10 +146,13 @@ pub unsafe fn S_Start(state: &mut SoundsState) {
             mus_e2m5 as i32,
             mus_e1m9 as i32,
         ];
-        if gameepisode < 4 as i32 {
-            mnum = mus_e1m1 as i32 + (gameepisode - 1 as i32) * 9 as i32 + gamemap - 1 as i32;
+        if unsafe { game_state() }.g_game.gameepisode < 4 as i32 {
+            mnum = mus_e1m1 as i32
+                + (unsafe { game_state() }.g_game.gameepisode - 1 as i32) * 9 as i32
+                + unsafe { game_state() }.g_game.gamemap
+                - 1 as i32;
         } else {
-            mnum = spmus[(gamemap - 1 as i32) as usize];
+            mnum = spmus[(unsafe { game_state() }.g_game.gamemap - 1 as i32) as usize];
         }
     }
     S_ChangeMusic(state, mnum, true_0);
@@ -219,7 +218,7 @@ unsafe fn S_AdjustSoundParams(
     adx = ((*listener).x as i32 - (*source).x as i32).abs() as fixed_t;
     ady = ((*listener).y as i32 - (*source).y as i32).abs() as fixed_t;
     approx_dist = adx + ady - ((if adx < ady { adx } else { ady }) >> 1 as i32);
-    if gamemap != 8 as i32 && approx_dist > S_CLIPPING_DIST {
+    if unsafe { game_state() }.g_game.gamemap != 8 as i32 && approx_dist > S_CLIPPING_DIST {
         return 0 as i32;
     }
     angle = R_PointToAngle2((*listener).x, (*listener).y, (*source).x, (*source).y);
@@ -233,7 +232,7 @@ unsafe fn S_AdjustSoundParams(
         (128 as fixed_t - (FixedMul(S_STEREO_SWING, finesine[angle as usize]) >> FRACBITS)) as i32;
     if approx_dist < S_CLOSE_DIST {
         *vol = snd_SfxVolume;
-    } else if gamemap == 8 as i32 {
+    } else if unsafe { game_state() }.g_game.gamemap == 8 as i32 {
         if approx_dist > S_CLIPPING_DIST {
             approx_dist = S_CLIPPING_DIST as fixed_t;
         }
@@ -271,15 +270,30 @@ pub unsafe fn S_StartSound(
             volume = snd_SfxVolume;
         }
     }
-    if !origin.is_null() && origin != players[consoleplayer as usize].mo {
+    if !origin.is_null()
+        && origin
+            != unsafe { game_state() }.g_game.players
+                [unsafe { game_state() }.g_game.consoleplayer as usize]
+                .mo
+    {
         rc = S_AdjustSoundParams(
-            players[consoleplayer as usize].mo,
+            unsafe { game_state() }.g_game.players
+                [unsafe { game_state() }.g_game.consoleplayer as usize]
+                .mo,
             origin,
             &raw mut volume,
             &raw mut sep,
         );
-        if (*origin).x == (*players[consoleplayer as usize].mo).x
-            && (*origin).y == (*players[consoleplayer as usize].mo).y
+        if (*origin).x
+            == (*unsafe { game_state() }.g_game.players
+                [unsafe { game_state() }.g_game.consoleplayer as usize]
+                .mo)
+                .x
+            && (*origin).y
+                == (*unsafe { game_state() }.g_game.players
+                    [unsafe { game_state() }.g_game.consoleplayer as usize]
+                    .mo)
+                    .y
         {
             sep = NORM_SEP;
         }

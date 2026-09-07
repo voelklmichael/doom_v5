@@ -17,11 +17,6 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::gameskill;
-use crate::src::g_game::netgame;
-use crate::src::g_game::players;
 use crate::src::g_game::G_DeferedInitNew;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
@@ -381,7 +376,7 @@ pub unsafe fn ST_refreshBackground() {
     if st_statusbaron {
         V_UseBuffer(unsafe { &mut game_state().v_video }, st_backing_screen);
         V_DrawPatch(unsafe { &mut game_state().v_video }, ST_X, 0 as i32, sbar);
-        if netgame {
+        if unsafe { game_state() }.g_game.netgame {
             V_DrawPatch(
                 unsafe { &mut game_state().v_video },
                 ST_FX,
@@ -418,7 +413,9 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
             _ => {}
         }
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
-        if !netgame && gameskill as i32 != sk_nightmare as i32 {
+        if !unsafe { game_state() }.g_game.netgame
+            && unsafe { game_state() }.g_game.gameskill as i32 != sk_nightmare as i32
+        {
             if cht_CheckCheat(&raw mut cheat_god, (*ev).data2 as ::core::ffi::c_char) != 0 {
                 (*plyr).cheats ^= CF_GODMODE as i32;
                 if (*plyr).cheats & CF_GODMODE as i32 != 0 {
@@ -601,14 +598,24 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                     &raw mut buf_0 as *mut ::core::ffi::c_char,
                     ::core::mem::size_of::<[::core::ffi::c_char; 52]>() as size_t,
                     b"ang=0x%x;x,y=(0x%x,0x%x)\0" as *const u8 as *const ::core::ffi::c_char,
-                    (*players[consoleplayer as usize].mo).angle,
-                    (*players[consoleplayer as usize].mo).x,
-                    (*players[consoleplayer as usize].mo).y,
+                    (*unsafe { game_state() }.g_game.players
+                        [unsafe { game_state() }.g_game.consoleplayer as usize]
+                        .mo)
+                        .angle,
+                    (*unsafe { game_state() }.g_game.players
+                        [unsafe { game_state() }.g_game.consoleplayer as usize]
+                        .mo)
+                        .x,
+                    (*unsafe { game_state() }.g_game.players
+                        [unsafe { game_state() }.g_game.consoleplayer as usize]
+                        .mo)
+                        .y,
                 );
                 (*plyr).message = &raw mut buf_0 as *mut ::core::ffi::c_char;
             }
         }
-        if !netgame && cht_CheckCheat(&raw mut cheat_clev, (*ev).data2 as ::core::ffi::c_char) != 0
+        if !unsafe { game_state() }.g_game.netgame
+            && cht_CheckCheat(&raw mut cheat_clev, (*ev).data2 as ::core::ffi::c_char) != 0
         {
             let mut buf_1: [::core::ffi::c_char; 3] = [0; 3];
             let mut epsd: i32 = 0;
@@ -657,7 +664,7 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
             }
             (*plyr).message = b"Changing Level...\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-            G_DeferedInitNew(gameskill, epsd, map);
+            G_DeferedInitNew(unsafe { game_state() }.g_game.gameskill, epsd, map);
         }
     }
     return false;
@@ -818,13 +825,13 @@ pub unsafe fn ST_updateWidgets() {
         i += 1;
     }
     ST_updateFaceWidget();
-    st_notdeathmatch = deathmatch == 0;
-    st_armson = st_statusbaron && deathmatch == 0;
-    st_fragson = deathmatch != 0 && st_statusbaron;
+    st_notdeathmatch = unsafe { game_state() }.g_game.deathmatch == 0;
+    st_armson = st_statusbaron && unsafe { game_state() }.g_game.deathmatch == 0;
+    st_fragson = unsafe { game_state() }.g_game.deathmatch != 0 && st_statusbaron;
     st_fragscount = 0 as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if i != consoleplayer {
+        if i != unsafe { game_state() }.g_game.consoleplayer {
             st_fragscount += (*plyr).frags[i as usize];
         } else {
             st_fragscount -= (*plyr).frags[i as usize];
@@ -889,8 +896,8 @@ pub unsafe fn ST_doPaletteStuff() {
 }
 pub unsafe fn ST_drawWidgets(mut refresh: bool) {
     let mut i: i32 = 0;
-    st_armson = st_statusbaron && deathmatch == 0;
-    st_fragson = deathmatch != 0 && st_statusbaron;
+    st_armson = st_statusbaron && unsafe { game_state() }.g_game.deathmatch == 0;
+    st_fragson = unsafe { game_state() }.g_game.deathmatch != 0 && st_statusbaron;
     STlib_updateNum(
         unsafe { &mut game_state().st_lib },
         &raw mut w_ready,
@@ -1034,7 +1041,7 @@ unsafe fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
         &raw mut namebuf as *mut ::core::ffi::c_char,
         9 as size_t,
         b"STFB%d\0" as *const u8 as *const ::core::ffi::c_char,
-        consoleplayer,
+        unsafe { game_state() }.g_game.consoleplayer,
     );
     callback.expect("non-null function pointer")(
         &raw mut namebuf as *mut ::core::ffi::c_char,
@@ -1161,7 +1168,8 @@ pub unsafe fn ST_unloadData() {
 pub unsafe fn ST_initData() {
     let mut i: i32 = 0;
     st_firsttime = true;
-    plyr = (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t;
+    plyr = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+        .offset(unsafe { game_state() }.g_game.consoleplayer as isize) as *mut player_t;
     st_clock = 0 as u32;
     st_chatstate = StartChatState;
     st_gamestate = FirstPersonState;

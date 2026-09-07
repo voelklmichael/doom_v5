@@ -4,12 +4,6 @@ use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_easy, sk_nightmare};
 use crate::src::d_player::player_t;
 use crate::src::doomdef::boolean;
-use crate::src::g_game::gameepisode;
-use crate::src::g_game::gamemap;
-use crate::src::g_game::gameskill;
-use crate::src::g_game::netgame;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::players;
 use crate::src::g_game::G_ExitLevel;
 use crate::src::i_system::I_Error;
 use crate::src::info::mobjinfo;
@@ -445,14 +439,14 @@ pub unsafe fn P_LookForPlayers(mut actor: *mut mobj_t, mut allaround: bool) -> b
     stop = (*actor).lastlook - 1 as i32 & 3 as i32;
     let mut current_block_9: u64;
     loop {
-        if !(playeringame[(*actor).lastlook as usize] == 0) {
+        if !(unsafe { game_state() }.g_game.playeringame[(*actor).lastlook as usize] == 0) {
             let fresh1 = c;
             c = c + 1;
             if fresh1 == 2 as i32 || (*actor).lastlook == stop {
                 return false;
             }
-            player = (&raw mut players as *mut player_t).offset((*actor).lastlook as isize)
-                as *mut player_t;
+            player = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                .offset((*actor).lastlook as isize) as *mut player_t;
             if !((*player).health <= 0 as i32) {
                 if P_CheckSight(unsafe { &mut game_state().p_sight }, actor, (*player).mo) {
                     if !allaround {
@@ -618,7 +612,7 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
     }
     if (*actor).flags & MF_JUSTATTACKED as i32 != 0 {
         (*actor).flags &= !(MF_JUSTATTACKED as i32);
-        if gameskill as i32 != sk_nightmare as i32 && !fastparm {
+        if unsafe { game_state() }.g_game.gameskill as i32 != sk_nightmare as i32 && !fastparm {
             P_NewChaseDir(actor);
         }
         return;
@@ -635,7 +629,10 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
         return;
     }
     if (*(*actor).info).missilestate != 0 {
-        if !((gameskill as i32) < sk_nightmare as i32 && !fastparm && (*actor).movecount != 0) {
+        if !((unsafe { game_state() }.g_game.gameskill as i32) < sk_nightmare as i32
+            && !fastparm
+            && (*actor).movecount != 0)
+        {
             if P_CheckMissileRange(actor) {
                 P_SetMobjState(actor, (*(*actor).info).missilestate as statenum_t);
                 (*actor).flags |= MF_JUSTATTACKED as i32;
@@ -643,7 +640,7 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
             }
         }
     }
-    if netgame
+    if unsafe { game_state() }.g_game.netgame
         && (*actor).threshold == 0
         && !P_CheckSight(
             unsafe { &mut game_state().p_sight },
@@ -1370,30 +1367,37 @@ pub unsafe fn A_Explode(mut thingy: *mut mobj_t) {
 }
 unsafe fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
     if (unsafe { game_state() }.doomstat.gameversion as u32) < exe_ultimate as i32 as u32 {
-        if gamemap != 8 as i32 {
+        if unsafe { game_state() }.g_game.gamemap != 8 as i32 {
             return false;
         }
-        if motype as u32 == MT_BRUISER as i32 as u32 && gameepisode != 1 as i32 {
+        if motype as u32 == MT_BRUISER as i32 as u32
+            && unsafe { game_state() }.g_game.gameepisode != 1 as i32
+        {
             return false;
         }
         return true;
     } else {
-        match gameepisode {
+        match unsafe { game_state() }.g_game.gameepisode {
             1 => {
-                return gamemap == 8 as i32 && motype as u32 == MT_BRUISER as i32 as u32;
+                return unsafe { game_state() }.g_game.gamemap == 8 as i32
+                    && motype as u32 == MT_BRUISER as i32 as u32;
             }
             2 => {
-                return gamemap == 8 as i32 && motype as u32 == MT_CYBORG as i32 as u32;
+                return unsafe { game_state() }.g_game.gamemap == 8 as i32
+                    && motype as u32 == MT_CYBORG as i32 as u32;
             }
             3 => {
-                return gamemap == 8 as i32 && motype as u32 == MT_SPIDER as i32 as u32;
+                return unsafe { game_state() }.g_game.gamemap == 8 as i32
+                    && motype as u32 == MT_SPIDER as i32 as u32;
             }
             4 => {
-                return gamemap == 6 as i32 && motype as u32 == MT_CYBORG as i32 as u32
-                    || gamemap == 8 as i32 && motype as u32 == MT_SPIDER as i32 as u32;
+                return unsafe { game_state() }.g_game.gamemap == 6 as i32
+                    && motype as u32 == MT_CYBORG as i32 as u32
+                    || unsafe { game_state() }.g_game.gamemap == 8 as i32
+                        && motype as u32 == MT_SPIDER as i32 as u32;
             }
             _ => {
-                return gamemap == 8 as i32;
+                return unsafe { game_state() }.g_game.gamemap == 8 as i32;
             }
         }
     };
@@ -1419,7 +1423,7 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
     };
     let mut i: i32 = 0;
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-        if gamemap != 7 as i32 {
+        if unsafe { game_state() }.g_game.gamemap != 7 as i32 {
             return;
         }
         if (*mo).type_0 as u32 != MT_FATSO as i32 as u32
@@ -1432,7 +1436,9 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
     }
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if playeringame[i as usize] != 0 && players[i as usize].health > 0 as i32 {
+        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0
+            && unsafe { game_state() }.g_game.players[i as usize].health > 0 as i32
+        {
             break;
         }
         i += 1;
@@ -1452,7 +1458,7 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
         th = (*th).next as *mut thinker_t;
     }
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-        if gamemap == 7 as i32 {
+        if unsafe { game_state() }.g_game.gamemap == 7 as i32 {
             if (*mo).type_0 as u32 == MT_FATSO as i32 as u32 {
                 junk.tag = 666 as i16;
                 EV_DoFloor(&raw mut junk, lowerFloorToLowest);
@@ -1465,13 +1471,13 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
             }
         }
     } else {
-        match gameepisode {
+        match unsafe { game_state() }.g_game.gameepisode {
             1 => {
                 junk.tag = 666 as i16;
                 EV_DoFloor(&raw mut junk, lowerFloorToLowest);
                 return;
             }
-            4 => match gamemap {
+            4 => match unsafe { game_state() }.g_game.gamemap {
                 6 => {
                     junk.tag = 666 as i16;
                     EV_DoDoor(&raw mut junk, vld_blazeOpen);
@@ -1605,7 +1611,8 @@ pub unsafe fn A_BrainSpit(mut mo: *mut mobj_t) {
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let state = unsafe { game_state() };
     state.p_enemy.easy ^= 1 as i32;
-    if gameskill as i32 <= sk_easy as i32 && state.p_enemy.easy == 0 {
+    if unsafe { game_state() }.g_game.gameskill as i32 <= sk_easy as i32 && state.p_enemy.easy == 0
+    {
         return;
     }
     targ = state.p_enemy.braintargets[state.p_enemy.braintargeton as usize];

@@ -17,13 +17,6 @@ use crate::src::d_mode::{exe_chex, exe_doom_1_9, exe_ultimate};
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::demoplayback;
-use crate::src::g_game::gamestate;
-use crate::src::g_game::netgame;
-use crate::src::g_game::players;
-use crate::src::g_game::testcontrols;
-use crate::src::g_game::usergame;
 use crate::src::g_game::G_DeferedInitNew;
 use crate::src::g_game::G_LoadGame;
 use crate::src::g_game::G_SaveGame;
@@ -742,7 +735,7 @@ pub unsafe extern "C" fn M_LoadSelect(mut choice: i32) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_LoadGame(mut choice: i32) {
-    if netgame {
+    if unsafe { game_state() }.g_game.netgame {
         M_StartMessage(
             "you can't do load while in a net game!\n\npress a key.",
             NULL,
@@ -801,7 +794,7 @@ pub unsafe extern "C" fn M_SaveSelect(mut choice: i32) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveGame(mut choice: i32) {
-    if !usergame {
+    if !unsafe { game_state() }.g_game.usergame {
         M_StartMessage(
             "you can't save if you aren't playing!\n\npress a key.",
             NULL,
@@ -809,7 +802,7 @@ pub unsafe extern "C" fn M_SaveGame(mut choice: i32) {
         );
         return;
     }
-    if gamestate as u32 != GS_LEVEL as i32 as u32 {
+    if unsafe { game_state() }.g_game.gamestate as u32 != GS_LEVEL as i32 as u32 {
         return;
     }
     M_SetupNextMenu(&raw mut SaveDef);
@@ -825,11 +818,11 @@ pub unsafe extern "C" fn M_QuickSaveResponse(mut key: i32) {
     }
 }
 pub unsafe fn M_QuickSave() {
-    if !usergame {
+    if !unsafe { game_state() }.g_game.usergame {
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
         return;
     }
-    if gamestate as u32 != GS_LEVEL as i32 as u32 {
+    if unsafe { game_state() }.g_game.gamestate as u32 != GS_LEVEL as i32 as u32 {
         return;
     }
     if quickSaveSlot < 0 as i32 {
@@ -866,7 +859,7 @@ pub unsafe extern "C" fn M_QuickLoadResponse(mut key: i32) {
     }
 }
 pub unsafe fn M_QuickLoad() {
-    if netgame {
+    if unsafe { game_state() }.g_game.netgame {
         M_StartMessage(
             "you can't quickload during a netgame!\n\npress a key.",
             NULL,
@@ -1039,7 +1032,7 @@ pub unsafe extern "C" fn M_DrawNewGame() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_NewGame(mut choice: i32) {
-    if netgame && !demoplayback {
+    if unsafe { game_state() }.g_game.netgame && !unsafe { game_state() }.g_game.demoplayback {
         M_StartMessage(
             "you can't start a new game\nwhile in a network game.\n\npress a key.",
             NULL,
@@ -1158,11 +1151,14 @@ pub unsafe extern "C" fn M_ChangeMessages(mut choice: i32) {
     choice = 0 as i32;
     showMessages = 1 as i32 - showMessages;
     if showMessages == 0 {
-        players[consoleplayer as usize].message = b"Messages OFF\0" as *const u8
-            as *const ::core::ffi::c_char
+        unsafe { game_state() }.g_game.players
+            [unsafe { game_state() }.g_game.consoleplayer as usize]
+            .message = b"Messages OFF\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char;
     } else {
-        players[consoleplayer as usize].message =
+        unsafe { game_state() }.g_game.players
+            [unsafe { game_state() }.g_game.consoleplayer as usize]
+            .message =
             b"Messages ON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
     unsafe { game_state() }.hu_stuff.message_dontfuckwithme = true;
@@ -1179,11 +1175,11 @@ pub unsafe extern "C" fn M_EndGameResponse(mut key: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_EndGame(mut choice: i32) {
     choice = 0 as i32;
-    if !usergame {
+    if !unsafe { game_state() }.g_game.usergame {
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_oof as i32);
         return;
     }
-    if netgame {
+    if unsafe { game_state() }.g_game.netgame {
         M_StartMessage("you can't end a netgame!\n\npress a key.", NULL, false);
         return;
     }
@@ -1243,7 +1239,7 @@ pub unsafe extern "C" fn M_QuitResponse(mut key: i32) {
     if key != unsafe { game_state() }.m_controls.key_menu_confirm {
         return;
     }
-    if !netgame {
+    if !unsafe { game_state() }.g_game.netgame {
         if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
             S_StartSound(
                 unsafe { &mut game_state().sounds },
@@ -1321,10 +1317,14 @@ pub unsafe extern "C" fn M_ChangeDetail(mut choice: i32) {
     detailLevel = 1 as i32 - detailLevel;
     R_SetViewSize(screenblocks, detailLevel);
     if detailLevel == 0 {
-        players[consoleplayer as usize].message =
+        unsafe { game_state() }.g_game.players
+            [unsafe { game_state() }.g_game.consoleplayer as usize]
+            .message =
             b"High detail\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     } else {
-        players[consoleplayer as usize].message =
+        unsafe { game_state() }.g_game.players
+            [unsafe { game_state() }.g_game.consoleplayer as usize]
+            .message =
             b"Low detail\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     };
 }
@@ -1482,7 +1482,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     static mut lasty: i32 = 0;
     static mut mousex: i32 = 0;
     static mut lastx: i32 = 0;
-    if testcontrols {
+    if unsafe { game_state() }.g_game.testcontrols {
         if (*ev).type_0 as u32 == ev_quit as i32 as u32
             || (*ev).type_0 as u32 == ev_keydown as i32 as u32
                 && ((*ev).data1 == unsafe { game_state() }.m_controls.key_menu_activate
@@ -1541,29 +1541,29 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     } else if (*ev).type_0 as u32 == ev_mouse as i32 as u32
         && mousewait < I_GetTime(unsafe { &mut game_state().i_timer })
     {
-        mousey += (*ev).data3;
-        if mousey < lasty - 30 as i32 {
+        unsafe { game_state() }.g_game.mousey += (*ev).data3;
+        if unsafe { game_state() }.g_game.mousey < lasty - 30 as i32 {
             key = unsafe { game_state() }.m_controls.key_menu_down;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lasty -= 30 as i32;
-            mousey = lasty;
-        } else if mousey > lasty + 30 as i32 {
+            unsafe { game_state() }.g_game.mousey = lasty;
+        } else if unsafe { game_state() }.g_game.mousey > lasty + 30 as i32 {
             key = unsafe { game_state() }.m_controls.key_menu_up;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lasty += 30 as i32;
-            mousey = lasty;
+            unsafe { game_state() }.g_game.mousey = lasty;
         }
-        mousex += (*ev).data2;
-        if mousex < lastx - 30 as i32 {
+        unsafe { game_state() }.g_game.mousex += (*ev).data2;
+        if unsafe { game_state() }.g_game.mousex < lastx - 30 as i32 {
             key = unsafe { game_state() }.m_controls.key_menu_left;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lastx -= 30 as i32;
-            mousex = lastx;
-        } else if mousex > lastx + 30 as i32 {
+            unsafe { game_state() }.g_game.mousex = lastx;
+        } else if unsafe { game_state() }.g_game.mousex > lastx + 30 as i32 {
             key = unsafe { game_state() }.m_controls.key_menu_right;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lastx += 30 as i32;
-            mousex = lastx;
+            unsafe { game_state() }.g_game.mousex = lastx;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = unsafe { game_state() }.m_controls.key_menu_forward;
@@ -1732,8 +1732,9 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             if usegamma > 4 as i32 {
                 usegamma = 0 as i32;
             }
-            players[consoleplayer as usize].message =
-                gammamsg[usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
+            unsafe { game_state() }.g_game.players
+                [unsafe { game_state() }.g_game.consoleplayer as usize]
+                .message = gammamsg[usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
             I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
             return true;
         }
