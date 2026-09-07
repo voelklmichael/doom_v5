@@ -12,10 +12,27 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memcpy;
-static mut go: bool = false;
-static mut wipe_scr_start: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-static mut wipe_scr_end: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
-static mut wipe_scr: *mut byte = ::core::ptr::null::<byte>() as *mut byte;
+
+pub struct FWipeState {
+    pub go: bool,
+    pub wipe_scr_start: *mut byte,
+    pub wipe_scr_end: *mut byte,
+    pub wipe_scr: *mut byte,
+    pub y: *mut i32,
+}
+
+impl FWipeState {
+    pub const fn new() -> Self {
+        FWipeState {
+            go: false,
+            wipe_scr_start: ::core::ptr::null::<byte>() as *mut byte,
+            wipe_scr_end: ::core::ptr::null::<byte>() as *mut byte,
+            wipe_scr: ::core::ptr::null::<byte>() as *mut byte,
+            y: ::core::ptr::null::<i32>() as *mut i32,
+        }
+    }
+}
+
 pub unsafe fn wipe_shittyColMajorXform(mut array: *mut i16, mut width: i32, mut height: i32) {
     let mut x: i32 = 0;
     let mut y_0: i32 = 0;
@@ -47,8 +64,8 @@ pub unsafe fn wipe_shittyColMajorXform(mut array: *mut i16, mut width: i32, mut 
 }
 pub unsafe fn wipe_initColorXForm(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     memcpy(
-        wipe_scr as *mut ::core::ffi::c_void,
-        wipe_scr_start as *const ::core::ffi::c_void,
+        unsafe { game_state() }.f_wipe.wipe_scr as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.f_wipe.wipe_scr_start as *const ::core::ffi::c_void,
         (width * height) as size_t,
     );
     return 0 as i32;
@@ -59,9 +76,9 @@ pub unsafe fn wipe_doColorXForm(mut width: i32, mut height: i32, mut ticks: i32)
     let mut e: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut newval: i32 = 0;
     changed = false;
-    w = wipe_scr;
-    e = wipe_scr_end;
-    while w != wipe_scr.offset((width * height) as isize) {
+    w = unsafe { game_state() }.f_wipe.wipe_scr;
+    e = unsafe { game_state() }.f_wipe.wipe_scr_end;
+    while w != unsafe { game_state() }.f_wipe.wipe_scr.offset((width * height) as isize) {
         if *w as i32 != *e as i32 {
             if *w as i32 > *e as i32 {
                 newval = *w as i32 - ticks;
@@ -89,32 +106,31 @@ pub unsafe fn wipe_doColorXForm(mut width: i32, mut height: i32, mut ticks: i32)
 pub unsafe fn wipe_exitColorXForm(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     return 0 as i32;
 }
-static mut y: *mut i32 = ::core::ptr::null::<i32>() as *mut i32;
 pub unsafe fn wipe_initMelt(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     let mut i: i32 = 0;
     let mut r: i32 = 0;
     memcpy(
-        wipe_scr as *mut ::core::ffi::c_void,
-        wipe_scr_start as *const ::core::ffi::c_void,
+        unsafe { game_state() }.f_wipe.wipe_scr as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.f_wipe.wipe_scr_start as *const ::core::ffi::c_void,
         (width * height) as size_t,
     );
-    wipe_shittyColMajorXform(wipe_scr_start as *mut i16, width / 2 as i32, height);
-    wipe_shittyColMajorXform(wipe_scr_end as *mut i16, width / 2 as i32, height);
-    y = Z_Malloc(
+    wipe_shittyColMajorXform(unsafe { game_state() }.f_wipe.wipe_scr_start as *mut i16, width / 2 as i32, height);
+    wipe_shittyColMajorXform(unsafe { game_state() }.f_wipe.wipe_scr_end as *mut i16, width / 2 as i32, height);
+    unsafe { game_state() }.f_wipe.y = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         (width as usize).wrapping_mul(::core::mem::size_of::<i32>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut i32;
-    *y.offset(0 as i32 as isize) = -(M_Random(unsafe { &mut game_state().m_random }) % 16 as i32);
+    *unsafe { game_state() }.f_wipe.y.offset(0 as i32 as isize) = -(M_Random(unsafe { &mut game_state().m_random }) % 16 as i32);
     i = 1 as i32;
     while i < width {
         r = M_Random(unsafe { &mut game_state().m_random }) % 3 as i32 - 1 as i32;
-        *y.offset(i as isize) = *y.offset((i - 1 as i32) as isize) + r;
-        if *y.offset(i as isize) > 0 as i32 {
-            *y.offset(i as isize) = 0 as i32;
-        } else if *y.offset(i as isize) == -(16 as i32) {
-            *y.offset(i as isize) = -(15 as i32);
+        *unsafe { game_state() }.f_wipe.y.offset(i as isize) = *unsafe { game_state() }.f_wipe.y.offset((i - 1 as i32) as isize) + r;
+        if *unsafe { game_state() }.f_wipe.y.offset(i as isize) > 0 as i32 {
+            *unsafe { game_state() }.f_wipe.y.offset(i as isize) = 0 as i32;
+        } else if *unsafe { game_state() }.f_wipe.y.offset(i as isize) == -(16 as i32) {
+            *unsafe { game_state() }.f_wipe.y.offset(i as isize) = -(15 as i32);
         }
         i += 1;
     }
@@ -137,22 +153,22 @@ pub unsafe fn wipe_doMelt(mut width: i32, mut height: i32, mut ticks: i32) -> i3
         }
         i = 0 as i32;
         while i < width {
-            if *y.offset(i as isize) < 0 as i32 {
-                let ref mut fresh1 = *y.offset(i as isize);
+            if *unsafe { game_state() }.f_wipe.y.offset(i as isize) < 0 as i32 {
+                let ref mut fresh1 = *unsafe { game_state() }.f_wipe.y.offset(i as isize);
                 *fresh1 += 1;
                 done = false;
-            } else if *y.offset(i as isize) < height {
-                dy = if *y.offset(i as isize) < 16 as i32 {
-                    *y.offset(i as isize) + 1 as i32
+            } else if *unsafe { game_state() }.f_wipe.y.offset(i as isize) < height {
+                dy = if *unsafe { game_state() }.f_wipe.y.offset(i as isize) < 16 as i32 {
+                    *unsafe { game_state() }.f_wipe.y.offset(i as isize) + 1 as i32
                 } else {
                     8 as i32
                 };
-                if *y.offset(i as isize) + dy >= height {
-                    dy = height - *y.offset(i as isize);
+                if *unsafe { game_state() }.f_wipe.y.offset(i as isize) + dy >= height {
+                    dy = height - *unsafe { game_state() }.f_wipe.y.offset(i as isize);
                 }
-                s = (wipe_scr_end as *mut i16).offset((i * height + *y.offset(i as isize)) as isize)
+                s = (unsafe { game_state() }.f_wipe.wipe_scr_end as *mut i16).offset((i * height + *unsafe { game_state() }.f_wipe.y.offset(i as isize)) as isize)
                     as *mut i16;
-                d = (wipe_scr as *mut i16).offset((*y.offset(i as isize) * width + i) as isize)
+                d = (unsafe { game_state() }.f_wipe.wipe_scr as *mut i16).offset((*unsafe { game_state() }.f_wipe.y.offset(i as isize) * width + i) as isize)
                     as *mut i16;
                 idx = 0 as i32;
                 j = dy;
@@ -163,12 +179,12 @@ pub unsafe fn wipe_doMelt(mut width: i32, mut height: i32, mut ticks: i32) -> i3
                     idx += width;
                     j -= 1;
                 }
-                *y.offset(i as isize) += dy;
-                s = (wipe_scr_start as *mut i16).offset((i * height) as isize) as *mut i16;
-                d = (wipe_scr as *mut i16).offset((*y.offset(i as isize) * width + i) as isize)
+                *unsafe { game_state() }.f_wipe.y.offset(i as isize) += dy;
+                s = (unsafe { game_state() }.f_wipe.wipe_scr_start as *mut i16).offset((i * height) as isize) as *mut i16;
+                d = (unsafe { game_state() }.f_wipe.wipe_scr as *mut i16).offset((*unsafe { game_state() }.f_wipe.y.offset(i as isize) * width + i) as isize)
                     as *mut i16;
                 idx = 0 as i32;
-                j = height - *y.offset(i as isize);
+                j = height - *unsafe { game_state() }.f_wipe.y.offset(i as isize);
                 while j != 0 {
                     let fresh3 = s;
                     s = s.offset(1);
@@ -186,43 +202,43 @@ pub unsafe fn wipe_doMelt(mut width: i32, mut height: i32, mut ticks: i32) -> i3
 pub unsafe fn wipe_exitMelt(mut width: i32, mut height: i32, mut ticks: i32) -> i32 {
     Z_Free(
         unsafe { &mut game_state().z_zone },
-        y as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.f_wipe.y as *mut ::core::ffi::c_void,
     );
     Z_Free(
         unsafe { &mut game_state().z_zone },
-        wipe_scr_start as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.f_wipe.wipe_scr_start as *mut ::core::ffi::c_void,
     );
     Z_Free(
         unsafe { &mut game_state().z_zone },
-        wipe_scr_end as *mut ::core::ffi::c_void,
+        unsafe { game_state() }.f_wipe.wipe_scr_end as *mut ::core::ffi::c_void,
     );
     return 0 as i32;
 }
 pub unsafe fn wipe_StartScreen(mut x: i32, mut y_0: i32, mut width: i32, mut height: i32) -> i32 {
-    wipe_scr_start = Z_Malloc(
+    unsafe { game_state() }.f_wipe.wipe_scr_start = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         SCREENWIDTH * SCREENHEIGHT,
         PU_STATIC as i32,
         NULL,
     ) as *mut byte;
-    I_ReadScreen(wipe_scr_start);
+    I_ReadScreen(unsafe { game_state() }.f_wipe.wipe_scr_start);
     return 0 as i32;
 }
 pub unsafe fn wipe_EndScreen(mut x: i32, mut y_0: i32, mut width: i32, mut height: i32) -> i32 {
-    wipe_scr_end = Z_Malloc(
+    unsafe { game_state() }.f_wipe.wipe_scr_end = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         SCREENWIDTH * SCREENHEIGHT,
         PU_STATIC as i32,
         NULL,
     ) as *mut byte;
-    I_ReadScreen(wipe_scr_end);
+    I_ReadScreen(unsafe { game_state() }.f_wipe.wipe_scr_end);
     V_DrawBlock(
         unsafe { &mut game_state().v_video },
         x,
         y_0,
         width,
         height,
-        wipe_scr_start,
+        unsafe { game_state() }.f_wipe.wipe_scr_start,
     );
     return 0 as i32;
 }
@@ -235,7 +251,7 @@ pub unsafe fn wipe_ScreenWipe(
     mut ticks: i32,
 ) -> i32 {
     let mut rc: i32 = 0;
-    static mut wipes: [Option<unsafe fn(i32, i32, i32) -> i32>; 6] = unsafe {
+    const wipes: [Option<unsafe fn(i32, i32, i32) -> i32>; 6] = {
         [
             Some(wipe_initColorXForm as unsafe fn(i32, i32, i32) -> i32),
             Some(wipe_doColorXForm as unsafe fn(i32, i32, i32) -> i32),
@@ -245,15 +261,12 @@ pub unsafe fn wipe_ScreenWipe(
             Some(wipe_exitMelt as unsafe fn(i32, i32, i32) -> i32),
         ]
     };
-    if !go {
-        go = true;
-        wipe_scr = unsafe { game_state() }.i_video.I_VideoBuffer;
-        Some(
-            (*(&raw mut wipes as *mut Option<unsafe extern "C" fn(i32, i32, i32) -> i32>)
-                .offset((wipeno * 3 as i32) as isize))
-            .expect("non-null function pointer"),
-        )
-        .expect("non-null function pointer")(width, height, ticks);
+    if !unsafe { game_state() }.f_wipe.go {
+        unsafe { game_state() }.f_wipe.go = true;
+        unsafe { game_state() }.f_wipe.wipe_scr = unsafe { game_state() }.i_video.I_VideoBuffer;
+        wipes[(wipeno * 3 as i32) as usize].expect("non-null function pointer")(
+            width, height, ticks,
+        );
     }
     V_MarkRect(
         unsafe { &mut game_state().v_video },
@@ -262,20 +275,14 @@ pub unsafe fn wipe_ScreenWipe(
         width,
         height,
     );
-    rc = Some(
-        (*(&raw mut wipes as *mut Option<unsafe extern "C" fn(i32, i32, i32) -> i32>)
-            .offset((wipeno * 3 as i32 + 1 as i32) as isize))
-        .expect("non-null function pointer"),
-    )
-    .expect("non-null function pointer")(width, height, ticks);
+    rc = wipes[(wipeno * 3 as i32 + 1 as i32) as usize].expect("non-null function pointer")(
+        width, height, ticks,
+    );
     if rc != 0 {
-        go = false;
-        Some(
-            (*(&raw mut wipes as *mut Option<unsafe extern "C" fn(i32, i32, i32) -> i32>)
-                .offset((wipeno * 3 as i32 + 2 as i32) as isize))
-            .expect("non-null function pointer"),
-        )
-        .expect("non-null function pointer")(width, height, ticks);
+        unsafe { game_state() }.f_wipe.go = false;
+        wipes[(wipeno * 3 as i32 + 2 as i32) as usize].expect("non-null function pointer")(
+            width, height, ticks,
+        );
     }
-    return (!go) as i32;
+    return (!unsafe { game_state() }.f_wipe.go) as i32;
 }
