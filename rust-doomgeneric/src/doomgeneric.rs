@@ -21,5 +21,5 @@ pub unsafe fn doomgeneric_Create(state: &mut GameState, args: Vec<String>) {
     DG_ScreenBuffer =
         malloc((DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4 as i32) as size_t) as *mut pixel_t;
     DG_Init();
-    D_DoomMain();
+    D_DoomMain(state);
 }

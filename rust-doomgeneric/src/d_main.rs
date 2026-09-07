@@ -1085,7 +1085,7 @@ unsafe extern "C" fn D_Endoom() {
     }
     exit(0 as i32);
 }
-pub unsafe fn D_DoomMain() {
+pub unsafe fn D_DoomMain(state: &mut GameState) {
     let mut p: i32 = 0;
     let mut file: [::core::ffi::c_char; 256] = [0; 256];
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
@@ -1095,30 +1095,30 @@ pub unsafe fn D_DoomMain() {
         b"Z_Init: Init zone memory allocation daemon. \n\0" as *const u8
             as *const ::core::ffi::c_char,
     );
-    Z_Init(unsafe { &mut game_state().z_zone });
-    unsafe { game_state() }.d_main.nomonsters = M_CheckParm("-nomonsters") != 0;
-    unsafe { game_state() }.d_main.respawnparm = M_CheckParm("-respawn") != 0;
-    unsafe { game_state() }.d_main.fastparm = M_CheckParm("-fast") != 0;
-    unsafe { game_state() }.d_main.devparm = M_CheckParm("-devparm") != 0;
+    Z_Init(&mut state.z_zone);
+    state.d_main.nomonsters = M_CheckParm("-nomonsters") != 0;
+    state.d_main.respawnparm = M_CheckParm("-respawn") != 0;
+    state.d_main.fastparm = M_CheckParm("-fast") != 0;
+    state.d_main.devparm = M_CheckParm("-devparm") != 0;
     if M_CheckParm("-deathmatch") != 0 {
-        unsafe { game_state() }.g_game.deathmatch = 1 as i32;
+        state.g_game.deathmatch = 1 as i32;
     }
     if M_CheckParm("-altdeath") != 0 {
-        unsafe { game_state() }.g_game.deathmatch = 2 as i32;
+        state.g_game.deathmatch = 2 as i32;
     }
-    if unsafe { game_state() }.d_main.devparm {
+    if state.d_main.devparm {
         printf(D_DEVSTR.as_ptr());
     }
     M_SetConfigDir(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         ::core::ptr::null_mut::<::core::ffi::c_char>(),
     );
     p = M_CheckParm("-turbo");
     if p != 0 {
         let mut scale: i32 = 200 as i32;
-        if p < unsafe { game_state() }.m_argv.myargv.len() as i32 - 1 as i32 {
+        if p < state.m_argv.myargv.len() as i32 - 1 as i32 {
             scale = atoi(
-                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                     as *mut ::core::ffi::c_char,
             );
         }
@@ -1132,44 +1132,44 @@ pub unsafe fn D_DoomMain() {
             b"turbo scale: %i%%\n\0" as *const u8 as *const ::core::ffi::c_char,
             scale,
         );
-        unsafe { game_state() }.g_game.forwardmove[0 as i32 as usize] =
-            unsafe { game_state() }.g_game.forwardmove[0 as i32 as usize] * scale / 100 as i32;
-        unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] =
-            unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] * scale / 100 as i32;
-        unsafe { game_state() }.g_game.sidemove[0 as i32 as usize] =
-            unsafe { game_state() }.g_game.sidemove[0 as i32 as usize] * scale / 100 as i32;
-        unsafe { game_state() }.g_game.sidemove[1 as i32 as usize] =
-            unsafe { game_state() }.g_game.sidemove[1 as i32 as usize] * scale / 100 as i32;
+        state.g_game.forwardmove[0 as i32 as usize] =
+            state.g_game.forwardmove[0 as i32 as usize] * scale / 100 as i32;
+        state.g_game.forwardmove[1 as i32 as usize] =
+            state.g_game.forwardmove[1 as i32 as usize] * scale / 100 as i32;
+        state.g_game.sidemove[0 as i32 as usize] =
+            state.g_game.sidemove[0 as i32 as usize] * scale / 100 as i32;
+        state.g_game.sidemove[1 as i32 as usize] =
+            state.g_game.sidemove[1 as i32 as usize] * scale / 100 as i32;
     }
     printf(b"V_Init: allocate screens.\n\0" as *const u8 as *const ::core::ffi::c_char);
     printf(b"M_LoadDefaults: Load system defaults.\n\0" as *const u8 as *const ::core::ffi::c_char);
     M_SetConfigFilenames(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         b"default.cfg\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
         b"doomgenericdoom.cfg\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char,
     );
     D_BindVariables();
-    M_LoadDefaults(unsafe { &mut game_state().m_config });
+    M_LoadDefaults(&mut state.m_config);
     I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
-    unsafe { game_state() }.d_main.iwadfile = D_FindIWAD(
-        unsafe { &mut game_state().d_iwad },
+    state.d_main.iwadfile = D_FindIWAD(
+        &mut state.d_iwad,
         (1 as i32) << doom as i32
             | (1 as i32) << doom2 as i32
             | (1 as i32) << pack_tnt as i32
             | (1 as i32) << pack_plut as i32
             | (1 as i32) << pack_chex as i32
             | (1 as i32) << pack_hacx as i32,
-        &raw mut unsafe { game_state() }.doomstat.gamemission,
+        &raw mut state.doomstat.gamemission,
     );
-    if unsafe { game_state() }.d_main.iwadfile.is_null() {
+    if state.d_main.iwadfile.is_null() {
         I_Error(
             "Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n",
         );
     }
-    unsafe { game_state() }.doomstat.modifiedgame = false;
+    state.doomstat.modifiedgame = false;
     printf(b"W_Init: Init WADfiles.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    D_AddFile(unsafe { game_state() }.d_main.iwadfile);
+    D_AddFile(state.d_main.iwadfile);
     W_CheckCorrectIWAD(doom);
     D_IdentifyVersion();
     InitGameVersion();
@@ -1178,23 +1178,23 @@ pub unsafe fn D_DoomMain() {
             b"BFG Edition: Using workarounds as needed.\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
-        unsafe { game_state() }.d_main.bfgedition = true;
+        state.d_main.bfgedition = true;
     }
-    unsafe { game_state() }.doomstat.modifiedgame = W_ParseCommandLine();
+    state.doomstat.modifiedgame = W_ParseCommandLine();
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p == 0 {
         p = M_CheckParmWithArgs("-timedemo", 1 as i32);
     }
     if p != 0 {
         if M_StringEndsWith(
-            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+            state.m_argv.myargv[(p + 1 as i32) as usize]
                 .to_str()
                 .unwrap(),
             ".lmp",
         ) {
             M_StringCopy(
                 &raw mut file as *mut ::core::ffi::c_char,
-                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                     as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
             );
@@ -1203,15 +1203,15 @@ pub unsafe fn D_DoomMain() {
                 &raw mut file as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
                 b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
-                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                     as *mut ::core::ffi::c_char,
             );
         }
         if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
-                &raw mut (*unsafe { game_state() }.w_wad.lumpinfo.offset(
-                    unsafe { game_state() }
+                &raw mut (*state.w_wad.lumpinfo.offset(
+                    state
                         .w_wad
                         .numlumps
                         .wrapping_sub(1 as u32) as isize,
@@ -1222,7 +1222,7 @@ pub unsafe fn D_DoomMain() {
         } else {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
-                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                     as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
@@ -1240,11 +1240,11 @@ pub unsafe fn D_DoomMain() {
     );
     W_GenerateHashTable();
     D_SetGameDescription();
-    unsafe { game_state() }.d_main.savegamedir = M_GetSaveGameDir(
-        unsafe { &mut game_state().m_config },
-        D_SaveGameIWADName(unsafe { game_state() }.doomstat.gamemission),
+    state.d_main.savegamedir = M_GetSaveGameDir(
+        &mut state.m_config,
+        D_SaveGameIWADName(state.doomstat.gamemission),
     );
-    if unsafe { game_state() }.doomstat.modifiedgame {
+    if state.doomstat.modifiedgame {
         let mut name: [[::core::ffi::c_char; 8]; 23] = [
             ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m1\0\0\0\0"),
             ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m2\0\0\0\0"),
@@ -1271,10 +1271,10 @@ pub unsafe fn D_DoomMain() {
             ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"spida1d1"),
         ];
         let mut i: i32 = 0;
-        if unsafe { game_state() }.doomstat.gamemode as u32 == shareware as i32 as u32 {
+        if state.doomstat.gamemode as u32 == shareware as i32 as u32 {
             I_Error("\nYou cannot -file with the shareware version. Register!");
         }
-        if unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32 {
+        if state.doomstat.gamemode as u32 == registered as i32 as u32 {
             i = 0 as i32;
             while i < 23 as i32 {
                 if W_CheckNumForName(&wad_name8_to_string(
@@ -1295,7 +1295,7 @@ pub unsafe fn D_DoomMain() {
                 as *const u8 as *const ::core::ffi::c_char,
         );
     }
-    I_PrintStartupBanner(unsafe { game_state() }.doomstat.gamedescription);
+    I_PrintStartupBanner(state.doomstat.gamedescription);
     PrintDehackedBanners();
     if W_CheckNumForName("FREEDOOM") >= 0 as i32 && W_CheckNumForName("FREEDM") < 0 as i32 {
         printf(
@@ -1305,88 +1305,88 @@ pub unsafe fn D_DoomMain() {
         I_PrintDivider();
     }
     printf(b"I_Init: Setting up machine state.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    I_InitSound(unsafe { &mut game_state().i_sound }, true);
-    I_InitMusic(unsafe { &mut game_state().i_sound });
+    I_InitSound(&mut state.i_sound, true);
+    I_InitMusic(&mut state.i_sound);
     D_ConnectNetGame();
-    unsafe { game_state() }.d_main.startskill = sk_medium;
-    unsafe { game_state() }.d_main.startepisode = 1 as i32;
-    unsafe { game_state() }.d_main.startmap = 1 as i32;
-    unsafe { game_state() }.d_main.autostart = false;
+    state.d_main.startskill = sk_medium;
+    state.d_main.startepisode = 1 as i32;
+    state.d_main.startmap = 1 as i32;
+    state.d_main.autostart = false;
     p = M_CheckParmWithArgs("-skill", 1 as i32);
     if p != 0 {
-        unsafe { game_state() }.d_main.startskill = (unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+        state.d_main.startskill = (state.m_argv.myargv[(p + 1 as i32) as usize]
             .as_bytes()
             .first()
             .copied()
             .unwrap_or(0) as i32
             - '1' as i32) as skill_t;
-        unsafe { game_state() }.d_main.autostart = true;
+        state.d_main.autostart = true;
     }
     p = M_CheckParmWithArgs("-episode", 1 as i32);
     if p != 0 {
-        unsafe { game_state() }.d_main.startepisode = unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+        state.d_main.startepisode = state.m_argv.myargv[(p + 1 as i32) as usize]
             .as_bytes()
             .first()
             .copied()
             .unwrap_or(0) as i32
             - '0' as i32;
-        unsafe { game_state() }.d_main.startmap = 1 as i32;
-        unsafe { game_state() }.d_main.autostart = true;
+        state.d_main.startmap = 1 as i32;
+        state.d_main.autostart = true;
     }
-    unsafe { game_state() }.g_game.timelimit = 0 as i32;
+    state.g_game.timelimit = 0 as i32;
     p = M_CheckParmWithArgs("-timer", 1 as i32);
     if p != 0 {
-        unsafe { game_state() }.g_game.timelimit = atoi(
-            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+        state.g_game.timelimit = atoi(
+            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
     }
     p = M_CheckParm("-avg");
     if p != 0 {
-        unsafe { game_state() }.g_game.timelimit = 20 as i32;
+        state.g_game.timelimit = 20 as i32;
     }
     p = M_CheckParmWithArgs("-warp", 1 as i32);
     if p != 0 {
-        if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-            unsafe { game_state() }.d_main.startmap = atoi(
-                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+        if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+            state.d_main.startmap = atoi(
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                     as *mut ::core::ffi::c_char,
             );
         } else {
-            unsafe { game_state() }.d_main.startepisode = unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+            state.d_main.startepisode = state.m_argv.myargv[(p + 1 as i32) as usize]
                 .as_bytes()
                 .first()
                 .copied()
                 .unwrap_or(0) as i32
                 - '0' as i32;
-            if (p + 2 as i32) < unsafe { game_state() }.m_argv.myargv.len() as i32 {
-                unsafe { game_state() }.d_main.startmap = unsafe { game_state() }.m_argv.myargv[(p + 2 as i32) as usize]
+            if (p + 2 as i32) < state.m_argv.myargv.len() as i32 {
+                state.d_main.startmap = state.m_argv.myargv[(p + 2 as i32) as usize]
                     .as_bytes()
                     .first()
                     .copied()
                     .unwrap_or(0) as i32
                     - '0' as i32;
             } else {
-                unsafe { game_state() }.d_main.startmap = 1 as i32;
+                state.d_main.startmap = 1 as i32;
             }
         }
-        unsafe { game_state() }.d_main.autostart = true;
+        state.d_main.autostart = true;
     }
     p = M_CheckParm("-testcontrols");
     if p > 0 as i32 {
-        unsafe { game_state() }.d_main.startepisode = 1 as i32;
-        unsafe { game_state() }.d_main.startmap = 1 as i32;
-        unsafe { game_state() }.d_main.autostart = true;
-        unsafe { game_state() }.g_game.testcontrols = true;
+        state.d_main.startepisode = 1 as i32;
+        state.d_main.startmap = 1 as i32;
+        state.d_main.autostart = true;
+        state.g_game.testcontrols = true;
     }
     p = M_CheckParmWithArgs("-loadgame", 1 as i32);
     if p != 0 {
-        unsafe { game_state() }.d_main.startloadgame = atoi(
-            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+        state.d_main.startloadgame = atoi(
+            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
     } else {
-        unsafe { game_state() }.d_main.startloadgame = -(1 as i32);
+        state.d_main.startloadgame = -(1 as i32);
     }
     printf(b"M_Init: Init miscellaneous info.\n\0" as *const u8 as *const ::core::ffi::c_char);
     M_Init();
@@ -1396,9 +1396,9 @@ pub unsafe fn D_DoomMain() {
     P_Init();
     printf(b"S_Init: Setting up sound.\n\0" as *const u8 as *const ::core::ffi::c_char);
     S_Init(
-        unsafe { &mut game_state().sounds },
-        unsafe { game_state() }.s_sound.sfxVolume * 8 as i32,
-        unsafe { game_state() }.s_sound.musicVolume * 8 as i32,
+        &mut state.sounds,
+        state.s_sound.sfxVolume * 8 as i32,
+        state.s_sound.musicVolume * 8 as i32,
     );
     printf(
         b"D_CheckNetGame: Checking network game status.\n\0" as *const u8
@@ -1410,10 +1410,10 @@ pub unsafe fn D_DoomMain() {
     HU_Init();
     printf(b"ST_Init: Init status bar.\n\0" as *const u8 as *const ::core::ffi::c_char);
     ST_Init();
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32
         && W_CheckNumForName("map01") < 0 as i32
     {
-        unsafe { game_state() }.d_main.storedemo = true;
+        state.d_main.storedemo = true;
     }
     if M_CheckParmWithArgs("-statdump", 1 as i32) != 0 {
         I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true);
@@ -1422,14 +1422,14 @@ pub unsafe fn D_DoomMain() {
     p = M_CheckParmWithArgs("-record", 1 as i32);
     if p != 0 {
         G_RecordDemo(
-            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
-        unsafe { game_state() }.d_main.autostart = true;
+        state.d_main.autostart = true;
     }
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p != 0 {
-        unsafe { game_state() }.g_game.singledemo = true;
+        state.g_game.singledemo = true;
         G_DeferedPlayDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop();
         return;
@@ -1440,17 +1440,17 @@ pub unsafe fn D_DoomMain() {
         D_DoomLoop();
         return;
     }
-    if unsafe { game_state() }.d_main.startloadgame >= 0 as i32 {
+    if state.d_main.startloadgame >= 0 as i32 {
         M_StringCopy(
             &raw mut file as *mut ::core::ffi::c_char,
-            P_SaveGameFile(unsafe { game_state() }.d_main.startloadgame),
+            P_SaveGameFile(state.d_main.startloadgame),
             ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
         );
         G_LoadGame(&raw mut file as *mut ::core::ffi::c_char);
     }
-    if unsafe { game_state() }.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
-        if unsafe { game_state() }.d_main.autostart || unsafe { game_state() }.g_game.netgame {
-            G_InitNew(unsafe { game_state() }.d_main.startskill, unsafe { game_state() }.d_main.startepisode, unsafe { game_state() }.d_main.startmap);
+    if state.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
+        if state.d_main.autostart || state.g_game.netgame {
+            G_InitNew(state.d_main.startskill, state.d_main.startepisode, state.d_main.startmap);
         } else {
             D_StartTitle();
         }
