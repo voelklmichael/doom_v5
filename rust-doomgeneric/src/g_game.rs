@@ -431,60 +431,50 @@ pub unsafe fn G_CmdChecksum(mut cmd: *mut ticcmd_t) -> i32 {
     }
     return sum;
 }
-unsafe fn WeaponSelectable(mut weapon: weapontype_t) -> bool {
+unsafe fn WeaponSelectable(state: &mut GameState, mut weapon: weapontype_t) -> bool {
     if weapon as u32 == wp_supershotgun as u32
-        && (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as u32 {
+        && (if state.doomstat.gamemission as u32 == pack_chex as u32 {
             doom as u32
         } else {
-            (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as u32 {
+            (if state.doomstat.gamemission as u32 == pack_hacx as u32 {
                 doom2 as u32
             } else {
-                unsafe { game_state() }.doomstat.gamemission as u32
+                state.doomstat.gamemission as u32
             })
         }) == doom as u32
     {
         return false;
     }
     if (weapon as u32 == wp_plasma as u32 || weapon as u32 == wp_bfg as u32)
-        && unsafe { game_state() }.doomstat.gamemission as u32 == doom as u32
-        && unsafe { game_state() }.doomstat.gamemode as u32 == shareware as u32
+        && state.doomstat.gamemission as u32 == doom as u32
+        && state.doomstat.gamemode as u32 == shareware as u32
     {
         return false;
     }
-    if !unsafe { game_state() }.g_game.players
-        [unsafe { game_state() }.g_game.consoleplayer as usize]
-        .weaponowned[weapon as usize]
-    {
+    if !state.g_game.players[state.g_game.consoleplayer as usize].weaponowned[weapon as usize] {
         return false;
     }
     if weapon as u32 == wp_fist as u32
-        && unsafe { game_state() }.g_game.players
-            [unsafe { game_state() }.g_game.consoleplayer as usize]
-            .weaponowned[wp_chainsaw as i32 as usize]
-        && unsafe { game_state() }.g_game.players
-            [unsafe { game_state() }.g_game.consoleplayer as usize]
-            .powers[pw_strength as i32 as usize]
+        && state.g_game.players[state.g_game.consoleplayer as usize].weaponowned
+            [wp_chainsaw as i32 as usize]
+        && state.g_game.players[state.g_game.consoleplayer as usize].powers
+            [pw_strength as i32 as usize]
             == 0
     {
         return false;
     }
     return true;
 }
-unsafe fn G_NextWeapon(mut direction: i32) -> i32 {
+unsafe fn G_NextWeapon(state: &mut GameState, mut direction: i32) -> i32 {
     let mut weapon: weapontype_t = wp_fist;
     let mut start_i: i32 = 0;
     let mut i: i32 = 0;
-    if unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
-        .pendingweapon as u32
+    if state.g_game.players[state.g_game.consoleplayer as usize].pendingweapon as u32
         == wp_nochange as u32
     {
-        weapon = unsafe { game_state() }.g_game.players
-            [unsafe { game_state() }.g_game.consoleplayer as usize]
-            .readyweapon;
+        weapon = state.g_game.players[state.g_game.consoleplayer as usize].readyweapon;
     } else {
-        weapon = unsafe { game_state() }.g_game.players
-            [unsafe { game_state() }.g_game.consoleplayer as usize]
-            .pendingweapon;
+        weapon = state.g_game.players[state.g_game.consoleplayer as usize].pendingweapon;
     }
     i = 0 as i32;
     while (i as usize)
@@ -508,7 +498,7 @@ unsafe fn G_NextWeapon(mut direction: i32) -> i32 {
                 (::core::mem::size_of::<[C2RustUnnamed_5; 9]>() as usize)
                     .wrapping_div(::core::mem::size_of::<C2RustUnnamed_5>() as usize),
             ) as i32;
-        if !(i != start_i && !WeaponSelectable(weapon_order_table[i as usize].weapon)) {
+        if !(i != start_i && !WeaponSelectable(state, weapon_order_table[i as usize].weapon)) {
             break;
         }
     }
@@ -700,7 +690,8 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
     if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as u32
         && unsafe { game_state() }.g_game.next_weapon != 0 as i32
     {
-        i = G_NextWeapon(unsafe { game_state() }.g_game.next_weapon);
+        let next_weapon = unsafe { game_state() }.g_game.next_weapon;
+        i = G_NextWeapon(unsafe { game_state() }, next_weapon);
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_CHANGE as i32) as byte;
         (*cmd).buttons = ((*cmd).buttons as i32 | i << BT_WEAPONSHIFT as i32) as byte;
     } else {
