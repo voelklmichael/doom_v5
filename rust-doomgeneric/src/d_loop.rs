@@ -133,15 +133,15 @@ pub const BACKUPTICS: i32 = 128;
 static localplayer: i32 = 0;
 #[no_mangle]
 pub static offsetms: fixed_t = 0;
-unsafe fn GetAdjustedTime() -> i32 {
+unsafe fn GetAdjustedTime(state: &mut GameState) -> i32 {
     let mut time_ms: i32 = 0;
-    time_ms = I_GetTimeMS(unsafe { &mut game_state().i_timer });
-    if unsafe { game_state() }.d_loop.new_sync {
+    time_ms = I_GetTimeMS(&mut state.i_timer);
+    if state.d_loop.new_sync {
         time_ms += offsetms as i32 / FRACUNIT;
     }
     return time_ms * TICRATE / 1000 as i32;
 }
-unsafe fn BuildNewTic() -> bool {
+unsafe fn BuildNewTic(state: &mut GameState) -> bool {
     let mut gameticdiv: i32 = 0;
     let mut cmd: ticcmd_t = ticcmd_t {
         forwardmove: 0,
@@ -155,29 +155,29 @@ unsafe fn BuildNewTic() -> bool {
         lookfly: 0,
         arti: 0,
     };
-    gameticdiv = unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup;
-    I_StartTic();
+    gameticdiv = state.d_loop.gametic / state.d_loop.ticdup;
+    I_StartTic(state);
     ::core::mem::transmute::<_, fn()>(
-        (*unsafe { game_state() }.d_loop.loop_interface)
+        (*state.d_loop.loop_interface)
             .ProcessEvents
             .expect("non-null function pointer"),
     )();
     ::core::mem::transmute::<_, fn()>(
-        (*unsafe { game_state() }.d_loop.loop_interface)
+        (*state.d_loop.loop_interface)
             .RunMenu
             .expect("non-null function pointer"),
     )();
     if drone {
         return false;
     }
-    if unsafe { game_state() }.d_loop.new_sync {
-        if !net_client_connected && unsafe { game_state() }.d_loop.maketic - gameticdiv > 2 as i32 {
+    if state.d_loop.new_sync {
+        if !net_client_connected && state.d_loop.maketic - gameticdiv > 2 as i32 {
             return false;
         }
-        if unsafe { game_state() }.d_loop.maketic - gameticdiv > 8 as i32 {
+        if state.d_loop.maketic - gameticdiv > 8 as i32 {
             return false;
         }
-    } else if unsafe { game_state() }.d_loop.maketic - gameticdiv >= 5 as i32 {
+    } else if state.d_loop.maketic - gameticdiv >= 5 as i32 {
         return false;
     }
     memset(
@@ -185,40 +185,36 @@ unsafe fn BuildNewTic() -> bool {
         0 as i32,
         ::core::mem::size_of::<ticcmd_t>() as size_t,
     );
-    (*unsafe { game_state() }.d_loop.loop_interface)
+    (*state.d_loop.loop_interface)
         .BuildTiccmd
-        .expect("non-null function pointer")(
-        &raw mut cmd, unsafe { game_state() }.d_loop.maketic
-    );
-    unsafe { game_state() }.d_loop.ticdata
-        [(unsafe { game_state() }.d_loop.maketic % BACKUPTICS) as usize]
-        .cmds[localplayer as usize] = cmd;
-    unsafe { game_state() }.d_loop.ticdata
-        [(unsafe { game_state() }.d_loop.maketic % BACKUPTICS) as usize]
-        .ingame[localplayer as usize] = true_0 as boolean;
-    unsafe { game_state() }.d_loop.maketic += 1;
+        .expect("non-null function pointer")(&raw mut cmd, state.d_loop.maketic);
+    state.d_loop.ticdata[(state.d_loop.maketic % BACKUPTICS) as usize].cmds[localplayer as usize] =
+        cmd;
+    state.d_loop.ticdata[(state.d_loop.maketic % BACKUPTICS) as usize].ingame
+        [localplayer as usize] = true_0 as boolean;
+    state.d_loop.maketic += 1;
     return true;
 }
-pub unsafe fn NetUpdate() {
+pub unsafe fn NetUpdate(state: &mut GameState) {
     let mut nowtime: i32 = 0;
     let mut newtics: i32 = 0;
     let mut i: i32 = 0;
-    if unsafe { game_state() }.d_loop.singletics {
+    if state.d_loop.singletics {
         return;
     }
-    nowtime = GetAdjustedTime() / unsafe { game_state() }.d_loop.ticdup;
-    newtics = nowtime - unsafe { game_state() }.d_loop.lasttime;
-    unsafe { game_state() }.d_loop.lasttime = nowtime;
-    if unsafe { game_state() }.d_loop.skiptics <= newtics {
-        newtics -= unsafe { game_state() }.d_loop.skiptics;
-        unsafe { game_state() }.d_loop.skiptics = 0 as i32;
+    nowtime = GetAdjustedTime(state) / state.d_loop.ticdup;
+    newtics = nowtime - state.d_loop.lasttime;
+    state.d_loop.lasttime = nowtime;
+    if state.d_loop.skiptics <= newtics {
+        newtics -= state.d_loop.skiptics;
+        state.d_loop.skiptics = 0 as i32;
     } else {
-        unsafe { game_state() }.d_loop.skiptics -= newtics;
+        state.d_loop.skiptics -= newtics;
         newtics = 0 as i32;
     }
     i = 0 as i32;
     while i < newtics {
-        if !BuildNewTic() {
+        if !BuildNewTic(state) {
             break;
         }
         i += 1;
@@ -251,7 +247,7 @@ pub unsafe fn D_ReceiveTic(mut ticcmds: *mut ticcmd_t, mut players_mask: *mut bo
     unsafe { game_state() }.d_loop.recvtic += 1;
 }
 pub unsafe fn D_StartGameLoop(state: &mut GameState) {
-    state.d_loop.lasttime = GetAdjustedTime() / state.d_loop.ticdup;
+    state.d_loop.lasttime = GetAdjustedTime(state) / state.d_loop.ticdup;
 }
 pub unsafe fn D_StartNetGame(
     mut settings: *mut net_gamesettings_t,
@@ -363,9 +359,9 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
     realtics = entertic - state.d_loop.try_run_tics_oldentertics;
     state.d_loop.try_run_tics_oldentertics = entertic;
     if state.d_loop.singletics {
-        BuildNewTic();
+        BuildNewTic(state);
     } else {
-        NetUpdate();
+        NetUpdate(state);
     }
     lowtic = GetLowTic();
     availabletics =
@@ -395,7 +391,7 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
             < state.d_loop.gametic / state.d_loop.ticdup
                 + counts
     {
-        NetUpdate();
+        NetUpdate(state);
         lowtic = GetLowTic();
         if lowtic < state.d_loop.gametic / state.d_loop.ticdup {
             I_Error("TryRunTics: lowtic < gametic");
@@ -448,7 +444,7 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
             TicdupSquash(set);
             i += 1;
         }
-        NetUpdate();
+        NetUpdate(state);
     }
 }
 pub unsafe fn D_RegisterLoopCallbacks(mut i: *mut loop_interface_t) {

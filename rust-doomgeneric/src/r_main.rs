@@ -550,13 +550,13 @@ pub unsafe fn R_RenderPlayerView(state: &mut GameState, mut player: *mut player_
     R_ClearDrawSegs();
     R_ClearPlanes();
     R_ClearSprites();
-    NetUpdate();
+    NetUpdate(state);
     R_RenderBSPNode(state.p_setup.numnodes - 1 as i32);
-    NetUpdate();
+    NetUpdate(state);
     R_DrawPlanes();
-    NetUpdate();
+    NetUpdate(state);
     R_DrawMasked();
-    NetUpdate();
+    NetUpdate(state);
 }
 pub const LIGHTLEVELS: i32 = 16;
 pub const MAXLIGHTSCALE: i32 = 48;
