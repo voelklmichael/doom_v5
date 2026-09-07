@@ -577,7 +577,7 @@ pub unsafe fn R_FillBackScreen() {
         unsafe { game_state() }.r_draw.viewwindowy + unsafe { game_state() }.r_draw.viewheight,
         W_CacheLumpName("brdr_br", PU_CACHE as i32) as *mut patch_t,
     );
-    V_RestoreBuffer(unsafe { &mut game_state().v_video });
+    V_RestoreBuffer(unsafe { game_state() });
 }
 pub unsafe fn R_VideoErase(mut ofs: u32, mut count: i32) {
     if !unsafe { game_state() }.r_draw.background_buffer.is_null() {
