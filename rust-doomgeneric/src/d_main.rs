@@ -306,7 +306,7 @@ pub unsafe fn D_ProcessEvents() {
         if M_Responder(&mut ev) {
             continue;
         }
-        G_Responder(ev);
+        G_Responder(unsafe { game_state() }, ev);
     }
 }
 pub unsafe fn D_Display(state: &mut GameState) {

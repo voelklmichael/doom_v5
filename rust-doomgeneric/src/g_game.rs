@@ -921,74 +921,74 @@ pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
             as *mut ::core::ffi::c_char;
     }
 }
-unsafe fn SetJoyButtons(mut buttons_mask: u32) {
+unsafe fn SetJoyButtons(state: &mut GameState, mut buttons_mask: u32) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAX_JOY_BUTTONS {
         let mut button_on: i32 = (buttons_mask & ((1 as i32) << i) as u32 != 0 as u32) as i32;
-        if *unsafe { game_state() }.g_game.joybuttons.offset(i as isize) == 0 && button_on != 0 {
-            if i == unsafe { game_state() }.m_controls.joybprevweapon {
-                unsafe { game_state() }.g_game.next_weapon = -(1 as i32);
-            } else if i == unsafe { game_state() }.m_controls.joybnextweapon {
-                unsafe { game_state() }.g_game.next_weapon = 1 as i32;
+        if *state.g_game.joybuttons.offset(i as isize) == 0 && button_on != 0 {
+            if i == state.m_controls.joybprevweapon {
+                state.g_game.next_weapon = -(1 as i32);
+            } else if i == state.m_controls.joybnextweapon {
+                state.g_game.next_weapon = 1 as i32;
             }
         }
-        *unsafe { game_state() }.g_game.joybuttons.offset(i as isize) = button_on as boolean;
+        *state.g_game.joybuttons.offset(i as isize) = button_on as boolean;
         i += 1;
     }
 }
-unsafe fn SetMouseButtons(mut buttons_mask: u32) {
+unsafe fn SetMouseButtons(state: &mut GameState, mut buttons_mask: u32) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAX_MOUSE_BUTTONS {
         let mut button_on: u32 = (buttons_mask & ((1 as i32) << i) as u32 != 0 as u32) as u32;
-        if *unsafe { game_state() }
+        if *state
             .g_game
             .mousebuttons
             .offset(i as isize)
             == 0
             && button_on != 0
         {
-            if i == unsafe { game_state() }.m_controls.mousebprevweapon {
-                unsafe { game_state() }.g_game.next_weapon = -(1 as i32);
-            } else if i == unsafe { game_state() }.m_controls.mousebnextweapon {
-                unsafe { game_state() }.g_game.next_weapon = 1 as i32;
+            if i == state.m_controls.mousebprevweapon {
+                state.g_game.next_weapon = -(1 as i32);
+            } else if i == state.m_controls.mousebnextweapon {
+                state.g_game.next_weapon = 1 as i32;
             }
         }
-        *unsafe { game_state() }
+        *state
             .g_game
             .mousebuttons
             .offset(i as isize) = button_on as boolean;
         i += 1;
     }
 }
-pub unsafe fn G_Responder(mut ev: event_t) -> bool {
-    if unsafe { game_state() }.g_game.gamestate == GS_LEVEL
+pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
+    if state.g_game.gamestate == GS_LEVEL
         && ev.type_0 as u32 == ev_keydown as u32
-        && ev.data1 == unsafe { game_state() }.m_controls.key_spy
-        && (unsafe { game_state() }.g_game.singledemo
-            || unsafe { game_state() }.g_game.deathmatch == 0)
+        && ev.data1 == state.m_controls.key_spy
+        && (state.g_game.singledemo
+            || state.g_game.deathmatch == 0)
     {
         loop {
-            unsafe { game_state() }.g_game.displayplayer += 1;
-            if unsafe { game_state() }.g_game.displayplayer == MAXPLAYERS {
-                unsafe { game_state() }.g_game.displayplayer = 0 as i32;
+            state.g_game.displayplayer += 1;
+            if state.g_game.displayplayer == MAXPLAYERS {
+                state.g_game.displayplayer = 0 as i32;
             }
-            if !(unsafe { game_state() }.g_game.playeringame
-                [unsafe { game_state() }.g_game.displayplayer as usize]
+            if !(state.g_game.playeringame
+                [state.g_game.displayplayer as usize]
                 == 0
-                && unsafe { game_state() }.g_game.displayplayer
-                    != unsafe { game_state() }.g_game.consoleplayer)
+                && state.g_game.displayplayer
+                    != state.g_game.consoleplayer)
             {
                 break;
             }
         }
         return true;
     }
-    if unsafe { game_state() }.g_game.gameaction == ga_nothing
-        && !unsafe { game_state() }.g_game.singledemo
-        && (unsafe { game_state() }.g_game.demoplayback
-            || unsafe { game_state() }.g_game.gamestate == GS_DEMOSCREEN)
+    if state.g_game.gameaction == ga_nothing
+        && !state.g_game.singledemo
+        && (state.g_game.demoplayback
+            || state.g_game.gamestate == GS_DEMOSCREEN)
     {
         if ev.type_0 == ev_keydown
             || ev.type_0 == ev_mouse && ev.data1 != 0
@@ -999,7 +999,7 @@ pub unsafe fn G_Responder(mut ev: event_t) -> bool {
         }
         return false;
     }
-    if unsafe { game_state() }.g_game.gamestate == GS_LEVEL {
+    if state.g_game.gamestate == GS_LEVEL {
         if HU_Responder(&ev) {
             return true;
         }
@@ -1010,49 +1010,49 @@ pub unsafe fn G_Responder(mut ev: event_t) -> bool {
             return true;
         }
     }
-    if unsafe { game_state() }.g_game.gamestate == GS_FINALE {
-        if F_Responder(unsafe { game_state() }, &ev) {
+    if state.g_game.gamestate == GS_FINALE {
+        if F_Responder(state, &ev) {
             return true;
         }
     }
-    if unsafe { game_state() }.g_game.testcontrols && ev.type_0 == ev_mouse {
-        unsafe { game_state() }.g_game.testcontrols_mousespeed = (ev.data2).abs();
+    if state.g_game.testcontrols && ev.type_0 == ev_mouse {
+        state.g_game.testcontrols_mousespeed = (ev.data2).abs();
     }
-    if ev.type_0 == ev_keydown && ev.data1 == unsafe { game_state() }.m_controls.key_prevweapon {
-        unsafe { game_state() }.g_game.next_weapon = -1;
+    if ev.type_0 == ev_keydown && ev.data1 == state.m_controls.key_prevweapon {
+        state.g_game.next_weapon = -1;
     } else if ev.type_0 == ev_keydown
-        && ev.data1 == unsafe { game_state() }.m_controls.key_nextweapon
+        && ev.data1 == state.m_controls.key_nextweapon
     {
-        unsafe { game_state() }.g_game.next_weapon = 1;
+        state.g_game.next_weapon = 1;
     }
     match ev.type_0 as u32 {
         0 => {
-            if ev.data1 == unsafe { game_state() }.m_controls.key_pause {
-                unsafe { game_state() }.g_game.sendpause = true;
+            if ev.data1 == state.m_controls.key_pause {
+                state.g_game.sendpause = true;
             } else if ev.data1 < NUMKEYS {
-                unsafe { game_state() }.g_game.gamekeydown[ev.data1 as usize] = true_0 as boolean;
+                state.g_game.gamekeydown[ev.data1 as usize] = true_0 as boolean;
             }
             return true;
         }
         1 => {
             if ev.data1 < NUMKEYS {
-                unsafe { game_state() }.g_game.gamekeydown[ev.data1 as usize] = false_0 as boolean;
+                state.g_game.gamekeydown[ev.data1 as usize] = false_0 as boolean;
             }
             return false;
         }
         2 => {
-            SetMouseButtons(ev.data1 as u32);
-            unsafe { game_state() }.g_game.mousex =
-                ev.data2 * (unsafe { game_state() }.m_menu.mouseSensitivity + 5 as i32) / 10 as i32;
-            unsafe { game_state() }.g_game.mousey =
-                ev.data3 * (unsafe { game_state() }.m_menu.mouseSensitivity + 5 as i32) / 10 as i32;
+            SetMouseButtons(state, ev.data1 as u32);
+            state.g_game.mousex =
+                ev.data2 * (state.m_menu.mouseSensitivity + 5 as i32) / 10 as i32;
+            state.g_game.mousey =
+                ev.data3 * (state.m_menu.mouseSensitivity + 5 as i32) / 10 as i32;
             return true;
         }
         3 => {
-            SetJoyButtons(ev.data1 as u32);
-            unsafe { game_state() }.g_game.joyxmove = ev.data2;
-            unsafe { game_state() }.g_game.joyymove = ev.data3;
-            unsafe { game_state() }.g_game.joystrafemove = ev.data4;
+            SetJoyButtons(state, ev.data1 as u32);
+            state.g_game.joyxmove = ev.data2;
+            state.g_game.joyymove = ev.data3;
+            state.g_game.joystrafemove = ev.data4;
             return true;
         }
         _ => {}
