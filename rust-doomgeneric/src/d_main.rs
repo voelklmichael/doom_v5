@@ -554,7 +554,7 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
 #[no_mangle]
 pub unsafe extern "C" fn doomgeneric_Tick(state: *mut ::core::ffi::c_void) {
     let state = unsafe { &mut *(state as *mut GameState) };
-    TryRunTics();
+    TryRunTics(state);
     S_UpdateSounds(state.g_game.players[state.g_game.consoleplayer as usize].mo);
     if state.i_video.screenvisible {
         D_Display();
@@ -575,7 +575,7 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
         G_BeginRecording();
     }
     state.d_main.main_loop_started = true;
-    TryRunTics();
+    TryRunTics(state);
     I_SetWindowTitle(state.doomstat.gamedescription);
     I_SetGrabMouseCallback(Some(D_GrabMouseCallback as unsafe fn() -> boolean));
     I_InitGraphics();
