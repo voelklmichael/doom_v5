@@ -507,8 +507,8 @@ pub unsafe fn A_KeenDie(mut mo: *mut mobj_t) {
         sidenum: [0; 2],
         bbox: [0; 4],
         slopetype: ST_HORIZONTAL,
-        frontsector: ::core::ptr::null_mut::<sector_t>(),
-        backsector: ::core::ptr::null_mut::<sector_t>(),
+        frontsector: None,
+        backsector: None,
         validcount: 0,
         specialdata: ::core::ptr::null_mut::<::core::ffi::c_void>(),
     };
@@ -1426,8 +1426,8 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
         sidenum: [0; 2],
         bbox: [0; 4],
         slopetype: ST_HORIZONTAL,
-        frontsector: ::core::ptr::null_mut::<sector_t>(),
-        backsector: ::core::ptr::null_mut::<sector_t>(),
+        frontsector: None,
+        backsector: None,
         validcount: 0,
         specialdata: ::core::ptr::null_mut::<::core::ffi::c_void>(),
     };

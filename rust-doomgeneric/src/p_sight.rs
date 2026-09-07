@@ -136,14 +136,14 @@ pub unsafe fn P_CrossSubsector(state: &mut PSightState, mut num: i32) -> bool {
                 s1 = P_DivlineSide(state.strace.x, state.strace.y, &raw mut divl);
                 s2 = P_DivlineSide(state.t2x, state.t2y, &raw mut divl);
                 if !(s1 == s2) {
-                    if (*line).backsector.is_null() {
+                    if (*line).backsector.is_none() {
                         return false;
                     }
                     if (*line).flags as i32 & ML_TWOSIDED == 0 {
                         return false;
                     }
-                    front = (*seg).frontsector;
-                    back = (*seg).backsector;
+                    front = unsafe { game_state() }.p_setup.sector_mut((*seg).frontsector.unwrap());
+                    back = unsafe { game_state() }.p_setup.sector_mut((*seg).backsector.unwrap());
                     if !((*front).floorheight == (*back).floorheight
                         && (*front).ceilingheight == (*back).ceilingheight)
                     {

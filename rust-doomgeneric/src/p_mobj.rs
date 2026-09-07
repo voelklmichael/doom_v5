@@ -525,8 +525,8 @@ pub struct line_s {
     pub sidenum: [i16; 2],
     pub bbox: [fixed_t; 4],
     pub slopetype: slopetype_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
+    pub frontsector: Option<SectorId>,
+    pub backsector: Option<SectorId>,
     pub validcount: i32,
     pub specialdata: *mut ::core::ffi::c_void,
 }
@@ -647,10 +647,13 @@ pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
                 P_SlideMove(mo);
             } else if (*mo).flags & MF_MISSILE as i32 != 0 {
                 if !unsafe { game_state() }.p_map.ceilingline.is_null()
-                    && !(*unsafe { game_state() }.p_map.ceilingline)
+                    && (*unsafe { game_state() }.p_map.ceilingline)
                         .backsector
-                        .is_null()
-                    && (*(*unsafe { game_state() }.p_map.ceilingline).backsector).ceilingpic as i32
+                        .is_some()
+                    && (*unsafe { game_state() }.p_setup.sector_mut(
+                        (*unsafe { game_state() }.p_map.ceilingline).backsector.unwrap(),
+                    ))
+                    .ceilingpic as i32
                         == unsafe { game_state() }.r_sky.skyflatnum
                 {
                     P_RemoveMobj(state, mo);

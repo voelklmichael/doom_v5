@@ -121,8 +121,8 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
     unsafe { game_state() }.r_bsp.curline = (*ds).curline;
     unsafe { game_state() }.r_bsp.frontsector = (*unsafe { game_state() }.r_bsp.curline).frontsector;
     unsafe { game_state() }.r_bsp.backsector = (*unsafe { game_state() }.r_bsp.curline).backsector;
-    texnum = *unsafe { game_state() }.r_data.texturetranslation.offset((*(*unsafe { game_state() }.r_bsp.curline).sidedef).midtexture as isize);
-    lightnum = ((*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;
+    texnum = *unsafe { game_state() }.r_data.texturetranslation.offset((*unsafe { game_state() }.p_setup.side_mut((*unsafe { game_state() }.r_bsp.curline).sidedef)).midtexture as isize);
+    lightnum = ((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32 >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;
     if (*(*unsafe { game_state() }.r_bsp.curline).v1).y == (*(*unsafe { game_state() }.r_bsp.curline).v2).y {
         lightnum -= 1;
     } else if (*(*unsafe { game_state() }.r_bsp.curline).v1).x == (*(*unsafe { game_state() }.r_bsp.curline).v2).x {
@@ -146,21 +146,21 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
     unsafe { game_state() }.r_things.mfloorclip = (*ds).sprbottomclip;
     unsafe { game_state() }.r_things.mceilingclip = (*ds).sprtopclip;
     if (*(*unsafe { game_state() }.r_bsp.curline).linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
-        unsafe { game_state() }.r_draw.dc_texturemid = if (*unsafe { game_state() }.r_bsp.frontsector).floorheight > (*unsafe { game_state() }.r_bsp.backsector).floorheight {
-            (*unsafe { game_state() }.r_bsp.frontsector).floorheight
+        unsafe { game_state() }.r_draw.dc_texturemid = if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight > (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight {
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight
         } else {
-            (*unsafe { game_state() }.r_bsp.backsector).floorheight
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight
         };
         unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_draw.dc_texturemid + *unsafe { game_state() }.r_data.textureheight.offset(texnum as isize) - unsafe { game_state() }.r_main.viewz;
     } else {
-        unsafe { game_state() }.r_draw.dc_texturemid = if (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight < (*unsafe { game_state() }.r_bsp.backsector).ceilingheight {
-            (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight
+        unsafe { game_state() }.r_draw.dc_texturemid = if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight < (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight {
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight
         } else {
-            (*unsafe { game_state() }.r_bsp.backsector).ceilingheight
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight
         };
         unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_draw.dc_texturemid - unsafe { game_state() }.r_main.viewz;
     }
-    unsafe { game_state() }.r_draw.dc_texturemid += (*(*unsafe { game_state() }.r_bsp.curline).sidedef).rowoffset;
+    unsafe { game_state() }.r_draw.dc_texturemid += (*unsafe { game_state() }.p_setup.side_mut((*unsafe { game_state() }.r_bsp.curline).sidedef)).rowoffset;
     if !unsafe { game_state() }.r_main.fixedcolormap.is_null() {
         unsafe { game_state() }.r_draw.dc_colormap = unsafe { game_state() }.r_main.fixedcolormap;
     }
@@ -342,25 +342,25 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
     } else {
         (*unsafe { game_state() }.r_bsp.ds_p).scale2 = (*unsafe { game_state() }.r_bsp.ds_p).scale1;
     }
-    unsafe { game_state() }.r_segs.worldtop = ((*unsafe { game_state() }.r_bsp.frontsector).ceilingheight - unsafe { game_state() }.r_main.viewz) as i32;
-    unsafe { game_state() }.r_segs.worldbottom = ((*unsafe { game_state() }.r_bsp.frontsector).floorheight - unsafe { game_state() }.r_main.viewz) as i32;
+    unsafe { game_state() }.r_segs.worldtop = ((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight - unsafe { game_state() }.r_main.viewz) as i32;
+    unsafe { game_state() }.r_segs.worldbottom = ((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight - unsafe { game_state() }.r_main.viewz) as i32;
     unsafe { game_state() }.r_segs.maskedtexture = false;
     unsafe { game_state() }.r_segs.bottomtexture = unsafe { game_state() }.r_segs.maskedtexture as i32;
     unsafe { game_state() }.r_segs.toptexture = unsafe { game_state() }.r_segs.bottomtexture;
     unsafe { game_state() }.r_segs.midtexture = unsafe { game_state() }.r_segs.toptexture;
     (*unsafe { game_state() }.r_bsp.ds_p).maskedtexturecol = ::core::ptr::null_mut::<i16>();
-    if unsafe { game_state() }.r_bsp.backsector.is_null() {
-        unsafe { game_state() }.r_segs.midtexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*unsafe { game_state() }.r_bsp.sidedef).midtexture as isize);
+    if unsafe { game_state() }.r_bsp.backsector.is_none() {
+        unsafe { game_state() }.r_segs.midtexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).midtexture as isize);
         unsafe { game_state() }.r_segs.markceiling = true;
         unsafe { game_state() }.r_segs.markfloor = unsafe { game_state() }.r_segs.markceiling;
         if (*unsafe { game_state() }.r_bsp.linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
             vtop =
-                (*unsafe { game_state() }.r_bsp.frontsector).floorheight + *unsafe { game_state() }.r_data.textureheight.offset((*unsafe { game_state() }.r_bsp.sidedef).midtexture as isize);
+                (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight + *unsafe { game_state() }.r_data.textureheight.offset((*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).midtexture as isize);
             unsafe { game_state() }.r_segs.rw_midtexturemid = vtop - unsafe { game_state() }.r_main.viewz;
         } else {
             unsafe { game_state() }.r_segs.rw_midtexturemid = unsafe { game_state() }.r_segs.worldtop as fixed_t;
         }
-        unsafe { game_state() }.r_segs.rw_midtexturemid += (*unsafe { game_state() }.r_bsp.sidedef).rowoffset;
+        unsafe { game_state() }.r_segs.rw_midtexturemid += (*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).rowoffset;
         (*unsafe { game_state() }.r_bsp.ds_p).silhouette = SIL_BOTH;
         (*unsafe { game_state() }.r_bsp.ds_p).sprtopclip =
             &raw mut unsafe { game_state() }.r_things.screenheightarray as *mut i16;
@@ -371,82 +371,82 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         (*unsafe { game_state() }.r_bsp.ds_p).sprbottomclip = ::core::ptr::null_mut::<i16>();
         (*unsafe { game_state() }.r_bsp.ds_p).sprtopclip = (*unsafe { game_state() }.r_bsp.ds_p).sprbottomclip;
         (*unsafe { game_state() }.r_bsp.ds_p).silhouette = 0 as i32;
-        if (*unsafe { game_state() }.r_bsp.frontsector).floorheight > (*unsafe { game_state() }.r_bsp.backsector).floorheight {
+        if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight > (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight {
             (*unsafe { game_state() }.r_bsp.ds_p).silhouette = SIL_BOTTOM;
-            (*unsafe { game_state() }.r_bsp.ds_p).bsilheight = (*unsafe { game_state() }.r_bsp.frontsector).floorheight;
-        } else if (*unsafe { game_state() }.r_bsp.backsector).floorheight > unsafe { game_state() }.r_main.viewz {
+            (*unsafe { game_state() }.r_bsp.ds_p).bsilheight = (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight;
+        } else if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight > unsafe { game_state() }.r_main.viewz {
             (*unsafe { game_state() }.r_bsp.ds_p).silhouette = SIL_BOTTOM;
             (*unsafe { game_state() }.r_bsp.ds_p).bsilheight = INT_MAX as fixed_t;
         }
-        if (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight < (*unsafe { game_state() }.r_bsp.backsector).ceilingheight {
+        if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight < (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight {
             (*unsafe { game_state() }.r_bsp.ds_p).silhouette |= SIL_TOP;
-            (*unsafe { game_state() }.r_bsp.ds_p).tsilheight = (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight;
-        } else if (*unsafe { game_state() }.r_bsp.backsector).ceilingheight < unsafe { game_state() }.r_main.viewz {
+            (*unsafe { game_state() }.r_bsp.ds_p).tsilheight = (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight;
+        } else if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight < unsafe { game_state() }.r_main.viewz {
             (*unsafe { game_state() }.r_bsp.ds_p).silhouette |= SIL_TOP;
             (*unsafe { game_state() }.r_bsp.ds_p).tsilheight = INT_MIN as fixed_t;
         }
-        if (*unsafe { game_state() }.r_bsp.backsector).ceilingheight <= (*unsafe { game_state() }.r_bsp.frontsector).floorheight {
+        if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight <= (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight {
             (*unsafe { game_state() }.r_bsp.ds_p).sprbottomclip =
                 &raw mut unsafe { game_state() }.r_things.negonearray as *mut i16;
             (*unsafe { game_state() }.r_bsp.ds_p).bsilheight = INT_MAX as fixed_t;
             (*unsafe { game_state() }.r_bsp.ds_p).silhouette |= SIL_BOTTOM;
         }
-        if (*unsafe { game_state() }.r_bsp.backsector).floorheight >= (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight {
+        if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight >= (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight {
             (*unsafe { game_state() }.r_bsp.ds_p).sprtopclip =
                 &raw mut unsafe { game_state() }.r_things.screenheightarray as *mut i16;
             (*unsafe { game_state() }.r_bsp.ds_p).tsilheight = INT_MIN as fixed_t;
             (*unsafe { game_state() }.r_bsp.ds_p).silhouette |= SIL_TOP;
         }
-        unsafe { game_state() }.r_segs.worldhigh = ((*unsafe { game_state() }.r_bsp.backsector).ceilingheight - unsafe { game_state() }.r_main.viewz) as i32;
-        unsafe { game_state() }.r_segs.worldlow = ((*unsafe { game_state() }.r_bsp.backsector).floorheight - unsafe { game_state() }.r_main.viewz) as i32;
-        if (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
-            && (*unsafe { game_state() }.r_bsp.backsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+        unsafe { game_state() }.r_segs.worldhigh = ((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight - unsafe { game_state() }.r_main.viewz) as i32;
+        unsafe { game_state() }.r_segs.worldlow = ((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight - unsafe { game_state() }.r_main.viewz) as i32;
+        if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+            && (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
         {
             unsafe { game_state() }.r_segs.worldtop = unsafe { game_state() }.r_segs.worldhigh;
         }
         if unsafe { game_state() }.r_segs.worldlow != unsafe { game_state() }.r_segs.worldbottom
-            || (*unsafe { game_state() }.r_bsp.backsector).floorpic as i32 != (*unsafe { game_state() }.r_bsp.frontsector).floorpic as i32
-            || (*unsafe { game_state() }.r_bsp.backsector).lightlevel as i32 != (*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32
+            || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorpic as i32 != (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorpic as i32
+            || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).lightlevel as i32 != (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32
         {
             unsafe { game_state() }.r_segs.markfloor = true;
         } else {
             unsafe { game_state() }.r_segs.markfloor = false;
         }
         if unsafe { game_state() }.r_segs.worldhigh != unsafe { game_state() }.r_segs.worldtop
-            || (*unsafe { game_state() }.r_bsp.backsector).ceilingpic as i32 != (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32
-            || (*unsafe { game_state() }.r_bsp.backsector).lightlevel as i32 != (*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32
+            || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingpic as i32 != (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32
+            || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).lightlevel as i32 != (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32
         {
             unsafe { game_state() }.r_segs.markceiling = true;
         } else {
             unsafe { game_state() }.r_segs.markceiling = false;
         }
-        if (*unsafe { game_state() }.r_bsp.backsector).ceilingheight <= (*unsafe { game_state() }.r_bsp.frontsector).floorheight
-            || (*unsafe { game_state() }.r_bsp.backsector).floorheight >= (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight
+        if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight <= (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight
+            || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight >= (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight
         {
             unsafe { game_state() }.r_segs.markfloor = true;
             unsafe { game_state() }.r_segs.markceiling = unsafe { game_state() }.r_segs.markfloor;
         }
         if unsafe { game_state() }.r_segs.worldhigh < unsafe { game_state() }.r_segs.worldtop {
-            unsafe { game_state() }.r_segs.toptexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*unsafe { game_state() }.r_bsp.sidedef).toptexture as isize);
+            unsafe { game_state() }.r_segs.toptexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).toptexture as isize);
             if (*unsafe { game_state() }.r_bsp.linedef).flags as i32 & ML_DONTPEGTOP != 0 {
                 unsafe { game_state() }.r_segs.rw_toptexturemid = unsafe { game_state() }.r_segs.worldtop as fixed_t;
             } else {
-                vtop = (*unsafe { game_state() }.r_bsp.backsector).ceilingheight
-                    + *unsafe { game_state() }.r_data.textureheight.offset((*unsafe { game_state() }.r_bsp.sidedef).toptexture as isize);
+                vtop = (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight
+                    + *unsafe { game_state() }.r_data.textureheight.offset((*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).toptexture as isize);
                 unsafe { game_state() }.r_segs.rw_toptexturemid = vtop - unsafe { game_state() }.r_main.viewz;
             }
         }
         if unsafe { game_state() }.r_segs.worldlow > unsafe { game_state() }.r_segs.worldbottom {
-            unsafe { game_state() }.r_segs.bottomtexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*unsafe { game_state() }.r_bsp.sidedef).bottomtexture as isize);
+            unsafe { game_state() }.r_segs.bottomtexture = *unsafe { game_state() }.r_data.texturetranslation.offset((*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).bottomtexture as isize);
             if (*unsafe { game_state() }.r_bsp.linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
                 unsafe { game_state() }.r_segs.rw_bottomtexturemid = unsafe { game_state() }.r_segs.worldtop as fixed_t;
             } else {
                 unsafe { game_state() }.r_segs.rw_bottomtexturemid = unsafe { game_state() }.r_segs.worldlow as fixed_t;
             }
         }
-        unsafe { game_state() }.r_segs.rw_toptexturemid += (*unsafe { game_state() }.r_bsp.sidedef).rowoffset;
-        unsafe { game_state() }.r_segs.rw_bottomtexturemid += (*unsafe { game_state() }.r_bsp.sidedef).rowoffset;
-        if (*unsafe { game_state() }.r_bsp.sidedef).midtexture != 0 {
+        unsafe { game_state() }.r_segs.rw_toptexturemid += (*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).rowoffset;
+        unsafe { game_state() }.r_segs.rw_bottomtexturemid += (*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).rowoffset;
+        if (*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).midtexture != 0 {
             unsafe { game_state() }.r_segs.maskedtexture = true;
             unsafe { game_state() }.r_segs.maskedtexturecol = unsafe { game_state() }.r_plane.lastopening.offset(-(unsafe { game_state() }.r_segs.rw_x as isize));
             (*unsafe { game_state() }.r_bsp.ds_p).maskedtexturecol = unsafe { game_state() }.r_segs.maskedtexturecol;
@@ -467,12 +467,12 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         if unsafe { game_state() }.r_segs.rw_normalangle.wrapping_sub(unsafe { game_state() }.r_segs.rw_angle1 as angle_t) < ANG180 {
             unsafe { game_state() }.r_segs.rw_offset = -unsafe { game_state() }.r_segs.rw_offset;
         }
-        unsafe { game_state() }.r_segs.rw_offset += (*unsafe { game_state() }.r_bsp.sidedef).textureoffset + (*unsafe { game_state() }.r_bsp.curline).offset;
+        unsafe { game_state() }.r_segs.rw_offset += (*unsafe { game_state() }.p_setup.side_mut(unsafe { game_state() }.r_bsp.sidedef)).textureoffset + (*unsafe { game_state() }.r_bsp.curline).offset;
         unsafe { game_state() }.r_segs.rw_centerangle = (ANG90 as angle_t)
             .wrapping_add(unsafe { game_state() }.r_main.viewangle)
             .wrapping_sub(unsafe { game_state() }.r_segs.rw_normalangle);
         if unsafe { game_state() }.r_main.fixedcolormap.is_null() {
-            lightnum = ((*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;
+            lightnum = ((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32 >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;
             if (*(*unsafe { game_state() }.r_bsp.curline).v1).y == (*(*unsafe { game_state() }.r_bsp.curline).v2).y {
                 lightnum -= 1;
             } else if (*(*unsafe { game_state() }.r_bsp.curline).v1).x == (*(*unsafe { game_state() }.r_bsp.curline).v2).x {
@@ -493,11 +493,11 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
             }
         }
     }
-    if (*unsafe { game_state() }.r_bsp.frontsector).floorheight >= unsafe { game_state() }.r_main.viewz {
+    if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight >= unsafe { game_state() }.r_main.viewz {
         unsafe { game_state() }.r_segs.markfloor = false;
     }
-    if (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight <= unsafe { game_state() }.r_main.viewz
-        && (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32 != unsafe { game_state() }.r_sky.skyflatnum
+    if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight <= unsafe { game_state() }.r_main.viewz
+        && (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32 != unsafe { game_state() }.r_sky.skyflatnum
     {
         unsafe { game_state() }.r_segs.markceiling = false;
     }
@@ -507,7 +507,7 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
     unsafe { game_state() }.r_segs.topfrac = (unsafe { game_state() }.r_main.centeryfrac >> 4 as i32) - FixedMul(unsafe { game_state() }.r_segs.worldtop as fixed_t, unsafe { game_state() }.r_segs.rw_scale);
     unsafe { game_state() }.r_segs.bottomstep = -FixedMul(unsafe { game_state() }.r_segs.rw_scalestep, unsafe { game_state() }.r_segs.worldbottom as fixed_t);
     unsafe { game_state() }.r_segs.bottomfrac = (unsafe { game_state() }.r_main.centeryfrac >> 4 as i32) - FixedMul(unsafe { game_state() }.r_segs.worldbottom as fixed_t, unsafe { game_state() }.r_segs.rw_scale);
-    if !unsafe { game_state() }.r_bsp.backsector.is_null() {
+    if !unsafe { game_state() }.r_bsp.backsector.is_none() {
         unsafe { game_state() }.r_segs.worldhigh >>= 4 as i32;
         unsafe { game_state() }.r_segs.worldlow >>= 4 as i32;
         if unsafe { game_state() }.r_segs.worldhigh < unsafe { game_state() }.r_segs.worldtop {
