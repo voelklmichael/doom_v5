@@ -25,6 +25,7 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::g_game::G_BuildTiccmd;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_menu::M_Ticker;
 use crate::src::tables::ANG270;
 use crate::src::tables::ANG90;
@@ -90,20 +91,20 @@ static mut doom_loop_interface: loop_interface_t = unsafe {
         RunMenu: Some(M_Ticker as unsafe fn() -> ()),
     }
 };
-unsafe fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
+unsafe fn LoadGameSettings(state: &mut GameState, mut settings: *mut net_gamesettings_t) {
     let mut i: u32 = 0;
-    unsafe { game_state() }.g_game.deathmatch = (*settings).deathmatch;
-    unsafe { game_state() }.d_main.startepisode = (*settings).episode;
-    unsafe { game_state() }.d_main.startmap = (*settings).map;
-    unsafe { game_state() }.d_main.startskill = (*settings).skill as skill_t;
-    unsafe { game_state() }.d_main.startloadgame = (*settings).loadgame;
-    unsafe { game_state() }.g_game.lowres_turn = (*settings).lowres_turn != 0;
-    unsafe { game_state() }.d_main.nomonsters = (*settings).nomonsters != 0;
-    unsafe { game_state() }.d_main.fastparm = (*settings).fast_monsters != 0;
-    unsafe { game_state() }.d_main.respawnparm = (*settings).respawn_monsters != 0;
-    unsafe { game_state() }.g_game.timelimit = (*settings).timelimit;
-    unsafe { game_state() }.g_game.consoleplayer = (*settings).consoleplayer;
-    if unsafe { game_state() }.g_game.lowres_turn {
+    state.g_game.deathmatch = (*settings).deathmatch;
+    state.d_main.startepisode = (*settings).episode;
+    state.d_main.startmap = (*settings).map;
+    state.d_main.startskill = (*settings).skill as skill_t;
+    state.d_main.startloadgame = (*settings).loadgame;
+    state.g_game.lowres_turn = (*settings).lowres_turn != 0;
+    state.d_main.nomonsters = (*settings).nomonsters != 0;
+    state.d_main.fastparm = (*settings).fast_monsters != 0;
+    state.d_main.respawnparm = (*settings).respawn_monsters != 0;
+    state.g_game.timelimit = (*settings).timelimit;
+    state.g_game.consoleplayer = (*settings).consoleplayer;
+    if state.g_game.lowres_turn {
         printf(
             b"NOTE: Turning resolution is reduced; this is probably because there is a client recording a Vanilla demo.\n\0"
                 as *const u8 as *const ::core::ffi::c_char,
@@ -111,47 +112,47 @@ unsafe fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
     }
     i = 0 as u32;
     while i < MAXPLAYERS as u32 {
-        unsafe { game_state() }.g_game.playeringame[i as usize] =
+        state.g_game.playeringame[i as usize] =
             (i < (*settings).num_players as u32) as i32 as boolean;
         i = i.wrapping_add(1);
     }
 }
-unsafe fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
-    (*settings).deathmatch = unsafe { game_state() }.g_game.deathmatch;
-    (*settings).episode = unsafe { game_state() }.d_main.startepisode;
-    (*settings).map = unsafe { game_state() }.d_main.startmap;
-    (*settings).skill = unsafe { game_state() }.d_main.startskill as i32;
-    (*settings).loadgame = unsafe { game_state() }.d_main.startloadgame;
-    (*settings).gameversion = unsafe { game_state() }.doomstat.gameversion as i32;
-    (*settings).nomonsters = unsafe { game_state() }.d_main.nomonsters as i32;
-    (*settings).fast_monsters = unsafe { game_state() }.d_main.fastparm as i32;
-    (*settings).respawn_monsters = unsafe { game_state() }.d_main.respawnparm as i32;
-    (*settings).timelimit = unsafe { game_state() }.g_game.timelimit;
+unsafe fn SaveGameSettings(state: &mut GameState, mut settings: *mut net_gamesettings_t) {
+    (*settings).deathmatch = state.g_game.deathmatch;
+    (*settings).episode = state.d_main.startepisode;
+    (*settings).map = state.d_main.startmap;
+    (*settings).skill = state.d_main.startskill as i32;
+    (*settings).loadgame = state.d_main.startloadgame;
+    (*settings).gameversion = state.doomstat.gameversion as i32;
+    (*settings).nomonsters = state.d_main.nomonsters as i32;
+    (*settings).fast_monsters = state.d_main.fastparm as i32;
+    (*settings).respawn_monsters = state.d_main.respawnparm as i32;
+    (*settings).timelimit = state.g_game.timelimit;
     (*settings).lowres_turn =
         (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
 }
-unsafe fn InitConnectData(mut connect_data: *mut net_connect_data_t) {
+unsafe fn InitConnectData(state: &mut GameState, mut connect_data: *mut net_connect_data_t) {
     (*connect_data).max_players = MAXPLAYERS;
     (*connect_data).drone = false_0;
     if M_CheckParm("-left") > 0 as i32 {
-        unsafe { game_state() }.r_main.viewangleoffset = ANG90;
+        state.r_main.viewangleoffset = ANG90;
         (*connect_data).drone = true_0;
     }
     if M_CheckParm("-right") > 0 as i32 {
-        unsafe { game_state() }.r_main.viewangleoffset = ANG270 as i32;
+        state.r_main.viewangleoffset = ANG270 as i32;
         (*connect_data).drone = true_0;
     }
-    (*connect_data).gamemode = unsafe { game_state() }.doomstat.gamemode as i32;
-    (*connect_data).gamemission = unsafe { game_state() }.doomstat.gamemission as i32;
+    (*connect_data).gamemode = state.doomstat.gamemode as i32;
+    (*connect_data).gamemission = state.doomstat.gamemission as i32;
     (*connect_data).lowres_turn =
         (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
     W_Checksum(
-        unsafe { &mut game_state().w_checksum },
+        &mut state.w_checksum,
         &raw mut (*connect_data).wad_sha1sum as *mut byte,
     );
     (*connect_data).is_freedoom = (W_CheckNumForName("FREEDOOM") >= 0 as i32) as i32;
 }
-pub unsafe fn D_ConnectNetGame() {
+pub unsafe fn D_ConnectNetGame(state: &mut GameState) {
     let mut connect_data: net_connect_data_t = net_connect_data_t {
         gamemode: 0,
         gamemission: 0,
@@ -163,13 +164,13 @@ pub unsafe fn D_ConnectNetGame() {
         deh_sha1sum: [0; 20],
         player_class: 0,
     };
-    InitConnectData(&raw mut connect_data);
-    unsafe { game_state() }.g_game.netgame = D_InitNetGame(&raw mut connect_data);
+    InitConnectData(state, &raw mut connect_data);
+    state.g_game.netgame = D_InitNetGame(state, &raw mut connect_data);
     if M_CheckParm("-solo-net") > 0 as i32 {
-        unsafe { game_state() }.g_game.netgame = true;
+        state.g_game.netgame = true;
     }
 }
-pub unsafe fn D_CheckNetGame() {
+pub unsafe fn D_CheckNetGame(state: &mut GameState) {
     let mut settings: net_gamesettings_t = net_gamesettings_t {
         ticdup: 0,
         extratics: 0,
@@ -190,31 +191,31 @@ pub unsafe fn D_CheckNetGame() {
         consoleplayer: 0,
         player_classes: [0; 8],
     };
-    if unsafe { game_state() }.g_game.netgame {
-        unsafe { game_state() }.d_main.autostart = true;
+    if state.g_game.netgame {
+        state.d_main.autostart = true;
     }
-    D_RegisterLoopCallbacks(&raw mut doom_loop_interface);
-    SaveGameSettings(&raw mut settings);
-    D_StartNetGame(&raw mut settings, None);
-    LoadGameSettings(&raw mut settings);
+    D_RegisterLoopCallbacks(state, &raw mut doom_loop_interface);
+    SaveGameSettings(state, &raw mut settings);
+    D_StartNetGame(state, &raw mut settings, None);
+    LoadGameSettings(state, &raw mut settings);
     printf(
         b"startskill %i  deathmatch: %i  startmap: %i  startepisode: %i\n\0" as *const u8
             as *const ::core::ffi::c_char,
-        unsafe { game_state() }.d_main.startskill as i32,
-        unsafe { game_state() }.g_game.deathmatch,
-        unsafe { game_state() }.d_main.startmap,
-        unsafe { game_state() }.d_main.startepisode,
+        state.d_main.startskill as i32,
+        state.g_game.deathmatch,
+        state.d_main.startmap,
+        state.d_main.startepisode,
     );
     printf(
         b"player %i of %i (%i nodes)\n\0" as *const u8 as *const ::core::ffi::c_char,
-        unsafe { game_state() }.g_game.consoleplayer + 1 as i32,
+        state.g_game.consoleplayer + 1 as i32,
         settings.num_players,
         settings.num_players,
     );
-    if unsafe { game_state() }.g_game.timelimit > 0 as i32
-        && unsafe { game_state() }.g_game.deathmatch != 0
+    if state.g_game.timelimit > 0 as i32
+        && state.g_game.deathmatch != 0
     {
-        if unsafe { game_state() }.g_game.timelimit == 20 as i32 && M_CheckParm("-avg") != 0 {
+        if state.g_game.timelimit == 20 as i32 && M_CheckParm("-avg") != 0 {
             printf(
                 b"Austin Virtual Gaming: Levels will end after 20 minutes\n\0" as *const u8
                     as *const ::core::ffi::c_char,
@@ -222,9 +223,9 @@ pub unsafe fn D_CheckNetGame() {
         } else {
             printf(
                 b"Levels will end after %d minute\0" as *const u8 as *const ::core::ffi::c_char,
-                unsafe { game_state() }.g_game.timelimit,
+                state.g_game.timelimit,
             );
-            if unsafe { game_state() }.g_game.timelimit > 1 as i32 {
+            if state.g_game.timelimit > 1 as i32 {
                 printf(b"s\0" as *const u8 as *const ::core::ffi::c_char);
             }
             printf(b".\n\0" as *const u8 as *const ::core::ffi::c_char);
