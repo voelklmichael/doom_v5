@@ -375,7 +375,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
     if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && state.d_loop.gametic != 0
     {
-        HU_Drawer();
+        HU_Drawer(state);
     }
     if state.g_game.gamestate as u32 != state.d_main.d_display_oldgamestate as u32
         && state.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
