@@ -8,7 +8,6 @@ use crate::src::i_system::I_Error;
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACBITS;
-use crate::src::r_data::colormaps;
 use crate::src::r_defs::lighttable_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
@@ -195,7 +194,7 @@ pub unsafe fn R_DrawFuzzColumn() {
     fracstep = unsafe { game_state() }.r_draw.dc_iscale;
     frac = unsafe { game_state() }.r_draw.dc_texturemid + (unsafe { game_state() }.r_draw.dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
     loop {
-        *dest = *colormaps.offset(
+        *dest = *unsafe { game_state() }.r_data.colormaps.offset(
             (6 as i32 * 256 as i32 + *dest.offset(fuzzoffset[unsafe { game_state() }.r_draw.fuzzpos as usize] as isize) as i32)
                 as isize,
         ) as byte;
@@ -241,11 +240,11 @@ pub unsafe fn R_DrawFuzzColumnLow() {
     fracstep = unsafe { game_state() }.r_draw.dc_iscale;
     frac = unsafe { game_state() }.r_draw.dc_texturemid + (unsafe { game_state() }.r_draw.dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
     loop {
-        *dest = *colormaps.offset(
+        *dest = *unsafe { game_state() }.r_data.colormaps.offset(
             (6 as i32 * 256 as i32 + *dest.offset(fuzzoffset[unsafe { game_state() }.r_draw.fuzzpos as usize] as isize) as i32)
                 as isize,
         ) as byte;
-        *dest2 = *colormaps.offset(
+        *dest2 = *unsafe { game_state() }.r_data.colormaps.offset(
             (6 as i32 * 256 as i32 + *dest2.offset(fuzzoffset[unsafe { game_state() }.r_draw.fuzzpos as usize] as isize) as i32)
                 as isize,
         ) as byte;

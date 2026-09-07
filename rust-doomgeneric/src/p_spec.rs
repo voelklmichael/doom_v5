@@ -54,9 +54,6 @@ use crate::src::p_switch::P_ChangeSwitchTexture;
 use crate::src::p_telept::EV_Teleport;
 use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_AddThinker;
-use crate::src::r_data::flattranslation;
-use crate::src::r_data::numflats;
-use crate::src::r_data::texturetranslation;
 use crate::src::r_data::R_CheckTextureNumForName;
 use crate::src::r_data::R_FlatNumForName;
 use crate::src::r_data::R_TextureNumForName;
@@ -1033,9 +1030,9 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
         while i < (*anim).basepic + (*anim).numpics {
             pic = (*anim).basepic + (leveltime / (*anim).speed + i) % (*anim).numpics;
             if (*anim).istexture {
-                *texturetranslation.offset(i as isize) = pic;
+                *unsafe { game_state() }.r_data.texturetranslation.offset(i as isize) = pic;
             } else {
-                *flattranslation.offset(i as isize) = pic;
+                *unsafe { game_state() }.r_data.flattranslation.offset(i as isize) = pic;
             }
             i += 1;
         }
@@ -1126,12 +1123,12 @@ unsafe fn DonutOverrun(
                     as *mut ::core::ffi::c_char,
                 &raw mut state.p_spec.donut_overrun_tmp_s3_floorpic,
             );
-            if state.p_spec.donut_overrun_tmp_s3_floorpic >= numflats {
+            if state.p_spec.donut_overrun_tmp_s3_floorpic >= unsafe { game_state() }.r_data.numflats {
                 fprintf(
                     stderr,
                     b"DonutOverrun: The second parameter for \"-donut\" switch should be greater than 0 and less than number of flats (%d). Using default value (%d) instead. \n\0"
                         as *const u8 as *const ::core::ffi::c_char,
-                    numflats,
+                    unsafe { game_state() }.r_data.numflats,
                     DONUT_FLOORPIC_DEFAULT,
                 );
                 state.p_spec.donut_overrun_tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;

@@ -25,7 +25,6 @@ use crate::src::p_mobj::{
     MT_VILE,
 };
 use crate::src::r_data::column_t;
-use crate::src::r_data::firstspritelump;
 use crate::src::r_defs::{spritedef_t, spriteframe_t};
 use crate::src::r_things::FF_FRAMEMASK;
 use crate::src::s_sound::S_ChangeMusic;
@@ -866,7 +865,7 @@ pub unsafe fn F_CastDrawer(state: &mut FFinaleState) {
         as *mut spriteframe_t;
     lump = (*sprframe).lump[0 as i32 as usize] as i32;
     flip = (*sprframe).flip[0 as i32 as usize] != 0;
-    patch = W_CacheLumpNum(lump + firstspritelump, PU_CACHE as i32) as *mut patch_t;
+    patch = W_CacheLumpNum(lump + unsafe { game_state() }.r_data.firstspritelump, PU_CACHE as i32) as *mut patch_t;
     if flip {
         V_DrawPatchFlipped(
             unsafe { &mut game_state().v_video },

@@ -19,7 +19,6 @@ use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_RemoveThinker;
-use crate::src::r_data::textureheight;
 use crate::src::r_defs::side_t;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::{sfx_pstop, sfx_stnmov};
@@ -311,16 +310,16 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
                     if twoSided(secnum, i) != 0 {
                         side = getSide(secnum, i, 0 as i32);
                         if (*side).bottomtexture as i32 >= 0 as i32 {
-                            if *textureheight.offset((*side).bottomtexture as isize) < minsize {
+                            if *unsafe { game_state() }.r_data.textureheight.offset((*side).bottomtexture as isize) < minsize {
                                 minsize =
-                                    *textureheight.offset((*side).bottomtexture as isize) as i32;
+                                    *unsafe { game_state() }.r_data.textureheight.offset((*side).bottomtexture as isize) as i32;
                             }
                         }
                         side = getSide(secnum, i, 1 as i32);
                         if (*side).bottomtexture as i32 >= 0 as i32 {
-                            if *textureheight.offset((*side).bottomtexture as isize) < minsize {
+                            if *unsafe { game_state() }.r_data.textureheight.offset((*side).bottomtexture as isize) < minsize {
                                 minsize =
-                                    *textureheight.offset((*side).bottomtexture as isize) as i32;
+                                    *unsafe { game_state() }.r_data.textureheight.offset((*side).bottomtexture as isize) as i32;
                             }
                         }
                     }
