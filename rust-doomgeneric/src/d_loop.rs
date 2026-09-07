@@ -36,6 +36,7 @@ pub struct DLoopState {
     pub frameskip: [i32; 4],
     pub oldnettics: i32,
     pub singletics: bool,
+    pub try_run_tics_oldentertics: i32,
 }
 
 impl DLoopState {
@@ -70,6 +71,7 @@ impl DLoopState {
             frameskip: [0; 4],
             oldnettics: 0,
             singletics: false,
+            try_run_tics_oldentertics: 0,
         }
     }
 }
@@ -353,14 +355,13 @@ pub unsafe fn TryRunTics() {
     let mut i: i32 = 0;
     let mut lowtic: i32 = 0;
     let mut entertic: i32 = 0;
-    static mut oldentertics: i32 = 0;
     let mut realtics: i32 = 0;
     let mut availabletics: i32 = 0;
     let mut counts: i32 = 0;
     entertic =
         I_GetTime(unsafe { &mut game_state().i_timer }) / unsafe { game_state() }.d_loop.ticdup;
-    realtics = entertic - oldentertics;
-    oldentertics = entertic;
+    realtics = entertic - unsafe { game_state() }.d_loop.try_run_tics_oldentertics;
+    unsafe { game_state() }.d_loop.try_run_tics_oldentertics = entertic;
     if unsafe { game_state() }.d_loop.singletics {
         BuildNewTic();
     } else {

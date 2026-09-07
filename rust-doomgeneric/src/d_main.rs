@@ -234,7 +234,7 @@ pub unsafe fn D_Display() {
     redrawsbar = false;
     if setsizeneeded {
         R_ExecuteSetViewSize();
-        unsafe { game_state() }.g_game.oldgamestate = 4294967295 as gamestate_t;
+        oldgamestate = 4294967295 as gamestate_t;
         borderdrawcount = 3 as i32;
     }
     if unsafe { game_state() }.g_game.gamestate as u32 != wipegamestate as u32 {
@@ -290,14 +290,13 @@ pub unsafe fn D_Display() {
     {
         HU_Drawer();
     }
-    if unsafe { game_state() }.g_game.gamestate as u32
-        != unsafe { game_state() }.g_game.oldgamestate as u32
+    if unsafe { game_state() }.g_game.gamestate as u32 != oldgamestate as u32
         && unsafe { game_state() }.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
     {
         I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
     }
     if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && unsafe { game_state() }.g_game.oldgamestate as u32 != GS_LEVEL as i32 as u32
+        && oldgamestate as u32 != GS_LEVEL as i32 as u32
     {
         viewactivestate = false;
         R_FillBackScreen();
@@ -321,7 +320,7 @@ pub unsafe fn D_Display() {
     viewactivestate = unsafe { game_state() }.g_game.viewactive;
     inhelpscreensstate = unsafe { game_state() }.m_menu.inhelpscreens;
     wipegamestate = unsafe { game_state() }.g_game.gamestate;
-    unsafe { game_state() }.g_game.oldgamestate = wipegamestate;
+    oldgamestate = wipegamestate;
     if unsafe { game_state() }.g_game.paused {
         if automapactive {
             y = 4 as i32;
