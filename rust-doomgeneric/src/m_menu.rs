@@ -2206,12 +2206,11 @@ pub unsafe fn M_SetupNextMenu(mut menudef: *mut menu_t) {
     unsafe { game_state() }.m_menu.currentMenu = menudef;
     unsafe { game_state() }.m_menu.itemOn = (*unsafe { game_state() }.m_menu.currentMenu).lastOn;
 }
-pub unsafe fn M_Ticker() {
-    unsafe { game_state() }.m_menu.skullAnimCounter -= 1;
-    if unsafe { game_state() }.m_menu.skullAnimCounter as i32 <= 0 as i32 {
-        unsafe { game_state() }.m_menu.whichSkull =
-            (unsafe { game_state() }.m_menu.whichSkull as i32 ^ 1 as i32) as i16;
-        unsafe { game_state() }.m_menu.skullAnimCounter = 8 as i16;
+pub unsafe fn M_Ticker(state: &mut GameState) {
+    state.m_menu.skullAnimCounter -= 1;
+    if state.m_menu.skullAnimCounter as i32 <= 0 as i32 {
+        state.m_menu.whichSkull = (state.m_menu.whichSkull as i32 ^ 1 as i32) as i16;
+        state.m_menu.skullAnimCounter = 8 as i16;
     }
 }
 pub unsafe fn M_Init() {

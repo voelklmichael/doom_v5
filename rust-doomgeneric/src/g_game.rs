@@ -504,7 +504,7 @@ unsafe fn G_NextWeapon(state: &mut GameState, mut direction: i32) -> i32 {
     }
     return weapon_order_table[i as usize].weapon_num as i32;
 }
-pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
+pub unsafe fn G_BuildTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t, mut maketic: i32) {
     let mut i: i32 = 0;
     let mut strafe: bool = false;
     let mut bstrafe: boolean = 0;
@@ -517,181 +517,181 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
         0 as i32,
         ::core::mem::size_of::<ticcmd_t>() as size_t,
     );
-    (*cmd).consistancy = unsafe { game_state() }.g_game.consistancy
-        [unsafe { game_state() }.g_game.consoleplayer as usize][(maketic % BACKUPTICS) as usize];
-    strafe = unsafe { game_state() }.g_game.gamekeydown
-        [unsafe { game_state() }.m_controls.key_strafe as usize]
+    (*cmd).consistancy = state.g_game.consistancy
+        [state.g_game.consoleplayer as usize][(maketic % BACKUPTICS) as usize];
+    strafe = state.g_game.gamekeydown
+        [state.m_controls.key_strafe as usize]
         != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .mousebuttons
-            .offset(unsafe { game_state() }.m_controls.mousebstrafe as isize)
+            .offset(state.m_controls.mousebstrafe as isize)
             != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .joybuttons
-            .offset(unsafe { game_state() }.m_controls.joybstrafe as isize)
+            .offset(state.m_controls.joybstrafe as isize)
             != 0;
-    speed = (unsafe { game_state() }.m_controls.key_speed >= NUMKEYS
-        || unsafe { game_state() }.m_controls.joybspeed >= MAX_JOY_BUTTONS
-        || unsafe { game_state() }.g_game.gamekeydown
-            [unsafe { game_state() }.m_controls.key_speed as usize]
+    speed = (state.m_controls.key_speed >= NUMKEYS
+        || state.m_controls.joybspeed >= MAX_JOY_BUTTONS
+        || state.g_game.gamekeydown
+            [state.m_controls.key_speed as usize]
             != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .joybuttons
-            .offset(unsafe { game_state() }.m_controls.joybspeed as isize)
+            .offset(state.m_controls.joybspeed as isize)
             != 0) as i32;
     side = 0 as i32;
     forward = side;
-    if unsafe { game_state() }.g_game.joyxmove < 0 as i32
-        || unsafe { game_state() }.g_game.joyxmove > 0 as i32
-        || unsafe { game_state() }.g_game.gamekeydown
-            [unsafe { game_state() }.m_controls.key_right as usize]
+    if state.g_game.joyxmove < 0 as i32
+        || state.g_game.joyxmove > 0 as i32
+        || state.g_game.gamekeydown
+            [state.m_controls.key_right as usize]
             != 0
-        || unsafe { game_state() }.g_game.gamekeydown
-            [unsafe { game_state() }.m_controls.key_left as usize]
+        || state.g_game.gamekeydown
+            [state.m_controls.key_left as usize]
             != 0
     {
-        unsafe { game_state() }.g_game.turnheld += unsafe { game_state() }.d_loop.ticdup;
+        state.g_game.turnheld += state.d_loop.ticdup;
     } else {
-        unsafe { game_state() }.g_game.turnheld = 0 as i32;
+        state.g_game.turnheld = 0 as i32;
     }
-    if unsafe { game_state() }.g_game.turnheld < SLOWTURNTICS {
+    if state.g_game.turnheld < SLOWTURNTICS {
         tspeed = 2 as i32;
     } else {
         tspeed = speed;
     }
     if strafe {
-        if unsafe { game_state() }.g_game.gamekeydown
-            [unsafe { game_state() }.m_controls.key_right as usize]
+        if state.g_game.gamekeydown
+            [state.m_controls.key_right as usize]
             != 0
         {
-            side += unsafe { game_state() }.g_game.sidemove[speed as usize] as i32;
+            side += state.g_game.sidemove[speed as usize] as i32;
         }
-        if unsafe { game_state() }.g_game.gamekeydown
-            [unsafe { game_state() }.m_controls.key_left as usize]
+        if state.g_game.gamekeydown
+            [state.m_controls.key_left as usize]
             != 0
         {
-            side -= unsafe { game_state() }.g_game.sidemove[speed as usize] as i32;
+            side -= state.g_game.sidemove[speed as usize] as i32;
         }
-        if unsafe { game_state() }.g_game.joyxmove > 0 as i32 {
-            side += unsafe { game_state() }.g_game.sidemove[speed as usize] as i32;
+        if state.g_game.joyxmove > 0 as i32 {
+            side += state.g_game.sidemove[speed as usize] as i32;
         }
-        if unsafe { game_state() }.g_game.joyxmove < 0 as i32 {
-            side -= unsafe { game_state() }.g_game.sidemove[speed as usize] as i32;
+        if state.g_game.joyxmove < 0 as i32 {
+            side -= state.g_game.sidemove[speed as usize] as i32;
         }
     } else {
-        if unsafe { game_state() }.g_game.gamekeydown
-            [unsafe { game_state() }.m_controls.key_right as usize]
+        if state.g_game.gamekeydown
+            [state.m_controls.key_right as usize]
             != 0
         {
             (*cmd).angleturn = ((*cmd).angleturn as i32 - angleturn[tspeed as usize] as i32) as i16;
         }
-        if unsafe { game_state() }.g_game.gamekeydown
-            [unsafe { game_state() }.m_controls.key_left as usize]
+        if state.g_game.gamekeydown
+            [state.m_controls.key_left as usize]
             != 0
         {
             (*cmd).angleturn = ((*cmd).angleturn as i32 + angleturn[tspeed as usize] as i32) as i16;
         }
-        if unsafe { game_state() }.g_game.joyxmove > 0 as i32 {
+        if state.g_game.joyxmove > 0 as i32 {
             (*cmd).angleturn = ((*cmd).angleturn as i32 - angleturn[tspeed as usize] as i32) as i16;
         }
-        if unsafe { game_state() }.g_game.joyxmove < 0 as i32 {
+        if state.g_game.joyxmove < 0 as i32 {
             (*cmd).angleturn = ((*cmd).angleturn as i32 + angleturn[tspeed as usize] as i32) as i16;
         }
     }
-    if unsafe { game_state() }.g_game.gamekeydown
-        [unsafe { game_state() }.m_controls.key_up as usize]
+    if state.g_game.gamekeydown
+        [state.m_controls.key_up as usize]
         != 0
     {
-        forward += unsafe { game_state() }.g_game.forwardmove[speed as usize] as i32;
+        forward += state.g_game.forwardmove[speed as usize] as i32;
     }
-    if unsafe { game_state() }.g_game.gamekeydown
-        [unsafe { game_state() }.m_controls.key_down as usize]
+    if state.g_game.gamekeydown
+        [state.m_controls.key_down as usize]
         != 0
     {
-        forward -= unsafe { game_state() }.g_game.forwardmove[speed as usize] as i32;
+        forward -= state.g_game.forwardmove[speed as usize] as i32;
     }
-    if unsafe { game_state() }.g_game.joyymove < 0 as i32 {
-        forward += unsafe { game_state() }.g_game.forwardmove[speed as usize] as i32;
+    if state.g_game.joyymove < 0 as i32 {
+        forward += state.g_game.forwardmove[speed as usize] as i32;
     }
-    if unsafe { game_state() }.g_game.joyymove > 0 as i32 {
-        forward -= unsafe { game_state() }.g_game.forwardmove[speed as usize] as i32;
+    if state.g_game.joyymove > 0 as i32 {
+        forward -= state.g_game.forwardmove[speed as usize] as i32;
     }
-    if unsafe { game_state() }.g_game.gamekeydown
-        [unsafe { game_state() }.m_controls.key_strafeleft as usize]
+    if state.g_game.gamekeydown
+        [state.m_controls.key_strafeleft as usize]
         != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .joybuttons
-            .offset(unsafe { game_state() }.m_controls.joybstrafeleft as isize)
+            .offset(state.m_controls.joybstrafeleft as isize)
             != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .mousebuttons
-            .offset(unsafe { game_state() }.m_controls.mousebstrafeleft as isize)
+            .offset(state.m_controls.mousebstrafeleft as isize)
             != 0
-        || unsafe { game_state() }.g_game.joystrafemove < 0 as i32
+        || state.g_game.joystrafemove < 0 as i32
     {
-        side -= unsafe { game_state() }.g_game.sidemove[speed as usize] as i32;
+        side -= state.g_game.sidemove[speed as usize] as i32;
     }
-    if unsafe { game_state() }.g_game.gamekeydown
-        [unsafe { game_state() }.m_controls.key_straferight as usize]
+    if state.g_game.gamekeydown
+        [state.m_controls.key_straferight as usize]
         != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .joybuttons
-            .offset(unsafe { game_state() }.m_controls.joybstraferight as isize)
+            .offset(state.m_controls.joybstraferight as isize)
             != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .mousebuttons
-            .offset(unsafe { game_state() }.m_controls.mousebstraferight as isize)
+            .offset(state.m_controls.mousebstraferight as isize)
             != 0
-        || unsafe { game_state() }.g_game.joystrafemove > 0 as i32
+        || state.g_game.joystrafemove > 0 as i32
     {
-        side += unsafe { game_state() }.g_game.sidemove[speed as usize] as i32;
+        side += state.g_game.sidemove[speed as usize] as i32;
     }
-    (*cmd).chatchar = HU_dequeueChatChar() as byte;
-    if unsafe { game_state() }.g_game.gamekeydown
-        [unsafe { game_state() }.m_controls.key_fire as usize]
+    (*cmd).chatchar = HU_dequeueChatChar(&mut state.hu_stuff) as byte;
+    if state.g_game.gamekeydown
+        [state.m_controls.key_fire as usize]
         != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .mousebuttons
-            .offset(unsafe { game_state() }.m_controls.mousebfire as isize)
+            .offset(state.m_controls.mousebfire as isize)
             != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .joybuttons
-            .offset(unsafe { game_state() }.m_controls.joybfire as isize)
+            .offset(state.m_controls.joybfire as isize)
             != 0
     {
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_ATTACK as i32) as byte;
     }
-    if unsafe { game_state() }.g_game.gamekeydown
-        [unsafe { game_state() }.m_controls.key_use as usize]
+    if state.g_game.gamekeydown
+        [state.m_controls.key_use as usize]
         != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .joybuttons
-            .offset(unsafe { game_state() }.m_controls.joybuse as isize)
+            .offset(state.m_controls.joybuse as isize)
             != 0
-        || *unsafe { game_state() }
+        || *state
             .g_game
             .mousebuttons
-            .offset(unsafe { game_state() }.m_controls.mousebuse as isize)
+            .offset(state.m_controls.mousebuse as isize)
             != 0
     {
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_USE as i32) as byte;
-        unsafe { game_state() }.g_game.dclicks = 0 as i32;
+        state.g_game.dclicks = 0 as i32;
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as u32
-        && unsafe { game_state() }.g_game.next_weapon != 0 as i32
+    if state.g_game.gamestate as u32 == GS_LEVEL as u32
+        && state.g_game.next_weapon != 0 as i32
     {
-        let next_weapon = unsafe { game_state() }.g_game.next_weapon;
-        i = G_NextWeapon(unsafe { game_state() }, next_weapon);
+        let next_weapon = state.g_game.next_weapon;
+        i = G_NextWeapon(state, next_weapon);
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_CHANGE as i32) as byte;
         (*cmd).buttons = ((*cmd).buttons as i32 | i << BT_WEAPONSHIFT as i32) as byte;
     } else {
@@ -700,8 +700,8 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
             < (::core::mem::size_of::<[*mut i32; 8]>() as usize)
                 .wrapping_div(::core::mem::size_of::<*mut i32>() as usize)
         {
-            let mut key: i32 = *unsafe { game_state() }.m_controls.weapon_keys[i as usize];
-            if unsafe { game_state() }.g_game.gamekeydown[key as usize] != 0 {
+            let mut key: i32 = *state.m_controls.weapon_keys[i as usize];
+            if state.g_game.gamekeydown[key as usize] != 0 {
                 (*cmd).buttons = ((*cmd).buttons as i32 | BT_CHANGE as i32) as byte;
                 (*cmd).buttons = ((*cmd).buttons as i32 | i << BT_WEAPONSHIFT as i32) as byte;
                 break;
@@ -710,124 +710,124 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
             }
         }
     }
-    unsafe { game_state() }.g_game.next_weapon = 0 as i32;
-    if *unsafe { game_state() }
+    state.g_game.next_weapon = 0 as i32;
+    if *state
         .g_game
         .mousebuttons
-        .offset(unsafe { game_state() }.m_controls.mousebforward as isize)
+        .offset(state.m_controls.mousebforward as isize)
         != 0
     {
-        forward += unsafe { game_state() }.g_game.forwardmove[speed as usize] as i32;
+        forward += state.g_game.forwardmove[speed as usize] as i32;
     }
-    if *unsafe { game_state() }
+    if *state
         .g_game
         .mousebuttons
-        .offset(unsafe { game_state() }.m_controls.mousebbackward as isize)
+        .offset(state.m_controls.mousebbackward as isize)
         != 0
     {
-        forward -= unsafe { game_state() }.g_game.forwardmove[speed as usize] as i32;
+        forward -= state.g_game.forwardmove[speed as usize] as i32;
     }
-    if unsafe { game_state() }.m_controls.dclick_use != 0 {
-        if *unsafe { game_state() }
+    if state.m_controls.dclick_use != 0 {
+        if *state
             .g_game
             .mousebuttons
-            .offset(unsafe { game_state() }.m_controls.mousebforward as isize)
-            != unsafe { game_state() }.g_game.dclickstate
-            && unsafe { game_state() }.g_game.dclicktime > 1 as i32
+            .offset(state.m_controls.mousebforward as isize)
+            != state.g_game.dclickstate
+            && state.g_game.dclicktime > 1 as i32
         {
-            unsafe { game_state() }.g_game.dclickstate = *unsafe { game_state() }
+            state.g_game.dclickstate = *state
                 .g_game
                 .mousebuttons
-                .offset(unsafe { game_state() }.m_controls.mousebforward as isize);
-            if unsafe { game_state() }.g_game.dclickstate != 0 {
-                unsafe { game_state() }.g_game.dclicks += 1;
+                .offset(state.m_controls.mousebforward as isize);
+            if state.g_game.dclickstate != 0 {
+                state.g_game.dclicks += 1;
             }
-            if unsafe { game_state() }.g_game.dclicks == 2 as i32 {
+            if state.g_game.dclicks == 2 as i32 {
                 (*cmd).buttons = ((*cmd).buttons as i32 | BT_USE as i32) as byte;
-                unsafe { game_state() }.g_game.dclicks = 0 as i32;
+                state.g_game.dclicks = 0 as i32;
             } else {
-                unsafe { game_state() }.g_game.dclicktime = 0 as i32;
+                state.g_game.dclicktime = 0 as i32;
             }
         } else {
-            unsafe { game_state() }.g_game.dclicktime += unsafe { game_state() }.d_loop.ticdup;
-            if unsafe { game_state() }.g_game.dclicktime > 20 as i32 {
-                unsafe { game_state() }.g_game.dclicks = 0 as i32;
-                unsafe { game_state() }.g_game.dclickstate = 0 as boolean;
+            state.g_game.dclicktime += state.d_loop.ticdup;
+            if state.g_game.dclicktime > 20 as i32 {
+                state.g_game.dclicks = 0 as i32;
+                state.g_game.dclickstate = 0 as boolean;
             }
         }
-        bstrafe = (*unsafe { game_state() }
+        bstrafe = (*state
             .g_game
             .mousebuttons
-            .offset(unsafe { game_state() }.m_controls.mousebstrafe as isize)
+            .offset(state.m_controls.mousebstrafe as isize)
             != 0
-            || *unsafe { game_state() }
+            || *state
                 .g_game
                 .joybuttons
-                .offset(unsafe { game_state() }.m_controls.joybstrafe as isize)
+                .offset(state.m_controls.joybstrafe as isize)
                 != 0) as i32 as boolean;
-        if bstrafe != unsafe { game_state() }.g_game.dclickstate2
-            && unsafe { game_state() }.g_game.dclicktime2 > 1 as i32
+        if bstrafe != state.g_game.dclickstate2
+            && state.g_game.dclicktime2 > 1 as i32
         {
-            unsafe { game_state() }.g_game.dclickstate2 = bstrafe;
-            if unsafe { game_state() }.g_game.dclickstate2 != 0 {
-                unsafe { game_state() }.g_game.dclicks2 += 1;
+            state.g_game.dclickstate2 = bstrafe;
+            if state.g_game.dclickstate2 != 0 {
+                state.g_game.dclicks2 += 1;
             }
-            if unsafe { game_state() }.g_game.dclicks2 == 2 as i32 {
+            if state.g_game.dclicks2 == 2 as i32 {
                 (*cmd).buttons = ((*cmd).buttons as i32 | BT_USE as i32) as byte;
-                unsafe { game_state() }.g_game.dclicks2 = 0 as i32;
+                state.g_game.dclicks2 = 0 as i32;
             } else {
-                unsafe { game_state() }.g_game.dclicktime2 = 0 as i32;
+                state.g_game.dclicktime2 = 0 as i32;
             }
         } else {
-            unsafe { game_state() }.g_game.dclicktime2 += unsafe { game_state() }.d_loop.ticdup;
-            if unsafe { game_state() }.g_game.dclicktime2 > 20 as i32 {
-                unsafe { game_state() }.g_game.dclicks2 = 0 as i32;
-                unsafe { game_state() }.g_game.dclickstate2 = 0 as boolean;
+            state.g_game.dclicktime2 += state.d_loop.ticdup;
+            if state.g_game.dclicktime2 > 20 as i32 {
+                state.g_game.dclicks2 = 0 as i32;
+                state.g_game.dclickstate2 = 0 as boolean;
             }
         }
     }
-    forward += unsafe { game_state() }.g_game.mousey;
+    forward += state.g_game.mousey;
     if strafe {
-        side += unsafe { game_state() }.g_game.mousex * 2 as i32;
+        side += state.g_game.mousex * 2 as i32;
     } else {
         (*cmd).angleturn =
-            ((*cmd).angleturn as i32 - unsafe { game_state() }.g_game.mousex * 0x8 as i32) as i16;
+            ((*cmd).angleturn as i32 - state.g_game.mousex * 0x8 as i32) as i16;
     }
-    if unsafe { game_state() }.g_game.mousex == 0 as i32 {
-        unsafe { game_state() }.g_game.testcontrols_mousespeed = 0 as i32;
+    if state.g_game.mousex == 0 as i32 {
+        state.g_game.testcontrols_mousespeed = 0 as i32;
     }
-    unsafe { game_state() }.g_game.mousey = 0 as i32;
-    unsafe { game_state() }.g_game.mousex = unsafe { game_state() }.g_game.mousey;
-    if forward > unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] {
-        forward = unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] as i32;
-    } else if forward < -unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] {
-        forward = -unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] as i32;
+    state.g_game.mousey = 0 as i32;
+    state.g_game.mousex = state.g_game.mousey;
+    if forward > state.g_game.forwardmove[1 as i32 as usize] {
+        forward = state.g_game.forwardmove[1 as i32 as usize] as i32;
+    } else if forward < -state.g_game.forwardmove[1 as i32 as usize] {
+        forward = -state.g_game.forwardmove[1 as i32 as usize] as i32;
     }
-    if side > unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] {
-        side = unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] as i32;
-    } else if side < -unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] {
-        side = -unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] as i32;
+    if side > state.g_game.forwardmove[1 as i32 as usize] {
+        side = state.g_game.forwardmove[1 as i32 as usize] as i32;
+    } else if side < -state.g_game.forwardmove[1 as i32 as usize] {
+        side = -state.g_game.forwardmove[1 as i32 as usize] as i32;
     }
     (*cmd).forwardmove = ((*cmd).forwardmove as i32 + forward) as i8;
     (*cmd).sidemove = ((*cmd).sidemove as i32 + side) as i8;
-    if unsafe { game_state() }.g_game.sendpause {
-        unsafe { game_state() }.g_game.sendpause = false;
+    if state.g_game.sendpause {
+        state.g_game.sendpause = false;
         (*cmd).buttons = (BT_SPECIAL as i32 | BTS_PAUSE as i32) as byte;
     }
-    if unsafe { game_state() }.g_game.sendsave {
-        unsafe { game_state() }.g_game.sendsave = false;
+    if state.g_game.sendsave {
+        state.g_game.sendsave = false;
         (*cmd).buttons = (BT_SPECIAL as i32
             | BTS_SAVEGAME as i32
-            | unsafe { game_state() }.g_game.savegameslot << BTS_SAVESHIFT as i32)
+            | state.g_game.savegameslot << BTS_SAVESHIFT as i32)
             as byte;
     }
-    if unsafe { game_state() }.g_game.lowres_turn {
+    if state.g_game.lowres_turn {
         let mut desired_angleturn: i16 = 0;
         desired_angleturn = ((*cmd).angleturn as i32
-            + unsafe { game_state() }.g_game.g_build_ticcmd_carry as i32)
+            + state.g_game.g_build_ticcmd_carry as i32)
             as i16;
         (*cmd).angleturn = (desired_angleturn as i32 + 128 as i32 & 0xff00 as i32) as i16;
-        unsafe { game_state() }.g_game.g_build_ticcmd_carry =
+        state.g_game.g_build_ticcmd_carry =
             (desired_angleturn as i32 - (*cmd).angleturn as i32) as i16;
     }
 }

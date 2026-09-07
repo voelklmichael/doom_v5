@@ -612,13 +612,11 @@ pub unsafe fn HU_queueChatChar(mut c: ::core::ffi::c_char) {
             unsafe { game_state() }.hu_stuff.head + 1 as i32 & QUEUESIZE - 1 as i32;
     };
 }
-pub unsafe fn HU_dequeueChatChar() -> ::core::ffi::c_char {
+pub unsafe fn HU_dequeueChatChar(state: &mut HuStuffState) -> ::core::ffi::c_char {
     let mut c: ::core::ffi::c_char = 0;
-    if unsafe { game_state() }.hu_stuff.head != unsafe { game_state() }.hu_stuff.tail {
-        c = unsafe { game_state() }.hu_stuff.chatchars
-            [unsafe { game_state() }.hu_stuff.tail as usize];
-        unsafe { game_state() }.hu_stuff.tail =
-            unsafe { game_state() }.hu_stuff.tail + 1 as i32 & QUEUESIZE - 1 as i32;
+    if state.head != state.tail {
+        c = state.chatchars[state.tail as usize];
+        state.tail = state.tail + 1 as i32 & QUEUESIZE - 1 as i32;
     } else {
         c = 0 as ::core::ffi::c_char;
     }
