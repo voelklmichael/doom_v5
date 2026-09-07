@@ -34,9 +34,6 @@ use crate::src::r_plane::distscale;
 use crate::src::r_plane::yslope;
 use crate::src::r_plane::R_ClearPlanes;
 use crate::src::r_plane::R_DrawPlanes;
-use crate::src::r_segs::rw_distance;
-use crate::src::r_segs::rw_normalangle;
-use crate::src::r_segs::walllights;
 use crate::src::r_sky::R_InitSkyMap;
 use crate::src::r_things::R_ClearSprites;
 use crate::src::r_things::R_DrawMasked;
@@ -311,11 +308,11 @@ pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
     let mut num: fixed_t = 0;
     let mut den: i32 = 0;
     anglea = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(unsafe { game_state() }.r_main.viewangle));
-    angleb = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(rw_normalangle));
+    angleb = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(unsafe { game_state() }.r_segs.rw_normalangle));
     sinea = finesine[(anglea >> ANGLETOFINESHIFT) as usize] as i32;
     sineb = finesine[(angleb >> ANGLETOFINESHIFT) as usize] as i32;
     num = FixedMul(unsafe { game_state() }.r_main.projection, sineb as fixed_t) << unsafe { game_state() }.r_main.detailshift;
-    den = FixedMul(rw_distance, sinea as fixed_t) as i32;
+    den = FixedMul(unsafe { game_state() }.r_segs.rw_distance, sinea as fixed_t) as i32;
     if den > num >> 16 as i32 {
         scale = FixedDiv(num, den as fixed_t);
         if scale > 64 as i32 * FRACUNIT {
@@ -541,7 +538,7 @@ pub unsafe fn R_SetupFrame(mut player: *mut player_t) {
             (((*player).fixedcolormap * 256 as i32) as usize)
                 .wrapping_mul(::core::mem::size_of::<lighttable_t>() as usize) as isize,
         );
-        walllights = &raw mut unsafe { game_state() }.r_main.scalelightfixed as *mut *mut lighttable_t;
+        unsafe { game_state() }.r_segs.walllights = &raw mut unsafe { game_state() }.r_main.scalelightfixed as *mut *mut lighttable_t;
         i = 0 as i32;
         while i < MAXLIGHTSCALE {
             unsafe { game_state() }.r_main.scalelightfixed[i as usize] = unsafe { game_state() }.r_main.fixedcolormap;
