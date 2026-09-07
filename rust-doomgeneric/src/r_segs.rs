@@ -23,11 +23,6 @@ use crate::src::r_main::LIGHTLEVELS;
 use crate::src::r_main::LIGHTSCALESHIFT;
 use crate::src::r_main::LIGHTSEGSHIFT;
 use crate::src::r_main::MAXLIGHTSCALE;
-use crate::src::r_plane::ceilingclip;
-use crate::src::r_plane::ceilingplane;
-use crate::src::r_plane::floorclip;
-use crate::src::r_plane::floorplane;
-use crate::src::r_plane::lastopening;
 use crate::src::r_plane::R_CheckPlane;
 use crate::src::r_things::R_DrawMaskedColumn;
 use crate::src::stdint_types::byte;
@@ -213,33 +208,33 @@ pub unsafe fn R_RenderSegLoop() {
     let mut bottom: i32 = 0;
     while unsafe { game_state() }.r_segs.rw_x < unsafe { game_state() }.r_segs.rw_stopx {
         yl = unsafe { game_state() }.r_segs.topfrac as i32 + HEIGHTUNIT - 1 as i32 >> HEIGHTBITS;
-        if yl < ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32 {
-            yl = ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
+        if yl < unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32 {
+            yl = unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
         }
         if unsafe { game_state() }.r_segs.markceiling {
-            top = ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
+            top = unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
             bottom = yl - 1 as i32;
-            if bottom >= floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
-                bottom = floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
+            if bottom >= unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
+                bottom = unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
             }
             if top <= bottom {
-                (*ceilingplane).top[unsafe { game_state() }.r_segs.rw_x as usize] = top as byte;
-                (*ceilingplane).bottom[unsafe { game_state() }.r_segs.rw_x as usize] = bottom as byte;
+                (*unsafe { game_state() }.r_plane.ceilingplane).top[unsafe { game_state() }.r_segs.rw_x as usize] = top as byte;
+                (*unsafe { game_state() }.r_plane.ceilingplane).bottom[unsafe { game_state() }.r_segs.rw_x as usize] = bottom as byte;
             }
         }
         yh = (unsafe { game_state() }.r_segs.bottomfrac >> HEIGHTBITS) as i32;
-        if yh >= floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
-            yh = floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
+        if yh >= unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
+            yh = unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
         }
         if unsafe { game_state() }.r_segs.markfloor {
             top = yh + 1 as i32;
-            bottom = floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
-            if top <= ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
-                top = ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
+            bottom = unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
+            if top <= unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
+                top = unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
             }
             if top <= bottom {
-                (*floorplane).top[unsafe { game_state() }.r_segs.rw_x as usize] = top as byte;
-                (*floorplane).bottom[unsafe { game_state() }.r_segs.rw_x as usize] = bottom as byte;
+                (*unsafe { game_state() }.r_plane.floorplane).top[unsafe { game_state() }.r_segs.rw_x as usize] = top as byte;
+                (*unsafe { game_state() }.r_plane.floorplane).bottom[unsafe { game_state() }.r_segs.rw_x as usize] = bottom as byte;
             }
         }
         if unsafe { game_state() }.r_segs.segtextured {
@@ -262,14 +257,14 @@ pub unsafe fn R_RenderSegLoop() {
             unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_segs.rw_midtexturemid;
             unsafe { game_state() }.r_draw.dc_source = R_GetColumn(unsafe { game_state() }.r_segs.midtexture, texturecolumn as i32);
             unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
-            ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = unsafe { game_state() }.r_draw.viewheight as i16;
-            floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = -(1 as i32) as i16;
+            unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = unsafe { game_state() }.r_draw.viewheight as i16;
+            unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = -(1 as i32) as i16;
         } else {
             if unsafe { game_state() }.r_segs.toptexture != 0 {
                 mid = (unsafe { game_state() }.r_segs.pixhigh >> HEIGHTBITS) as i32;
                 unsafe { game_state() }.r_segs.pixhigh += unsafe { game_state() }.r_segs.pixhighstep;
-                if mid >= floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
-                    mid = floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
+                if mid >= unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
+                    mid = unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
                 }
                 if mid >= yl {
                     unsafe { game_state() }.r_draw.dc_yl = yl;
@@ -277,18 +272,18 @@ pub unsafe fn R_RenderSegLoop() {
                     unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_segs.rw_toptexturemid;
                     unsafe { game_state() }.r_draw.dc_source = R_GetColumn(unsafe { game_state() }.r_segs.toptexture, texturecolumn as i32);
                     unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
-                    ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = mid as i16;
+                    unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = mid as i16;
                 } else {
-                    ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = (yl - 1 as i32) as i16;
+                    unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = (yl - 1 as i32) as i16;
                 }
             } else if unsafe { game_state() }.r_segs.markceiling {
-                ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = (yl - 1 as i32) as i16;
+                unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = (yl - 1 as i32) as i16;
             }
             if unsafe { game_state() }.r_segs.bottomtexture != 0 {
                 mid = unsafe { game_state() }.r_segs.pixlow as i32 + HEIGHTUNIT - 1 as i32 >> HEIGHTBITS;
                 unsafe { game_state() }.r_segs.pixlow += unsafe { game_state() }.r_segs.pixlowstep;
-                if mid <= ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
-                    mid = ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
+                if mid <= unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 {
+                    mid = unsafe { game_state() }.r_plane.ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
                 }
                 if mid <= yh {
                     unsafe { game_state() }.r_draw.dc_yl = mid;
@@ -296,12 +291,12 @@ pub unsafe fn R_RenderSegLoop() {
                     unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_segs.rw_bottomtexturemid;
                     unsafe { game_state() }.r_draw.dc_source = R_GetColumn(unsafe { game_state() }.r_segs.bottomtexture, texturecolumn as i32);
                     unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
-                    floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = mid as i16;
+                    unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = mid as i16;
                 } else {
-                    floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = (yh + 1 as i32) as i16;
+                    unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = (yh + 1 as i32) as i16;
                 }
             } else if unsafe { game_state() }.r_segs.markfloor {
-                floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = (yh + 1 as i32) as i16;
+                unsafe { game_state() }.r_plane.floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = (yh + 1 as i32) as i16;
             }
             if unsafe { game_state() }.r_segs.maskedtexture {
                 *unsafe { game_state() }.r_segs.maskedtexturecol.offset(unsafe { game_state() }.r_segs.rw_x as isize) = texturecolumn as i16;
@@ -460,9 +455,9 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         unsafe { game_state() }.r_segs.rw_bottomtexturemid += (*sidedef).rowoffset;
         if (*sidedef).midtexture != 0 {
             unsafe { game_state() }.r_segs.maskedtexture = true;
-            unsafe { game_state() }.r_segs.maskedtexturecol = lastopening.offset(-(unsafe { game_state() }.r_segs.rw_x as isize));
+            unsafe { game_state() }.r_segs.maskedtexturecol = unsafe { game_state() }.r_plane.lastopening.offset(-(unsafe { game_state() }.r_segs.rw_x as isize));
             (*ds_p).maskedtexturecol = unsafe { game_state() }.r_segs.maskedtexturecol;
-            lastopening = lastopening.offset((unsafe { game_state() }.r_segs.rw_stopx - unsafe { game_state() }.r_segs.rw_x) as isize);
+            unsafe { game_state() }.r_plane.lastopening = unsafe { game_state() }.r_plane.lastopening.offset((unsafe { game_state() }.r_segs.rw_stopx - unsafe { game_state() }.r_segs.rw_x) as isize);
         }
     }
     unsafe { game_state() }.r_segs.segtextured = (unsafe { game_state() }.r_segs.midtexture | unsafe { game_state() }.r_segs.toptexture | unsafe { game_state() }.r_segs.bottomtexture) != 0 || unsafe { game_state() }.r_segs.maskedtexture;
@@ -532,29 +527,29 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         }
     }
     if unsafe { game_state() }.r_segs.markceiling {
-        ceilingplane = R_CheckPlane(ceilingplane, unsafe { game_state() }.r_segs.rw_x, unsafe { game_state() }.r_segs.rw_stopx - 1 as i32);
+        unsafe { game_state() }.r_plane.ceilingplane = R_CheckPlane(unsafe { game_state() }.r_plane.ceilingplane, unsafe { game_state() }.r_segs.rw_x, unsafe { game_state() }.r_segs.rw_stopx - 1 as i32);
     }
     if unsafe { game_state() }.r_segs.markfloor {
-        floorplane = R_CheckPlane(floorplane, unsafe { game_state() }.r_segs.rw_x, unsafe { game_state() }.r_segs.rw_stopx - 1 as i32);
+        unsafe { game_state() }.r_plane.floorplane = R_CheckPlane(unsafe { game_state() }.r_plane.floorplane, unsafe { game_state() }.r_segs.rw_x, unsafe { game_state() }.r_segs.rw_stopx - 1 as i32);
     }
     R_RenderSegLoop();
     if ((*ds_p).silhouette & SIL_TOP != 0 || unsafe { game_state() }.r_segs.maskedtexture) && (*ds_p).sprtopclip.is_null() {
         memcpy(
-            lastopening as *mut ::core::ffi::c_void,
-            (&raw mut ceilingclip as *mut i16).offset(start as isize) as *const ::core::ffi::c_void,
+            unsafe { game_state() }.r_plane.lastopening as *mut ::core::ffi::c_void,
+            (&raw mut unsafe { game_state() }.r_plane.ceilingclip as *mut i16).offset(start as isize) as *const ::core::ffi::c_void,
             (2 as i32 * (unsafe { game_state() }.r_segs.rw_stopx - start)) as size_t,
         );
-        (*ds_p).sprtopclip = lastopening.offset(-(start as isize));
-        lastopening = lastopening.offset((unsafe { game_state() }.r_segs.rw_stopx - start) as isize);
+        (*ds_p).sprtopclip = unsafe { game_state() }.r_plane.lastopening.offset(-(start as isize));
+        unsafe { game_state() }.r_plane.lastopening = unsafe { game_state() }.r_plane.lastopening.offset((unsafe { game_state() }.r_segs.rw_stopx - start) as isize);
     }
     if ((*ds_p).silhouette & SIL_BOTTOM != 0 || unsafe { game_state() }.r_segs.maskedtexture) && (*ds_p).sprbottomclip.is_null() {
         memcpy(
-            lastopening as *mut ::core::ffi::c_void,
-            (&raw mut floorclip as *mut i16).offset(start as isize) as *const ::core::ffi::c_void,
+            unsafe { game_state() }.r_plane.lastopening as *mut ::core::ffi::c_void,
+            (&raw mut unsafe { game_state() }.r_plane.floorclip as *mut i16).offset(start as isize) as *const ::core::ffi::c_void,
             (2 as i32 * (unsafe { game_state() }.r_segs.rw_stopx - start)) as size_t,
         );
-        (*ds_p).sprbottomclip = lastopening.offset(-(start as isize));
-        lastopening = lastopening.offset((unsafe { game_state() }.r_segs.rw_stopx - start) as isize);
+        (*ds_p).sprbottomclip = unsafe { game_state() }.r_plane.lastopening.offset(-(start as isize));
+        unsafe { game_state() }.r_plane.lastopening = unsafe { game_state() }.r_plane.lastopening.offset((unsafe { game_state() }.r_segs.rw_stopx - start) as isize);
     }
     if unsafe { game_state() }.r_segs.maskedtexture && (*ds_p).silhouette & SIL_TOP == 0 {
         (*ds_p).silhouette |= SIL_TOP;
