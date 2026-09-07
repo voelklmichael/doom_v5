@@ -452,7 +452,7 @@ pub unsafe fn ST_refreshBackground() {
                 unsafe { game_state() }.st_stuff.faceback,
             );
         }
-        V_RestoreBuffer(unsafe { &mut game_state().v_video });
+        V_RestoreBuffer(unsafe { game_state() });
         V_CopyRect(
             unsafe { &mut game_state().v_video },
             ST_X,

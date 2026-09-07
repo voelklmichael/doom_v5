@@ -403,7 +403,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         }
     }
     if state.g_game.testcontrols {
-        V_DrawMouseSpeedBox(state.g_game.testcontrols_mousespeed);
+        V_DrawMouseSpeedBox(&mut state.i_video, state.g_game.testcontrols_mousespeed);
     }
     state.d_main.d_display_menuactivestate = state.m_menu.menuactive;
     state.d_main.d_display_viewactivestate = state.g_game.viewactive;
@@ -579,7 +579,7 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
     I_SetWindowTitle(state.doomstat.gamedescription);
     I_SetGrabMouseCallback(Some(D_GrabMouseCallback as unsafe fn() -> boolean));
     I_InitGraphics(state);
-    V_RestoreBuffer(&mut state.v_video);
+    V_RestoreBuffer(state);
     R_ExecuteSetViewSize(state);
     D_StartGameLoop(state);
     if state.g_game.testcontrols {
