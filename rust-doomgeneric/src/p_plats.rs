@@ -9,8 +9,6 @@ use crate::src::p_floor::T_MovePlane;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
-use crate::src::p_setup::sectors;
-use crate::src::p_setup::sides;
 use crate::src::p_spec::plat_t;
 use crate::src::p_spec::P_FindHighestFloorSurrounding;
 use crate::src::p_spec::P_FindLowestFloorSurrounding;
@@ -160,7 +158,7 @@ pub unsafe fn EV_DoPlat(
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -182,7 +180,7 @@ pub unsafe fn EV_DoPlat(
             3 => {
                 (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
                 (*sec).floorpic =
-                    (*(*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).sector).floorpic;
+                    (*(*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).sector).floorpic;
                 (*plat).high = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
@@ -196,7 +194,7 @@ pub unsafe fn EV_DoPlat(
             2 => {
                 (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
                 (*sec).floorpic =
-                    (*(*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).sector).floorpic;
+                    (*(*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).sector).floorpic;
                 (*plat).high = ((*sec).floorheight as i32 + amount * FRACUNIT) as fixed_t;
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;

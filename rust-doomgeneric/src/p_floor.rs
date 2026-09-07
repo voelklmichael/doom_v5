@@ -6,7 +6,6 @@ use crate::src::m_fixed::INT_MAX;
 use crate::src::p_map::P_ChangeSector;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
-use crate::src::p_setup::sectors;
 use crate::src::p_spec::floormove_t;
 use crate::src::p_spec::getSector;
 use crate::src::p_spec::getSide;
@@ -212,7 +211,7 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -340,7 +339,7 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
                 i = 0 as i32;
                 while i < (*sec).linecount {
                     if twoSided(secnum, i) != 0 {
-                        if (*getSide(secnum, i, 0 as i32)).sector.offset_from(sectors) as i64
+                        if (*getSide(secnum, i, 0 as i32)).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64
                             == secnum as i64
                         {
                             sec = getSector(secnum, i, 1 as i32);
@@ -404,7 +403,7 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -441,10 +440,10 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
             while i < (*sec).linecount {
                 if !((**(*sec).lines.offset(i as isize)).flags as i32 & ML_TWOSIDED == 0) {
                     tsec = (**(*sec).lines.offset(i as isize)).frontsector;
-                    newsecnum = tsec.offset_from(sectors) as i64 as i32;
+                    newsecnum = tsec.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32;
                     if !(secnum != newsecnum) {
                         tsec = (**(*sec).lines.offset(i as isize)).backsector;
-                        newsecnum = tsec.offset_from(sectors) as i64 as i32;
+                        newsecnum = tsec.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32;
                         if !((*tsec).floorpic as i32 != texture) {
                             height += stairsize as i32;
                             if (*tsec).specialdata.is_null() {

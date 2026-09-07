@@ -13,8 +13,6 @@ use crate::src::p_inter::{
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t, thinker_t};
-use crate::src::p_setup::sectors;
-use crate::src::p_setup::sides;
 use crate::src::p_spec::plat_t;
 use crate::src::p_spec::P_FindLowestCeilingSurrounding;
 use crate::src::p_spec::P_FindSectorFromLineTag;
@@ -234,7 +232,7 @@ pub unsafe fn EV_DoDoor(mut line: *mut line_t, mut type_0: vldoor_e) -> i32 {
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -365,7 +363,7 @@ pub unsafe fn EV_VerticalDoor(mut line: *mut line_t, mut thing: *mut mobj_t) {
         }
         _ => {}
     }
-    sec = (*sides.offset((*line).sidenum[(side ^ 1 as i32) as usize] as isize)).sector;
+    sec = (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[(side ^ 1 as i32) as usize] as isize)).sector;
     if !(*sec).specialdata.is_null() {
         door = (*sec).specialdata as *mut vldoor_t;
         match (*line).special as i32 {

@@ -48,11 +48,6 @@ use crate::src::p_plats::PPlatsState;
 use crate::src::p_plats::{
     blazeDWUS, downWaitUpStay, perpetualRaise, plattype_e, raiseToNearestAndChange,
 };
-use crate::src::p_setup::lines;
-use crate::src::p_setup::numlines;
-use crate::src::p_setup::numsectors;
-use crate::src::p_setup::sectors;
-use crate::src::p_setup::sides;
 use crate::src::p_switch::bwhere_e;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_switch::P_ChangeSwitchTexture;
@@ -404,8 +399,8 @@ pub unsafe fn P_InitPicAnims() {
     }
 }
 pub unsafe fn getSide(mut currentSector: i32, mut line: i32, mut side: i32) -> *mut side_t {
-    return sides.offset(
-        *(&raw mut (**(*sectors.offset(currentSector as isize))
+    return unsafe { game_state() }.p_setup.sides.offset(
+        *(&raw mut (**(*unsafe { game_state() }.p_setup.sectors.offset(currentSector as isize))
             .lines
             .offset(line as isize))
         .sidenum as *mut i16)
@@ -413,8 +408,8 @@ pub unsafe fn getSide(mut currentSector: i32, mut line: i32, mut side: i32) -> *
     ) as *mut side_t;
 }
 pub unsafe fn getSector(mut currentSector: i32, mut line: i32, mut side: i32) -> *mut sector_t {
-    return (*sides.offset(
-        (**(*sectors.offset(currentSector as isize))
+    return (*unsafe { game_state() }.p_setup.sides.offset(
+        (**(*unsafe { game_state() }.p_setup.sectors.offset(currentSector as isize))
             .lines
             .offset(line as isize))
         .sidenum[side as usize] as isize,
@@ -422,7 +417,7 @@ pub unsafe fn getSector(mut currentSector: i32, mut line: i32, mut side: i32) ->
     .sector;
 }
 pub unsafe fn twoSided(mut sector: i32, mut line: i32) -> i32 {
-    return (**(*sectors.offset(sector as isize))
+    return (**(*unsafe { game_state() }.p_setup.sectors.offset(sector as isize))
         .lines
         .offset(line as isize))
     .flags as i32
@@ -553,8 +548,8 @@ pub unsafe fn P_FindHighestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t
 pub unsafe fn P_FindSectorFromLineTag(mut line: *mut line_t, mut start: i32) -> i32 {
     let mut i: i32 = 0;
     i = start + 1 as i32;
-    while i < numsectors {
-        if (*sectors.offset(i as isize)).tag as i32 == (*line).tag as i32 {
+    while i < unsafe { game_state() }.p_setup.numsectors {
+        if (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).tag as i32 == (*line).tag as i32 {
             return i;
         }
         i += 1;
@@ -583,7 +578,7 @@ pub unsafe fn P_FindMinSurroundingLight(mut sector: *mut sector_t, mut max: i32)
 pub unsafe fn P_CrossSpecialLine(mut linenum: i32, mut side: i32, mut thing: *mut mobj_t) {
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut ok: i32 = 0;
-    line = lines.offset(linenum as isize) as *mut line_t;
+    line = unsafe { game_state() }.p_setup.lines.offset(linenum as isize) as *mut line_t;
     if (*thing).player.is_null() {
         match (*thing).type_0 as u32 {
             33 | 34 | 35 | 31 | 32 | 16 => return,
@@ -1052,7 +1047,7 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
         match (*line).special as i32 {
             48 => {
                 let ref mut fresh0 =
-                    (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).textureoffset;
+                    (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).textureoffset;
                 *fresh0 += FRACUNIT;
             }
             _ => {}
@@ -1066,21 +1061,21 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
             if state.buttonlist[i as usize].btimer == 0 {
                 match state.buttonlist[i as usize].where_0 as u32 {
                     0 => {
-                        (*sides.offset(
+                        (*unsafe { game_state() }.p_setup.sides.offset(
                             (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
                                 as isize,
                         ))
                         .toptexture = state.buttonlist[i as usize].btexture as i16;
                     }
                     1 => {
-                        (*sides.offset(
+                        (*unsafe { game_state() }.p_setup.sides.offset(
                             (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
                                 as isize,
                         ))
                         .midtexture = state.buttonlist[i as usize].btexture as i16;
                     }
                     2 => {
-                        (*sides.offset(
+                        (*unsafe { game_state() }.p_setup.sides.offset(
                             (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
                                 as isize,
                         ))
@@ -1163,7 +1158,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
         if !(secnum >= 0 as i32) {
             break;
         }
-        s1 = sectors.offset(secnum as isize) as *mut sector_t;
+        s1 = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
         if !(*s1).specialdata.is_null() {
             continue;
         }
@@ -1249,9 +1244,9 @@ pub unsafe fn P_SpawnSpecials(
     } else {
         unsafe { game_state() }.p_spec.levelTimer = false;
     }
-    sector = sectors;
+    sector = unsafe { game_state() }.p_setup.sectors;
     i = 0 as i32;
-    while i < numsectors {
+    while i < unsafe { game_state() }.p_setup.numsectors {
         if !((*sector).special == 0) {
             match (*sector).special as i32 {
                 1 => {
@@ -1296,15 +1291,15 @@ pub unsafe fn P_SpawnSpecials(
     }
     unsafe { game_state() }.p_spec.numlinespecials = 0 as i16;
     i = 0 as i32;
-    while i < numlines {
-        match (*lines.offset(i as isize)).special as i32 {
+    while i < unsafe { game_state() }.p_setup.numlines {
+        match (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).special as i32 {
             48 => {
                 if unsafe { game_state() }.p_spec.numlinespecials as i32 >= MAXLINEANIMS {
                     I_Error("Too many scrolling wall linedefs! (Vanilla limit is 64)");
                 }
                 unsafe { game_state() }.p_spec.linespeciallist
                     [unsafe { game_state() }.p_spec.numlinespecials as usize] =
-                    lines.offset(i as isize) as *mut line_t;
+                    unsafe { game_state() }.p_setup.lines.offset(i as isize) as *mut line_t;
                 unsafe { game_state() }.p_spec.numlinespecials += 1;
             }
             _ => {}

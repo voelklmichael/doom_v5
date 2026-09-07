@@ -10,9 +10,6 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_mobj::subsector_t;
-use crate::src::p_setup::nodes;
-use crate::src::p_setup::numnodes;
-use crate::src::p_setup::subsectors;
 use crate::src::r_bsp::R_ClearClipSegs;
 use crate::src::r_bsp::R_ClearDrawSegs;
 use crate::src::r_bsp::R_RenderBSPNode;
@@ -503,16 +500,16 @@ pub unsafe fn R_PointInSubsector(mut x: fixed_t, mut y: fixed_t) -> *mut subsect
     let mut node: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     let mut nodenum: i32 = 0;
-    if numnodes == 0 {
-        return subsectors;
+    if unsafe { game_state() }.p_setup.numnodes == 0 {
+        return unsafe { game_state() }.p_setup.subsectors;
     }
-    nodenum = numnodes - 1 as i32;
+    nodenum = unsafe { game_state() }.p_setup.numnodes - 1 as i32;
     while nodenum & NF_SUBSECTOR == 0 {
-        node = nodes.offset(nodenum as isize) as *mut node_t;
+        node = unsafe { game_state() }.p_setup.nodes.offset(nodenum as isize) as *mut node_t;
         side = R_PointOnSide(x, y, node);
         nodenum = (*node).children[side as usize] as i32;
     }
-    return subsectors.offset((nodenum & !NF_SUBSECTOR) as isize) as *mut subsector_t;
+    return unsafe { game_state() }.p_setup.subsectors.offset((nodenum & !NF_SUBSECTOR) as isize) as *mut subsector_t;
 }
 pub unsafe fn R_SetupFrame(mut player: *mut player_t) {
     let mut i: i32 = 0;
@@ -551,7 +548,7 @@ pub unsafe fn R_RenderPlayerView(mut player: *mut player_t) {
     R_ClearPlanes();
     R_ClearSprites();
     NetUpdate();
-    R_RenderBSPNode(numnodes - 1 as i32);
+    R_RenderBSPNode(unsafe { game_state() }.p_setup.numnodes - 1 as i32);
     NetUpdate();
     R_DrawPlanes();
     NetUpdate();

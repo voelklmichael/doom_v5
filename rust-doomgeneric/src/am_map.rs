@@ -22,14 +22,6 @@ use crate::src::m_fixed::INT_MAX;
 use crate::src::m_misc::M_snprintf;
 use crate::src::p_maputl::MAPBLOCKUNITS;
 use crate::src::p_mobj::mobj_t;
-use crate::src::p_setup::bmaporgx;
-use crate::src::p_setup::bmaporgy;
-use crate::src::p_setup::lines;
-use crate::src::p_setup::numlines;
-use crate::src::p_setup::numsectors;
-use crate::src::p_setup::numvertexes;
-use crate::src::p_setup::sectors;
-use crate::src::p_setup::vertexes;
 use crate::src::p_spec::ML_MAPPED;
 use crate::src::p_spec::ML_SECRET;
 use crate::src::st_stuff::ST_Responder;
@@ -602,16 +594,16 @@ pub unsafe fn AM_findMinMaxBoundaries() {
     unsafe { game_state() }.am_map.max_y = -INT_MAX as fixed_t;
     unsafe { game_state() }.am_map.max_x = unsafe { game_state() }.am_map.max_y;
     i = 0 as i32;
-    while i < numvertexes {
-        if (*vertexes.offset(i as isize)).x < unsafe { game_state() }.am_map.min_x {
-            unsafe { game_state() }.am_map.min_x = (*vertexes.offset(i as isize)).x;
-        } else if (*vertexes.offset(i as isize)).x > unsafe { game_state() }.am_map.max_x {
-            unsafe { game_state() }.am_map.max_x = (*vertexes.offset(i as isize)).x;
+    while i < unsafe { game_state() }.p_setup.numvertexes {
+        if (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).x < unsafe { game_state() }.am_map.min_x {
+            unsafe { game_state() }.am_map.min_x = (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).x;
+        } else if (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).x > unsafe { game_state() }.am_map.max_x {
+            unsafe { game_state() }.am_map.max_x = (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).x;
         }
-        if (*vertexes.offset(i as isize)).y < unsafe { game_state() }.am_map.min_y {
-            unsafe { game_state() }.am_map.min_y = (*vertexes.offset(i as isize)).y;
-        } else if (*vertexes.offset(i as isize)).y > unsafe { game_state() }.am_map.max_y {
-            unsafe { game_state() }.am_map.max_y = (*vertexes.offset(i as isize)).y;
+        if (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).y < unsafe { game_state() }.am_map.min_y {
+            unsafe { game_state() }.am_map.min_y = (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).y;
+        } else if (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).y > unsafe { game_state() }.am_map.max_y {
+            unsafe { game_state() }.am_map.max_y = (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).y;
         }
         i += 1;
     }
@@ -1220,9 +1212,9 @@ pub unsafe fn AM_drawGrid(mut color: i32) {
         b: mpoint_t { x: 0, y: 0 },
     };
     start = unsafe { game_state() }.am_map.m_x;
-    if (start as i32 - bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
+    if (start as i32 - unsafe { game_state() }.p_setup.bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
         start += (MAPBLOCKUNITS << FRACBITS)
-            - (start as i32 - bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS);
+            - (start as i32 - unsafe { game_state() }.p_setup.bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS);
     }
     end = unsafe { game_state() }.am_map.m_x + unsafe { game_state() }.am_map.m_w;
     ml.a.y = unsafe { game_state() }.am_map.m_y;
@@ -1235,9 +1227,9 @@ pub unsafe fn AM_drawGrid(mut color: i32) {
         x += MAPBLOCKUNITS << FRACBITS;
     }
     start = unsafe { game_state() }.am_map.m_y;
-    if (start as i32 - bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
+    if (start as i32 - unsafe { game_state() }.p_setup.bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
         start += (MAPBLOCKUNITS << FRACBITS)
-            - (start as i32 - bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS);
+            - (start as i32 - unsafe { game_state() }.p_setup.bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS);
     }
     end = unsafe { game_state() }.am_map.m_y + unsafe { game_state() }.am_map.m_h;
     ml.a.x = unsafe { game_state() }.am_map.m_x;
@@ -1257,29 +1249,29 @@ pub unsafe fn AM_drawWalls() {
         b: mpoint_t { x: 0, y: 0 },
     };
     i = 0 as i32;
-    while i < numlines {
-        l.a.x = (*(*lines.offset(i as isize)).v1).x;
-        l.a.y = (*(*lines.offset(i as isize)).v1).y;
-        l.b.x = (*(*lines.offset(i as isize)).v2).x;
-        l.b.y = (*(*lines.offset(i as isize)).v2).y;
-        if unsafe { game_state() }.am_map.cheating != 0 || (*lines.offset(i as isize)).flags as i32 & ML_MAPPED != 0 {
-            if !((*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE != 0 && unsafe { game_state() }.am_map.cheating == 0) {
-                if (*lines.offset(i as isize)).backsector.is_null() {
+    while i < unsafe { game_state() }.p_setup.numlines {
+        l.a.x = (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).v1).x;
+        l.a.y = (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).v1).y;
+        l.b.x = (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).v2).x;
+        l.b.y = (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).v2).y;
+        if unsafe { game_state() }.am_map.cheating != 0 || (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).flags as i32 & ML_MAPPED != 0 {
+            if !((*unsafe { game_state() }.p_setup.lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE != 0 && unsafe { game_state() }.am_map.cheating == 0) {
+                if (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).backsector.is_null() {
                     AM_drawMline(&raw mut l, WALLCOLORS + unsafe { game_state() }.am_map.lightlev);
-                } else if (*lines.offset(i as isize)).special as i32 == 39 as i32 {
+                } else if (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).special as i32 == 39 as i32 {
                     AM_drawMline(&raw mut l, WALLCOLORS + WALLRANGE / 2 as i32);
-                } else if (*lines.offset(i as isize)).flags as i32 & ML_SECRET != 0 {
+                } else if (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).flags as i32 & ML_SECRET != 0 {
                     if unsafe { game_state() }.am_map.cheating != 0 {
                         AM_drawMline(&raw mut l, SECRETWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
                     } else {
                         AM_drawMline(&raw mut l, WALLCOLORS + unsafe { game_state() }.am_map.lightlev);
                     }
-                } else if (*(*lines.offset(i as isize)).backsector).floorheight
-                    != (*(*lines.offset(i as isize)).frontsector).floorheight
+                } else if (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).backsector).floorheight
+                    != (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).frontsector).floorheight
                 {
                     AM_drawMline(&raw mut l, FDWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
-                } else if (*(*lines.offset(i as isize)).backsector).ceilingheight
-                    != (*(*lines.offset(i as isize)).frontsector).ceilingheight
+                } else if (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).backsector).ceilingheight
+                    != (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).frontsector).ceilingheight
                 {
                     AM_drawMline(&raw mut l, CDWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
                 } else if unsafe { game_state() }.am_map.cheating != 0 {
@@ -1287,7 +1279,7 @@ pub unsafe fn AM_drawWalls() {
                 }
             }
         } else if (*unsafe { game_state() }.am_map.plr).powers[pw_allmap as i32 as usize] != 0 {
-            if (*lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE == 0 {
+            if (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE == 0 {
                 AM_drawMline(&raw mut l, GRAYS + 3 as i32);
             }
         }
@@ -1413,8 +1405,8 @@ pub unsafe fn AM_drawThings(mut colors: i32, mut colorrange: i32) {
     let mut i: i32 = 0;
     let mut t: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     i = 0 as i32;
-    while i < numsectors {
-        t = (*sectors.offset(i as isize)).thinglist;
+    while i < unsafe { game_state() }.p_setup.numsectors {
+        t = (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).thinglist;
         while !t.is_null() {
             AM_drawLineCharacter(
                 &raw const thintriangle_guy as *mut mline_t,

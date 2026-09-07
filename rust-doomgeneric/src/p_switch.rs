@@ -23,7 +23,6 @@ use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::{degenmobj_t, line_t};
 use crate::src::p_plats::EV_DoPlat;
 use crate::src::p_plats::{blazeDWUS, downWaitUpStay, raiseAndChange, raiseToNearestAndChange};
-use crate::src::p_setup::sides;
 use crate::src::p_spec::button_t;
 use crate::src::p_spec::EV_DoDonut;
 use crate::src::p_spec::ML_SECRET;
@@ -360,9 +359,9 @@ pub unsafe fn P_ChangeSwitchTexture(
     if useAgain == 0 {
         (*line).special = 0 as i16;
     }
-    texTop = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).toptexture as i32;
-    texMid = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).midtexture as i32;
-    texBot = (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).bottomtexture as i32;
+    texTop = (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).toptexture as i32;
+    texMid = (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).midtexture as i32;
+    texBot = (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).bottomtexture as i32;
     sound = sfx_swtchn as i32;
     if (*line).special as i32 == 11 as i32 {
         sound = sfx_swtchx as i32;
@@ -376,7 +375,7 @@ pub unsafe fn P_ChangeSwitchTexture(
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).toptexture =
+            (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).toptexture =
                 state.switchlist[(i ^ 1 as i32) as usize] as i16;
             if useAgain != 0 {
                 P_StartButton(state, line, top, state.switchlist[i as usize], BUTTONTIME);
@@ -389,7 +388,7 @@ pub unsafe fn P_ChangeSwitchTexture(
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).midtexture =
+            (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).midtexture =
                 state.switchlist[(i ^ 1 as i32) as usize] as i16;
             if useAgain != 0 {
                 P_StartButton(
@@ -408,7 +407,7 @@ pub unsafe fn P_ChangeSwitchTexture(
                     as *mut ::core::ffi::c_void,
                 sound,
             );
-            (*sides.offset((*line).sidenum[0 as i32 as usize] as isize)).bottomtexture =
+            (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).bottomtexture =
                 state.switchlist[(i ^ 1 as i32) as usize] as i16;
             if useAgain != 0 {
                 P_StartButton(

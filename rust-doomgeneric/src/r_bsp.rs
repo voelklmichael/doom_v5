@@ -3,10 +3,6 @@ use crate::src::i_system::I_Error;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_mobj::{line_t, sector_t, subsector_t};
-use crate::src::p_setup::nodes;
-use crate::src::p_setup::numsubsectors;
-use crate::src::p_setup::segs;
-use crate::src::p_setup::subsectors;
 use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, side_t, visplane_t};
 use crate::src::r_main::R_PointOnSide;
 use crate::src::r_main::R_PointToAngle;
@@ -312,17 +308,17 @@ pub unsafe fn R_Subsector(mut num: i32) {
     let mut count: i32 = 0;
     let mut line: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut sub: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
-    if num >= numsubsectors {
+    if num >= unsafe { game_state() }.p_setup.numsubsectors {
         I_Error(&format!(
             "R_Subsector: ss {} with numss = {}",
-            num, numsubsectors
+            num, unsafe { game_state() }.p_setup.numsubsectors
         ));
     }
     unsafe { game_state() }.r_main.sscount += 1;
-    sub = subsectors.offset(num as isize) as *mut subsector_t;
+    sub = unsafe { game_state() }.p_setup.subsectors.offset(num as isize) as *mut subsector_t;
     frontsector = (*sub).sector;
     count = (*sub).numlines as i32;
-    line = segs.offset((*sub).firstline as isize) as *mut seg_t;
+    line = unsafe { game_state() }.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
     if (*frontsector).floorheight < unsafe { game_state() }.r_main.viewz {
         floorplane = R_FindPlane(
             (*frontsector).floorheight,
@@ -365,7 +361,7 @@ pub unsafe fn R_RenderBSPNode(mut bspnum: i32) {
         }
         return;
     }
-    bsp = nodes.offset(bspnum as isize) as *mut node_t;
+    bsp = unsafe { game_state() }.p_setup.nodes.offset(bspnum as isize) as *mut node_t;
     side = R_PointOnSide(unsafe { game_state() }.r_main.viewx, unsafe { game_state() }.r_main.viewy, bsp);
     R_RenderBSPNode((*bsp).children[side as usize] as i32);
     if R_CheckBBox(
