@@ -18,6 +18,7 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
 use crate::src::g_game::G_DeferedInitNew;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_video::I_SetPalette;
 use crate::src::m_cheat::cheatseq_t;
@@ -440,24 +441,19 @@ pub const ST_MAXAMMO2Y: i32 = 191;
 pub const ST_MAXAMMO3WIDTH: i32 = ST_MAXAMMO0WIDTH;
 pub const ST_MAXAMMO3X: i32 = 314;
 pub const ST_MAXAMMO3Y: i32 = 185;
-pub unsafe fn ST_refreshBackground() {
-    if unsafe { game_state() }.st_stuff.st_statusbaron {
-        V_UseBuffer(unsafe { &mut game_state().v_video }, unsafe { game_state() }.st_stuff.st_backing_screen);
-        V_DrawPatch(unsafe { &mut game_state().v_video }, ST_X, 0 as i32, unsafe { game_state() }.st_stuff.sbar);
-        if unsafe { game_state() }.g_game.netgame {
-            V_DrawPatch(
-                unsafe { &mut game_state().v_video },
-                ST_FX,
-                0 as i32,
-                unsafe { game_state() }.st_stuff.faceback,
-            );
+pub unsafe fn ST_refreshBackground(state: &mut GameState) {
+    if state.st_stuff.st_statusbaron {
+        V_UseBuffer(&mut state.v_video, state.st_stuff.st_backing_screen);
+        V_DrawPatch(&mut state.v_video, ST_X, 0 as i32, state.st_stuff.sbar);
+        if state.g_game.netgame {
+            V_DrawPatch(&mut state.v_video, ST_FX, 0 as i32, state.st_stuff.faceback);
         }
-        V_RestoreBuffer(unsafe { game_state() });
+        V_RestoreBuffer(state);
         V_CopyRect(
-            unsafe { &mut game_state().v_video },
+            &mut state.v_video,
             ST_X,
             0 as i32,
-            unsafe { game_state() }.st_stuff.st_backing_screen,
+            state.st_stuff.st_backing_screen,
             ST_WIDTH,
             ST_HEIGHT,
             ST_X,
@@ -918,14 +914,14 @@ pub unsafe fn ST_Ticker() {
     ST_updateWidgets();
     unsafe { game_state() }.st_stuff.st_oldhealth = (*unsafe { game_state() }.st_stuff.plyr).health;
 }
-pub unsafe fn ST_doPaletteStuff() {
+pub unsafe fn ST_doPaletteStuff(state: &mut GameState) {
     let mut palette: i32 = 0;
     let mut pal: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut cnt: i32 = 0;
     let mut bzc: i32 = 0;
-    cnt = (*unsafe { game_state() }.st_stuff.plyr).damagecount;
-    if (*unsafe { game_state() }.st_stuff.plyr).powers[pw_strength as i32 as usize] != 0 {
-        bzc = 12 as i32 - ((*unsafe { game_state() }.st_stuff.plyr).powers[pw_strength as i32 as usize] >> 6 as i32);
+    cnt = (*state.st_stuff.plyr).damagecount;
+    if (*state.st_stuff.plyr).powers[pw_strength as i32 as usize] != 0 {
+        bzc = 12 as i32 - ((*state.st_stuff.plyr).powers[pw_strength as i32 as usize] >> 6 as i32);
         if bzc > cnt {
             cnt = bzc;
         }
@@ -936,105 +932,85 @@ pub unsafe fn ST_doPaletteStuff() {
             palette = NUMREDPALS - 1 as i32;
         }
         palette += STARTREDPALS;
-    } else if (*unsafe { game_state() }.st_stuff.plyr).bonuscount != 0 {
-        palette = (*unsafe { game_state() }.st_stuff.plyr).bonuscount + 7 as i32 >> 3 as i32;
+    } else if (*state.st_stuff.plyr).bonuscount != 0 {
+        palette = (*state.st_stuff.plyr).bonuscount + 7 as i32 >> 3 as i32;
         if palette >= NUMBONUSPALS {
             palette = NUMBONUSPALS - 1 as i32;
         }
         palette += STARTBONUSPALS;
-    } else if (*unsafe { game_state() }.st_stuff.plyr).powers[pw_ironfeet as i32 as usize] > 4 as i32 * 32 as i32
-        || (*unsafe { game_state() }.st_stuff.plyr).powers[pw_ironfeet as i32 as usize] & 8 as i32 != 0
+    } else if (*state.st_stuff.plyr).powers[pw_ironfeet as i32 as usize] > 4 as i32 * 32 as i32
+        || (*state.st_stuff.plyr).powers[pw_ironfeet as i32 as usize] & 8 as i32 != 0
     {
         palette = RADIATIONPAL;
     } else {
         palette = 0 as i32;
     }
-    if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32
+    if state.doomstat.gameversion as u32 == exe_chex as i32 as u32
         && palette >= STARTREDPALS
         && palette < STARTREDPALS + NUMREDPALS
     {
         palette = RADIATIONPAL;
     }
-    if palette != unsafe { game_state() }.st_stuff.st_palette {
-        unsafe { game_state() }.st_stuff.st_palette = palette;
-        pal = (W_CacheLumpNum(unsafe { game_state() }.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte)
+    if palette != state.st_stuff.st_palette {
+        state.st_stuff.st_palette = palette;
+        pal = (W_CacheLumpNum(state.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte)
             .offset((palette * 768 as i32) as isize);
         I_SetPalette(pal);
     }
 }
-pub unsafe fn ST_drawWidgets(mut refresh: bool) {
+pub unsafe fn ST_drawWidgets(state: &mut GameState, mut refresh: bool) {
     let mut i: i32 = 0;
-    unsafe { game_state() }.st_stuff.st_armson = unsafe { game_state() }.st_stuff.st_statusbaron && unsafe { game_state() }.g_game.deathmatch == 0;
-    unsafe { game_state() }.st_stuff.st_fragson = unsafe { game_state() }.g_game.deathmatch != 0 && unsafe { game_state() }.st_stuff.st_statusbaron;
-    STlib_updateNum(
-        unsafe { &mut game_state().st_lib },
-        &raw mut unsafe { game_state() }.st_stuff.w_ready,
-        refresh,
-    );
+    state.st_stuff.st_armson = state.st_stuff.st_statusbaron && state.g_game.deathmatch == 0;
+    state.st_stuff.st_fragson = state.g_game.deathmatch != 0 && state.st_stuff.st_statusbaron;
+    let w_ready = &raw mut state.st_stuff.w_ready;
+    STlib_updateNum(state, w_ready, refresh);
     i = 0 as i32;
     while i < 4 as i32 {
-        STlib_updateNum(
-            unsafe { &mut game_state().st_lib },
-            (&raw mut unsafe { game_state() }.st_stuff.w_ammo as *mut st_number_t).offset(i as isize) as *mut st_number_t,
-            refresh,
-        );
-        STlib_updateNum(
-            unsafe { &mut game_state().st_lib },
-            (&raw mut unsafe { game_state() }.st_stuff.w_maxammo as *mut st_number_t).offset(i as isize) as *mut st_number_t,
-            refresh,
-        );
+        let w_ammo = (&raw mut state.st_stuff.w_ammo as *mut st_number_t).offset(i as isize) as *mut st_number_t;
+        STlib_updateNum(state, w_ammo, refresh);
+        let w_maxammo = (&raw mut state.st_stuff.w_maxammo as *mut st_number_t).offset(i as isize) as *mut st_number_t;
+        STlib_updateNum(state, w_maxammo, refresh);
         i += 1;
     }
-    STlib_updatePercent(
-        unsafe { &mut game_state().st_lib },
-        &raw mut unsafe { game_state() }.st_stuff.w_health,
-        refresh as i32,
-    );
-    STlib_updatePercent(
-        unsafe { &mut game_state().st_lib },
-        &raw mut unsafe { game_state() }.st_stuff.w_armor,
-        refresh as i32,
-    );
-    STlib_updateBinIcon(&raw mut unsafe { game_state() }.st_stuff.w_armsbg, refresh);
+    let w_health = &raw mut state.st_stuff.w_health;
+    STlib_updatePercent(state, w_health, refresh as i32);
+    let w_armor = &raw mut state.st_stuff.w_armor;
+    STlib_updatePercent(state, w_armor, refresh as i32);
+    let w_armsbg = &raw mut state.st_stuff.w_armsbg;
+    STlib_updateBinIcon(state, w_armsbg, refresh);
     i = 0 as i32;
     while i < 6 as i32 {
-        STlib_updateMultIcon(
-            (&raw mut unsafe { game_state() }.st_stuff.w_arms as *mut st_multicon_t).offset(i as isize) as *mut st_multicon_t,
-            refresh,
-        );
+        let w_arms = (&raw mut state.st_stuff.w_arms as *mut st_multicon_t).offset(i as isize) as *mut st_multicon_t;
+        STlib_updateMultIcon(state, w_arms, refresh);
         i += 1;
     }
-    STlib_updateMultIcon(&raw mut unsafe { game_state() }.st_stuff.w_faces, refresh);
+    let w_faces = &raw mut state.st_stuff.w_faces;
+    STlib_updateMultIcon(state, w_faces, refresh);
     i = 0 as i32;
     while i < 3 as i32 {
-        STlib_updateMultIcon(
-            (&raw mut unsafe { game_state() }.st_stuff.w_keyboxes as *mut st_multicon_t).offset(i as isize) as *mut st_multicon_t,
-            refresh,
-        );
+        let w_keyboxes = (&raw mut state.st_stuff.w_keyboxes as *mut st_multicon_t).offset(i as isize) as *mut st_multicon_t;
+        STlib_updateMultIcon(state, w_keyboxes, refresh);
         i += 1;
     }
-    STlib_updateNum(
-        unsafe { &mut game_state().st_lib },
-        &raw mut unsafe { game_state() }.st_stuff.w_frags,
-        refresh,
-    );
+    let w_frags = &raw mut state.st_stuff.w_frags;
+    STlib_updateNum(state, w_frags, refresh);
 }
-pub unsafe fn ST_doRefresh() {
-    unsafe { game_state() }.st_stuff.st_firsttime = false;
-    ST_refreshBackground();
-    ST_drawWidgets(true);
+pub unsafe fn ST_doRefresh(state: &mut GameState) {
+    state.st_stuff.st_firsttime = false;
+    ST_refreshBackground(state);
+    ST_drawWidgets(state, true);
 }
-pub unsafe fn ST_diffDraw() {
-    ST_drawWidgets(false);
+pub unsafe fn ST_diffDraw(state: &mut GameState) {
+    ST_drawWidgets(state, false);
 }
-pub unsafe fn ST_Drawer(mut fullscreen: bool, mut refresh: bool) {
-    unsafe { game_state() }.st_stuff.st_statusbaron = !fullscreen || unsafe { game_state() }.am_map.automapactive;
-    unsafe { game_state() }.st_stuff.st_firsttime = unsafe { game_state() }.st_stuff.st_firsttime || refresh;
-    ST_doPaletteStuff();
-    if unsafe { game_state() }.st_stuff.st_firsttime {
-        ST_doRefresh();
+pub unsafe fn ST_Drawer(state: &mut GameState, mut fullscreen: bool, mut refresh: bool) {
+    state.st_stuff.st_statusbaron = !fullscreen || state.am_map.automapactive;
+    state.st_stuff.st_firsttime = state.st_stuff.st_firsttime || refresh;
+    ST_doPaletteStuff(state);
+    if state.st_stuff.st_firsttime {
+        ST_doRefresh(state);
     } else {
-        ST_diffDraw();
+        ST_diffDraw(state);
     };
 }
 unsafe fn ST_loadUnloadGraphics(mut callback: load_callback_t) {
