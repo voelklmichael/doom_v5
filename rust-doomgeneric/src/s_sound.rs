@@ -47,6 +47,31 @@ use crate::src::stdint_types::size_t;
 use crate::src::tables::angle_t;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::z_zone::PU_STATIC;
+
+pub struct SSoundState {
+    pub channels: *mut channel_t,
+    pub sfxVolume: i32,
+    pub musicVolume: i32,
+    pub snd_SfxVolume: i32,
+    pub mus_paused: bool,
+    pub mus_playing: *mut musicinfo_t,
+    pub snd_channels: i32,
+}
+
+impl SSoundState {
+    pub const fn new() -> Self {
+        SSoundState {
+            channels: ::core::ptr::null::<channel_t>() as *mut channel_t,
+            sfxVolume: 8,
+            musicVolume: 8,
+            snd_SfxVolume: 0,
+            mus_paused: false,
+            mus_playing: ::core::ptr::null::<musicinfo_t>() as *mut musicinfo_t,
+            snd_channels: 8,
+        }
+    }
+}
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct channel_t {
@@ -59,13 +84,6 @@ pub const S_CLOSE_DIST: i32 = 200 * FRACUNIT;
 pub const S_ATTENUATOR: i32 = S_CLIPPING_DIST - S_CLOSE_DIST >> FRACBITS;
 pub const S_STEREO_SWING: i32 = 96 * FRACUNIT;
 pub const NORM_SEP: i32 = 128;
-static mut channels: *mut channel_t = ::core::ptr::null::<channel_t>() as *mut channel_t;
-pub static mut sfxVolume: i32 = 8;
-pub static mut musicVolume: i32 = 8;
-static mut snd_SfxVolume: i32 = 0;
-static mut mus_paused: bool = false;
-static mut mus_playing: *mut musicinfo_t = ::core::ptr::null::<musicinfo_t>() as *mut musicinfo_t;
-pub static mut snd_channels: i32 = 8;
 pub unsafe fn S_Init(state: &mut SoundsState, mut sfxVolume_0: i32, mut musicVolume_0: i32) {
     let mut i: i32 = 0;
     I_PrecacheSounds(
@@ -75,19 +93,19 @@ pub unsafe fn S_Init(state: &mut SoundsState, mut sfxVolume_0: i32, mut musicVol
     );
     S_SetSfxVolume(sfxVolume_0);
     S_SetMusicVolume(musicVolume_0);
-    channels = Z_Malloc(
+    unsafe { game_state() }.s_sound.channels = Z_Malloc(
         unsafe { &mut game_state().z_zone },
-        (snd_channels as usize).wrapping_mul(::core::mem::size_of::<channel_t>() as usize) as i32,
+        (unsafe { game_state() }.s_sound.snd_channels as usize).wrapping_mul(::core::mem::size_of::<channel_t>() as usize) as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut channel_t;
     i = 0 as i32;
-    while i < snd_channels {
-        let ref mut fresh0 = (*channels.offset(i as isize)).sfxinfo;
+    while i < unsafe { game_state() }.s_sound.snd_channels {
+        let ref mut fresh0 = (*unsafe { game_state() }.s_sound.channels.offset(i as isize)).sfxinfo;
         *fresh0 = ::core::ptr::null_mut::<sfxinfo_t>();
         i += 1;
     }
-    mus_paused = false;
+    unsafe { game_state() }.s_sound.mus_paused = false;
     i = 1 as i32;
     while i < NUMSFX as i32 {
         let ref mut fresh1 =
@@ -105,14 +123,14 @@ pub unsafe extern "C" fn S_Shutdown() {
 unsafe fn S_StopChannel(mut cnum: i32) {
     let mut i: i32 = 0;
     let mut c: *mut channel_t = ::core::ptr::null_mut::<channel_t>();
-    c = channels.offset(cnum as isize) as *mut channel_t;
+    c = unsafe { game_state() }.s_sound.channels.offset(cnum as isize) as *mut channel_t;
     if !(*c).sfxinfo.is_null() {
         if I_SoundIsPlaying(unsafe { &mut game_state().i_sound }, (*c).handle) {
             I_StopSound(unsafe { &mut game_state().i_sound }, (*c).handle);
         }
         i = 0 as i32;
-        while i < snd_channels {
-            if cnum != i && (*c).sfxinfo == (*channels.offset(i as isize)).sfxinfo {
+        while i < unsafe { game_state() }.s_sound.snd_channels {
+            if cnum != i && (*c).sfxinfo == (*unsafe { game_state() }.s_sound.channels.offset(i as isize)).sfxinfo {
                 break;
             }
             i += 1;
@@ -125,13 +143,13 @@ pub unsafe fn S_Start(state: &mut SoundsState) {
     let mut cnum: i32 = 0;
     let mut mnum: i32 = 0;
     cnum = 0 as i32;
-    while cnum < snd_channels {
-        if !(*channels.offset(cnum as isize)).sfxinfo.is_null() {
+    while cnum < unsafe { game_state() }.s_sound.snd_channels {
+        if !(*unsafe { game_state() }.s_sound.channels.offset(cnum as isize)).sfxinfo.is_null() {
             S_StopChannel(cnum);
         }
         cnum += 1;
     }
-    mus_paused = false;
+    unsafe { game_state() }.s_sound.mus_paused = false;
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
         mnum = mus_runnin as i32 + unsafe { game_state() }.g_game.gamemap - 1 as i32;
     } else {
@@ -160,9 +178,9 @@ pub unsafe fn S_Start(state: &mut SoundsState) {
 pub unsafe fn S_StopSound(mut origin: *mut mobj_t) {
     let mut cnum: i32 = 0;
     cnum = 0 as i32;
-    while cnum < snd_channels {
-        if !(*channels.offset(cnum as isize)).sfxinfo.is_null()
-            && (*channels.offset(cnum as isize)).origin == origin
+    while cnum < unsafe { game_state() }.s_sound.snd_channels {
+        if !(*unsafe { game_state() }.s_sound.channels.offset(cnum as isize)).sfxinfo.is_null()
+            && (*unsafe { game_state() }.s_sound.channels.offset(cnum as isize)).origin == origin
         {
             S_StopChannel(cnum);
             break;
@@ -175,32 +193,32 @@ unsafe fn S_GetChannel(mut origin: *mut mobj_t, mut sfxinfo: *mut sfxinfo_t) -> 
     let mut cnum: i32 = 0;
     let mut c: *mut channel_t = ::core::ptr::null_mut::<channel_t>();
     cnum = 0 as i32;
-    while cnum < snd_channels {
-        if (*channels.offset(cnum as isize)).sfxinfo.is_null() {
+    while cnum < unsafe { game_state() }.s_sound.snd_channels {
+        if (*unsafe { game_state() }.s_sound.channels.offset(cnum as isize)).sfxinfo.is_null() {
             break;
         }
-        if !origin.is_null() && (*channels.offset(cnum as isize)).origin == origin {
+        if !origin.is_null() && (*unsafe { game_state() }.s_sound.channels.offset(cnum as isize)).origin == origin {
             S_StopChannel(cnum);
             break;
         } else {
             cnum += 1;
         }
     }
-    if cnum == snd_channels {
+    if cnum == unsafe { game_state() }.s_sound.snd_channels {
         cnum = 0 as i32;
-        while cnum < snd_channels {
-            if (*(*channels.offset(cnum as isize)).sfxinfo).priority >= (*sfxinfo).priority {
+        while cnum < unsafe { game_state() }.s_sound.snd_channels {
+            if (*(*unsafe { game_state() }.s_sound.channels.offset(cnum as isize)).sfxinfo).priority >= (*sfxinfo).priority {
                 break;
             }
             cnum += 1;
         }
-        if cnum == snd_channels {
+        if cnum == unsafe { game_state() }.s_sound.snd_channels {
             return -(1 as i32);
         } else {
             S_StopChannel(cnum);
         }
     }
-    c = channels.offset(cnum as isize) as *mut channel_t;
+    c = unsafe { game_state() }.s_sound.channels.offset(cnum as isize) as *mut channel_t;
     (*c).sfxinfo = sfxinfo;
     (*c).origin = origin;
     return cnum;
@@ -231,16 +249,16 @@ unsafe fn S_AdjustSoundParams(
     *sep =
         (128 as fixed_t - (FixedMul(S_STEREO_SWING, finesine[angle as usize]) >> FRACBITS)) as i32;
     if approx_dist < S_CLOSE_DIST {
-        *vol = snd_SfxVolume;
+        *vol = unsafe { game_state() }.s_sound.snd_SfxVolume;
     } else if unsafe { game_state() }.g_game.gamemap == 8 as i32 {
         if approx_dist > S_CLIPPING_DIST {
             approx_dist = S_CLIPPING_DIST as fixed_t;
         }
         *vol = 15 as i32
-            + (snd_SfxVolume - 15 as i32) * (S_CLIPPING_DIST - approx_dist as i32 >> FRACBITS)
+            + (unsafe { game_state() }.s_sound.snd_SfxVolume - 15 as i32) * (S_CLIPPING_DIST - approx_dist as i32 >> FRACBITS)
                 / S_ATTENUATOR;
     } else {
-        *vol = snd_SfxVolume * (S_CLIPPING_DIST - approx_dist as i32 >> FRACBITS) / S_ATTENUATOR;
+        *vol = unsafe { game_state() }.s_sound.snd_SfxVolume * (S_CLIPPING_DIST - approx_dist as i32 >> FRACBITS) / S_ATTENUATOR;
     }
     return (*vol > 0 as i32) as i32;
 }
@@ -256,7 +274,7 @@ pub unsafe fn S_StartSound(
     let mut cnum: i32 = 0;
     let mut volume: i32 = 0;
     origin = origin_p as *mut mobj_t;
-    volume = snd_SfxVolume;
+    volume = unsafe { game_state() }.s_sound.snd_SfxVolume;
     if sfx_id < 1 as i32 || sfx_id > NUMSFX as i32 {
         I_Error(&format!("Bad sfx #: {}", sfx_id));
     }
@@ -266,8 +284,8 @@ pub unsafe fn S_StartSound(
         if volume < 1 as i32 {
             return;
         }
-        if volume > snd_SfxVolume {
-            volume = snd_SfxVolume;
+        if volume > unsafe { game_state() }.s_sound.snd_SfxVolume {
+            volume = unsafe { game_state() }.s_sound.snd_SfxVolume;
         }
     }
     if !origin.is_null()
@@ -316,19 +334,19 @@ pub unsafe fn S_StartSound(
     if (*sfx).lumpnum < 0 as i32 {
         (*sfx).lumpnum = I_GetSfxLumpNum(unsafe { &mut game_state().i_sound }, sfx);
     }
-    (*channels.offset(cnum as isize)).handle =
+    (*unsafe { game_state() }.s_sound.channels.offset(cnum as isize)).handle =
         I_StartSound(unsafe { &mut game_state().i_sound }, sfx, cnum, volume, sep);
 }
 pub unsafe fn S_PauseSound() {
-    if !mus_playing.is_null() && !mus_paused {
+    if !unsafe { game_state() }.s_sound.mus_playing.is_null() && !unsafe { game_state() }.s_sound.mus_paused {
         I_PauseSong(unsafe { &mut game_state().i_sound });
-        mus_paused = true;
+        unsafe { game_state() }.s_sound.mus_paused = true;
     }
 }
 pub unsafe fn S_ResumeSound() {
-    if !mus_playing.is_null() && mus_paused {
+    if !unsafe { game_state() }.s_sound.mus_playing.is_null() && unsafe { game_state() }.s_sound.mus_paused {
         I_ResumeSong(unsafe { &mut game_state().i_sound });
-        mus_paused = false;
+        unsafe { game_state() }.s_sound.mus_paused = false;
     }
 }
 pub unsafe fn S_UpdateSounds(mut listener: *mut mobj_t) {
@@ -341,12 +359,12 @@ pub unsafe fn S_UpdateSounds(mut listener: *mut mobj_t) {
     I_UpdateSound(unsafe { &mut game_state().i_sound });
     let mut current_block_20: u64;
     cnum = 0 as i32;
-    while cnum < snd_channels {
-        c = channels.offset(cnum as isize) as *mut channel_t;
+    while cnum < unsafe { game_state() }.s_sound.snd_channels {
+        c = unsafe { game_state() }.s_sound.channels.offset(cnum as isize) as *mut channel_t;
         sfx = (*c).sfxinfo;
         if !(*c).sfxinfo.is_null() {
             if I_SoundIsPlaying(unsafe { &mut game_state().i_sound }, (*c).handle) {
-                volume = snd_SfxVolume;
+                volume = unsafe { game_state() }.s_sound.snd_SfxVolume;
                 sep = NORM_SEP;
                 if !(*sfx).link.is_null() {
                     volume += (*sfx).volume;
@@ -354,8 +372,8 @@ pub unsafe fn S_UpdateSounds(mut listener: *mut mobj_t) {
                         S_StopChannel(cnum);
                         current_block_20 = 10680521327981672866;
                     } else {
-                        if volume > snd_SfxVolume {
-                            volume = snd_SfxVolume;
+                        if volume > unsafe { game_state() }.s_sound.snd_SfxVolume {
+                            volume = unsafe { game_state() }.s_sound.snd_SfxVolume;
                         }
                         current_block_20 = 17860125682698302841;
                     }
@@ -402,7 +420,7 @@ pub unsafe fn S_SetSfxVolume(mut volume: i32) {
     if volume < 0 as i32 || volume > 127 as i32 {
         I_Error(&format!("Attempt to set sfx volume at {}", volume));
     }
-    snd_SfxVolume = volume;
+    unsafe { game_state() }.s_sound.snd_SfxVolume = volume;
 }
 pub unsafe fn S_StartMusic(state: &mut SoundsState, mut m_id: i32) {
     S_ChangeMusic(state, m_id, false_0);
@@ -423,7 +441,7 @@ pub unsafe fn S_ChangeMusic(state: &mut SoundsState, mut musicnum: i32, mut loop
         music = (&raw mut state.S_music as *mut musicinfo_t).offset(musicnum as isize)
             as *mut musicinfo_t;
     }
-    if mus_playing == music {
+    if unsafe { game_state() }.s_sound.mus_playing == music {
         return;
     }
     S_StopMusic();
@@ -446,20 +464,20 @@ pub unsafe fn S_ChangeMusic(state: &mut SoundsState, mut musicnum: i32, mut loop
     );
     (*music).handle = handle;
     I_PlaySong(unsafe { &mut game_state().i_sound }, handle, looping != 0);
-    mus_playing = music;
+    unsafe { game_state() }.s_sound.mus_playing = music;
 }
 pub unsafe fn S_MusicPlaying() -> bool {
     return I_MusicIsPlaying(unsafe { &mut game_state().i_sound });
 }
 pub unsafe fn S_StopMusic() {
-    if !mus_playing.is_null() {
-        if mus_paused {
+    if !unsafe { game_state() }.s_sound.mus_playing.is_null() {
+        if unsafe { game_state() }.s_sound.mus_paused {
             I_ResumeSong(unsafe { &mut game_state().i_sound });
         }
         I_StopSong(unsafe { &mut game_state().i_sound });
-        I_UnRegisterSong(unsafe { &mut game_state().i_sound }, (*mus_playing).handle);
-        W_ReleaseLumpNum((*mus_playing).lumpnum);
-        (*mus_playing).data = NULL;
-        mus_playing = ::core::ptr::null_mut::<musicinfo_t>();
+        I_UnRegisterSong(unsafe { &mut game_state().i_sound }, (*unsafe { game_state() }.s_sound.mus_playing).handle);
+        W_ReleaseLumpNum((*unsafe { game_state() }.s_sound.mus_playing).lumpnum);
+        (*unsafe { game_state() }.s_sound.mus_playing).data = NULL;
+        unsafe { game_state() }.s_sound.mus_playing = ::core::ptr::null_mut::<musicinfo_t>();
     }
 }

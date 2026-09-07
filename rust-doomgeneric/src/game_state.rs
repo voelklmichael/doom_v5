@@ -54,6 +54,7 @@ use crate::src::r_data::RDataState;
 use crate::src::r_plane::RPlaneState;
 use crate::src::r_bsp::RBspState;
 use crate::src::r_things::RThingsState;
+use crate::src::s_sound::SSoundState;
 use crate::src::sounds::SoundsState;
 use crate::src::st_lib::StLibState;
 use crate::src::st_stuff::StStuffState;
@@ -109,6 +110,7 @@ pub struct GameState {
     pub r_plane: RPlaneState,
     pub r_bsp: RBspState,
     pub r_things: RThingsState,
+    pub s_sound: SSoundState,
     pub sounds: SoundsState,
     pub st_lib: StLibState,
     pub st_stuff: StStuffState,
@@ -167,6 +169,7 @@ impl GameState {
             r_plane: RPlaneState::new(),
             r_bsp: RBspState::new(),
             r_things: RThingsState::new(),
+            s_sound: SSoundState::new(),
             sounds: SoundsState::new(),
             st_lib: StLibState::new(),
             st_stuff: StStuffState::new(),

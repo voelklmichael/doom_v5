@@ -88,9 +88,6 @@ use crate::src::r_draw::R_FillBackScreen;
 use crate::src::r_main::R_ExecuteSetViewSize;
 use crate::src::r_main::R_Init;
 use crate::src::r_main::R_RenderPlayerView;
-use crate::src::s_sound::musicVolume;
-use crate::src::s_sound::sfxVolume;
-use crate::src::s_sound::snd_channels;
 use crate::src::s_sound::S_Init;
 use crate::src::s_sound::S_StartMusic;
 use crate::src::s_sound::S_UpdateSounds;
@@ -481,12 +478,12 @@ pub unsafe fn D_BindVariables() {
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "sfx_volume",
-        &raw mut sfxVolume as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.s_sound.sfxVolume as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "music_volume",
-        &raw mut musicVolume as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.s_sound.musicVolume as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
@@ -506,7 +503,7 @@ pub unsafe fn D_BindVariables() {
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "snd_channels",
-        &raw mut snd_channels as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.s_sound.snd_channels as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
@@ -1404,8 +1401,8 @@ pub unsafe fn D_DoomMain() {
     printf(b"S_Init: Setting up sound.\n\0" as *const u8 as *const ::core::ffi::c_char);
     S_Init(
         unsafe { &mut game_state().sounds },
-        sfxVolume * 8 as i32,
-        musicVolume * 8 as i32,
+        unsafe { game_state() }.s_sound.sfxVolume * 8 as i32,
+        unsafe { game_state() }.s_sound.musicVolume * 8 as i32,
     );
     printf(
         b"D_CheckNetGame: Checking network game status.\n\0" as *const u8
