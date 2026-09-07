@@ -459,11 +459,11 @@ pub unsafe fn D_BindVariables(state: &mut GameState) {
     let mut i: i32 = 0;
     I_BindJoystickVariables(&mut state.i_joystick);
     I_BindSoundVariables(state);
-    M_BindBaseControls();
-    M_BindWeaponControls();
-    M_BindMapControls();
-    M_BindMenuControls();
-    M_BindChatControls(MAXPLAYERS as u32);
+    M_BindBaseControls(state);
+    M_BindWeaponControls(state);
+    M_BindMapControls(state);
+    M_BindMenuControls(state);
+    M_BindChatControls(state, MAXPLAYERS as u32);
     state.m_controls.key_multi_msgplayer[0 as i32 as usize] = HUSTR_KEYGREEN;
     state.m_controls.key_multi_msgplayer[1 as i32 as usize] = HUSTR_KEYINDIGO;
     state.m_controls.key_multi_msgplayer[2 as i32 as usize] = HUSTR_KEYBROWN;

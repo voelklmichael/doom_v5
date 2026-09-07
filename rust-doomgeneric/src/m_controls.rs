@@ -1,4 +1,5 @@
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_misc::M_snprintf;
 use crate::src::stdint_types::size_t;
@@ -287,141 +288,141 @@ pub const KEY_PGUP: i32 = 0x80 + 0x49 as i32;
 pub const KEY_PGDN: i32 = 0x80 + 0x51 as i32;
 pub const KEY_INS: i32 = 0x80 + 0x52 as i32;
 pub const KEY_DEL: i32 = 0x80 + 0x53 as i32;
-pub unsafe fn M_BindBaseControls() {
+pub unsafe fn M_BindBaseControls(state: &mut GameState) {
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_right",
-        &raw mut unsafe { game_state() }.m_controls.key_right as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_right as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_left",
-        &raw mut unsafe { game_state() }.m_controls.key_left as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_left as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_up",
-        &raw mut unsafe { game_state() }.m_controls.key_up as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_up as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_down",
-        &raw mut unsafe { game_state() }.m_controls.key_down as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_down as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_strafeleft",
-        &raw mut unsafe { game_state() }.m_controls.key_strafeleft as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_strafeleft as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_straferight",
-        &raw mut unsafe { game_state() }.m_controls.key_straferight as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_straferight as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_fire",
-        &raw mut unsafe { game_state() }.m_controls.key_fire as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_fire as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_use",
-        &raw mut unsafe { game_state() }.m_controls.key_use as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_use as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_strafe",
-        &raw mut unsafe { game_state() }.m_controls.key_strafe as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_strafe as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_speed",
-        &raw mut unsafe { game_state() }.m_controls.key_speed as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_speed as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_fire",
-        &raw mut unsafe { game_state() }.m_controls.mousebfire as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebfire as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_strafe",
-        &raw mut unsafe { game_state() }.m_controls.mousebstrafe as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebstrafe as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_forward",
-        &raw mut unsafe { game_state() }.m_controls.mousebforward as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebforward as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_fire",
-        &raw mut unsafe { game_state() }.m_controls.joybfire as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybfire as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_strafe",
-        &raw mut unsafe { game_state() }.m_controls.joybstrafe as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybstrafe as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_use",
-        &raw mut unsafe { game_state() }.m_controls.joybuse as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybuse as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_speed",
-        &raw mut unsafe { game_state() }.m_controls.joybspeed as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybspeed as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_menu_activate",
-        &raw mut unsafe { game_state() }.m_controls.joybmenu as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybmenu as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_strafeleft",
-        &raw mut unsafe { game_state() }.m_controls.joybstrafeleft as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybstrafeleft as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_straferight",
-        &raw mut unsafe { game_state() }.m_controls.joybstraferight as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybstraferight as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_strafeleft",
-        &raw mut unsafe { game_state() }.m_controls.mousebstrafeleft as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebstrafeleft as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_straferight",
-        &raw mut unsafe { game_state() }.m_controls.mousebstraferight as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebstraferight as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_use",
-        &raw mut unsafe { game_state() }.m_controls.mousebuse as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebuse as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_backward",
-        &raw mut unsafe { game_state() }.m_controls.mousebbackward as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebbackward as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "dclick_use",
-        &raw mut unsafe { game_state() }.m_controls.dclick_use as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.dclick_use as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_pause",
-        &raw mut unsafe { game_state() }.m_controls.key_pause as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_pause as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_message_refresh",
-        &raw mut unsafe { game_state() }.m_controls.key_message_refresh as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_message_refresh as *mut ::core::ffi::c_void,
     );
 }
 pub unsafe fn M_BindHereticControls() {
@@ -619,274 +620,274 @@ pub unsafe fn M_BindStrifeControls() {
         &raw mut unsafe { game_state() }.m_controls.joybjump as *mut ::core::ffi::c_void,
     );
 }
-pub unsafe fn M_BindWeaponControls() {
+pub unsafe fn M_BindWeaponControls(state: &mut GameState) {
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_weapon1",
-        &raw mut unsafe { game_state() }.m_controls.key_weapon1 as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_weapon1 as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_weapon2",
-        &raw mut unsafe { game_state() }.m_controls.key_weapon2 as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_weapon2 as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_weapon3",
-        &raw mut unsafe { game_state() }.m_controls.key_weapon3 as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_weapon3 as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_weapon4",
-        &raw mut unsafe { game_state() }.m_controls.key_weapon4 as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_weapon4 as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_weapon5",
-        &raw mut unsafe { game_state() }.m_controls.key_weapon5 as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_weapon5 as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_weapon6",
-        &raw mut unsafe { game_state() }.m_controls.key_weapon6 as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_weapon6 as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_weapon7",
-        &raw mut unsafe { game_state() }.m_controls.key_weapon7 as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_weapon7 as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_weapon8",
-        &raw mut unsafe { game_state() }.m_controls.key_weapon8 as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_weapon8 as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_prevweapon",
-        &raw mut unsafe { game_state() }.m_controls.key_prevweapon as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_prevweapon as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_nextweapon",
-        &raw mut unsafe { game_state() }.m_controls.key_nextweapon as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_nextweapon as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_prevweapon",
-        &raw mut unsafe { game_state() }.m_controls.joybprevweapon as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybprevweapon as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_nextweapon",
-        &raw mut unsafe { game_state() }.m_controls.joybnextweapon as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybnextweapon as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_prevweapon",
-        &raw mut unsafe { game_state() }.m_controls.mousebprevweapon as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebprevweapon as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_nextweapon",
-        &raw mut unsafe { game_state() }.m_controls.mousebnextweapon as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebnextweapon as *mut ::core::ffi::c_void,
     );
 }
-pub unsafe fn M_BindMapControls() {
+pub unsafe fn M_BindMapControls(state: &mut GameState) {
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_north",
-        &raw mut unsafe { game_state() }.m_controls.key_map_north as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_north as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_south",
-        &raw mut unsafe { game_state() }.m_controls.key_map_south as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_south as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_east",
-        &raw mut unsafe { game_state() }.m_controls.key_map_east as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_east as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_west",
-        &raw mut unsafe { game_state() }.m_controls.key_map_west as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_west as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_zoomin",
-        &raw mut unsafe { game_state() }.m_controls.key_map_zoomin as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_zoomin as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_zoomout",
-        &raw mut unsafe { game_state() }.m_controls.key_map_zoomout as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_zoomout as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_toggle",
-        &raw mut unsafe { game_state() }.m_controls.key_map_toggle as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_toggle as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_maxzoom",
-        &raw mut unsafe { game_state() }.m_controls.key_map_maxzoom as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_maxzoom as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_follow",
-        &raw mut unsafe { game_state() }.m_controls.key_map_follow as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_follow as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_grid",
-        &raw mut unsafe { game_state() }.m_controls.key_map_grid as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_grid as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_mark",
-        &raw mut unsafe { game_state() }.m_controls.key_map_mark as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_mark as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_map_clearmark",
-        &raw mut unsafe { game_state() }.m_controls.key_map_clearmark as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_map_clearmark as *mut ::core::ffi::c_void,
     );
 }
-pub unsafe fn M_BindMenuControls() {
+pub unsafe fn M_BindMenuControls(state: &mut GameState) {
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_activate",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_activate as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_activate as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_up",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_up as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_up as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_down",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_down as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_down as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_left",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_left as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_left as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_right",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_right as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_right as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_back",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_back as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_back as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_forward",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_forward as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_forward as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_confirm",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_confirm as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_confirm as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_abort",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_abort as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_abort as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_help",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_help as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_help as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_save",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_save as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_save as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_load",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_load as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_load as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_volume",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_volume as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_volume as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_detail",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_detail as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_detail as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_qsave",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_qsave as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_qsave as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_endgame",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_endgame as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_endgame as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_messages",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_messages as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_messages as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_qload",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_qload as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_qload as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_quit",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_quit as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_quit as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_gamma",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_gamma as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_gamma as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_incscreen",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_incscreen as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_incscreen as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_decscreen",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_decscreen as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_decscreen as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_menu_screenshot",
-        &raw mut unsafe { game_state() }.m_controls.key_menu_screenshot as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_menu_screenshot as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_demo_quit",
-        &raw mut unsafe { game_state() }.m_controls.key_demo_quit as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_demo_quit as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_spy",
-        &raw mut unsafe { game_state() }.m_controls.key_spy as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_spy as *mut ::core::ffi::c_void,
     );
 }
-pub unsafe fn M_BindChatControls(mut num_players: u32) {
+pub unsafe fn M_BindChatControls(state: &mut GameState, mut num_players: u32) {
     let mut name: [::core::ffi::c_char; 32] = [0; 32];
     let mut i: u32 = 0;
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_multi_msg",
-        &raw mut unsafe { game_state() }.m_controls.key_multi_msg as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_multi_msg as *mut ::core::ffi::c_void,
     );
     i = 0 as u32;
     while i < num_players {
@@ -897,11 +898,11 @@ pub unsafe fn M_BindChatControls(mut num_players: u32) {
             i.wrapping_add(1 as u32),
         );
         M_BindVariable(
-            unsafe { &mut game_state().m_config },
+            &mut state.m_config,
             ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),
-            (&raw mut unsafe { game_state() }.m_controls.key_multi_msgplayer as *mut i32)
+            (&raw mut state.m_controls.key_multi_msgplayer as *mut i32)
                 .offset(i as isize) as *mut i32 as *mut ::core::ffi::c_void,
         );
         i = i.wrapping_add(1);
