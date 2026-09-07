@@ -461,87 +461,87 @@ pub unsafe fn ST_refreshBackground(state: &mut GameState) {
         );
     }
 }
-pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
+pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
     let mut i: i32 = 0;
     if (*ev).type_0 as u32 == ev_keyup as i32 as u32
         && (*ev).data1 as u32 & 0xffff0000 as u32 == AM_MSGHEADER as u32
     {
         match (*ev).data1 {
             AM_MSGENTERED => {
-                unsafe { game_state() }.st_stuff.st_gamestate = AutomapState;
-                unsafe { game_state() }.st_stuff.st_firsttime = true;
+                state.st_stuff.st_gamestate = AutomapState;
+                state.st_stuff.st_firsttime = true;
             }
             AM_MSGEXITED => {
-                unsafe { game_state() }.st_stuff.st_gamestate = FirstPersonState;
+                state.st_stuff.st_gamestate = FirstPersonState;
             }
             _ => {}
         }
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
-        if !unsafe { game_state() }.g_game.netgame
-            && unsafe { game_state() }.g_game.gameskill as i32 != sk_nightmare as i32
+        if !state.g_game.netgame
+            && state.g_game.gameskill as i32 != sk_nightmare as i32
         {
-            if cht_CheckCheat(&raw mut unsafe { game_state() }.st_stuff.cheat_god, (*ev).data2 as ::core::ffi::c_char) != 0 {
-                (*unsafe { game_state() }.st_stuff.plyr).cheats ^= CF_GODMODE as i32;
-                if (*unsafe { game_state() }.st_stuff.plyr).cheats & CF_GODMODE as i32 != 0 {
-                    if !(*unsafe { game_state() }.st_stuff.plyr).mo.is_null() {
-                        (*(*unsafe { game_state() }.st_stuff.plyr).mo).health = 100 as i32;
+            if cht_CheckCheat(&raw mut state.st_stuff.cheat_god, (*ev).data2 as ::core::ffi::c_char) != 0 {
+                (*state.st_stuff.plyr).cheats ^= CF_GODMODE as i32;
+                if (*state.st_stuff.plyr).cheats & CF_GODMODE as i32 != 0 {
+                    if !(*state.st_stuff.plyr).mo.is_null() {
+                        (*(*state.st_stuff.plyr).mo).health = 100 as i32;
                     }
-                    (*unsafe { game_state() }.st_stuff.plyr).health = deh_god_mode_health;
-                    (*unsafe { game_state() }.st_stuff.plyr).message = b"Degreelessness Mode On\0" as *const u8
+                    (*state.st_stuff.plyr).health = deh_god_mode_health;
+                    (*state.st_stuff.plyr).message = b"Degreelessness Mode On\0" as *const u8
                         as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 } else {
-                    (*unsafe { game_state() }.st_stuff.plyr).message = b"Degreelessness Mode Off\0" as *const u8
+                    (*state.st_stuff.plyr).message = b"Degreelessness Mode Off\0" as *const u8
                         as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 }
-            } else if cht_CheckCheat(&raw mut unsafe { game_state() }.st_stuff.cheat_ammonokey, (*ev).data2 as ::core::ffi::c_char)
+            } else if cht_CheckCheat(&raw mut state.st_stuff.cheat_ammonokey, (*ev).data2 as ::core::ffi::c_char)
                 != 0
             {
-                (*unsafe { game_state() }.st_stuff.plyr).armorpoints = deh_idfa_armor;
-                (*unsafe { game_state() }.st_stuff.plyr).armortype = deh_idfa_armor_class;
+                (*state.st_stuff.plyr).armorpoints = deh_idfa_armor;
+                (*state.st_stuff.plyr).armortype = deh_idfa_armor_class;
                 i = 0 as i32;
                 while i < NUMWEAPONS as i32 {
-                    (*unsafe { game_state() }.st_stuff.plyr).weaponowned[i as usize] = true;
+                    (*state.st_stuff.plyr).weaponowned[i as usize] = true;
                     i += 1;
                 }
                 i = 0 as i32;
                 while i < NUMAMMO as i32 {
-                    (*unsafe { game_state() }.st_stuff.plyr).ammo[i as usize] = (*unsafe { game_state() }.st_stuff.plyr).maxammo[i as usize];
+                    (*state.st_stuff.plyr).ammo[i as usize] = (*state.st_stuff.plyr).maxammo[i as usize];
                     i += 1;
                 }
-                (*unsafe { game_state() }.st_stuff.plyr).message = b"Ammo (no keys) Added\0" as *const u8
+                (*state.st_stuff.plyr).message = b"Ammo (no keys) Added\0" as *const u8
                     as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-            } else if cht_CheckCheat(&raw mut unsafe { game_state() }.st_stuff.cheat_ammo, (*ev).data2 as ::core::ffi::c_char) != 0 {
-                (*unsafe { game_state() }.st_stuff.plyr).armorpoints = deh_idkfa_armor;
-                (*unsafe { game_state() }.st_stuff.plyr).armortype = deh_idkfa_armor_class;
+            } else if cht_CheckCheat(&raw mut state.st_stuff.cheat_ammo, (*ev).data2 as ::core::ffi::c_char) != 0 {
+                (*state.st_stuff.plyr).armorpoints = deh_idkfa_armor;
+                (*state.st_stuff.plyr).armortype = deh_idkfa_armor_class;
                 i = 0 as i32;
                 while i < NUMWEAPONS as i32 {
-                    (*unsafe { game_state() }.st_stuff.plyr).weaponowned[i as usize] = true;
+                    (*state.st_stuff.plyr).weaponowned[i as usize] = true;
                     i += 1;
                 }
                 i = 0 as i32;
                 while i < NUMAMMO as i32 {
-                    (*unsafe { game_state() }.st_stuff.plyr).ammo[i as usize] = (*unsafe { game_state() }.st_stuff.plyr).maxammo[i as usize];
+                    (*state.st_stuff.plyr).ammo[i as usize] = (*state.st_stuff.plyr).maxammo[i as usize];
                     i += 1;
                 }
                 i = 0 as i32;
                 while i < NUMCARDS as i32 {
-                    (*unsafe { game_state() }.st_stuff.plyr).cards[i as usize] = true;
+                    (*state.st_stuff.plyr).cards[i as usize] = true;
                     i += 1;
                 }
-                (*unsafe { game_state() }.st_stuff.plyr).message = b"Very Happy Ammo Added\0" as *const u8
+                (*state.st_stuff.plyr).message = b"Very Happy Ammo Added\0" as *const u8
                     as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-            } else if cht_CheckCheat(&raw mut unsafe { game_state() }.st_stuff.cheat_mus, (*ev).data2 as ::core::ffi::c_char) != 0 {
+            } else if cht_CheckCheat(&raw mut state.st_stuff.cheat_mus, (*ev).data2 as ::core::ffi::c_char) != 0 {
                 let mut buf: [::core::ffi::c_char; 3] = [0; 3];
                 let mut musnum: i32 = 0;
-                (*unsafe { game_state() }.st_stuff.plyr).message = b"Music Change\0" as *const u8 as *const ::core::ffi::c_char
+                (*state.st_stuff.plyr).message = b"Music Change\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                cht_GetParam(&raw mut unsafe { game_state() }.st_stuff.cheat_mus, &raw mut buf as *mut ::core::ffi::c_char);
-                if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
-                    || (unsafe { game_state() }.doomstat.gameversion as u32)
+                cht_GetParam(&raw mut state.st_stuff.cheat_mus, &raw mut buf as *mut ::core::ffi::c_char);
+                if state.doomstat.gamemode as u32 == commercial as i32 as u32
+                    || (state.doomstat.gameversion as u32)
                         < exe_ultimate as i32 as u32
                 {
                     musnum = mus_runnin as i32
@@ -554,11 +554,11 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                         - '0' as i32
                         > 35 as i32
                     {
-                        (*unsafe { game_state() }.st_stuff.plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
+                        (*state.st_stuff.plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
                             as *const ::core::ffi::c_char
                             as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(unsafe { game_state() }, musnum, 1 as i32);
+                        S_ChangeMusic(state, musnum, 1 as i32);
                     }
                 } else {
                     musnum = mus_e1m1 as i32
@@ -569,50 +569,50 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                         - '1' as i32
                         > 31 as i32
                     {
-                        (*unsafe { game_state() }.st_stuff.plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
+                        (*state.st_stuff.plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
                             as *const ::core::ffi::c_char
                             as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(unsafe { game_state() }, musnum, 1 as i32);
+                        S_ChangeMusic(state, musnum, 1 as i32);
                     }
                 }
-            } else if (if unsafe { game_state() }.doomstat.gamemission as u32
+            } else if (if state.doomstat.gamemission as u32
                 == pack_chex as i32 as u32
             {
                 doom as i32 as u32
             } else {
-                (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+                (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                     doom2 as i32 as u32
                 } else {
-                    unsafe { game_state() }.doomstat.gamemission as u32
+                    state.doomstat.gamemission as u32
                 })
             }) == doom as i32 as u32
-                && cht_CheckCheat(&raw mut unsafe { game_state() }.st_stuff.cheat_noclip, (*ev).data2 as ::core::ffi::c_char) != 0
-                || (if unsafe { game_state() }.doomstat.gamemission as u32
+                && cht_CheckCheat(&raw mut state.st_stuff.cheat_noclip, (*ev).data2 as ::core::ffi::c_char) != 0
+                || (if state.doomstat.gamemission as u32
                     == pack_chex as i32 as u32
                 {
                     doom as i32 as u32
                 } else {
-                    (if unsafe { game_state() }.doomstat.gamemission as u32
+                    (if state.doomstat.gamemission as u32
                         == pack_hacx as i32 as u32
                     {
                         doom2 as i32 as u32
                     } else {
-                        unsafe { game_state() }.doomstat.gamemission as u32
+                        state.doomstat.gamemission as u32
                     })
                 }) != doom as i32 as u32
                     && cht_CheckCheat(
-                        &raw mut unsafe { game_state() }.st_stuff.cheat_commercial_noclip,
+                        &raw mut state.st_stuff.cheat_commercial_noclip,
                         (*ev).data2 as ::core::ffi::c_char,
                     ) != 0
             {
-                (*unsafe { game_state() }.st_stuff.plyr).cheats ^= CF_NOCLIP as i32;
-                if (*unsafe { game_state() }.st_stuff.plyr).cheats & CF_NOCLIP as i32 != 0 {
-                    (*unsafe { game_state() }.st_stuff.plyr).message = b"No Clipping Mode ON\0" as *const u8
+                (*state.st_stuff.plyr).cheats ^= CF_NOCLIP as i32;
+                if (*state.st_stuff.plyr).cheats & CF_NOCLIP as i32 != 0 {
+                    (*state.st_stuff.plyr).message = b"No Clipping Mode ON\0" as *const u8
                         as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 } else {
-                    (*unsafe { game_state() }.st_stuff.plyr).message = b"No Clipping Mode OFF\0" as *const u8
+                    (*state.st_stuff.plyr).message = b"No Clipping Mode OFF\0" as *const u8
                         as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 }
@@ -620,74 +620,74 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
             i = 0 as i32;
             while i < 6 as i32 {
                 if cht_CheckCheat(
-                    (&raw mut unsafe { game_state() }.st_stuff.cheat_powerup as *mut cheatseq_t).offset(i as isize)
+                    (&raw mut state.st_stuff.cheat_powerup as *mut cheatseq_t).offset(i as isize)
                         as *mut cheatseq_t,
                     (*ev).data2 as ::core::ffi::c_char,
                 ) != 0
                 {
-                    if (*unsafe { game_state() }.st_stuff.plyr).powers[i as usize] == 0 {
-                        P_GivePower(unsafe { game_state() }.st_stuff.plyr, i);
+                    if (*state.st_stuff.plyr).powers[i as usize] == 0 {
+                        P_GivePower(state.st_stuff.plyr, i);
                     } else if i != pw_strength as i32 {
-                        (*unsafe { game_state() }.st_stuff.plyr).powers[i as usize] = 1 as i32;
+                        (*state.st_stuff.plyr).powers[i as usize] = 1 as i32;
                     } else {
-                        (*unsafe { game_state() }.st_stuff.plyr).powers[i as usize] = 0 as i32;
+                        (*state.st_stuff.plyr).powers[i as usize] = 0 as i32;
                     }
-                    (*unsafe { game_state() }.st_stuff.plyr).message = b"Power-up Toggled\0" as *const u8
+                    (*state.st_stuff.plyr).message = b"Power-up Toggled\0" as *const u8
                         as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 }
                 i += 1;
             }
             if cht_CheckCheat(
-                (&raw mut unsafe { game_state() }.st_stuff.cheat_powerup as *mut cheatseq_t).offset(6 as i32 as isize)
+                (&raw mut state.st_stuff.cheat_powerup as *mut cheatseq_t).offset(6 as i32 as isize)
                     as *mut cheatseq_t,
                 (*ev).data2 as ::core::ffi::c_char,
             ) != 0
             {
-                (*unsafe { game_state() }.st_stuff.plyr).message = b"inVuln, Str, Inviso, Rad, Allmap, or Lite-amp\0" as *const u8
+                (*state.st_stuff.plyr).message = b"inVuln, Str, Inviso, Rad, Allmap, or Lite-amp\0" as *const u8
                     as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-            } else if cht_CheckCheat(&raw mut unsafe { game_state() }.st_stuff.cheat_choppers, (*ev).data2 as ::core::ffi::c_char)
+            } else if cht_CheckCheat(&raw mut state.st_stuff.cheat_choppers, (*ev).data2 as ::core::ffi::c_char)
                 != 0
             {
-                (*unsafe { game_state() }.st_stuff.plyr).weaponowned[wp_chainsaw as i32 as usize] = true;
-                (*unsafe { game_state() }.st_stuff.plyr).powers[pw_invulnerability as i32 as usize] = true_0;
-                (*unsafe { game_state() }.st_stuff.plyr).message = b"... doesn't suck - GM\0" as *const u8
+                (*state.st_stuff.plyr).weaponowned[wp_chainsaw as i32 as usize] = true;
+                (*state.st_stuff.plyr).powers[pw_invulnerability as i32 as usize] = true_0;
+                (*state.st_stuff.plyr).message = b"... doesn't suck - GM\0" as *const u8
                     as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-            } else if cht_CheckCheat(&raw mut unsafe { game_state() }.st_stuff.cheat_mypos, (*ev).data2 as ::core::ffi::c_char) != 0
+            } else if cht_CheckCheat(&raw mut state.st_stuff.cheat_mypos, (*ev).data2 as ::core::ffi::c_char) != 0
             {
                 M_snprintf(
-                    &raw mut unsafe { game_state() }.st_stuff.st_responder_mypos_buf as *mut ::core::ffi::c_char,
+                    &raw mut state.st_stuff.st_responder_mypos_buf as *mut ::core::ffi::c_char,
                     ::core::mem::size_of::<[::core::ffi::c_char; 52]>() as size_t,
                     b"ang=0x%x;x,y=(0x%x,0x%x)\0" as *const u8 as *const ::core::ffi::c_char,
-                    (*unsafe { game_state() }.g_game.players
-                        [unsafe { game_state() }.g_game.consoleplayer as usize]
+                    (*state.g_game.players
+                        [state.g_game.consoleplayer as usize]
                         .mo)
                         .angle,
-                    (*unsafe { game_state() }.g_game.players
-                        [unsafe { game_state() }.g_game.consoleplayer as usize]
+                    (*state.g_game.players
+                        [state.g_game.consoleplayer as usize]
                         .mo)
                         .x,
-                    (*unsafe { game_state() }.g_game.players
-                        [unsafe { game_state() }.g_game.consoleplayer as usize]
+                    (*state.g_game.players
+                        [state.g_game.consoleplayer as usize]
                         .mo)
                         .y,
                 );
-                (*unsafe { game_state() }.st_stuff.plyr).message = &raw mut unsafe { game_state() }.st_stuff.st_responder_mypos_buf as *mut ::core::ffi::c_char;
+                (*state.st_stuff.plyr).message = &raw mut state.st_stuff.st_responder_mypos_buf as *mut ::core::ffi::c_char;
             }
         }
-        if !unsafe { game_state() }.g_game.netgame
-            && cht_CheckCheat(&raw mut unsafe { game_state() }.st_stuff.cheat_clev, (*ev).data2 as ::core::ffi::c_char) != 0
+        if !state.g_game.netgame
+            && cht_CheckCheat(&raw mut state.st_stuff.cheat_clev, (*ev).data2 as ::core::ffi::c_char) != 0
         {
             let mut buf_1: [::core::ffi::c_char; 3] = [0; 3];
             let mut epsd: i32 = 0;
             let mut map: i32 = 0;
             cht_GetParam(
-                &raw mut unsafe { game_state() }.st_stuff.cheat_clev,
+                &raw mut state.st_stuff.cheat_clev,
                 &raw mut buf_1 as *mut ::core::ffi::c_char,
             );
-            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+            if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 epsd = 1 as i32;
                 map = (buf_1[0 as i32 as usize] as i32 - '0' as i32) * 10 as i32
                     + buf_1[1 as i32 as usize] as i32
@@ -696,7 +696,7 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                 epsd = buf_1[0 as i32 as usize] as i32 - '0' as i32;
                 map = buf_1[1 as i32 as usize] as i32 - '0' as i32;
             }
-            if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32 {
+            if state.doomstat.gameversion as u32 == exe_chex as i32 as u32 {
                 epsd = 1 as i32;
             }
             if epsd < 1 as i32 {
@@ -705,30 +705,30 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
             if map < 1 as i32 {
                 return false;
             }
-            if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32
+            if state.doomstat.gamemode as u32 == retail as i32 as u32
                 && (epsd > 4 as i32 || map > 9 as i32)
             {
                 return false;
             }
-            if unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32
+            if state.doomstat.gamemode as u32 == registered as i32 as u32
                 && (epsd > 3 as i32 || map > 9 as i32)
             {
                 return false;
             }
-            if unsafe { game_state() }.doomstat.gamemode as u32 == shareware as i32 as u32
+            if state.doomstat.gamemode as u32 == shareware as i32 as u32
                 && (epsd > 1 as i32 || map > 9 as i32)
             {
                 return false;
             }
-            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+            if state.doomstat.gamemode as u32 == commercial as i32 as u32
                 && (epsd > 1 as i32 || map > 40 as i32)
             {
                 return false;
             }
-            (*unsafe { game_state() }.st_stuff.plyr).message = b"Changing Level...\0" as *const u8 as *const ::core::ffi::c_char
+            (*state.st_stuff.plyr).message = b"Changing Level...\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
-            let gameskill = unsafe { game_state() }.g_game.gameskill;
-            G_DeferedInitNew(unsafe { game_state() }, gameskill, epsd, map);
+            let gameskill = state.g_game.gameskill;
+            G_DeferedInitNew(state, gameskill, epsd, map);
         }
     }
     return false;

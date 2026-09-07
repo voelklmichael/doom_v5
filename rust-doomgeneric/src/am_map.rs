@@ -693,7 +693,7 @@ pub unsafe fn AM_initVariables() {
     unsafe { game_state() }.am_map.old_m_y = unsafe { game_state() }.am_map.m_y;
     unsafe { game_state() }.am_map.old_m_w = unsafe { game_state() }.am_map.m_w;
     unsafe { game_state() }.am_map.old_m_h = unsafe { game_state() }.am_map.m_h;
-    ST_Responder(&st_notify);
+    ST_Responder(unsafe { game_state() }, &st_notify);
 }
 pub unsafe fn AM_loadPics() {
     let mut i: i32 = 0;
@@ -763,7 +763,7 @@ pub unsafe fn AM_Stop() {
     };
     AM_unloadPics();
     unsafe { game_state() }.am_map.automapactive = false;
-    ST_Responder(&st_notify);
+    ST_Responder(unsafe { game_state() }, &st_notify);
     unsafe { game_state() }.am_map.stopped = true;
 }
 pub unsafe fn AM_Start() {

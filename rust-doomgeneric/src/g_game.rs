@@ -1003,7 +1003,7 @@ pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
         if HU_Responder(&ev) {
             return true;
         }
-        if ST_Responder(&ev) {
+        if ST_Responder(state, &ev) {
             return true;
         }
         if AM_Responder(&ev) {
