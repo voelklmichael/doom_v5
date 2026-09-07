@@ -1090,13 +1090,13 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
                 G_DoLoadLevel();
             }
             2 => {
-                G_DoNewGame();
+                G_DoNewGame(unsafe { game_state() });
             }
             3 => {
-                G_DoLoadGame();
+                G_DoLoadGame(unsafe { game_state() });
             }
             4 => {
-                G_DoSaveGame();
+                G_DoSaveGame(unsafe { game_state() });
             }
             5 => {
                 G_DoPlayDemo();
@@ -1726,40 +1726,40 @@ pub unsafe fn G_LoadGame(state: &mut GameState, mut name: *mut ::core::ffi::c_ch
     );
     state.g_game.gameaction = ga_loadgame;
 }
-pub unsafe fn G_DoLoadGame() {
+pub unsafe fn G_DoLoadGame(state: &mut GameState) {
     let mut savedleveltime: i32 = 0;
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
-    unsafe { game_state() }.p_saveg.save_stream = fopen(
-        &raw mut unsafe { game_state() }.g_game.savename as *mut ::core::ffi::c_char,
+    state.g_game.gameaction = ga_nothing;
+    state.p_saveg.save_stream = fopen(
+        &raw mut state.g_game.savename as *mut ::core::ffi::c_char,
         b"rb\0" as *const u8 as *const ::core::ffi::c_char,
     ) as *mut FILE;
-    if unsafe { game_state() }.p_saveg.save_stream.is_null() {
+    if state.p_saveg.save_stream.is_null() {
         return;
     }
-    unsafe { game_state() }.p_saveg.savegame_error = false;
+    state.p_saveg.savegame_error = false;
     if !P_ReadSaveGameHeader() {
-        fclose(unsafe { game_state() }.p_saveg.save_stream);
+        fclose(state.p_saveg.save_stream);
         return;
     }
-    savedleveltime = unsafe { game_state() }.p_tick.leveltime;
+    savedleveltime = state.p_tick.leveltime;
     G_InitNew(
-        unsafe { game_state() }.g_game.gameskill,
-        unsafe { game_state() }.g_game.gameepisode,
-        unsafe { game_state() }.g_game.gamemap,
+        state.g_game.gameskill,
+        state.g_game.gameepisode,
+        state.g_game.gamemap,
     );
-    unsafe { game_state() }.p_tick.leveltime = savedleveltime;
+    state.p_tick.leveltime = savedleveltime;
     P_UnArchivePlayers();
     P_UnArchiveWorld();
     P_UnArchiveThinkers();
-    P_UnArchiveSpecials(unsafe { &mut game_state().p_ceilng });
+    P_UnArchiveSpecials(&mut state.p_ceilng);
     if !P_ReadSaveGameEOF() {
         I_Error("Bad savegame");
     }
-    fclose(unsafe { game_state() }.p_saveg.save_stream);
-    if unsafe { game_state() }.r_main.setsizeneeded {
-        R_ExecuteSetViewSize(unsafe { game_state() });
+    fclose(state.p_saveg.save_stream);
+    if state.r_main.setsizeneeded {
+        R_ExecuteSetViewSize(state);
     }
-    R_FillBackScreen(unsafe { game_state() });
+    R_FillBackScreen(state);
 }
 pub unsafe fn G_SaveGame(state: &mut GameState, mut slot: i32, mut description: *mut ::core::ffi::c_char) {
     state.g_game.savegameslot = slot;
@@ -1770,7 +1770,7 @@ pub unsafe fn G_SaveGame(state: &mut GameState, mut slot: i32, mut description: 
     );
     state.g_game.sendsave = true;
 }
-pub unsafe fn G_DoSaveGame() {
+pub unsafe fn G_DoSaveGame(state: &mut GameState) {
     let mut savegame_file: *mut ::core::ffi::c_char =
         ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut temp_savegame_file: *mut ::core::ffi::c_char =
@@ -1779,21 +1779,21 @@ pub unsafe fn G_DoSaveGame() {
         ::core::ptr::null_mut::<::core::ffi::c_char>();
     recovery_savegame_file = ::core::ptr::null_mut::<::core::ffi::c_char>();
     temp_savegame_file = P_TempSaveGameFile();
-    savegame_file = P_SaveGameFile(unsafe { game_state() }.g_game.savegameslot);
-    unsafe { game_state() }.p_saveg.save_stream = fopen(
+    savegame_file = P_SaveGameFile(state.g_game.savegameslot);
+    state.p_saveg.save_stream = fopen(
         temp_savegame_file,
         b"wb\0" as *const u8 as *const ::core::ffi::c_char,
     ) as *mut FILE;
-    if unsafe { game_state() }.p_saveg.save_stream.is_null() {
+    if state.p_saveg.save_stream.is_null() {
         recovery_savegame_file = M_TempFile(
             b"recovery.dsg\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
-        unsafe { game_state() }.p_saveg.save_stream = fopen(
+        state.p_saveg.save_stream = fopen(
             recovery_savegame_file,
             b"wb\0" as *const u8 as *const ::core::ffi::c_char,
         ) as *mut FILE;
-        if unsafe { game_state() }.p_saveg.save_stream.is_null() {
+        if state.p_saveg.save_stream.is_null() {
             I_Error(&format!(
                 "Failed to open either '{}' or '{}' to write savegame.",
                 ::std::ffi::CStr::from_ptr(temp_savegame_file)
@@ -1805,21 +1805,21 @@ pub unsafe fn G_DoSaveGame() {
             ));
         }
     }
-    unsafe { game_state() }.p_saveg.savegame_error = false;
+    state.p_saveg.savegame_error = false;
     P_WriteSaveGameHeader(
-        &raw mut unsafe { game_state() }.g_game.savedescription as *mut ::core::ffi::c_char,
+        &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char,
     );
     P_ArchivePlayers();
     P_ArchiveWorld();
     P_ArchiveThinkers();
-    P_ArchiveSpecials(unsafe { &mut game_state().p_ceilng });
+    P_ArchiveSpecials(&mut state.p_ceilng);
     P_WriteSaveGameEOF();
-    if unsafe { game_state() }.g_game.vanilla_savegame_limit != 0
-        && ftell(unsafe { game_state() }.p_saveg.save_stream) > SAVEGAMESIZE as i64
+    if state.g_game.vanilla_savegame_limit != 0
+        && ftell(state.p_saveg.save_stream) > SAVEGAMESIZE as i64
     {
         I_Error("Savegame buffer overrun");
     }
-    fclose(unsafe { game_state() }.p_saveg.save_stream);
+    fclose(state.p_saveg.save_stream);
     if !recovery_savegame_file.is_null() {
         I_Error(&format!(
             "Failed to open savegame file '{}' for writing.\nBut your game has been saved to '{}' for recovery.",
@@ -1829,16 +1829,16 @@ pub unsafe fn G_DoSaveGame() {
     }
     remove(savegame_file);
     rename(temp_savegame_file, savegame_file);
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
+    state.g_game.gameaction = ga_nothing;
     M_StringCopy(
-        &raw mut unsafe { game_state() }.g_game.savedescription as *mut ::core::ffi::c_char,
+        &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char,
         b"\0" as *const u8 as *const ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
     );
-    unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
+    state.g_game.players[state.g_game.consoleplayer as usize]
         .message =
         b"game saved.\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    R_FillBackScreen(unsafe { game_state() });
+    R_FillBackScreen(state);
 }
 pub unsafe fn G_DeferedInitNew(state: &mut GameState, mut skill: skill_t, mut episode: i32, mut map: i32) {
     state.g_game.d_skill = skill;
@@ -1846,26 +1846,26 @@ pub unsafe fn G_DeferedInitNew(state: &mut GameState, mut skill: skill_t, mut ep
     state.g_game.d_map = map;
     state.g_game.gameaction = ga_newgame;
 }
-pub unsafe fn G_DoNewGame() {
-    unsafe { game_state() }.g_game.demoplayback = false;
-    unsafe { game_state() }.g_game.netdemo = false;
-    unsafe { game_state() }.g_game.netgame = false;
-    unsafe { game_state() }.g_game.deathmatch = false_0;
-    unsafe { game_state() }.g_game.playeringame[3 as i32 as usize] = 0 as boolean;
-    unsafe { game_state() }.g_game.playeringame[2 as i32 as usize] =
-        unsafe { game_state() }.g_game.playeringame[3 as i32 as usize];
-    unsafe { game_state() }.g_game.playeringame[1 as i32 as usize] =
-        unsafe { game_state() }.g_game.playeringame[2 as i32 as usize];
-    unsafe { game_state() }.d_main.respawnparm = false;
-    unsafe { game_state() }.d_main.fastparm = false;
-    unsafe { game_state() }.d_main.nomonsters = false;
-    unsafe { game_state() }.g_game.consoleplayer = 0 as i32;
+pub unsafe fn G_DoNewGame(state: &mut GameState) {
+    state.g_game.demoplayback = false;
+    state.g_game.netdemo = false;
+    state.g_game.netgame = false;
+    state.g_game.deathmatch = false_0;
+    state.g_game.playeringame[3 as i32 as usize] = 0 as boolean;
+    state.g_game.playeringame[2 as i32 as usize] =
+        state.g_game.playeringame[3 as i32 as usize];
+    state.g_game.playeringame[1 as i32 as usize] =
+        state.g_game.playeringame[2 as i32 as usize];
+    state.d_main.respawnparm = false;
+    state.d_main.fastparm = false;
+    state.d_main.nomonsters = false;
+    state.g_game.consoleplayer = 0 as i32;
     G_InitNew(
-        unsafe { game_state() }.g_game.d_skill,
-        unsafe { game_state() }.g_game.d_episode,
-        unsafe { game_state() }.g_game.d_map,
+        state.g_game.d_skill,
+        state.g_game.d_episode,
+        state.g_game.d_map,
     );
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
+    state.g_game.gameaction = ga_nothing;
 }
 pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     let mut skytexturename: *mut ::core::ffi::c_char =
