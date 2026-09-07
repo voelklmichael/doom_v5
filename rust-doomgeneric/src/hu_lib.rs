@@ -1,4 +1,3 @@
-use crate::src::am_map::automapactive;
 use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
@@ -131,7 +130,7 @@ pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
     let mut lh: i32 = 0;
     let mut y: i32 = 0;
     let mut yoffset: i32 = 0;
-    if !automapactive && viewwindowx != 0 && (*l).needsupdate != 0 {
+    if !unsafe { game_state() }.am_map.automapactive && viewwindowx != 0 && (*l).needsupdate != 0 {
         lh = (**(*l).f.offset(0 as i32 as isize)).height as i32 + 1 as i32;
         y = (*l).y;
         yoffset = y * SCREENWIDTH;

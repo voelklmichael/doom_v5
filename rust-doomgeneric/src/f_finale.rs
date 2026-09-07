@@ -1,4 +1,3 @@
-use crate::src::am_map::automapactive;
 use crate::src::d_event::ev_keydown;
 use crate::src::d_event::event_t;
 use crate::src::d_event::{ga_nothing, ga_worlddone};
@@ -309,7 +308,7 @@ pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
     unsafe { game_state() }.g_game.gameaction = ga_nothing;
     unsafe { game_state() }.g_game.gamestate = GS_FINALE;
     unsafe { game_state() }.g_game.viewactive = false;
-    automapactive = false;
+    unsafe { game_state() }.am_map.automapactive = false;
     if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {

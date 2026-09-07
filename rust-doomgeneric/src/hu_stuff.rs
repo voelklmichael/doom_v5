@@ -1,4 +1,3 @@
-use crate::src::am_map::automapactive;
 use crate::src::d_event::ev_keydown;
 use crate::src::d_event::event_t;
 use crate::src::d_mode::commercial;
@@ -476,7 +475,7 @@ pub unsafe fn HU_Start() {
 pub unsafe fn HU_Drawer() {
     HUlib_drawSText(&raw mut unsafe { game_state() }.hu_stuff.w_message);
     HUlib_drawIText(&raw mut unsafe { game_state() }.hu_stuff.w_chat);
-    if automapactive {
+    if unsafe { game_state() }.am_map.automapactive {
         HUlib_drawTextLine(
             &raw mut unsafe { game_state() }.hu_stuff.w_title,
             false_0 as boolean,

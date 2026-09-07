@@ -6,7 +6,6 @@ use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 
-use crate::src::am_map::automapactive;
 use crate::src::d_event::GS_LEVEL;
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse, ev_quit};
 use crate::src::d_main::devparm;
@@ -1875,14 +1874,14 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     }
     if !unsafe { game_state() }.m_menu.menuactive {
         if key == unsafe { game_state() }.m_controls.key_menu_decscreen {
-            if automapactive || unsafe { game_state() }.hu_stuff.chat_on {
+            if unsafe { game_state() }.am_map.automapactive || unsafe { game_state() }.hu_stuff.chat_on {
                 return false;
             }
             M_SizeDisplay(0 as i32);
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             return true;
         } else if key == unsafe { game_state() }.m_controls.key_menu_incscreen {
-            if automapactive || unsafe { game_state() }.hu_stuff.chat_on {
+            if unsafe { game_state() }.am_map.automapactive || unsafe { game_state() }.hu_stuff.chat_on {
                 return false;
             }
             M_SizeDisplay(1 as i32);
