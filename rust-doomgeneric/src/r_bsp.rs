@@ -180,8 +180,8 @@ pub unsafe fn R_AddLine(state: &mut GameState, mut line: *mut seg_t) {
     let mut span: angle_t = 0;
     let mut tspan: angle_t = 0;
     state.r_bsp.curline = line;
-    angle1 = R_PointToAngle((*(*line).v1).x, (*(*line).v1).y);
-    angle2 = R_PointToAngle((*(*line).v2).x, (*(*line).v2).y);
+    angle1 = R_PointToAngle(state, (*(*line).v1).x, (*(*line).v1).y);
+    angle2 = R_PointToAngle(state, (*(*line).v2).x, (*(*line).v2).y);
     span = angle1.wrapping_sub(angle2);
     if span >= ANG180 {
         return;
@@ -286,8 +286,8 @@ pub unsafe fn R_CheckBBox(state: &mut GameState, mut bspcoord: *mut fixed_t) -> 
     y1 = *bspcoord.offset(checkcoord[boxpos as usize][1 as i32 as usize] as isize);
     x2 = *bspcoord.offset(checkcoord[boxpos as usize][2 as i32 as usize] as isize);
     y2 = *bspcoord.offset(checkcoord[boxpos as usize][3 as i32 as usize] as isize);
-    angle1 = R_PointToAngle(x1, y1).wrapping_sub(state.r_main.viewangle);
-    angle2 = R_PointToAngle(x2, y2).wrapping_sub(state.r_main.viewangle);
+    angle1 = R_PointToAngle(state, x1, y1).wrapping_sub(state.r_main.viewangle);
+    angle2 = R_PointToAngle(state, x2, y2).wrapping_sub(state.r_main.viewangle);
     span = angle1.wrapping_sub(angle2);
     if span >= ANG180 {
         return true;

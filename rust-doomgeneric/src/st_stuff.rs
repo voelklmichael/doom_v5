@@ -791,9 +791,14 @@ pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
                 state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
             } else {
                 let plyr_attacker = plyr_attacker.unwrap();
-                badguyangle = R_PointToAngle2(
+                let (plyr_mo_x, plyr_mo_y) = (
                     (*(*state.st_stuff.plyr).mo).x,
                     (*(*state.st_stuff.plyr).mo).y,
+                );
+                badguyangle = R_PointToAngle2(
+                    state,
+                    plyr_mo_x,
+                    plyr_mo_y,
                     (*plyr_attacker).x,
                     (*plyr_attacker).y,
                 );

@@ -311,6 +311,7 @@ pub unsafe fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
             sfx_punch as i32,
         );
         (*(*player).mo).angle = R_PointToAngle2(
+            unsafe { game_state() },
             (*(*player).mo).x,
             (*(*player).mo).y,
             (*unsafe { game_state() }.p_map.linetarget).x,
@@ -351,6 +352,7 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
         sfx_sawhit as i32,
     );
     angle = R_PointToAngle2(
+        unsafe { game_state() },
         (*(*player).mo).x,
         (*(*player).mo).y,
         (*unsafe { game_state() }.p_map.linetarget).x,

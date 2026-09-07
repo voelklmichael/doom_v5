@@ -469,6 +469,7 @@ pub unsafe fn P_LookForPlayers(mut actor: *mut mobj_t, mut allaround: bool) -> b
                 if P_CheckSight(unsafe { &mut game_state().p_sight }, actor, (*player).mo) {
                     if !allaround {
                         an = R_PointToAngle2(
+                            unsafe { game_state() },
                             (*actor).x,
                             (*actor).y,
                             (*(*player).mo).x,
@@ -697,7 +698,7 @@ pub unsafe fn A_FaceTarget(id: MobjId) {
         None => return,
     };
     (*actor).flags &= !(MF_AMBUSH as i32);
-    (*actor).angle = R_PointToAngle2((*actor).x, (*actor).y, (*target).x, (*target).y);
+    (*actor).angle = R_PointToAngle2(unsafe { game_state() }, (*actor).x, (*actor).y, (*target).x, (*target).y);
     if (*target).flags & MF_SHADOW as i32 != 0 {
         (*actor).angle = (*actor).angle.wrapping_add(
             (P_Random(unsafe { &mut game_state().m_random })
@@ -986,7 +987,7 @@ pub unsafe fn A_Tracer(id: MobjId) {
     if dest.is_null() || (*dest).health <= 0 as i32 {
         return;
     }
-    exact = R_PointToAngle2((*actor).x, (*actor).y, (*dest).x, (*dest).y);
+    exact = R_PointToAngle2(unsafe { game_state() }, (*actor).x, (*actor).y, (*dest).x, (*dest).y);
     if exact != (*actor).angle {
         if exact.wrapping_sub((*actor).angle) > 0x80000000 as u32 {
             (*actor).angle = (*actor).angle.wrapping_sub(TRACEANGLE as angle_t);

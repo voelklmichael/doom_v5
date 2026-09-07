@@ -142,6 +142,7 @@ pub unsafe fn P_DeathThink(state: &mut PUserState, mut player: *mut player_t) {
     if attacker.is_some() && attacker != Some((*player).mo) {
         let attacker = attacker.unwrap();
         angle = R_PointToAngle2(
+            unsafe { game_state() },
             (*(*player).mo).x,
             (*(*player).mo).y,
             (*attacker).x,

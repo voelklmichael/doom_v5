@@ -562,11 +562,12 @@ pub unsafe fn P_HitSlideLine(mut ld: *mut line_t) {
         (*unsafe { game_state() }.p_map.slidemo).y,
         ld,
     );
-    lineangle = R_PointToAngle2(0 as fixed_t, 0 as fixed_t, (*ld).dx, (*ld).dy);
+    lineangle = R_PointToAngle2(unsafe { game_state() }, 0 as fixed_t, 0 as fixed_t, (*ld).dx, (*ld).dy);
     if side == 1 as i32 {
         lineangle = (lineangle as u32).wrapping_add(ANG180) as angle_t as angle_t;
     }
     moveangle = R_PointToAngle2(
+        unsafe { game_state() },
         0 as fixed_t,
         0 as fixed_t,
         unsafe { game_state() }.p_map.tmxmove,
