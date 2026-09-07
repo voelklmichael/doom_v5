@@ -54,6 +54,7 @@ use crate::src::v_video::VVideoState;
 use crate::src::w_checksum::WChecksumState;
 use crate::src::w_file::WFileState;
 use crate::src::w_wad::WWadState;
+use crate::src::wi_stuff::WiStuffState;
 use crate::src::z_zone::ZZoneState;
 
 pub struct GameState {
@@ -100,6 +101,7 @@ pub struct GameState {
     pub w_checksum: WChecksumState,
     pub w_file: WFileState,
     pub w_wad: WWadState,
+    pub wi_stuff: WiStuffState,
     pub z_zone: ZZoneState,
 }
 
@@ -149,6 +151,7 @@ impl GameState {
             w_checksum: WChecksumState::new(),
             w_file: WFileState::new(),
             w_wad: WWadState::new(),
+            wi_stuff: WiStuffState::new(),
             z_zone: ZZoneState::new(),
         }
     }
@@ -170,6 +173,7 @@ pub unsafe fn game_state() -> &'static mut GameState {
         state.m_config.fixup_defaults();
         state.m_controls.fixup_weapon_keys();
         state.m_menu.fixup_menu_links();
+        state.wi_stuff.fixup_anims();
     }
     state
 }
