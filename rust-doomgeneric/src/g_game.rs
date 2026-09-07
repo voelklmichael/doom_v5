@@ -86,7 +86,6 @@ use crate::src::p_saveg::P_UnArchiveWorld;
 use crate::src::p_saveg::P_WriteSaveGameEOF;
 use crate::src::p_saveg::P_WriteSaveGameHeader;
 use crate::src::p_setup::P_SetupLevel;
-use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_Ticker;
 use crate::src::r_data::R_FlatNumForName;
 use crate::src::r_data::R_TextureNumForName;
@@ -1668,7 +1667,7 @@ pub unsafe fn G_DoCompleted() {
             unsafe { game_state() }.g_game.players[i as usize].itemcount;
         unsafe { game_state() }.g_game.wminfo.plyr[i as usize].ssecret =
             unsafe { game_state() }.g_game.players[i as usize].secretcount;
-        unsafe { game_state() }.g_game.wminfo.plyr[i as usize].stime = leveltime;
+        unsafe { game_state() }.g_game.wminfo.plyr[i as usize].stime = unsafe { game_state() }.p_tick.leveltime;
         memcpy(
             &raw mut (*(&raw mut unsafe { game_state() }.g_game.wminfo.plyr
                 as *mut wbplayerstruct_t)
@@ -1752,13 +1751,13 @@ pub unsafe fn G_DoLoadGame() {
         fclose(unsafe { game_state() }.p_saveg.save_stream);
         return;
     }
-    savedleveltime = leveltime;
+    savedleveltime = unsafe { game_state() }.p_tick.leveltime;
     G_InitNew(
         unsafe { game_state() }.g_game.gameskill,
         unsafe { game_state() }.g_game.gameepisode,
         unsafe { game_state() }.g_game.gamemap,
     );
-    leveltime = savedleveltime;
+    unsafe { game_state() }.p_tick.leveltime = savedleveltime;
     P_UnArchivePlayers();
     P_UnArchiveWorld();
     P_UnArchiveThinkers();

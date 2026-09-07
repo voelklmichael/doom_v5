@@ -31,7 +31,6 @@ use crate::src::p_maputl::P_SetThingPosition;
 use crate::src::p_maputl::P_UnsetThingPosition;
 use crate::src::p_pspr::P_SetupPsprites;
 use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
-use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_RemoveThinker;
 use crate::src::p_user::VIEWHEIGHT;
@@ -856,7 +855,7 @@ pub unsafe fn P_MobjThinker(mut mobj: *mut mobj_t) {
         if (*mobj).movecount < 12 as i32 * TICRATE {
             return;
         }
-        if leveltime & 31 as i32 != 0 {
+        if unsafe { game_state() }.p_tick.leveltime & 31 as i32 != 0 {
             return;
         }
         if P_Random(unsafe { &mut game_state().m_random }) > 4 as i32 {
@@ -1001,7 +1000,7 @@ pub unsafe fn P_RemoveMobj(state: &mut PMobjState, mut mobj: *mut mobj_t) {
         && (*mobj).type_0 as u32 != MT_INS as i32 as u32
     {
         state.itemrespawnque[state.iquehead as usize] = (*mobj).spawnpoint;
-        state.itemrespawntime[state.iquehead as usize] = leveltime;
+        state.itemrespawntime[state.iquehead as usize] = unsafe { game_state() }.p_tick.leveltime;
         state.iquehead = state.iquehead + 1 as i32 & ITEMQUESIZE - 1 as i32;
         if state.iquehead == state.iquetail {
             state.iquetail = state.iquetail + 1 as i32 & ITEMQUESIZE - 1 as i32;
@@ -1025,7 +1024,7 @@ pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {
     if state.iquehead == state.iquetail {
         return;
     }
-    if leveltime - state.itemrespawntime[state.iquetail as usize] < 30 as i32 * TICRATE {
+    if unsafe { game_state() }.p_tick.leveltime - state.itemrespawntime[state.iquetail as usize] < 30 as i32 * TICRATE {
         return;
     }
     mthing = (&raw mut state.itemrespawnque as *mut mapthing_t).offset(state.iquetail as isize)

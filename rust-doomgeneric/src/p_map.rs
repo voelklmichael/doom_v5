@@ -49,7 +49,6 @@ use crate::src::p_spec::P_CrossSpecialLine;
 use crate::src::p_spec::P_ShootSpecialLine;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_switch::P_UseSpecialLine;
-use crate::src::p_tick::leveltime;
 use crate::src::r_main::R_PointInSubsector;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::s_sound::S_StartSound;
@@ -1147,7 +1146,7 @@ pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
         return true_0 as boolean;
     }
     unsafe { game_state() }.p_map.nofit = true_0 as boolean;
-    if unsafe { game_state() }.p_map.crushchange != 0 && leveltime & 3 as i32 == 0 {
+    if unsafe { game_state() }.p_map.crushchange != 0 && unsafe { game_state() }.p_tick.leveltime & 3 as i32 == 0 {
         P_DamageMobj(
             thing,
             ::core::ptr::null_mut::<mobj_t>(),

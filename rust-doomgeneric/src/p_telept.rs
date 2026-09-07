@@ -8,7 +8,6 @@ use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::MF_MISSILE;
 use crate::src::p_mobj::{line_t, sector_t, thinker_t};
 use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG};
-use crate::src::p_tick::thinkercap;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::sfx_telept;
 use crate::src::tables::finecosine;
@@ -35,9 +34,9 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numsectors {
         if (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).tag as i32 == tag {
-            thinker = thinkercap.next as *mut thinker_t;
-            thinker = thinkercap.next as *mut thinker_t;
-            while thinker != &raw mut thinkercap {
+            thinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+            thinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+            while thinker != &raw mut unsafe { game_state() }.p_tick.thinkercap {
                 if matches!((*thinker).function, ThinkerFn::Mobj(_)) {
                     m = thinker as *mut mobj_t;
                     if !((*m).type_0 as u32 != MT_TELEPORTMAN as i32 as u32) {

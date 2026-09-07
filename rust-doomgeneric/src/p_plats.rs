@@ -14,7 +14,6 @@ use crate::src::p_spec::P_FindHighestFloorSurrounding;
 use crate::src::p_spec::P_FindLowestFloorSurrounding;
 use crate::src::p_spec::P_FindNextHighestFloor;
 use crate::src::p_spec::P_FindSectorFromLineTag;
-use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_RemoveThinker;
 use crate::src::s_sound::S_StartSound;
@@ -63,7 +62,7 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
             if (*plat).type_0 as u32 == raiseAndChange as i32 as u32
                 || (*plat).type_0 as u32 == raiseToNearestAndChange as i32 as u32
             {
-                if leveltime & 7 as i32 == 0 {
+                if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
                     S_StartSound(
                         unsafe { &mut game_state().sounds },
                         &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,

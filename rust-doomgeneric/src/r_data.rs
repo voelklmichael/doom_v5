@@ -9,7 +9,6 @@ use crate::src::m_misc::M_StringCopy;
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::thinker_t;
 use crate::src::p_mobj::ThinkerFn;
-use crate::src::p_tick::thinkercap;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::spriteframe_t;
 use crate::src::stdint_types::byte;
@@ -814,8 +813,8 @@ pub unsafe fn R_PrecacheLevel() {
         0 as i32,
         unsafe { game_state() }.r_things.numsprites as size_t,
     );
-    th = thinkercap.next as *mut thinker_t;
-    while th != &raw mut thinkercap {
+    th = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while th != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         if matches!((*th).function, ThinkerFn::Mobj(_)) {
             *spritepresent.offset((*(th as *mut mobj_t)).sprite as isize) =
                 1 as ::core::ffi::c_char;

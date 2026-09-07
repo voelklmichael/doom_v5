@@ -26,7 +26,6 @@ use crate::src::p_spec::P_InitPicAnims;
 use crate::src::p_spec::P_SpawnSpecials;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_switch::P_InitSwitchList;
-use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_InitThinkers;
 use crate::src::r_data::R_FlatNumForName;
 use crate::src::r_data::R_PrecacheLevel;
@@ -937,7 +936,7 @@ pub unsafe fn P_SetupLevel(
     lumpnum = W_GetNumForName(&wad_name8_to_string(
         &raw mut lumpname as *mut ::core::ffi::c_char,
     ));
-    leveltime = 0 as i32;
+    unsafe { game_state() }.p_tick.leveltime = 0 as i32;
     P_LoadBlockMap(lumpnum + ML_BLOCKMAP as i32);
     P_LoadVertexes(lumpnum + ML_VERTEXES as i32);
     P_LoadSectors(lumpnum + ML_SECTORS as i32);

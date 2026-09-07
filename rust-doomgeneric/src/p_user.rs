@@ -23,7 +23,6 @@ use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::{MF_JUSTATTACKED, MF_NOCLIP, MF_SHADOW};
 use crate::src::p_pspr::P_MovePsprites;
 use crate::src::p_spec::P_PlayerInSpecialSector;
-use crate::src::p_tick::leveltime;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::stdint_types::byte;
 use crate::src::tables::angle_t;
@@ -70,7 +69,7 @@ pub unsafe fn P_CalcHeight(state: &mut PUserState, mut player: *mut player_t) {
         (*player).viewz = (*(*player).mo).z + (*player).viewheight;
         return;
     }
-    angle = FINEANGLES / 20 as i32 * leveltime & FINEMASK;
+    angle = FINEANGLES / 20 as i32 * unsafe { game_state() }.p_tick.leveltime & FINEMASK;
     bob = FixedMul((*player).bob / 2 as fixed_t, finesine[angle as usize]);
     if (*player).playerstate as u32 == PST_LIVE as i32 as u32 {
         (*player).viewheight += (*player).deltaviewheight;

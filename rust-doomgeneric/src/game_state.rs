@@ -47,6 +47,7 @@ use crate::src::p_setup::PSetupState;
 use crate::src::p_sight::PSightState;
 use crate::src::p_spec::PSpecState;
 use crate::src::p_switch::PSwitchState;
+use crate::src::p_tick::PTickState;
 use crate::src::p_user::PUserState;
 use crate::src::r_sky::RSkyState;
 use crate::src::r_main::RMainState;
@@ -106,6 +107,7 @@ pub struct GameState {
     pub p_sight: PSightState,
     pub p_spec: PSpecState,
     pub p_switch: PSwitchState,
+    pub p_tick: PTickState,
     pub p_user: PUserState,
     pub r_main: RMainState,
     pub r_segs: RSegsState,
@@ -167,6 +169,7 @@ impl GameState {
             p_sight: PSightState::new(),
             p_spec: PSpecState::new(),
             p_switch: PSwitchState::new(),
+            p_tick: PTickState::new(),
             p_user: PUserState::new(),
             r_main: RMainState::new(),
             r_segs: RSegsState::new(),
