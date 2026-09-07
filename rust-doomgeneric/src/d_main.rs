@@ -554,7 +554,8 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
 pub unsafe extern "C" fn doomgeneric_Tick(state: *mut ::core::ffi::c_void) {
     let state = unsafe { &mut *(state as *mut GameState) };
     TryRunTics(state);
-    S_UpdateSounds(state.g_game.players[state.g_game.consoleplayer as usize].mo);
+    let listener_mo = state.g_game.players[state.g_game.consoleplayer as usize].mo;
+    S_UpdateSounds(state, listener_mo);
     if state.i_video.screenvisible {
         D_Display(state);
     }
@@ -628,9 +629,9 @@ pub unsafe fn D_DoAdvanceDemo() {
             unsafe { game_state() }.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
             if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
+                S_StartMusic(unsafe { game_state() }, mus_dm2ttl as i32);
             } else {
-                S_StartMusic(unsafe { &mut game_state().sounds }, mus_intro as i32);
+                S_StartMusic(unsafe { game_state() }, mus_intro as i32);
             }
         }
         1 => {
@@ -655,7 +656,7 @@ pub unsafe fn D_DoAdvanceDemo() {
                 unsafe { game_state() }.d_main.pagetic = TICRATE * 11 as i32;
                 unsafe { game_state() }.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
+                S_StartMusic(unsafe { game_state() }, mus_dm2ttl as i32);
             } else {
                 unsafe { game_state() }.d_main.pagetic = 200 as i32;
                 if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
@@ -1395,7 +1396,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     P_Init();
     printf(b"S_Init: Setting up sound.\n\0" as *const u8 as *const ::core::ffi::c_char);
     S_Init(
-        &mut state.sounds,
+        state,
         state.s_sound.sfxVolume * 8 as i32,
         state.s_sound.musicVolume * 8 as i32,
     );

@@ -558,7 +558,7 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                             as *const ::core::ffi::c_char
                             as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(unsafe { &mut game_state().sounds }, musnum, 1 as i32);
+                        S_ChangeMusic(unsafe { game_state() }, musnum, 1 as i32);
                     }
                 } else {
                     musnum = mus_e1m1 as i32
@@ -573,7 +573,7 @@ pub unsafe fn ST_Responder(mut ev: &event_t) -> bool {
                             as *const ::core::ffi::c_char
                             as *mut ::core::ffi::c_char;
                     } else {
-                        S_ChangeMusic(unsafe { &mut game_state().sounds }, musnum, 1 as i32);
+                        S_ChangeMusic(unsafe { game_state() }, musnum, 1 as i32);
                     }
                 }
             } else if (if unsafe { game_state() }.doomstat.gamemission as u32

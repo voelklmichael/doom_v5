@@ -1084,7 +1084,7 @@ pub unsafe fn P_RemoveMobj(state: &mut PMobjState, mut mobj: *mut mobj_t) {
         }
     }
     P_UnsetThingPosition(mobj);
-    S_StopSound(mobj);
+    S_StopSound(unsafe { game_state() }, mobj);
     P_RemoveThinker(mobj as *mut thinker_t);
 }
 pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {

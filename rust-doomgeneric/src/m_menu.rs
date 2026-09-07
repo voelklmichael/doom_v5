@@ -1135,7 +1135,8 @@ pub unsafe extern "C" fn M_SfxVol(mut choice: i32) {
         }
         _ => {}
     }
-    S_SetSfxVolume(unsafe { game_state() }.s_sound.sfxVolume * 8 as i32);
+    let sfx_volume = unsafe { game_state() }.s_sound.sfxVolume * 8 as i32;
+    S_SetSfxVolume(unsafe { game_state() }, sfx_volume);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_MusicVol(mut choice: i32) {
@@ -1152,7 +1153,8 @@ pub unsafe extern "C" fn M_MusicVol(mut choice: i32) {
         }
         _ => {}
     }
-    S_SetMusicVolume(unsafe { game_state() }.s_sound.musicVolume * 8 as i32);
+    let music_volume = unsafe { game_state() }.s_sound.musicVolume * 8 as i32;
+    S_SetMusicVolume(unsafe { game_state() }, music_volume);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawMainMenu() {

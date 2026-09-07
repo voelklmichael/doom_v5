@@ -897,7 +897,7 @@ pub unsafe fn P_SetupLevel(
     }
     unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
         .viewz = 1 as i32 as fixed_t;
-    S_Start(unsafe { &mut game_state().sounds });
+    S_Start(unsafe { game_state() });
     Z_FreeTags(
         unsafe { &mut game_state().z_zone },
         PU_LEVEL as i32,
