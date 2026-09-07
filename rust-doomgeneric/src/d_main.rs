@@ -421,7 +421,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
             W_CacheLumpName("M_PAUSE", PU_CACHE as i32) as *mut patch_t,
         );
     }
-    M_Drawer();
+    M_Drawer(state);
     NetUpdate(state);
     if !wipe {
         I_FinishUpdate();
@@ -447,7 +447,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
             SCREENHEIGHT,
             tics,
         ) != 0;
-        M_Drawer();
+        M_Drawer(state);
         I_FinishUpdate();
         if done {
             break;

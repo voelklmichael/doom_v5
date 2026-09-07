@@ -20,6 +20,7 @@ use crate::src::g_game::G_LoadGame;
 use crate::src::g_game::G_SaveGame;
 use crate::src::g_game::G_ScreenShot;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_stuff::HU_FONTSIZE;
 use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::i_system::I_Quit;
@@ -806,6 +807,7 @@ pub unsafe extern "C" fn M_DrawLoad() {
             unsafe { game_state() }.m_menu.defs.LoadDef.y as i32 + LINEHEIGHT * i,
         );
         M_WriteText(
+            unsafe { game_state() },
             unsafe { game_state() }.m_menu.defs.LoadDef.x as i32,
             unsafe { game_state() }.m_menu.defs.LoadDef.y as i32 + LINEHEIGHT * i,
             &unsafe { game_state() }.m_menu.savegamestrings[i as usize],
@@ -879,6 +881,7 @@ pub unsafe extern "C" fn M_DrawSave() {
             unsafe { game_state() }.m_menu.defs.LoadDef.y as i32 + LINEHEIGHT * i,
         );
         M_WriteText(
+            unsafe { game_state() },
             unsafe { game_state() }.m_menu.defs.LoadDef.x as i32,
             unsafe { game_state() }.m_menu.defs.LoadDef.y as i32 + LINEHEIGHT * i,
             &unsafe { game_state() }.m_menu.savegamestrings[i as usize],
@@ -887,10 +890,12 @@ pub unsafe extern "C" fn M_DrawSave() {
     }
     if unsafe { game_state() }.m_menu.saveStringEnter != 0 {
         i = M_StringWidth(
+            unsafe { game_state() },
             &unsafe { game_state() }.m_menu.savegamestrings
                 [unsafe { game_state() }.m_menu.saveSlot as usize],
         );
         M_WriteText(
+            unsafe { game_state() },
             unsafe { game_state() }.m_menu.defs.LoadDef.x as i32 + i,
             unsafe { game_state() }.m_menu.defs.LoadDef.y as i32
                 + LINEHEIGHT * unsafe { game_state() }.m_menu.saveSlot,
@@ -1582,7 +1587,7 @@ pub unsafe fn M_StopMessage() {
         unsafe { game_state() }.m_menu.messageLastMenuActive != 0;
     unsafe { game_state() }.m_menu.messageToPrint = 0 as i32;
 }
-pub unsafe fn M_StringWidth(string: &str) -> i32 {
+pub unsafe fn M_StringWidth(state: &mut GameState, string: &str) -> i32 {
     let mut w: i32 = 0 as i32;
     let mut c: i32 = 0;
     for b in string.bytes() {
@@ -1590,14 +1595,14 @@ pub unsafe fn M_StringWidth(string: &str) -> i32 {
         if c < 0 as i32 || c >= HU_FONTSIZE {
             w += 4 as i32;
         } else {
-            w += (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
+            w += (*state.hu_stuff.hu_font[c as usize]).width as i32;
         }
     }
     return w;
 }
-pub unsafe fn M_StringHeight(string: &str) -> i32 {
+pub unsafe fn M_StringHeight(state: &mut GameState, string: &str) -> i32 {
     let mut h: i32 = 0;
-    let height: i32 = (*unsafe { game_state() }.hu_stuff.hu_font[0 as i32 as usize]).height as i32;
+    let height: i32 = (*state.hu_stuff.hu_font[0 as i32 as usize]).height as i32;
     h = height;
     for b in string.bytes() {
         if b == b'\n' {
@@ -1606,7 +1611,7 @@ pub unsafe fn M_StringHeight(string: &str) -> i32 {
     }
     return h;
 }
-pub unsafe fn M_WriteText(x: i32, y: i32, string: &str) {
+pub unsafe fn M_WriteText(state: &mut GameState, x: i32, y: i32, string: &str) {
     let mut w: i32 = 0;
     let mut c: i32 = 0;
     let mut cx: i32 = 0;
@@ -1623,16 +1628,11 @@ pub unsafe fn M_WriteText(x: i32, y: i32, string: &str) {
             if c < 0 as i32 || c >= HU_FONTSIZE {
                 cx += 4 as i32;
             } else {
-                w = (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
+                w = (*state.hu_stuff.hu_font[c as usize]).width as i32;
                 if cx + w > SCREENWIDTH {
                     break 'outer;
                 }
-                V_DrawPatchDirect(
-                    unsafe { &mut game_state().v_video },
-                    cx,
-                    cy,
-                    unsafe { game_state() }.hu_stuff.hu_font[c as usize],
-                );
+                V_DrawPatchDirect(&mut state.v_video, cx, cy, state.hu_stuff.hu_font[c as usize]);
                 cx += w;
             }
         }
@@ -1825,6 +1825,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
                         && ch <= 127 as i32
                         && unsafe { game_state() }.m_menu.saveCharIndex < SAVESTRINGSIZE - 1 as i32
                         && M_StringWidth(
+                            unsafe { game_state() },
                             &unsafe { game_state() }.m_menu.savegamestrings
                                 [unsafe { game_state() }.m_menu.saveSlot as usize],
                         ) < (SAVESTRINGSIZE - 2 as i32) * 8 as i32
@@ -2135,74 +2136,63 @@ pub unsafe fn M_StartControlPanel() {
         &raw mut unsafe { game_state() }.m_menu.defs.MainDef;
     unsafe { game_state() }.m_menu.itemOn = (*unsafe { game_state() }.m_menu.currentMenu).lastOn;
 }
-pub unsafe fn M_Drawer() {
+pub unsafe fn M_Drawer(state: &mut GameState) {
     let mut i: u32 = 0;
     let mut max: u32 = 0;
     let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    unsafe { game_state() }.m_menu.inhelpscreens = false;
-    if unsafe { game_state() }.m_menu.messageToPrint != 0 {
-        unsafe { game_state() }.m_menu.drawer_y = (SCREENHEIGHT / 2 as i32
-            - M_StringHeight(&unsafe { game_state() }.m_menu.messageString) / 2 as i32)
+    state.m_menu.inhelpscreens = false;
+    if state.m_menu.messageToPrint != 0 {
+        let message_string = state.m_menu.messageString.clone();
+        state.m_menu.drawer_y = (SCREENHEIGHT / 2 as i32
+            - M_StringHeight(state, &message_string) / 2 as i32)
             as i16;
-        for line in unsafe { game_state() }.m_menu.messageString.split('\n') {
+        for line in message_string.split('\n') {
             let line = if line.len() > 79 { &line[..79] } else { line };
-            unsafe { game_state() }.m_menu.drawer_x =
-                (SCREENWIDTH / 2 as i32 - M_StringWidth(line) / 2 as i32) as i16;
+            state.m_menu.drawer_x = (SCREENWIDTH / 2 as i32 - M_StringWidth(state, line) / 2 as i32) as i16;
             M_WriteText(
-                unsafe { game_state() }.m_menu.drawer_x as i32,
-                unsafe { game_state() }.m_menu.drawer_y as i32,
+                state,
+                state.m_menu.drawer_x as i32,
+                state.m_menu.drawer_y as i32,
                 line,
             );
-            unsafe { game_state() }.m_menu.drawer_y = (unsafe { game_state() }.m_menu.drawer_y
-                as i32
-                + (*unsafe { game_state() }.hu_stuff.hu_font[0 as i32 as usize]).height as i32)
+            state.m_menu.drawer_y = (state.m_menu.drawer_y as i32
+                + (*state.hu_stuff.hu_font[0 as i32 as usize]).height as i32)
                 as i16;
         }
         return;
     }
-    if !unsafe { game_state() }.m_menu.menuactive {
+    if !state.m_menu.menuactive {
         return;
     }
-    if (*unsafe { game_state() }.m_menu.currentMenu)
-        .routine
-        .is_some()
-    {
+    if (*state.m_menu.currentMenu).routine.is_some() {
         ::core::mem::transmute::<_, fn()>(
-            (*unsafe { game_state() }.m_menu.currentMenu)
-                .routine
-                .expect("non-null function pointer"),
+            (*state.m_menu.currentMenu).routine.expect("non-null function pointer"),
         )();
     }
-    unsafe { game_state() }.m_menu.drawer_x = (*unsafe { game_state() }.m_menu.currentMenu).x;
-    unsafe { game_state() }.m_menu.drawer_y = (*unsafe { game_state() }.m_menu.currentMenu).y;
-    max = (*unsafe { game_state() }.m_menu.currentMenu).numitems as u32;
+    state.m_menu.drawer_x = (*state.m_menu.currentMenu).x;
+    state.m_menu.drawer_y = (*state.m_menu.currentMenu).y;
+    max = (*state.m_menu.currentMenu).numitems as u32;
     i = 0 as u32;
     while i < max {
-        name = &raw mut (*(*unsafe { game_state() }.m_menu.currentMenu)
-            .menuitems
-            .offset(i as isize))
-        .name as *mut ::core::ffi::c_char;
+        name = &raw mut (*(*state.m_menu.currentMenu).menuitems.offset(i as isize)).name
+            as *mut ::core::ffi::c_char;
         if *name.offset(0 as i32 as isize) != 0 {
             V_DrawPatchDirect(
-                unsafe { &mut game_state().v_video },
-                unsafe { game_state() }.m_menu.drawer_x as i32,
-                unsafe { game_state() }.m_menu.drawer_y as i32,
+                &mut state.v_video,
+                state.m_menu.drawer_x as i32,
+                state.m_menu.drawer_y as i32,
                 W_CacheLumpName(&wad_name8_to_string(name), PU_CACHE as i32) as *mut patch_t,
             );
         }
-        unsafe { game_state() }.m_menu.drawer_y =
-            (unsafe { game_state() }.m_menu.drawer_y as i32 + LINEHEIGHT) as i16;
+        state.m_menu.drawer_y = (state.m_menu.drawer_y as i32 + LINEHEIGHT) as i16;
         i = i.wrapping_add(1);
     }
     V_DrawPatchDirect(
-        unsafe { &mut game_state().v_video },
-        unsafe { game_state() }.m_menu.drawer_x as i32 + SKULLXOFF,
-        (*unsafe { game_state() }.m_menu.currentMenu).y as i32 - 5 as i32
-            + unsafe { game_state() }.m_menu.itemOn as i32 * LINEHEIGHT,
-        W_CacheLumpName(
-            skullName[unsafe { game_state() }.m_menu.whichSkull as usize],
-            PU_CACHE as i32,
-        ) as *mut patch_t,
+        &mut state.v_video,
+        state.m_menu.drawer_x as i32 + SKULLXOFF,
+        (*state.m_menu.currentMenu).y as i32 - 5 as i32 + state.m_menu.itemOn as i32 * LINEHEIGHT,
+        W_CacheLumpName(skullName[state.m_menu.whichSkull as usize], PU_CACHE as i32)
+            as *mut patch_t,
     );
 }
 pub unsafe fn M_ClearMenus() {
