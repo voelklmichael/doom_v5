@@ -482,7 +482,7 @@ pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
     }
 }
 pub unsafe fn R_Init() {
-    R_InitData();
+    R_InitData(unsafe { game_state() });
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_SetViewSize(
