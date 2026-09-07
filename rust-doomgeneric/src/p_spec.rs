@@ -52,7 +52,6 @@ use crate::src::p_switch::bwhere_e;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_switch::P_ChangeSwitchTexture;
 use crate::src::p_telept::EV_Teleport;
-use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::r_data::R_CheckTextureNumForName;
 use crate::src::r_data::R_FlatNumForName;
@@ -951,7 +950,7 @@ pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
     match (*sector).special as i32 {
         5 => {
             if (*player).powers[pw_ironfeet as i32 as usize] == 0 {
-                if leveltime & 0x1f as i32 == 0 {
+                if unsafe { game_state() }.p_tick.leveltime & 0x1f as i32 == 0 {
                     P_DamageMobj(
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -963,7 +962,7 @@ pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
         }
         7 => {
             if (*player).powers[pw_ironfeet as i32 as usize] == 0 {
-                if leveltime & 0x1f as i32 == 0 {
+                if unsafe { game_state() }.p_tick.leveltime & 0x1f as i32 == 0 {
                     P_DamageMobj(
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -977,7 +976,7 @@ pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
             if (*player).powers[pw_ironfeet as i32 as usize] == 0
                 || P_Random(unsafe { &mut game_state().m_random }) < 5 as i32
             {
-                if leveltime & 0x1f as i32 == 0 {
+                if unsafe { game_state() }.p_tick.leveltime & 0x1f as i32 == 0 {
                     P_DamageMobj(
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -993,7 +992,7 @@ pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
         }
         11 => {
             (*player).cheats &= !(CF_GODMODE as i32);
-            if leveltime & 0x1f as i32 == 0 {
+            if unsafe { game_state() }.p_tick.leveltime & 0x1f as i32 == 0 {
                 P_DamageMobj(
                     (*player).mo,
                     ::core::ptr::null_mut::<mobj_t>(),
@@ -1028,7 +1027,7 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
     while anim < unsafe { game_state() }.p_spec.lastanim {
         i = (*anim).basepic;
         while i < (*anim).basepic + (*anim).numpics {
-            pic = (*anim).basepic + (leveltime / (*anim).speed + i) % (*anim).numpics;
+            pic = (*anim).basepic + (unsafe { game_state() }.p_tick.leveltime / (*anim).speed + i) % (*anim).numpics;
             if (*anim).istexture {
                 *unsafe { game_state() }.r_data.texturetranslation.offset(i as isize) = pic;
             } else {

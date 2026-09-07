@@ -33,7 +33,6 @@ use crate::src::p_mobj::MF_JUSTATTACKED;
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::p_mobj::{state_t, StateAction};
 use crate::src::p_mobj::{MT_BFG, MT_EXTRABFG, MT_PLASMA, MT_ROCKET};
-use crate::src::p_tick::leveltime;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::{
@@ -99,9 +98,9 @@ pub unsafe fn P_CalcSwing(state: &mut PPsprState, mut player: *mut player_t) {
     let mut swing: fixed_t = 0;
     let mut angle: i32 = 0;
     swing = (*player).bob;
-    angle = FINEANGLES / 70 as i32 * leveltime & FINEMASK;
+    angle = FINEANGLES / 70 as i32 * unsafe { game_state() }.p_tick.leveltime & FINEMASK;
     state.swingx = FixedMul(swing, finesine[angle as usize]);
-    angle = FINEANGLES / 70 as i32 * leveltime + FINEANGLES / 2 as i32 & FINEMASK;
+    angle = FINEANGLES / 70 as i32 * unsafe { game_state() }.p_tick.leveltime + FINEANGLES / 2 as i32 & FINEMASK;
     state.swingy = -FixedMul(state.swingx, finesine[angle as usize]);
 }
 pub unsafe fn P_BringUpWeapon(mut player: *mut player_t) {
@@ -235,7 +234,7 @@ pub unsafe fn A_WeaponReady(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     } else {
         (*player).attackdown = false_0;
     }
-    angle = 128 as i32 * leveltime & FINEMASK;
+    angle = 128 as i32 * unsafe { game_state() }.p_tick.leveltime & FINEMASK;
     (*psp).sx = FRACUNIT + FixedMul((*player).bob, finecosine[angle as isize]);
     angle &= FINEANGLES / 2 as i32 - 1 as i32;
     (*psp).sy = 32 as fixed_t * FRACUNIT + FixedMul((*player).bob, finesine[angle as usize]);

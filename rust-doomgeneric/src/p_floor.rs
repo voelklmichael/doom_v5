@@ -16,7 +16,6 @@ use crate::src::p_spec::P_FindLowestFloorSurrounding;
 use crate::src::p_spec::P_FindNextHighestFloor;
 use crate::src::p_spec::P_FindSectorFromLineTag;
 use crate::src::p_spec::ML_TWOSIDED;
-use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_RemoveThinker;
 use crate::src::r_defs::side_t;
@@ -163,7 +162,7 @@ pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
         0 as i32,
         (*floor).direction,
     );
-    if leveltime & 7 as i32 == 0 {
+    if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
         S_StartSound(
             unsafe { &mut game_state().sounds },
             &raw mut (*(*floor).sector).soundorg as *mut ::core::ffi::c_void,

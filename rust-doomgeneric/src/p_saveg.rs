@@ -33,8 +33,6 @@ use crate::src::p_plats::plat_e;
 use crate::src::p_plats::plattype_e;
 use crate::src::p_plats::P_AddActivePlat;
 use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
-use crate::src::p_tick::leveltime;
-use crate::src::p_tick::thinkercap;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_InitThinkers;
 use crate::src::r_defs::side_t;
@@ -731,9 +729,9 @@ pub unsafe fn P_WriteSaveGameHeader(mut description: *mut ::core::ffi::c_char) {
         saveg_write8(unsafe { game_state() }.g_game.playeringame[i as usize] as byte);
         i += 1;
     }
-    saveg_write8((leveltime >> 16 as i32 & 0xff as i32) as byte);
-    saveg_write8((leveltime >> 8 as i32 & 0xff as i32) as byte);
-    saveg_write8((leveltime & 0xff as i32) as byte);
+    saveg_write8((unsafe { game_state() }.p_tick.leveltime >> 16 as i32 & 0xff as i32) as byte);
+    saveg_write8((unsafe { game_state() }.p_tick.leveltime >> 8 as i32 & 0xff as i32) as byte);
+    saveg_write8((unsafe { game_state() }.p_tick.leveltime & 0xff as i32) as byte);
 }
 pub unsafe fn P_ReadSaveGameHeader() -> bool {
     let mut i: i32 = 0;
@@ -781,7 +779,7 @@ pub unsafe fn P_ReadSaveGameHeader() -> bool {
     a = saveg_read8();
     b = saveg_read8();
     c = saveg_read8();
-    leveltime = ((a as i32) << 16 as i32) + ((b as i32) << 8 as i32) + c as i32;
+    unsafe { game_state() }.p_tick.leveltime = ((a as i32) << 16 as i32) + ((b as i32) << 8 as i32) + c as i32;
     return true;
 }
 pub unsafe fn P_ReadSaveGameEOF() -> bool {
@@ -914,8 +912,8 @@ pub unsafe fn P_UnArchiveWorld() {
 }
 pub unsafe fn P_ArchiveThinkers() {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
-    th = thinkercap.next as *mut thinker_t;
-    while th != &raw mut thinkercap {
+    th = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while th != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         if matches!((*th).function, ThinkerFn::Mobj(_)) {
             saveg_write8(tc_mobj as i32 as byte);
             saveg_write_pad();
@@ -930,8 +928,8 @@ pub unsafe fn P_UnArchiveThinkers() {
     let mut currentthinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut next: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut mobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
-    currentthinker = thinkercap.next as *mut thinker_t;
-    while currentthinker != &raw mut thinkercap {
+    currentthinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while currentthinker != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         next = (*currentthinker).next as *mut thinker_t;
         if matches!((*currentthinker).function, ThinkerFn::Mobj(_)) {
             P_RemoveMobj(
@@ -982,8 +980,8 @@ pub static specials_e: C2RustUnnamed_5 = tc_ceiling;
 pub unsafe fn P_ArchiveSpecials(state: &mut PCeilngState) {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut i: i32 = 0;
-    th = thinkercap.next as *mut thinker_t;
-    while th != &raw mut thinkercap {
+    th = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while th != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         match (*th).function {
             ThinkerFn::Paused => {
                 i = 0 as i32;

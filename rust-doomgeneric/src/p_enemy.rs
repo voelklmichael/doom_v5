@@ -48,7 +48,6 @@ use crate::src::p_mobj::{
 };
 use crate::src::p_sight::P_CheckSight;
 use crate::src::p_switch::P_UseSpecialLine;
-use crate::src::p_tick::thinkercap;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::{
@@ -501,8 +500,8 @@ pub unsafe fn A_KeenDie(mut mo: *mut mobj_t) {
         specialdata: ::core::ptr::null_mut::<::core::ffi::c_void>(),
     };
     A_Fall(mo);
-    th = thinkercap.next as *mut thinker_t;
-    while th != &raw mut thinkercap {
+    th = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while th != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         if matches!((*th).function, ThinkerFn::Mobj(_)) {
             mo2 = th as *mut mobj_t;
             if mo2 != mo && (*mo2).type_0 as u32 == (*mo).type_0 as u32 && (*mo2).health > 0 as i32
@@ -1272,8 +1271,8 @@ pub unsafe fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
     let mut count: i32 = 0;
     let mut currentthinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     count = 0 as i32;
-    currentthinker = thinkercap.next as *mut thinker_t;
-    while currentthinker != &raw mut thinkercap {
+    currentthinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while currentthinker != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         if matches!((*currentthinker).function, ThinkerFn::Mobj(_))
             && (*(currentthinker as *mut mobj_t)).type_0 as u32 == MT_SKULL as i32 as u32
         {
@@ -1441,8 +1440,8 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
     if i == MAXPLAYERS {
         return;
     }
-    th = thinkercap.next as *mut thinker_t;
-    while th != &raw mut thinkercap {
+    th = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while th != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         if matches!((*th).function, ThinkerFn::Mobj(_)) {
             mo2 = th as *mut mobj_t;
             if mo2 != mo && (*mo2).type_0 as u32 == (*mo).type_0 as u32 && (*mo2).health > 0 as i32
@@ -1541,9 +1540,9 @@ pub unsafe fn A_BrainAwake(mut mo: *mut mobj_t) {
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     unsafe { game_state() }.p_enemy.numbraintargets = 0 as i32;
     unsafe { game_state() }.p_enemy.braintargeton = 0 as i32;
-    thinker = thinkercap.next as *mut thinker_t;
-    thinker = thinkercap.next as *mut thinker_t;
-    while thinker != &raw mut thinkercap {
+    thinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    thinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while thinker != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         if matches!((*thinker).function, ThinkerFn::Mobj(_)) {
             m = thinker as *mut mobj_t;
             if (*m).type_0 as u32 == MT_BOSSTARGET as i32 as u32 {

@@ -11,29 +11,42 @@ use crate::src::p_user::P_PlayerThink;
 use crate::src::z_zone::Z_Free;
 use ::libc;
 
-pub static mut leveltime: i32 = 0;
-pub static mut thinkercap: thinker_t = thinker_s {
-    prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-    next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-    function: ThinkerFn::Paused,
-};
+pub struct PTickState {
+    pub leveltime: i32,
+    pub thinkercap: thinker_t,
+}
+
+impl PTickState {
+    pub const fn new() -> Self {
+        PTickState {
+            leveltime: 0,
+            thinkercap: thinker_s {
+        prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
+        next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
+        function: ThinkerFn::Paused,
+    },
+        }
+    }
+}
+
+
 pub unsafe fn P_InitThinkers() {
-    thinkercap.next = &raw mut thinkercap as *mut thinker_s;
-    thinkercap.prev = thinkercap.next;
+    unsafe { game_state() }.p_tick.thinkercap.next = &raw mut unsafe { game_state() }.p_tick.thinkercap as *mut thinker_s;
+    unsafe { game_state() }.p_tick.thinkercap.prev = unsafe { game_state() }.p_tick.thinkercap.next;
 }
 pub unsafe fn P_AddThinker(mut thinker: *mut thinker_t) {
-    (*thinkercap.prev).next = thinker as *mut thinker_s;
-    (*thinker).next = &raw mut thinkercap as *mut thinker_s;
-    (*thinker).prev = thinkercap.prev;
-    thinkercap.prev = thinker as *mut thinker_s;
+    (*unsafe { game_state() }.p_tick.thinkercap.prev).next = thinker as *mut thinker_s;
+    (*thinker).next = &raw mut unsafe { game_state() }.p_tick.thinkercap as *mut thinker_s;
+    (*thinker).prev = unsafe { game_state() }.p_tick.thinkercap.prev;
+    unsafe { game_state() }.p_tick.thinkercap.prev = thinker as *mut thinker_s;
 }
 pub unsafe fn P_RemoveThinker(mut thinker: *mut thinker_t) {
     (*thinker).function = ThinkerFn::Removed;
 }
 pub unsafe fn P_RunThinkers() {
     let mut currentthinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
-    currentthinker = thinkercap.next as *mut thinker_t;
-    while currentthinker != &raw mut thinkercap {
+    currentthinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
+    while currentthinker != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         match (*currentthinker).function {
             ThinkerFn::Removed => {
                 (*(*currentthinker).next).prev = (*currentthinker).prev;
@@ -86,5 +99,5 @@ pub unsafe fn P_Ticker() {
     P_RunThinkers();
     P_UpdateSpecials(unsafe { &mut game_state().p_switch });
     P_RespawnSpecials(unsafe { &mut game_state().p_mobj });
-    leveltime += 1;
+    unsafe { game_state() }.p_tick.leveltime += 1;
 }

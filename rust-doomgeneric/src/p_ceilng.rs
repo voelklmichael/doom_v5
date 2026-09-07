@@ -9,7 +9,6 @@ use crate::src::p_mobj::{line_t, sector_t};
 use crate::src::p_spec::ceiling_t;
 use crate::src::p_spec::P_FindHighestCeilingSurrounding;
 use crate::src::p_spec::P_FindSectorFromLineTag;
-use crate::src::p_tick::leveltime;
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_RemoveThinker;
 use crate::src::s_sound::S_StartSound;
@@ -50,7 +49,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 1 as i32,
                 (*ceiling).direction,
             );
-            if leveltime & 7 as i32 == 0 {
+            if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
                 match (*ceiling).type_0 as u32 {
                     5 => {}
                     _ => {
@@ -101,7 +100,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 1 as i32,
                 (*ceiling).direction,
             );
-            if leveltime & 7 as i32 == 0 {
+            if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
                 match (*ceiling).type_0 as u32 {
                     5 => {}
                     _ => {
