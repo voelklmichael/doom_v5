@@ -10,8 +10,9 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
+use crate::src::i_video::IVideoState;
 use crate::src::hu_stuff::HU_FONTSIZE;
 use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::info::{S_NULL, S_PLAY_ATK1};
@@ -298,30 +299,30 @@ impl FFinaleState {
     }
 }
 
-pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
+pub unsafe fn F_StartFinale(state: &mut GameState) {
     let mut i: size_t = 0;
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
-    unsafe { game_state() }.g_game.gamestate = GS_FINALE;
-    unsafe { game_state() }.g_game.viewactive = false;
-    unsafe { game_state() }.am_map.automapactive = false;
-    if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
+    state.g_game.gameaction = ga_nothing;
+    state.g_game.gamestate = GS_FINALE;
+    state.g_game.viewactive = false;
+    state.am_map.automapactive = false;
+    if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+        (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
-            unsafe { game_state() }.doomstat.gamemission as u32
+            state.doomstat.gamemission as u32
         })
     }) == doom as i32 as u32
     {
         S_ChangeMusic(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             mus_victor as i32,
             true_0,
         );
     } else {
         S_ChangeMusic(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             mus_read_m as i32,
             true_0,
         );
@@ -331,58 +332,58 @@ pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
         < (::core::mem::size_of::<[textscreen_t; 22]>() as usize)
             .wrapping_div(::core::mem::size_of::<textscreen_t>() as usize)
     {
-        let mut screen: *mut textscreen_t = (&raw mut state.textscreens as *mut textscreen_t)
+        let mut screen: *mut textscreen_t = (&raw mut state.f_finale.textscreens as *mut textscreen_t)
             .offset(i as isize) as *mut textscreen_t;
-        if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32
+        if state.doomstat.gameversion as u32 == exe_chex as i32 as u32
             && (*screen).mission as u32 == doom as i32 as u32
         {
             (*screen).level = 5 as i32;
         }
-        if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
+        if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
             doom as i32 as u32
         } else {
-            (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+            (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                 doom2 as i32 as u32
             } else {
-                unsafe { game_state() }.doomstat.gamemission as u32
+                state.doomstat.gamemission as u32
             })
         }) == (*screen).mission as u32
-            && ((if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
+            && ((if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
                 doom as i32 as u32
             } else {
-                (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+                (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                     doom2 as i32 as u32
                 } else {
-                    unsafe { game_state() }.doomstat.gamemission as u32
+                    state.doomstat.gamemission as u32
                 })
             }) != doom as i32 as u32
-                || unsafe { game_state() }.g_game.gameepisode == (*screen).episode)
-            && unsafe { game_state() }.g_game.gamemap == (*screen).level
+                || state.g_game.gameepisode == (*screen).episode)
+            && state.g_game.gamemap == (*screen).level
         {
-            state.finaletext = (*screen).text;
-            state.finaleflat = (*screen).background;
+            state.f_finale.finaletext = (*screen).text;
+            state.f_finale.finaleflat = (*screen).background;
         }
         i = i.wrapping_add(1);
     }
-    state.finaletext = state.finaletext;
-    state.finaleflat = state.finaleflat;
-    state.finalestage = F_STAGE_TEXT;
-    state.finalecount = 0 as u32;
+    state.f_finale.finaletext = state.f_finale.finaletext;
+    state.f_finale.finaleflat = state.f_finale.finaleflat;
+    state.f_finale.finalestage = F_STAGE_TEXT;
+    state.f_finale.finalecount = 0 as u32;
 }
-pub unsafe fn F_Responder(state: &mut FFinaleState, mut event: &event_t) -> bool {
-    if state.finalestage as u32 == F_STAGE_CAST as i32 as u32 {
+pub unsafe fn F_Responder(state: &mut GameState, mut event: &event_t) -> bool {
+    if state.f_finale.finalestage as u32 == F_STAGE_CAST as i32 as u32 {
         return F_CastResponder(state, event);
     }
     return false;
 }
-pub unsafe fn F_Ticker(state: &mut FFinaleState) {
+pub unsafe fn F_Ticker(state: &mut GameState) {
     let mut i: size_t = 0;
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
-        && state.finalecount > 50 as u32
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32
+        && state.f_finale.finalecount > 50 as u32
     {
         i = 0 as size_t;
         while i < MAXPLAYERS as size_t {
-            if unsafe { game_state() }.g_game.players[i as usize]
+            if state.g_game.players[i as usize]
                 .cmd
                 .buttons
                 != 0
@@ -392,36 +393,36 @@ pub unsafe fn F_Ticker(state: &mut FFinaleState) {
             i = i.wrapping_add(1);
         }
         if i < MAXPLAYERS as size_t {
-            if unsafe { game_state() }.g_game.gamemap == 30 as i32 {
+            if state.g_game.gamemap == 30 as i32 {
                 F_StartCast(state);
             } else {
-                unsafe { game_state() }.g_game.gameaction = ga_worlddone;
+                state.g_game.gameaction = ga_worlddone;
             }
         }
     }
-    state.finalecount = state.finalecount.wrapping_add(1);
-    if state.finalestage as u32 == F_STAGE_CAST as i32 as u32 {
+    state.f_finale.finalecount = state.f_finale.finalecount.wrapping_add(1);
+    if state.f_finale.finalestage as u32 == F_STAGE_CAST as i32 as u32 {
         F_CastTicker(state);
         return;
     }
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         return;
     }
-    if state.finalestage as u32 == F_STAGE_TEXT as i32 as u32
-        && state.finalecount as size_t
-            > (state.finaletext.len() as size_t)
+    if state.f_finale.finalestage as u32 == F_STAGE_TEXT as i32 as u32
+        && state.f_finale.finalecount as size_t
+            > (state.f_finale.finaletext.len() as size_t)
                 .wrapping_mul(TEXTSPEED as size_t)
                 .wrapping_add(TEXTWAIT as size_t)
     {
-        state.finalecount = 0 as u32;
-        state.finalestage = F_STAGE_ARTSCREEN;
-        unsafe { game_state() }.d_main.wipegamestate = 4294967295 as gamestate_t;
-        if unsafe { game_state() }.g_game.gameepisode == 3 as i32 {
-            S_StartMusic(unsafe { &mut game_state().sounds }, mus_bunny as i32);
+        state.f_finale.finalecount = 0 as u32;
+        state.f_finale.finalestage = F_STAGE_ARTSCREEN;
+        state.d_main.wipegamestate = 4294967295 as gamestate_t;
+        if state.g_game.gameepisode == 3 as i32 {
+            S_StartMusic(&mut state.sounds, mus_bunny as i32);
         }
     }
 }
-pub unsafe fn F_TextWrite(state: &mut FFinaleState) {
+pub unsafe fn F_TextWrite(state: &mut GameState) {
     let mut src: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut x: i32 = 0;
@@ -431,8 +432,8 @@ pub unsafe fn F_TextWrite(state: &mut FFinaleState) {
     let mut c: i32 = 0;
     let mut cx: i32 = 0;
     let mut cy: i32 = 0;
-    src = W_CacheLumpName(state.finaleflat, PU_CACHE as i32) as *mut byte;
-    dest = unsafe { game_state() }.i_video.I_VideoBuffer;
+    src = W_CacheLumpName(state.f_finale.finaleflat, PU_CACHE as i32) as *mut byte;
+    dest = state.i_video.I_VideoBuffer;
     y = 0 as i32;
     while y < SCREENHEIGHT {
         x = 0 as i32;
@@ -456,7 +457,7 @@ pub unsafe fn F_TextWrite(state: &mut FFinaleState) {
         y += 1;
     }
     V_MarkRect(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         0 as i32,
         0 as i32,
         SCREENWIDTH,
@@ -464,8 +465,8 @@ pub unsafe fn F_TextWrite(state: &mut FFinaleState) {
     );
     cx = 10 as i32;
     cy = 10 as i32;
-    let mut chars = state.finaletext.bytes();
-    count = (state.finalecount as i32 - 10 as i32) / TEXTSPEED;
+    let mut chars = state.f_finale.finaletext.bytes();
+    count = (state.f_finale.finalecount as i32 - 10 as i32) / TEXTSPEED;
     if count < 0 as i32 {
         count = 0 as i32;
     }
@@ -482,15 +483,15 @@ pub unsafe fn F_TextWrite(state: &mut FFinaleState) {
             if c < 0 as i32 || c > HU_FONTSIZE {
                 cx += 4 as i32;
             } else {
-                w = (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
+                w = (*state.hu_stuff.hu_font[c as usize]).width as i32;
                 if cx + w > SCREENWIDTH {
                     break;
                 }
                 V_DrawPatch(
-                    unsafe { &mut game_state().v_video },
+                    &mut state.v_video,
                     cx,
                     cy,
-                    unsafe { game_state() }.hu_stuff.hu_font[c as usize],
+                    state.hu_stuff.hu_font[c as usize],
                 );
                 cx += w;
             }
@@ -572,64 +573,64 @@ const INITIAL_CASTORDER: [castinfo_t; 18] = [
         type_0: MT_PLAYER,
     },
 ];
-pub unsafe fn F_StartCast(state: &mut FFinaleState) {
-    unsafe { game_state() }.d_main.wipegamestate = 4294967295 as gamestate_t;
-    state.castnum = 0 as i32;
-    state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-        (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-            (*(&raw mut state.castorder as *mut castinfo_t).offset(state.castnum as isize)).type_0
+pub unsafe fn F_StartCast(state: &mut GameState) {
+    state.d_main.wipegamestate = 4294967295 as gamestate_t;
+    state.f_finale.castnum = 0 as i32;
+    state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
+        (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+            (*(&raw mut state.f_finale.castorder as *mut castinfo_t).offset(state.f_finale.castnum as isize)).type_0
                 as isize,
         ))
         .seestate as isize,
     ) as *mut state_t;
-    state.casttics = (*state.caststate).tics;
-    state.castdeath = false;
-    state.finalestage = F_STAGE_CAST;
-    state.castframes = 0 as i32;
-    state.castonmelee = 0 as i32;
-    state.castattacking = false;
-    S_ChangeMusic(unsafe { &mut game_state().sounds }, mus_evil as i32, true_0);
+    state.f_finale.casttics = (*state.f_finale.caststate).tics;
+    state.f_finale.castdeath = false;
+    state.f_finale.finalestage = F_STAGE_CAST;
+    state.f_finale.castframes = 0 as i32;
+    state.f_finale.castonmelee = 0 as i32;
+    state.f_finale.castattacking = false;
+    S_ChangeMusic(&mut state.sounds, mus_evil as i32, true_0);
 }
-pub unsafe fn F_CastTicker(state: &mut FFinaleState) {
+pub unsafe fn F_CastTicker(state: &mut GameState) {
     let mut current_block: u64;
     let mut st: i32 = 0;
     let mut sfx: i32 = 0;
-    state.casttics -= 1;
-    if state.casttics > 0 as i32 {
+    state.f_finale.casttics -= 1;
+    if state.f_finale.casttics > 0 as i32 {
         return;
     }
-    if (*state.caststate).tics == -(1 as i32)
-        || (*state.caststate).nextstate as u32 == S_NULL as i32 as u32
+    if (*state.f_finale.caststate).tics == -(1 as i32)
+        || (*state.f_finale.caststate).nextstate as u32 == S_NULL as i32 as u32
     {
-        state.castnum += 1;
-        state.castdeath = false;
-        if state.castorder[state.castnum as usize].name.is_none() {
-            state.castnum = 0 as i32;
+        state.f_finale.castnum += 1;
+        state.f_finale.castdeath = false;
+        if state.f_finale.castorder[state.f_finale.castnum as usize].name.is_none() {
+            state.f_finale.castnum = 0 as i32;
         }
-        if unsafe { game_state() }.info.mobjinfo[state.castorder[state.castnum as usize].type_0 as usize].seesound != 0 {
+        if state.info.mobjinfo[state.f_finale.castorder[state.f_finale.castnum as usize].type_0 as usize].seesound != 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 NULL,
-                unsafe { game_state() }.info.mobjinfo[state.castorder[state.castnum as usize].type_0 as usize].seesound,
+                state.info.mobjinfo[state.f_finale.castorder[state.f_finale.castnum as usize].type_0 as usize].seesound,
             );
         }
-        state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-            (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-                (*(&raw mut state.castorder as *mut castinfo_t).offset(state.castnum as isize))
+        state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
+            (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+                (*(&raw mut state.f_finale.castorder as *mut castinfo_t).offset(state.f_finale.castnum as isize))
                     .type_0 as isize,
             ))
             .seestate as isize,
         ) as *mut state_t;
-        state.castframes = 0 as i32;
+        state.f_finale.castframes = 0 as i32;
         current_block = 1356832168064818221;
-    } else if state.caststate
-        == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_PLAY_ATK1 as i32 as isize) as *mut state_t
+    } else if state.f_finale.caststate
+        == (&raw mut state.info.states as *mut state_t).offset(S_PLAY_ATK1 as i32 as isize) as *mut state_t
     {
         current_block = 13354568087807251156;
     } else {
-        st = (*state.caststate).nextstate as i32;
-        state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(st as isize) as *mut state_t;
-        state.castframes += 1;
+        st = (*state.f_finale.caststate).nextstate as i32;
+        state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(st as isize) as *mut state_t;
+        state.f_finale.castframes += 1;
         match st {
             154 => {
                 sfx = sfx_dshtgn as i32;
@@ -687,52 +688,52 @@ pub unsafe fn F_CastTicker(state: &mut FFinaleState) {
             }
         }
         if sfx != 0 {
-            S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx);
+            S_StartSound(&mut state.sounds, NULL, sfx);
         }
         current_block = 1356832168064818221;
     }
     match current_block {
         1356832168064818221 => {
-            if state.castframes == 12 as i32 {
-                state.castattacking = true;
-                if state.castonmelee != 0 {
-                    state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-                        (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-                            (*(&raw mut state.castorder as *mut castinfo_t)
-                                .offset(state.castnum as isize))
+            if state.f_finale.castframes == 12 as i32 {
+                state.f_finale.castattacking = true;
+                if state.f_finale.castonmelee != 0 {
+                    state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
+                        (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+                            (*(&raw mut state.f_finale.castorder as *mut castinfo_t)
+                                .offset(state.f_finale.castnum as isize))
                             .type_0 as isize,
                         ))
                         .meleestate as isize,
                     ) as *mut state_t;
                 } else {
-                    state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-                        (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-                            (*(&raw mut state.castorder as *mut castinfo_t)
-                                .offset(state.castnum as isize))
+                    state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
+                        (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+                            (*(&raw mut state.f_finale.castorder as *mut castinfo_t)
+                                .offset(state.f_finale.castnum as isize))
                             .type_0 as isize,
                         ))
                         .missilestate as isize,
                     ) as *mut state_t;
                 }
-                state.castonmelee ^= 1 as i32;
-                if state.caststate
-                    == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_NULL as i32 as isize)
+                state.f_finale.castonmelee ^= 1 as i32;
+                if state.f_finale.caststate
+                    == (&raw mut state.info.states as *mut state_t).offset(S_NULL as i32 as isize)
                         as *mut state_t
                 {
-                    if state.castonmelee != 0 {
-                        state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-                            (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-                                (*(&raw mut state.castorder as *mut castinfo_t)
-                                    .offset(state.castnum as isize))
+                    if state.f_finale.castonmelee != 0 {
+                        state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
+                            (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+                                (*(&raw mut state.f_finale.castorder as *mut castinfo_t)
+                                    .offset(state.f_finale.castnum as isize))
                                 .type_0 as isize,
                             ))
                             .meleestate as isize,
                         ) as *mut state_t;
                     } else {
-                        state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-                            (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-                                (*(&raw mut state.castorder as *mut castinfo_t)
-                                    .offset(state.castnum as isize))
+                        state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
+                            (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+                                (*(&raw mut state.f_finale.castorder as *mut castinfo_t)
+                                    .offset(state.f_finale.castnum as isize))
                                 .type_0 as isize,
                             ))
                             .missilestate as isize,
@@ -740,13 +741,13 @@ pub unsafe fn F_CastTicker(state: &mut FFinaleState) {
                     }
                 }
             }
-            if state.castattacking {
-                if state.castframes == 24 as i32
-                    || state.caststate
-                        == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-                            (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-                                (*(&raw mut state.castorder as *mut castinfo_t)
-                                    .offset(state.castnum as isize))
+            if state.f_finale.castattacking {
+                if state.f_finale.castframes == 24 as i32
+                    || state.f_finale.caststate
+                        == (&raw mut state.info.states as *mut state_t).offset(
+                            (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+                                (*(&raw mut state.f_finale.castorder as *mut castinfo_t)
+                                    .offset(state.f_finale.castnum as isize))
                                 .type_0 as isize,
                             ))
                             .seestate as isize,
@@ -764,11 +765,11 @@ pub unsafe fn F_CastTicker(state: &mut FFinaleState) {
     }
     match current_block {
         13354568087807251156 => {
-            state.castattacking = false;
-            state.castframes = 0 as i32;
-            state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-                (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-                    (*(&raw mut state.castorder as *mut castinfo_t).offset(state.castnum as isize))
+            state.f_finale.castattacking = false;
+            state.f_finale.castframes = 0 as i32;
+            state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
+                (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+                    (*(&raw mut state.f_finale.castorder as *mut castinfo_t).offset(state.f_finale.castnum as isize))
                         .type_0 as isize,
                 ))
                 .seestate as isize,
@@ -776,39 +777,39 @@ pub unsafe fn F_CastTicker(state: &mut FFinaleState) {
         }
         _ => {}
     }
-    state.casttics = (*state.caststate).tics;
-    if state.casttics == -(1 as i32) {
-        state.casttics = 15 as i32;
+    state.f_finale.casttics = (*state.f_finale.caststate).tics;
+    if state.f_finale.casttics == -(1 as i32) {
+        state.f_finale.casttics = 15 as i32;
     }
 }
-pub unsafe fn F_CastResponder(state: &mut FFinaleState, mut ev: &event_t) -> bool {
+pub unsafe fn F_CastResponder(state: &mut GameState, mut ev: &event_t) -> bool {
     if ev.type_0 != ev_keydown as u32 {
         return false;
     }
-    if state.castdeath {
+    if state.f_finale.castdeath {
         return true;
     }
-    state.castdeath = true;
-    state.caststate = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(
-        (*(&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(
-            (*(&raw mut state.castorder as *mut castinfo_t).offset(state.castnum as isize)).type_0
+    state.f_finale.castdeath = true;
+    state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
+        (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(
+            (*(&raw mut state.f_finale.castorder as *mut castinfo_t).offset(state.f_finale.castnum as isize)).type_0
                 as isize,
         ))
         .deathstate as isize,
     ) as *mut state_t;
-    state.casttics = (*state.caststate).tics;
-    state.castframes = 0 as i32;
-    state.castattacking = false;
-    if unsafe { game_state() }.info.mobjinfo[state.castorder[state.castnum as usize].type_0 as usize].deathsound != 0 {
+    state.f_finale.casttics = (*state.f_finale.caststate).tics;
+    state.f_finale.castframes = 0 as i32;
+    state.f_finale.castattacking = false;
+    if state.info.mobjinfo[state.f_finale.castorder[state.f_finale.castnum as usize].type_0 as usize].deathsound != 0 {
         S_StartSound(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             NULL,
-            unsafe { game_state() }.info.mobjinfo[state.castorder[state.castnum as usize].type_0 as usize].deathsound,
+            state.info.mobjinfo[state.f_finale.castorder[state.f_finale.castnum as usize].type_0 as usize].deathsound,
         );
     }
     return true;
 }
-pub unsafe fn F_CastPrint(text: &str) {
+pub unsafe fn F_CastPrint(state: &mut GameState, text: &str) {
     let mut c: i32 = 0;
     let mut cx: i32 = 0;
     let mut w: i32 = 0;
@@ -818,7 +819,7 @@ pub unsafe fn F_CastPrint(text: &str) {
         if c < 0 as i32 || c > HU_FONTSIZE {
             width += 4 as i32;
         } else {
-            w = (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
+            w = (*state.hu_stuff.hu_font[c as usize]).width as i32;
             width += w;
         }
     }
@@ -828,58 +829,61 @@ pub unsafe fn F_CastPrint(text: &str) {
         if c < 0 as i32 || c > HU_FONTSIZE {
             cx += 4 as i32;
         } else {
-            w = (*unsafe { game_state() }.hu_stuff.hu_font[c as usize]).width as i32;
+            w = (*state.hu_stuff.hu_font[c as usize]).width as i32;
             V_DrawPatch(
-                unsafe { &mut game_state().v_video },
+                &mut state.v_video,
                 cx,
                 180 as i32,
-                unsafe { game_state() }.hu_stuff.hu_font[c as usize],
+                state.hu_stuff.hu_font[c as usize],
             );
             cx += w;
         }
     }
 }
-pub unsafe fn F_CastDrawer(state: &mut FFinaleState) {
+pub unsafe fn F_CastDrawer(state: &mut GameState) {
     let mut sprdef: *mut spritedef_t = ::core::ptr::null_mut::<spritedef_t>();
     let mut sprframe: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
     let mut lump: i32 = 0;
     let mut flip: bool = false;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         0 as i32,
         0 as i32,
         W_CacheLumpName("BOSSBACK", PU_CACHE as i32) as *mut patch_t,
     );
-    F_CastPrint(state.castorder[state.castnum as usize].name.unwrap());
-    sprdef = unsafe { game_state() }
+    let cast_name = state.f_finale.castorder[state.f_finale.castnum as usize]
+        .name
+        .unwrap();
+    F_CastPrint(state, cast_name);
+    sprdef = state
         .r_things
         .sprites
-        .offset((*state.caststate).sprite as isize) as *mut spritedef_t;
+        .offset((*state.f_finale.caststate).sprite as isize) as *mut spritedef_t;
     sprframe = (*sprdef)
         .spriteframes
-        .offset(((*state.caststate).frame & FF_FRAMEMASK) as isize)
+        .offset(((*state.f_finale.caststate).frame & FF_FRAMEMASK) as isize)
         as *mut spriteframe_t;
     lump = (*sprframe).lump[0 as i32 as usize] as i32;
     flip = (*sprframe).flip[0 as i32 as usize] != 0;
-    patch = W_CacheLumpNum(lump + unsafe { game_state() }.r_data.firstspritelump, PU_CACHE as i32) as *mut patch_t;
+    patch = W_CacheLumpNum(lump + state.r_data.firstspritelump, PU_CACHE as i32) as *mut patch_t;
     if flip {
         V_DrawPatchFlipped(
-            unsafe { &mut game_state().v_video },
+            &mut state.v_video,
             160 as i32,
             170 as i32,
             patch,
         );
     } else {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
+            &mut state.v_video,
             160 as i32,
             170 as i32,
             patch,
         );
     };
 }
-pub unsafe fn F_DrawPatchCol(mut x: i32, mut patch: *mut patch_t, mut col: i32) {
+pub unsafe fn F_DrawPatchCol(state: &mut IVideoState, mut x: i32, mut patch: *mut patch_t, mut col: i32) {
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
     let mut source: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -888,7 +892,7 @@ pub unsafe fn F_DrawPatchCol(mut x: i32, mut patch: *mut patch_t, mut col: i32) 
     column = (patch as *mut byte)
         .offset(*(&raw const (*patch).columnofs as *const i32).offset(col as isize) as isize)
         as *mut column_t;
-    desttop = unsafe { game_state() }.i_video.I_VideoBuffer.offset(x as isize);
+    desttop = state.I_VideoBuffer.offset(x as isize);
     while (*column).topdelta as i32 != 0xff as i32 {
         source = (column as *mut byte).offset(3 as i32 as isize);
         dest = desttop.offset(((*column).topdelta as i32 * SCREENWIDTH) as isize);
@@ -909,7 +913,7 @@ pub unsafe fn F_DrawPatchCol(mut x: i32, mut patch: *mut patch_t, mut col: i32) 
             .offset(4 as i32 as isize) as *mut column_t;
     }
 }
-pub unsafe fn F_BunnyScroll(state: &mut FFinaleState) {
+pub unsafe fn F_BunnyScroll(state: &mut GameState) {
     let mut scrolled: i32 = 0;
     let mut x: i32 = 0;
     let mut p1: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
@@ -919,13 +923,13 @@ pub unsafe fn F_BunnyScroll(state: &mut FFinaleState) {
     p1 = W_CacheLumpName("PFUB2", PU_LEVEL as i32) as *mut patch_t;
     p2 = W_CacheLumpName("PFUB1", PU_LEVEL as i32) as *mut patch_t;
     V_MarkRect(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         0 as i32,
         0 as i32,
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    scrolled = 320 as i32 - (state.finalecount as i32 - 230 as i32) / 2 as i32;
+    scrolled = 320 as i32 - (state.f_finale.finalecount as i32 - 230 as i32) / 2 as i32;
     if scrolled > 320 as i32 {
         scrolled = 320 as i32;
     }
@@ -935,35 +939,36 @@ pub unsafe fn F_BunnyScroll(state: &mut FFinaleState) {
     x = 0 as i32;
     while x < SCREENWIDTH {
         if x + scrolled < 320 as i32 {
-            F_DrawPatchCol(x, p1, x + scrolled);
+            F_DrawPatchCol(&mut state.i_video, x, p1, x + scrolled);
         } else {
-            F_DrawPatchCol(x, p2, x + scrolled - 320 as i32);
+            F_DrawPatchCol(&mut state.i_video, x, p2, x + scrolled - 320 as i32);
         }
         x += 1;
     }
-    if state.finalecount < 1130 as u32 {
+    if state.f_finale.finalecount < 1130 as u32 {
         return;
     }
-    if state.finalecount < 1180 as u32 {
+    if state.f_finale.finalecount < 1180 as u32 {
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
+            &mut state.v_video,
             (SCREENWIDTH - 13 as i32 * 8 as i32) / 2 as i32,
             (SCREENHEIGHT - 8 as i32 * 8 as i32) / 2 as i32,
             W_CacheLumpName("END0", PU_CACHE as i32) as *mut patch_t,
         );
-        state.laststage = 0 as i32;
+        state.f_finale.laststage = 0 as i32;
         return;
     }
     stage = state
+        .f_finale
         .finalecount
         .wrapping_sub(1180 as u32)
         .wrapping_div(5 as u32) as i32;
     if stage > 6 as i32 {
         stage = 6 as i32;
     }
-    if stage > state.laststage {
-        S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pistol as i32);
-        state.laststage = stage;
+    if stage > state.f_finale.laststage {
+        S_StartSound(&mut state.sounds, NULL, sfx_pistol as i32);
+        state.f_finale.laststage = stage;
     }
     snprintf(
         &raw mut name as *mut ::core::ffi::c_char,
@@ -972,7 +977,7 @@ pub unsafe fn F_BunnyScroll(state: &mut FFinaleState) {
         stage,
     );
     V_DrawPatch(
-        unsafe { &mut game_state().v_video },
+        &mut state.v_video,
         (SCREENWIDTH - 13 as i32 * 8 as i32) / 2 as i32,
         (SCREENHEIGHT - 8 as i32 * 8 as i32) / 2 as i32,
         W_CacheLumpName(
@@ -981,14 +986,14 @@ pub unsafe fn F_BunnyScroll(state: &mut FFinaleState) {
         ) as *mut patch_t,
     );
 }
-unsafe fn F_ArtScreenDrawer(state: &mut FFinaleState) {
+unsafe fn F_ArtScreenDrawer(state: &mut GameState) {
     let mut lumpname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    if unsafe { game_state() }.g_game.gameepisode == 3 as i32 {
+    if state.g_game.gameepisode == 3 as i32 {
         F_BunnyScroll(state);
     } else {
-        match unsafe { game_state() }.g_game.gameepisode {
+        match state.g_game.gameepisode {
             1 => {
-                if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
+                if state.doomstat.gamemode as u32 == retail as i32 as u32 {
                     lumpname = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 } else {
@@ -1008,15 +1013,15 @@ unsafe fn F_ArtScreenDrawer(state: &mut FFinaleState) {
         }
         lumpname = lumpname;
         V_DrawPatch(
-            unsafe { &mut game_state().v_video },
+            &mut state.v_video,
             0 as i32,
             0 as i32,
             W_CacheLumpName(&wad_name8_to_string(lumpname), PU_CACHE as i32) as *mut patch_t,
         );
     };
 }
-pub unsafe fn F_Drawer(state: &mut FFinaleState) {
-    match state.finalestage as u32 {
+pub unsafe fn F_Drawer(state: &mut GameState) {
+    match state.f_finale.finalestage as u32 {
         2 => {
             F_CastDrawer(state);
         }

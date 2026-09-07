@@ -1019,7 +1019,7 @@ pub unsafe fn G_Responder(mut ev: event_t) -> bool {
         }
     }
     if unsafe { game_state() }.g_game.gamestate == GS_FINALE {
-        if F_Responder(unsafe { &mut game_state().f_finale }, &ev) {
+        if F_Responder(unsafe { game_state() }, &ev) {
             return true;
         }
     }
@@ -1102,7 +1102,7 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
                 G_DoCompleted();
             }
             7 => {
-                F_StartFinale(unsafe { &mut game_state().f_finale });
+                F_StartFinale(unsafe { game_state() });
             }
             8 => {
                 G_DoWorldDone();
@@ -1254,7 +1254,7 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
             WI_Ticker();
         }
         2 => {
-            F_Ticker(unsafe { &mut game_state().f_finale });
+            F_Ticker(unsafe { game_state() });
         }
         3 => {
             D_PageTicker();
@@ -1714,7 +1714,7 @@ pub unsafe fn G_WorldDone() {
         }
         match current_block_3 {
             9744923308842414524 => {
-                F_StartFinale(unsafe { &mut game_state().f_finale });
+                F_StartFinale(unsafe { game_state() });
             }
             _ => {}
         }
