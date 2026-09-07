@@ -1209,9 +1209,9 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
                         unsafe { game_state() }.g_game.paused =
                             !unsafe { game_state() }.g_game.paused;
                         if unsafe { game_state() }.g_game.paused {
-                            S_PauseSound();
+                            S_PauseSound(unsafe { game_state() });
                         } else {
-                            S_ResumeSound();
+                            S_ResumeSound(unsafe { game_state() });
                         }
                     }
                     2 => {
@@ -1882,7 +1882,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     let mut i: i32 = 0;
     if unsafe { game_state() }.g_game.paused {
         unsafe { game_state() }.g_game.paused = false;
-        S_ResumeSound();
+        S_ResumeSound(unsafe { game_state() });
     }
     if skill as i32 > sk_nightmare as i32 {
         skill = sk_nightmare;

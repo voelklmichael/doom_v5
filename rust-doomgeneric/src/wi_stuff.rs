@@ -1949,13 +1949,13 @@ pub unsafe fn WI_Ticker() {
     if unsafe { game_state() }.wi_stuff.bcnt == 1 as i32 {
         if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
             S_ChangeMusic(
-                unsafe { &mut game_state().sounds },
+                unsafe { game_state() },
                 mus_dm2int as i32,
                 true_0,
             );
         } else {
             S_ChangeMusic(
-                unsafe { &mut game_state().sounds },
+                unsafe { game_state() },
                 mus_inter as i32,
                 true_0,
             );

@@ -316,13 +316,13 @@ pub unsafe fn F_StartFinale(state: &mut GameState) {
     }) == doom as i32 as u32
     {
         S_ChangeMusic(
-            &mut state.sounds,
+            state,
             mus_victor as i32,
             true_0,
         );
     } else {
         S_ChangeMusic(
-            &mut state.sounds,
+            state,
             mus_read_m as i32,
             true_0,
         );
@@ -418,7 +418,7 @@ pub unsafe fn F_Ticker(state: &mut GameState) {
         state.f_finale.finalestage = F_STAGE_ARTSCREEN;
         state.d_main.wipegamestate = 4294967295 as gamestate_t;
         if state.g_game.gameepisode == 3 as i32 {
-            S_StartMusic(&mut state.sounds, mus_bunny as i32);
+            S_StartMusic(state, mus_bunny as i32);
         }
     }
 }
@@ -589,7 +589,7 @@ pub unsafe fn F_StartCast(state: &mut GameState) {
     state.f_finale.castframes = 0 as i32;
     state.f_finale.castonmelee = 0 as i32;
     state.f_finale.castattacking = false;
-    S_ChangeMusic(&mut state.sounds, mus_evil as i32, true_0);
+    S_ChangeMusic(state, mus_evil as i32, true_0);
 }
 pub unsafe fn F_CastTicker(state: &mut GameState) {
     let mut current_block: u64;
