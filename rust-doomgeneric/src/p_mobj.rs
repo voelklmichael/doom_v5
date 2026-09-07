@@ -808,7 +808,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) 
         mo as *mut ::core::ffi::c_void,
         sfx_telept as i32,
     );
-    ss = R_PointInSubsector(x, y);
+    ss = R_PointInSubsector(unsafe { game_state() }, x, y);
     mo = P_SpawnMobj(x, y, (*unsafe { game_state() }.p_setup.sector_mut((*ss).sector)).floorheight, MT_TFOG);
     S_StartSound(
         unsafe { &mut game_state().sounds },
@@ -1109,7 +1109,7 @@ pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {
         as *mut mapthing_t;
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
-    ss = R_PointInSubsector(x, y);
+    ss = R_PointInSubsector(unsafe { game_state() }, x, y);
     mo = P_SpawnMobj(x, y, (*unsafe { game_state() }.p_setup.sector_mut((*ss).sector)).floorheight, MT_IFOG);
     S_StartSound(
         unsafe { &mut game_state().sounds },

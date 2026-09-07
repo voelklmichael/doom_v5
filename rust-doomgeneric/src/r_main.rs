@@ -499,20 +499,20 @@ pub unsafe fn R_Init() {
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     unsafe { game_state() }.r_main.framecount = 0 as i32;
 }
-pub unsafe fn R_PointInSubsector(mut x: fixed_t, mut y: fixed_t) -> *mut subsector_t {
+pub unsafe fn R_PointInSubsector(state: &mut GameState, mut x: fixed_t, mut y: fixed_t) -> *mut subsector_t {
     let mut node: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     let mut nodenum: i32 = 0;
-    if unsafe { game_state() }.p_setup.numnodes == 0 {
-        return unsafe { game_state() }.p_setup.subsector_mut(SubsectorId(0));
+    if state.p_setup.numnodes == 0 {
+        return state.p_setup.subsector_mut(SubsectorId(0));
     }
-    nodenum = unsafe { game_state() }.p_setup.numnodes - 1 as i32;
+    nodenum = state.p_setup.numnodes - 1 as i32;
     while nodenum & NF_SUBSECTOR == 0 {
-        node = unsafe { game_state() }.p_setup.nodes.offset(nodenum as isize) as *mut node_t;
+        node = state.p_setup.nodes.offset(nodenum as isize) as *mut node_t;
         side = R_PointOnSide(x, y, node);
         nodenum = (*node).children[side as usize] as i32;
     }
-    return unsafe { game_state() }
+    return state
         .p_setup
         .subsector_mut(SubsectorId((nodenum & !NF_SUBSECTOR) as u32));
 }

@@ -190,7 +190,7 @@ pub unsafe fn P_TeleportMove(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixe
         x + (*unsafe { game_state() }.p_map.tmthing).radius;
     unsafe { game_state() }.p_map.tmbbox[BOXLEFT as i32 as usize] =
         x - (*unsafe { game_state() }.p_map.tmthing).radius;
-    newsubsec = R_PointInSubsector(x, y);
+    newsubsec = R_PointInSubsector(unsafe { game_state() }, x, y);
     unsafe { game_state() }.p_map.ceilingline = ::core::ptr::null_mut::<line_t>();
     unsafe { game_state() }.p_map.tmdropoffz =
         (*unsafe { game_state() }.p_setup.sector_mut((*newsubsec).sector)).floorheight;
@@ -398,7 +398,7 @@ pub unsafe fn P_CheckPosition(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fix
         x + (*unsafe { game_state() }.p_map.tmthing).radius;
     unsafe { game_state() }.p_map.tmbbox[BOXLEFT as i32 as usize] =
         x - (*unsafe { game_state() }.p_map.tmthing).radius;
-    newsubsec = R_PointInSubsector(x, y);
+    newsubsec = R_PointInSubsector(unsafe { game_state() }, x, y);
     unsafe { game_state() }.p_map.ceilingline = ::core::ptr::null_mut::<line_t>();
     unsafe { game_state() }.p_map.tmdropoffz =
         (*unsafe { game_state() }.p_setup.sector_mut((*newsubsec).sector)).floorheight;
