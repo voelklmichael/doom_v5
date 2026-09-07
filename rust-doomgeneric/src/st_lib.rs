@@ -1,7 +1,6 @@
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
-use crate::src::st_stuff::st_backing_screen;
 use crate::src::st_stuff::ST_Y;
 use crate::src::v_video::V_CopyRect;
 use crate::src::v_video::V_DrawPatch;
@@ -105,7 +104,7 @@ pub unsafe fn STlib_drawNum(state: &mut StLibState, mut n: *mut st_number_t, mut
         unsafe { &mut game_state().v_video },
         x,
         (*n).y - ST_Y,
-        st_backing_screen,
+        unsafe { game_state() }.st_stuff.st_backing_screen,
         w * numdigits,
         h,
         x,
@@ -211,7 +210,7 @@ pub unsafe fn STlib_updateMultIcon(mut mi: *mut st_multicon_t, mut refresh: bool
                 unsafe { &mut game_state().v_video },
                 x,
                 y - ST_Y,
-                st_backing_screen,
+                unsafe { game_state() }.st_stuff.st_backing_screen,
                 w,
                 h,
                 x,
@@ -267,7 +266,7 @@ pub unsafe fn STlib_updateBinIcon(mut bi: *mut st_binicon_t, mut refresh: bool) 
                 unsafe { &mut game_state().v_video },
                 x,
                 y - ST_Y,
-                st_backing_screen,
+                unsafe { game_state() }.st_stuff.st_backing_screen,
                 w,
                 h,
                 x,

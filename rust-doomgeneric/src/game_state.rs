@@ -48,6 +48,7 @@ use crate::src::r_sky::RSkyState;
 use crate::src::r_things::RThingsState;
 use crate::src::sounds::SoundsState;
 use crate::src::st_lib::StLibState;
+use crate::src::st_stuff::StStuffState;
 use crate::src::statdump::StatDumpState;
 use crate::src::v_video::VVideoState;
 use crate::src::w_checksum::WChecksumState;
@@ -93,6 +94,7 @@ pub struct GameState {
     pub r_things: RThingsState,
     pub sounds: SoundsState,
     pub st_lib: StLibState,
+    pub st_stuff: StStuffState,
     pub statdump: StatDumpState,
     pub v_video: VVideoState,
     pub w_checksum: WChecksumState,
@@ -141,6 +143,7 @@ impl GameState {
             r_things: RThingsState::new(),
             sounds: SoundsState::new(),
             st_lib: StLibState::new(),
+            st_stuff: StStuffState::new(),
             statdump: StatDumpState::new(),
             v_video: VVideoState::new(),
             w_checksum: WChecksumState::new(),
