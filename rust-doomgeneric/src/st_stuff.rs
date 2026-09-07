@@ -747,173 +747,173 @@ pub unsafe fn ST_calcPainOffset() -> i32 {
     }
     return unsafe { game_state() }.st_stuff.st_calcpainoffset_lastcalc;
 }
-pub unsafe fn ST_updateFaceWidget() {
+pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut badguyangle: angle_t = 0;
     let mut diffang: angle_t = 0;
         let mut doevilgrin: bool = false;
-    if unsafe { game_state() }.st_stuff.st_updatefacewidget_priority < 10 as i32 {
-        if (*unsafe { game_state() }.st_stuff.plyr).health == 0 {
-            unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 9 as i32;
-            unsafe { game_state() }.st_stuff.st_faceindex = ST_DEADFACE;
-            unsafe { game_state() }.st_stuff.st_facecount = 1 as i32;
+    if state.st_stuff.st_updatefacewidget_priority < 10 as i32 {
+        if (*state.st_stuff.plyr).health == 0 {
+            state.st_stuff.st_updatefacewidget_priority = 9 as i32;
+            state.st_stuff.st_faceindex = ST_DEADFACE;
+            state.st_stuff.st_facecount = 1 as i32;
         }
     }
-    if unsafe { game_state() }.st_stuff.st_updatefacewidget_priority < 9 as i32 {
-        if (*unsafe { game_state() }.st_stuff.plyr).bonuscount != 0 {
+    if state.st_stuff.st_updatefacewidget_priority < 9 as i32 {
+        if (*state.st_stuff.plyr).bonuscount != 0 {
             doevilgrin = false;
             i = 0 as i32;
             while i < NUMWEAPONS as i32 {
-                if unsafe { game_state() }.st_stuff.oldweaponsowned[i as usize] != (*unsafe { game_state() }.st_stuff.plyr).weaponowned[i as usize] {
+                if state.st_stuff.oldweaponsowned[i as usize] != (*state.st_stuff.plyr).weaponowned[i as usize] {
                     doevilgrin = true;
-                    unsafe { game_state() }.st_stuff.oldweaponsowned[i as usize] = (*unsafe { game_state() }.st_stuff.plyr).weaponowned[i as usize];
+                    state.st_stuff.oldweaponsowned[i as usize] = (*state.st_stuff.plyr).weaponowned[i as usize];
                 }
                 i += 1;
             }
             if doevilgrin {
-                unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 8 as i32;
-                unsafe { game_state() }.st_stuff.st_facecount = ST_EVILGRINCOUNT;
-                unsafe { game_state() }.st_stuff.st_faceindex = ST_calcPainOffset() + ST_EVILGRINOFFSET;
+                state.st_stuff.st_updatefacewidget_priority = 8 as i32;
+                state.st_stuff.st_facecount = ST_EVILGRINCOUNT;
+                state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_EVILGRINOFFSET;
             }
         }
     }
-    if unsafe { game_state() }.st_stuff.st_updatefacewidget_priority < 8 as i32 {
-        let plyr_attacker = (*unsafe { game_state() }.st_stuff.plyr)
+    if state.st_stuff.st_updatefacewidget_priority < 8 as i32 {
+        let plyr_attacker = (*state.st_stuff.plyr)
             .attacker
-            .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id));
-        if (*unsafe { game_state() }.st_stuff.plyr).damagecount != 0
+            .and_then(|id| state.p_mobj.mobj_get(id));
+        if (*state.st_stuff.plyr).damagecount != 0
             && plyr_attacker.is_some()
-            && plyr_attacker != Some((*unsafe { game_state() }.st_stuff.plyr).mo)
+            && plyr_attacker != Some((*state.st_stuff.plyr).mo)
         {
-            unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 7 as i32;
-            if (*unsafe { game_state() }.st_stuff.plyr).health - unsafe { game_state() }.st_stuff.st_oldhealth > ST_MUCHPAIN {
-                unsafe { game_state() }.st_stuff.st_facecount = ST_TURNCOUNT;
-                unsafe { game_state() }.st_stuff.st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
+            state.st_stuff.st_updatefacewidget_priority = 7 as i32;
+            if (*state.st_stuff.plyr).health - state.st_stuff.st_oldhealth > ST_MUCHPAIN {
+                state.st_stuff.st_facecount = ST_TURNCOUNT;
+                state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
             } else {
                 let plyr_attacker = plyr_attacker.unwrap();
                 badguyangle = R_PointToAngle2(
-                    (*(*unsafe { game_state() }.st_stuff.plyr).mo).x,
-                    (*(*unsafe { game_state() }.st_stuff.plyr).mo).y,
+                    (*(*state.st_stuff.plyr).mo).x,
+                    (*(*state.st_stuff.plyr).mo).y,
                     (*plyr_attacker).x,
                     (*plyr_attacker).y,
                 );
-                if badguyangle > (*(*unsafe { game_state() }.st_stuff.plyr).mo).angle {
-                    diffang = badguyangle.wrapping_sub((*(*unsafe { game_state() }.st_stuff.plyr).mo).angle);
+                if badguyangle > (*(*state.st_stuff.plyr).mo).angle {
+                    diffang = badguyangle.wrapping_sub((*(*state.st_stuff.plyr).mo).angle);
                     i = (diffang > ANG180) as i32;
                 } else {
-                    diffang = (*(*unsafe { game_state() }.st_stuff.plyr).mo).angle.wrapping_sub(badguyangle);
+                    diffang = (*(*state.st_stuff.plyr).mo).angle.wrapping_sub(badguyangle);
                     i = (diffang <= ANG180) as i32;
                 }
-                unsafe { game_state() }.st_stuff.st_facecount = ST_TURNCOUNT;
-                unsafe { game_state() }.st_stuff.st_faceindex = ST_calcPainOffset();
+                state.st_stuff.st_facecount = ST_TURNCOUNT;
+                state.st_stuff.st_faceindex = ST_calcPainOffset();
                 if diffang < ANG45 as angle_t {
-                    unsafe { game_state() }.st_stuff.st_faceindex += ST_RAMPAGEOFFSET;
+                    state.st_stuff.st_faceindex += ST_RAMPAGEOFFSET;
                 } else if i != 0 {
-                    unsafe { game_state() }.st_stuff.st_faceindex += ST_TURNOFFSET;
+                    state.st_stuff.st_faceindex += ST_TURNOFFSET;
                 } else {
-                    unsafe { game_state() }.st_stuff.st_faceindex += ST_TURNOFFSET + 1 as i32;
+                    state.st_stuff.st_faceindex += ST_TURNOFFSET + 1 as i32;
                 }
             }
         }
     }
-    if unsafe { game_state() }.st_stuff.st_updatefacewidget_priority < 7 as i32 {
-        if (*unsafe { game_state() }.st_stuff.plyr).damagecount != 0 {
-            if (*unsafe { game_state() }.st_stuff.plyr).health - unsafe { game_state() }.st_stuff.st_oldhealth > ST_MUCHPAIN {
-                unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 7 as i32;
-                unsafe { game_state() }.st_stuff.st_facecount = ST_TURNCOUNT;
-                unsafe { game_state() }.st_stuff.st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
+    if state.st_stuff.st_updatefacewidget_priority < 7 as i32 {
+        if (*state.st_stuff.plyr).damagecount != 0 {
+            if (*state.st_stuff.plyr).health - state.st_stuff.st_oldhealth > ST_MUCHPAIN {
+                state.st_stuff.st_updatefacewidget_priority = 7 as i32;
+                state.st_stuff.st_facecount = ST_TURNCOUNT;
+                state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
             } else {
-                unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 6 as i32;
-                unsafe { game_state() }.st_stuff.st_facecount = ST_TURNCOUNT;
-                unsafe { game_state() }.st_stuff.st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
+                state.st_stuff.st_updatefacewidget_priority = 6 as i32;
+                state.st_stuff.st_facecount = ST_TURNCOUNT;
+                state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
             }
         }
     }
-    if unsafe { game_state() }.st_stuff.st_updatefacewidget_priority < 6 as i32 {
-        if (*unsafe { game_state() }.st_stuff.plyr).attackdown != 0 {
-            if unsafe { game_state() }.st_stuff.st_updatefacewidget_lastattackdown == -(1 as i32) {
-                unsafe { game_state() }.st_stuff.st_updatefacewidget_lastattackdown = ST_RAMPAGEDELAY;
+    if state.st_stuff.st_updatefacewidget_priority < 6 as i32 {
+        if (*state.st_stuff.plyr).attackdown != 0 {
+            if state.st_stuff.st_updatefacewidget_lastattackdown == -(1 as i32) {
+                state.st_stuff.st_updatefacewidget_lastattackdown = ST_RAMPAGEDELAY;
             } else {
-                unsafe { game_state() }.st_stuff.st_updatefacewidget_lastattackdown -= 1;
-                if unsafe { game_state() }.st_stuff.st_updatefacewidget_lastattackdown == 0 {
-                    unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 5 as i32;
-                    unsafe { game_state() }.st_stuff.st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
-                    unsafe { game_state() }.st_stuff.st_facecount = 1 as i32;
-                    unsafe { game_state() }.st_stuff.st_updatefacewidget_lastattackdown = 1 as i32;
+                state.st_stuff.st_updatefacewidget_lastattackdown -= 1;
+                if state.st_stuff.st_updatefacewidget_lastattackdown == 0 {
+                    state.st_stuff.st_updatefacewidget_priority = 5 as i32;
+                    state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
+                    state.st_stuff.st_facecount = 1 as i32;
+                    state.st_stuff.st_updatefacewidget_lastattackdown = 1 as i32;
                 }
             }
         } else {
-            unsafe { game_state() }.st_stuff.st_updatefacewidget_lastattackdown = -(1 as i32);
+            state.st_stuff.st_updatefacewidget_lastattackdown = -(1 as i32);
         }
     }
-    if unsafe { game_state() }.st_stuff.st_updatefacewidget_priority < 5 as i32 {
-        if (*unsafe { game_state() }.st_stuff.plyr).cheats & CF_GODMODE as i32 != 0
-            || (*unsafe { game_state() }.st_stuff.plyr).powers[pw_invulnerability as i32 as usize] != 0
+    if state.st_stuff.st_updatefacewidget_priority < 5 as i32 {
+        if (*state.st_stuff.plyr).cheats & CF_GODMODE as i32 != 0
+            || (*state.st_stuff.plyr).powers[pw_invulnerability as i32 as usize] != 0
         {
-            unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 4 as i32;
-            unsafe { game_state() }.st_stuff.st_faceindex = ST_GODFACE;
-            unsafe { game_state() }.st_stuff.st_facecount = 1 as i32;
+            state.st_stuff.st_updatefacewidget_priority = 4 as i32;
+            state.st_stuff.st_faceindex = ST_GODFACE;
+            state.st_stuff.st_facecount = 1 as i32;
         }
     }
-    if unsafe { game_state() }.st_stuff.st_facecount == 0 {
-        unsafe { game_state() }.st_stuff.st_faceindex = ST_calcPainOffset() + unsafe { game_state() }.st_stuff.st_randomnumber % 3 as i32;
-        unsafe { game_state() }.st_stuff.st_facecount = ST_STRAIGHTFACECOUNT;
-        unsafe { game_state() }.st_stuff.st_updatefacewidget_priority = 0 as i32;
+    if state.st_stuff.st_facecount == 0 {
+        state.st_stuff.st_faceindex = ST_calcPainOffset() + state.st_stuff.st_randomnumber % 3 as i32;
+        state.st_stuff.st_facecount = ST_STRAIGHTFACECOUNT;
+        state.st_stuff.st_updatefacewidget_priority = 0 as i32;
     }
-    unsafe { game_state() }.st_stuff.st_facecount -= 1;
+    state.st_stuff.st_facecount -= 1;
 }
-pub unsafe fn ST_updateWidgets() {
+pub unsafe fn ST_updateWidgets(state: &mut GameState) {
     let mut i: i32 = 0;
-    if weaponinfo[(*unsafe { game_state() }.st_stuff.plyr).readyweapon as usize].ammo as u32 == am_noammo as i32 as u32 {
-        unsafe { game_state() }.st_stuff.w_ready.num = &raw mut unsafe { game_state() }.st_stuff.st_updatewidgets_largeammo;
+    if weaponinfo[(*state.st_stuff.plyr).readyweapon as usize].ammo as u32 == am_noammo as i32 as u32 {
+        state.st_stuff.w_ready.num = &raw mut state.st_stuff.st_updatewidgets_largeammo;
     } else {
-        unsafe { game_state() }.st_stuff.w_ready.num = (&raw mut (*unsafe { game_state() }.st_stuff.plyr).ammo as *mut i32).offset(
-            (*(&raw const weaponinfo as *mut weaponinfo_t).offset((*unsafe { game_state() }.st_stuff.plyr).readyweapon as isize))
+        state.st_stuff.w_ready.num = (&raw mut (*state.st_stuff.plyr).ammo as *mut i32).offset(
+            (*(&raw const weaponinfo as *mut weaponinfo_t).offset((*state.st_stuff.plyr).readyweapon as isize))
                 .ammo as isize,
         ) as *mut i32;
     }
-    unsafe { game_state() }.st_stuff.w_ready.data = (*unsafe { game_state() }.st_stuff.plyr).readyweapon as i32;
+    state.st_stuff.w_ready.data = (*state.st_stuff.plyr).readyweapon as i32;
     i = 0 as i32;
     while i < 6 as i32 {
-        unsafe { game_state() }.st_stuff.w_arms_owned[i as usize] = (*unsafe { game_state() }.st_stuff.plyr).weaponowned[(i + 1 as i32) as usize] as i32;
+        state.st_stuff.w_arms_owned[i as usize] = (*state.st_stuff.plyr).weaponowned[(i + 1 as i32) as usize] as i32;
         i += 1;
     }
     i = 0 as i32;
     while i < 3 as i32 {
-        unsafe { game_state() }.st_stuff.keyboxes[i as usize] = if (*unsafe { game_state() }.st_stuff.plyr).cards[i as usize] {
+        state.st_stuff.keyboxes[i as usize] = if (*state.st_stuff.plyr).cards[i as usize] {
             i
         } else {
             -(1 as i32)
         };
-        if (*unsafe { game_state() }.st_stuff.plyr).cards[(i + 3 as i32) as usize] {
-            unsafe { game_state() }.st_stuff.keyboxes[i as usize] = i + 3 as i32;
+        if (*state.st_stuff.plyr).cards[(i + 3 as i32) as usize] {
+            state.st_stuff.keyboxes[i as usize] = i + 3 as i32;
         }
         i += 1;
     }
-    ST_updateFaceWidget();
-    unsafe { game_state() }.st_stuff.st_notdeathmatch = unsafe { game_state() }.g_game.deathmatch == 0;
-    unsafe { game_state() }.st_stuff.st_armson = unsafe { game_state() }.st_stuff.st_statusbaron && unsafe { game_state() }.g_game.deathmatch == 0;
-    unsafe { game_state() }.st_stuff.st_fragson = unsafe { game_state() }.g_game.deathmatch != 0 && unsafe { game_state() }.st_stuff.st_statusbaron;
-    unsafe { game_state() }.st_stuff.st_fragscount = 0 as i32;
+    ST_updateFaceWidget(state);
+    state.st_stuff.st_notdeathmatch = state.g_game.deathmatch == 0;
+    state.st_stuff.st_armson = state.st_stuff.st_statusbaron && state.g_game.deathmatch == 0;
+    state.st_stuff.st_fragson = state.g_game.deathmatch != 0 && state.st_stuff.st_statusbaron;
+    state.st_stuff.st_fragscount = 0 as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if i != unsafe { game_state() }.g_game.consoleplayer {
-            unsafe { game_state() }.st_stuff.st_fragscount += (*unsafe { game_state() }.st_stuff.plyr).frags[i as usize];
+        if i != state.g_game.consoleplayer {
+            state.st_stuff.st_fragscount += (*state.st_stuff.plyr).frags[i as usize];
         } else {
-            unsafe { game_state() }.st_stuff.st_fragscount -= (*unsafe { game_state() }.st_stuff.plyr).frags[i as usize];
+            state.st_stuff.st_fragscount -= (*state.st_stuff.plyr).frags[i as usize];
         }
         i += 1;
     }
-    unsafe { game_state() }.st_stuff.st_msgcounter -= 1;
-    if unsafe { game_state() }.st_stuff.st_msgcounter == 0 {
-        unsafe { game_state() }.st_stuff.st_chat = unsafe { game_state() }.st_stuff.st_oldchat;
+    state.st_stuff.st_msgcounter -= 1;
+    if state.st_stuff.st_msgcounter == 0 {
+        state.st_stuff.st_chat = state.st_stuff.st_oldchat;
     }
 }
-pub unsafe fn ST_Ticker() {
-    unsafe { game_state() }.st_stuff.st_clock = unsafe { game_state() }.st_stuff.st_clock.wrapping_add(1);
-    unsafe { game_state() }.st_stuff.st_randomnumber = M_Random(unsafe { &mut game_state().m_random });
-    ST_updateWidgets();
-    unsafe { game_state() }.st_stuff.st_oldhealth = (*unsafe { game_state() }.st_stuff.plyr).health;
+pub unsafe fn ST_Ticker(state: &mut GameState) {
+    state.st_stuff.st_clock = state.st_stuff.st_clock.wrapping_add(1);
+    state.st_stuff.st_randomnumber = M_Random(&mut state.m_random);
+    ST_updateWidgets(state);
+    state.st_stuff.st_oldhealth = (*state.st_stuff.plyr).health;
 }
 pub unsafe fn ST_doPaletteStuff(state: &mut GameState) {
     let mut palette: i32 = 0;

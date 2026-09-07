@@ -548,15 +548,15 @@ pub unsafe fn AM_getIslope(mut ml: *mut mline_t, mut is: *mut islope_t) {
         (*is).slp = FixedDiv(dy as fixed_t, dx as fixed_t);
     };
 }
-pub unsafe fn AM_activateNewScale() {
-    unsafe { game_state() }.am_map.m_x += unsafe { game_state() }.am_map.m_w as i32 / 2 as i32;
-    unsafe { game_state() }.am_map.m_y += unsafe { game_state() }.am_map.m_h as i32 / 2 as i32;
-    unsafe { game_state() }.am_map.m_w = FixedMul((unsafe { game_state() }.am_map.f_w as fixed_t) << 16 as i32, unsafe { game_state() }.am_map.scale_ftom);
-    unsafe { game_state() }.am_map.m_h = FixedMul((unsafe { game_state() }.am_map.f_h as fixed_t) << 16 as i32, unsafe { game_state() }.am_map.scale_ftom);
-    unsafe { game_state() }.am_map.m_x -= unsafe { game_state() }.am_map.m_w as i32 / 2 as i32;
-    unsafe { game_state() }.am_map.m_y -= unsafe { game_state() }.am_map.m_h as i32 / 2 as i32;
-    unsafe { game_state() }.am_map.m_x2 = unsafe { game_state() }.am_map.m_x + unsafe { game_state() }.am_map.m_w;
-    unsafe { game_state() }.am_map.m_y2 = unsafe { game_state() }.am_map.m_y + unsafe { game_state() }.am_map.m_h;
+pub unsafe fn AM_activateNewScale(state: &mut GameState) {
+    state.am_map.m_x += state.am_map.m_w as i32 / 2 as i32;
+    state.am_map.m_y += state.am_map.m_h as i32 / 2 as i32;
+    state.am_map.m_w = FixedMul((state.am_map.f_w as fixed_t) << 16 as i32, state.am_map.scale_ftom);
+    state.am_map.m_h = FixedMul((state.am_map.f_h as fixed_t) << 16 as i32, state.am_map.scale_ftom);
+    state.am_map.m_x -= state.am_map.m_w as i32 / 2 as i32;
+    state.am_map.m_y -= state.am_map.m_h as i32 / 2 as i32;
+    state.am_map.m_x2 = state.am_map.m_x + state.am_map.m_w;
+    state.am_map.m_y2 = state.am_map.m_y + state.am_map.m_h;
 }
 pub unsafe fn AM_saveScaleAndLoc() {
     unsafe { game_state() }.am_map.old_m_x = unsafe { game_state() }.am_map.m_x;
@@ -620,25 +620,25 @@ pub unsafe fn AM_findMinMaxBoundaries() {
         2 as fixed_t * 16 as fixed_t * FRACUNIT,
     );
 }
-pub unsafe fn AM_changeWindowLoc() {
-    if unsafe { game_state() }.am_map.m_paninc.x != 0 || unsafe { game_state() }.am_map.m_paninc.y != 0 {
-        unsafe { game_state() }.am_map.followplayer = 0 as i32;
-        unsafe { game_state() }.am_map.f_oldloc.x = INT_MAX as fixed_t;
+pub unsafe fn AM_changeWindowLoc(state: &mut GameState) {
+    if state.am_map.m_paninc.x != 0 || state.am_map.m_paninc.y != 0 {
+        state.am_map.followplayer = 0 as i32;
+        state.am_map.f_oldloc.x = INT_MAX as fixed_t;
     }
-    unsafe { game_state() }.am_map.m_x += unsafe { game_state() }.am_map.m_paninc.x;
-    unsafe { game_state() }.am_map.m_y += unsafe { game_state() }.am_map.m_paninc.y;
-    if unsafe { game_state() }.am_map.m_x as i32 + unsafe { game_state() }.am_map.m_w as i32 / 2 as i32 > unsafe { game_state() }.am_map.max_x {
-        unsafe { game_state() }.am_map.m_x = (unsafe { game_state() }.am_map.max_x as i32 - unsafe { game_state() }.am_map.m_w as i32 / 2 as i32) as fixed_t;
-    } else if (unsafe { game_state() }.am_map.m_x as i32 + unsafe { game_state() }.am_map.m_w as i32 / 2 as i32) < unsafe { game_state() }.am_map.min_x {
-        unsafe { game_state() }.am_map.m_x = (unsafe { game_state() }.am_map.min_x as i32 - unsafe { game_state() }.am_map.m_w as i32 / 2 as i32) as fixed_t;
+    state.am_map.m_x += state.am_map.m_paninc.x;
+    state.am_map.m_y += state.am_map.m_paninc.y;
+    if state.am_map.m_x as i32 + state.am_map.m_w as i32 / 2 as i32 > state.am_map.max_x {
+        state.am_map.m_x = (state.am_map.max_x as i32 - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
+    } else if (state.am_map.m_x as i32 + state.am_map.m_w as i32 / 2 as i32) < state.am_map.min_x {
+        state.am_map.m_x = (state.am_map.min_x as i32 - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
     }
-    if unsafe { game_state() }.am_map.m_y as i32 + unsafe { game_state() }.am_map.m_h as i32 / 2 as i32 > unsafe { game_state() }.am_map.max_y {
-        unsafe { game_state() }.am_map.m_y = (unsafe { game_state() }.am_map.max_y as i32 - unsafe { game_state() }.am_map.m_h as i32 / 2 as i32) as fixed_t;
-    } else if (unsafe { game_state() }.am_map.m_y as i32 + unsafe { game_state() }.am_map.m_h as i32 / 2 as i32) < unsafe { game_state() }.am_map.min_y {
-        unsafe { game_state() }.am_map.m_y = (unsafe { game_state() }.am_map.min_y as i32 - unsafe { game_state() }.am_map.m_h as i32 / 2 as i32) as fixed_t;
+    if state.am_map.m_y as i32 + state.am_map.m_h as i32 / 2 as i32 > state.am_map.max_y {
+        state.am_map.m_y = (state.am_map.max_y as i32 - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
+    } else if (state.am_map.m_y as i32 + state.am_map.m_h as i32 / 2 as i32) < state.am_map.min_y {
+        state.am_map.m_y = (state.am_map.min_y as i32 - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
     }
-    unsafe { game_state() }.am_map.m_x2 = unsafe { game_state() }.am_map.m_x + unsafe { game_state() }.am_map.m_w;
-    unsafe { game_state() }.am_map.m_y2 = unsafe { game_state() }.am_map.m_y + unsafe { game_state() }.am_map.m_h;
+    state.am_map.m_x2 = state.am_map.m_x + state.am_map.m_w;
+    state.am_map.m_y2 = state.am_map.m_y + state.am_map.m_h;
 }
 pub unsafe fn AM_initVariables() {
     let mut pnum: i32 = 0;
@@ -688,7 +688,7 @@ pub unsafe fn AM_initVariables() {
         ((*(*unsafe { game_state() }.am_map.plr).mo).x as i32 - unsafe { game_state() }.am_map.m_w as i32 / 2 as i32) as fixed_t;
     unsafe { game_state() }.am_map.m_y =
         ((*(*unsafe { game_state() }.am_map.plr).mo).y as i32 - unsafe { game_state() }.am_map.m_h as i32 / 2 as i32) as fixed_t;
-    AM_changeWindowLoc();
+    AM_changeWindowLoc(unsafe { game_state() });
     unsafe { game_state() }.am_map.old_m_x = unsafe { game_state() }.am_map.m_x;
     unsafe { game_state() }.am_map.old_m_y = unsafe { game_state() }.am_map.m_y;
     unsafe { game_state() }.am_map.old_m_w = unsafe { game_state() }.am_map.m_w;
@@ -784,15 +784,15 @@ pub unsafe fn AM_Start() {
     AM_initVariables();
     AM_loadPics();
 }
-pub unsafe fn AM_minOutWindowScale() {
-    unsafe { game_state() }.am_map.scale_mtof = unsafe { game_state() }.am_map.min_scale_mtof;
-    unsafe { game_state() }.am_map.scale_ftom = FixedDiv(FRACUNIT, unsafe { game_state() }.am_map.scale_mtof);
-    AM_activateNewScale();
+pub unsafe fn AM_minOutWindowScale(state: &mut GameState) {
+    state.am_map.scale_mtof = state.am_map.min_scale_mtof;
+    state.am_map.scale_ftom = FixedDiv(FRACUNIT, state.am_map.scale_mtof);
+    AM_activateNewScale(state);
 }
-pub unsafe fn AM_maxOutWindowScale() {
-    unsafe { game_state() }.am_map.scale_mtof = unsafe { game_state() }.am_map.max_scale_mtof;
-    unsafe { game_state() }.am_map.scale_ftom = FixedDiv(FRACUNIT, unsafe { game_state() }.am_map.scale_mtof);
-    AM_activateNewScale();
+pub unsafe fn AM_maxOutWindowScale(state: &mut GameState) {
+    state.am_map.scale_mtof = state.am_map.max_scale_mtof;
+    state.am_map.scale_ftom = FixedDiv(FRACUNIT, state.am_map.scale_mtof);
+    AM_activateNewScale(state);
 }
 pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
     let mut rc: i32 = 0;
@@ -848,7 +848,7 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
                 (unsafe { game_state() }.am_map.am_responder_bigstate == 0) as i32;
             if unsafe { game_state() }.am_map.am_responder_bigstate != 0 {
                 AM_saveScaleAndLoc();
-                AM_minOutWindowScale();
+                AM_minOutWindowScale(unsafe { game_state() });
             } else {
                 AM_restoreScaleAndLoc();
             }
@@ -928,37 +928,37 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
     }
     return rc != 0;
 }
-pub unsafe fn AM_changeWindowScale() {
-    unsafe { game_state() }.am_map.scale_mtof = FixedMul(unsafe { game_state() }.am_map.scale_mtof, unsafe { game_state() }.am_map.mtof_zoommul);
-    unsafe { game_state() }.am_map.scale_ftom = FixedDiv(FRACUNIT, unsafe { game_state() }.am_map.scale_mtof);
-    if unsafe { game_state() }.am_map.scale_mtof < unsafe { game_state() }.am_map.min_scale_mtof {
-        AM_minOutWindowScale();
-    } else if unsafe { game_state() }.am_map.scale_mtof > unsafe { game_state() }.am_map.max_scale_mtof {
-        AM_maxOutWindowScale();
+pub unsafe fn AM_changeWindowScale(state: &mut GameState) {
+    state.am_map.scale_mtof = FixedMul(state.am_map.scale_mtof, state.am_map.mtof_zoommul);
+    state.am_map.scale_ftom = FixedDiv(FRACUNIT, state.am_map.scale_mtof);
+    if state.am_map.scale_mtof < state.am_map.min_scale_mtof {
+        AM_minOutWindowScale(state);
+    } else if state.am_map.scale_mtof > state.am_map.max_scale_mtof {
+        AM_maxOutWindowScale(state);
     } else {
-        AM_activateNewScale();
+        AM_activateNewScale(state);
     };
 }
-pub unsafe fn AM_doFollowPlayer() {
-    if unsafe { game_state() }.am_map.f_oldloc.x != (*(*unsafe { game_state() }.am_map.plr).mo).x
-        || unsafe { game_state() }.am_map.f_oldloc.y != (*(*unsafe { game_state() }.am_map.plr).mo).y
+pub unsafe fn AM_doFollowPlayer(state: &mut GameState) {
+    if state.am_map.f_oldloc.x != (*(*state.am_map.plr).mo).x
+        || state.am_map.f_oldloc.y != (*(*state.am_map.plr).mo).y
     {
-        unsafe { game_state() }.am_map.m_x = (FixedMul(
-            (FixedMul((*(*unsafe { game_state() }.am_map.plr).mo).x, unsafe { game_state() }.am_map.scale_mtof) >> 16 as i32)
+        state.am_map.m_x = (FixedMul(
+            (FixedMul((*(*state.am_map.plr).mo).x, state.am_map.scale_mtof) >> 16 as i32)
                 << 16 as i32,
-            unsafe { game_state() }.am_map.scale_ftom,
+            state.am_map.scale_ftom,
         ) as i32
-            - unsafe { game_state() }.am_map.m_w as i32 / 2 as i32) as fixed_t;
-        unsafe { game_state() }.am_map.m_y = (FixedMul(
-            (FixedMul((*(*unsafe { game_state() }.am_map.plr).mo).y, unsafe { game_state() }.am_map.scale_mtof) >> 16 as i32)
+            - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
+        state.am_map.m_y = (FixedMul(
+            (FixedMul((*(*state.am_map.plr).mo).y, state.am_map.scale_mtof) >> 16 as i32)
                 << 16 as i32,
-            unsafe { game_state() }.am_map.scale_ftom,
+            state.am_map.scale_ftom,
         ) as i32
-            - unsafe { game_state() }.am_map.m_h as i32 / 2 as i32) as fixed_t;
-        unsafe { game_state() }.am_map.m_x2 = unsafe { game_state() }.am_map.m_x + unsafe { game_state() }.am_map.m_w;
-        unsafe { game_state() }.am_map.m_y2 = unsafe { game_state() }.am_map.m_y + unsafe { game_state() }.am_map.m_h;
-        unsafe { game_state() }.am_map.f_oldloc.x = (*(*unsafe { game_state() }.am_map.plr).mo).x;
-        unsafe { game_state() }.am_map.f_oldloc.y = (*(*unsafe { game_state() }.am_map.plr).mo).y;
+            - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
+        state.am_map.m_x2 = state.am_map.m_x + state.am_map.m_w;
+        state.am_map.m_y2 = state.am_map.m_y + state.am_map.m_h;
+        state.am_map.f_oldloc.x = (*(*state.am_map.plr).mo).x;
+        state.am_map.f_oldloc.y = (*(*state.am_map.plr).mo).y;
     }
 }
 pub unsafe fn AM_updateLightLev() {
@@ -980,19 +980,19 @@ pub unsafe fn AM_updateLightLev() {
             unsafe { game_state() }.am_map.amclock + 6 as i32 - unsafe { game_state() }.am_map.amclock % 6 as i32;
     }
 }
-pub unsafe fn AM_Ticker() {
-    if !unsafe { game_state() }.am_map.automapactive {
+pub unsafe fn AM_Ticker(state: &mut GameState) {
+    if !state.am_map.automapactive {
         return;
     }
-    unsafe { game_state() }.am_map.amclock += 1;
-    if unsafe { game_state() }.am_map.followplayer != 0 {
-        AM_doFollowPlayer();
+    state.am_map.amclock += 1;
+    if state.am_map.followplayer != 0 {
+        AM_doFollowPlayer(state);
     }
-    if unsafe { game_state() }.am_map.ftom_zoommul != FRACUNIT {
-        AM_changeWindowScale();
+    if state.am_map.ftom_zoommul != FRACUNIT {
+        AM_changeWindowScale(state);
     }
-    if unsafe { game_state() }.am_map.m_paninc.x != 0 || unsafe { game_state() }.am_map.m_paninc.y != 0 {
-        AM_changeWindowLoc();
+    if state.am_map.m_paninc.x != 0 || state.am_map.m_paninc.y != 0 {
+        AM_changeWindowLoc(state);
     }
 }
 pub unsafe fn AM_clearFB(state: &mut GameState, mut color: i32) {

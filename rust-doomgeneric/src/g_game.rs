@@ -1247,18 +1247,18 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
     match state.g_game.gamestate as u32 {
         0 => {
             P_Ticker(state);
-            ST_Ticker();
-            AM_Ticker();
+            ST_Ticker(state);
+            AM_Ticker(state);
             HU_Ticker();
         }
         1 => {
-            WI_Ticker();
+            WI_Ticker(state);
         }
         2 => {
             F_Ticker(state);
         }
         3 => {
-            D_PageTicker();
+            D_PageTicker(state);
         }
         _ => {}
     };
@@ -2353,7 +2353,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         if unsafe { game_state() }.g_game.singledemo {
             I_Quit();
         } else {
-            D_AdvanceDemo();
+            D_AdvanceDemo(unsafe { game_state() });
         }
         return true_0 as boolean;
     }
