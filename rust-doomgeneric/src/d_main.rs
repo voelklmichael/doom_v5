@@ -328,7 +328,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
     }
     if state.g_game.gamestate as u32 != state.d_main.wipegamestate as u32 {
         wipe = true;
-        wipe_StartScreen(0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
+        wipe_StartScreen(state, 0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
     } else {
         wipe = false;
     }
@@ -428,7 +428,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         I_FinishUpdate();
         return;
     }
-    wipe_EndScreen(0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
+    wipe_EndScreen(state, 0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
     wipestart = I_GetTime(&mut state.i_timer) - 1 as i32;
     loop {
         loop {
@@ -441,6 +441,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         }
         wipestart = nowtime;
         done = wipe_ScreenWipe(
+            state,
             wipe_Melt as i32,
             0 as i32,
             0 as i32,
