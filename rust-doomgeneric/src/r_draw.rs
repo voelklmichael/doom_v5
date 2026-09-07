@@ -2,7 +2,6 @@ use crate::src::d_mode::commercial;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
@@ -97,24 +96,24 @@ impl RDrawState {
 pub const SBARHEIGHT: i32 = 32;
 #[no_mangle]
 pub static translations: [[byte; 256]; 3] = [[0; 256]; 3];
-pub unsafe fn R_DrawColumn() {
+pub unsafe fn R_DrawColumn(state: &mut GameState) {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
-    count = unsafe { game_state() }.r_draw.dc_yh - unsafe { game_state() }.r_draw.dc_yl;
+    count = state.r_draw.dc_yh - state.r_draw.dc_yl;
     if count < 0 as i32 {
         return;
     }
-    if unsafe { game_state() }.r_draw.dc_x as u32 >= SCREENWIDTH as u32 || unsafe { game_state() }.r_draw.dc_yl < 0 as i32 || unsafe { game_state() }.r_draw.dc_yh >= SCREENHEIGHT {
-        I_Error(&format!("R_DrawColumn: {} to {} at {}", unsafe { game_state() }.r_draw.dc_yl, unsafe { game_state() }.r_draw.dc_yh, unsafe { game_state() }.r_draw.dc_x));
+    if state.r_draw.dc_x as u32 >= SCREENWIDTH as u32 || state.r_draw.dc_yl < 0 as i32 || state.r_draw.dc_yh >= SCREENHEIGHT {
+        I_Error(&format!("R_DrawColumn: {} to {} at {}", state.r_draw.dc_yl, state.r_draw.dc_yh, state.r_draw.dc_x));
     }
-    dest = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[unsafe { game_state() }.r_draw.dc_x as usize] as isize);
-    fracstep = unsafe { game_state() }.r_draw.dc_iscale;
-    frac = unsafe { game_state() }.r_draw.dc_texturemid + (unsafe { game_state() }.r_draw.dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
+    dest = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[state.r_draw.dc_x as usize] as isize);
+    fracstep = state.r_draw.dc_iscale;
+    frac = state.r_draw.dc_texturemid + (state.r_draw.dc_yl as fixed_t - state.r_main.centery as fixed_t) * fracstep;
     loop {
-        *dest = *unsafe { game_state() }.r_draw.dc_colormap
-            .offset(*unsafe { game_state() }.r_draw.dc_source.offset((frac as i32 >> FRACBITS & 127 as i32) as isize) as isize)
+        *dest = *state.r_draw.dc_colormap
+            .offset(*state.r_draw.dc_source.offset((frac as i32 >> FRACBITS & 127 as i32) as isize) as isize)
             as byte;
         dest = dest.offset(SCREENWIDTH as isize);
         frac += fracstep;
@@ -125,28 +124,28 @@ pub unsafe fn R_DrawColumn() {
         }
     }
 }
-pub unsafe fn R_DrawColumnLow() {
+pub unsafe fn R_DrawColumnLow(state: &mut GameState) {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
     let mut x: i32 = 0;
-    count = unsafe { game_state() }.r_draw.dc_yh - unsafe { game_state() }.r_draw.dc_yl;
+    count = state.r_draw.dc_yh - state.r_draw.dc_yl;
     if count < 0 as i32 {
         return;
     }
-    if unsafe { game_state() }.r_draw.dc_x as u32 >= SCREENWIDTH as u32 || unsafe { game_state() }.r_draw.dc_yl < 0 as i32 || unsafe { game_state() }.r_draw.dc_yh >= SCREENHEIGHT {
-        I_Error(&format!("R_DrawColumn: {} to {} at {}", unsafe { game_state() }.r_draw.dc_yl, unsafe { game_state() }.r_draw.dc_yh, unsafe { game_state() }.r_draw.dc_x));
+    if state.r_draw.dc_x as u32 >= SCREENWIDTH as u32 || state.r_draw.dc_yl < 0 as i32 || state.r_draw.dc_yh >= SCREENHEIGHT {
+        I_Error(&format!("R_DrawColumn: {} to {} at {}", state.r_draw.dc_yl, state.r_draw.dc_yh, state.r_draw.dc_x));
     }
-    x = unsafe { game_state() }.r_draw.dc_x << 1 as i32;
-    dest = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[x as usize] as isize);
-    dest2 = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[(x + 1 as i32) as usize] as isize);
-    fracstep = unsafe { game_state() }.r_draw.dc_iscale;
-    frac = unsafe { game_state() }.r_draw.dc_texturemid + (unsafe { game_state() }.r_draw.dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
+    x = state.r_draw.dc_x << 1 as i32;
+    dest = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[x as usize] as isize);
+    dest2 = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[(x + 1 as i32) as usize] as isize);
+    fracstep = state.r_draw.dc_iscale;
+    frac = state.r_draw.dc_texturemid + (state.r_draw.dc_yl as fixed_t - state.r_main.centery as fixed_t) * fracstep;
     loop {
-        *dest = *unsafe { game_state() }.r_draw.dc_colormap
-            .offset(*unsafe { game_state() }.r_draw.dc_source.offset((frac as i32 >> FRACBITS & 127 as i32) as isize) as isize)
+        *dest = *state.r_draw.dc_colormap
+            .offset(*state.r_draw.dc_source.offset((frac as i32 >> FRACBITS & 127 as i32) as isize) as isize)
             as byte;
         *dest2 = *dest;
         dest = dest.offset(SCREENWIDTH as isize);
@@ -169,38 +168,38 @@ pub static fuzzoffset: [i32; 50] = [
     -FUZZOFF, FUZZOFF, FUZZOFF, -FUZZOFF, -FUZZOFF, FUZZOFF, FUZZOFF, -FUZZOFF, -FUZZOFF, -FUZZOFF,
     -FUZZOFF, FUZZOFF, FUZZOFF, FUZZOFF, FUZZOFF, -FUZZOFF, FUZZOFF, FUZZOFF, -FUZZOFF, FUZZOFF,
 ];
-pub unsafe fn R_DrawFuzzColumn() {
+pub unsafe fn R_DrawFuzzColumn(state: &mut GameState) {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
-    if unsafe { game_state() }.r_draw.dc_yl == 0 {
-        unsafe { game_state() }.r_draw.dc_yl = 1 as i32;
+    if state.r_draw.dc_yl == 0 {
+        state.r_draw.dc_yl = 1 as i32;
     }
-    if unsafe { game_state() }.r_draw.dc_yh == unsafe { game_state() }.r_draw.viewheight - 1 as i32 {
-        unsafe { game_state() }.r_draw.dc_yh = unsafe { game_state() }.r_draw.viewheight - 2 as i32;
+    if state.r_draw.dc_yh == state.r_draw.viewheight - 1 as i32 {
+        state.r_draw.dc_yh = state.r_draw.viewheight - 2 as i32;
     }
-    count = unsafe { game_state() }.r_draw.dc_yh - unsafe { game_state() }.r_draw.dc_yl;
+    count = state.r_draw.dc_yh - state.r_draw.dc_yl;
     if count < 0 as i32 {
         return;
     }
-    if unsafe { game_state() }.r_draw.dc_x as u32 >= SCREENWIDTH as u32 || unsafe { game_state() }.r_draw.dc_yl < 0 as i32 || unsafe { game_state() }.r_draw.dc_yh >= SCREENHEIGHT {
+    if state.r_draw.dc_x as u32 >= SCREENWIDTH as u32 || state.r_draw.dc_yl < 0 as i32 || state.r_draw.dc_yh >= SCREENHEIGHT {
         I_Error(&format!(
             "R_DrawFuzzColumn: {} to {} at {}",
-            unsafe { game_state() }.r_draw.dc_yl, unsafe { game_state() }.r_draw.dc_yh, unsafe { game_state() }.r_draw.dc_x
+            state.r_draw.dc_yl, state.r_draw.dc_yh, state.r_draw.dc_x
         ));
     }
-    dest = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[unsafe { game_state() }.r_draw.dc_x as usize] as isize);
-    fracstep = unsafe { game_state() }.r_draw.dc_iscale;
-    frac = unsafe { game_state() }.r_draw.dc_texturemid + (unsafe { game_state() }.r_draw.dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
+    dest = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[state.r_draw.dc_x as usize] as isize);
+    fracstep = state.r_draw.dc_iscale;
+    frac = state.r_draw.dc_texturemid + (state.r_draw.dc_yl as fixed_t - state.r_main.centery as fixed_t) * fracstep;
     loop {
-        *dest = *unsafe { game_state() }.r_data.colormaps.offset(
-            (6 as i32 * 256 as i32 + *dest.offset(fuzzoffset[unsafe { game_state() }.r_draw.fuzzpos as usize] as isize) as i32)
+        *dest = *state.r_data.colormaps.offset(
+            (6 as i32 * 256 as i32 + *dest.offset(fuzzoffset[state.r_draw.fuzzpos as usize] as isize) as i32)
                 as isize,
         ) as byte;
-        unsafe { game_state() }.r_draw.fuzzpos += 1;
-        if unsafe { game_state() }.r_draw.fuzzpos == FUZZTABLE {
-            unsafe { game_state() }.r_draw.fuzzpos = 0 as i32;
+        state.r_draw.fuzzpos += 1;
+        if state.r_draw.fuzzpos == FUZZTABLE {
+            state.r_draw.fuzzpos = 0 as i32;
         }
         dest = dest.offset(SCREENWIDTH as isize);
         frac += fracstep;
@@ -211,46 +210,46 @@ pub unsafe fn R_DrawFuzzColumn() {
         }
     }
 }
-pub unsafe fn R_DrawFuzzColumnLow() {
+pub unsafe fn R_DrawFuzzColumnLow(state: &mut GameState) {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
     let mut x: i32 = 0;
-    if unsafe { game_state() }.r_draw.dc_yl == 0 {
-        unsafe { game_state() }.r_draw.dc_yl = 1 as i32;
+    if state.r_draw.dc_yl == 0 {
+        state.r_draw.dc_yl = 1 as i32;
     }
-    if unsafe { game_state() }.r_draw.dc_yh == unsafe { game_state() }.r_draw.viewheight - 1 as i32 {
-        unsafe { game_state() }.r_draw.dc_yh = unsafe { game_state() }.r_draw.viewheight - 2 as i32;
+    if state.r_draw.dc_yh == state.r_draw.viewheight - 1 as i32 {
+        state.r_draw.dc_yh = state.r_draw.viewheight - 2 as i32;
     }
-    count = unsafe { game_state() }.r_draw.dc_yh - unsafe { game_state() }.r_draw.dc_yl;
+    count = state.r_draw.dc_yh - state.r_draw.dc_yl;
     if count < 0 as i32 {
         return;
     }
-    x = unsafe { game_state() }.r_draw.dc_x << 1 as i32;
-    if x as u32 >= SCREENWIDTH as u32 || unsafe { game_state() }.r_draw.dc_yl < 0 as i32 || unsafe { game_state() }.r_draw.dc_yh >= SCREENHEIGHT {
+    x = state.r_draw.dc_x << 1 as i32;
+    if x as u32 >= SCREENWIDTH as u32 || state.r_draw.dc_yl < 0 as i32 || state.r_draw.dc_yh >= SCREENHEIGHT {
         I_Error(&format!(
             "R_DrawFuzzColumn: {} to {} at {}",
-            unsafe { game_state() }.r_draw.dc_yl, unsafe { game_state() }.r_draw.dc_yh, unsafe { game_state() }.r_draw.dc_x
+            state.r_draw.dc_yl, state.r_draw.dc_yh, state.r_draw.dc_x
         ));
     }
-    dest = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[x as usize] as isize);
-    dest2 = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[(x + 1 as i32) as usize] as isize);
-    fracstep = unsafe { game_state() }.r_draw.dc_iscale;
-    frac = unsafe { game_state() }.r_draw.dc_texturemid + (unsafe { game_state() }.r_draw.dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
+    dest = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[x as usize] as isize);
+    dest2 = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[(x + 1 as i32) as usize] as isize);
+    fracstep = state.r_draw.dc_iscale;
+    frac = state.r_draw.dc_texturemid + (state.r_draw.dc_yl as fixed_t - state.r_main.centery as fixed_t) * fracstep;
     loop {
-        *dest = *unsafe { game_state() }.r_data.colormaps.offset(
-            (6 as i32 * 256 as i32 + *dest.offset(fuzzoffset[unsafe { game_state() }.r_draw.fuzzpos as usize] as isize) as i32)
+        *dest = *state.r_data.colormaps.offset(
+            (6 as i32 * 256 as i32 + *dest.offset(fuzzoffset[state.r_draw.fuzzpos as usize] as isize) as i32)
                 as isize,
         ) as byte;
-        *dest2 = *unsafe { game_state() }.r_data.colormaps.offset(
-            (6 as i32 * 256 as i32 + *dest2.offset(fuzzoffset[unsafe { game_state() }.r_draw.fuzzpos as usize] as isize) as i32)
+        *dest2 = *state.r_data.colormaps.offset(
+            (6 as i32 * 256 as i32 + *dest2.offset(fuzzoffset[state.r_draw.fuzzpos as usize] as isize) as i32)
                 as isize,
         ) as byte;
-        unsafe { game_state() }.r_draw.fuzzpos += 1;
-        if unsafe { game_state() }.r_draw.fuzzpos == FUZZTABLE {
-            unsafe { game_state() }.r_draw.fuzzpos = 0 as i32;
+        state.r_draw.fuzzpos += 1;
+        if state.r_draw.fuzzpos == FUZZTABLE {
+            state.r_draw.fuzzpos = 0 as i32;
         }
         dest = dest.offset(SCREENWIDTH as isize);
         dest2 = dest2.offset(SCREENWIDTH as isize);
@@ -262,24 +261,24 @@ pub unsafe fn R_DrawFuzzColumnLow() {
         }
     }
 }
-pub unsafe fn R_DrawTranslatedColumn() {
+pub unsafe fn R_DrawTranslatedColumn(state: &mut GameState) {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
-    count = unsafe { game_state() }.r_draw.dc_yh - unsafe { game_state() }.r_draw.dc_yl;
+    count = state.r_draw.dc_yh - state.r_draw.dc_yl;
     if count < 0 as i32 {
         return;
     }
-    if unsafe { game_state() }.r_draw.dc_x as u32 >= SCREENWIDTH as u32 || unsafe { game_state() }.r_draw.dc_yl < 0 as i32 || unsafe { game_state() }.r_draw.dc_yh >= SCREENHEIGHT {
-        I_Error(&format!("R_DrawColumn: {} to {} at {}", unsafe { game_state() }.r_draw.dc_yl, unsafe { game_state() }.r_draw.dc_yh, unsafe { game_state() }.r_draw.dc_x));
+    if state.r_draw.dc_x as u32 >= SCREENWIDTH as u32 || state.r_draw.dc_yl < 0 as i32 || state.r_draw.dc_yh >= SCREENHEIGHT {
+        I_Error(&format!("R_DrawColumn: {} to {} at {}", state.r_draw.dc_yl, state.r_draw.dc_yh, state.r_draw.dc_x));
     }
-    dest = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[unsafe { game_state() }.r_draw.dc_x as usize] as isize);
-    fracstep = unsafe { game_state() }.r_draw.dc_iscale;
-    frac = unsafe { game_state() }.r_draw.dc_texturemid + (unsafe { game_state() }.r_draw.dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
+    dest = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[state.r_draw.dc_x as usize] as isize);
+    fracstep = state.r_draw.dc_iscale;
+    frac = state.r_draw.dc_texturemid + (state.r_draw.dc_yl as fixed_t - state.r_main.centery as fixed_t) * fracstep;
     loop {
-        *dest = *unsafe { game_state() }.r_draw.dc_colormap.offset(
-            *unsafe { game_state() }.r_draw.dc_translation.offset(*unsafe { game_state() }.r_draw.dc_source.offset((frac >> FRACBITS) as isize) as isize)
+        *dest = *state.r_draw.dc_colormap.offset(
+            *state.r_draw.dc_translation.offset(*state.r_draw.dc_source.offset((frac >> FRACBITS) as isize) as isize)
                 as isize,
         ) as byte;
         dest = dest.offset(SCREENWIDTH as isize);
@@ -291,32 +290,32 @@ pub unsafe fn R_DrawTranslatedColumn() {
         }
     }
 }
-pub unsafe fn R_DrawTranslatedColumnLow() {
+pub unsafe fn R_DrawTranslatedColumnLow(state: &mut GameState) {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut frac: fixed_t = 0;
     let mut fracstep: fixed_t = 0;
     let mut x: i32 = 0;
-    count = unsafe { game_state() }.r_draw.dc_yh - unsafe { game_state() }.r_draw.dc_yl;
+    count = state.r_draw.dc_yh - state.r_draw.dc_yl;
     if count < 0 as i32 {
         return;
     }
-    x = unsafe { game_state() }.r_draw.dc_x << 1 as i32;
-    if x as u32 >= SCREENWIDTH as u32 || unsafe { game_state() }.r_draw.dc_yl < 0 as i32 || unsafe { game_state() }.r_draw.dc_yh >= SCREENHEIGHT {
-        I_Error(&format!("R_DrawColumn: {} to {} at {}", unsafe { game_state() }.r_draw.dc_yl, unsafe { game_state() }.r_draw.dc_yh, x));
+    x = state.r_draw.dc_x << 1 as i32;
+    if x as u32 >= SCREENWIDTH as u32 || state.r_draw.dc_yl < 0 as i32 || state.r_draw.dc_yh >= SCREENHEIGHT {
+        I_Error(&format!("R_DrawColumn: {} to {} at {}", state.r_draw.dc_yl, state.r_draw.dc_yh, x));
     }
-    dest = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[x as usize] as isize);
-    dest2 = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.dc_yl as usize].offset(unsafe { game_state() }.r_draw.columnofs[(x + 1 as i32) as usize] as isize);
-    fracstep = unsafe { game_state() }.r_draw.dc_iscale;
-    frac = unsafe { game_state() }.r_draw.dc_texturemid + (unsafe { game_state() }.r_draw.dc_yl as fixed_t - unsafe { game_state() }.r_main.centery as fixed_t) * fracstep;
+    dest = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[x as usize] as isize);
+    dest2 = state.r_draw.ylookup[state.r_draw.dc_yl as usize].offset(state.r_draw.columnofs[(x + 1 as i32) as usize] as isize);
+    fracstep = state.r_draw.dc_iscale;
+    frac = state.r_draw.dc_texturemid + (state.r_draw.dc_yl as fixed_t - state.r_main.centery as fixed_t) * fracstep;
     loop {
-        *dest = *unsafe { game_state() }.r_draw.dc_colormap.offset(
-            *unsafe { game_state() }.r_draw.dc_translation.offset(*unsafe { game_state() }.r_draw.dc_source.offset((frac >> FRACBITS) as isize) as isize)
+        *dest = *state.r_draw.dc_colormap.offset(
+            *state.r_draw.dc_translation.offset(*state.r_draw.dc_source.offset((frac >> FRACBITS) as isize) as isize)
                 as isize,
         ) as byte;
-        *dest2 = *unsafe { game_state() }.r_draw.dc_colormap.offset(
-            *unsafe { game_state() }.r_draw.dc_translation.offset(*unsafe { game_state() }.r_draw.dc_source.offset((frac >> FRACBITS) as isize) as isize)
+        *dest2 = *state.r_draw.dc_colormap.offset(
+            *state.r_draw.dc_translation.offset(*state.r_draw.dc_source.offset((frac >> FRACBITS) as isize) as isize)
                 as isize,
         ) as byte;
         dest = dest.offset(SCREENWIDTH as isize);
@@ -329,10 +328,10 @@ pub unsafe fn R_DrawTranslatedColumnLow() {
         }
     }
 }
-pub unsafe fn R_InitTranslationTables() {
+pub unsafe fn R_InitTranslationTables(state: &mut GameState) {
     let mut i: i32 = 0;
-    unsafe { game_state() }.r_draw.translationtables = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+    state.r_draw.translationtables = Z_Malloc(
+        &mut state.z_zone,
         256 as i32 * 3 as i32,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -340,22 +339,22 @@ pub unsafe fn R_InitTranslationTables() {
     i = 0 as i32;
     while i < 256 as i32 {
         if i >= 0x70 as i32 && i <= 0x7f as i32 {
-            *unsafe { game_state() }.r_draw.translationtables.offset(i as isize) = (0x60 as i32 + (i & 0xf as i32)) as byte;
-            *unsafe { game_state() }.r_draw.translationtables.offset((i + 256 as i32) as isize) =
+            *state.r_draw.translationtables.offset(i as isize) = (0x60 as i32 + (i & 0xf as i32)) as byte;
+            *state.r_draw.translationtables.offset((i + 256 as i32) as isize) =
                 (0x40 as i32 + (i & 0xf as i32)) as byte;
-            *unsafe { game_state() }.r_draw.translationtables.offset((i + 512 as i32) as isize) =
+            *state.r_draw.translationtables.offset((i + 512 as i32) as isize) =
                 (0x20 as i32 + (i & 0xf as i32)) as byte;
         } else {
-            let ref mut fresh11 = *unsafe { game_state() }.r_draw.translationtables.offset((i + 512 as i32) as isize);
+            let ref mut fresh11 = *state.r_draw.translationtables.offset((i + 512 as i32) as isize);
             *fresh11 = i as byte;
-            let ref mut fresh12 = *unsafe { game_state() }.r_draw.translationtables.offset((i + 256 as i32) as isize);
+            let ref mut fresh12 = *state.r_draw.translationtables.offset((i + 256 as i32) as isize);
             *fresh12 = *fresh11;
-            *unsafe { game_state() }.r_draw.translationtables.offset(i as isize) = *fresh12;
+            *state.r_draw.translationtables.offset(i as isize) = *fresh12;
         }
         i += 1;
     }
 }
-pub unsafe fn R_DrawSpan() {
+pub unsafe fn R_DrawSpan(state: &mut GameState) {
     let mut position: u32 = 0;
     let mut step: u32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -363,26 +362,26 @@ pub unsafe fn R_DrawSpan() {
     let mut spot: i32 = 0;
     let mut xtemp: u32 = 0;
     let mut ytemp: u32 = 0;
-    if unsafe { game_state() }.r_draw.ds_x2 < unsafe { game_state() }.r_draw.ds_x1
-        || unsafe { game_state() }.r_draw.ds_x1 < 0 as i32
-        || unsafe { game_state() }.r_draw.ds_x2 >= SCREENWIDTH
-        || unsafe { game_state() }.r_draw.ds_y as u32 > SCREENHEIGHT as u32
+    if state.r_draw.ds_x2 < state.r_draw.ds_x1
+        || state.r_draw.ds_x1 < 0 as i32
+        || state.r_draw.ds_x2 >= SCREENWIDTH
+        || state.r_draw.ds_y as u32 > SCREENHEIGHT as u32
     {
-        I_Error(&format!("R_DrawSpan: {} to {} at {}", unsafe { game_state() }.r_draw.ds_x1, unsafe { game_state() }.r_draw.ds_x2, unsafe { game_state() }.r_draw.ds_y));
+        I_Error(&format!("R_DrawSpan: {} to {} at {}", state.r_draw.ds_x1, state.r_draw.ds_x2, state.r_draw.ds_y));
     }
-    position = (unsafe { game_state() }.r_draw.ds_xfrac << 10 as i32) as u32 & 0xffff0000 as u32
-        | (unsafe { game_state() }.r_draw.ds_yfrac as i32 >> 6 as i32 & 0xffff as i32) as u32;
-    step = (unsafe { game_state() }.r_draw.ds_xstep << 10 as i32) as u32 & 0xffff0000 as u32
-        | (unsafe { game_state() }.r_draw.ds_ystep as i32 >> 6 as i32 & 0xffff as i32) as u32;
-    dest = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.ds_y as usize].offset(unsafe { game_state() }.r_draw.columnofs[unsafe { game_state() }.r_draw.ds_x1 as usize] as isize);
-    count = unsafe { game_state() }.r_draw.ds_x2 - unsafe { game_state() }.r_draw.ds_x1;
+    position = (state.r_draw.ds_xfrac << 10 as i32) as u32 & 0xffff0000 as u32
+        | (state.r_draw.ds_yfrac as i32 >> 6 as i32 & 0xffff as i32) as u32;
+    step = (state.r_draw.ds_xstep << 10 as i32) as u32 & 0xffff0000 as u32
+        | (state.r_draw.ds_ystep as i32 >> 6 as i32 & 0xffff as i32) as u32;
+    dest = state.r_draw.ylookup[state.r_draw.ds_y as usize].offset(state.r_draw.columnofs[state.r_draw.ds_x1 as usize] as isize);
+    count = state.r_draw.ds_x2 - state.r_draw.ds_x1;
     loop {
         ytemp = position >> 4 as i32 & 0xfc0 as u32;
         xtemp = position >> 26 as i32;
         spot = (xtemp | ytemp) as i32;
         let fresh6 = dest;
         dest = dest.offset(1);
-        *fresh6 = *unsafe { game_state() }.r_draw.ds_colormap.offset(*unsafe { game_state() }.r_draw.ds_source.offset(spot as isize) as isize) as byte;
+        *fresh6 = *state.r_draw.ds_colormap.offset(*state.r_draw.ds_source.offset(spot as isize) as isize) as byte;
         position = position.wrapping_add(step);
         let fresh7 = count;
         count = count - 1;
@@ -391,7 +390,7 @@ pub unsafe fn R_DrawSpan() {
         }
     }
 }
-pub unsafe fn R_DrawSpanLow() {
+pub unsafe fn R_DrawSpanLow(state: &mut GameState) {
     let mut position: u32 = 0;
     let mut step: u32 = 0;
     let mut xtemp: u32 = 0;
@@ -399,31 +398,31 @@ pub unsafe fn R_DrawSpanLow() {
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut count: i32 = 0;
     let mut spot: i32 = 0;
-    if unsafe { game_state() }.r_draw.ds_x2 < unsafe { game_state() }.r_draw.ds_x1
-        || unsafe { game_state() }.r_draw.ds_x1 < 0 as i32
-        || unsafe { game_state() }.r_draw.ds_x2 >= SCREENWIDTH
-        || unsafe { game_state() }.r_draw.ds_y as u32 > SCREENHEIGHT as u32
+    if state.r_draw.ds_x2 < state.r_draw.ds_x1
+        || state.r_draw.ds_x1 < 0 as i32
+        || state.r_draw.ds_x2 >= SCREENWIDTH
+        || state.r_draw.ds_y as u32 > SCREENHEIGHT as u32
     {
-        I_Error(&format!("R_DrawSpan: {} to {} at {}", unsafe { game_state() }.r_draw.ds_x1, unsafe { game_state() }.r_draw.ds_x2, unsafe { game_state() }.r_draw.ds_y));
+        I_Error(&format!("R_DrawSpan: {} to {} at {}", state.r_draw.ds_x1, state.r_draw.ds_x2, state.r_draw.ds_y));
     }
-    position = (unsafe { game_state() }.r_draw.ds_xfrac << 10 as i32) as u32 & 0xffff0000 as u32
-        | (unsafe { game_state() }.r_draw.ds_yfrac as i32 >> 6 as i32 & 0xffff as i32) as u32;
-    step = (unsafe { game_state() }.r_draw.ds_xstep << 10 as i32) as u32 & 0xffff0000 as u32
-        | (unsafe { game_state() }.r_draw.ds_ystep as i32 >> 6 as i32 & 0xffff as i32) as u32;
-    count = unsafe { game_state() }.r_draw.ds_x2 - unsafe { game_state() }.r_draw.ds_x1;
-    unsafe { game_state() }.r_draw.ds_x1 <<= 1 as i32;
-    unsafe { game_state() }.r_draw.ds_x2 <<= 1 as i32;
-    dest = unsafe { game_state() }.r_draw.ylookup[unsafe { game_state() }.r_draw.ds_y as usize].offset(unsafe { game_state() }.r_draw.columnofs[unsafe { game_state() }.r_draw.ds_x1 as usize] as isize);
+    position = (state.r_draw.ds_xfrac << 10 as i32) as u32 & 0xffff0000 as u32
+        | (state.r_draw.ds_yfrac as i32 >> 6 as i32 & 0xffff as i32) as u32;
+    step = (state.r_draw.ds_xstep << 10 as i32) as u32 & 0xffff0000 as u32
+        | (state.r_draw.ds_ystep as i32 >> 6 as i32 & 0xffff as i32) as u32;
+    count = state.r_draw.ds_x2 - state.r_draw.ds_x1;
+    state.r_draw.ds_x1 <<= 1 as i32;
+    state.r_draw.ds_x2 <<= 1 as i32;
+    dest = state.r_draw.ylookup[state.r_draw.ds_y as usize].offset(state.r_draw.columnofs[state.r_draw.ds_x1 as usize] as isize);
     loop {
         ytemp = position >> 4 as i32 & 0xfc0 as u32;
         xtemp = position >> 26 as i32;
         spot = (xtemp | ytemp) as i32;
         let fresh8 = dest;
         dest = dest.offset(1);
-        *fresh8 = *unsafe { game_state() }.r_draw.ds_colormap.offset(*unsafe { game_state() }.r_draw.ds_source.offset(spot as isize) as isize) as byte;
+        *fresh8 = *state.r_draw.ds_colormap.offset(*state.r_draw.ds_source.offset(spot as isize) as isize) as byte;
         let fresh9 = dest;
         dest = dest.offset(1);
-        *fresh9 = *unsafe { game_state() }.r_draw.ds_colormap.offset(*unsafe { game_state() }.r_draw.ds_source.offset(spot as isize) as isize) as byte;
+        *fresh9 = *state.r_draw.ds_colormap.offset(*state.r_draw.ds_source.offset(spot as isize) as isize) as byte;
         position = position.wrapping_add(step);
         let fresh10 = count;
         count = count - 1;

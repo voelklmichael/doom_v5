@@ -451,7 +451,7 @@ pub unsafe fn R_DrawMaskedColumn(state: &mut GameState, mut column: *mut column_
             state.r_draw.dc_source = (column as *mut byte).offset(3 as i32 as isize);
             state.r_draw.dc_texturemid =
                 (basetexturemid as i32 - (((*column).topdelta as i32) << FRACBITS)) as fixed_t;
-            state.r_main.colfunc.expect("non-null function pointer")();
+            state.r_main.colfunc.expect("non-null function pointer")(state);
         }
         column = (column as *mut byte)
             .offset((*column).length as i32 as isize)

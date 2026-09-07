@@ -132,7 +132,7 @@ pub unsafe fn R_MapPlane(state: &mut GameState, mut y: i32, mut x1: i32, mut x2:
     state.r_draw.ds_y = y;
     state.r_draw.ds_x1 = x1;
     state.r_draw.ds_x2 = x2;
-    state.r_main.spanfunc.expect("non-null function pointer")();
+    state.r_main.spanfunc.expect("non-null function pointer")(state);
 }
 pub unsafe fn R_ClearPlanes(state: &mut GameState) {
     let mut i: i32 = 0;
@@ -310,7 +310,7 @@ pub unsafe fn R_DrawPlanes(state: &mut GameState) {
                             >> ANGLETOSKYSHIFT) as i32;
                         state.r_draw.dc_x = x;
                         state.r_draw.dc_source = R_GetColumn(state.r_sky.skytexture, angle);
-                        state.r_main.colfunc.expect("non-null function pointer")();
+                        state.r_main.colfunc.expect("non-null function pointer")(state);
                     }
                     x += 1;
                 }
