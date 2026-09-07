@@ -1690,18 +1690,18 @@ pub unsafe fn G_DoCompleted() {
     );
     WI_Start(&raw mut unsafe { game_state() }.g_game.wminfo);
 }
-pub unsafe fn G_WorldDone() {
-    unsafe { game_state() }.g_game.gameaction = ga_worlddone;
-    if unsafe { game_state() }.g_game.secretexit {
-        unsafe { game_state() }.g_game.players
-            [unsafe { game_state() }.g_game.consoleplayer as usize]
+pub unsafe fn G_WorldDone(state: &mut GameState) {
+    state.g_game.gameaction = ga_worlddone;
+    if state.g_game.secretexit {
+        state.g_game.players
+            [state.g_game.consoleplayer as usize]
             .didsecret = true;
     }
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32 {
+    if state.doomstat.gamemode as u32 == commercial as u32 {
         let mut current_block_3: u64;
-        match unsafe { game_state() }.g_game.gamemap {
+        match state.g_game.gamemap {
             15 | 31 => {
-                if !unsafe { game_state() }.g_game.secretexit {
+                if !state.g_game.secretexit {
                     current_block_3 = 6937071982253665452;
                 } else {
                     current_block_3 = 9744923308842414524;
@@ -1716,7 +1716,7 @@ pub unsafe fn G_WorldDone() {
         }
         match current_block_3 {
             9744923308842414524 => {
-                F_StartFinale(unsafe { game_state() });
+                F_StartFinale(state);
             }
             _ => {}
         }
