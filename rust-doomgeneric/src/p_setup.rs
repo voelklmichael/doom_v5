@@ -2,16 +2,6 @@ use crate::src::d_mode::commercial;
 use crate::src::d_mode::skill_t;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
-use crate::src::g_game::bodyqueslot;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::players;
-use crate::src::g_game::precache;
-use crate::src::g_game::totalitems;
-use crate::src::g_game::totalkills;
-use crate::src::g_game::totalsecret;
-use crate::src::g_game::wminfo;
 use crate::src::g_game::G_DeathMatchSpawnPlayer;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_GetMemoryValue;
@@ -860,19 +850,22 @@ pub unsafe fn P_SetupLevel(
     let mut i: i32 = 0;
     let mut lumpname: [::core::ffi::c_char; 9] = [0; 9];
     let mut lumpnum: i32 = 0;
-    wminfo.maxfrags = 0 as i32;
-    totalsecret = wminfo.maxfrags;
-    totalitems = totalsecret;
-    totalkills = totalitems;
-    wminfo.partime = 180 as i32;
+    unsafe { game_state() }.g_game.wminfo.maxfrags = 0 as i32;
+    unsafe { game_state() }.g_game.totalsecret = unsafe { game_state() }.g_game.wminfo.maxfrags;
+    unsafe { game_state() }.g_game.totalitems = unsafe { game_state() }.g_game.totalsecret;
+    unsafe { game_state() }.g_game.totalkills = unsafe { game_state() }.g_game.totalitems;
+    unsafe { game_state() }.g_game.wminfo.partime = 180 as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        players[i as usize].itemcount = 0 as i32;
-        players[i as usize].secretcount = players[i as usize].itemcount;
-        players[i as usize].killcount = players[i as usize].secretcount;
+        unsafe { game_state() }.g_game.players[i as usize].itemcount = 0 as i32;
+        unsafe { game_state() }.g_game.players[i as usize].secretcount =
+            unsafe { game_state() }.g_game.players[i as usize].itemcount;
+        unsafe { game_state() }.g_game.players[i as usize].killcount =
+            unsafe { game_state() }.g_game.players[i as usize].secretcount;
         i += 1;
     }
-    players[consoleplayer as usize].viewz = 1 as i32 as fixed_t;
+    unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
+        .viewz = 1 as i32 as fixed_t;
     S_Start(unsafe { &mut game_state().sounds });
     Z_FreeTags(
         unsafe { &mut game_state().z_zone },
@@ -917,14 +910,15 @@ pub unsafe fn P_SetupLevel(
     P_LoadSegs(lumpnum + ML_SEGS as i32);
     P_GroupLines();
     P_LoadReject(lumpnum + ML_REJECT as i32);
-    bodyqueslot = 0 as i32;
+    unsafe { game_state() }.g_game.bodyqueslot = 0 as i32;
     deathmatch_p = &raw mut deathmatchstarts as *mut mapthing_t;
     P_LoadThings(lumpnum + ML_THINGS as i32);
-    if deathmatch != 0 {
+    if unsafe { game_state() }.g_game.deathmatch != 0 {
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if playeringame[i as usize] != 0 {
-                players[i as usize].mo = ::core::ptr::null_mut::<mobj_t>();
+            if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
+                unsafe { game_state() }.g_game.players[i as usize].mo =
+                    ::core::ptr::null_mut::<mobj_t>();
                 G_DeathMatchSpawnPlayer(i);
             }
             i += 1;
@@ -934,7 +928,7 @@ pub unsafe fn P_SetupLevel(
     gs.p_mobj.iquetail = 0 as i32;
     gs.p_mobj.iquehead = gs.p_mobj.iquetail;
     P_SpawnSpecials(&mut gs.p_switch, &mut gs.p_plats, &mut gs.p_ceilng);
-    if precache {
+    if unsafe { game_state() }.g_game.precache {
         R_PrecacheLevel();
     }
 }

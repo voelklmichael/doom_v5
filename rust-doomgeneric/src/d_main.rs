@@ -33,27 +33,6 @@ use crate::src::f_finale::F_Drawer;
 use crate::src::f_wipe::wipe_EndScreen;
 use crate::src::f_wipe::wipe_ScreenWipe;
 use crate::src::f_wipe::wipe_StartScreen;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::demoplayback;
-use crate::src::g_game::demorecording;
-use crate::src::g_game::displayplayer;
-use crate::src::g_game::forwardmove;
-use crate::src::g_game::gameaction;
-use crate::src::g_game::gamestate;
-use crate::src::g_game::netgame;
-use crate::src::g_game::nodrawers;
-use crate::src::g_game::paused;
-use crate::src::g_game::players;
-use crate::src::g_game::sidemove;
-use crate::src::g_game::singledemo;
-use crate::src::g_game::testcontrols;
-use crate::src::g_game::testcontrols_mousespeed;
-use crate::src::g_game::timelimit;
-use crate::src::g_game::usergame;
-use crate::src::g_game::vanilla_demo_limit;
-use crate::src::g_game::vanilla_savegame_limit;
-use crate::src::g_game::viewactive;
 use crate::src::g_game::G_BeginRecording;
 use crate::src::g_game::G_DeferedPlayDemo;
 use crate::src::g_game::G_InitNew;
@@ -255,25 +234,27 @@ pub unsafe fn D_Display() {
     let mut done: bool = false;
     let mut wipe: bool = false;
     let mut redrawsbar: bool = false;
-    if nodrawers {
+    if unsafe { game_state() }.g_game.nodrawers {
         return;
     }
     redrawsbar = false;
     if setsizeneeded {
         R_ExecuteSetViewSize();
-        oldgamestate = 4294967295 as gamestate_t;
+        unsafe { game_state() }.g_game.oldgamestate = 4294967295 as gamestate_t;
         borderdrawcount = 3 as i32;
     }
-    if gamestate as u32 != wipegamestate as u32 {
+    if unsafe { game_state() }.g_game.gamestate as u32 != wipegamestate as u32 {
         wipe = true;
         wipe_StartScreen(0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
     } else {
         wipe = false;
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 && unsafe { game_state() }.d_loop.gametic != 0 {
+    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && unsafe { game_state() }.d_loop.gametic != 0
+    {
         HU_Erase();
     }
-    match gamestate as u32 {
+    match unsafe { game_state() }.g_game.gamestate as u32 {
         0 => {
             if !(unsafe { game_state() }.d_loop.gametic == 0) {
                 if automapactive {
@@ -300,25 +281,36 @@ pub unsafe fn D_Display() {
         }
         _ => {}
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32
+    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && !automapactive
         && unsafe { game_state() }.d_loop.gametic != 0
     {
         R_RenderPlayerView(
-            (&raw mut players as *mut player_t).offset(displayplayer as isize) as *mut player_t,
+            (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                .offset(unsafe { game_state() }.g_game.displayplayer as isize)
+                as *mut player_t,
         );
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 && unsafe { game_state() }.d_loop.gametic != 0 {
+    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && unsafe { game_state() }.d_loop.gametic != 0
+    {
         HU_Drawer();
     }
-    if gamestate as u32 != oldgamestate as u32 && gamestate as u32 != GS_LEVEL as i32 as u32 {
+    if unsafe { game_state() }.g_game.gamestate as u32
+        != unsafe { game_state() }.g_game.oldgamestate as u32
+        && unsafe { game_state() }.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
+    {
         I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 && oldgamestate as u32 != GS_LEVEL as i32 as u32 {
+    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && unsafe { game_state() }.g_game.oldgamestate as u32 != GS_LEVEL as i32 as u32
+    {
         viewactivestate = false;
         R_FillBackScreen();
     }
-    if gamestate as u32 == GS_LEVEL as i32 as u32 && !automapactive && scaledviewwidth != 320 as i32
+    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && !automapactive
+        && scaledviewwidth != 320 as i32
     {
         if menuactive || menuactivestate || !viewactivestate {
             borderdrawcount = 3 as i32;
@@ -328,15 +320,15 @@ pub unsafe fn D_Display() {
             borderdrawcount -= 1;
         }
     }
-    if testcontrols {
-        V_DrawMouseSpeedBox(testcontrols_mousespeed);
+    if unsafe { game_state() }.g_game.testcontrols {
+        V_DrawMouseSpeedBox(unsafe { game_state() }.g_game.testcontrols_mousespeed);
     }
     menuactivestate = menuactive;
-    viewactivestate = viewactive;
+    viewactivestate = unsafe { game_state() }.g_game.viewactive;
     inhelpscreensstate = inhelpscreens;
-    wipegamestate = gamestate;
-    oldgamestate = wipegamestate;
-    if paused {
+    wipegamestate = unsafe { game_state() }.g_game.gamestate;
+    unsafe { game_state() }.g_game.oldgamestate = wipegamestate;
+    if unsafe { game_state() }.g_game.paused {
         if automapactive {
             y = 4 as i32;
         } else {
@@ -433,12 +425,12 @@ pub unsafe fn D_BindVariables() {
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "vanilla_savegame_limit",
-        &raw mut vanilla_savegame_limit as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.g_game.vanilla_savegame_limit as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "vanilla_demo_limit",
-        &raw mut vanilla_demo_limit as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.g_game.vanilla_demo_limit as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
@@ -470,28 +462,37 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
     if drone {
         return false_0 as boolean;
     }
-    if menuactive || paused {
+    if menuactive || unsafe { game_state() }.g_game.paused {
         return false_0 as boolean;
     }
-    return (gamestate as u32 == GS_LEVEL as i32 as u32 && !demoplayback && !advancedemo) as i32
-        as boolean;
+    return (unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && !unsafe { game_state() }.g_game.demoplayback
+        && !advancedemo) as i32 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn doomgeneric_Tick() {
     TryRunTics();
-    S_UpdateSounds(players[consoleplayer as usize].mo);
+    S_UpdateSounds(
+        unsafe { game_state() }.g_game.players
+            [unsafe { game_state() }.g_game.consoleplayer as usize]
+            .mo,
+    );
     if screenvisible {
         D_Display();
     }
 }
 pub unsafe fn D_DoomLoop() {
-    if bfgedition && (demorecording || gameaction as u32 == ga_playdemo as i32 as u32 || netgame) {
+    if bfgedition
+        && (unsafe { game_state() }.g_game.demorecording
+            || unsafe { game_state() }.g_game.gameaction as u32 == ga_playdemo as i32 as u32
+            || unsafe { game_state() }.g_game.netgame)
+    {
         printf(
             b" WARNING: You are playing using one of the Doom Classic\n IWAD files shipped with the Doom 3: BFG Edition. These are\n known to be incompatible with the regular IWAD files and\n may cause demos and network games to get out of sync.\n\0"
                 as *const u8 as *const ::core::ffi::c_char,
         );
     }
-    if demorecording {
+    if unsafe { game_state() }.g_game.demorecording {
         G_BeginRecording();
     }
     main_loop_started = true;
@@ -502,8 +503,8 @@ pub unsafe fn D_DoomLoop() {
     V_RestoreBuffer(unsafe { &mut game_state().v_video });
     R_ExecuteSetViewSize();
     D_StartGameLoop();
-    if testcontrols {
-        wipegamestate = gamestate;
+    if unsafe { game_state() }.g_game.testcontrols {
+        wipegamestate = unsafe { game_state() }.g_game.gamestate;
     }
     doomgeneric_Tick();
 }
@@ -532,11 +533,12 @@ pub unsafe fn D_AdvanceDemo() {
     advancedemo = true;
 }
 pub unsafe fn D_DoAdvanceDemo() {
-    players[consoleplayer as usize].playerstate = PST_LIVE;
+    unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
+        .playerstate = PST_LIVE;
     advancedemo = false;
-    usergame = false;
-    paused = false;
-    gameaction = ga_nothing;
+    unsafe { game_state() }.g_game.usergame = false;
+    unsafe { game_state() }.g_game.paused = false;
+    unsafe { game_state() }.g_game.gameaction = ga_nothing;
     if unsafe { game_state() }.doomstat.gameversion as u32 == exe_ultimate as i32 as u32
         || unsafe { game_state() }.doomstat.gameversion as u32 == exe_final as i32 as u32
     {
@@ -551,7 +553,7 @@ pub unsafe fn D_DoAdvanceDemo() {
             } else {
                 pagetic = 170 as i32;
             }
-            gamestate = GS_DEMOSCREEN;
+            unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
             pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
             if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
@@ -567,7 +569,7 @@ pub unsafe fn D_DoAdvanceDemo() {
         }
         2 => {
             pagetic = 200 as i32;
-            gamestate = GS_DEMOSCREEN;
+            unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
             pagename =
                 b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
@@ -577,7 +579,7 @@ pub unsafe fn D_DoAdvanceDemo() {
             );
         }
         4 => {
-            gamestate = GS_DEMOSCREEN;
+            unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
             if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 pagetic = TICRATE * 11 as i32;
                 pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
@@ -618,7 +620,7 @@ pub unsafe fn D_DoAdvanceDemo() {
     }
 }
 pub unsafe fn D_StartTitle() {
-    gameaction = ga_nothing;
+    unsafe { game_state() }.g_game.gameaction = ga_nothing;
     demosequence = -(1 as i32);
     D_AdvanceDemo();
 }
@@ -1089,10 +1091,10 @@ pub unsafe fn D_DoomMain() {
     fastparm = M_CheckParm("-fast") != 0;
     devparm = M_CheckParm("-devparm") != 0;
     if M_CheckParm("-deathmatch") != 0 {
-        deathmatch = 1 as i32;
+        unsafe { game_state() }.g_game.deathmatch = 1 as i32;
     }
     if M_CheckParm("-altdeath") != 0 {
-        deathmatch = 2 as i32;
+        unsafe { game_state() }.g_game.deathmatch = 2 as i32;
     }
     if devparm {
         printf(D_DEVSTR.as_ptr());
@@ -1120,10 +1122,14 @@ pub unsafe fn D_DoomMain() {
             b"turbo scale: %i%%\n\0" as *const u8 as *const ::core::ffi::c_char,
             scale,
         );
-        forwardmove[0 as i32 as usize] = forwardmove[0 as i32 as usize] * scale / 100 as i32;
-        forwardmove[1 as i32 as usize] = forwardmove[1 as i32 as usize] * scale / 100 as i32;
-        sidemove[0 as i32 as usize] = sidemove[0 as i32 as usize] * scale / 100 as i32;
-        sidemove[1 as i32 as usize] = sidemove[1 as i32 as usize] * scale / 100 as i32;
+        unsafe { game_state() }.g_game.forwardmove[0 as i32 as usize] =
+            unsafe { game_state() }.g_game.forwardmove[0 as i32 as usize] * scale / 100 as i32;
+        unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] =
+            unsafe { game_state() }.g_game.forwardmove[1 as i32 as usize] * scale / 100 as i32;
+        unsafe { game_state() }.g_game.sidemove[0 as i32 as usize] =
+            unsafe { game_state() }.g_game.sidemove[0 as i32 as usize] * scale / 100 as i32;
+        unsafe { game_state() }.g_game.sidemove[1 as i32 as usize] =
+            unsafe { game_state() }.g_game.sidemove[1 as i32 as usize] * scale / 100 as i32;
     }
     printf(b"V_Init: allocate screens.\n\0" as *const u8 as *const ::core::ffi::c_char);
     printf(b"M_LoadDefaults: Load system defaults.\n\0" as *const u8 as *const ::core::ffi::c_char);
@@ -1317,17 +1323,17 @@ pub unsafe fn D_DoomMain() {
         startmap = 1 as i32;
         autostart = true;
     }
-    timelimit = 0 as i32;
+    unsafe { game_state() }.g_game.timelimit = 0 as i32;
     p = M_CheckParmWithArgs("-timer", 1 as i32);
     if p != 0 {
-        timelimit = atoi(
+        unsafe { game_state() }.g_game.timelimit = atoi(
             unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
     }
     p = M_CheckParm("-avg");
     if p != 0 {
-        timelimit = 20 as i32;
+        unsafe { game_state() }.g_game.timelimit = 20 as i32;
     }
     p = M_CheckParmWithArgs("-warp", 1 as i32);
     if p != 0 {
@@ -1361,7 +1367,7 @@ pub unsafe fn D_DoomMain() {
         startepisode = 1 as i32;
         startmap = 1 as i32;
         autostart = true;
-        testcontrols = true;
+        unsafe { game_state() }.g_game.testcontrols = true;
     }
     p = M_CheckParmWithArgs("-loadgame", 1 as i32);
     if p != 0 {
@@ -1413,7 +1419,7 @@ pub unsafe fn D_DoomMain() {
     }
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p != 0 {
-        singledemo = true;
+        unsafe { game_state() }.g_game.singledemo = true;
         G_DeferedPlayDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop();
         return;
@@ -1432,8 +1438,8 @@ pub unsafe fn D_DoomMain() {
         );
         G_LoadGame(&raw mut file as *mut ::core::ffi::c_char);
     }
-    if gameaction as u32 != ga_loadgame as i32 as u32 {
-        if autostart || netgame {
+    if unsafe { game_state() }.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
+        if autostart || unsafe { game_state() }.g_game.netgame {
             G_InitNew(startskill, startepisode, startmap);
         } else {
             D_StartTitle();

@@ -1,5 +1,4 @@
 use crate::src::doomdef::NULL;
-use crate::src::g_game::demoplayback;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_ConsoleStdout;
@@ -707,7 +706,7 @@ pub unsafe fn R_PrecacheLevel() {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut sf: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
-    if demoplayback {
+    if unsafe { game_state() }.g_game.demoplayback {
         return;
     }
     flatpresent = Z_Malloc(

@@ -15,11 +15,6 @@ use crate::src::d_player::{
     wp_shotgun, wp_supershotgun,
 };
 use crate::src::doomdef::NULL;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::gameskill;
-use crate::src::g_game::netgame;
-use crate::src::g_game::players;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_Tactile;
@@ -101,7 +96,9 @@ pub unsafe fn P_GiveAmmo(mut player: *mut player_t, mut ammo: ammotype_t, mut nu
     } else {
         num = clipammo[ammo as usize] / 2 as i32;
     }
-    if gameskill as i32 == sk_baby as i32 || gameskill as i32 == sk_nightmare as i32 {
+    if unsafe { game_state() }.g_game.gameskill as i32 == sk_baby as i32
+        || unsafe { game_state() }.g_game.gameskill as i32 == sk_nightmare as i32
+    {
         num <<= 1 as i32;
     }
     oldammo = (*player).ammo[ammo as usize];
@@ -158,20 +155,25 @@ pub unsafe fn P_GiveWeapon(
 ) -> bool {
     let mut gaveammo: bool = false;
     let mut gaveweapon: bool;
-    if netgame && deathmatch != 2 as i32 && !dropped {
+    if unsafe { game_state() }.g_game.netgame
+        && unsafe { game_state() }.g_game.deathmatch != 2 as i32
+        && !dropped
+    {
         if (*player).weaponowned[weapon as usize] {
             return false;
         }
         (*player).bonuscount += BONUSADD;
         (*player).weaponowned[weapon as usize] = true;
-        if deathmatch != 0 {
+        if unsafe { game_state() }.g_game.deathmatch != 0 {
             P_GiveAmmo(player, weaponinfo[weapon as usize].ammo, 5 as i32);
         } else {
             P_GiveAmmo(player, weaponinfo[weapon as usize].ammo, 2 as i32);
         }
         (*player).pendingweapon = weapon;
         if player
-            == (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t
+            == (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                .offset(unsafe { game_state() }.g_game.consoleplayer as isize)
+                as *mut player_t
         {
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_wpnup as i32);
         }
@@ -332,7 +334,7 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
                     as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_bluecard);
-            if netgame {
+            if unsafe { game_state() }.g_game.netgame {
                 return;
             }
         }
@@ -343,7 +345,7 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
                     as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_yellowcard);
-            if netgame {
+            if unsafe { game_state() }.g_game.netgame {
                 return;
             }
         }
@@ -354,7 +356,7 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
                     as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_redcard);
-            if netgame {
+            if unsafe { game_state() }.g_game.netgame {
                 return;
             }
         }
@@ -365,7 +367,7 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
                     as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_blueskull);
-            if netgame {
+            if unsafe { game_state() }.g_game.netgame {
                 return;
             }
         }
@@ -376,7 +378,7 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
                     as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_yellowskull);
-            if netgame {
+            if unsafe { game_state() }.g_game.netgame {
                 return;
             }
         }
@@ -387,7 +389,7 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
                     as *mut ::core::ffi::c_char;
             }
             P_GiveCard(player, it_redskull);
-            if netgame {
+            if unsafe { game_state() }.g_game.netgame {
                 return;
             }
         }
@@ -633,7 +635,10 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
     }
     P_RemoveMobj(unsafe { &mut game_state().p_mobj }, special);
     (*player).bonuscount += BONUSADD;
-    if player == (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t
+    if player
+        == (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+            .offset(unsafe { game_state() }.g_game.consoleplayer as isize)
+            as *mut player_t
     {
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sound);
     }
@@ -654,24 +659,27 @@ pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
         if !(*target).player.is_null() {
             (*(*source).player).frags[(*target)
                 .player
-                .offset_from(&raw mut players as *mut player_t)
+                .offset_from(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
                 as i64 as usize] += 1;
         }
-    } else if !netgame && (*target).flags & MF_COUNTKILL as i32 != 0 {
-        players[0 as i32 as usize].killcount += 1;
+    } else if !unsafe { game_state() }.g_game.netgame && (*target).flags & MF_COUNTKILL as i32 != 0
+    {
+        unsafe { game_state() }.g_game.players[0 as i32 as usize].killcount += 1;
     }
     if !(*target).player.is_null() {
         if source.is_null() {
             (*(*target).player).frags[(*target)
                 .player
-                .offset_from(&raw mut players as *mut player_t)
+                .offset_from(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
                 as i64 as usize] += 1;
         }
         (*target).flags &= !(MF_SOLID as i32);
         (*(*target).player).playerstate = PST_DEAD;
         P_DropWeapon((*target).player as *mut player_t);
         if (*target).player
-            == (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t
+            == (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                .offset(unsafe { game_state() }.g_game.consoleplayer as isize)
+                as *mut player_t
             && automapactive
         {
             AM_Stop();
@@ -727,7 +735,7 @@ pub unsafe fn P_DamageMobj(
         (*target).momx = (*target).momy;
     }
     player = (*target).player as *mut player_t;
-    if !player.is_null() && gameskill as i32 == sk_baby as i32 {
+    if !player.is_null() && unsafe { game_state() }.g_game.gameskill as i32 == sk_baby as i32 {
         damage >>= 1 as i32;
     }
     if !inflictor.is_null()
@@ -790,7 +798,9 @@ pub unsafe fn P_DamageMobj(
             100 as i32
         };
         if player
-            == (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t
+            == (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                .offset(unsafe { game_state() }.g_game.consoleplayer as isize)
+                as *mut player_t
         {
             I_Tactile(40 as i32, 10 as i32, 40 as i32 + temp * 2 as i32);
         }

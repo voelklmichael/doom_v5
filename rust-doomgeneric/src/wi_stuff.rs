@@ -9,10 +9,6 @@ use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::netgame;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::players;
 use crate::src::g_game::G_WorldDone;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
@@ -1148,7 +1144,7 @@ pub unsafe fn WI_fragSum(mut playernum: i32) -> i32 {
     let mut frags_0: i32 = 0 as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if playeringame[i as usize] != 0 && i != playernum {
+        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 && i != playernum {
             frags_0 += (*plrs.offset(playernum as isize)).frags[i as usize];
         }
         i += 1;
@@ -1168,10 +1164,10 @@ pub unsafe fn WI_initDeathmatchStats() {
     cnt_pause = TICRATE;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if playeringame[i as usize] != 0 {
+        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
             j = 0 as i32;
             while j < MAXPLAYERS {
-                if playeringame[j as usize] != 0 {
+                if unsafe { game_state() }.g_game.playeringame[j as usize] != 0 {
                     dm_frags[i as usize][j as usize] = 0 as i32;
                 }
                 j += 1;
@@ -1191,10 +1187,10 @@ pub unsafe fn WI_updateDeathmatchStats() {
         acceleratestage = 0 as i32;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if playeringame[i as usize] != 0 {
+            if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
                 j = 0 as i32;
                 while j < MAXPLAYERS {
-                    if playeringame[j as usize] != 0 {
+                    if unsafe { game_state() }.g_game.playeringame[j as usize] != 0 {
                         dm_frags[i as usize][j as usize] =
                             (*plrs.offset(i as isize)).frags[j as usize];
                     }
@@ -1222,10 +1218,10 @@ pub unsafe fn WI_updateDeathmatchStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if playeringame[i as usize] != 0 {
+            if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
                 j = 0 as i32;
                 while j < MAXPLAYERS {
-                    if playeringame[j as usize] != 0
+                    if unsafe { game_state() }.g_game.playeringame[j as usize] != 0
                         && dm_frags[i as usize][j as usize]
                             != (*plrs.offset(i as isize)).frags[j as usize]
                     {
@@ -1314,7 +1310,7 @@ pub unsafe fn WI_drawDeathmatchStats() {
     y = DM_MATRIXY;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if playeringame[i as usize] != 0 {
+        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
             V_DrawPatch(
                 unsafe { &mut game_state().v_video },
                 x - (*p[i as usize]).width as i32 / 2 as i32,
@@ -1351,10 +1347,10 @@ pub unsafe fn WI_drawDeathmatchStats() {
     i = 0 as i32;
     while i < MAXPLAYERS {
         x = DM_MATRIXX + DM_SPACINGX;
-        if playeringame[i as usize] != 0 {
+        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
             j = 0 as i32;
             while j < MAXPLAYERS {
-                if playeringame[j as usize] != 0 {
+                if unsafe { game_state() }.g_game.playeringame[j as usize] != 0 {
                     WI_drawNum(x + w, y, dm_frags[i as usize][j as usize], 2 as i32);
                 }
                 x += DM_SPACINGX;
@@ -1377,7 +1373,7 @@ pub unsafe fn WI_initNetgameStats() {
     cnt_pause = TICRATE;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if !(playeringame[i as usize] == 0) {
+        if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
             cnt_frags[i as usize] = 0 as i32;
             cnt_secret[i as usize] = cnt_frags[i as usize];
             cnt_items[i as usize] = cnt_secret[i as usize];
@@ -1398,7 +1394,7 @@ pub unsafe fn WI_updateNetgameStats() {
         acceleratestage = 0 as i32;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(playeringame[i as usize] == 0) {
+            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
                 cnt_kills[i as usize] =
                     (*plrs.offset(i as isize)).skills * 100 as i32 / (*wbs).maxkills;
                 cnt_items[i as usize] =
@@ -1429,7 +1425,7 @@ pub unsafe fn WI_updateNetgameStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(playeringame[i as usize] == 0) {
+            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
                 cnt_kills[i as usize] += 2 as i32;
                 if cnt_kills[i as usize]
                     >= (*plrs.offset(i as isize)).skills * 100 as i32 / (*wbs).maxkills
@@ -1461,7 +1457,7 @@ pub unsafe fn WI_updateNetgameStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(playeringame[i as usize] == 0) {
+            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
                 cnt_items[i as usize] += 2 as i32;
                 if cnt_items[i as usize]
                     >= (*plrs.offset(i as isize)).sitems * 100 as i32 / (*wbs).maxitems
@@ -1493,7 +1489,7 @@ pub unsafe fn WI_updateNetgameStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(playeringame[i as usize] == 0) {
+            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
                 cnt_secret[i as usize] += 2 as i32;
                 if cnt_secret[i as usize]
                     >= (*plrs.offset(i as isize)).ssecret * 100 as i32 / (*wbs).maxsecret
@@ -1525,7 +1521,7 @@ pub unsafe fn WI_updateNetgameStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(playeringame[i as usize] == 0) {
+            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
                 cnt_frags[i as usize] += 1 as i32;
                 fsum = WI_fragSum(i);
                 if cnt_frags[i as usize] >= fsum {
@@ -1618,7 +1614,7 @@ pub unsafe fn WI_drawNetgameStats() {
     y = NG_STATSY + (*kills).height as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if !(playeringame[i as usize] == 0) {
+        if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
             x = 32 as i32 + (*star).width as i32 / 2 as i32 + 32 as i32 * (dofrags == 0) as i32;
             V_DrawPatch(
                 unsafe { &mut game_state().v_video },
@@ -1849,9 +1845,9 @@ pub unsafe fn WI_checkForAccelerate() {
     let mut i: i32 = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     i = 0 as i32;
-    player = &raw mut players as *mut player_t;
+    player = &raw mut unsafe { game_state() }.g_game.players as *mut player_t;
     while i < MAXPLAYERS {
-        if playeringame[i as usize] != 0 {
+        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
             if (*player).cmd.buttons as i32 & BT_ATTACK as i32 != 0 {
                 if (*player).attackdown == 0 {
                     acceleratestage = 1 as i32;
@@ -1893,9 +1889,9 @@ pub unsafe fn WI_Ticker() {
     WI_checkForAccelerate();
     match state as i32 {
         0 => {
-            if deathmatch != 0 {
+            if unsafe { game_state() }.g_game.deathmatch != 0 {
                 WI_updateDeathmatchStats();
-            } else if netgame {
+            } else if unsafe { game_state() }.g_game.netgame {
                 WI_updateNetgameStats();
             } else {
                 WI_updateStats();
@@ -2032,7 +2028,8 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
         &raw mut sp_secret,
     );
     if W_CheckNumForName("WIOBJ") >= 0 as i32 {
-        if netgame && deathmatch == 0 {
+        if unsafe { game_state() }.g_game.netgame && unsafe { game_state() }.g_game.deathmatch == 0
+        {
             callback.expect("non-null function pointer")(
                 b"WIOBJ\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
                 &raw mut items,
@@ -2166,9 +2163,9 @@ unsafe fn WI_unloadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *m
 pub unsafe fn WI_Drawer() {
     match state as i32 {
         0 => {
-            if deathmatch != 0 {
+            if unsafe { game_state() }.g_game.deathmatch != 0 {
                 WI_drawDeathmatchStats();
-            } else if netgame {
+            } else if unsafe { game_state() }.g_game.netgame {
                 WI_drawNetgameStats();
             } else {
                 WI_drawStats();
@@ -2209,9 +2206,9 @@ pub unsafe fn WI_initVariables(mut wbstartstruct: *mut wbstartstruct_t) {
 pub unsafe fn WI_Start(mut wbstartstruct: *mut wbstartstruct_t) {
     WI_initVariables(wbstartstruct);
     WI_loadData();
-    if deathmatch != 0 {
+    if unsafe { game_state() }.g_game.deathmatch != 0 {
         WI_initDeathmatchStats();
-    } else if netgame {
+    } else if unsafe { game_state() }.g_game.netgame {
         WI_initNetgameStats();
     } else {
         WI_initStats();

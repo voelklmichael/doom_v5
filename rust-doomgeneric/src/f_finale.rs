@@ -12,12 +12,6 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::g_game::gameaction;
-use crate::src::g_game::gameepisode;
-use crate::src::g_game::gamemap;
-use crate::src::g_game::gamestate;
-use crate::src::g_game::players;
-use crate::src::g_game::viewactive;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::hu_stuff::HU_FONTSIZE;
@@ -312,9 +306,9 @@ impl FFinaleState {
 
 pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
     let mut i: size_t = 0;
-    gameaction = ga_nothing;
-    gamestate = GS_FINALE;
-    viewactive = false;
+    unsafe { game_state() }.g_game.gameaction = ga_nothing;
+    unsafe { game_state() }.g_game.gamestate = GS_FINALE;
+    unsafe { game_state() }.g_game.viewactive = false;
     automapactive = false;
     if (if unsafe { game_state() }.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
@@ -368,8 +362,8 @@ pub unsafe fn F_StartFinale(state: &mut FFinaleState) {
                     unsafe { game_state() }.doomstat.gamemission as u32
                 })
             }) != doom as i32 as u32
-                || gameepisode == (*screen).episode)
-            && gamemap == (*screen).level
+                || unsafe { game_state() }.g_game.gameepisode == (*screen).episode)
+            && unsafe { game_state() }.g_game.gamemap == (*screen).level
         {
             state.finaletext = (*screen).text;
             state.finaleflat = (*screen).background;
@@ -394,16 +388,20 @@ pub unsafe fn F_Ticker(state: &mut FFinaleState) {
     {
         i = 0 as size_t;
         while i < MAXPLAYERS as size_t {
-            if players[i as usize].cmd.buttons != 0 {
+            if unsafe { game_state() }.g_game.players[i as usize]
+                .cmd
+                .buttons
+                != 0
+            {
                 break;
             }
             i = i.wrapping_add(1);
         }
         if i < MAXPLAYERS as size_t {
-            if gamemap == 30 as i32 {
+            if unsafe { game_state() }.g_game.gamemap == 30 as i32 {
                 F_StartCast(state);
             } else {
-                gameaction = ga_worlddone;
+                unsafe { game_state() }.g_game.gameaction = ga_worlddone;
             }
         }
     }
@@ -424,7 +422,7 @@ pub unsafe fn F_Ticker(state: &mut FFinaleState) {
         state.finalecount = 0 as u32;
         state.finalestage = F_STAGE_ARTSCREEN;
         wipegamestate = 4294967295 as gamestate_t;
-        if gameepisode == 3 as i32 {
+        if unsafe { game_state() }.g_game.gameepisode == 3 as i32 {
             S_StartMusic(unsafe { &mut game_state().sounds }, mus_bunny as i32);
         }
     }
@@ -991,10 +989,10 @@ pub unsafe fn F_BunnyScroll(state: &mut FFinaleState) {
 }
 unsafe fn F_ArtScreenDrawer(state: &mut FFinaleState) {
     let mut lumpname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    if gameepisode == 3 as i32 {
+    if unsafe { game_state() }.g_game.gameepisode == 3 as i32 {
         F_BunnyScroll(state);
     } else {
-        match gameepisode {
+        match unsafe { game_state() }.g_game.gameepisode {
             1 => {
                 if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
                     lumpname = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char

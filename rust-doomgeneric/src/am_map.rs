@@ -7,15 +7,6 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::g_game::consoleplayer;
-use crate::src::g_game::deathmatch;
-use crate::src::g_game::gameepisode;
-use crate::src::g_game::gamemap;
-use crate::src::g_game::netgame;
-use crate::src::g_game::playeringame;
-use crate::src::g_game::players;
-use crate::src::g_game::singledemo;
-use crate::src::g_game::viewactive;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::{fprintf, stderr};
@@ -608,17 +599,24 @@ pub unsafe fn AM_initVariables() {
     mtof_zoommul = FRACUNIT as fixed_t;
     m_w = FixedMul((f_w as fixed_t) << 16 as i32, scale_ftom);
     m_h = FixedMul((f_h as fixed_t) << 16 as i32, scale_ftom);
-    if playeringame[consoleplayer as usize] != 0 {
-        unsafe { game_state() }.hu_stuff.plr =
-            (&raw mut players as *mut player_t).offset(consoleplayer as isize) as *mut player_t;
+    if unsafe { game_state() }.g_game.playeringame
+        [unsafe { game_state() }.g_game.consoleplayer as usize]
+        != 0
+    {
+        unsafe { game_state() }.hu_stuff.plr = (&raw mut unsafe { game_state() }.g_game.players
+            as *mut player_t)
+            .offset(unsafe { game_state() }.g_game.consoleplayer as isize)
+            as *mut player_t;
     } else {
         unsafe { game_state() }.hu_stuff.plr =
-            (&raw mut players as *mut player_t).offset(0 as i32 as isize) as *mut player_t;
+            (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                .offset(0 as i32 as isize) as *mut player_t;
         pnum = 0 as i32;
         while pnum < MAXPLAYERS {
-            if playeringame[pnum as usize] != 0 {
+            if unsafe { game_state() }.g_game.playeringame[pnum as usize] != 0 {
                 unsafe { game_state() }.hu_stuff.plr =
-                    (&raw mut players as *mut player_t).offset(pnum as isize) as *mut player_t;
+                    (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+                        .offset(pnum as isize) as *mut player_t;
                 break;
             } else {
                 pnum += 1;
@@ -714,10 +712,12 @@ pub unsafe fn AM_Start() {
         AM_Stop();
     }
     stopped = false;
-    if lastlevel != gamemap || lastepisode != gameepisode {
+    if lastlevel != unsafe { game_state() }.g_game.gamemap
+        || lastepisode != unsafe { game_state() }.g_game.gameepisode
+    {
         AM_LevelInit();
-        lastlevel = gamemap;
-        lastepisode = gameepisode;
+        lastlevel = unsafe { game_state() }.g_game.gamemap;
+        lastepisode = unsafe { game_state() }.g_game.gameepisode;
     }
     AM_initVariables();
     AM_loadPics();
@@ -743,7 +743,7 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
             && (*ev).data1 == unsafe { game_state() }.m_controls.key_map_toggle
         {
             AM_Start();
-            viewactive = false;
+            unsafe { game_state() }.g_game.viewactive = false;
             rc = true_0;
         }
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
@@ -781,7 +781,7 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
             ftom_zoommul = M_ZOOMOUT as fixed_t;
         } else if key == unsafe { game_state() }.m_controls.key_map_toggle {
             bigstate = 0 as i32;
-            viewactive = true;
+            unsafe { game_state() }.g_game.viewactive = true;
             AM_Stop();
         } else if key == unsafe { game_state() }.m_controls.key_map_maxzoom {
             bigstate = (bigstate == 0) as i32;
@@ -833,7 +833,7 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
         } else {
             rc = false_0;
         }
-        if deathmatch == 0
+        if unsafe { game_state() }.g_game.deathmatch == 0
             && cht_CheckCheat(&raw mut cheat_amap, (*ev).data2 as ::core::ffi::c_char) != 0
         {
             rc = false_0;
@@ -1282,7 +1282,7 @@ pub unsafe fn AM_drawPlayers() {
     static mut their_colors: [i32; 4] = [GREENS, GRAYS, BROWNS, REDS];
     let mut their_color: i32 = -(1 as i32);
     let mut color: i32 = 0;
-    if !netgame {
+    if !unsafe { game_state() }.g_game.netgame {
         if cheating != 0 {
             AM_drawLineCharacter(
                 &raw mut cheat_player_arrow as *mut mline_t,
@@ -1313,9 +1313,13 @@ pub unsafe fn AM_drawPlayers() {
     i = 0 as i32;
     while i < MAXPLAYERS {
         their_color += 1;
-        p = (&raw mut players as *mut player_t).offset(i as isize) as *mut player_t;
-        if !(deathmatch != 0 && !singledemo && p != unsafe { game_state() }.hu_stuff.plr) {
-            if !(playeringame[i as usize] == 0) {
+        p = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t).offset(i as isize)
+            as *mut player_t;
+        if !(unsafe { game_state() }.g_game.deathmatch != 0
+            && !unsafe { game_state() }.g_game.singledemo
+            && p != unsafe { game_state() }.hu_stuff.plr)
+        {
+            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
                 if (*p).powers[pw_invisibility as i32 as usize] != 0 {
                     color = 246 as i32;
                 } else {
