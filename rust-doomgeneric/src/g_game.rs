@@ -15,7 +15,6 @@ use crate::src::d_mode::{commercial, shareware};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
 use crate::src::d_mode::{exe_chex, exe_final2, exe_ultimate};
 use crate::src::d_mode::{sk_baby, sk_nightmare, skill_t};
-use crate::src::d_net::DNetState;
 use crate::src::d_player::pw_strength;
 use crate::src::d_player::{am_clip, NUMAMMO};
 use crate::src::d_player::{player_s, player_t, PST_DEAD, PST_LIVE, PST_REBORN};
@@ -59,7 +58,6 @@ use crate::src::m_misc::M_StringCopy;
 use crate::src::m_misc::M_TempFile;
 use crate::src::m_misc::M_WriteFile;
 use crate::src::m_misc::M_snprintf;
-use crate::src::m_random::MRandomState;
 use crate::src::m_random::M_ClearRandom;
 use crate::src::m_random::P_Random;
 use crate::src::p_inter::maxammo;
@@ -1070,33 +1068,33 @@ pub unsafe fn G_Responder(mut ev: event_t) -> bool {
     }
     return false;
 }
-pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
+pub unsafe fn G_Ticker(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut buf: i32 = 0;
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0
-            && unsafe { game_state() }.g_game.players[i as usize].playerstate as u32
+        if state.g_game.playeringame[i as usize] != 0
+            && state.g_game.players[i as usize].playerstate as u32
                 == PST_REBORN as u32
         {
-            G_DoReborn(unsafe { game_state() }, i);
+            G_DoReborn(state, i);
         }
         i += 1;
     }
-    while unsafe { game_state() }.g_game.gameaction as u32 != ga_nothing as u32 {
-        match unsafe { game_state() }.g_game.gameaction as u32 {
+    while state.g_game.gameaction as u32 != ga_nothing as u32 {
+        match state.g_game.gameaction as u32 {
             1 => {
                 G_DoLoadLevel();
             }
             2 => {
-                G_DoNewGame(unsafe { game_state() });
+                G_DoNewGame(state);
             }
             3 => {
-                G_DoLoadGame(unsafe { game_state() });
+                G_DoLoadGame(state);
             }
             4 => {
-                G_DoSaveGame(unsafe { game_state() });
+                G_DoSaveGame(state);
             }
             5 => {
                 G_DoPlayDemo();
@@ -1105,90 +1103,90 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
                 G_DoCompleted();
             }
             7 => {
-                F_StartFinale(unsafe { game_state() });
+                F_StartFinale(state);
             }
             8 => {
                 G_DoWorldDone();
             }
             9 => {
                 V_ScreenShot(
-                    unsafe { game_state() },
+                    state,
                     b"DOOM%02i.%s\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                 );
-                unsafe { game_state() }.g_game.players
-                    [unsafe { game_state() }.g_game.consoleplayer as usize]
+                state.g_game.players
+                    [state.g_game.consoleplayer as usize]
                     .message = b"screen shot\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
-                unsafe { game_state() }.g_game.gameaction = ga_nothing;
+                state.g_game.gameaction = ga_nothing;
             }
             0 | _ => {}
         }
     }
     buf =
-        unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup % BACKUPTICS;
+        state.d_loop.gametic / state.d_loop.ticdup % BACKUPTICS;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
-            cmd = &raw mut (*(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+        if state.g_game.playeringame[i as usize] != 0 {
+            cmd = &raw mut (*(&raw mut state.g_game.players as *mut player_t)
                 .offset(i as isize))
             .cmd;
             memcpy(
                 cmd as *mut ::core::ffi::c_void,
-                d_net_state.netcmds.offset(i as isize) as *mut ticcmd_t
+                state.d_net.netcmds.offset(i as isize) as *mut ticcmd_t
                     as *const ::core::ffi::c_void,
                 ::core::mem::size_of::<ticcmd_t>() as size_t,
             );
-            if unsafe { game_state() }.g_game.demoplayback {
+            if state.g_game.demoplayback {
                 G_ReadDemoTiccmd(cmd);
             }
-            if unsafe { game_state() }.g_game.demorecording {
+            if state.g_game.demorecording {
                 G_WriteDemoTiccmd(cmd);
             }
             if (*cmd).forwardmove as i32 > TURBOTHRESHOLD {
-                unsafe { game_state() }.g_game.turbodetected[i as usize] = true_0 as boolean;
+                state.g_game.turbodetected[i as usize] = true_0 as boolean;
             }
-            if unsafe { game_state() }.d_loop.gametic & 31 as i32 == 0 as i32
-                && (unsafe { game_state() }.d_loop.gametic >> 5 as i32) % MAXPLAYERS == i
-                && unsafe { game_state() }.g_game.turbodetected[i as usize] != 0
+            if state.d_loop.gametic & 31 as i32 == 0 as i32
+                && (state.d_loop.gametic >> 5 as i32) % MAXPLAYERS == i
+                && state.g_game.turbodetected[i as usize] != 0
             {
                 M_snprintf(
-                    &raw mut unsafe { game_state() }.g_game.g_ticker_turbomessage
+                    &raw mut state.g_game.g_ticker_turbomessage
                         as *mut ::core::ffi::c_char,
                     ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
                     b"%s is turbo!\0" as *const u8 as *const ::core::ffi::c_char,
                     player_names[i as usize],
                 );
-                unsafe { game_state() }.g_game.players
-                    [unsafe { game_state() }.g_game.consoleplayer as usize]
-                    .message = &raw mut unsafe { game_state() }.g_game.g_ticker_turbomessage
+                state.g_game.players
+                    [state.g_game.consoleplayer as usize]
+                    .message = &raw mut state.g_game.g_ticker_turbomessage
                     as *mut ::core::ffi::c_char;
-                unsafe { game_state() }.g_game.turbodetected[i as usize] = false_0 as boolean;
+                state.g_game.turbodetected[i as usize] = false_0 as boolean;
             }
-            if unsafe { game_state() }.g_game.netgame
-                && !unsafe { game_state() }.g_game.netdemo
-                && unsafe { game_state() }.d_loop.gametic % unsafe { game_state() }.d_loop.ticdup
+            if state.g_game.netgame
+                && !state.g_game.netdemo
+                && state.d_loop.gametic % state.d_loop.ticdup
                     == 0
             {
-                if unsafe { game_state() }.d_loop.gametic > BACKUPTICS
-                    && unsafe { game_state() }.g_game.consistancy[i as usize][buf as usize] as i32
+                if state.d_loop.gametic > BACKUPTICS
+                    && state.g_game.consistancy[i as usize][buf as usize] as i32
                         != (*cmd).consistancy as i32
                 {
                     I_Error(&format!(
                         "consistency failure ({} should be {})",
                         (*cmd).consistancy as i32,
-                        unsafe { game_state() }.g_game.consistancy[i as usize][buf as usize] as i32,
+                        state.g_game.consistancy[i as usize][buf as usize] as i32,
                     ));
                 }
-                if !unsafe { game_state() }.g_game.players[i as usize]
+                if !state.g_game.players[i as usize]
                     .mo
                     .is_null()
                 {
-                    unsafe { game_state() }.g_game.consistancy[i as usize][buf as usize] =
-                        (*unsafe { game_state() }.g_game.players[i as usize].mo).x as byte;
+                    state.g_game.consistancy[i as usize][buf as usize] =
+                        (*state.g_game.players[i as usize].mo).x as byte;
                 } else {
-                    unsafe { game_state() }.g_game.consistancy[i as usize][buf as usize] =
-                        state.rndindex as byte;
+                    state.g_game.consistancy[i as usize][buf as usize] =
+                        state.m_random.rndindex as byte;
                 }
             }
         }
@@ -1196,43 +1194,43 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
     }
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
-            if unsafe { game_state() }.g_game.players[i as usize]
+        if state.g_game.playeringame[i as usize] != 0 {
+            if state.g_game.players[i as usize]
                 .cmd
                 .buttons as i32
                 & BT_SPECIAL as i32
                 != 0
             {
-                match unsafe { game_state() }.g_game.players[i as usize]
+                match state.g_game.players[i as usize]
                     .cmd
                     .buttons as i32
                     & BT_SPECIALMASK as i32
                 {
                     1 => {
-                        unsafe { game_state() }.g_game.paused =
-                            !unsafe { game_state() }.g_game.paused;
-                        if unsafe { game_state() }.g_game.paused {
-                            S_PauseSound(unsafe { game_state() });
+                        state.g_game.paused =
+                            !state.g_game.paused;
+                        if state.g_game.paused {
+                            S_PauseSound(state);
                         } else {
-                            S_ResumeSound(unsafe { game_state() });
+                            S_ResumeSound(state);
                         }
                     }
                     2 => {
-                        if unsafe { game_state() }.g_game.savedescription[0 as i32 as usize] == 0 {
+                        if state.g_game.savedescription[0 as i32 as usize] == 0 {
                             M_StringCopy(
-                                &raw mut unsafe { game_state() }.g_game.savedescription
+                                &raw mut state.g_game.savedescription
                                     as *mut ::core::ffi::c_char,
                                 b"NET GAME\0" as *const u8 as *const ::core::ffi::c_char,
                                 ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
                             );
                         }
-                        unsafe { game_state() }.g_game.savegameslot =
-                            (unsafe { game_state() }.g_game.players[i as usize]
+                        state.g_game.savegameslot =
+                            (state.g_game.players[i as usize]
                                 .cmd
                                 .buttons as i32
                                 & BTS_SAVEMASK as i32)
                                 >> BTS_SAVESHIFT as i32;
-                        unsafe { game_state() }.g_game.gameaction = ga_savegame;
+                        state.g_game.gameaction = ga_savegame;
                     }
                     _ => {}
                 }
@@ -1240,13 +1238,13 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
         }
         i += 1;
     }
-    if unsafe { game_state() }.g_game.oldgamestate as u32 == GS_INTERMISSION as u32
-        && unsafe { game_state() }.g_game.gamestate as u32 != GS_INTERMISSION as u32
+    if state.g_game.oldgamestate as u32 == GS_INTERMISSION as u32
+        && state.g_game.gamestate as u32 != GS_INTERMISSION as u32
     {
         WI_End();
     }
-    unsafe { game_state() }.g_game.oldgamestate = unsafe { game_state() }.g_game.gamestate;
-    match unsafe { game_state() }.g_game.gamestate as u32 {
+    state.g_game.oldgamestate = state.g_game.gamestate;
+    match state.g_game.gamestate as u32 {
         0 => {
             P_Ticker();
             ST_Ticker();
@@ -1257,7 +1255,7 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
             WI_Ticker();
         }
         2 => {
-            F_Ticker(unsafe { game_state() });
+            F_Ticker(state);
         }
         3 => {
             D_PageTicker();
