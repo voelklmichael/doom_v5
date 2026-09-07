@@ -18,6 +18,7 @@ use crate::src::d_main::DMainState;
 use crate::src::d_net::DNetState;
 use crate::src::doomstat::DoomstatState;
 use crate::src::f_finale::FFinaleState;
+use crate::src::f_wipe::FWipeState;
 use crate::src::g_game::GGameState;
 use crate::src::hu_stuff::HuStuffState;
 use crate::src::i_cdmus::ICdMusState;
@@ -76,6 +77,7 @@ pub struct GameState {
     pub d_net: DNetState,
     pub doomstat: DoomstatState,
     pub f_finale: FFinaleState,
+    pub f_wipe: FWipeState,
     pub g_game: GGameState,
     pub hu_stuff: HuStuffState,
     pub i_cdmus: ICdMusState,
@@ -136,6 +138,7 @@ impl GameState {
             d_net: DNetState::new(),
             doomstat: DoomstatState::new(),
             f_finale: FFinaleState::new(),
+            f_wipe: FWipeState::new(),
             g_game: GGameState::new(),
             hu_stuff: HuStuffState::new(),
             i_cdmus: ICdMusState::new(),
