@@ -298,7 +298,7 @@ unsafe fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     (*str).health = saveg_read32();
     (*str).movedir = saveg_read32();
     (*str).movecount = saveg_read32();
-    saveg_readp();
+    saveg_read32();
     (*str).target = None;
     (*str).reactiontime = saveg_read32();
     (*str).threshold = saveg_read32();
@@ -313,7 +313,7 @@ unsafe fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     }
     (*str).lastlook = saveg_read32();
     saveg_read_mapthing_t(&raw mut (*str).spawnpoint);
-    saveg_readp();
+    saveg_read32();
     (*str).tracer = None;
 }
 unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
@@ -345,7 +345,7 @@ unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     saveg_write32((*str).health);
     saveg_write32((*str).movedir);
     saveg_write32((*str).movecount);
-    saveg_writep(::core::ptr::null_mut::<::core::ffi::c_void>());
+    saveg_write32(0 as i32);
     saveg_write32((*str).reactiontime);
     saveg_write32((*str).threshold);
     if !(*str).player.is_null() {
@@ -361,7 +361,7 @@ unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     }
     saveg_write32((*str).lastlook);
     saveg_write_mapthing_t(&raw mut (*str).spawnpoint);
-    saveg_writep(::core::ptr::null_mut::<::core::ffi::c_void>());
+    saveg_write32(0 as i32);
 }
 unsafe fn saveg_read_ticcmd_t(mut str: *mut ticcmd_t) {
     (*str).forwardmove = saveg_read8() as i8;
@@ -456,7 +456,7 @@ unsafe fn saveg_read_player_t(mut str: *mut player_t) {
     (*str).message = saveg_readp() as *mut ::core::ffi::c_char;
     (*str).damagecount = saveg_read32();
     (*str).bonuscount = saveg_read32();
-    saveg_readp();
+    saveg_read32();
     (*str).attacker = None;
     (*str).extralight = saveg_read32();
     (*str).fixedcolormap = saveg_read32();
@@ -525,7 +525,7 @@ unsafe fn saveg_write_player_t(mut str: *mut player_t) {
     saveg_writep((*str).message as *mut ::core::ffi::c_void);
     saveg_write32((*str).damagecount);
     saveg_write32((*str).bonuscount);
-    saveg_writep(::core::ptr::null_mut::<::core::ffi::c_void>());
+    saveg_write32(0 as i32);
     saveg_write32((*str).extralight);
     saveg_write32((*str).fixedcolormap);
     saveg_write32((*str).colormap);
