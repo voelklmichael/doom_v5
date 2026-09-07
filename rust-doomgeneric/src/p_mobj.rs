@@ -924,6 +924,7 @@ pub unsafe fn P_SpawnMobj(
     return mobj;
 }
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
+#[repr(C)]
 pub struct MobjId {
     index: u32,
     generation: u32,

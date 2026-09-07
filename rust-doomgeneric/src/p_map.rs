@@ -31,6 +31,7 @@ use crate::src::p_maputl::MAPBLOCKSHIFT;
 use crate::src::p_maputl::PT_ADDLINES;
 use crate::src::p_maputl::PT_ADDTHINGS;
 use crate::src::p_mobj::mobj_t;
+use crate::src::p_mobj::MobjId;
 use crate::src::p_mobj::statenum_t;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SetMobjState;
@@ -141,7 +142,8 @@ pub const USERANGE: i32 = 64 * FRACUNIT;
 pub const MAXSPECIALCROSS_ORIGINAL: i32 = 8;
 pub const DEFAULT_SPECHIT_MAGIC: i32 = 0x1c09c98;
 #[no_mangle]
-pub unsafe extern "C" fn PIT_StompThing(mut thing: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn PIT_StompThing(mut thing_id: MobjId) -> boolean {
+    let thing = unsafe { game_state() }.p_mobj.mobj_get(thing_id).unwrap();
     let mut blockdist: fixed_t = 0;
     if (*thing).flags & MF_SHOOTABLE as i32 == 0 {
         return true_0 as boolean;
@@ -218,7 +220,7 @@ pub unsafe fn P_TeleportMove(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixe
             if !P_BlockThingsIterator(
                 bx,
                 by,
-                Some(PIT_StompThing as unsafe extern "C" fn(*mut mobj_t) -> boolean),
+                Some(PIT_StompThing as unsafe extern "C" fn(MobjId) -> boolean),
             ) {
                 return false;
             }
@@ -289,7 +291,8 @@ pub unsafe extern "C" fn PIT_CheckLine(mut ld: *mut line_t) -> boolean {
     return true_0 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_CheckThing(mut thing: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn PIT_CheckThing(mut thing_id: MobjId) -> boolean {
+    let thing = unsafe { game_state() }.p_mobj.mobj_get(thing_id).unwrap();
     let mut blockdist: fixed_t = 0;
     let mut solid: bool = false;
     let mut damage: i32 = 0;
@@ -428,7 +431,7 @@ pub unsafe fn P_CheckPosition(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fix
             if !P_BlockThingsIterator(
                 bx,
                 by,
-                Some(PIT_CheckThing as unsafe extern "C" fn(*mut mobj_t) -> boolean),
+                Some(PIT_CheckThing as unsafe extern "C" fn(MobjId) -> boolean),
             ) {
                 return false;
             }
@@ -1063,7 +1066,8 @@ pub unsafe fn P_UseLines(mut player: *mut player_t) {
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_RadiusAttack(mut thing: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn PIT_RadiusAttack(mut thing_id: MobjId) -> boolean {
+    let thing = unsafe { game_state() }.p_mobj.mobj_get(thing_id).unwrap();
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut dist: fixed_t = 0;
@@ -1122,7 +1126,7 @@ pub unsafe fn P_RadiusAttack(mut spot: *mut mobj_t, mut source: *mut mobj_t, mut
             P_BlockThingsIterator(
                 x,
                 y,
-                Some(PIT_RadiusAttack as unsafe extern "C" fn(*mut mobj_t) -> boolean),
+                Some(PIT_RadiusAttack as unsafe extern "C" fn(MobjId) -> boolean),
             );
             x += 1;
         }
@@ -1130,7 +1134,8 @@ pub unsafe fn P_RadiusAttack(mut spot: *mut mobj_t, mut source: *mut mobj_t, mut
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_ChangeSector(mut thing: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn PIT_ChangeSector(mut thing_id: MobjId) -> boolean {
+    let thing = unsafe { game_state() }.p_mobj.mobj_get(thing_id).unwrap();
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     if P_ThingHeightClip(thing) {
         return true_0 as boolean;
@@ -1184,7 +1189,7 @@ pub unsafe fn P_ChangeSector(mut sector: *mut sector_t, mut crunch: bool) -> boo
             P_BlockThingsIterator(
                 x,
                 y,
-                Some(PIT_ChangeSector as unsafe extern "C" fn(*mut mobj_t) -> boolean),
+                Some(PIT_ChangeSector as unsafe extern "C" fn(MobjId) -> boolean),
             );
             y += 1;
         }
