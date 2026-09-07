@@ -680,7 +680,7 @@ pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
                 as *mut player_t
             && unsafe { game_state() }.am_map.automapactive
         {
-            AM_Stop();
+            AM_Stop(unsafe { game_state() });
         }
     }
     if (*target).health < -(*(*target).info).spawnhealth && (*(*target).info).xdeathstate != 0 {

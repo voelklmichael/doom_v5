@@ -558,65 +558,65 @@ pub unsafe fn AM_activateNewScale(state: &mut GameState) {
     state.am_map.m_x2 = state.am_map.m_x + state.am_map.m_w;
     state.am_map.m_y2 = state.am_map.m_y + state.am_map.m_h;
 }
-pub unsafe fn AM_saveScaleAndLoc() {
-    unsafe { game_state() }.am_map.old_m_x = unsafe { game_state() }.am_map.m_x;
-    unsafe { game_state() }.am_map.old_m_y = unsafe { game_state() }.am_map.m_y;
-    unsafe { game_state() }.am_map.old_m_w = unsafe { game_state() }.am_map.m_w;
-    unsafe { game_state() }.am_map.old_m_h = unsafe { game_state() }.am_map.m_h;
+pub unsafe fn AM_saveScaleAndLoc(state: &mut GameState) {
+    state.am_map.old_m_x = state.am_map.m_x;
+    state.am_map.old_m_y = state.am_map.m_y;
+    state.am_map.old_m_w = state.am_map.m_w;
+    state.am_map.old_m_h = state.am_map.m_h;
 }
-pub unsafe fn AM_restoreScaleAndLoc() {
-    unsafe { game_state() }.am_map.m_w = unsafe { game_state() }.am_map.old_m_w;
-    unsafe { game_state() }.am_map.m_h = unsafe { game_state() }.am_map.old_m_h;
-    if unsafe { game_state() }.am_map.followplayer == 0 {
-        unsafe { game_state() }.am_map.m_x = unsafe { game_state() }.am_map.old_m_x;
-        unsafe { game_state() }.am_map.m_y = unsafe { game_state() }.am_map.old_m_y;
+pub unsafe fn AM_restoreScaleAndLoc(state: &mut GameState) {
+    state.am_map.m_w = state.am_map.old_m_w;
+    state.am_map.m_h = state.am_map.old_m_h;
+    if state.am_map.followplayer == 0 {
+        state.am_map.m_x = state.am_map.old_m_x;
+        state.am_map.m_y = state.am_map.old_m_y;
     } else {
-        unsafe { game_state() }.am_map.m_x = ((*(*unsafe { game_state() }.am_map.plr).mo).x as i32 - unsafe { game_state() }.am_map.m_w as i32 / 2 as i32)
+        state.am_map.m_x = ((*(*state.am_map.plr).mo).x as i32 - state.am_map.m_w as i32 / 2 as i32)
             as fixed_t;
-        unsafe { game_state() }.am_map.m_y = ((*(*unsafe { game_state() }.am_map.plr).mo).y as i32 - unsafe { game_state() }.am_map.m_h as i32 / 2 as i32)
+        state.am_map.m_y = ((*(*state.am_map.plr).mo).y as i32 - state.am_map.m_h as i32 / 2 as i32)
             as fixed_t;
     }
-    unsafe { game_state() }.am_map.m_x2 = unsafe { game_state() }.am_map.m_x + unsafe { game_state() }.am_map.m_w;
-    unsafe { game_state() }.am_map.m_y2 = unsafe { game_state() }.am_map.m_y + unsafe { game_state() }.am_map.m_h;
-    unsafe { game_state() }.am_map.scale_mtof = FixedDiv((unsafe { game_state() }.am_map.f_w as fixed_t) << FRACBITS, unsafe { game_state() }.am_map.m_w);
-    unsafe { game_state() }.am_map.scale_ftom = FixedDiv(FRACUNIT, unsafe { game_state() }.am_map.scale_mtof);
+    state.am_map.m_x2 = state.am_map.m_x + state.am_map.m_w;
+    state.am_map.m_y2 = state.am_map.m_y + state.am_map.m_h;
+    state.am_map.scale_mtof = FixedDiv((state.am_map.f_w as fixed_t) << FRACBITS, state.am_map.m_w);
+    state.am_map.scale_ftom = FixedDiv(FRACUNIT, state.am_map.scale_mtof);
 }
-pub unsafe fn AM_addMark() {
-    unsafe { game_state() }.am_map.markpoints[unsafe { game_state() }.am_map.markpointnum as usize].x = (unsafe { game_state() }.am_map.m_x as i32 + unsafe { game_state() }.am_map.m_w as i32 / 2 as i32) as fixed_t;
-    unsafe { game_state() }.am_map.markpoints[unsafe { game_state() }.am_map.markpointnum as usize].y = (unsafe { game_state() }.am_map.m_y as i32 + unsafe { game_state() }.am_map.m_h as i32 / 2 as i32) as fixed_t;
-    unsafe { game_state() }.am_map.markpointnum = (unsafe { game_state() }.am_map.markpointnum + 1 as i32) % AM_NUMMARKPOINTS;
+pub unsafe fn AM_addMark(state: &mut GameState) {
+    state.am_map.markpoints[state.am_map.markpointnum as usize].x = (state.am_map.m_x as i32 + state.am_map.m_w as i32 / 2 as i32) as fixed_t;
+    state.am_map.markpoints[state.am_map.markpointnum as usize].y = (state.am_map.m_y as i32 + state.am_map.m_h as i32 / 2 as i32) as fixed_t;
+    state.am_map.markpointnum = (state.am_map.markpointnum + 1 as i32) % AM_NUMMARKPOINTS;
 }
-pub unsafe fn AM_findMinMaxBoundaries() {
+pub unsafe fn AM_findMinMaxBoundaries(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut a: fixed_t = 0;
     let mut b: fixed_t = 0;
-    unsafe { game_state() }.am_map.min_y = INT_MAX as fixed_t;
-    unsafe { game_state() }.am_map.min_x = unsafe { game_state() }.am_map.min_y;
-    unsafe { game_state() }.am_map.max_y = -INT_MAX as fixed_t;
-    unsafe { game_state() }.am_map.max_x = unsafe { game_state() }.am_map.max_y;
+    state.am_map.min_y = INT_MAX as fixed_t;
+    state.am_map.min_x = state.am_map.min_y;
+    state.am_map.max_y = -INT_MAX as fixed_t;
+    state.am_map.max_x = state.am_map.max_y;
     i = 0 as i32;
-    while i < unsafe { game_state() }.p_setup.numvertexes {
-        if (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).x < unsafe { game_state() }.am_map.min_x {
-            unsafe { game_state() }.am_map.min_x = (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).x;
-        } else if (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).x > unsafe { game_state() }.am_map.max_x {
-            unsafe { game_state() }.am_map.max_x = (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).x;
+    while i < state.p_setup.numvertexes {
+        if (*state.p_setup.vertexes.offset(i as isize)).x < state.am_map.min_x {
+            state.am_map.min_x = (*state.p_setup.vertexes.offset(i as isize)).x;
+        } else if (*state.p_setup.vertexes.offset(i as isize)).x > state.am_map.max_x {
+            state.am_map.max_x = (*state.p_setup.vertexes.offset(i as isize)).x;
         }
-        if (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).y < unsafe { game_state() }.am_map.min_y {
-            unsafe { game_state() }.am_map.min_y = (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).y;
-        } else if (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).y > unsafe { game_state() }.am_map.max_y {
-            unsafe { game_state() }.am_map.max_y = (*unsafe { game_state() }.p_setup.vertexes.offset(i as isize)).y;
+        if (*state.p_setup.vertexes.offset(i as isize)).y < state.am_map.min_y {
+            state.am_map.min_y = (*state.p_setup.vertexes.offset(i as isize)).y;
+        } else if (*state.p_setup.vertexes.offset(i as isize)).y > state.am_map.max_y {
+            state.am_map.max_y = (*state.p_setup.vertexes.offset(i as isize)).y;
         }
         i += 1;
     }
-    unsafe { game_state() }.am_map.max_w = unsafe { game_state() }.am_map.max_x - unsafe { game_state() }.am_map.min_x;
-    unsafe { game_state() }.am_map.max_h = unsafe { game_state() }.am_map.max_y - unsafe { game_state() }.am_map.min_y;
-    unsafe { game_state() }.am_map.min_w = (2 as i32 * 16 as i32 * FRACUNIT) as fixed_t;
-    unsafe { game_state() }.am_map.min_h = (2 as i32 * 16 as i32 * FRACUNIT) as fixed_t;
-    a = FixedDiv((unsafe { game_state() }.am_map.f_w as fixed_t) << FRACBITS, unsafe { game_state() }.am_map.max_w);
-    b = FixedDiv((unsafe { game_state() }.am_map.f_h as fixed_t) << FRACBITS, unsafe { game_state() }.am_map.max_h);
-    unsafe { game_state() }.am_map.min_scale_mtof = if a < b { a } else { b };
-    unsafe { game_state() }.am_map.max_scale_mtof = FixedDiv(
-        (unsafe { game_state() }.am_map.f_h as fixed_t) << FRACBITS,
+    state.am_map.max_w = state.am_map.max_x - state.am_map.min_x;
+    state.am_map.max_h = state.am_map.max_y - state.am_map.min_y;
+    state.am_map.min_w = (2 as i32 * 16 as i32 * FRACUNIT) as fixed_t;
+    state.am_map.min_h = (2 as i32 * 16 as i32 * FRACUNIT) as fixed_t;
+    a = FixedDiv((state.am_map.f_w as fixed_t) << FRACBITS, state.am_map.max_w);
+    b = FixedDiv((state.am_map.f_h as fixed_t) << FRACBITS, state.am_map.max_h);
+    state.am_map.min_scale_mtof = if a < b { a } else { b };
+    state.am_map.max_scale_mtof = FixedDiv(
+        (state.am_map.f_h as fixed_t) << FRACBITS,
         2 as fixed_t * 16 as fixed_t * FRACUNIT,
     );
 }
@@ -640,7 +640,7 @@ pub unsafe fn AM_changeWindowLoc(state: &mut GameState) {
     state.am_map.m_x2 = state.am_map.m_x + state.am_map.m_w;
     state.am_map.m_y2 = state.am_map.m_y + state.am_map.m_h;
 }
-pub unsafe fn AM_initVariables() {
+pub unsafe fn AM_initVariables(state: &mut GameState) {
     let mut pnum: i32 = 0;
     const st_notify: event_t = event_t {
         type_0: ev_keyup,
@@ -649,34 +649,34 @@ pub unsafe fn AM_initVariables() {
         data3: 0 as i32,
         data4: 0,
     };
-    unsafe { game_state() }.am_map.automapactive = true;
-    unsafe { game_state() }.am_map.fb = unsafe { game_state() }.i_video.I_VideoBuffer;
-    unsafe { game_state() }.am_map.f_oldloc.x = INT_MAX as fixed_t;
-    unsafe { game_state() }.am_map.amclock = 0 as i32;
-    unsafe { game_state() }.am_map.lightlev = 0 as i32;
-    unsafe { game_state() }.am_map.m_paninc.y = 0 as i32 as fixed_t;
-    unsafe { game_state() }.am_map.m_paninc.x = unsafe { game_state() }.am_map.m_paninc.y;
-    unsafe { game_state() }.am_map.ftom_zoommul = FRACUNIT as fixed_t;
-    unsafe { game_state() }.am_map.mtof_zoommul = FRACUNIT as fixed_t;
-    unsafe { game_state() }.am_map.m_w = FixedMul((unsafe { game_state() }.am_map.f_w as fixed_t) << 16 as i32, unsafe { game_state() }.am_map.scale_ftom);
-    unsafe { game_state() }.am_map.m_h = FixedMul((unsafe { game_state() }.am_map.f_h as fixed_t) << 16 as i32, unsafe { game_state() }.am_map.scale_ftom);
-    if unsafe { game_state() }.g_game.playeringame
-        [unsafe { game_state() }.g_game.consoleplayer as usize]
+    state.am_map.automapactive = true;
+    state.am_map.fb = state.i_video.I_VideoBuffer;
+    state.am_map.f_oldloc.x = INT_MAX as fixed_t;
+    state.am_map.amclock = 0 as i32;
+    state.am_map.lightlev = 0 as i32;
+    state.am_map.m_paninc.y = 0 as i32 as fixed_t;
+    state.am_map.m_paninc.x = state.am_map.m_paninc.y;
+    state.am_map.ftom_zoommul = FRACUNIT as fixed_t;
+    state.am_map.mtof_zoommul = FRACUNIT as fixed_t;
+    state.am_map.m_w = FixedMul((state.am_map.f_w as fixed_t) << 16 as i32, state.am_map.scale_ftom);
+    state.am_map.m_h = FixedMul((state.am_map.f_h as fixed_t) << 16 as i32, state.am_map.scale_ftom);
+    if state.g_game.playeringame
+        [state.g_game.consoleplayer as usize]
         != 0
     {
-        unsafe { game_state() }.am_map.plr = (&raw mut unsafe { game_state() }.g_game.players
+        state.am_map.plr = (&raw mut state.g_game.players
             as *mut player_t)
-            .offset(unsafe { game_state() }.g_game.consoleplayer as isize)
+            .offset(state.g_game.consoleplayer as isize)
             as *mut player_t;
     } else {
-        unsafe { game_state() }.am_map.plr =
-            (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+        state.am_map.plr =
+            (&raw mut state.g_game.players as *mut player_t)
                 .offset(0 as i32 as isize) as *mut player_t;
         pnum = 0 as i32;
         while pnum < MAXPLAYERS {
-            if unsafe { game_state() }.g_game.playeringame[pnum as usize] != 0 {
-                unsafe { game_state() }.am_map.plr =
-                    (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+            if state.g_game.playeringame[pnum as usize] != 0 {
+                state.am_map.plr =
+                    (&raw mut state.g_game.players as *mut player_t)
                         .offset(pnum as isize) as *mut player_t;
                 break;
             } else {
@@ -684,18 +684,18 @@ pub unsafe fn AM_initVariables() {
             }
         }
     }
-    unsafe { game_state() }.am_map.m_x =
-        ((*(*unsafe { game_state() }.am_map.plr).mo).x as i32 - unsafe { game_state() }.am_map.m_w as i32 / 2 as i32) as fixed_t;
-    unsafe { game_state() }.am_map.m_y =
-        ((*(*unsafe { game_state() }.am_map.plr).mo).y as i32 - unsafe { game_state() }.am_map.m_h as i32 / 2 as i32) as fixed_t;
-    AM_changeWindowLoc(unsafe { game_state() });
-    unsafe { game_state() }.am_map.old_m_x = unsafe { game_state() }.am_map.m_x;
-    unsafe { game_state() }.am_map.old_m_y = unsafe { game_state() }.am_map.m_y;
-    unsafe { game_state() }.am_map.old_m_w = unsafe { game_state() }.am_map.m_w;
-    unsafe { game_state() }.am_map.old_m_h = unsafe { game_state() }.am_map.m_h;
-    ST_Responder(unsafe { game_state() }, &st_notify);
+    state.am_map.m_x =
+        ((*(*state.am_map.plr).mo).x as i32 - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
+    state.am_map.m_y =
+        ((*(*state.am_map.plr).mo).y as i32 - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
+    AM_changeWindowLoc(state);
+    state.am_map.old_m_x = state.am_map.m_x;
+    state.am_map.old_m_y = state.am_map.m_y;
+    state.am_map.old_m_w = state.am_map.m_w;
+    state.am_map.old_m_h = state.am_map.m_h;
+    ST_Responder(state, &st_notify);
 }
-pub unsafe fn AM_loadPics() {
+pub unsafe fn AM_loadPics(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
     i = 0 as i32;
@@ -706,7 +706,7 @@ pub unsafe fn AM_loadPics() {
             b"AMMNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
             i,
         );
-        unsafe { game_state() }.am_map.marknums[i as usize] = W_CacheLumpName(
+        state.am_map.marknums[i as usize] = W_CacheLumpName(
             &wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char),
             PU_STATIC as i32,
         ) as *mut patch_t;
@@ -730,30 +730,30 @@ pub unsafe fn AM_unloadPics() {
         i += 1;
     }
 }
-pub unsafe fn AM_clearMarks() {
+pub unsafe fn AM_clearMarks(state: &mut GameState) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < AM_NUMMARKPOINTS {
-        unsafe { game_state() }.am_map.markpoints[i as usize].x = -(1 as i32) as fixed_t;
+        state.am_map.markpoints[i as usize].x = -(1 as i32) as fixed_t;
         i += 1;
     }
-    unsafe { game_state() }.am_map.markpointnum = 0 as i32;
+    state.am_map.markpointnum = 0 as i32;
 }
-pub unsafe fn AM_LevelInit() {
-    unsafe { game_state() }.am_map.leveljuststarted = 0 as i32;
-    unsafe { game_state() }.am_map.f_y = 0 as i32;
-    unsafe { game_state() }.am_map.f_x = unsafe { game_state() }.am_map.f_y;
-    unsafe { game_state() }.am_map.f_w = finit_width;
-    unsafe { game_state() }.am_map.f_h = finit_height;
-    AM_clearMarks();
-    AM_findMinMaxBoundaries();
-    unsafe { game_state() }.am_map.scale_mtof = FixedDiv(unsafe { game_state() }.am_map.min_scale_mtof, (0.7f64 * FRACUNIT as f64) as fixed_t);
-    if unsafe { game_state() }.am_map.scale_mtof > unsafe { game_state() }.am_map.max_scale_mtof {
-        unsafe { game_state() }.am_map.scale_mtof = unsafe { game_state() }.am_map.min_scale_mtof;
+pub unsafe fn AM_LevelInit(state: &mut GameState) {
+    state.am_map.leveljuststarted = 0 as i32;
+    state.am_map.f_y = 0 as i32;
+    state.am_map.f_x = state.am_map.f_y;
+    state.am_map.f_w = finit_width;
+    state.am_map.f_h = finit_height;
+    AM_clearMarks(state);
+    AM_findMinMaxBoundaries(state);
+    state.am_map.scale_mtof = FixedDiv(state.am_map.min_scale_mtof, (0.7f64 * FRACUNIT as f64) as fixed_t);
+    if state.am_map.scale_mtof > state.am_map.max_scale_mtof {
+        state.am_map.scale_mtof = state.am_map.min_scale_mtof;
     }
-    unsafe { game_state() }.am_map.scale_ftom = FixedDiv(FRACUNIT, unsafe { game_state() }.am_map.scale_mtof);
+    state.am_map.scale_ftom = FixedDiv(FRACUNIT, state.am_map.scale_mtof);
 }
-pub unsafe fn AM_Stop() {
+pub unsafe fn AM_Stop(state: &mut GameState) {
     const st_notify: event_t = event_t {
         type_0: ev_keydown,
         data1: ev_keyup as i32,
@@ -762,27 +762,27 @@ pub unsafe fn AM_Stop() {
         data4: 0,
     };
     AM_unloadPics();
-    unsafe { game_state() }.am_map.automapactive = false;
-    ST_Responder(unsafe { game_state() }, &st_notify);
-    unsafe { game_state() }.am_map.stopped = true;
+    state.am_map.automapactive = false;
+    ST_Responder(state, &st_notify);
+    state.am_map.stopped = true;
 }
-pub unsafe fn AM_Start() {
-    if !unsafe { game_state() }.am_map.stopped {
-        AM_Stop();
+pub unsafe fn AM_Start(state: &mut GameState) {
+    if !state.am_map.stopped {
+        AM_Stop(state);
     }
-    unsafe { game_state() }.am_map.stopped = false;
-    if unsafe { game_state() }.am_map.am_start_lastlevel != unsafe { game_state() }.g_game.gamemap
-        || unsafe { game_state() }.am_map.am_start_lastepisode
-            != unsafe { game_state() }.g_game.gameepisode
+    state.am_map.stopped = false;
+    if state.am_map.am_start_lastlevel != state.g_game.gamemap
+        || state.am_map.am_start_lastepisode
+            != state.g_game.gameepisode
     {
-        AM_LevelInit();
-        unsafe { game_state() }.am_map.am_start_lastlevel =
-            unsafe { game_state() }.g_game.gamemap;
-        unsafe { game_state() }.am_map.am_start_lastepisode =
-            unsafe { game_state() }.g_game.gameepisode;
+        AM_LevelInit(state);
+        state.am_map.am_start_lastlevel =
+            state.g_game.gamemap;
+        state.am_map.am_start_lastepisode =
+            state.g_game.gameepisode;
     }
-    AM_initVariables();
-    AM_loadPics();
+    AM_initVariables(state);
+    AM_loadPics(state);
 }
 pub unsafe fn AM_minOutWindowScale(state: &mut GameState) {
     state.am_map.scale_mtof = state.am_map.min_scale_mtof;
@@ -794,136 +794,136 @@ pub unsafe fn AM_maxOutWindowScale(state: &mut GameState) {
     state.am_map.scale_ftom = FixedDiv(FRACUNIT, state.am_map.scale_mtof);
     AM_activateNewScale(state);
 }
-pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
+pub unsafe fn AM_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
     let mut rc: i32 = 0;
     let mut key: i32 = 0;
     rc = false_0;
-    if !unsafe { game_state() }.am_map.automapactive {
+    if !state.am_map.automapactive {
         if (*ev).type_0 as u32 == ev_keydown as i32 as u32
-            && (*ev).data1 == unsafe { game_state() }.m_controls.key_map_toggle
+            && (*ev).data1 == state.m_controls.key_map_toggle
         {
-            AM_Start();
-            unsafe { game_state() }.g_game.viewactive = false;
+            AM_Start(state);
+            state.g_game.viewactive = false;
             rc = true_0;
         }
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
         rc = true_0;
         key = (*ev).data1;
-        if key == unsafe { game_state() }.m_controls.key_map_east {
-            if unsafe { game_state() }.am_map.followplayer == 0 {
-                unsafe { game_state() }.am_map.m_paninc.x = FixedMul((4 as fixed_t) << 16 as i32, unsafe { game_state() }.am_map.scale_ftom);
+        if key == state.m_controls.key_map_east {
+            if state.am_map.followplayer == 0 {
+                state.am_map.m_paninc.x = FixedMul((4 as fixed_t) << 16 as i32, state.am_map.scale_ftom);
             } else {
                 rc = false_0;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_west {
-            if unsafe { game_state() }.am_map.followplayer == 0 {
-                unsafe { game_state() }.am_map.m_paninc.x = -FixedMul((4 as fixed_t) << 16 as i32, unsafe { game_state() }.am_map.scale_ftom);
+        } else if key == state.m_controls.key_map_west {
+            if state.am_map.followplayer == 0 {
+                state.am_map.m_paninc.x = -FixedMul((4 as fixed_t) << 16 as i32, state.am_map.scale_ftom);
             } else {
                 rc = false_0;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_north {
-            if unsafe { game_state() }.am_map.followplayer == 0 {
-                unsafe { game_state() }.am_map.m_paninc.y = FixedMul((4 as fixed_t) << 16 as i32, unsafe { game_state() }.am_map.scale_ftom);
+        } else if key == state.m_controls.key_map_north {
+            if state.am_map.followplayer == 0 {
+                state.am_map.m_paninc.y = FixedMul((4 as fixed_t) << 16 as i32, state.am_map.scale_ftom);
             } else {
                 rc = false_0;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_south {
-            if unsafe { game_state() }.am_map.followplayer == 0 {
-                unsafe { game_state() }.am_map.m_paninc.y = -FixedMul((4 as fixed_t) << 16 as i32, unsafe { game_state() }.am_map.scale_ftom);
+        } else if key == state.m_controls.key_map_south {
+            if state.am_map.followplayer == 0 {
+                state.am_map.m_paninc.y = -FixedMul((4 as fixed_t) << 16 as i32, state.am_map.scale_ftom);
             } else {
                 rc = false_0;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_zoomout {
-            unsafe { game_state() }.am_map.mtof_zoommul = M_ZOOMOUT as fixed_t;
-            unsafe { game_state() }.am_map.ftom_zoommul = M_ZOOMIN as fixed_t;
-        } else if key == unsafe { game_state() }.m_controls.key_map_zoomin {
-            unsafe { game_state() }.am_map.mtof_zoommul = M_ZOOMIN as fixed_t;
-            unsafe { game_state() }.am_map.ftom_zoommul = M_ZOOMOUT as fixed_t;
-        } else if key == unsafe { game_state() }.m_controls.key_map_toggle {
-            unsafe { game_state() }.am_map.am_responder_bigstate = 0 as i32;
-            unsafe { game_state() }.g_game.viewactive = true;
-            AM_Stop();
-        } else if key == unsafe { game_state() }.m_controls.key_map_maxzoom {
-            unsafe { game_state() }.am_map.am_responder_bigstate =
-                (unsafe { game_state() }.am_map.am_responder_bigstate == 0) as i32;
-            if unsafe { game_state() }.am_map.am_responder_bigstate != 0 {
-                AM_saveScaleAndLoc();
-                AM_minOutWindowScale(unsafe { game_state() });
+        } else if key == state.m_controls.key_map_zoomout {
+            state.am_map.mtof_zoommul = M_ZOOMOUT as fixed_t;
+            state.am_map.ftom_zoommul = M_ZOOMIN as fixed_t;
+        } else if key == state.m_controls.key_map_zoomin {
+            state.am_map.mtof_zoommul = M_ZOOMIN as fixed_t;
+            state.am_map.ftom_zoommul = M_ZOOMOUT as fixed_t;
+        } else if key == state.m_controls.key_map_toggle {
+            state.am_map.am_responder_bigstate = 0 as i32;
+            state.g_game.viewactive = true;
+            AM_Stop(state);
+        } else if key == state.m_controls.key_map_maxzoom {
+            state.am_map.am_responder_bigstate =
+                (state.am_map.am_responder_bigstate == 0) as i32;
+            if state.am_map.am_responder_bigstate != 0 {
+                AM_saveScaleAndLoc(state);
+                AM_minOutWindowScale(state);
             } else {
-                AM_restoreScaleAndLoc();
+                AM_restoreScaleAndLoc(state);
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_follow {
-            unsafe { game_state() }.am_map.followplayer = (unsafe { game_state() }.am_map.followplayer == 0) as i32;
-            unsafe { game_state() }.am_map.f_oldloc.x = INT_MAX as fixed_t;
-            if unsafe { game_state() }.am_map.followplayer != 0 {
-                (*unsafe { game_state() }.am_map.plr).message = b"Follow Mode ON\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
-            } else {
-                (*unsafe { game_state() }.am_map.plr).message = b"Follow Mode OFF\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
-            }
-        } else if key == unsafe { game_state() }.m_controls.key_map_grid {
-            unsafe { game_state() }.am_map.grid = (unsafe { game_state() }.am_map.grid == 0) as i32;
-            if unsafe { game_state() }.am_map.grid != 0 {
-                (*unsafe { game_state() }.am_map.plr).message = b"Grid ON\0" as *const u8
+        } else if key == state.m_controls.key_map_follow {
+            state.am_map.followplayer = (state.am_map.followplayer == 0) as i32;
+            state.am_map.f_oldloc.x = INT_MAX as fixed_t;
+            if state.am_map.followplayer != 0 {
+                (*state.am_map.plr).message = b"Follow Mode ON\0" as *const u8
                     as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
             } else {
-                (*unsafe { game_state() }.am_map.plr).message = b"Grid OFF\0" as *const u8
+                (*state.am_map.plr).message = b"Follow Mode OFF\0" as *const u8
                     as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_mark {
+        } else if key == state.m_controls.key_map_grid {
+            state.am_map.grid = (state.am_map.grid == 0) as i32;
+            if state.am_map.grid != 0 {
+                (*state.am_map.plr).message = b"Grid ON\0" as *const u8
+                    as *const ::core::ffi::c_char
+                    as *mut ::core::ffi::c_char;
+            } else {
+                (*state.am_map.plr).message = b"Grid OFF\0" as *const u8
+                    as *const ::core::ffi::c_char
+                    as *mut ::core::ffi::c_char;
+            }
+        } else if key == state.m_controls.key_map_mark {
             M_snprintf(
-                &raw mut unsafe { game_state() }.am_map.am_responder_buffer as *mut ::core::ffi::c_char,
+                &raw mut state.am_map.am_responder_buffer as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 20]>() as size_t,
                 b"%s %d\0" as *const u8 as *const ::core::ffi::c_char,
                 b"Marked Spot\0" as *const u8 as *const ::core::ffi::c_char,
-                unsafe { game_state() }.am_map.markpointnum,
+                state.am_map.markpointnum,
             );
-            (*unsafe { game_state() }.am_map.plr).message =
-                &raw mut unsafe { game_state() }.am_map.am_responder_buffer as *mut ::core::ffi::c_char;
-            AM_addMark();
-        } else if key == unsafe { game_state() }.m_controls.key_map_clearmark {
-            AM_clearMarks();
-            (*unsafe { game_state() }.am_map.plr).message = b"All Marks Cleared\0" as *const u8
+            (*state.am_map.plr).message =
+                &raw mut state.am_map.am_responder_buffer as *mut ::core::ffi::c_char;
+            AM_addMark(state);
+        } else if key == state.m_controls.key_map_clearmark {
+            AM_clearMarks(state);
+            (*state.am_map.plr).message = b"All Marks Cleared\0" as *const u8
                 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
         } else {
             rc = false_0;
         }
-        if unsafe { game_state() }.g_game.deathmatch == 0
-            && cht_CheckCheat(&raw mut unsafe { game_state() }.am_map.cheat_amap, (*ev).data2 as ::core::ffi::c_char) != 0
+        if state.g_game.deathmatch == 0
+            && cht_CheckCheat(&raw mut state.am_map.cheat_amap, (*ev).data2 as ::core::ffi::c_char) != 0
         {
             rc = false_0;
-            unsafe { game_state() }.am_map.cheating = (unsafe { game_state() }.am_map.cheating + 1 as i32) % 3 as i32;
+            state.am_map.cheating = (state.am_map.cheating + 1 as i32) % 3 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_keyup as i32 as u32 {
         rc = false_0;
         key = (*ev).data1;
-        if key == unsafe { game_state() }.m_controls.key_map_east {
-            if unsafe { game_state() }.am_map.followplayer == 0 {
-                unsafe { game_state() }.am_map.m_paninc.x = 0 as i32 as fixed_t;
+        if key == state.m_controls.key_map_east {
+            if state.am_map.followplayer == 0 {
+                state.am_map.m_paninc.x = 0 as i32 as fixed_t;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_west {
-            if unsafe { game_state() }.am_map.followplayer == 0 {
-                unsafe { game_state() }.am_map.m_paninc.x = 0 as i32 as fixed_t;
+        } else if key == state.m_controls.key_map_west {
+            if state.am_map.followplayer == 0 {
+                state.am_map.m_paninc.x = 0 as i32 as fixed_t;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_north {
-            if unsafe { game_state() }.am_map.followplayer == 0 {
-                unsafe { game_state() }.am_map.m_paninc.y = 0 as i32 as fixed_t;
+        } else if key == state.m_controls.key_map_north {
+            if state.am_map.followplayer == 0 {
+                state.am_map.m_paninc.y = 0 as i32 as fixed_t;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_south {
-            if unsafe { game_state() }.am_map.followplayer == 0 {
-                unsafe { game_state() }.am_map.m_paninc.y = 0 as i32 as fixed_t;
+        } else if key == state.m_controls.key_map_south {
+            if state.am_map.followplayer == 0 {
+                state.am_map.m_paninc.y = 0 as i32 as fixed_t;
             }
-        } else if key == unsafe { game_state() }.m_controls.key_map_zoomout
-            || key == unsafe { game_state() }.m_controls.key_map_zoomin
+        } else if key == state.m_controls.key_map_zoomout
+            || key == state.m_controls.key_map_zoomin
         {
-            unsafe { game_state() }.am_map.mtof_zoommul = FRACUNIT as fixed_t;
-            unsafe { game_state() }.am_map.ftom_zoommul = FRACUNIT as fixed_t;
+            state.am_map.mtof_zoommul = FRACUNIT as fixed_t;
+            state.am_map.ftom_zoommul = FRACUNIT as fixed_t;
         }
     }
     return rc != 0;
