@@ -456,68 +456,68 @@ pub unsafe fn D_Display(state: &mut GameState) {
         }
     }
 }
-pub unsafe fn D_BindVariables() {
+pub unsafe fn D_BindVariables(state: &mut GameState) {
     let mut i: i32 = 0;
-    I_BindJoystickVariables(unsafe { &mut game_state().i_joystick });
-    I_BindSoundVariables(unsafe { game_state() });
+    I_BindJoystickVariables(&mut state.i_joystick);
+    I_BindSoundVariables(state);
     M_BindBaseControls();
     M_BindWeaponControls();
     M_BindMapControls();
     M_BindMenuControls();
     M_BindChatControls(MAXPLAYERS as u32);
-    unsafe { game_state() }.m_controls.key_multi_msgplayer[0 as i32 as usize] = HUSTR_KEYGREEN;
-    unsafe { game_state() }.m_controls.key_multi_msgplayer[1 as i32 as usize] = HUSTR_KEYINDIGO;
-    unsafe { game_state() }.m_controls.key_multi_msgplayer[2 as i32 as usize] = HUSTR_KEYBROWN;
-    unsafe { game_state() }.m_controls.key_multi_msgplayer[3 as i32 as usize] = HUSTR_KEYRED;
+    state.m_controls.key_multi_msgplayer[0 as i32 as usize] = HUSTR_KEYGREEN;
+    state.m_controls.key_multi_msgplayer[1 as i32 as usize] = HUSTR_KEYINDIGO;
+    state.m_controls.key_multi_msgplayer[2 as i32 as usize] = HUSTR_KEYBROWN;
+    state.m_controls.key_multi_msgplayer[3 as i32 as usize] = HUSTR_KEYRED;
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouse_sensitivity",
-        &raw mut unsafe { game_state() }.m_menu.mouseSensitivity as *mut ::core::ffi::c_void,
+        &raw mut state.m_menu.mouseSensitivity as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "sfx_volume",
-        &raw mut unsafe { game_state() }.s_sound.sfxVolume as *mut ::core::ffi::c_void,
+        &raw mut state.s_sound.sfxVolume as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "music_volume",
-        &raw mut unsafe { game_state() }.s_sound.musicVolume as *mut ::core::ffi::c_void,
+        &raw mut state.s_sound.musicVolume as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "show_messages",
-        &raw mut unsafe { game_state() }.m_menu.showMessages as *mut ::core::ffi::c_void,
+        &raw mut state.m_menu.showMessages as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "screenblocks",
-        &raw mut unsafe { game_state() }.m_menu.screenblocks as *mut ::core::ffi::c_void,
+        &raw mut state.m_menu.screenblocks as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "detaillevel",
-        &raw mut unsafe { game_state() }.m_menu.detailLevel as *mut ::core::ffi::c_void,
+        &raw mut state.m_menu.detailLevel as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "snd_channels",
-        &raw mut unsafe { game_state() }.s_sound.snd_channels as *mut ::core::ffi::c_void,
+        &raw mut state.s_sound.snd_channels as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "vanilla_savegame_limit",
-        &raw mut unsafe { game_state() }.g_game.vanilla_savegame_limit as *mut ::core::ffi::c_void,
+        &raw mut state.g_game.vanilla_savegame_limit as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "vanilla_demo_limit",
-        &raw mut unsafe { game_state() }.g_game.vanilla_demo_limit as *mut ::core::ffi::c_void,
+        &raw mut state.g_game.vanilla_demo_limit as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "show_endoom",
-        &raw mut unsafe { game_state() }.d_main.show_endoom as *mut ::core::ffi::c_void,
+        &raw mut state.d_main.show_endoom as *mut ::core::ffi::c_void,
     );
     i = 0 as i32;
     while i < 10 as i32 {
@@ -529,11 +529,11 @@ pub unsafe fn D_BindVariables() {
             i,
         );
         M_BindVariable(
-            unsafe { &mut game_state().m_config },
+            &mut state.m_config,
             ::std::ffi::CStr::from_ptr(&raw mut buf as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),
-            (&raw mut unsafe { game_state() }.hu_stuff.chat_macros as *mut *mut ::core::ffi::c_char)
+            (&raw mut state.hu_stuff.chat_macros as *mut *mut ::core::ffi::c_char)
                 .offset(i as isize) as *mut *mut ::core::ffi::c_char
                 as *mut ::core::ffi::c_void,
         );
@@ -1149,7 +1149,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         b"doomgenericdoom.cfg\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char,
     );
-    D_BindVariables();
+    D_BindVariables(state);
     M_LoadDefaults(state);
     I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
     state.d_main.iwadfile = D_FindIWAD(
