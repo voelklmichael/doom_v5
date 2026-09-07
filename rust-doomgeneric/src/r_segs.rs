@@ -182,7 +182,7 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
                 as fixed_t;
             col = R_GetColumn(texnum, *unsafe { game_state() }.r_segs.maskedtexturecol.offset(unsafe { game_state() }.r_draw.dc_x as isize) as i32)
                 .offset(-(3 as i32 as isize)) as *mut column_t;
-            R_DrawMaskedColumn(col);
+            R_DrawMaskedColumn(unsafe { game_state() }, col);
             *unsafe { game_state() }.r_segs.maskedtexturecol.offset(unsafe { game_state() }.r_draw.dc_x as isize) = SHRT_MAX as i16;
         }
         unsafe { game_state() }.r_things.spryscale += unsafe { game_state() }.r_segs.rw_scalestep;

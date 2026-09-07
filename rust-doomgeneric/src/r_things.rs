@@ -393,96 +393,96 @@ pub unsafe fn R_InitSprites(mut namelist: *mut *mut ::core::ffi::c_char) {
     }
     R_InitSpriteDefs(namelist);
 }
-pub unsafe fn R_ClearSprites() {
-    unsafe { game_state() }.r_things.vissprite_p =
-        &raw mut unsafe { game_state() }.r_things.vissprites as *mut vissprite_t;
+pub unsafe fn R_ClearSprites(state: &mut GameState) {
+    state.r_things.vissprite_p =
+        &raw mut state.r_things.vissprites as *mut vissprite_t;
 }
-pub unsafe fn R_NewVisSprite() -> *mut vissprite_t {
-    if unsafe { game_state() }.r_things.vissprite_p
-        == (&raw mut unsafe { game_state() }.r_things.vissprites as *mut vissprite_t)
+pub unsafe fn R_NewVisSprite(state: &mut GameState) -> *mut vissprite_t {
+    if state.r_things.vissprite_p
+        == (&raw mut state.r_things.vissprites as *mut vissprite_t)
             .offset(MAXVISSPRITES as isize) as *mut vissprite_t
     {
-        return &raw mut unsafe { game_state() }.r_things.overflowsprite;
+        return &raw mut state.r_things.overflowsprite;
     }
-    unsafe { game_state() }.r_things.vissprite_p =
-        unsafe { game_state() }.r_things.vissprite_p.offset(1);
-    return unsafe { game_state() }
+    state.r_things.vissprite_p =
+        state.r_things.vissprite_p.offset(1);
+    return state
         .r_things
         .vissprite_p
         .offset(-(1 as i32 as isize));
 }
-pub unsafe fn R_DrawMaskedColumn(mut column: *mut column_t) {
+pub unsafe fn R_DrawMaskedColumn(state: &mut GameState, mut column: *mut column_t) {
     let mut topscreen: i32 = 0;
     let mut bottomscreen: i32 = 0;
     let mut basetexturemid: fixed_t = 0;
-    basetexturemid = unsafe { game_state() }.r_draw.dc_texturemid;
+    basetexturemid = state.r_draw.dc_texturemid;
     while (*column).topdelta as i32 != 0xff as i32 {
-        topscreen = unsafe { game_state() }.r_things.sprtopscreen as i32
-            + unsafe { game_state() }.r_things.spryscale as i32 * (*column).topdelta as i32;
+        topscreen = state.r_things.sprtopscreen as i32
+            + state.r_things.spryscale as i32 * (*column).topdelta as i32;
         bottomscreen =
-            topscreen + unsafe { game_state() }.r_things.spryscale as i32 * (*column).length as i32;
-        unsafe { game_state() }.r_draw.dc_yl = topscreen + FRACUNIT - 1 as i32 >> FRACBITS;
-        unsafe { game_state() }.r_draw.dc_yh = bottomscreen - 1 as i32 >> FRACBITS;
-        if unsafe { game_state() }.r_draw.dc_yh
-            >= *unsafe { game_state() }
+            topscreen + state.r_things.spryscale as i32 * (*column).length as i32;
+        state.r_draw.dc_yl = topscreen + FRACUNIT - 1 as i32 >> FRACBITS;
+        state.r_draw.dc_yh = bottomscreen - 1 as i32 >> FRACBITS;
+        if state.r_draw.dc_yh
+            >= *state
                 .r_things
                 .mfloorclip
-                .offset(unsafe { game_state() }.r_draw.dc_x as isize) as i32
+                .offset(state.r_draw.dc_x as isize) as i32
         {
-            unsafe { game_state() }.r_draw.dc_yh = *unsafe { game_state() }
+            state.r_draw.dc_yh = *state
                 .r_things
                 .mfloorclip
-                .offset(unsafe { game_state() }.r_draw.dc_x as isize) as i32
+                .offset(state.r_draw.dc_x as isize) as i32
                 - 1 as i32;
         }
-        if unsafe { game_state() }.r_draw.dc_yl
-            <= *unsafe { game_state() }
+        if state.r_draw.dc_yl
+            <= *state
                 .r_things
                 .mceilingclip
-                .offset(unsafe { game_state() }.r_draw.dc_x as isize) as i32
+                .offset(state.r_draw.dc_x as isize) as i32
         {
-            unsafe { game_state() }.r_draw.dc_yl = *unsafe { game_state() }
+            state.r_draw.dc_yl = *state
                 .r_things
                 .mceilingclip
-                .offset(unsafe { game_state() }.r_draw.dc_x as isize) as i32
+                .offset(state.r_draw.dc_x as isize) as i32
                 + 1 as i32;
         }
-        if unsafe { game_state() }.r_draw.dc_yl <= unsafe { game_state() }.r_draw.dc_yh {
-            unsafe { game_state() }.r_draw.dc_source = (column as *mut byte).offset(3 as i32 as isize);
-            unsafe { game_state() }.r_draw.dc_texturemid =
+        if state.r_draw.dc_yl <= state.r_draw.dc_yh {
+            state.r_draw.dc_source = (column as *mut byte).offset(3 as i32 as isize);
+            state.r_draw.dc_texturemid =
                 (basetexturemid as i32 - (((*column).topdelta as i32) << FRACBITS)) as fixed_t;
-            unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
+            state.r_main.colfunc.expect("non-null function pointer")();
         }
         column = (column as *mut byte)
             .offset((*column).length as i32 as isize)
             .offset(4 as i32 as isize) as *mut column_t;
     }
-    unsafe { game_state() }.r_draw.dc_texturemid = basetexturemid;
+    state.r_draw.dc_texturemid = basetexturemid;
 }
-pub unsafe fn R_DrawVisSprite(mut vis: *mut vissprite_t, mut x1: i32, mut x2: i32) {
+pub unsafe fn R_DrawVisSprite(state: &mut GameState, mut vis: *mut vissprite_t, mut x1: i32, mut x2: i32) {
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
     let mut texturecolumn: i32 = 0;
     let mut frac: fixed_t = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    patch = W_CacheLumpNum((*vis).patch + unsafe { game_state() }.r_data.firstspritelump, PU_CACHE as i32) as *mut patch_t;
-    unsafe { game_state() }.r_draw.dc_colormap = (*vis).colormap;
-    if unsafe { game_state() }.r_draw.dc_colormap.is_null() {
-        unsafe { game_state() }.r_main.colfunc = unsafe { game_state() }.r_main.fuzzcolfunc;
+    patch = W_CacheLumpNum((*vis).patch + state.r_data.firstspritelump, PU_CACHE as i32) as *mut patch_t;
+    state.r_draw.dc_colormap = (*vis).colormap;
+    if state.r_draw.dc_colormap.is_null() {
+        state.r_main.colfunc = state.r_main.fuzzcolfunc;
     } else if (*vis).mobjflags & MF_TRANSLATION as i32 != 0 {
-        unsafe { game_state() }.r_main.colfunc = unsafe { game_state() }.r_main.transcolfunc;
-        unsafe { game_state() }.r_draw.dc_translation = unsafe { game_state() }.r_draw.translationtables.offset(-(256 as i32 as isize)).offset(
+        state.r_main.colfunc = state.r_main.transcolfunc;
+        state.r_draw.dc_translation = state.r_draw.translationtables.offset(-(256 as i32 as isize)).offset(
             (((*vis).mobjflags & MF_TRANSLATION as i32) >> MF_TRANSSHIFT as i32 - 8 as i32)
                 as isize,
         );
     }
-    unsafe { game_state() }.r_draw.dc_iscale = (((*vis).xiscale as i32).abs() >> unsafe { game_state() }.r_main.detailshift) as fixed_t;
-    unsafe { game_state() }.r_draw.dc_texturemid = (*vis).texturemid;
+    state.r_draw.dc_iscale = (((*vis).xiscale as i32).abs() >> state.r_main.detailshift) as fixed_t;
+    state.r_draw.dc_texturemid = (*vis).texturemid;
     frac = (*vis).startfrac;
-    unsafe { game_state() }.r_things.spryscale = (*vis).scale;
-    unsafe { game_state() }.r_things.sprtopscreen =
-        unsafe { game_state() }.r_main.centeryfrac - FixedMul(unsafe { game_state() }.r_draw.dc_texturemid, unsafe { game_state() }.r_things.spryscale);
-    unsafe { game_state() }.r_draw.dc_x = (*vis).x1;
-    while unsafe { game_state() }.r_draw.dc_x <= (*vis).x2 {
+    state.r_things.spryscale = (*vis).scale;
+    state.r_things.sprtopscreen =
+        state.r_main.centeryfrac - FixedMul(state.r_draw.dc_texturemid, state.r_things.spryscale);
+    state.r_draw.dc_x = (*vis).x1;
+    while state.r_draw.dc_x <= (*vis).x2 {
         texturecolumn = (frac >> FRACBITS) as i32;
         if texturecolumn < 0 as i32 || texturecolumn >= (*patch).width as i32 {
             I_Error("R_DrawSpriteRange: bad texturecolumn");
@@ -490,11 +490,11 @@ pub unsafe fn R_DrawVisSprite(mut vis: *mut vissprite_t, mut x1: i32, mut x2: i3
         column = (patch as *mut byte).offset(
             *(&raw const (*patch).columnofs as *const i32).offset(texturecolumn as isize) as isize,
         ) as *mut column_t;
-        R_DrawMaskedColumn(column);
-        unsafe { game_state() }.r_draw.dc_x += 1;
+        R_DrawMaskedColumn(state, column);
+        state.r_draw.dc_x += 1;
         frac += (*vis).xiscale;
     }
-    unsafe { game_state() }.r_main.colfunc = unsafe { game_state() }.r_main.basecolfunc;
+    state.r_main.colfunc = state.r_main.basecolfunc;
 }
 pub unsafe fn R_ProjectSprite(state: &mut GameState, mut thing: *mut mobj_t) {
     let mut tr_x: fixed_t = 0;
@@ -572,7 +572,7 @@ pub unsafe fn R_ProjectSprite(state: &mut GameState, mut thing: *mut mobj_t) {
     if x2 < 0 as i32 {
         return;
     }
-    vis = R_NewVisSprite();
+    vis = R_NewVisSprite(state);
     (*vis).mobjflags = (*thing).flags;
     (*vis).scale = xscale << state.r_main.detailshift;
     (*vis).gx = (*thing).x;
@@ -642,7 +642,7 @@ pub unsafe fn R_AddSprites(state: &mut GameState, mut sec: *mut sector_t) {
         thing = (*thing).snext as *mut mobj_t;
     }
 }
-pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
+pub unsafe fn R_DrawPSprite(state: &mut GameState, mut psp: *mut pspdef_t) {
     let mut tx: fixed_t = 0;
     let mut x1: i32 = 0;
     let mut x2: i32 = 0;
@@ -668,13 +668,13 @@ pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
         colormap: ::core::ptr::null::<lighttable_t>() as *mut lighttable_t,
         mobjflags: 0,
     };
-    if (*(*psp).state).sprite as u32 >= unsafe { game_state() }.r_things.numsprites as u32 {
+    if (*(*psp).state).sprite as u32 >= state.r_things.numsprites as u32 {
         I_Error(&format!(
             "R_ProjectSprite: invalid sprite number {} ",
             (*(*psp).state).sprite as u32,
         ));
     }
-    sprdef = unsafe { game_state() }
+    sprdef = state
         .r_things
         .sprites
         .offset((*(*psp).state).sprite as isize) as *mut spritedef_t;
@@ -692,14 +692,14 @@ pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     lump = (*sprframe).lump[0 as i32 as usize] as i32;
     flip = (*sprframe).flip[0 as i32 as usize] != 0;
     tx = ((*psp).sx as i32 - 160 as i32 * FRACUNIT) as fixed_t;
-    tx -= *unsafe { game_state() }.r_data.spriteoffset.offset(lump as isize);
-    x1 = (unsafe { game_state() }.r_main.centerxfrac + FixedMul(tx, unsafe { game_state() }.r_things.pspritescale) >> FRACBITS)
+    tx -= *state.r_data.spriteoffset.offset(lump as isize);
+    x1 = (state.r_main.centerxfrac + FixedMul(tx, state.r_things.pspritescale) >> FRACBITS)
         as i32;
-    if x1 > unsafe { game_state() }.r_draw.viewwidth {
+    if x1 > state.r_draw.viewwidth {
         return;
     }
-    tx += *unsafe { game_state() }.r_data.spritewidth.offset(lump as isize);
-    x2 = (unsafe { game_state() }.r_main.centerxfrac as i32 + FixedMul(tx, unsafe { game_state() }.r_things.pspritescale) as i32
+    tx += *state.r_data.spritewidth.offset(lump as isize);
+    x2 = (state.r_main.centerxfrac as i32 + FixedMul(tx, state.r_things.pspritescale) as i32
         >> FRACBITS)
         - 1 as i32;
     if x2 < 0 as i32 {
@@ -708,79 +708,79 @@ pub unsafe fn R_DrawPSprite(mut psp: *mut pspdef_t) {
     vis = &raw mut avis;
     (*vis).mobjflags = 0 as i32;
     (*vis).texturemid = (BASEYCENTER << FRACBITS) + FRACUNIT / 2 as fixed_t
-        - ((*psp).sy - *unsafe { game_state() }.r_data.spritetopoffset.offset(lump as isize));
+        - ((*psp).sy - *state.r_data.spritetopoffset.offset(lump as isize));
     (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
-    (*vis).x2 = if x2 >= unsafe { game_state() }.r_draw.viewwidth {
-        unsafe { game_state() }.r_draw.viewwidth - 1 as i32
+    (*vis).x2 = if x2 >= state.r_draw.viewwidth {
+        state.r_draw.viewwidth - 1 as i32
     } else {
         x2
     };
-    (*vis).scale = unsafe { game_state() }.r_things.pspritescale << unsafe { game_state() }.r_main.detailshift;
+    (*vis).scale = state.r_things.pspritescale << state.r_main.detailshift;
     if flip {
-        (*vis).xiscale = -unsafe { game_state() }.r_things.pspriteiscale;
-        (*vis).startfrac = (*unsafe { game_state() }.r_data.spritewidth.offset(lump as isize) as i32 - 1 as i32) as fixed_t;
+        (*vis).xiscale = -state.r_things.pspriteiscale;
+        (*vis).startfrac = (*state.r_data.spritewidth.offset(lump as isize) as i32 - 1 as i32) as fixed_t;
     } else {
-        (*vis).xiscale = unsafe { game_state() }.r_things.pspriteiscale;
+        (*vis).xiscale = state.r_things.pspriteiscale;
         (*vis).startfrac = 0 as i32 as fixed_t;
     }
     if (*vis).x1 > x1 {
         (*vis).startfrac += (*vis).xiscale as i32 * ((*vis).x1 - x1);
     }
     (*vis).patch = lump;
-    if (*unsafe { game_state() }.r_main.viewplayer).powers[pw_invisibility as i32 as usize] > 4 as i32 * 32 as i32
-        || (*unsafe { game_state() }.r_main.viewplayer).powers[pw_invisibility as i32 as usize] & 8 as i32 != 0
+    if (*state.r_main.viewplayer).powers[pw_invisibility as i32 as usize] > 4 as i32 * 32 as i32
+        || (*state.r_main.viewplayer).powers[pw_invisibility as i32 as usize] & 8 as i32 != 0
     {
         (*vis).colormap = ::core::ptr::null_mut::<lighttable_t>();
-    } else if !unsafe { game_state() }.r_main.fixedcolormap.is_null() {
-        (*vis).colormap = unsafe { game_state() }.r_main.fixedcolormap;
+    } else if !state.r_main.fixedcolormap.is_null() {
+        (*vis).colormap = state.r_main.fixedcolormap;
     } else if (*(*psp).state).frame & FF_FULLBRIGHT != 0 {
-        (*vis).colormap = unsafe { game_state() }.r_data.colormaps;
+        (*vis).colormap = state.r_data.colormaps;
     } else {
-        (*vis).colormap = *unsafe { game_state() }
+        (*vis).colormap = *state
             .r_things
             .spritelights
             .offset((MAXLIGHTSCALE - 1 as i32) as isize);
     }
-    R_DrawVisSprite(vis, (*vis).x1, (*vis).x2);
+    R_DrawVisSprite(state, vis, (*vis).x1, (*vis).x2);
 }
-pub unsafe fn R_DrawPlayerSprites() {
+pub unsafe fn R_DrawPlayerSprites(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut lightnum: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
-    lightnum = ((*unsafe { game_state() }.p_setup.sector_mut(
-        (*(*(*unsafe { game_state() }.r_main.viewplayer).mo).subsector).sector,
+    lightnum = ((*state.p_setup.sector_mut(
+        (*(*(*state.r_main.viewplayer).mo).subsector).sector,
     ))
     .lightlevel as i32
         >> LIGHTSEGSHIFT)
-        + unsafe { game_state() }.r_main.extralight;
+        + state.r_main.extralight;
     if lightnum < 0 as i32 {
-        unsafe { game_state() }.r_things.spritelights =
-            &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
+        state.r_things.spritelights =
+            &raw mut *(&raw mut state.r_main.scalelight as *mut [*mut lighttable_t; 48])
                 .offset(0 as i32 as isize) as *mut *mut lighttable_t;
     } else if lightnum >= LIGHTLEVELS {
-        unsafe { game_state() }.r_things.spritelights =
-            &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
+        state.r_things.spritelights =
+            &raw mut *(&raw mut state.r_main.scalelight as *mut [*mut lighttable_t; 48])
                 .offset((LIGHTLEVELS - 1 as i32) as isize) as *mut *mut lighttable_t;
     } else {
-        unsafe { game_state() }.r_things.spritelights =
-            &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
+        state.r_things.spritelights =
+            &raw mut *(&raw mut state.r_main.scalelight as *mut [*mut lighttable_t; 48])
                 .offset(lightnum as isize) as *mut *mut lighttable_t;
     }
-    unsafe { game_state() }.r_things.mfloorclip =
-        &raw mut unsafe { game_state() }.r_things.screenheightarray as *mut i16;
-    unsafe { game_state() }.r_things.mceilingclip =
-        &raw mut unsafe { game_state() }.r_things.negonearray as *mut i16;
+    state.r_things.mfloorclip =
+        &raw mut state.r_things.screenheightarray as *mut i16;
+    state.r_things.mceilingclip =
+        &raw mut state.r_things.negonearray as *mut i16;
     i = 0 as i32;
-    psp = &raw mut (*unsafe { game_state() }.r_main.viewplayer).psprites as *mut pspdef_t;
+    psp = &raw mut (*state.r_main.viewplayer).psprites as *mut pspdef_t;
     while i < NUMPSPRITES as i32 {
         if !(*psp).state.is_null() {
-            R_DrawPSprite(psp);
+            R_DrawPSprite(state, psp);
         }
         i += 1;
         psp = psp.offset(1);
     }
 }
-pub unsafe fn R_SortVisSprites() {
+pub unsafe fn R_SortVisSprites(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut count: i32 = 0;
     let mut ds: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
@@ -803,40 +803,40 @@ pub unsafe fn R_SortVisSprites() {
         mobjflags: 0,
     };
     let mut bestscale: fixed_t = 0;
-    count = unsafe { game_state() }
+    count = state
         .r_things
         .vissprite_p
-        .offset_from(&raw mut unsafe { game_state() }.r_things.vissprites as *mut vissprite_t)
+        .offset_from(&raw mut state.r_things.vissprites as *mut vissprite_t)
         as i64 as i32;
     unsorted.prev = &raw mut unsorted as *mut vissprite_s;
     unsorted.next = unsorted.prev;
     if count == 0 {
         return;
     }
-    ds = &raw mut unsafe { game_state() }.r_things.vissprites as *mut vissprite_t;
-    while ds < unsafe { game_state() }.r_things.vissprite_p {
+    ds = &raw mut state.r_things.vissprites as *mut vissprite_t;
+    while ds < state.r_things.vissprite_p {
         (*ds).next = ds.offset(1 as i32 as isize) as *mut vissprite_s;
         (*ds).prev = ds.offset(-(1 as i32 as isize)) as *mut vissprite_s;
         ds = ds.offset(1);
     }
-    unsafe { game_state() }.r_things.vissprites[0 as i32 as usize].prev =
+    state.r_things.vissprites[0 as i32 as usize].prev =
         &raw mut unsorted as *mut vissprite_s;
-    unsorted.next = (&raw mut unsafe { game_state() }.r_things.vissprites as *mut vissprite_t)
+    unsorted.next = (&raw mut state.r_things.vissprites as *mut vissprite_t)
         .offset(0 as i32 as isize) as *mut vissprite_t as *mut vissprite_s;
-    let ref mut fresh0 = (*unsafe { game_state() }
+    let ref mut fresh0 = (*state
         .r_things
         .vissprite_p
         .offset(-(1 as i32 as isize)))
     .next;
     *fresh0 = &raw mut unsorted as *mut vissprite_s;
-    unsorted.prev = unsafe { game_state() }
+    unsorted.prev = state
         .r_things
         .vissprite_p
         .offset(-(1 as i32 as isize)) as *mut vissprite_s;
-    unsafe { game_state() }.r_things.vsprsortedhead.prev =
-        &raw mut unsafe { game_state() }.r_things.vsprsortedhead as *mut vissprite_s;
-    unsafe { game_state() }.r_things.vsprsortedhead.next =
-        unsafe { game_state() }.r_things.vsprsortedhead.prev;
+    state.r_things.vsprsortedhead.prev =
+        &raw mut state.r_things.vsprsortedhead as *mut vissprite_s;
+    state.r_things.vsprsortedhead.next =
+        state.r_things.vsprsortedhead.prev;
     i = 0 as i32;
     while i < count {
         bestscale = INT_MAX as fixed_t;
@@ -851,10 +851,10 @@ pub unsafe fn R_SortVisSprites() {
         }
         (*(*best).next).prev = (*best).prev;
         (*(*best).prev).next = (*best).next;
-        (*best).next = &raw mut unsafe { game_state() }.r_things.vsprsortedhead as *mut vissprite_s;
-        (*best).prev = unsafe { game_state() }.r_things.vsprsortedhead.prev;
-        (*unsafe { game_state() }.r_things.vsprsortedhead.prev).next = best as *mut vissprite_s;
-        unsafe { game_state() }.r_things.vsprsortedhead.prev = best as *mut vissprite_s;
+        (*best).next = &raw mut state.r_things.vsprsortedhead as *mut vissprite_s;
+        (*best).prev = state.r_things.vsprsortedhead.prev;
+        (*state.r_things.vsprsortedhead.prev).next = best as *mut vissprite_s;
+        state.r_things.vsprsortedhead.prev = best as *mut vissprite_s;
         i += 1;
     }
 }
@@ -969,12 +969,12 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
         &raw mut unsafe { game_state() }.r_things.clipbot as *mut i16;
     unsafe { game_state() }.r_things.mceilingclip =
         &raw mut unsafe { game_state() }.r_things.cliptop as *mut i16;
-    R_DrawVisSprite(spr, (*spr).x1, (*spr).x2);
+    R_DrawVisSprite(unsafe { game_state() }, spr, (*spr).x1, (*spr).x2);
 }
 pub unsafe fn R_DrawMasked() {
     let mut spr: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut ds: *mut drawseg_t = ::core::ptr::null_mut::<drawseg_t>();
-    R_SortVisSprites();
+    R_SortVisSprites(unsafe { game_state() });
     if unsafe { game_state() }.r_things.vissprite_p
         > &raw mut unsafe { game_state() }.r_things.vissprites as *mut vissprite_t
     {
@@ -992,6 +992,6 @@ pub unsafe fn R_DrawMasked() {
         ds = ds.offset(-1);
     }
     if unsafe { game_state() }.r_main.viewangleoffset == 0 {
-        R_DrawPlayerSprites();
+        R_DrawPlayerSprites(unsafe { game_state() });
     }
 }
