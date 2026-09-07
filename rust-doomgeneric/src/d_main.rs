@@ -422,7 +422,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         );
     }
     M_Drawer();
-    NetUpdate();
+    NetUpdate(state);
     if !wipe {
         I_FinishUpdate();
         return;
