@@ -1,5 +1,5 @@
 use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_controls::KEY_BACKSPACE;
@@ -1896,37 +1896,41 @@ pub unsafe fn M_SaveDefaultsAlternate(
     state.doom_defaults.filename = orig_main;
     state.extra_defaults.filename = orig_extra;
 }
-pub unsafe fn M_LoadDefaults(state: &mut MConfigState) {
+pub unsafe fn M_LoadDefaults(state: &mut GameState) {
     let mut i: i32 = 0;
     i = M_CheckParmWithArgs("-config", 1 as i32);
     if i != 0 {
-        state.doom_defaults.filename = unsafe { game_state() }.m_argv.myargv
-            [(i + 1 as i32) as usize]
+        state.m_config.doom_defaults.filename = state.m_argv.myargv[(i + 1 as i32) as usize]
             .as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"\tdefault file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-            state.doom_defaults.filename,
+            state.m_config.doom_defaults.filename,
         );
     } else {
-        state.doom_defaults.filename =
-            M_StringJoin(state.configdir, state.default_main_config, NULL);
+        state.m_config.doom_defaults.filename = M_StringJoin(
+            state.m_config.configdir,
+            state.m_config.default_main_config,
+            NULL,
+        );
     }
     printf(
         b"saving config in %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-        state.doom_defaults.filename,
+        state.m_config.doom_defaults.filename,
     );
     i = M_CheckParmWithArgs("-extraconfig", 1 as i32);
     if i != 0 {
-        state.extra_defaults.filename = unsafe { game_state() }.m_argv.myargv
-            [(i + 1 as i32) as usize]
+        state.m_config.extra_defaults.filename = state.m_argv.myargv[(i + 1 as i32) as usize]
             .as_ptr() as *mut ::core::ffi::c_char;
         printf(
             b"        extra configuration file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-            state.extra_defaults.filename,
+            state.m_config.extra_defaults.filename,
         );
     } else {
-        state.extra_defaults.filename =
-            M_StringJoin(state.configdir, state.default_extra_config, NULL);
+        state.m_config.extra_defaults.filename = M_StringJoin(
+            state.m_config.configdir,
+            state.m_config.default_extra_config,
+            NULL,
+        );
     }
 }
 unsafe fn GetDefaultForName(state: &mut MConfigState, name: &str) -> *mut default_t {

@@ -1150,7 +1150,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
             as *mut ::core::ffi::c_char,
     );
     D_BindVariables();
-    M_LoadDefaults(&mut state.m_config);
+    M_LoadDefaults(state);
     I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
     state.d_main.iwadfile = D_FindIWAD(
         &mut state.d_iwad,
