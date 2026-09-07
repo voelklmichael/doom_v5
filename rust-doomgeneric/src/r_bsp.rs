@@ -1,4 +1,3 @@
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
@@ -67,8 +66,8 @@ pub struct cliprange_t {
     pub last: i32,
 }
 pub const NF_SUBSECTOR: i32 = 0x8000;
-pub unsafe fn R_ClearDrawSegs() {
-    unsafe { game_state() }.r_bsp.ds_p = &raw mut unsafe { game_state() }.r_bsp.drawsegs as *mut drawseg_t;
+pub unsafe fn R_ClearDrawSegs(state: &mut GameState) {
+    state.r_bsp.ds_p = &raw mut state.r_bsp.drawsegs as *mut drawseg_t;
 }
 pub unsafe fn R_ClipSolidWallSegment(state: &mut GameState, mut first: i32, mut last: i32) {
     let mut current_block: u64;
@@ -166,12 +165,12 @@ pub unsafe fn R_ClipPassWallSegment(state: &mut GameState, mut first: i32, mut l
     }
     R_StoreWallRange(state, (*start).last + 1 as i32, last);
 }
-pub unsafe fn R_ClearClipSegs() {
-    unsafe { game_state() }.r_bsp.solidsegs[0 as i32 as usize].first = -(0x7fffffff as i32);
-    unsafe { game_state() }.r_bsp.solidsegs[0 as i32 as usize].last = -(1 as i32);
-    unsafe { game_state() }.r_bsp.solidsegs[1 as i32 as usize].first = unsafe { game_state() }.r_draw.viewwidth;
-    unsafe { game_state() }.r_bsp.solidsegs[1 as i32 as usize].last = 0x7fffffff as i32;
-    unsafe { game_state() }.r_bsp.newend = (&raw mut unsafe { game_state() }.r_bsp.solidsegs as *mut cliprange_t).offset(2 as i32 as isize);
+pub unsafe fn R_ClearClipSegs(state: &mut GameState) {
+    state.r_bsp.solidsegs[0 as i32 as usize].first = -(0x7fffffff as i32);
+    state.r_bsp.solidsegs[0 as i32 as usize].last = -(1 as i32);
+    state.r_bsp.solidsegs[1 as i32 as usize].first = state.r_draw.viewwidth;
+    state.r_bsp.solidsegs[1 as i32 as usize].last = 0x7fffffff as i32;
+    state.r_bsp.newend = (&raw mut state.r_bsp.solidsegs as *mut cliprange_t).offset(2 as i32 as isize);
 }
 pub unsafe fn R_AddLine(state: &mut GameState, mut line: *mut seg_t) {
     let mut x1: i32 = 0;
