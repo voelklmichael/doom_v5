@@ -1,4 +1,3 @@
-use crate::src::am_map::automapactive;
 use crate::src::am_map::AM_Drawer;
 use crate::src::d_event::event_t;
 use crate::src::d_event::D_PopEvent;
@@ -251,7 +250,7 @@ pub unsafe fn D_Display() {
     match unsafe { game_state() }.g_game.gamestate as u32 {
         0 => {
             if !(unsafe { game_state() }.d_loop.gametic == 0) {
-                if automapactive {
+                if unsafe { game_state() }.am_map.automapactive {
                     AM_Drawer();
                 }
                 if wipe || viewheight != 200 as i32 && fullscreen {
@@ -276,7 +275,7 @@ pub unsafe fn D_Display() {
         _ => {}
     }
     if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && !automapactive
+        && !unsafe { game_state() }.am_map.automapactive
         && unsafe { game_state() }.d_loop.gametic != 0
     {
         R_RenderPlayerView(
@@ -302,7 +301,7 @@ pub unsafe fn D_Display() {
         R_FillBackScreen();
     }
     if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && !automapactive
+        && !unsafe { game_state() }.am_map.automapactive
         && scaledviewwidth != 320 as i32
     {
         if unsafe { game_state() }.m_menu.menuactive || menuactivestate || !viewactivestate {
@@ -322,7 +321,7 @@ pub unsafe fn D_Display() {
     wipegamestate = unsafe { game_state() }.g_game.gamestate;
     oldgamestate = wipegamestate;
     if unsafe { game_state() }.g_game.paused {
-        if automapactive {
+        if unsafe { game_state() }.am_map.automapactive {
             y = 4 as i32;
         } else {
             y = viewwindowy + 4 as i32;

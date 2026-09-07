@@ -1,4 +1,3 @@
-use crate::src::am_map::automapactive;
 use crate::src::am_map::AM_Responder;
 use crate::src::am_map::AM_Stop;
 use crate::src::am_map::AM_Ticker;
@@ -1561,7 +1560,7 @@ pub unsafe fn G_DoCompleted() {
         }
         i += 1;
     }
-    if automapactive {
+    if unsafe { game_state() }.am_map.automapactive {
         AM_Stop();
     }
     if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32 {
@@ -1692,7 +1691,7 @@ pub unsafe fn G_DoCompleted() {
     }
     unsafe { game_state() }.g_game.gamestate = GS_INTERMISSION;
     unsafe { game_state() }.g_game.viewactive = false;
-    automapactive = false;
+    unsafe { game_state() }.am_map.automapactive = false;
     StatCopy(
         unsafe { &mut game_state().statdump },
         &raw mut unsafe { game_state() }.g_game.wminfo,
@@ -1957,7 +1956,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     unsafe { game_state() }.g_game.usergame = true;
     unsafe { game_state() }.g_game.paused = false;
     unsafe { game_state() }.g_game.demoplayback = false;
-    automapactive = false;
+    unsafe { game_state() }.am_map.automapactive = false;
     unsafe { game_state() }.g_game.viewactive = true;
     unsafe { game_state() }.g_game.gameepisode = episode;
     unsafe { game_state() }.g_game.gamemap = map;

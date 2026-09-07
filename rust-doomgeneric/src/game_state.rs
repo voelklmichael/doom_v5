@@ -10,6 +10,7 @@
 
 use std::sync::OnceLock;
 
+use crate::src::am_map::AmMapState;
 use crate::src::d_event::DEventState;
 use crate::src::d_iwad::DIwadState;
 use crate::src::d_loop::DLoopState;
@@ -55,6 +56,7 @@ use crate::src::w_wad::WWadState;
 use crate::src::z_zone::ZZoneState;
 
 pub struct GameState {
+    pub am_map: AmMapState,
     pub d_event: DEventState,
     pub d_iwad: DIwadState,
     pub d_loop: DLoopState,
@@ -102,6 +104,7 @@ pub struct GameState {
 impl GameState {
     fn new() -> Self {
         GameState {
+            am_map: AmMapState::new(),
             d_event: DEventState::new(),
             d_iwad: DIwadState::new(),
             d_loop: DLoopState::new(),

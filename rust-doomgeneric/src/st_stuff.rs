@@ -1,4 +1,3 @@
-use crate::src::am_map::automapactive;
 use crate::src::am_map::{AM_MSGENTERED, AM_MSGEXITED, AM_MSGHEADER};
 use crate::src::d_event::event_t;
 use crate::src::d_event::{ev_keydown, ev_keyup};
@@ -960,7 +959,7 @@ pub unsafe fn ST_diffDraw() {
     ST_drawWidgets(false);
 }
 pub unsafe fn ST_Drawer(mut fullscreen: bool, mut refresh: bool) {
-    st_statusbaron = !fullscreen || automapactive;
+    st_statusbaron = !fullscreen || unsafe { game_state() }.am_map.automapactive;
     st_firsttime = st_firsttime || refresh;
     ST_doPaletteStuff();
     if st_firsttime {

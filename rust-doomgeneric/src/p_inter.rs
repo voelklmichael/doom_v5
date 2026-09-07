@@ -1,4 +1,3 @@
-use crate::src::am_map::automapactive;
 use crate::src::am_map::AM_Stop;
 use crate::src::d_items::weaponinfo;
 use crate::src::d_mode::commercial;
@@ -680,7 +679,7 @@ pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
             == (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
                 .offset(unsafe { game_state() }.g_game.consoleplayer as isize)
                 as *mut player_t
-            && automapactive
+            && unsafe { game_state() }.am_map.automapactive
         {
             AM_Stop();
         }
