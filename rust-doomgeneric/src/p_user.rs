@@ -12,7 +12,6 @@ use crate::src::d_ticcmd::{BT_CHANGE, BT_SPECIAL, BT_USE, BT_WEAPONMASK, BT_WEAP
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::game_state::game_state;
-use crate::src::info::states;
 use crate::src::info::{S_PLAY, S_PLAY_RUN1};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
@@ -118,7 +117,7 @@ pub unsafe fn P_MovePlayer(state: &mut PUserState, mut player: *mut player_t) {
     }
     if ((*cmd).forwardmove as i32 != 0 || (*cmd).sidemove as i32 != 0)
         && (*(*player).mo).state
-            == (&raw mut states as *mut state_t).offset(S_PLAY as i32 as isize) as *mut state_t
+            == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_PLAY as i32 as isize) as *mut state_t
     {
         P_SetMobjState((*player).mo, S_PLAY_RUN1);
     }

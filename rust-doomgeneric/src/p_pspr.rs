@@ -12,7 +12,6 @@ use crate::src::d_ticcmd::BT_ATTACK;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::game_state::game_state;
-use crate::src::info::states;
 use crate::src::info::{S_CHAIN1, S_NULL, S_PLAY, S_PLAY_ATK1, S_PLAY_ATK2, S_SAW};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
@@ -58,7 +57,7 @@ pub unsafe fn P_SetPsprite(mut player: *mut player_t, mut position: i32, mut stn
             (*psp).state = ::core::ptr::null_mut::<state_t>();
             break;
         } else {
-            state = (&raw mut states as *mut state_t).offset(stnum as isize) as *mut state_t;
+            state = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(stnum as isize) as *mut state_t;
             (*psp).state = state;
             (*psp).tics = (*state).tics;
             if (*state).misc1 != 0 {
@@ -201,15 +200,15 @@ pub unsafe fn A_WeaponReady(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut newstate: statenum_t = S_NULL;
     let mut angle: i32 = 0;
     if (*(*player).mo).state
-        == (&raw mut states as *mut state_t).offset(S_PLAY_ATK1 as i32 as isize) as *mut state_t
+        == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_PLAY_ATK1 as i32 as isize) as *mut state_t
         || (*(*player).mo).state
-            == (&raw mut states as *mut state_t).offset(S_PLAY_ATK2 as i32 as isize) as *mut state_t
+            == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_PLAY_ATK2 as i32 as isize) as *mut state_t
     {
         P_SetMobjState((*player).mo, S_PLAY);
     }
     if (*player).readyweapon as u32 == wp_chainsaw as i32 as u32
         && (*psp).state
-            == (&raw mut states as *mut state_t).offset(S_SAW as i32 as isize) as *mut state_t
+            == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_SAW as i32 as isize) as *mut state_t
     {
         S_StartSound(
             unsafe { &mut game_state().sounds },
@@ -551,7 +550,7 @@ pub unsafe fn A_FireCGun(mut player: *mut player_t, mut psp: *mut pspdef_t) {
             .state
             .offset(weaponinfo[(*player).readyweapon as usize].flashstate as isize)
             .offset_from(
-                (&raw mut states as *mut state_t).offset(S_CHAIN1 as i32 as isize) as *mut state_t,
+                (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_CHAIN1 as i32 as isize) as *mut state_t,
             ) as i64 as statenum_t,
     );
     P_BulletSlope(unsafe { &mut game_state().p_pspr }, (*player).mo);

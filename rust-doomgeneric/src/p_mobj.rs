@@ -8,8 +8,6 @@ use crate::src::g_game::G_PlayerReborn;
 use crate::src::game_state::game_state;
 use crate::src::hu_stuff::HU_Start;
 use crate::src::i_system::I_Error;
-use crate::src::info::mobjinfo;
-use crate::src::info::states;
 use crate::src::info::{S_BLOOD2, S_BLOOD3, S_NULL, S_PLAY, S_PLAY_RUN1, S_PUFF3};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
@@ -567,7 +565,7 @@ pub unsafe fn P_SetMobjState(mut mobj: *mut mobj_t, mut state: statenum_t) -> bo
             P_RemoveMobj(unsafe { &mut game_state().p_mobj }, mobj);
             return false;
         }
-        st = (&raw mut states as *mut state_t).offset(state as isize) as *mut state_t;
+        st = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(state as isize) as *mut state_t;
         (*mobj).state = st;
         (*mobj).tics = (*st).tics;
         (*mobj).sprite = (*st).sprite;
@@ -586,7 +584,7 @@ pub unsafe fn P_ExplodeMissile(mut mo: *mut mobj_t) {
     (*mo).momz = 0 as i32 as fixed_t;
     (*mo).momy = (*mo).momz;
     (*mo).momx = (*mo).momy;
-    P_SetMobjState(mo, mobjinfo[(*mo).type_0 as usize].deathstate as statenum_t);
+    P_SetMobjState(mo, unsafe { game_state() }.info.mobjinfo[(*mo).type_0 as usize].deathstate as statenum_t);
     (*mo).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*mo).tics < 1 as i32 {
         (*mo).tics = 1 as i32;
@@ -700,7 +698,7 @@ pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
         if !player.is_null()
             && (((*(*player).mo)
                 .state
-                .offset_from(&raw mut states as *mut state_t) as i64
+                .offset_from(&raw mut unsafe { game_state() }.info.states as *mut state_t) as i64
                 - S_PLAY_RUN1 as i32 as i64) as u32)
                 < 4 as u32
         {
@@ -884,7 +882,7 @@ pub unsafe fn P_SpawnMobj(
         0 as i32,
         ::core::mem::size_of::<mobj_t>() as size_t,
     );
-    info = (&raw mut mobjinfo as *mut mobjinfo_t).offset(type_0 as isize) as *mut mobjinfo_t;
+    info = (&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t).offset(type_0 as isize) as *mut mobjinfo_t;
     (*mobj).type_0 = type_0;
     (*mobj).info = info;
     (*mobj).x = x;
@@ -897,7 +895,7 @@ pub unsafe fn P_SpawnMobj(
         (*mobj).reactiontime = (*info).reactiontime;
     }
     (*mobj).lastlook = P_Random(unsafe { &mut game_state().m_random }) % MAXPLAYERS;
-    st = (&raw mut states as *mut state_t).offset((*info).spawnstate as isize) as *mut state_t;
+    st = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset((*info).spawnstate as isize) as *mut state_t;
     (*mobj).state = st;
     (*mobj).tics = (*st).tics;
     (*mobj).sprite = (*st).sprite;
@@ -1040,12 +1038,12 @@ pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {
     );
     i = 0 as i32;
     while i < NUMMOBJTYPES as i32 {
-        if (*mthing).type_0 as i32 == mobjinfo[i as usize].doomednum {
+        if (*mthing).type_0 as i32 == unsafe { game_state() }.info.mobjinfo[i as usize].doomednum {
             break;
         }
         i += 1;
     }
-    if mobjinfo[i as usize].flags & MF_SPAWNCEILING as i32 != 0 {
+    if unsafe { game_state() }.info.mobjinfo[i as usize].flags & MF_SPAWNCEILING as i32 != 0 {
         z = ONCEILINGZ as fixed_t;
     } else {
         z = ONFLOORZ as fixed_t;
@@ -1153,7 +1151,7 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     }
     i = 0 as i32;
     while i < NUMMOBJTYPES as i32 {
-        if (*mthing).type_0 as i32 == mobjinfo[i as usize].doomednum {
+        if (*mthing).type_0 as i32 == unsafe { game_state() }.info.mobjinfo[i as usize].doomednum {
             break;
         }
         i += 1;
@@ -1167,17 +1165,17 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
         ));
     }
     if unsafe { game_state() }.g_game.deathmatch != 0
-        && mobjinfo[i as usize].flags & MF_NOTDMATCH as i32 != 0
+        && unsafe { game_state() }.info.mobjinfo[i as usize].flags & MF_NOTDMATCH as i32 != 0
     {
         return;
     }
-    if unsafe { game_state() }.d_main.nomonsters && (i == MT_SKULL as i32 || mobjinfo[i as usize].flags & MF_COUNTKILL as i32 != 0)
+    if unsafe { game_state() }.d_main.nomonsters && (i == MT_SKULL as i32 || unsafe { game_state() }.info.mobjinfo[i as usize].flags & MF_COUNTKILL as i32 != 0)
     {
         return;
     }
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
-    if mobjinfo[i as usize].flags & MF_SPAWNCEILING as i32 != 0 {
+    if unsafe { game_state() }.info.mobjinfo[i as usize].flags & MF_SPAWNCEILING as i32 != 0 {
         z = ONCEILINGZ as fixed_t;
     } else {
         z = ONFLOORZ as fixed_t;

@@ -9,8 +9,6 @@ use crate::src::g_game::G_VanillaVersionCode;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
 use crate::src::i_system::{fprintf, fread, ftell, fwrite, stderr};
-use crate::src::info::mobjinfo;
-use crate::src::info::states;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_misc::M_StringJoin;
 use crate::src::m_misc::M_snprintf;
@@ -291,7 +289,7 @@ unsafe fn saveg_read_mobj_t(mut str: *mut mobj_t) {
     (*str).type_0 = saveg_read32() as mobjtype_t;
     (*str).info = saveg_readp() as *mut mobjinfo_t;
     (*str).tics = saveg_read32();
-    (*str).state = (&raw mut states as *mut state_t)
+    (*str).state = (&raw mut unsafe { game_state() }.info.states as *mut state_t)
         .offset((saveg_read32 as unsafe extern "C" fn() -> i32)() as isize)
         as *mut state_t;
     (*str).flags = saveg_read32();
@@ -338,7 +336,7 @@ unsafe fn saveg_write_mobj_t(mut str: *mut mobj_t) {
     saveg_write32((*str).type_0 as i32);
     saveg_writep((*str).info as *mut ::core::ffi::c_void);
     saveg_write32((*str).tics);
-    saveg_write32((*str).state.offset_from(&raw mut states as *mut state_t) as i64 as i32);
+    saveg_write32((*str).state.offset_from(&raw mut unsafe { game_state() }.info.states as *mut state_t) as i64 as i32);
     saveg_write32((*str).flags);
     saveg_write32((*str).health);
     saveg_write32((*str).movedir);
@@ -381,7 +379,7 @@ unsafe fn saveg_read_pspdef_t(mut str: *mut pspdef_t) {
     let mut state: i32 = 0;
     state = saveg_read32();
     if state > 0 as i32 {
-        (*str).state = (&raw mut states as *mut state_t).offset(state as isize) as *mut state_t;
+        (*str).state = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(state as isize) as *mut state_t;
     } else {
         (*str).state = ::core::ptr::null_mut::<state_t>();
     }
@@ -391,7 +389,7 @@ unsafe fn saveg_read_pspdef_t(mut str: *mut pspdef_t) {
 }
 unsafe fn saveg_write_pspdef_t(mut str: *mut pspdef_t) {
     if !(*str).state.is_null() {
-        saveg_write32((*str).state.offset_from(&raw mut states as *mut state_t) as i64 as i32);
+        saveg_write32((*str).state.offset_from(&raw mut unsafe { game_state() }.info.states as *mut state_t) as i64 as i32);
     } else {
         saveg_write32(0 as i32);
     }
@@ -961,7 +959,7 @@ pub unsafe fn P_UnArchiveThinkers() {
                 (*mobj).target = ::core::ptr::null_mut::<mobj_s>();
                 (*mobj).tracer = ::core::ptr::null_mut::<mobj_s>();
                 P_SetThingPosition(mobj);
-                (*mobj).info = (&raw mut mobjinfo as *mut mobjinfo_t)
+                (*mobj).info = (&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t)
                     .offset((*mobj).type_0 as isize)
                     as *mut mobjinfo_t;
                 (*mobj).floorz = (*(*(*mobj).subsector).sector).floorheight;

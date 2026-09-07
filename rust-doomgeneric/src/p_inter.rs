@@ -17,7 +17,6 @@ use crate::src::doomdef::NULL;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_Tactile;
-use crate::src::info::states;
 use crate::src::info::S_NULL;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
@@ -824,7 +823,7 @@ pub unsafe fn P_DamageMobj(
         (*target).target = source as *mut mobj_s;
         (*target).threshold = BASETHRESHOLD;
         if (*target).state
-            == (&raw mut states as *mut state_t).offset((*(*target).info).spawnstate as isize)
+            == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset((*(*target).info).spawnstate as isize)
                 as *mut state_t
             && (*(*target).info).seestate != S_NULL as i32
         {
