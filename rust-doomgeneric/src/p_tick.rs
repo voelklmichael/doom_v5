@@ -1,6 +1,7 @@
 use crate::src::d_player::player_t;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::p_doors::vldoor_t;
 use crate::src::p_lights::{fireflicker_t, glow_t, lightflash_t, strobe_t};
 use crate::src::p_mobj::P_RespawnSpecials;
@@ -70,34 +71,30 @@ pub unsafe fn P_RunThinkers() {
         currentthinker = (*currentthinker).next as *mut thinker_t;
     }
 }
-pub unsafe fn P_Ticker() {
+pub unsafe fn P_Ticker(state: &mut GameState) {
     let mut i: i32 = 0;
-    if unsafe { game_state() }.g_game.paused {
+    if state.g_game.paused {
         return;
     }
-    if !unsafe { game_state() }.g_game.netgame
-        && unsafe { game_state() }.m_menu.menuactive
-        && !unsafe { game_state() }.g_game.demoplayback
-        && unsafe { game_state() }.g_game.players
-            [unsafe { game_state() }.g_game.consoleplayer as usize]
-            .viewz
-            != 1 as i32
+    if !state.g_game.netgame
+        && state.m_menu.menuactive
+        && !state.g_game.demoplayback
+        && state.g_game.players[state.g_game.consoleplayer as usize].viewz != 1 as i32
     {
         return;
     }
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
+        if state.g_game.playeringame[i as usize] != 0 {
             P_PlayerThink(
-                unsafe { &mut game_state().p_user },
-                (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
-                    .offset(i as isize) as *mut player_t,
+                &mut state.p_user,
+                (&raw mut state.g_game.players as *mut player_t).offset(i as isize) as *mut player_t,
             );
         }
         i += 1;
     }
     P_RunThinkers();
-    P_UpdateSpecials(unsafe { &mut game_state().p_switch });
-    P_RespawnSpecials(unsafe { &mut game_state().p_mobj });
-    unsafe { game_state() }.p_tick.leveltime += 1;
+    P_UpdateSpecials(&mut state.p_switch);
+    P_RespawnSpecials(&mut state.p_mobj);
+    state.p_tick.leveltime += 1;
 }
