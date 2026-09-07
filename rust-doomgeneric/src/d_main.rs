@@ -341,7 +341,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         0 => {
             if !(state.d_loop.gametic == 0) {
                 if state.am_map.automapactive {
-                    AM_Drawer();
+                    AM_Drawer(state);
                 }
                 if wipe || state.r_draw.viewheight != 200 as i32 && state.d_main.d_display_fullscreen {
                     redrawsbar = true;
