@@ -41,6 +41,7 @@ use crate::src::g_game::G_Responder;
 use crate::src::g_game::G_TimeDemo;
 use crate::src::g_game::G_VanillaVersionCode;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::hu_stuff::HU_Drawer;
 use crate::src::hu_stuff::HU_Erase;
@@ -551,14 +552,11 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
         && !unsafe { game_state() }.d_main.advancedemo) as i32 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn doomgeneric_Tick() {
+pub unsafe extern "C" fn doomgeneric_Tick(state: *mut ::core::ffi::c_void) {
+    let state = unsafe { &mut *(state as *mut GameState) };
     TryRunTics();
-    S_UpdateSounds(
-        unsafe { game_state() }.g_game.players
-            [unsafe { game_state() }.g_game.consoleplayer as usize]
-            .mo,
-    );
-    if unsafe { game_state() }.i_video.screenvisible {
+    S_UpdateSounds(state.g_game.players[state.g_game.consoleplayer as usize].mo);
+    if state.i_video.screenvisible {
         D_Display();
     }
 }
@@ -587,7 +585,7 @@ pub unsafe fn D_DoomLoop() {
     if unsafe { game_state() }.g_game.testcontrols {
         unsafe { game_state() }.d_main.wipegamestate = unsafe { game_state() }.g_game.gamestate;
     }
-    doomgeneric_Tick();
+    doomgeneric_Tick(unsafe { game_state() } as *mut GameState as *mut ::core::ffi::c_void);
 }
 pub unsafe fn D_PageTicker() {
     unsafe { game_state() }.d_main.pagetic -= 1;

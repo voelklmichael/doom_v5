@@ -9,6 +9,7 @@
 #![feature(extern_types, raw_ref_op)]
 #[allow(unused_imports)]
 use ::rust_doomgeneric;
+use ::rust_doomgeneric::src::game_state::{game_state, GameState};
 use libc::memset;
 use libc::strlen;
 extern "C" {
@@ -17,7 +18,7 @@ extern "C" {
     pub type _XrmHashBucketRec;
     pub type _XPrivate;
     static mut DG_ScreenBuffer: *mut pixel_t;
-    fn doomgeneric_Tick();
+    fn doomgeneric_Tick(state: *mut ::core::ffi::c_void);
     fn __ctype_tolower_loc() -> *mut *const __int32_t;
     fn tolower(__c: i32) -> i32;
     fn usleep(__useconds: __useconds_t) -> i32;
@@ -1068,9 +1069,13 @@ pub unsafe extern "C" fn DG_SetWindowTitle(mut title: *const ::core::ffi::c_char
 }
 pub fn main() {
     unsafe {
-        ::rust_doomgeneric::src::doomgeneric::doomgeneric_Create(::std::env::args().collect());
+        let state: *mut GameState = game_state() as *mut GameState;
+        ::rust_doomgeneric::src::doomgeneric::doomgeneric_Create(
+            &mut *state,
+            ::std::env::args().collect(),
+        );
         loop {
-            doomgeneric_Tick();
+            doomgeneric_Tick(state as *mut ::core::ffi::c_void);
         }
     }
 }
