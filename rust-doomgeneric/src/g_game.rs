@@ -1129,10 +1129,10 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
                 ::core::mem::size_of::<ticcmd_t>() as size_t,
             );
             if state.g_game.demoplayback {
-                G_ReadDemoTiccmd(cmd);
+                G_ReadDemoTiccmd(state, cmd);
             }
             if state.g_game.demorecording {
-                G_WriteDemoTiccmd(cmd);
+                G_WriteDemoTiccmd(state, cmd);
             }
             if (*cmd).forwardmove as i32 > TURBOTHRESHOLD {
                 state.g_game.turbodetected[i as usize] = true_0 as boolean;
@@ -1962,131 +1962,131 @@ pub unsafe fn G_InitNew(state: &mut GameState, mut skill: skill_t, mut episode: 
     G_DoLoadLevel(state);
 }
 pub const DEMOMARKER: i32 = 0x80;
-pub unsafe fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
-    if *unsafe { game_state() }.g_game.demo_p as i32 == DEMOMARKER {
+pub unsafe fn G_ReadDemoTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t) {
+    if *state.g_game.demo_p as i32 == DEMOMARKER {
         G_CheckDemoStatus();
         return;
     }
-    let fresh18 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    let fresh18 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     (*cmd).forwardmove = *fresh18 as i8;
-    let fresh19 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    let fresh19 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     (*cmd).sidemove = *fresh19 as i8;
-    if unsafe { game_state() }.g_game.longtics {
-        let fresh20 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    if state.g_game.longtics {
+        let fresh20 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
         (*cmd).angleturn = *fresh20 as i16;
-        let fresh21 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+        let fresh21 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
         (*cmd).angleturn = ((*cmd).angleturn as i32 | (*fresh21 as i32) << 8 as i32) as i16;
     } else {
-        let fresh22 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+        let fresh22 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
         (*cmd).angleturn = ((*fresh22 as u8 as i32) << 8 as i32) as i16;
     }
-    let fresh23 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    let fresh23 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     (*cmd).buttons = *fresh23 as u8 as byte;
 }
-unsafe fn IncreaseDemoBuffer() {
+unsafe fn IncreaseDemoBuffer(state: &mut GameState) {
     let mut current_length: i32 = 0;
     let mut new_demobuffer: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut new_demop: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut new_length: i32 = 0;
-    current_length = unsafe { game_state() }
+    current_length = state
         .g_game
         .demoend
-        .offset_from(unsafe { game_state() }.g_game.demobuffer) as i64 as i32;
+        .offset_from(state.g_game.demobuffer) as i64 as i32;
     new_length = current_length * 2 as i32;
     new_demobuffer = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+        &mut state.z_zone,
         new_length,
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut byte;
     new_demop = new_demobuffer.offset(
-        unsafe { game_state() }
+        state
             .g_game
             .demo_p
-            .offset_from(unsafe { game_state() }.g_game.demobuffer) as i64 as isize,
+            .offset_from(state.g_game.demobuffer) as i64 as isize,
     );
     memcpy(
         new_demobuffer as *mut ::core::ffi::c_void,
-        unsafe { game_state() }.g_game.demobuffer as *const ::core::ffi::c_void,
+        state.g_game.demobuffer as *const ::core::ffi::c_void,
         current_length as size_t,
     );
     Z_Free(
-        unsafe { &mut game_state().z_zone },
-        unsafe { game_state() }.g_game.demobuffer as *mut ::core::ffi::c_void,
+        &mut state.z_zone,
+        state.g_game.demobuffer as *mut ::core::ffi::c_void,
     );
-    unsafe { game_state() }.g_game.demobuffer = new_demobuffer;
-    unsafe { game_state() }.g_game.demo_p = new_demop;
-    unsafe { game_state() }.g_game.demoend = unsafe { game_state() }
+    state.g_game.demobuffer = new_demobuffer;
+    state.g_game.demo_p = new_demop;
+    state.g_game.demoend = state
         .g_game
         .demobuffer
         .offset(new_length as isize);
 }
-pub unsafe fn G_WriteDemoTiccmd(mut cmd: *mut ticcmd_t) {
+pub unsafe fn G_WriteDemoTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t) {
     let mut demo_start: *mut byte = ::core::ptr::null_mut::<byte>();
-    if unsafe { game_state() }.g_game.gamekeydown
-        [unsafe { game_state() }.m_controls.key_demo_quit as usize]
+    if state.g_game.gamekeydown
+        [state.m_controls.key_demo_quit as usize]
         != 0
     {
         G_CheckDemoStatus();
     }
-    demo_start = unsafe { game_state() }.g_game.demo_p;
-    let fresh12 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    demo_start = state.g_game.demo_p;
+    let fresh12 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     *fresh12 = (*cmd).forwardmove as byte;
-    let fresh13 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    let fresh13 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     *fresh13 = (*cmd).sidemove as byte;
-    if unsafe { game_state() }.g_game.longtics {
-        let fresh14 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    if state.g_game.longtics {
+        let fresh14 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
         *fresh14 = ((*cmd).angleturn as i32 & 0xff as i32) as byte;
-        let fresh15 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+        let fresh15 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
         *fresh15 = ((*cmd).angleturn as i32 >> 8 as i32 & 0xff as i32) as byte;
     } else {
-        let fresh16 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+        let fresh16 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
         *fresh16 = ((*cmd).angleturn as i32 >> 8 as i32) as byte;
     }
-    let fresh17 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    let fresh17 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
     *fresh17 = (*cmd).buttons;
-    unsafe { game_state() }.g_game.demo_p = demo_start;
-    if unsafe { game_state() }.g_game.demo_p
-        > unsafe { game_state() }
+    state.g_game.demo_p = demo_start;
+    if state.g_game.demo_p
+        > state
             .g_game
             .demoend
             .offset(-(16 as i32 as isize))
     {
-        if unsafe { game_state() }.g_game.vanilla_demo_limit != 0 {
+        if state.g_game.vanilla_demo_limit != 0 {
             G_CheckDemoStatus();
             return;
         } else {
-            IncreaseDemoBuffer();
+            IncreaseDemoBuffer(state);
         }
     }
-    G_ReadDemoTiccmd(cmd);
+    G_ReadDemoTiccmd(state, cmd);
 }
-pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
+pub unsafe fn G_RecordDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_char) {
     let mut demoname_size: size_t = 0;
     let mut i: i32 = 0;
     let mut maxsize: i32 = 0;
-    unsafe { game_state() }.g_game.usergame = false;
+    state.g_game.usergame = false;
     demoname_size = strlen(name).wrapping_add(5 as size_t);
-    unsafe { game_state() }.g_game.demoname = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+    state.g_game.demoname = Z_Malloc(
+        &mut state.z_zone,
         demoname_size as i32,
         PU_STATIC as i32,
         NULL,
     ) as *mut ::core::ffi::c_char;
     M_snprintf(
-        unsafe { game_state() }.g_game.demoname,
+        state.g_game.demoname,
         demoname_size,
         b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
         name,
@@ -2095,21 +2095,21 @@ pub unsafe fn G_RecordDemo(mut name: *mut ::core::ffi::c_char) {
     i = M_CheckParmWithArgs("-maxdemo", 1 as i32);
     if i != 0 {
         maxsize = atoi(
-            unsafe { game_state() }.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
+            state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         ) * 1024 as i32;
     }
-    unsafe { game_state() }.g_game.demobuffer = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+    state.g_game.demobuffer = Z_Malloc(
+        &mut state.z_zone,
         maxsize,
         PU_STATIC as i32,
         NULL,
     ) as *mut byte;
-    unsafe { game_state() }.g_game.demoend = unsafe { game_state() }
+    state.g_game.demoend = state
         .g_game
         .demobuffer
         .offset(maxsize as isize);
-    unsafe { game_state() }.g_game.demorecording = true;
+    state.g_game.demorecording = true;
 }
 pub unsafe fn G_VanillaVersionCode(state: &mut DoomstatState) -> i32 {
     match state.gameversion as u32 {
@@ -2123,57 +2123,57 @@ pub unsafe fn G_VanillaVersionCode(state: &mut DoomstatState) -> i32 {
     }
     return 106 as i32;
 }
-pub unsafe fn G_BeginRecording() {
+pub unsafe fn G_BeginRecording(state: &mut GameState) {
     let mut i: i32 = 0;
-    unsafe { game_state() }.g_game.longtics = M_CheckParm("-longtics") != 0 as i32;
-    unsafe { game_state() }.g_game.lowres_turn = !unsafe { game_state() }.g_game.longtics;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demobuffer;
-    if unsafe { game_state() }.g_game.longtics {
-        let fresh0 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    state.g_game.longtics = M_CheckParm("-longtics") != 0 as i32;
+    state.g_game.lowres_turn = !state.g_game.longtics;
+    state.g_game.demo_p = state.g_game.demobuffer;
+    if state.g_game.longtics {
+        let fresh0 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
         *fresh0 = DOOM_191_VERSION as byte;
     } else {
-        let fresh1 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-        *fresh1 = G_VanillaVersionCode(&mut unsafe { game_state() }.doomstat) as byte;
+        let fresh1 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
+        *fresh1 = G_VanillaVersionCode(&mut state.doomstat) as byte;
     }
-    let fresh2 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh2 = unsafe { game_state() }.g_game.gameskill as byte;
-    let fresh3 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh3 = unsafe { game_state() }.g_game.gameepisode as byte;
-    let fresh4 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh4 = unsafe { game_state() }.g_game.gamemap as byte;
-    let fresh5 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh5 = unsafe { game_state() }.g_game.deathmatch as byte;
-    let fresh6 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh6 = unsafe { game_state() }.d_main.respawnparm as byte;
-    let fresh7 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh7 = unsafe { game_state() }.d_main.fastparm as byte;
-    let fresh8 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh8 = unsafe { game_state() }.d_main.nomonsters as byte;
-    let fresh9 = unsafe { game_state() }.g_game.demo_p;
-    unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh9 = unsafe { game_state() }.g_game.consoleplayer as byte;
+    let fresh2 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    *fresh2 = state.g_game.gameskill as byte;
+    let fresh3 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    *fresh3 = state.g_game.gameepisode as byte;
+    let fresh4 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    *fresh4 = state.g_game.gamemap as byte;
+    let fresh5 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    *fresh5 = state.g_game.deathmatch as byte;
+    let fresh6 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    *fresh6 = state.d_main.respawnparm as byte;
+    let fresh7 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    *fresh7 = state.d_main.fastparm as byte;
+    let fresh8 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    *fresh8 = state.d_main.nomonsters as byte;
+    let fresh9 = state.g_game.demo_p;
+    state.g_game.demo_p = state.g_game.demo_p.offset(1);
+    *fresh9 = state.g_game.consoleplayer as byte;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        let fresh10 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-        *fresh10 = unsafe { game_state() }.g_game.playeringame[i as usize] as byte;
+        let fresh10 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
+        *fresh10 = state.g_game.playeringame[i as usize] as byte;
         i += 1;
     }
 }
-pub unsafe fn G_DeferedPlayDemo(mut name: *mut ::core::ffi::c_char) {
-    unsafe { game_state() }.g_game.defdemoname = name;
-    unsafe { game_state() }.g_game.gameaction = ga_playdemo;
+pub unsafe fn G_DeferedPlayDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_char) {
+    state.g_game.defdemoname = name;
+    state.g_game.gameaction = ga_playdemo;
 }
-unsafe fn DemoVersionDescription(mut version: i32) -> *mut ::core::ffi::c_char {
+unsafe fn DemoVersionDescription(state: &mut GameState, mut version: i32) -> *mut ::core::ffi::c_char {
     match version {
         104 => {
             return b"v1.4\0" as *const u8 as *const ::core::ffi::c_char
@@ -2206,7 +2206,7 @@ unsafe fn DemoVersionDescription(mut version: i32) -> *mut ::core::ffi::c_char {
             as *mut ::core::ffi::c_char;
     } else {
         M_snprintf(
-            &raw mut unsafe { game_state() }
+            &raw mut state
                 .g_game
                 .demo_version_description_resultbuf as *mut ::core::ffi::c_char,
             ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
@@ -2214,7 +2214,7 @@ unsafe fn DemoVersionDescription(mut version: i32) -> *mut ::core::ffi::c_char {
             version / 100 as i32,
             version % 100 as i32,
         );
-        return &raw mut unsafe { game_state() }
+        return &raw mut state
             .g_game
             .demo_version_description_resultbuf as *mut ::core::ffi::c_char;
     };
@@ -2245,7 +2245,7 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
             message,
             demoversion,
             G_VanillaVersionCode(&mut state.doomstat),
-            DemoVersionDescription(demoversion),
+            DemoVersionDescription(state, demoversion),
         );
     }
     let fresh25 = state.g_game.demo_p;
@@ -2293,12 +2293,12 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
     state.g_game.usergame = false;
     state.g_game.demoplayback = true;
 }
-pub unsafe fn G_TimeDemo(mut name: *mut ::core::ffi::c_char) {
-    unsafe { game_state() }.g_game.nodrawers = M_CheckParm("-nodraw") != 0;
-    unsafe { game_state() }.g_game.timingdemo = true;
-    unsafe { game_state() }.d_loop.singletics = true;
-    unsafe { game_state() }.g_game.defdemoname = name;
-    unsafe { game_state() }.g_game.gameaction = ga_playdemo;
+pub unsafe fn G_TimeDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_char) {
+    state.g_game.nodrawers = M_CheckParm("-nodraw") != 0;
+    state.g_game.timingdemo = true;
+    state.d_loop.singletics = true;
+    state.g_game.defdemoname = name;
+    state.g_game.gameaction = ga_playdemo;
 }
 #[no_mangle]
 pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
