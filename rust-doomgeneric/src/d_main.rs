@@ -355,7 +355,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
             }
         }
         1 => {
-            WI_Drawer();
+            WI_Drawer(state);
         }
         2 => {
             F_Drawer(state);
