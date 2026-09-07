@@ -1370,7 +1370,7 @@ pub unsafe extern "C" fn M_EndGameResponse(state: &mut GameState, mut key: i32) 
     }
     (*state.m_menu.currentMenu).lastOn = state.m_menu.itemOn;
     M_ClearMenus(state);
-    D_StartTitle();
+    D_StartTitle(state);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_EndGame(state: &mut GameState, mut choice: i32) {
