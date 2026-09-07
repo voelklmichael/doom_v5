@@ -8,7 +8,6 @@ use crate::src::p_setup::numsubsectors;
 use crate::src::p_setup::segs;
 use crate::src::p_setup::subsectors;
 use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, side_t, visplane_t};
-use crate::src::r_draw::viewwidth;
 use crate::src::r_main::R_PointOnSide;
 use crate::src::r_main::R_PointToAngle;
 use crate::src::r_plane::ceilingplane;
@@ -152,7 +151,7 @@ pub unsafe fn R_ClipPassWallSegment(mut first: i32, mut last: i32) {
 pub unsafe fn R_ClearClipSegs() {
     solidsegs[0 as i32 as usize].first = -(0x7fffffff as i32);
     solidsegs[0 as i32 as usize].last = -(1 as i32);
-    solidsegs[1 as i32 as usize].first = viewwidth;
+    solidsegs[1 as i32 as usize].first = unsafe { game_state() }.r_draw.viewwidth;
     solidsegs[1 as i32 as usize].last = 0x7fffffff as i32;
     newend = (&raw mut solidsegs as *mut cliprange_t).offset(2 as i32 as isize);
 }

@@ -19,15 +19,6 @@ use crate::src::r_data::texturetranslation;
 use crate::src::r_data::R_GetColumn;
 use crate::src::r_defs::drawseg_t;
 use crate::src::r_defs::lighttable_t;
-use crate::src::r_draw::dc_colormap;
-use crate::src::r_draw::dc_iscale;
-use crate::src::r_draw::dc_source;
-use crate::src::r_draw::dc_texturemid;
-use crate::src::r_draw::dc_x;
-use crate::src::r_draw::dc_yh;
-use crate::src::r_draw::dc_yl;
-use crate::src::r_draw::viewheight;
-use crate::src::r_draw::viewwidth;
 use crate::src::r_main::R_PointToDist;
 use crate::src::r_main::R_ScaleFromGlobalAngle;
 use crate::src::r_main::LIGHTLEVELS;
@@ -169,46 +160,46 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
     unsafe { game_state() }.r_things.mfloorclip = (*ds).sprbottomclip;
     unsafe { game_state() }.r_things.mceilingclip = (*ds).sprtopclip;
     if (*(*curline).linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
-        dc_texturemid = if (*frontsector).floorheight > (*backsector).floorheight {
+        unsafe { game_state() }.r_draw.dc_texturemid = if (*frontsector).floorheight > (*backsector).floorheight {
             (*frontsector).floorheight
         } else {
             (*backsector).floorheight
         };
-        dc_texturemid = dc_texturemid + *textureheight.offset(texnum as isize) - unsafe { game_state() }.r_main.viewz;
+        unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_draw.dc_texturemid + *textureheight.offset(texnum as isize) - unsafe { game_state() }.r_main.viewz;
     } else {
-        dc_texturemid = if (*frontsector).ceilingheight < (*backsector).ceilingheight {
+        unsafe { game_state() }.r_draw.dc_texturemid = if (*frontsector).ceilingheight < (*backsector).ceilingheight {
             (*frontsector).ceilingheight
         } else {
             (*backsector).ceilingheight
         };
-        dc_texturemid = dc_texturemid - unsafe { game_state() }.r_main.viewz;
+        unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_draw.dc_texturemid - unsafe { game_state() }.r_main.viewz;
     }
-    dc_texturemid += (*(*curline).sidedef).rowoffset;
+    unsafe { game_state() }.r_draw.dc_texturemid += (*(*curline).sidedef).rowoffset;
     if !unsafe { game_state() }.r_main.fixedcolormap.is_null() {
-        dc_colormap = unsafe { game_state() }.r_main.fixedcolormap;
+        unsafe { game_state() }.r_draw.dc_colormap = unsafe { game_state() }.r_main.fixedcolormap;
     }
-    dc_x = x1;
-    while dc_x <= x2 {
-        if *unsafe { game_state() }.r_segs.maskedtexturecol.offset(dc_x as isize) as i32 != SHRT_MAX {
+    unsafe { game_state() }.r_draw.dc_x = x1;
+    while unsafe { game_state() }.r_draw.dc_x <= x2 {
+        if *unsafe { game_state() }.r_segs.maskedtexturecol.offset(unsafe { game_state() }.r_draw.dc_x as isize) as i32 != SHRT_MAX {
             if unsafe { game_state() }.r_main.fixedcolormap.is_null() {
                 index = (unsafe { game_state() }.r_things.spryscale >> LIGHTSCALESHIFT) as u32;
                 if index >= MAXLIGHTSCALE as u32 {
                     index = (MAXLIGHTSCALE - 1 as i32) as u32;
                 }
-                dc_colormap = *unsafe { game_state() }.r_segs.walllights.offset(index as isize);
+                unsafe { game_state() }.r_draw.dc_colormap = *unsafe { game_state() }.r_segs.walllights.offset(index as isize);
             }
             unsafe { game_state() }.r_things.sprtopscreen =
-                unsafe { game_state() }.r_main.centeryfrac - FixedMul(dc_texturemid, unsafe { game_state() }.r_things.spryscale);
-            dc_iscale = (0xffffffff as u32)
+                unsafe { game_state() }.r_main.centeryfrac - FixedMul(unsafe { game_state() }.r_draw.dc_texturemid, unsafe { game_state() }.r_things.spryscale);
+            unsafe { game_state() }.r_draw.dc_iscale = (0xffffffff as u32)
                 .wrapping_div(unsafe { game_state() }.r_things.spryscale as u32)
                 as fixed_t;
-            col = R_GetColumn(texnum, *unsafe { game_state() }.r_segs.maskedtexturecol.offset(dc_x as isize) as i32)
+            col = R_GetColumn(texnum, *unsafe { game_state() }.r_segs.maskedtexturecol.offset(unsafe { game_state() }.r_draw.dc_x as isize) as i32)
                 .offset(-(3 as i32 as isize)) as *mut column_t;
             R_DrawMaskedColumn(col);
-            *unsafe { game_state() }.r_segs.maskedtexturecol.offset(dc_x as isize) = SHRT_MAX as i16;
+            *unsafe { game_state() }.r_segs.maskedtexturecol.offset(unsafe { game_state() }.r_draw.dc_x as isize) = SHRT_MAX as i16;
         }
         unsafe { game_state() }.r_things.spryscale += unsafe { game_state() }.r_segs.rw_scalestep;
-        dc_x += 1;
+        unsafe { game_state() }.r_draw.dc_x += 1;
     }
 }
 pub const HEIGHTBITS: i32 = 12;
@@ -261,19 +252,19 @@ pub unsafe fn R_RenderSegLoop() {
             if index >= MAXLIGHTSCALE as u32 {
                 index = (MAXLIGHTSCALE - 1 as i32) as u32;
             }
-            dc_colormap = *unsafe { game_state() }.r_segs.walllights.offset(index as isize);
-            dc_x = unsafe { game_state() }.r_segs.rw_x;
-            dc_iscale = (0xffffffff as u32).wrapping_div(unsafe { game_state() }.r_segs.rw_scale as u32) as fixed_t;
+            unsafe { game_state() }.r_draw.dc_colormap = *unsafe { game_state() }.r_segs.walllights.offset(index as isize);
+            unsafe { game_state() }.r_draw.dc_x = unsafe { game_state() }.r_segs.rw_x;
+            unsafe { game_state() }.r_draw.dc_iscale = (0xffffffff as u32).wrapping_div(unsafe { game_state() }.r_segs.rw_scale as u32) as fixed_t;
         } else {
             texturecolumn = 0 as i32 as fixed_t;
         }
         if unsafe { game_state() }.r_segs.midtexture != 0 {
-            dc_yl = yl;
-            dc_yh = yh;
-            dc_texturemid = unsafe { game_state() }.r_segs.rw_midtexturemid;
-            dc_source = R_GetColumn(unsafe { game_state() }.r_segs.midtexture, texturecolumn as i32);
+            unsafe { game_state() }.r_draw.dc_yl = yl;
+            unsafe { game_state() }.r_draw.dc_yh = yh;
+            unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_segs.rw_midtexturemid;
+            unsafe { game_state() }.r_draw.dc_source = R_GetColumn(unsafe { game_state() }.r_segs.midtexture, texturecolumn as i32);
             unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
-            ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = viewheight as i16;
+            ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = unsafe { game_state() }.r_draw.viewheight as i16;
             floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = -(1 as i32) as i16;
         } else {
             if unsafe { game_state() }.r_segs.toptexture != 0 {
@@ -283,10 +274,10 @@ pub unsafe fn R_RenderSegLoop() {
                     mid = floorclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 - 1 as i32;
                 }
                 if mid >= yl {
-                    dc_yl = yl;
-                    dc_yh = mid;
-                    dc_texturemid = unsafe { game_state() }.r_segs.rw_toptexturemid;
-                    dc_source = R_GetColumn(unsafe { game_state() }.r_segs.toptexture, texturecolumn as i32);
+                    unsafe { game_state() }.r_draw.dc_yl = yl;
+                    unsafe { game_state() }.r_draw.dc_yh = mid;
+                    unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_segs.rw_toptexturemid;
+                    unsafe { game_state() }.r_draw.dc_source = R_GetColumn(unsafe { game_state() }.r_segs.toptexture, texturecolumn as i32);
                     unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
                     ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] = mid as i16;
                 } else {
@@ -302,10 +293,10 @@ pub unsafe fn R_RenderSegLoop() {
                     mid = ceilingclip[unsafe { game_state() }.r_segs.rw_x as usize] as i32 + 1 as i32;
                 }
                 if mid <= yh {
-                    dc_yl = mid;
-                    dc_yh = yh;
-                    dc_texturemid = unsafe { game_state() }.r_segs.rw_bottomtexturemid;
-                    dc_source = R_GetColumn(unsafe { game_state() }.r_segs.bottomtexture, texturecolumn as i32);
+                    unsafe { game_state() }.r_draw.dc_yl = mid;
+                    unsafe { game_state() }.r_draw.dc_yh = yh;
+                    unsafe { game_state() }.r_draw.dc_texturemid = unsafe { game_state() }.r_segs.rw_bottomtexturemid;
+                    unsafe { game_state() }.r_draw.dc_source = R_GetColumn(unsafe { game_state() }.r_segs.bottomtexture, texturecolumn as i32);
                     unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
                     floorclip[unsafe { game_state() }.r_segs.rw_x as usize] = mid as i16;
                 } else {
@@ -335,7 +326,7 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
     {
         return;
     }
-    if start >= viewwidth || start > stop {
+    if start >= unsafe { game_state() }.r_draw.viewwidth || start > stop {
         I_Error(&format!("Bad R_RenderWallRange: {} to {}", start, stop));
     }
     sidedef = (*curline).sidedef;

@@ -83,10 +83,6 @@ use crate::src::m_misc::M_StringEndsWith;
 use crate::src::m_misc::M_snprintf;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::p_setup::P_Init;
-use crate::src::r_draw::scaledviewwidth;
-use crate::src::r_draw::viewheight;
-use crate::src::r_draw::viewwindowx;
-use crate::src::r_draw::viewwindowy;
 use crate::src::r_draw::R_DrawViewBorder;
 use crate::src::r_draw::R_FillBackScreen;
 use crate::src::r_main::R_ExecuteSetViewSize;
@@ -252,14 +248,14 @@ pub unsafe fn D_Display() {
                 if unsafe { game_state() }.am_map.automapactive {
                     AM_Drawer();
                 }
-                if wipe || viewheight != 200 as i32 && fullscreen {
+                if wipe || unsafe { game_state() }.r_draw.viewheight != 200 as i32 && fullscreen {
                     redrawsbar = true;
                 }
                 if inhelpscreensstate && !unsafe { game_state() }.m_menu.inhelpscreens {
                     redrawsbar = true;
                 }
-                ST_Drawer(viewheight == 200 as i32, redrawsbar);
-                fullscreen = viewheight == 200 as i32;
+                ST_Drawer(unsafe { game_state() }.r_draw.viewheight == 200 as i32, redrawsbar);
+                fullscreen = unsafe { game_state() }.r_draw.viewheight == 200 as i32;
             }
         }
         1 => {
@@ -301,7 +297,7 @@ pub unsafe fn D_Display() {
     }
     if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && !unsafe { game_state() }.am_map.automapactive
-        && scaledviewwidth != 320 as i32
+        && unsafe { game_state() }.r_draw.scaledviewwidth != 320 as i32
     {
         if unsafe { game_state() }.m_menu.menuactive || menuactivestate || !viewactivestate {
             borderdrawcount = 3 as i32;
@@ -323,11 +319,11 @@ pub unsafe fn D_Display() {
         if unsafe { game_state() }.am_map.automapactive {
             y = 4 as i32;
         } else {
-            y = viewwindowy + 4 as i32;
+            y = unsafe { game_state() }.r_draw.viewwindowy + 4 as i32;
         }
         V_DrawPatchDirect(
             unsafe { &mut game_state().v_video },
-            viewwindowx + (scaledviewwidth - 68 as i32) / 2 as i32,
+            unsafe { game_state() }.r_draw.viewwindowx + (unsafe { game_state() }.r_draw.scaledviewwidth - 68 as i32) / 2 as i32,
             y,
             W_CacheLumpName("M_PAUSE", PU_CACHE as i32) as *mut patch_t,
         );

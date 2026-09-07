@@ -6,10 +6,6 @@ use crate::src::game_state::game_state;
 use crate::src::m_controls::KEY_BACKSPACE;
 use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_misc::__ctype_toupper_loc;
-use crate::src::r_draw::viewheight;
-use crate::src::r_draw::viewwidth;
-use crate::src::r_draw::viewwindowx;
-use crate::src::r_draw::viewwindowy;
 use crate::src::r_draw::R_VideoErase;
 use crate::src::stdint_types::__int32_t;
 use crate::src::v_video::V_DrawPatchDirect;
@@ -130,16 +126,16 @@ pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
     let mut lh: i32 = 0;
     let mut y: i32 = 0;
     let mut yoffset: i32 = 0;
-    if !unsafe { game_state() }.am_map.automapactive && viewwindowx != 0 && (*l).needsupdate != 0 {
+    if !unsafe { game_state() }.am_map.automapactive && unsafe { game_state() }.r_draw.viewwindowx != 0 && (*l).needsupdate != 0 {
         lh = (**(*l).f.offset(0 as i32 as isize)).height as i32 + 1 as i32;
         y = (*l).y;
         yoffset = y * SCREENWIDTH;
         while y < (*l).y + lh {
-            if y < viewwindowy || y >= viewwindowy + viewheight {
+            if y < unsafe { game_state() }.r_draw.viewwindowy || y >= unsafe { game_state() }.r_draw.viewwindowy + unsafe { game_state() }.r_draw.viewheight {
                 R_VideoErase(yoffset as u32, SCREENWIDTH);
             } else {
-                R_VideoErase(yoffset as u32, viewwindowx);
-                R_VideoErase((yoffset + viewwindowx + viewwidth) as u32, viewwindowx);
+                R_VideoErase(yoffset as u32, unsafe { game_state() }.r_draw.viewwindowx);
+                R_VideoErase((yoffset + unsafe { game_state() }.r_draw.viewwindowx + unsafe { game_state() }.r_draw.viewwidth) as u32, unsafe { game_state() }.r_draw.viewwindowx);
             }
             y += 1;
             yoffset += SCREENWIDTH;
