@@ -993,48 +993,48 @@ pub unsafe fn WI_initAnimatedBack() {
         i += 1;
     }
 }
-pub unsafe fn WI_updateAnimatedBack() {
+pub unsafe fn WI_updateAnimatedBack(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         return;
     }
-    if (*unsafe { game_state() }.wi_stuff.wbs).epsd > 2 as i32 {
+    if (*state.wi_stuff.wbs).epsd > 2 as i32 {
         return;
     }
     i = 0 as i32;
-    while i < unsafe { game_state() }.wi_stuff.NUMANIMS[(*unsafe { game_state() }.wi_stuff.wbs).epsd as usize] {
-        a = (*(&raw mut unsafe { game_state() }.wi_stuff.anims as *mut *mut anim_t).offset((*unsafe { game_state() }.wi_stuff.wbs).epsd as isize)).offset(i as isize)
+    while i < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
+        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t).offset((*state.wi_stuff.wbs).epsd as isize)).offset(i as isize)
             as *mut anim_t;
-        if unsafe { game_state() }.wi_stuff.bcnt == (*a).nexttic {
+        if state.wi_stuff.bcnt == (*a).nexttic {
             match (*a).type_0 as u32 {
                 0 => {
                     (*a).ctr += 1;
                     if (*a).ctr >= (*a).nanims {
                         (*a).ctr = 0 as i32;
                     }
-                    (*a).nexttic = unsafe { game_state() }.wi_stuff.bcnt + (*a).period;
+                    (*a).nexttic = state.wi_stuff.bcnt + (*a).period;
                 }
                 1 => {
                     (*a).ctr += 1;
                     if (*a).ctr == (*a).nanims {
                         (*a).ctr = -(1 as i32);
-                        (*a).nexttic = unsafe { game_state() }.wi_stuff.bcnt
+                        (*a).nexttic = state.wi_stuff.bcnt
                             + (*a).data2
-                            + M_Random(unsafe { &mut game_state().m_random }) % (*a).data1;
+                            + M_Random(&mut state.m_random) % (*a).data1;
                     } else {
-                        (*a).nexttic = unsafe { game_state() }.wi_stuff.bcnt + (*a).period;
+                        (*a).nexttic = state.wi_stuff.bcnt + (*a).period;
                     }
                 }
                 2 => {
-                    if !(unsafe { game_state() }.wi_stuff.state as i32 == StatCount as i32 && i == 7 as i32)
-                        && (*unsafe { game_state() }.wi_stuff.wbs).next == (*a).data1
+                    if !(state.wi_stuff.state as i32 == StatCount as i32 && i == 7 as i32)
+                        && (*state.wi_stuff.wbs).next == (*a).data1
                     {
                         (*a).ctr += 1;
                         if (*a).ctr == (*a).nanims {
                             (*a).ctr -= 1;
                         }
-                        (*a).nexttic = unsafe { game_state() }.wi_stuff.bcnt + (*a).period;
+                        (*a).nexttic = state.wi_stuff.bcnt + (*a).period;
                     }
                 }
                 _ => {}
@@ -1154,31 +1154,31 @@ pub unsafe fn WI_End() {
     }
     WI_unloadData_0();
 }
-pub unsafe fn WI_initNoState() {
-    unsafe { game_state() }.wi_stuff.state = NoState;
-    unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
-    unsafe { game_state() }.wi_stuff.cnt = 10 as i32;
+pub unsafe fn WI_initNoState(state: &mut GameState) {
+    state.wi_stuff.state = NoState;
+    state.wi_stuff.acceleratestage = 0 as i32;
+    state.wi_stuff.cnt = 10 as i32;
 }
-pub unsafe fn WI_updateNoState() {
-    WI_updateAnimatedBack();
-    unsafe { game_state() }.wi_stuff.cnt -= 1;
-    if unsafe { game_state() }.wi_stuff.cnt == 0 {
-        G_WorldDone(unsafe { game_state() });
+pub unsafe fn WI_updateNoState(state: &mut GameState) {
+    WI_updateAnimatedBack(state);
+    state.wi_stuff.cnt -= 1;
+    if state.wi_stuff.cnt == 0 {
+        G_WorldDone(state);
     }
 }
-pub unsafe fn WI_initShowNextLoc() {
-    unsafe { game_state() }.wi_stuff.state = ShowNextLoc;
-    unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
-    unsafe { game_state() }.wi_stuff.cnt = SHOWNEXTLOCDELAY * TICRATE;
+pub unsafe fn WI_initShowNextLoc(state: &mut GameState) {
+    state.wi_stuff.state = ShowNextLoc;
+    state.wi_stuff.acceleratestage = 0 as i32;
+    state.wi_stuff.cnt = SHOWNEXTLOCDELAY * TICRATE;
     WI_initAnimatedBack();
 }
-pub unsafe fn WI_updateShowNextLoc() {
-    WI_updateAnimatedBack();
-    unsafe { game_state() }.wi_stuff.cnt -= 1;
-    if unsafe { game_state() }.wi_stuff.cnt == 0 || unsafe { game_state() }.wi_stuff.acceleratestage != 0 {
-        WI_initNoState();
+pub unsafe fn WI_updateShowNextLoc(state: &mut GameState) {
+    WI_updateAnimatedBack(state);
+    state.wi_stuff.cnt -= 1;
+    if state.wi_stuff.cnt == 0 || state.wi_stuff.acceleratestage != 0 {
+        WI_initNoState(state);
     } else {
-        unsafe { game_state() }.wi_stuff.snl_pointeron = (unsafe { game_state() }.wi_stuff.cnt & 31 as i32) < 20 as i32;
+        state.wi_stuff.snl_pointeron = (state.wi_stuff.cnt & 31 as i32) < 20 as i32;
     };
 }
 pub unsafe fn WI_drawShowNextLoc(state: &mut GameState) {
@@ -1222,17 +1222,17 @@ pub unsafe fn WI_drawNoState(state: &mut GameState) {
     state.wi_stuff.snl_pointeron = true;
     WI_drawShowNextLoc(state);
 }
-pub unsafe fn WI_fragSum(mut playernum: i32) -> i32 {
+pub unsafe fn WI_fragSum(state: &mut GameState, mut playernum: i32) -> i32 {
     let mut i: i32 = 0;
     let mut frags_0: i32 = 0 as i32;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 && i != playernum {
-            frags_0 += (*unsafe { game_state() }.wi_stuff.plrs.offset(playernum as isize)).frags[i as usize];
+        if state.g_game.playeringame[i as usize] != 0 && i != playernum {
+            frags_0 += (*state.wi_stuff.plrs.offset(playernum as isize)).frags[i as usize];
         }
         i += 1;
     }
-    frags_0 -= (*unsafe { game_state() }.wi_stuff.plrs.offset(playernum as isize)).frags[playernum as usize];
+    frags_0 -= (*state.wi_stuff.plrs.offset(playernum as isize)).frags[playernum as usize];
     return frags_0;
 }
 pub unsafe fn WI_initDeathmatchStats() {
@@ -1258,39 +1258,39 @@ pub unsafe fn WI_initDeathmatchStats() {
     }
     WI_initAnimatedBack();
 }
-pub unsafe fn WI_updateDeathmatchStats() {
+pub unsafe fn WI_updateDeathmatchStats(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut stillticking: bool = false;
-    WI_updateAnimatedBack();
-    if unsafe { game_state() }.wi_stuff.acceleratestage != 0 && unsafe { game_state() }.wi_stuff.dm_state != 4 as i32 {
-        unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
+    WI_updateAnimatedBack(state);
+    if state.wi_stuff.acceleratestage != 0 && state.wi_stuff.dm_state != 4 as i32 {
+        state.wi_stuff.acceleratestage = 0 as i32;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
+            if state.g_game.playeringame[i as usize] != 0 {
                 j = 0 as i32;
                 while j < MAXPLAYERS {
-                    if unsafe { game_state() }.g_game.playeringame[j as usize] != 0 {
-                        unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize] =
-                            (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).frags[j as usize];
+                    if state.g_game.playeringame[j as usize] != 0 {
+                        state.wi_stuff.dm_frags[i as usize][j as usize] =
+                            (*state.wi_stuff.plrs.offset(i as isize)).frags[j as usize];
                     }
                     j += 1;
                 }
-                unsafe { game_state() }.wi_stuff.dm_totals[i as usize] = WI_fragSum(i);
+                state.wi_stuff.dm_totals[i as usize] = WI_fragSum(state, i);
             }
             i += 1;
         }
         S_StartSound(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
-        unsafe { game_state() }.wi_stuff.dm_state = 4 as i32;
+        state.wi_stuff.dm_state = 4 as i32;
     }
-    if unsafe { game_state() }.wi_stuff.dm_state == 2 as i32 {
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    if state.wi_stuff.dm_state == 2 as i32 {
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1298,64 +1298,64 @@ pub unsafe fn WI_updateDeathmatchStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
+            if state.g_game.playeringame[i as usize] != 0 {
                 j = 0 as i32;
                 while j < MAXPLAYERS {
-                    if unsafe { game_state() }.g_game.playeringame[j as usize] != 0
-                        && unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize]
-                            != (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).frags[j as usize]
+                    if state.g_game.playeringame[j as usize] != 0
+                        && state.wi_stuff.dm_frags[i as usize][j as usize]
+                            != (*state.wi_stuff.plrs.offset(i as isize)).frags[j as usize]
                     {
-                        if (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).frags[j as usize] < 0 as i32 {
-                            unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize] -= 1;
+                        if (*state.wi_stuff.plrs.offset(i as isize)).frags[j as usize] < 0 as i32 {
+                            state.wi_stuff.dm_frags[i as usize][j as usize] -= 1;
                         } else {
-                            unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize] += 1;
+                            state.wi_stuff.dm_frags[i as usize][j as usize] += 1;
                         }
-                        if unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize] > 99 as i32 {
-                            unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize] = 99 as i32;
+                        if state.wi_stuff.dm_frags[i as usize][j as usize] > 99 as i32 {
+                            state.wi_stuff.dm_frags[i as usize][j as usize] = 99 as i32;
                         }
-                        if unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize] < -(99 as i32) {
-                            unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize] = -(99 as i32);
+                        if state.wi_stuff.dm_frags[i as usize][j as usize] < -(99 as i32) {
+                            state.wi_stuff.dm_frags[i as usize][j as usize] = -(99 as i32);
                         }
                         stillticking = true;
                     }
                     j += 1;
                 }
-                unsafe { game_state() }.wi_stuff.dm_totals[i as usize] = WI_fragSum(i);
-                if unsafe { game_state() }.wi_stuff.dm_totals[i as usize] > 99 as i32 {
-                    unsafe { game_state() }.wi_stuff.dm_totals[i as usize] = 99 as i32;
+                state.wi_stuff.dm_totals[i as usize] = WI_fragSum(state, i);
+                if state.wi_stuff.dm_totals[i as usize] > 99 as i32 {
+                    state.wi_stuff.dm_totals[i as usize] = 99 as i32;
                 }
-                if unsafe { game_state() }.wi_stuff.dm_totals[i as usize] < -(99 as i32) {
-                    unsafe { game_state() }.wi_stuff.dm_totals[i as usize] = -(99 as i32);
+                if state.wi_stuff.dm_totals[i as usize] < -(99 as i32) {
+                    state.wi_stuff.dm_totals[i as usize] = -(99 as i32);
                 }
             }
             i += 1;
         }
         if !stillticking {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
-            unsafe { game_state() }.wi_stuff.dm_state += 1;
+            state.wi_stuff.dm_state += 1;
         }
-    } else if unsafe { game_state() }.wi_stuff.dm_state == 4 as i32 {
-        if unsafe { game_state() }.wi_stuff.acceleratestage != 0 {
+    } else if state.wi_stuff.dm_state == 4 as i32 {
+        if state.wi_stuff.acceleratestage != 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_slop as i32,
             );
-            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                WI_initNoState();
+            if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+                WI_initNoState(state);
             } else {
-                WI_initShowNextLoc();
+                WI_initShowNextLoc(state);
             }
         }
-    } else if unsafe { game_state() }.wi_stuff.dm_state & 1 as i32 != 0 {
-        unsafe { game_state() }.wi_stuff.cnt_pause -= 1;
-        if unsafe { game_state() }.wi_stuff.cnt_pause == 0 {
-            unsafe { game_state() }.wi_stuff.dm_state += 1;
-            unsafe { game_state() }.wi_stuff.cnt_pause = TICRATE;
+    } else if state.wi_stuff.dm_state & 1 as i32 != 0 {
+        state.wi_stuff.cnt_pause -= 1;
+        if state.wi_stuff.cnt_pause == 0 {
+            state.wi_stuff.dm_state += 1;
+            state.wi_stuff.cnt_pause = TICRATE;
         }
     }
 }
@@ -1457,46 +1457,47 @@ pub unsafe fn WI_initNetgameStats() {
             unsafe { game_state() }.wi_stuff.cnt_secret[i as usize] = unsafe { game_state() }.wi_stuff.cnt_frags[i as usize];
             unsafe { game_state() }.wi_stuff.cnt_items[i as usize] = unsafe { game_state() }.wi_stuff.cnt_secret[i as usize];
             unsafe { game_state() }.wi_stuff.cnt_kills[i as usize] = unsafe { game_state() }.wi_stuff.cnt_items[i as usize];
-            unsafe { game_state() }.wi_stuff.dofrags += WI_fragSum(i);
+            let fragsum = WI_fragSum(unsafe { game_state() }, i);
+            unsafe { game_state() }.wi_stuff.dofrags += fragsum;
         }
         i += 1;
     }
     unsafe { game_state() }.wi_stuff.dofrags = (unsafe { game_state() }.wi_stuff.dofrags != 0) as i32;
     WI_initAnimatedBack();
 }
-pub unsafe fn WI_updateNetgameStats() {
+pub unsafe fn WI_updateNetgameStats(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut fsum: i32 = 0;
     let mut stillticking: bool = false;
-    WI_updateAnimatedBack();
-    if unsafe { game_state() }.wi_stuff.acceleratestage != 0 && unsafe { game_state() }.wi_stuff.ng_state != 10 as i32 {
-        unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
+    WI_updateAnimatedBack(state);
+    if state.wi_stuff.acceleratestage != 0 && state.wi_stuff.ng_state != 10 as i32 {
+        state.wi_stuff.acceleratestage = 0 as i32;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
-                unsafe { game_state() }.wi_stuff.cnt_kills[i as usize] =
-                    (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxkills;
-                unsafe { game_state() }.wi_stuff.cnt_items[i as usize] =
-                    (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxitems;
-                unsafe { game_state() }.wi_stuff.cnt_secret[i as usize] =
-                    (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxsecret;
-                if unsafe { game_state() }.wi_stuff.dofrags != 0 {
-                    unsafe { game_state() }.wi_stuff.cnt_frags[i as usize] = WI_fragSum(i);
+            if !(state.g_game.playeringame[i as usize] == 0) {
+                state.wi_stuff.cnt_kills[i as usize] =
+                    (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills;
+                state.wi_stuff.cnt_items[i as usize] =
+                    (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems;
+                state.wi_stuff.cnt_secret[i as usize] =
+                    (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret;
+                if state.wi_stuff.dofrags != 0 {
+                    state.wi_stuff.cnt_frags[i as usize] = WI_fragSum(state, i);
                 }
             }
             i += 1;
         }
         S_StartSound(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
-        unsafe { game_state() }.wi_stuff.ng_state = 10 as i32;
+        state.wi_stuff.ng_state = 10 as i32;
     }
-    if unsafe { game_state() }.wi_stuff.ng_state == 2 as i32 {
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    if state.wi_stuff.ng_state == 2 as i32 {
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1504,13 +1505,13 @@ pub unsafe fn WI_updateNetgameStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
-                unsafe { game_state() }.wi_stuff.cnt_kills[i as usize] += 2 as i32;
-                if unsafe { game_state() }.wi_stuff.cnt_kills[i as usize]
-                    >= (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxkills
+            if !(state.g_game.playeringame[i as usize] == 0) {
+                state.wi_stuff.cnt_kills[i as usize] += 2 as i32;
+                if state.wi_stuff.cnt_kills[i as usize]
+                    >= (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills
                 {
-                    unsafe { game_state() }.wi_stuff.cnt_kills[i as usize] =
-                        (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxkills;
+                    state.wi_stuff.cnt_kills[i as usize] =
+                        (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills;
                 } else {
                     stillticking = true;
                 }
@@ -1519,16 +1520,16 @@ pub unsafe fn WI_updateNetgameStats() {
         }
         if !stillticking {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
-            unsafe { game_state() }.wi_stuff.ng_state += 1;
+            state.wi_stuff.ng_state += 1;
         }
-    } else if unsafe { game_state() }.wi_stuff.ng_state == 4 as i32 {
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    } else if state.wi_stuff.ng_state == 4 as i32 {
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1536,13 +1537,13 @@ pub unsafe fn WI_updateNetgameStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
-                unsafe { game_state() }.wi_stuff.cnt_items[i as usize] += 2 as i32;
-                if unsafe { game_state() }.wi_stuff.cnt_items[i as usize]
-                    >= (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxitems
+            if !(state.g_game.playeringame[i as usize] == 0) {
+                state.wi_stuff.cnt_items[i as usize] += 2 as i32;
+                if state.wi_stuff.cnt_items[i as usize]
+                    >= (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems
                 {
-                    unsafe { game_state() }.wi_stuff.cnt_items[i as usize] =
-                        (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxitems;
+                    state.wi_stuff.cnt_items[i as usize] =
+                        (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems;
                 } else {
                     stillticking = true;
                 }
@@ -1551,16 +1552,16 @@ pub unsafe fn WI_updateNetgameStats() {
         }
         if !stillticking {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
-            unsafe { game_state() }.wi_stuff.ng_state += 1;
+            state.wi_stuff.ng_state += 1;
         }
-    } else if unsafe { game_state() }.wi_stuff.ng_state == 6 as i32 {
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    } else if state.wi_stuff.ng_state == 6 as i32 {
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1568,13 +1569,13 @@ pub unsafe fn WI_updateNetgameStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
-                unsafe { game_state() }.wi_stuff.cnt_secret[i as usize] += 2 as i32;
-                if unsafe { game_state() }.wi_stuff.cnt_secret[i as usize]
-                    >= (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxsecret
+            if !(state.g_game.playeringame[i as usize] == 0) {
+                state.wi_stuff.cnt_secret[i as usize] += 2 as i32;
+                if state.wi_stuff.cnt_secret[i as usize]
+                    >= (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret
                 {
-                    unsafe { game_state() }.wi_stuff.cnt_secret[i as usize] =
-                        (*unsafe { game_state() }.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxsecret;
+                    state.wi_stuff.cnt_secret[i as usize] =
+                        (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret;
                 } else {
                     stillticking = true;
                 }
@@ -1583,16 +1584,16 @@ pub unsafe fn WI_updateNetgameStats() {
         }
         if !stillticking {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
-            unsafe { game_state() }.wi_stuff.ng_state += 1 as i32 + 2 as i32 * (unsafe { game_state() }.wi_stuff.dofrags == 0) as i32;
+            state.wi_stuff.ng_state += 1 as i32 + 2 as i32 * (state.wi_stuff.dofrags == 0) as i32;
         }
-    } else if unsafe { game_state() }.wi_stuff.ng_state == 8 as i32 {
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    } else if state.wi_stuff.ng_state == 8 as i32 {
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
@@ -1600,11 +1601,11 @@ pub unsafe fn WI_updateNetgameStats() {
         stillticking = false;
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
-                unsafe { game_state() }.wi_stuff.cnt_frags[i as usize] += 1 as i32;
-                fsum = WI_fragSum(i);
-                if unsafe { game_state() }.wi_stuff.cnt_frags[i as usize] >= fsum {
-                    unsafe { game_state() }.wi_stuff.cnt_frags[i as usize] = fsum;
+            if !(state.g_game.playeringame[i as usize] == 0) {
+                state.wi_stuff.cnt_frags[i as usize] += 1 as i32;
+                fsum = WI_fragSum(state, i);
+                if state.wi_stuff.cnt_frags[i as usize] >= fsum {
+                    state.wi_stuff.cnt_frags[i as usize] = fsum;
                 } else {
                     stillticking = true;
                 }
@@ -1613,30 +1614,30 @@ pub unsafe fn WI_updateNetgameStats() {
         }
         if !stillticking {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pldeth as i32,
             );
-            unsafe { game_state() }.wi_stuff.ng_state += 1;
+            state.wi_stuff.ng_state += 1;
         }
-    } else if unsafe { game_state() }.wi_stuff.ng_state == 10 as i32 {
-        if unsafe { game_state() }.wi_stuff.acceleratestage != 0 {
+    } else if state.wi_stuff.ng_state == 10 as i32 {
+        if state.wi_stuff.acceleratestage != 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_sgcock as i32,
             );
-            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                WI_initNoState();
+            if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+                WI_initNoState(state);
             } else {
-                WI_initShowNextLoc();
+                WI_initShowNextLoc(state);
             }
         }
-    } else if unsafe { game_state() }.wi_stuff.ng_state & 1 as i32 != 0 {
-        unsafe { game_state() }.wi_stuff.cnt_pause -= 1;
-        if unsafe { game_state() }.wi_stuff.cnt_pause == 0 {
-            unsafe { game_state() }.wi_stuff.ng_state += 1;
-            unsafe { game_state() }.wi_stuff.cnt_pause = TICRATE;
+    } else if state.wi_stuff.ng_state & 1 as i32 != 0 {
+        state.wi_stuff.cnt_pause -= 1;
+        if state.wi_stuff.cnt_pause == 0 {
+            state.wi_stuff.ng_state += 1;
+            state.wi_stuff.cnt_pause = TICRATE;
         }
     }
 }
@@ -1740,130 +1741,130 @@ pub unsafe fn WI_initStats() {
     unsafe { game_state() }.wi_stuff.cnt_pause = TICRATE;
     WI_initAnimatedBack();
 }
-pub unsafe fn WI_updateStats() {
-    WI_updateAnimatedBack();
-    if unsafe { game_state() }.wi_stuff.acceleratestage != 0 && unsafe { game_state() }.wi_stuff.sp_state != 10 as i32 {
-        unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
-        unsafe { game_state() }.wi_stuff.cnt_kills[0 as i32 as usize] =
-            (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).skills * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxkills;
-        unsafe { game_state() }.wi_stuff.cnt_items[0 as i32 as usize] =
-            (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).sitems * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxitems;
-        unsafe { game_state() }.wi_stuff.cnt_secret[0 as i32 as usize] =
-            (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).ssecret * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxsecret;
-        unsafe { game_state() }.wi_stuff.cnt_time = (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).stime / TICRATE;
-        unsafe { game_state() }.wi_stuff.cnt_par = (*unsafe { game_state() }.wi_stuff.wbs).partime / TICRATE;
+pub unsafe fn WI_updateStats(state: &mut GameState) {
+    WI_updateAnimatedBack(state);
+    if state.wi_stuff.acceleratestage != 0 && state.wi_stuff.sp_state != 10 as i32 {
+        state.wi_stuff.acceleratestage = 0 as i32;
+        state.wi_stuff.cnt_kills[0 as i32 as usize] =
+            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills;
+        state.wi_stuff.cnt_items[0 as i32 as usize] =
+            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems;
+        state.wi_stuff.cnt_secret[0 as i32 as usize] =
+            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret;
+        state.wi_stuff.cnt_time = (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE;
+        state.wi_stuff.cnt_par = (*state.wi_stuff.wbs).partime / TICRATE;
         S_StartSound(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
             sfx_barexp as i32,
         );
-        unsafe { game_state() }.wi_stuff.sp_state = 10 as i32;
+        state.wi_stuff.sp_state = 10 as i32;
     }
-    if unsafe { game_state() }.wi_stuff.sp_state == 2 as i32 {
-        unsafe { game_state() }.wi_stuff.cnt_kills[0 as i32 as usize] += 2 as i32;
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    if state.wi_stuff.sp_state == 2 as i32 {
+        state.wi_stuff.cnt_kills[0 as i32 as usize] += 2 as i32;
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
         }
-        if unsafe { game_state() }.wi_stuff.cnt_kills[0 as i32 as usize]
-            >= (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).skills * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxkills
+        if state.wi_stuff.cnt_kills[0 as i32 as usize]
+            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills
         {
-            unsafe { game_state() }.wi_stuff.cnt_kills[0 as i32 as usize] =
-                (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).skills * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxkills;
+            state.wi_stuff.cnt_kills[0 as i32 as usize] =
+                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills;
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
-            unsafe { game_state() }.wi_stuff.sp_state += 1;
+            state.wi_stuff.sp_state += 1;
         }
-    } else if unsafe { game_state() }.wi_stuff.sp_state == 4 as i32 {
-        unsafe { game_state() }.wi_stuff.cnt_items[0 as i32 as usize] += 2 as i32;
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    } else if state.wi_stuff.sp_state == 4 as i32 {
+        state.wi_stuff.cnt_items[0 as i32 as usize] += 2 as i32;
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
         }
-        if unsafe { game_state() }.wi_stuff.cnt_items[0 as i32 as usize]
-            >= (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).sitems * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxitems
+        if state.wi_stuff.cnt_items[0 as i32 as usize]
+            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems
         {
-            unsafe { game_state() }.wi_stuff.cnt_items[0 as i32 as usize] =
-                (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).sitems * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxitems;
+            state.wi_stuff.cnt_items[0 as i32 as usize] =
+                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems;
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
-            unsafe { game_state() }.wi_stuff.sp_state += 1;
+            state.wi_stuff.sp_state += 1;
         }
-    } else if unsafe { game_state() }.wi_stuff.sp_state == 6 as i32 {
-        unsafe { game_state() }.wi_stuff.cnt_secret[0 as i32 as usize] += 2 as i32;
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    } else if state.wi_stuff.sp_state == 6 as i32 {
+        state.wi_stuff.cnt_secret[0 as i32 as usize] += 2 as i32;
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
         }
-        if unsafe { game_state() }.wi_stuff.cnt_secret[0 as i32 as usize]
-            >= (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).ssecret * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxsecret
+        if state.wi_stuff.cnt_secret[0 as i32 as usize]
+            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret
         {
-            unsafe { game_state() }.wi_stuff.cnt_secret[0 as i32 as usize] =
-                (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).ssecret * 100 as i32 / (*unsafe { game_state() }.wi_stuff.wbs).maxsecret;
+            state.wi_stuff.cnt_secret[0 as i32 as usize] =
+                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret;
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_barexp as i32,
             );
-            unsafe { game_state() }.wi_stuff.sp_state += 1;
+            state.wi_stuff.sp_state += 1;
         }
-    } else if unsafe { game_state() }.wi_stuff.sp_state == 8 as i32 {
-        if unsafe { game_state() }.wi_stuff.bcnt & 3 as i32 == 0 {
+    } else if state.wi_stuff.sp_state == 8 as i32 {
+        if state.wi_stuff.bcnt & 3 as i32 == 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_pistol as i32,
             );
         }
-        unsafe { game_state() }.wi_stuff.cnt_time += 3 as i32;
-        if unsafe { game_state() }.wi_stuff.cnt_time >= (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).stime / TICRATE {
-            unsafe { game_state() }.wi_stuff.cnt_time = (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).stime / TICRATE;
+        state.wi_stuff.cnt_time += 3 as i32;
+        if state.wi_stuff.cnt_time >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE {
+            state.wi_stuff.cnt_time = (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE;
         }
-        unsafe { game_state() }.wi_stuff.cnt_par += 3 as i32;
-        if unsafe { game_state() }.wi_stuff.cnt_par >= (*unsafe { game_state() }.wi_stuff.wbs).partime / TICRATE {
-            unsafe { game_state() }.wi_stuff.cnt_par = (*unsafe { game_state() }.wi_stuff.wbs).partime / TICRATE;
-            if unsafe { game_state() }.wi_stuff.cnt_time >= (*unsafe { game_state() }.wi_stuff.plrs.offset(unsafe { game_state() }.wi_stuff.me as isize)).stime / TICRATE {
+        state.wi_stuff.cnt_par += 3 as i32;
+        if state.wi_stuff.cnt_par >= (*state.wi_stuff.wbs).partime / TICRATE {
+            state.wi_stuff.cnt_par = (*state.wi_stuff.wbs).partime / TICRATE;
+            if state.wi_stuff.cnt_time >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE {
                 S_StartSound(
-                    unsafe { &mut game_state().sounds },
+                    &mut state.sounds,
                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     sfx_barexp as i32,
                 );
-                unsafe { game_state() }.wi_stuff.sp_state += 1;
+                state.wi_stuff.sp_state += 1;
             }
         }
-    } else if unsafe { game_state() }.wi_stuff.sp_state == 10 as i32 {
-        if unsafe { game_state() }.wi_stuff.acceleratestage != 0 {
+    } else if state.wi_stuff.sp_state == 10 as i32 {
+        if state.wi_stuff.acceleratestage != 0 {
             S_StartSound(
-                unsafe { &mut game_state().sounds },
+                &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
                 sfx_sgcock as i32,
             );
-            if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                WI_initNoState();
+            if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+                WI_initNoState(state);
             } else {
-                WI_initShowNextLoc();
+                WI_initShowNextLoc(state);
             }
         }
-    } else if unsafe { game_state() }.wi_stuff.sp_state & 1 as i32 != 0 {
-        unsafe { game_state() }.wi_stuff.cnt_pause -= 1;
-        if unsafe { game_state() }.wi_stuff.cnt_pause == 0 {
-            unsafe { game_state() }.wi_stuff.sp_state += 1;
-            unsafe { game_state() }.wi_stuff.cnt_pause = TICRATE;
+    } else if state.wi_stuff.sp_state & 1 as i32 != 0 {
+        state.wi_stuff.cnt_pause -= 1;
+        if state.wi_stuff.cnt_pause == 0 {
+            state.wi_stuff.sp_state += 1;
+            state.wi_stuff.cnt_pause = TICRATE;
         }
     }
 }
@@ -1916,16 +1917,16 @@ pub unsafe fn WI_drawStats(state: &mut GameState) {
         WI_drawTime(state, SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
     }
 }
-pub unsafe fn WI_checkForAccelerate() {
+pub unsafe fn WI_checkForAccelerate(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     i = 0 as i32;
-    player = &raw mut unsafe { game_state() }.g_game.players as *mut player_t;
+    player = &raw mut state.g_game.players as *mut player_t;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
+        if state.g_game.playeringame[i as usize] != 0 {
             if (*player).cmd.buttons as i32 & BT_ATTACK as i32 != 0 {
                 if (*player).attackdown == 0 {
-                    unsafe { game_state() }.wi_stuff.acceleratestage = 1 as i32;
+                    state.wi_stuff.acceleratestage = 1 as i32;
                 }
                 (*player).attackdown = true_0;
             } else {
@@ -1933,7 +1934,7 @@ pub unsafe fn WI_checkForAccelerate() {
             }
             if (*player).cmd.buttons as i32 & BT_USE as i32 != 0 {
                 if (*player).usedown == 0 {
-                    unsafe { game_state() }.wi_stuff.acceleratestage = 1 as i32;
+                    state.wi_stuff.acceleratestage = 1 as i32;
                 }
                 (*player).usedown = true_0;
             } else {
@@ -1944,39 +1945,39 @@ pub unsafe fn WI_checkForAccelerate() {
         player = player.offset(1);
     }
 }
-pub unsafe fn WI_Ticker() {
-    unsafe { game_state() }.wi_stuff.bcnt += 1;
-    if unsafe { game_state() }.wi_stuff.bcnt == 1 as i32 {
-        if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+pub unsafe fn WI_Ticker(state: &mut GameState) {
+    state.wi_stuff.bcnt += 1;
+    if state.wi_stuff.bcnt == 1 as i32 {
+        if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
             S_ChangeMusic(
-                unsafe { game_state() },
+                state,
                 mus_dm2int as i32,
                 true_0,
             );
         } else {
             S_ChangeMusic(
-                unsafe { game_state() },
+                state,
                 mus_inter as i32,
                 true_0,
             );
         }
     }
-    WI_checkForAccelerate();
-    match unsafe { game_state() }.wi_stuff.state as i32 {
+    WI_checkForAccelerate(state);
+    match state.wi_stuff.state as i32 {
         0 => {
-            if unsafe { game_state() }.g_game.deathmatch != 0 {
-                WI_updateDeathmatchStats();
-            } else if unsafe { game_state() }.g_game.netgame {
-                WI_updateNetgameStats();
+            if state.g_game.deathmatch != 0 {
+                WI_updateDeathmatchStats(state);
+            } else if state.g_game.netgame {
+                WI_updateNetgameStats(state);
             } else {
-                WI_updateStats();
+                WI_updateStats(state);
             }
         }
         1 => {
-            WI_updateShowNextLoc();
+            WI_updateShowNextLoc(state);
         }
         -1 => {
-            WI_updateNoState();
+            WI_updateNoState(state);
         }
         _ => {}
     };

@@ -587,10 +587,10 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
     }
     doomgeneric_Tick(state as *mut GameState as *mut ::core::ffi::c_void);
 }
-pub unsafe fn D_PageTicker() {
-    unsafe { game_state() }.d_main.pagetic -= 1;
-    if unsafe { game_state() }.d_main.pagetic < 0 as i32 {
-        D_AdvanceDemo();
+pub unsafe fn D_PageTicker(state: &mut GameState) {
+    state.d_main.pagetic -= 1;
+    if state.d_main.pagetic < 0 as i32 {
+        D_AdvanceDemo(state);
     }
 }
 pub unsafe fn D_PageDrawer() {
@@ -601,8 +601,8 @@ pub unsafe fn D_PageDrawer() {
         W_CacheLumpName(&wad_name8_to_string(unsafe { game_state() }.d_main.pagename), PU_CACHE as i32) as *mut patch_t,
     );
 }
-pub unsafe fn D_AdvanceDemo() {
-    unsafe { game_state() }.d_main.advancedemo = true;
+pub unsafe fn D_AdvanceDemo(state: &mut GameState) {
+    state.d_main.advancedemo = true;
 }
 pub unsafe fn D_DoAdvanceDemo() {
     unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
@@ -694,7 +694,7 @@ pub unsafe fn D_DoAdvanceDemo() {
 pub unsafe fn D_StartTitle() {
     unsafe { game_state() }.g_game.gameaction = ga_nothing;
     unsafe { game_state() }.d_main.demosequence = -(1 as i32);
-    D_AdvanceDemo();
+    D_AdvanceDemo(unsafe { game_state() });
 }
 static banners: [&str; 7] = [
     "                         DOOM 2: Hell on Earth v%i.%i                           ",
