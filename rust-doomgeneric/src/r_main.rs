@@ -21,15 +21,9 @@ use crate::src::r_data::colormaps;
 use crate::src::r_data::R_InitData;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::{node_t, seg_t};
-use crate::src::r_draw::scaledviewwidth;
-use crate::src::r_draw::viewheight;
-use crate::src::r_draw::viewwidth;
 use crate::src::r_draw::R_InitBuffer;
 use crate::src::r_draw::R_InitTranslationTables;
-use crate::src::r_draw::{
-    R_DrawColumn, R_DrawColumnLow, R_DrawFuzzColumn, R_DrawFuzzColumnLow, R_DrawSpan,
-    R_DrawSpanLow, R_DrawTranslatedColumn, R_DrawTranslatedColumnLow,
-};
+use crate::src::r_draw::{R_DrawColumn, R_DrawColumnLow, R_DrawFuzzColumn, R_DrawFuzzColumnLow, R_DrawSpan, R_DrawSpanLow, R_DrawTranslatedColumn, R_DrawTranslatedColumnLow};
 use crate::src::r_plane::distscale;
 use crate::src::r_plane::yslope;
 use crate::src::r_plane::R_ClearPlanes;
@@ -339,21 +333,21 @@ pub unsafe fn R_InitTextureMapping() {
         if finetangent[i as usize] > FRACUNIT * 2 as i32 {
             t = -(1 as i32);
         } else if finetangent[i as usize] < -FRACUNIT * 2 as i32 {
-            t = viewwidth + 1 as i32;
+            t = unsafe { game_state() }.r_draw.viewwidth + 1 as i32;
         } else {
             t = FixedMul(finetangent[i as usize], focallength) as i32;
             t = unsafe { game_state() }.r_main.centerxfrac as i32 - t + FRACUNIT - 1 as i32 >> FRACBITS;
             if t < -(1 as i32) {
                 t = -(1 as i32);
-            } else if t > viewwidth + 1 as i32 {
-                t = viewwidth + 1 as i32;
+            } else if t > unsafe { game_state() }.r_draw.viewwidth + 1 as i32 {
+                t = unsafe { game_state() }.r_draw.viewwidth + 1 as i32;
             }
         }
         unsafe { game_state() }.r_main.viewangletox[i as usize] = t;
         i += 1;
     }
     x = 0 as i32;
-    while x <= viewwidth {
+    while x <= unsafe { game_state() }.r_draw.viewwidth {
         i = 0 as i32;
         while unsafe { game_state() }.r_main.viewangletox[i as usize] > x {
             i += 1;
@@ -367,8 +361,8 @@ pub unsafe fn R_InitTextureMapping() {
         t = unsafe { game_state() }.r_main.centerx - t;
         if unsafe { game_state() }.r_main.viewangletox[i as usize] == -(1 as i32) {
             unsafe { game_state() }.r_main.viewangletox[i as usize] = 0 as i32;
-        } else if unsafe { game_state() }.r_main.viewangletox[i as usize] == viewwidth + 1 as i32 {
-            unsafe { game_state() }.r_main.viewangletox[i as usize] = viewwidth;
+        } else if unsafe { game_state() }.r_main.viewangletox[i as usize] == unsafe { game_state() }.r_draw.viewwidth + 1 as i32 {
+            unsafe { game_state() }.r_main.viewangletox[i as usize] = unsafe { game_state() }.r_draw.viewwidth;
         }
         i += 1;
     }
@@ -418,16 +412,16 @@ pub unsafe fn R_ExecuteSetViewSize() {
     let mut startmap: i32 = 0;
     unsafe { game_state() }.r_main.setsizeneeded = false;
     if unsafe { game_state() }.r_main.setblocks == 11 as i32 {
-        scaledviewwidth = SCREENWIDTH;
-        viewheight = SCREENHEIGHT;
+        unsafe { game_state() }.r_draw.scaledviewwidth = SCREENWIDTH;
+        unsafe { game_state() }.r_draw.viewheight = SCREENHEIGHT;
     } else {
-        scaledviewwidth = unsafe { game_state() }.r_main.setblocks * 32 as i32;
-        viewheight = unsafe { game_state() }.r_main.setblocks * 168 as i32 / 10 as i32 & !(7 as i32);
+        unsafe { game_state() }.r_draw.scaledviewwidth = unsafe { game_state() }.r_main.setblocks * 32 as i32;
+        unsafe { game_state() }.r_draw.viewheight = unsafe { game_state() }.r_main.setblocks * 168 as i32 / 10 as i32 & !(7 as i32);
     }
     unsafe { game_state() }.r_main.detailshift = unsafe { game_state() }.r_main.setdetail;
-    viewwidth = scaledviewwidth >> unsafe { game_state() }.r_main.detailshift;
-    unsafe { game_state() }.r_main.centery = viewheight / 2 as i32;
-    unsafe { game_state() }.r_main.centerx = viewwidth / 2 as i32;
+    unsafe { game_state() }.r_draw.viewwidth = unsafe { game_state() }.r_draw.scaledviewwidth >> unsafe { game_state() }.r_main.detailshift;
+    unsafe { game_state() }.r_main.centery = unsafe { game_state() }.r_draw.viewheight / 2 as i32;
+    unsafe { game_state() }.r_main.centerx = unsafe { game_state() }.r_draw.viewwidth / 2 as i32;
     unsafe { game_state() }.r_main.centerxfrac = (unsafe { game_state() }.r_main.centerx << FRACBITS) as fixed_t;
     unsafe { game_state() }.r_main.centeryfrac = (unsafe { game_state() }.r_main.centery << FRACBITS) as fixed_t;
     unsafe { game_state() }.r_main.projection = unsafe { game_state() }.r_main.centerxfrac;
@@ -444,28 +438,28 @@ pub unsafe fn R_ExecuteSetViewSize() {
         unsafe { game_state() }.r_main.transcolfunc = Some(R_DrawTranslatedColumnLow as unsafe fn() -> ());
         unsafe { game_state() }.r_main.spanfunc = Some(R_DrawSpanLow as unsafe fn() -> ());
     }
-    R_InitBuffer(scaledviewwidth, viewheight);
+    R_InitBuffer(unsafe { game_state() }.r_draw.scaledviewwidth, unsafe { game_state() }.r_draw.viewheight);
     R_InitTextureMapping();
-    unsafe { game_state() }.r_things.pspritescale = (FRACUNIT * viewwidth / SCREENWIDTH) as fixed_t;
+    unsafe { game_state() }.r_things.pspritescale = (FRACUNIT * unsafe { game_state() }.r_draw.viewwidth / SCREENWIDTH) as fixed_t;
     unsafe { game_state() }.r_things.pspriteiscale =
-        (FRACUNIT * SCREENWIDTH / viewwidth) as fixed_t;
+        (FRACUNIT * SCREENWIDTH / unsafe { game_state() }.r_draw.viewwidth) as fixed_t;
     i = 0 as i32;
-    while i < viewwidth {
-        unsafe { game_state() }.r_things.screenheightarray[i as usize] = viewheight as i16;
+    while i < unsafe { game_state() }.r_draw.viewwidth {
+        unsafe { game_state() }.r_things.screenheightarray[i as usize] = unsafe { game_state() }.r_draw.viewheight as i16;
         i += 1;
     }
     i = 0 as i32;
-    while i < viewheight {
-        dy = (((i - viewheight / 2 as i32) << FRACBITS) + FRACUNIT / 2 as i32) as fixed_t;
+    while i < unsafe { game_state() }.r_draw.viewheight {
+        dy = (((i - unsafe { game_state() }.r_draw.viewheight / 2 as i32) << FRACBITS) + FRACUNIT / 2 as i32) as fixed_t;
         dy = (dy as i32).abs() as fixed_t;
         yslope[i as usize] = FixedDiv(
-            ((viewwidth as fixed_t) << unsafe { game_state() }.r_main.detailshift) / 2 as fixed_t * FRACUNIT,
+            ((unsafe { game_state() }.r_draw.viewwidth as fixed_t) << unsafe { game_state() }.r_main.detailshift) / 2 as fixed_t * FRACUNIT,
             dy,
         );
         i += 1;
     }
     i = 0 as i32;
-    while i < viewwidth {
+    while i < unsafe { game_state() }.r_draw.viewwidth {
         cosadj = (finecosine[(unsafe { game_state() }.r_main.xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize] as i32).abs()
             as fixed_t;
         distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
@@ -476,7 +470,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
         startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32 * NUMCOLORMAPS / LIGHTLEVELS;
         j = 0 as i32;
         while j < MAXLIGHTSCALE {
-            level = startmap - j * SCREENWIDTH / (viewwidth << unsafe { game_state() }.r_main.detailshift) / DISTMAP;
+            level = startmap - j * SCREENWIDTH / (unsafe { game_state() }.r_draw.viewwidth << unsafe { game_state() }.r_main.detailshift) / DISTMAP;
             if level < 0 as i32 {
                 level = 0 as i32;
             }
