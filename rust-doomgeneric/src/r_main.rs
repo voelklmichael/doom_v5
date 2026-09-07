@@ -265,15 +265,15 @@ pub unsafe fn R_PointToAngle2(
     unsafe { game_state() }.r_main.viewy = y1;
     return R_PointToAngle(x2, y2);
 }
-pub unsafe fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
+pub unsafe fn R_PointToDist(state: &mut GameState, mut x: fixed_t, mut y: fixed_t) -> fixed_t {
     let mut angle: i32 = 0;
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut temp: fixed_t = 0;
     let mut dist: fixed_t = 0;
     let mut frac: fixed_t = 0;
-    dx = (x as i32 - unsafe { game_state() }.r_main.viewx as i32).abs() as fixed_t;
-    dy = (y as i32 - unsafe { game_state() }.r_main.viewy as i32).abs() as fixed_t;
+    dx = (x as i32 - state.r_main.viewx as i32).abs() as fixed_t;
+    dy = (y as i32 - state.r_main.viewy as i32).abs() as fixed_t;
     if dy > dx {
         temp = dx;
         dx = dy;
@@ -289,7 +289,7 @@ pub unsafe fn R_PointToDist(mut x: fixed_t, mut y: fixed_t) -> fixed_t {
     dist = FixedDiv(dx, finesine[angle as usize]);
     return dist;
 }
-pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
+pub unsafe fn R_ScaleFromGlobalAngle(state: &mut GameState, mut visangle: angle_t) -> fixed_t {
     let mut scale: fixed_t = 0;
     let mut anglea: angle_t = 0;
     let mut angleb: angle_t = 0;
@@ -297,12 +297,12 @@ pub unsafe fn R_ScaleFromGlobalAngle(mut visangle: angle_t) -> fixed_t {
     let mut sineb: i32 = 0;
     let mut num: fixed_t = 0;
     let mut den: i32 = 0;
-    anglea = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(unsafe { game_state() }.r_main.viewangle));
-    angleb = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(unsafe { game_state() }.r_segs.rw_normalangle));
+    anglea = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(state.r_main.viewangle));
+    angleb = (ANG90 as angle_t).wrapping_add(visangle.wrapping_sub(state.r_segs.rw_normalangle));
     sinea = finesine[(anglea >> ANGLETOFINESHIFT) as usize] as i32;
     sineb = finesine[(angleb >> ANGLETOFINESHIFT) as usize] as i32;
-    num = FixedMul(unsafe { game_state() }.r_main.projection, sineb as fixed_t) << unsafe { game_state() }.r_main.detailshift;
-    den = FixedMul(unsafe { game_state() }.r_segs.rw_distance, sinea as fixed_t) as i32;
+    num = FixedMul(state.r_main.projection, sineb as fixed_t) << state.r_main.detailshift;
+    den = FixedMul(state.r_segs.rw_distance, sinea as fixed_t) as i32;
     if den > num >> 16 as i32 {
         scale = FixedDiv(num, den as fixed_t);
         if scale > 64 as i32 * FRACUNIT {

@@ -79,7 +79,7 @@ pub unsafe fn R_ClipSolidWallSegment(mut first: i32, mut last: i32) {
     }
     if first < (*start).first {
         if last < (*start).first - 1 as i32 {
-            R_StoreWallRange(first, last);
+            R_StoreWallRange(unsafe { game_state() }, first, last);
             next = unsafe { game_state() }.r_bsp.newend;
             unsafe { game_state() }.r_bsp.newend = unsafe { game_state() }.r_bsp.newend.offset(1);
             while next != start {
@@ -90,7 +90,7 @@ pub unsafe fn R_ClipSolidWallSegment(mut first: i32, mut last: i32) {
             (*next).last = last;
             return;
         }
-        R_StoreWallRange(first, (*start).first - 1 as i32);
+        R_StoreWallRange(unsafe { game_state() }, first, (*start).first - 1 as i32);
         (*start).first = first;
     }
     if last <= (*start).last {
@@ -103,6 +103,7 @@ pub unsafe fn R_ClipSolidWallSegment(mut first: i32, mut last: i32) {
             break;
         }
         R_StoreWallRange(
+            unsafe { game_state() },
             (*next).last + 1 as i32,
             (*next.offset(1 as i32 as isize)).first - 1 as i32,
         );
@@ -116,7 +117,7 @@ pub unsafe fn R_ClipSolidWallSegment(mut first: i32, mut last: i32) {
     }
     match current_block {
         224731115979188411 => {
-            R_StoreWallRange((*next).last + 1 as i32, last);
+            R_StoreWallRange(unsafe { game_state() }, (*next).last + 1 as i32, last);
             (*start).last = last;
         }
         _ => {}
@@ -143,16 +144,17 @@ pub unsafe fn R_ClipPassWallSegment(mut first: i32, mut last: i32) {
     }
     if first < (*start).first {
         if last < (*start).first - 1 as i32 {
-            R_StoreWallRange(first, last);
+            R_StoreWallRange(unsafe { game_state() }, first, last);
             return;
         }
-        R_StoreWallRange(first, (*start).first - 1 as i32);
+        R_StoreWallRange(unsafe { game_state() }, first, (*start).first - 1 as i32);
     }
     if last <= (*start).last {
         return;
     }
     while last >= (*start.offset(1 as i32 as isize)).first - 1 as i32 {
         R_StoreWallRange(
+            unsafe { game_state() },
             (*start).last + 1 as i32,
             (*start.offset(1 as i32 as isize)).first - 1 as i32,
         );
@@ -161,7 +163,7 @@ pub unsafe fn R_ClipPassWallSegment(mut first: i32, mut last: i32) {
             return;
         }
     }
-    R_StoreWallRange((*start).last + 1 as i32, last);
+    R_StoreWallRange(unsafe { game_state() }, (*start).last + 1 as i32, last);
 }
 pub unsafe fn R_ClearClipSegs() {
     unsafe { game_state() }.r_bsp.solidsegs[0 as i32 as usize].first = -(0x7fffffff as i32);

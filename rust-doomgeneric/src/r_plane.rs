@@ -1,5 +1,6 @@
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedDiv;
@@ -194,7 +195,7 @@ pub unsafe fn R_FindPlane(
     );
     return check;
 }
-pub unsafe fn R_CheckPlane(
+pub unsafe fn R_CheckPlane(state: &mut GameState, 
     mut pl: *mut visplane_t,
     mut start: i32,
     mut stop: i32,
@@ -230,11 +231,11 @@ pub unsafe fn R_CheckPlane(
         (*pl).maxx = unionh;
         return pl;
     }
-    (*unsafe { game_state() }.r_plane.lastvisplane).height = (*pl).height;
-    (*unsafe { game_state() }.r_plane.lastvisplane).picnum = (*pl).picnum;
-    (*unsafe { game_state() }.r_plane.lastvisplane).lightlevel = (*pl).lightlevel;
-    let fresh0 = unsafe { game_state() }.r_plane.lastvisplane;
-    unsafe { game_state() }.r_plane.lastvisplane = unsafe { game_state() }.r_plane.lastvisplane.offset(1);
+    (*state.r_plane.lastvisplane).height = (*pl).height;
+    (*state.r_plane.lastvisplane).picnum = (*pl).picnum;
+    (*state.r_plane.lastvisplane).lightlevel = (*pl).lightlevel;
+    let fresh0 = state.r_plane.lastvisplane;
+    state.r_plane.lastvisplane = state.r_plane.lastvisplane.offset(1);
     pl = fresh0;
     (*pl).minx = start;
     (*pl).maxx = stop;
