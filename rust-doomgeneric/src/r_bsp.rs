@@ -173,58 +173,58 @@ pub unsafe fn R_ClearClipSegs() {
     unsafe { game_state() }.r_bsp.solidsegs[1 as i32 as usize].last = 0x7fffffff as i32;
     unsafe { game_state() }.r_bsp.newend = (&raw mut unsafe { game_state() }.r_bsp.solidsegs as *mut cliprange_t).offset(2 as i32 as isize);
 }
-pub unsafe fn R_AddLine(mut line: *mut seg_t) {
+pub unsafe fn R_AddLine(state: &mut GameState, mut line: *mut seg_t) {
     let mut x1: i32 = 0;
     let mut x2: i32 = 0;
     let mut angle1: angle_t = 0;
     let mut angle2: angle_t = 0;
     let mut span: angle_t = 0;
     let mut tspan: angle_t = 0;
-    unsafe { game_state() }.r_bsp.curline = line;
+    state.r_bsp.curline = line;
     angle1 = R_PointToAngle((*(*line).v1).x, (*(*line).v1).y);
     angle2 = R_PointToAngle((*(*line).v2).x, (*(*line).v2).y);
     span = angle1.wrapping_sub(angle2);
     if span >= ANG180 {
         return;
     }
-    unsafe { game_state() }.r_segs.rw_angle1 = angle1 as i32;
-    angle1 = angle1.wrapping_sub(unsafe { game_state() }.r_main.viewangle);
-    angle2 = angle2.wrapping_sub(unsafe { game_state() }.r_main.viewangle);
-    tspan = angle1.wrapping_add(unsafe { game_state() }.r_main.clipangle);
-    if tspan > (2 as angle_t).wrapping_mul(unsafe { game_state() }.r_main.clipangle) {
-        tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(unsafe { game_state() }.r_main.clipangle));
+    state.r_segs.rw_angle1 = angle1 as i32;
+    angle1 = angle1.wrapping_sub(state.r_main.viewangle);
+    angle2 = angle2.wrapping_sub(state.r_main.viewangle);
+    tspan = angle1.wrapping_add(state.r_main.clipangle);
+    if tspan > (2 as angle_t).wrapping_mul(state.r_main.clipangle) {
+        tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(state.r_main.clipangle));
         if tspan >= span {
             return;
         }
-        angle1 = unsafe { game_state() }.r_main.clipangle;
+        angle1 = state.r_main.clipangle;
     }
-    tspan = unsafe { game_state() }.r_main.clipangle.wrapping_sub(angle2);
-    if tspan > (2 as angle_t).wrapping_mul(unsafe { game_state() }.r_main.clipangle) {
-        tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(unsafe { game_state() }.r_main.clipangle));
+    tspan = state.r_main.clipangle.wrapping_sub(angle2);
+    if tspan > (2 as angle_t).wrapping_mul(state.r_main.clipangle) {
+        tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(state.r_main.clipangle));
         if tspan >= span {
             return;
         }
-        angle2 = unsafe { game_state() }.r_main.clipangle.wrapping_neg();
+        angle2 = state.r_main.clipangle.wrapping_neg();
     }
     angle1 = angle1.wrapping_add(ANG90 as angle_t) >> ANGLETOFINESHIFT;
     angle2 = angle2.wrapping_add(ANG90 as angle_t) >> ANGLETOFINESHIFT;
-    x1 = unsafe { game_state() }.r_main.viewangletox[angle1 as usize];
-    x2 = unsafe { game_state() }.r_main.viewangletox[angle2 as usize];
+    x1 = state.r_main.viewangletox[angle1 as usize];
+    x2 = state.r_main.viewangletox[angle2 as usize];
     if x1 == x2 {
         return;
     }
-    unsafe { game_state() }.r_bsp.backsector = (*line).backsector;
-    if !unsafe { game_state() }.r_bsp.backsector.is_none() {
-        if !((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight <= (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight
-            || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight >= (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight)
+    state.r_bsp.backsector = (*line).backsector;
+    if !state.r_bsp.backsector.is_none() {
+        if !((*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingheight <= (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight
+            || (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorheight >= (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingheight)
         {
-            if !((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight != (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight
-                || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight != (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight)
+            if !((*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingheight != (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingheight
+                || (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorheight != (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight)
             {
-                if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingpic as i32 == (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32
-                    && (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorpic as i32 == (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorpic as i32
-                    && (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).lightlevel as i32 == (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32
-                    && (*unsafe { game_state() }.p_setup.side_mut((*unsafe { game_state() }.r_bsp.curline).sidedef)).midtexture as i32 == 0 as i32
+                if (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingpic as i32 == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingpic as i32
+                    && (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorpic as i32 == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorpic as i32
+                    && (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).lightlevel as i32 == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).lightlevel as i32
+                    && (*state.p_setup.side_mut((*state.r_bsp.curline).sidedef)).midtexture as i32 == 0 as i32
                 {
                     return;
                 }
@@ -250,7 +250,7 @@ pub static checkcoord: [[i32; 4]; 12] = [
     [2 as i32, 1 as i32, 3 as i32, 0 as i32],
     [0; 4],
 ];
-pub unsafe fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
+pub unsafe fn R_CheckBBox(state: &mut GameState, mut bspcoord: *mut fixed_t) -> bool {
     let mut boxx: i32 = 0;
     let mut boxy: i32 = 0;
     let mut boxpos: i32 = 0;
@@ -265,16 +265,16 @@ pub unsafe fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
     let mut start: *mut cliprange_t = ::core::ptr::null_mut::<cliprange_t>();
     let mut sx1: i32 = 0;
     let mut sx2: i32 = 0;
-    if unsafe { game_state() }.r_main.viewx <= *bspcoord.offset(BOXLEFT as i32 as isize) {
+    if state.r_main.viewx <= *bspcoord.offset(BOXLEFT as i32 as isize) {
         boxx = 0 as i32;
-    } else if unsafe { game_state() }.r_main.viewx < *bspcoord.offset(BOXRIGHT as i32 as isize) {
+    } else if state.r_main.viewx < *bspcoord.offset(BOXRIGHT as i32 as isize) {
         boxx = 1 as i32;
     } else {
         boxx = 2 as i32;
     }
-    if unsafe { game_state() }.r_main.viewy >= *bspcoord.offset(BOXTOP as i32 as isize) {
+    if state.r_main.viewy >= *bspcoord.offset(BOXTOP as i32 as isize) {
         boxy = 0 as i32;
-    } else if unsafe { game_state() }.r_main.viewy > *bspcoord.offset(BOXBOTTOM as i32 as isize) {
+    } else if state.r_main.viewy > *bspcoord.offset(BOXBOTTOM as i32 as isize) {
         boxy = 1 as i32;
     } else {
         boxy = 2 as i32;
@@ -287,37 +287,37 @@ pub unsafe fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
     y1 = *bspcoord.offset(checkcoord[boxpos as usize][1 as i32 as usize] as isize);
     x2 = *bspcoord.offset(checkcoord[boxpos as usize][2 as i32 as usize] as isize);
     y2 = *bspcoord.offset(checkcoord[boxpos as usize][3 as i32 as usize] as isize);
-    angle1 = R_PointToAngle(x1, y1).wrapping_sub(unsafe { game_state() }.r_main.viewangle);
-    angle2 = R_PointToAngle(x2, y2).wrapping_sub(unsafe { game_state() }.r_main.viewangle);
+    angle1 = R_PointToAngle(x1, y1).wrapping_sub(state.r_main.viewangle);
+    angle2 = R_PointToAngle(x2, y2).wrapping_sub(state.r_main.viewangle);
     span = angle1.wrapping_sub(angle2);
     if span >= ANG180 {
         return true;
     }
-    tspan = angle1.wrapping_add(unsafe { game_state() }.r_main.clipangle);
-    if tspan > (2 as angle_t).wrapping_mul(unsafe { game_state() }.r_main.clipangle) {
-        tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(unsafe { game_state() }.r_main.clipangle));
+    tspan = angle1.wrapping_add(state.r_main.clipangle);
+    if tspan > (2 as angle_t).wrapping_mul(state.r_main.clipangle) {
+        tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(state.r_main.clipangle));
         if tspan >= span {
             return false;
         }
-        angle1 = unsafe { game_state() }.r_main.clipangle;
+        angle1 = state.r_main.clipangle;
     }
-    tspan = unsafe { game_state() }.r_main.clipangle.wrapping_sub(angle2);
-    if tspan > (2 as angle_t).wrapping_mul(unsafe { game_state() }.r_main.clipangle) {
-        tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(unsafe { game_state() }.r_main.clipangle));
+    tspan = state.r_main.clipangle.wrapping_sub(angle2);
+    if tspan > (2 as angle_t).wrapping_mul(state.r_main.clipangle) {
+        tspan = tspan.wrapping_sub((2 as angle_t).wrapping_mul(state.r_main.clipangle));
         if tspan >= span {
             return false;
         }
-        angle2 = unsafe { game_state() }.r_main.clipangle.wrapping_neg();
+        angle2 = state.r_main.clipangle.wrapping_neg();
     }
     angle1 = angle1.wrapping_add(ANG90 as angle_t) >> ANGLETOFINESHIFT;
     angle2 = angle2.wrapping_add(ANG90 as angle_t) >> ANGLETOFINESHIFT;
-    sx1 = unsafe { game_state() }.r_main.viewangletox[angle1 as usize];
-    sx2 = unsafe { game_state() }.r_main.viewangletox[angle2 as usize];
+    sx1 = state.r_main.viewangletox[angle1 as usize];
+    sx2 = state.r_main.viewangletox[angle2 as usize];
     if sx1 == sx2 {
         return false;
     }
     sx2 -= 1;
-    start = &raw mut unsafe { game_state() }.r_bsp.solidsegs as *mut cliprange_t;
+    start = &raw mut state.r_bsp.solidsegs as *mut cliprange_t;
     while (*start).last < sx2 {
         start = start.offset(1);
     }
@@ -373,28 +373,29 @@ pub unsafe fn R_Subsector(state: &mut GameState, mut num: i32) {
         if !(fresh1 != 0) {
             break;
         }
-        R_AddLine(line);
+        R_AddLine(state, line);
         line = line.offset(1);
     }
 }
-pub unsafe fn R_RenderBSPNode(mut bspnum: i32) {
+pub unsafe fn R_RenderBSPNode(state: &mut GameState, mut bspnum: i32) {
     let mut bsp: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     if bspnum & NF_SUBSECTOR != 0 {
         if bspnum == -(1 as i32) {
-            R_Subsector(unsafe { game_state() }, 0 as i32);
+            R_Subsector(state, 0 as i32);
         } else {
-            R_Subsector(unsafe { game_state() }, bspnum & !NF_SUBSECTOR);
+            R_Subsector(state, bspnum & !NF_SUBSECTOR);
         }
         return;
     }
-    bsp = unsafe { game_state() }.p_setup.nodes.offset(bspnum as isize) as *mut node_t;
-    side = R_PointOnSide(unsafe { game_state() }.r_main.viewx, unsafe { game_state() }.r_main.viewy, bsp);
-    R_RenderBSPNode((*bsp).children[side as usize] as i32);
+    bsp = state.p_setup.nodes.offset(bspnum as isize) as *mut node_t;
+    side = R_PointOnSide(state.r_main.viewx, state.r_main.viewy, bsp);
+    R_RenderBSPNode(state, (*bsp).children[side as usize] as i32);
     if R_CheckBBox(
+        state,
         &raw mut *(&raw mut (*bsp).bbox as *mut [fixed_t; 4]).offset((side ^ 1 as i32) as isize)
             as *mut fixed_t,
     ) {
-        R_RenderBSPNode((*bsp).children[(side ^ 1 as i32) as usize] as i32);
+        R_RenderBSPNode(state, (*bsp).children[(side ^ 1 as i32) as usize] as i32);
     }
 }
