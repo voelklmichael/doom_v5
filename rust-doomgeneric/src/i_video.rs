@@ -6,6 +6,7 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomgeneric::DOOMGENERIC_RESX;
 use crate::src::doomgeneric::DOOMGENERIC_RESY;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_input::I_GetEvent;
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::M_CheckParmWithArgs;
@@ -180,22 +181,22 @@ pub unsafe fn cmap_to_fb(mut out: *mut uint8_t, mut in_0: *mut uint8_t, mut in_p
         i += 1;
     }
 }
-pub unsafe fn I_InitGraphics() {
+pub unsafe fn I_InitGraphics(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut gfxmodeparm: i32 = 0;
     let mut mode: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     memset(
-        &raw mut unsafe { game_state() }.i_video.s_Fb as *mut ::core::ffi::c_void,
+        &raw mut state.i_video.s_Fb as *mut ::core::ffi::c_void,
         0 as i32,
         ::core::mem::size_of::<FB_ScreenInfo>() as size_t,
     );
-    unsafe { game_state() }.i_video.s_Fb.xres = DOOMGENERIC_RESX as uint32_t;
-    unsafe { game_state() }.i_video.s_Fb.yres = DOOMGENERIC_RESY as uint32_t;
-    unsafe { game_state() }.i_video.s_Fb.xres_virtual = unsafe { game_state() }.i_video.s_Fb.xres;
-    unsafe { game_state() }.i_video.s_Fb.yres_virtual = unsafe { game_state() }.i_video.s_Fb.yres;
+    state.i_video.s_Fb.xres = DOOMGENERIC_RESX as uint32_t;
+    state.i_video.s_Fb.yres = DOOMGENERIC_RESY as uint32_t;
+    state.i_video.s_Fb.xres_virtual = state.i_video.s_Fb.xres;
+    state.i_video.s_Fb.yres_virtual = state.i_video.s_Fb.yres;
     gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1 as i32);
     if gfxmodeparm != 0 {
-        mode = unsafe { game_state() }.m_argv.myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr()
+        mode = state.m_argv.myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr()
             as *mut ::core::ffi::c_char;
     } else {
         mode = b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
@@ -205,25 +206,25 @@ pub unsafe fn I_InitGraphics() {
         b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char,
     ) == 0 as i32
     {
-        unsafe { game_state() }.i_video.s_Fb.bits_per_pixel = 32 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.blue.length = 8 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.green.length = 8 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.red.length = 8 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.transp.length = 8 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.blue.offset = 0 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.green.offset = 8 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.red.offset = 16 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.transp.offset = 24 as uint32_t;
+        state.i_video.s_Fb.bits_per_pixel = 32 as uint32_t;
+        state.i_video.s_Fb.blue.length = 8 as uint32_t;
+        state.i_video.s_Fb.green.length = 8 as uint32_t;
+        state.i_video.s_Fb.red.length = 8 as uint32_t;
+        state.i_video.s_Fb.transp.length = 8 as uint32_t;
+        state.i_video.s_Fb.blue.offset = 0 as uint32_t;
+        state.i_video.s_Fb.green.offset = 8 as uint32_t;
+        state.i_video.s_Fb.red.offset = 16 as uint32_t;
+        state.i_video.s_Fb.transp.offset = 24 as uint32_t;
     } else if strcmp(mode, b"rgb565\0" as *const u8 as *const ::core::ffi::c_char) == 0 as i32 {
-        unsafe { game_state() }.i_video.s_Fb.bits_per_pixel = 16 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.blue.length = 5 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.green.length = 6 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.red.length = 5 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.transp.length = 0 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.blue.offset = 11 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.green.offset = 5 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.red.offset = 0 as uint32_t;
-        unsafe { game_state() }.i_video.s_Fb.transp.offset = 16 as uint32_t;
+        state.i_video.s_Fb.bits_per_pixel = 16 as uint32_t;
+        state.i_video.s_Fb.blue.length = 5 as uint32_t;
+        state.i_video.s_Fb.green.length = 6 as uint32_t;
+        state.i_video.s_Fb.red.length = 5 as uint32_t;
+        state.i_video.s_Fb.transp.length = 0 as uint32_t;
+        state.i_video.s_Fb.blue.offset = 11 as uint32_t;
+        state.i_video.s_Fb.green.offset = 5 as uint32_t;
+        state.i_video.s_Fb.red.offset = 0 as uint32_t;
+        state.i_video.s_Fb.transp.offset = 16 as uint32_t;
     } else {
         I_Error(&format!(
             "Unknown gfxmode value: {}\n",
@@ -233,23 +234,23 @@ pub unsafe fn I_InitGraphics() {
     printf(
         b"I_InitGraphics: framebuffer: x_res: %d, y_res: %d, x_virtual: %d, y_virtual: %d, bpp: %d\n\0"
             as *const u8 as *const ::core::ffi::c_char,
-        unsafe { game_state() }.i_video.s_Fb.xres,
-        unsafe { game_state() }.i_video.s_Fb.yres,
-        unsafe { game_state() }.i_video.s_Fb.xres_virtual,
-        unsafe { game_state() }.i_video.s_Fb.yres_virtual,
-        unsafe { game_state() }.i_video.s_Fb.bits_per_pixel,
+        state.i_video.s_Fb.xres,
+        state.i_video.s_Fb.yres,
+        state.i_video.s_Fb.xres_virtual,
+        state.i_video.s_Fb.yres_virtual,
+        state.i_video.s_Fb.bits_per_pixel,
     );
     printf(
         b"I_InitGraphics: framebuffer: RGBA: %d%d%d%d, red_off: %d, green_off: %d, blue_off: %d, transp_off: %d\n\0"
             as *const u8 as *const ::core::ffi::c_char,
-        unsafe { game_state() }.i_video.s_Fb.red.length,
-        unsafe { game_state() }.i_video.s_Fb.green.length,
-        unsafe { game_state() }.i_video.s_Fb.blue.length,
-        unsafe { game_state() }.i_video.s_Fb.transp.length,
-        unsafe { game_state() }.i_video.s_Fb.red.offset,
-        unsafe { game_state() }.i_video.s_Fb.green.offset,
-        unsafe { game_state() }.i_video.s_Fb.blue.offset,
-        unsafe { game_state() }.i_video.s_Fb.transp.offset,
+        state.i_video.s_Fb.red.length,
+        state.i_video.s_Fb.green.length,
+        state.i_video.s_Fb.blue.length,
+        state.i_video.s_Fb.transp.length,
+        state.i_video.s_Fb.red.offset,
+        state.i_video.s_Fb.green.offset,
+        state.i_video.s_Fb.blue.offset,
+        state.i_video.s_Fb.transp.offset,
     );
     printf(
         b"I_InitGraphics: DOOM screen size: w x h: %d x %d\n\0" as *const u8
@@ -260,32 +261,32 @@ pub unsafe fn I_InitGraphics() {
     i = M_CheckParmWithArgs("-scaling", 1 as i32);
     if i > 0 as i32 {
         i = atoi(
-            unsafe { game_state() }.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
+            state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
-        unsafe { game_state() }.i_video.fb_scaling = i;
+        state.i_video.fb_scaling = i;
         printf(
             b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8 as *const ::core::ffi::c_char,
-            unsafe { game_state() }.i_video.fb_scaling,
+            state.i_video.fb_scaling,
         );
     } else {
-        unsafe { game_state() }.i_video.fb_scaling = unsafe { game_state() }.i_video.s_Fb.xres.wrapping_div(SCREENWIDTH as uint32_t) as i32;
-        if unsafe { game_state() }.i_video.s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) < unsafe { game_state() }.i_video.fb_scaling as uint32_t {
-            unsafe { game_state() }.i_video.fb_scaling = unsafe { game_state() }.i_video.s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) as i32;
+        state.i_video.fb_scaling = state.i_video.s_Fb.xres.wrapping_div(SCREENWIDTH as uint32_t) as i32;
+        if state.i_video.s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) < state.i_video.fb_scaling as uint32_t {
+            state.i_video.fb_scaling = state.i_video.s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) as i32;
         }
         printf(
             b"I_InitGraphics: Auto-scaling factor: %d\n\0" as *const u8
                 as *const ::core::ffi::c_char,
-            unsafe { game_state() }.i_video.fb_scaling,
+            state.i_video.fb_scaling,
         );
     }
-    unsafe { game_state() }.i_video.I_VideoBuffer = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+    state.i_video.I_VideoBuffer = Z_Malloc(
+        &mut state.z_zone,
         SCREENWIDTH * SCREENHEIGHT,
         PU_STATIC as i32,
         NULL,
     ) as *mut byte;
-    unsafe { game_state() }.i_video.screenvisible = true;
+    state.i_video.screenvisible = true;
 }
 pub unsafe fn I_ShutdownGraphics() {
     Z_Free(

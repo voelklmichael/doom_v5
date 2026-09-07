@@ -322,7 +322,7 @@ pub unsafe fn D_Display() {
     }
     redrawsbar = false;
     if unsafe { game_state() }.r_main.setsizeneeded {
-        R_ExecuteSetViewSize();
+        R_ExecuteSetViewSize(unsafe { game_state() });
         unsafe { game_state() }.d_main.d_display_oldgamestate = 4294967295 as gamestate_t;
         unsafe { game_state() }.d_main.d_display_borderdrawcount = 3 as i32;
     }
@@ -578,10 +578,10 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
     TryRunTics(state);
     I_SetWindowTitle(state.doomstat.gamedescription);
     I_SetGrabMouseCallback(Some(D_GrabMouseCallback as unsafe fn() -> boolean));
-    I_InitGraphics();
+    I_InitGraphics(state);
     V_RestoreBuffer(&mut state.v_video);
-    R_ExecuteSetViewSize();
-    D_StartGameLoop();
+    R_ExecuteSetViewSize(state);
+    D_StartGameLoop(state);
     if state.g_game.testcontrols {
         state.d_main.wipegamestate = state.g_game.gamestate;
     }

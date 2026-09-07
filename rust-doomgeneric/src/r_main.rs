@@ -3,6 +3,7 @@ use crate::src::d_player::player_t;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedDiv;
@@ -398,66 +399,66 @@ pub unsafe fn R_SetViewSize(mut blocks: i32, mut detail: i32) {
     unsafe { game_state() }.r_main.setblocks = blocks;
     unsafe { game_state() }.r_main.setdetail = detail;
 }
-pub unsafe fn R_ExecuteSetViewSize() {
+pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
     let mut cosadj: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut level: i32 = 0;
     let mut startmap: i32 = 0;
-    unsafe { game_state() }.r_main.setsizeneeded = false;
-    if unsafe { game_state() }.r_main.setblocks == 11 as i32 {
-        unsafe { game_state() }.r_draw.scaledviewwidth = SCREENWIDTH;
-        unsafe { game_state() }.r_draw.viewheight = SCREENHEIGHT;
+    state.r_main.setsizeneeded = false;
+    if state.r_main.setblocks == 11 as i32 {
+        state.r_draw.scaledviewwidth = SCREENWIDTH;
+        state.r_draw.viewheight = SCREENHEIGHT;
     } else {
-        unsafe { game_state() }.r_draw.scaledviewwidth = unsafe { game_state() }.r_main.setblocks * 32 as i32;
-        unsafe { game_state() }.r_draw.viewheight = unsafe { game_state() }.r_main.setblocks * 168 as i32 / 10 as i32 & !(7 as i32);
+        state.r_draw.scaledviewwidth = state.r_main.setblocks * 32 as i32;
+        state.r_draw.viewheight = state.r_main.setblocks * 168 as i32 / 10 as i32 & !(7 as i32);
     }
-    unsafe { game_state() }.r_main.detailshift = unsafe { game_state() }.r_main.setdetail;
-    unsafe { game_state() }.r_draw.viewwidth = unsafe { game_state() }.r_draw.scaledviewwidth >> unsafe { game_state() }.r_main.detailshift;
-    unsafe { game_state() }.r_main.centery = unsafe { game_state() }.r_draw.viewheight / 2 as i32;
-    unsafe { game_state() }.r_main.centerx = unsafe { game_state() }.r_draw.viewwidth / 2 as i32;
-    unsafe { game_state() }.r_main.centerxfrac = (unsafe { game_state() }.r_main.centerx << FRACBITS) as fixed_t;
-    unsafe { game_state() }.r_main.centeryfrac = (unsafe { game_state() }.r_main.centery << FRACBITS) as fixed_t;
-    unsafe { game_state() }.r_main.projection = unsafe { game_state() }.r_main.centerxfrac;
-    if unsafe { game_state() }.r_main.detailshift == 0 {
-        unsafe { game_state() }.r_main.basecolfunc = Some(R_DrawColumn as unsafe fn() -> ());
-        unsafe { game_state() }.r_main.colfunc = unsafe { game_state() }.r_main.basecolfunc;
-        unsafe { game_state() }.r_main.fuzzcolfunc = Some(R_DrawFuzzColumn as unsafe fn() -> ());
-        unsafe { game_state() }.r_main.transcolfunc = Some(R_DrawTranslatedColumn as unsafe fn() -> ());
-        unsafe { game_state() }.r_main.spanfunc = Some(R_DrawSpan as unsafe fn() -> ());
+    state.r_main.detailshift = state.r_main.setdetail;
+    state.r_draw.viewwidth = state.r_draw.scaledviewwidth >> state.r_main.detailshift;
+    state.r_main.centery = state.r_draw.viewheight / 2 as i32;
+    state.r_main.centerx = state.r_draw.viewwidth / 2 as i32;
+    state.r_main.centerxfrac = (state.r_main.centerx << FRACBITS) as fixed_t;
+    state.r_main.centeryfrac = (state.r_main.centery << FRACBITS) as fixed_t;
+    state.r_main.projection = state.r_main.centerxfrac;
+    if state.r_main.detailshift == 0 {
+        state.r_main.basecolfunc = Some(R_DrawColumn as unsafe fn() -> ());
+        state.r_main.colfunc = state.r_main.basecolfunc;
+        state.r_main.fuzzcolfunc = Some(R_DrawFuzzColumn as unsafe fn() -> ());
+        state.r_main.transcolfunc = Some(R_DrawTranslatedColumn as unsafe fn() -> ());
+        state.r_main.spanfunc = Some(R_DrawSpan as unsafe fn() -> ());
     } else {
-        unsafe { game_state() }.r_main.basecolfunc = Some(R_DrawColumnLow as unsafe fn() -> ());
-        unsafe { game_state() }.r_main.colfunc = unsafe { game_state() }.r_main.basecolfunc;
-        unsafe { game_state() }.r_main.fuzzcolfunc = Some(R_DrawFuzzColumnLow as unsafe fn() -> ());
-        unsafe { game_state() }.r_main.transcolfunc = Some(R_DrawTranslatedColumnLow as unsafe fn() -> ());
-        unsafe { game_state() }.r_main.spanfunc = Some(R_DrawSpanLow as unsafe fn() -> ());
+        state.r_main.basecolfunc = Some(R_DrawColumnLow as unsafe fn() -> ());
+        state.r_main.colfunc = state.r_main.basecolfunc;
+        state.r_main.fuzzcolfunc = Some(R_DrawFuzzColumnLow as unsafe fn() -> ());
+        state.r_main.transcolfunc = Some(R_DrawTranslatedColumnLow as unsafe fn() -> ());
+        state.r_main.spanfunc = Some(R_DrawSpanLow as unsafe fn() -> ());
     }
-    R_InitBuffer(unsafe { game_state() }.r_draw.scaledviewwidth, unsafe { game_state() }.r_draw.viewheight);
+    R_InitBuffer(state.r_draw.scaledviewwidth, state.r_draw.viewheight);
     R_InitTextureMapping();
-    unsafe { game_state() }.r_things.pspritescale = (FRACUNIT * unsafe { game_state() }.r_draw.viewwidth / SCREENWIDTH) as fixed_t;
-    unsafe { game_state() }.r_things.pspriteiscale =
-        (FRACUNIT * SCREENWIDTH / unsafe { game_state() }.r_draw.viewwidth) as fixed_t;
+    state.r_things.pspritescale = (FRACUNIT * state.r_draw.viewwidth / SCREENWIDTH) as fixed_t;
+    state.r_things.pspriteiscale =
+        (FRACUNIT * SCREENWIDTH / state.r_draw.viewwidth) as fixed_t;
     i = 0 as i32;
-    while i < unsafe { game_state() }.r_draw.viewwidth {
-        unsafe { game_state() }.r_things.screenheightarray[i as usize] = unsafe { game_state() }.r_draw.viewheight as i16;
+    while i < state.r_draw.viewwidth {
+        state.r_things.screenheightarray[i as usize] = state.r_draw.viewheight as i16;
         i += 1;
     }
     i = 0 as i32;
-    while i < unsafe { game_state() }.r_draw.viewheight {
-        dy = (((i - unsafe { game_state() }.r_draw.viewheight / 2 as i32) << FRACBITS) + FRACUNIT / 2 as i32) as fixed_t;
+    while i < state.r_draw.viewheight {
+        dy = (((i - state.r_draw.viewheight / 2 as i32) << FRACBITS) + FRACUNIT / 2 as i32) as fixed_t;
         dy = (dy as i32).abs() as fixed_t;
-        unsafe { game_state() }.r_plane.yslope[i as usize] = FixedDiv(
-            ((unsafe { game_state() }.r_draw.viewwidth as fixed_t) << unsafe { game_state() }.r_main.detailshift) / 2 as fixed_t * FRACUNIT,
+        state.r_plane.yslope[i as usize] = FixedDiv(
+            ((state.r_draw.viewwidth as fixed_t) << state.r_main.detailshift) / 2 as fixed_t * FRACUNIT,
             dy,
         );
         i += 1;
     }
     i = 0 as i32;
-    while i < unsafe { game_state() }.r_draw.viewwidth {
-        cosadj = (finecosine[(unsafe { game_state() }.r_main.xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize] as i32).abs()
+    while i < state.r_draw.viewwidth {
+        cosadj = (finecosine[(state.r_main.xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize] as i32).abs()
             as fixed_t;
-        unsafe { game_state() }.r_plane.distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
+        state.r_plane.distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
         i += 1;
     }
     i = 0 as i32;
@@ -465,14 +466,14 @@ pub unsafe fn R_ExecuteSetViewSize() {
         startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32 * NUMCOLORMAPS / LIGHTLEVELS;
         j = 0 as i32;
         while j < MAXLIGHTSCALE {
-            level = startmap - j * SCREENWIDTH / (unsafe { game_state() }.r_draw.viewwidth << unsafe { game_state() }.r_main.detailshift) / DISTMAP;
+            level = startmap - j * SCREENWIDTH / (state.r_draw.viewwidth << state.r_main.detailshift) / DISTMAP;
             if level < 0 as i32 {
                 level = 0 as i32;
             }
             if level >= NUMCOLORMAPS {
                 level = NUMCOLORMAPS - 1 as i32;
             }
-            unsafe { game_state() }.r_main.scalelight[i as usize][j as usize] = unsafe { game_state() }.r_data.colormaps.offset((level * 256 as i32) as isize);
+            state.r_main.scalelight[i as usize][j as usize] = state.r_data.colormaps.offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;

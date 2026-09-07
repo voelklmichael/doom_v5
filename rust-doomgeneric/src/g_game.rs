@@ -1765,7 +1765,7 @@ pub unsafe fn G_DoLoadGame() {
     }
     fclose(unsafe { game_state() }.p_saveg.save_stream);
     if unsafe { game_state() }.r_main.setsizeneeded {
-        R_ExecuteSetViewSize();
+        R_ExecuteSetViewSize(unsafe { game_state() });
     }
     R_FillBackScreen();
 }
