@@ -1246,7 +1246,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
     state.g_game.oldgamestate = state.g_game.gamestate;
     match state.g_game.gamestate as u32 {
         0 => {
-            P_Ticker();
+            P_Ticker(state);
             ST_Ticker();
             AM_Ticker();
             HU_Ticker();
