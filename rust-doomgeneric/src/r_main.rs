@@ -20,8 +20,6 @@ use crate::src::r_defs::{node_t, seg_t};
 use crate::src::r_draw::R_InitBuffer;
 use crate::src::r_draw::R_InitTranslationTables;
 use crate::src::r_draw::{R_DrawColumn, R_DrawColumnLow, R_DrawFuzzColumn, R_DrawFuzzColumnLow, R_DrawSpan, R_DrawSpanLow, R_DrawTranslatedColumn, R_DrawTranslatedColumnLow};
-use crate::src::r_plane::distscale;
-use crate::src::r_plane::yslope;
 use crate::src::r_plane::R_ClearPlanes;
 use crate::src::r_plane::R_DrawPlanes;
 use crate::src::r_sky::R_InitSkyMap;
@@ -448,7 +446,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
     while i < unsafe { game_state() }.r_draw.viewheight {
         dy = (((i - unsafe { game_state() }.r_draw.viewheight / 2 as i32) << FRACBITS) + FRACUNIT / 2 as i32) as fixed_t;
         dy = (dy as i32).abs() as fixed_t;
-        yslope[i as usize] = FixedDiv(
+        unsafe { game_state() }.r_plane.yslope[i as usize] = FixedDiv(
             ((unsafe { game_state() }.r_draw.viewwidth as fixed_t) << unsafe { game_state() }.r_main.detailshift) / 2 as fixed_t * FRACUNIT,
             dy,
         );
@@ -458,7 +456,7 @@ pub unsafe fn R_ExecuteSetViewSize() {
     while i < unsafe { game_state() }.r_draw.viewwidth {
         cosadj = (finecosine[(unsafe { game_state() }.r_main.xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize] as i32).abs()
             as fixed_t;
-        distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
+        unsafe { game_state() }.r_plane.distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
         i += 1;
     }
     i = 0 as i32;

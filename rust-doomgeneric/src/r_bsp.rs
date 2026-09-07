@@ -6,8 +6,6 @@ use crate::src::p_mobj::{line_t, sector_t, subsector_t};
 use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, side_t, visplane_t};
 use crate::src::r_main::R_PointOnSide;
 use crate::src::r_main::R_PointToAngle;
-use crate::src::r_plane::ceilingplane;
-use crate::src::r_plane::floorplane;
 use crate::src::r_plane::R_FindPlane;
 use crate::src::r_segs::R_StoreWallRange;
 use crate::src::r_things::R_AddSprites;
@@ -320,24 +318,24 @@ pub unsafe fn R_Subsector(mut num: i32) {
     count = (*sub).numlines as i32;
     line = unsafe { game_state() }.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
     if (*frontsector).floorheight < unsafe { game_state() }.r_main.viewz {
-        floorplane = R_FindPlane(
+        unsafe { game_state() }.r_plane.floorplane = R_FindPlane(
             (*frontsector).floorheight,
             (*frontsector).floorpic as i32,
             (*frontsector).lightlevel as i32,
         );
     } else {
-        floorplane = ::core::ptr::null_mut::<visplane_t>();
+        unsafe { game_state() }.r_plane.floorplane = ::core::ptr::null_mut::<visplane_t>();
     }
     if (*frontsector).ceilingheight > unsafe { game_state() }.r_main.viewz
         || (*frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
     {
-        ceilingplane = R_FindPlane(
+        unsafe { game_state() }.r_plane.ceilingplane = R_FindPlane(
             (*frontsector).ceilingheight,
             (*frontsector).ceilingpic as i32,
             (*frontsector).lightlevel as i32,
         );
     } else {
-        ceilingplane = ::core::ptr::null_mut::<visplane_t>();
+        unsafe { game_state() }.r_plane.ceilingplane = ::core::ptr::null_mut::<visplane_t>();
     }
     R_AddSprites(frontsector);
     loop {
