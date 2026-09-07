@@ -1414,7 +1414,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     printf(b"HU_Init: Setting up heads up display.\n\0" as *const u8 as *const ::core::ffi::c_char);
     HU_Init();
     printf(b"ST_Init: Init status bar.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    ST_Init();
+    ST_Init(state);
     if state.doomstat.gamemode as u32 == commercial as i32 as u32
         && W_CheckNumForName("map01") < 0 as i32
     {

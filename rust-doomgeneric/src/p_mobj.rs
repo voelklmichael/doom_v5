@@ -1181,7 +1181,7 @@ pub unsafe fn P_SpawnPlayer(state: &mut GameState, mut mthing: *mut mapthing_t) 
         }
     }
     if (*mthing).type_0 as i32 - 1 as i32 == state.g_game.consoleplayer {
-        ST_Start();
+        ST_Start(state);
         HU_Start();
     }
 }
