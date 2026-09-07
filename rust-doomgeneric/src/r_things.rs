@@ -17,8 +17,6 @@ use crate::src::m_fixed::INT_MAX;
 use crate::src::p_mobj::sector_t;
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::p_mobj::{MF_SHADOW, MF_TRANSLATION, MF_TRANSSHIFT};
-use crate::src::r_bsp::drawsegs;
-use crate::src::r_bsp::ds_p;
 use crate::src::r_data::column_t;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::{drawseg_t, spritedef_t, spriteframe_t};
@@ -870,8 +868,8 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
             unsafe { game_state() }.r_things.cliptop[x as usize];
         x += 1;
     }
-    ds = ds_p.offset(-(1 as i32 as isize));
-    while ds >= &raw mut drawsegs as *mut drawseg_t {
+    ds = unsafe { game_state() }.r_bsp.ds_p.offset(-(1 as i32 as isize));
+    while ds >= &raw mut unsafe { game_state() }.r_bsp.drawsegs as *mut drawseg_t {
         if !((*ds).x1 > (*spr).x2
             || (*ds).x2 < (*spr).x1
             || (*ds).silhouette == 0 && (*ds).maskedtexturecol.is_null())
@@ -981,8 +979,8 @@ pub unsafe fn R_DrawMasked() {
             spr = (*spr).next as *mut vissprite_t;
         }
     }
-    ds = ds_p.offset(-(1 as i32 as isize));
-    while ds >= &raw mut drawsegs as *mut drawseg_t {
+    ds = unsafe { game_state() }.r_bsp.ds_p.offset(-(1 as i32 as isize));
+    while ds >= &raw mut unsafe { game_state() }.r_bsp.drawsegs as *mut drawseg_t {
         if !(*ds).maskedtexturecol.is_null() {
             R_RenderMaskedSegRange(ds, (*ds).x1, (*ds).x2);
         }

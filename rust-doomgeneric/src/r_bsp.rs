@@ -14,6 +14,48 @@ use crate::src::tables::ANG180;
 use crate::src::tables::ANG90;
 use crate::src::tables::ANGLETOFINESHIFT;
 
+pub struct RBspState {
+    pub curline: *mut seg_t,
+    pub sidedef: *mut side_t,
+    pub linedef: *mut line_t,
+    pub frontsector: *mut sector_t,
+    pub backsector: *mut sector_t,
+    pub drawsegs: [drawseg_t; 256],
+    pub ds_p: *mut drawseg_t,
+    pub newend: *mut cliprange_t,
+    pub solidsegs: [cliprange_t; 32],
+}
+
+impl RBspState {
+    pub const fn new() -> Self {
+        RBspState {
+            curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
+            sidedef: ::core::ptr::null::<side_t>() as *mut side_t,
+            linedef: ::core::ptr::null::<line_t>() as *mut line_t,
+            frontsector: ::core::ptr::null::<sector_t>() as *mut sector_t,
+            backsector: ::core::ptr::null::<sector_t>() as *mut sector_t,
+            drawsegs: [drawseg_s {
+        curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
+        x1: 0,
+        x2: 0,
+        scale1: 0,
+        scale2: 0,
+        scalestep: 0,
+        silhouette: 0,
+        bsilheight: 0,
+        tsilheight: 0,
+        sprtopclip: ::core::ptr::null::<i16>() as *mut i16,
+        sprbottomclip: ::core::ptr::null::<i16>() as *mut i16,
+        maskedtexturecol: ::core::ptr::null::<i16>() as *mut i16,
+    }; 256],
+            ds_p: ::core::ptr::null::<drawseg_t>() as *mut drawseg_t,
+            newend: ::core::ptr::null::<cliprange_t>() as *mut cliprange_t,
+            solidsegs: [cliprange_t { first: 0, last: 0 }; 32],
+        }
+    }
+}
+
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cliprange_t {
@@ -21,46 +63,22 @@ pub struct cliprange_t {
     pub last: i32,
 }
 pub const NF_SUBSECTOR: i32 = 0x8000;
-pub static mut curline: *mut seg_t = ::core::ptr::null::<seg_t>() as *mut seg_t;
-pub static mut sidedef: *mut side_t = ::core::ptr::null::<side_t>() as *mut side_t;
-pub static mut linedef: *mut line_t = ::core::ptr::null::<line_t>() as *mut line_t;
-pub static mut frontsector: *mut sector_t = ::core::ptr::null::<sector_t>() as *mut sector_t;
-pub static mut backsector: *mut sector_t = ::core::ptr::null::<sector_t>() as *mut sector_t;
-pub static mut drawsegs: [drawseg_t; 256] = [drawseg_s {
-    curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
-    x1: 0,
-    x2: 0,
-    scale1: 0,
-    scale2: 0,
-    scalestep: 0,
-    silhouette: 0,
-    bsilheight: 0,
-    tsilheight: 0,
-    sprtopclip: ::core::ptr::null::<i16>() as *mut i16,
-    sprbottomclip: ::core::ptr::null::<i16>() as *mut i16,
-    maskedtexturecol: ::core::ptr::null::<i16>() as *mut i16,
-}; 256];
-pub static mut ds_p: *mut drawseg_t = ::core::ptr::null::<drawseg_t>() as *mut drawseg_t;
 pub unsafe fn R_ClearDrawSegs() {
-    ds_p = &raw mut drawsegs as *mut drawseg_t;
+    unsafe { game_state() }.r_bsp.ds_p = &raw mut unsafe { game_state() }.r_bsp.drawsegs as *mut drawseg_t;
 }
-#[no_mangle]
-pub static mut newend: *mut cliprange_t = ::core::ptr::null::<cliprange_t>() as *mut cliprange_t;
-#[no_mangle]
-pub static mut solidsegs: [cliprange_t; 32] = [cliprange_t { first: 0, last: 0 }; 32];
 pub unsafe fn R_ClipSolidWallSegment(mut first: i32, mut last: i32) {
     let mut current_block: u64;
     let mut next: *mut cliprange_t = ::core::ptr::null_mut::<cliprange_t>();
     let mut start: *mut cliprange_t = ::core::ptr::null_mut::<cliprange_t>();
-    start = &raw mut solidsegs as *mut cliprange_t;
+    start = &raw mut unsafe { game_state() }.r_bsp.solidsegs as *mut cliprange_t;
     while (*start).last < first - 1 as i32 {
         start = start.offset(1);
     }
     if first < (*start).first {
         if last < (*start).first - 1 as i32 {
             R_StoreWallRange(first, last);
-            next = newend;
-            newend = newend.offset(1);
+            next = unsafe { game_state() }.r_bsp.newend;
+            unsafe { game_state() }.r_bsp.newend = unsafe { game_state() }.r_bsp.newend.offset(1);
             while next != start {
                 *next = *next.offset(-(1 as i32 as isize));
                 next = next.offset(-1);
@@ -106,17 +124,17 @@ pub unsafe fn R_ClipSolidWallSegment(mut first: i32, mut last: i32) {
     loop {
         let fresh0 = next;
         next = next.offset(1);
-        if !(fresh0 != newend) {
+        if !(fresh0 != unsafe { game_state() }.r_bsp.newend) {
             break;
         }
         start = start.offset(1);
         *start = *next;
     }
-    newend = start.offset(1 as i32 as isize);
+    unsafe { game_state() }.r_bsp.newend = start.offset(1 as i32 as isize);
 }
 pub unsafe fn R_ClipPassWallSegment(mut first: i32, mut last: i32) {
     let mut start: *mut cliprange_t = ::core::ptr::null_mut::<cliprange_t>();
-    start = &raw mut solidsegs as *mut cliprange_t;
+    start = &raw mut unsafe { game_state() }.r_bsp.solidsegs as *mut cliprange_t;
     while (*start).last < first - 1 as i32 {
         start = start.offset(1);
     }
@@ -143,11 +161,11 @@ pub unsafe fn R_ClipPassWallSegment(mut first: i32, mut last: i32) {
     R_StoreWallRange((*start).last + 1 as i32, last);
 }
 pub unsafe fn R_ClearClipSegs() {
-    solidsegs[0 as i32 as usize].first = -(0x7fffffff as i32);
-    solidsegs[0 as i32 as usize].last = -(1 as i32);
-    solidsegs[1 as i32 as usize].first = unsafe { game_state() }.r_draw.viewwidth;
-    solidsegs[1 as i32 as usize].last = 0x7fffffff as i32;
-    newend = (&raw mut solidsegs as *mut cliprange_t).offset(2 as i32 as isize);
+    unsafe { game_state() }.r_bsp.solidsegs[0 as i32 as usize].first = -(0x7fffffff as i32);
+    unsafe { game_state() }.r_bsp.solidsegs[0 as i32 as usize].last = -(1 as i32);
+    unsafe { game_state() }.r_bsp.solidsegs[1 as i32 as usize].first = unsafe { game_state() }.r_draw.viewwidth;
+    unsafe { game_state() }.r_bsp.solidsegs[1 as i32 as usize].last = 0x7fffffff as i32;
+    unsafe { game_state() }.r_bsp.newend = (&raw mut unsafe { game_state() }.r_bsp.solidsegs as *mut cliprange_t).offset(2 as i32 as isize);
 }
 pub unsafe fn R_AddLine(mut line: *mut seg_t) {
     let mut x1: i32 = 0;
@@ -156,7 +174,7 @@ pub unsafe fn R_AddLine(mut line: *mut seg_t) {
     let mut angle2: angle_t = 0;
     let mut span: angle_t = 0;
     let mut tspan: angle_t = 0;
-    curline = line;
+    unsafe { game_state() }.r_bsp.curline = line;
     angle1 = R_PointToAngle((*(*line).v1).x, (*(*line).v1).y);
     angle2 = R_PointToAngle((*(*line).v2).x, (*(*line).v2).y);
     span = angle1.wrapping_sub(angle2);
@@ -189,18 +207,18 @@ pub unsafe fn R_AddLine(mut line: *mut seg_t) {
     if x1 == x2 {
         return;
     }
-    backsector = (*line).backsector;
-    if !backsector.is_null() {
-        if !((*backsector).ceilingheight <= (*frontsector).floorheight
-            || (*backsector).floorheight >= (*frontsector).ceilingheight)
+    unsafe { game_state() }.r_bsp.backsector = (*line).backsector;
+    if !unsafe { game_state() }.r_bsp.backsector.is_null() {
+        if !((*unsafe { game_state() }.r_bsp.backsector).ceilingheight <= (*unsafe { game_state() }.r_bsp.frontsector).floorheight
+            || (*unsafe { game_state() }.r_bsp.backsector).floorheight >= (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight)
         {
-            if !((*backsector).ceilingheight != (*frontsector).ceilingheight
-                || (*backsector).floorheight != (*frontsector).floorheight)
+            if !((*unsafe { game_state() }.r_bsp.backsector).ceilingheight != (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight
+                || (*unsafe { game_state() }.r_bsp.backsector).floorheight != (*unsafe { game_state() }.r_bsp.frontsector).floorheight)
             {
-                if (*backsector).ceilingpic as i32 == (*frontsector).ceilingpic as i32
-                    && (*backsector).floorpic as i32 == (*frontsector).floorpic as i32
-                    && (*backsector).lightlevel as i32 == (*frontsector).lightlevel as i32
-                    && (*(*curline).sidedef).midtexture as i32 == 0 as i32
+                if (*unsafe { game_state() }.r_bsp.backsector).ceilingpic as i32 == (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32
+                    && (*unsafe { game_state() }.r_bsp.backsector).floorpic as i32 == (*unsafe { game_state() }.r_bsp.frontsector).floorpic as i32
+                    && (*unsafe { game_state() }.r_bsp.backsector).lightlevel as i32 == (*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32
+                    && (*(*unsafe { game_state() }.r_bsp.curline).sidedef).midtexture as i32 == 0 as i32
                 {
                     return;
                 }
@@ -212,7 +230,7 @@ pub unsafe fn R_AddLine(mut line: *mut seg_t) {
     R_ClipSolidWallSegment(x1, x2 - 1 as i32);
 }
 #[no_mangle]
-pub static mut checkcoord: [[i32; 4]; 12] = [
+pub static checkcoord: [[i32; 4]; 12] = [
     [3 as i32, 0 as i32, 2 as i32, 1 as i32],
     [3 as i32, 0 as i32, 2 as i32, 0 as i32],
     [3 as i32, 1 as i32, 2 as i32, 0 as i32],
@@ -293,7 +311,7 @@ pub unsafe fn R_CheckBBox(mut bspcoord: *mut fixed_t) -> bool {
         return false;
     }
     sx2 -= 1;
-    start = &raw mut solidsegs as *mut cliprange_t;
+    start = &raw mut unsafe { game_state() }.r_bsp.solidsegs as *mut cliprange_t;
     while (*start).last < sx2 {
         start = start.offset(1);
     }
@@ -314,30 +332,30 @@ pub unsafe fn R_Subsector(mut num: i32) {
     }
     unsafe { game_state() }.r_main.sscount += 1;
     sub = unsafe { game_state() }.p_setup.subsectors.offset(num as isize) as *mut subsector_t;
-    frontsector = (*sub).sector;
+    unsafe { game_state() }.r_bsp.frontsector = (*sub).sector;
     count = (*sub).numlines as i32;
     line = unsafe { game_state() }.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
-    if (*frontsector).floorheight < unsafe { game_state() }.r_main.viewz {
+    if (*unsafe { game_state() }.r_bsp.frontsector).floorheight < unsafe { game_state() }.r_main.viewz {
         unsafe { game_state() }.r_plane.floorplane = R_FindPlane(
-            (*frontsector).floorheight,
-            (*frontsector).floorpic as i32,
-            (*frontsector).lightlevel as i32,
+            (*unsafe { game_state() }.r_bsp.frontsector).floorheight,
+            (*unsafe { game_state() }.r_bsp.frontsector).floorpic as i32,
+            (*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32,
         );
     } else {
         unsafe { game_state() }.r_plane.floorplane = ::core::ptr::null_mut::<visplane_t>();
     }
-    if (*frontsector).ceilingheight > unsafe { game_state() }.r_main.viewz
-        || (*frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+    if (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight > unsafe { game_state() }.r_main.viewz
+        || (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
     {
         unsafe { game_state() }.r_plane.ceilingplane = R_FindPlane(
-            (*frontsector).ceilingheight,
-            (*frontsector).ceilingpic as i32,
-            (*frontsector).lightlevel as i32,
+            (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight,
+            (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32,
+            (*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32,
         );
     } else {
         unsafe { game_state() }.r_plane.ceilingplane = ::core::ptr::null_mut::<visplane_t>();
     }
-    R_AddSprites(frontsector);
+    R_AddSprites(unsafe { game_state() }.r_bsp.frontsector);
     loop {
         let fresh1 = count;
         count = count - 1;

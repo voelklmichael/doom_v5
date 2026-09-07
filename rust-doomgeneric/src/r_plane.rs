@@ -4,8 +4,6 @@ use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::m_fixed::FixedMul;
-use crate::src::r_bsp::drawsegs;
-use crate::src::r_bsp::ds_p;
 use crate::src::r_data::R_GetColumn;
 use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::{drawseg_t, visplane_t};
@@ -272,10 +270,10 @@ pub unsafe fn R_DrawPlanes() {
     let mut stop: i32 = 0;
     let mut angle: i32 = 0;
     let mut lumpnum: i32 = 0;
-    if ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as i64 > MAXDRAWSEGS as i64 {
+    if unsafe { game_state() }.r_bsp.ds_p.offset_from(&raw mut unsafe { game_state() }.r_bsp.drawsegs as *mut drawseg_t) as i64 > MAXDRAWSEGS as i64 {
         I_Error(&format!(
             "R_DrawPlanes: drawsegs overflow ({})",
-            ds_p.offset_from(&raw mut drawsegs as *mut drawseg_t) as i64,
+            unsafe { game_state() }.r_bsp.ds_p.offset_from(&raw mut unsafe { game_state() }.r_bsp.drawsegs as *mut drawseg_t) as i64,
         ));
     }
     if unsafe { game_state() }.r_plane.lastvisplane.offset_from(&raw mut unsafe { game_state() }.r_plane.visplanes as *mut visplane_t) as i64 > MAXVISPLANES as i64
