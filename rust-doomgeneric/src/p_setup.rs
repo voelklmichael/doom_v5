@@ -959,8 +959,8 @@ pub unsafe fn P_SetupLevel(
     gs.p_mobj.iquetail = 0 as i32;
     gs.p_mobj.iquehead = gs.p_mobj.iquetail;
     P_SpawnSpecials(&mut gs.p_switch, &mut gs.p_plats, &mut gs.p_ceilng);
-    if unsafe { game_state() }.g_game.precache {
-        R_PrecacheLevel();
+    if gs.g_game.precache {
+        R_PrecacheLevel(gs);
     }
 }
 pub unsafe fn P_Init() {

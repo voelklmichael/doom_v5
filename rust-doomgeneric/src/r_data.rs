@@ -711,7 +711,7 @@ pub unsafe fn R_TextureNumForName(mut name: *mut ::core::ffi::c_char) -> i32 {
     }
     return i;
 }
-pub unsafe fn R_PrecacheLevel() {
+pub unsafe fn R_PrecacheLevel(state: &mut GameState) {
     let mut flatpresent: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut texturepresent: *mut ::core::ffi::c_char =
         ::core::ptr::null_mut::<::core::ffi::c_char>();
@@ -724,75 +724,75 @@ pub unsafe fn R_PrecacheLevel() {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut sf: *mut spriteframe_t = ::core::ptr::null_mut::<spriteframe_t>();
-    if unsafe { game_state() }.g_game.demoplayback {
+    if state.g_game.demoplayback {
         return;
     }
     flatpresent = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
-        unsafe { game_state() }.r_data.numflats,
+        &mut state.z_zone,
+        state.r_data.numflats,
         PU_STATIC as i32,
         NULL,
     ) as *mut ::core::ffi::c_char;
     memset(
         flatpresent as *mut ::core::ffi::c_void,
         0 as i32,
-        unsafe { game_state() }.r_data.numflats as size_t,
+        state.r_data.numflats as size_t,
     );
     i = 0 as i32;
-    while i < unsafe { game_state() }.p_setup.numsectors {
-        *flatpresent.offset(unsafe { game_state() }.p_setup.sectors[i as usize].floorpic as isize) =
+    while i < state.p_setup.numsectors {
+        *flatpresent.offset(state.p_setup.sectors[i as usize].floorpic as isize) =
             1 as ::core::ffi::c_char;
-        *flatpresent.offset(unsafe { game_state() }.p_setup.sectors[i as usize].ceilingpic as isize) =
+        *flatpresent.offset(state.p_setup.sectors[i as usize].ceilingpic as isize) =
             1 as ::core::ffi::c_char;
         i += 1;
     }
-    unsafe { game_state() }.r_data.flatmemory = 0 as i32;
+    state.r_data.flatmemory = 0 as i32;
     i = 0 as i32;
-    while i < unsafe { game_state() }.r_data.numflats {
+    while i < state.r_data.numflats {
         if *flatpresent.offset(i as isize) != 0 {
-            lump = unsafe { game_state() }.r_data.firstflat + i;
-            unsafe { game_state() }.r_data.flatmemory += (*unsafe { game_state() }.w_wad.lumpinfo.offset(lump as isize)).size;
+            lump = state.r_data.firstflat + i;
+            state.r_data.flatmemory += (*state.w_wad.lumpinfo.offset(lump as isize)).size;
             W_CacheLumpNum(lump, PU_CACHE as i32);
         }
         i += 1;
     }
     Z_Free(
-        unsafe { &mut game_state().z_zone },
+        &mut state.z_zone,
         flatpresent as *mut ::core::ffi::c_void,
     );
     texturepresent = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
-        unsafe { game_state() }.r_data.numtextures,
+        &mut state.z_zone,
+        state.r_data.numtextures,
         PU_STATIC as i32,
         NULL,
     ) as *mut ::core::ffi::c_char;
     memset(
         texturepresent as *mut ::core::ffi::c_void,
         0 as i32,
-        unsafe { game_state() }.r_data.numtextures as size_t,
+        state.r_data.numtextures as size_t,
     );
     i = 0 as i32;
-    while i < unsafe { game_state() }.p_setup.numsides {
-        *texturepresent.offset(unsafe { game_state() }.p_setup.sides[i as usize].toptexture as isize) =
+    while i < state.p_setup.numsides {
+        *texturepresent.offset(state.p_setup.sides[i as usize].toptexture as isize) =
             1 as ::core::ffi::c_char;
-        *texturepresent.offset(unsafe { game_state() }.p_setup.sides[i as usize].midtexture as isize) =
+        *texturepresent.offset(state.p_setup.sides[i as usize].midtexture as isize) =
             1 as ::core::ffi::c_char;
-        *texturepresent.offset(unsafe { game_state() }.p_setup.sides[i as usize].bottomtexture as isize) =
+        *texturepresent.offset(state.p_setup.sides[i as usize].bottomtexture as isize) =
             1 as ::core::ffi::c_char;
         i += 1;
     }
-    *texturepresent.offset(unsafe { game_state() }.r_sky.skytexture as isize) =
+    *texturepresent.offset(state.r_sky.skytexture as isize) =
         1 as ::core::ffi::c_char;
-    unsafe { game_state() }.r_data.texturememory = 0 as i32;
+    state.r_data.texturememory = 0 as i32;
     i = 0 as i32;
-    while i < unsafe { game_state() }.r_data.numtextures {
+    while i < state.r_data.numtextures {
         if !(*texturepresent.offset(i as isize) == 0) {
-            texture = *unsafe { game_state() }.r_data.textures.offset(i as isize);
+            texture = *state.r_data.textures.offset(i as isize);
             j = 0 as i32;
             while j < (*texture).patchcount as i32 {
                 lump = (*(&raw mut (*texture).patches as *mut texpatch_t).offset(j as isize)).patch;
-                unsafe { game_state() }.r_data.texturememory +=
-                    (*unsafe { game_state() }.w_wad.lumpinfo.offset(lump as isize)).size;
+                state.r_data.texturememory +=
+                    (*state.w_wad.lumpinfo.offset(lump as isize)).size;
                 W_CacheLumpNum(lump, PU_CACHE as i32);
                 j += 1;
             }
@@ -800,42 +800,42 @@ pub unsafe fn R_PrecacheLevel() {
         i += 1;
     }
     Z_Free(
-        unsafe { &mut game_state().z_zone },
+        &mut state.z_zone,
         texturepresent as *mut ::core::ffi::c_void,
     );
     spritepresent = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
-        unsafe { game_state() }.r_things.numsprites,
+        &mut state.z_zone,
+        state.r_things.numsprites,
         PU_STATIC as i32,
         NULL,
     ) as *mut ::core::ffi::c_char;
     memset(
         spritepresent as *mut ::core::ffi::c_void,
         0 as i32,
-        unsafe { game_state() }.r_things.numsprites as size_t,
+        state.r_things.numsprites as size_t,
     );
-    th = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
-    while th != &raw mut unsafe { game_state() }.p_tick.thinkercap {
+    th = state.p_tick.thinkercap.next as *mut thinker_t;
+    while th != &raw mut state.p_tick.thinkercap {
         if matches!((*th).function, ThinkerFn::Mobj(_)) {
             *spritepresent.offset((*(th as *mut mobj_t)).sprite as isize) =
                 1 as ::core::ffi::c_char;
         }
         th = (*th).next as *mut thinker_t;
     }
-    unsafe { game_state() }.r_data.spritememory = 0 as i32;
+    state.r_data.spritememory = 0 as i32;
     i = 0 as i32;
-    while i < unsafe { game_state() }.r_things.numsprites {
+    while i < state.r_things.numsprites {
         if !(*spritepresent.offset(i as isize) == 0) {
             j = 0 as i32;
-            while j < (*unsafe { game_state() }.r_things.sprites.offset(i as isize)).numframes {
-                sf = (*unsafe { game_state() }.r_things.sprites.offset(i as isize))
+            while j < (*state.r_things.sprites.offset(i as isize)).numframes {
+                sf = (*state.r_things.sprites.offset(i as isize))
                     .spriteframes
                     .offset(j as isize) as *mut spriteframe_t;
                 k = 0 as i32;
                 while k < 8 as i32 {
-                    lump = unsafe { game_state() }.r_data.firstspritelump + (*sf).lump[k as usize] as i32;
-                    unsafe { game_state() }.r_data.spritememory +=
-                        (*unsafe { game_state() }.w_wad.lumpinfo.offset(lump as isize)).size;
+                    lump = state.r_data.firstspritelump + (*sf).lump[k as usize] as i32;
+                    state.r_data.spritememory +=
+                        (*state.w_wad.lumpinfo.offset(lump as isize)).size;
                     W_CacheLumpNum(lump, PU_CACHE as i32);
                     k += 1;
                 }
@@ -845,7 +845,7 @@ pub unsafe fn R_PrecacheLevel() {
         i += 1;
     }
     Z_Free(
-        unsafe { &mut game_state().z_zone },
+        &mut state.z_zone,
         spritepresent as *mut ::core::ffi::c_void,
     );
 }
