@@ -1,7 +1,6 @@
 use crate::src::d_player::player_t;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::game_state::game_state;
-use crate::src::m_menu::menuactive;
 use crate::src::p_doors::vldoor_t;
 use crate::src::p_lights::{fireflicker_t, glow_t, lightflash_t, strobe_t};
 use crate::src::p_mobj::P_RespawnSpecials;
@@ -64,7 +63,7 @@ pub unsafe fn P_Ticker() {
         return;
     }
     if !unsafe { game_state() }.g_game.netgame
-        && menuactive
+        && unsafe { game_state() }.m_menu.menuactive
         && !unsafe { game_state() }.g_game.demoplayback
         && unsafe { game_state() }.g_game.players
             [unsafe { game_state() }.g_game.consoleplayer as usize]

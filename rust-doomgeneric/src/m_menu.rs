@@ -57,6 +57,607 @@ use crate::src::z_zone::PU_CACHE;
 use libc::snprintf;
 use libc::toupper;
 
+pub struct MMenuDefsHolder {
+    pub MainDef: menu_t,
+    pub EpiDef: menu_t,
+    pub NewDef: menu_t,
+    pub OptionsDef: menu_t,
+    pub ReadDef1: menu_t,
+    pub ReadDef2: menu_t,
+    pub SoundDef: menu_t,
+    pub LoadDef: menu_t,
+    pub SaveDef: menu_t,
+}
+
+impl MMenuDefsHolder {
+    pub const fn new() -> Self {
+        MMenuDefsHolder {
+            MainDef: menu_s {
+                numitems: main_end as i32 as i16,
+                prevMenu: ::core::ptr::null::<menu_s>() as *mut menu_s,
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawMainMenu as unsafe extern "C" fn() -> ()),
+                x: 97 as i16,
+                y: 64 as i16,
+                lastOn: 0 as i16,
+            },
+            EpiDef: menu_s {
+                numitems: ep_end as i32 as i16,
+                prevMenu: ::core::ptr::null_mut::<menu_s>(),
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawEpisode as unsafe extern "C" fn() -> ()),
+                x: 48 as i16,
+                y: 63 as i16,
+                lastOn: ep1 as i32 as i16,
+            },
+            NewDef: menu_s {
+                numitems: newg_end as i32 as i16,
+                prevMenu: ::core::ptr::null_mut::<menu_s>(),
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawNewGame as unsafe extern "C" fn() -> ()),
+                x: 48 as i16,
+                y: 63 as i16,
+                lastOn: hurtme as i32 as i16,
+            },
+            OptionsDef: menu_s {
+                numitems: opt_end as i32 as i16,
+                prevMenu: ::core::ptr::null_mut::<menu_s>(),
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawOptions as unsafe extern "C" fn() -> ()),
+                x: 60 as i16,
+                y: 37 as i16,
+                lastOn: 0 as i16,
+            },
+            ReadDef1: menu_s {
+                numitems: read1_end as i32 as i16,
+                prevMenu: ::core::ptr::null_mut::<menu_s>(),
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawReadThis1 as unsafe extern "C" fn() -> ()),
+                x: 280 as i16,
+                y: 185 as i16,
+                lastOn: 0 as i16,
+            },
+            ReadDef2: menu_s {
+                numitems: read2_end as i32 as i16,
+                prevMenu: ::core::ptr::null_mut::<menu_s>(),
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawReadThis2 as unsafe extern "C" fn() -> ()),
+                x: 330 as i16,
+                y: 175 as i16,
+                lastOn: 0 as i16,
+            },
+            SoundDef: menu_s {
+                numitems: sound_end as i32 as i16,
+                prevMenu: ::core::ptr::null_mut::<menu_s>(),
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawSound as unsafe extern "C" fn() -> ()),
+                x: 80 as i16,
+                y: 64 as i16,
+                lastOn: 0 as i16,
+            },
+            LoadDef: menu_s {
+                numitems: load_end as i32 as i16,
+                prevMenu: ::core::ptr::null_mut::<menu_s>(),
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawLoad as unsafe extern "C" fn() -> ()),
+                x: 80 as i16,
+                y: 54 as i16,
+                lastOn: 0 as i16,
+            },
+            SaveDef: menu_s {
+                numitems: load_end as i32 as i16,
+                prevMenu: ::core::ptr::null_mut::<menu_s>(),
+                menuitems: ::core::ptr::null_mut::<menuitem_t>(),
+                routine: Some(M_DrawSave as unsafe extern "C" fn() -> ()),
+                x: 80 as i16,
+                y: 54 as i16,
+                lastOn: 0 as i16,
+            },
+        }
+    }
+}
+
+pub struct MMenuMenusHolder {
+    pub MainMenu: [menuitem_t; 6],
+    pub EpisodeMenu: [menuitem_t; 4],
+    pub NewGameMenu: [menuitem_t; 5],
+    pub OptionsMenu: [menuitem_t; 8],
+    pub ReadMenu1: [menuitem_t; 1],
+    pub ReadMenu2: [menuitem_t; 1],
+    pub SoundMenu: [menuitem_t; 4],
+    pub LoadMenu: [menuitem_t; 6],
+    pub SaveMenu: [menuitem_t; 6],
+}
+
+impl MMenuMenusHolder {
+    pub const fn new() -> Self {
+        MMenuMenusHolder {
+            MainMenu: unsafe {
+                [
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_NGAME\0\0\0",
+                        ),
+                        routine: Some(M_NewGame as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'n' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_OPTION\0\0",
+                        ),
+                        routine: Some(M_Options as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'o' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_LOADG\0\0\0",
+                        ),
+                        routine: Some(M_LoadGame as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'l' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_SAVEG\0\0\0",
+                        ),
+                        routine: Some(M_SaveGame as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 's' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_RDTHIS\0\0",
+                        ),
+                        routine: Some(M_ReadThis as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'r' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_QUITG\0\0\0",
+                        ),
+                        routine: Some(M_QuitDOOM as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'q' as i32 as ::core::ffi::c_char,
+                    },
+                ]
+            },
+            EpisodeMenu: unsafe {
+                [
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_EPI1\0\0\0\0",
+                        ),
+                        routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'k' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_EPI2\0\0\0\0",
+                        ),
+                        routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 't' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_EPI3\0\0\0\0",
+                        ),
+                        routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'i' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_EPI4\0\0\0\0",
+                        ),
+                        routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 't' as i32 as ::core::ffi::c_char,
+                    },
+                ]
+            },
+            NewGameMenu: unsafe {
+                [
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_JKILL\0\0\0",
+                        ),
+                        routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'i' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_ROUGH\0\0\0",
+                        ),
+                        routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'h' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_HURT\0\0\0\0",
+                        ),
+                        routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'h' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_ULTRA\0\0\0",
+                        ),
+                        routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'u' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_NMARE\0\0\0",
+                        ),
+                        routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'n' as i32 as ::core::ffi::c_char,
+                    },
+                ]
+            },
+            OptionsMenu: unsafe {
+                [
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_ENDGAM\0\0",
+                        ),
+                        routine: Some(M_EndGame as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'e' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_MESSG\0\0\0",
+                        ),
+                        routine: Some(M_ChangeMessages as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_DETAIL\0\0",
+                        ),
+                        routine: Some(M_ChangeDetail as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'g' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 2 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_SCRNSZ\0\0",
+                        ),
+                        routine: Some(M_SizeDisplay as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 's' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: -(1 as i32) as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: None,
+                        alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 2 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_MSENS\0\0\0",
+                        ),
+                        routine: Some(M_ChangeSensitivity as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: -(1 as i32) as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: None,
+                        alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_SVOL\0\0\0\0",
+                        ),
+                        routine: Some(M_Sound as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 's' as i32 as ::core::ffi::c_char,
+                    },
+                ]
+            },
+            ReadMenu1: unsafe {
+                [menuitem_t {
+                    status: 1 as i16,
+                    name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                        *b"\0\0\0\0\0\0\0\0\0\0",
+                    ),
+                    routine: Some(M_ReadThis2 as unsafe extern "C" fn(i32) -> ()),
+                    alphaKey: 0 as ::core::ffi::c_char,
+                }]
+            },
+            ReadMenu2: unsafe {
+                [menuitem_t {
+                    status: 1 as i16,
+                    name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                        *b"\0\0\0\0\0\0\0\0\0\0",
+                    ),
+                    routine: Some(M_FinishReadThis as unsafe extern "C" fn(i32) -> ()),
+                    alphaKey: 0 as ::core::ffi::c_char,
+                }]
+            },
+            SoundMenu: unsafe {
+                [
+                    menuitem_t {
+                        status: 2 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_SFXVOL\0\0",
+                        ),
+                        routine: Some(M_SfxVol as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 's' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: -(1 as i32) as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: None,
+                        alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 2 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"M_MUSVOL\0\0",
+                        ),
+                        routine: Some(M_MusicVol as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: -(1 as i32) as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: None,
+                        alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                    },
+                ]
+            },
+            LoadMenu: unsafe {
+                [
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '1' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '2' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '3' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '4' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '5' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '6' as i32 as ::core::ffi::c_char,
+                    },
+                ]
+            },
+            SaveMenu: unsafe {
+                [
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '1' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '2' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '3' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '4' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '5' as i32 as ::core::ffi::c_char,
+                    },
+                    menuitem_t {
+                        status: 1 as i16,
+                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
+                            *b"\0\0\0\0\0\0\0\0\0\0",
+                        ),
+                        routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
+                        alphaKey: '6' as i32 as ::core::ffi::c_char,
+                    },
+                ]
+            },
+        }
+    }
+}
+
+pub struct MMenuState {
+    pub menus: MMenuMenusHolder,
+    pub defs: MMenuDefsHolder,
+    pub mouseSensitivity: i32,
+    pub showMessages: i32,
+    pub detailLevel: i32,
+    pub screenblocks: i32,
+    pub screenSize: i32,
+    pub quickSaveSlot: i32,
+    pub messageToPrint: i32,
+    pub messageString: String,
+    pub messx: i32,
+    pub messy: i32,
+    pub messageLastMenuActive: i32,
+    pub messageNeedsInput: bool,
+    pub messageRoutine: Option<unsafe extern "C" fn(i32) -> ()>,
+    pub saveStringEnter: i32,
+    pub saveSlot: i32,
+    pub saveCharIndex: i32,
+    pub saveOldString: String,
+    pub inhelpscreens: bool,
+    pub menuactive: bool,
+    pub savegamestrings: [String; 10],
+    pub endstring: [::core::ffi::c_char; 160],
+    pub itemOn: i16,
+    pub skullAnimCounter: i16,
+    pub whichSkull: i16,
+    pub currentMenu: *mut menu_t,
+    pub tempstring: [::core::ffi::c_char; 80],
+    pub epi: i32,
+    pub responder_joywait: i32,
+    pub responder_mousewait: i32,
+    pub responder_mousey: i32,
+    pub responder_lasty: i32,
+    pub responder_mousex: i32,
+    pub responder_lastx: i32,
+    pub drawer_x: i16,
+    pub drawer_y: i16,
+}
+
+impl MMenuState {
+    pub const fn new() -> Self {
+        MMenuState {
+            menus: MMenuMenusHolder::new(),
+            defs: MMenuDefsHolder::new(),
+            mouseSensitivity: 5,
+            showMessages: 1,
+            detailLevel: 0,
+            screenblocks: 10,
+            screenSize: 0,
+            quickSaveSlot: 0,
+            messageToPrint: 0,
+            messageString: String::new(),
+            messx: 0,
+            messy: 0,
+            messageLastMenuActive: 0,
+            messageNeedsInput: false,
+            messageRoutine: None,
+            saveStringEnter: 0,
+            saveSlot: 0,
+            saveCharIndex: 0,
+            saveOldString: String::new(),
+            inhelpscreens: false,
+            menuactive: false,
+            savegamestrings: [
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new(),
+            ],
+            endstring: [0; 160],
+            itemOn: 0,
+            skullAnimCounter: 0,
+            whichSkull: 0,
+            currentMenu: ::core::ptr::null::<menu_t>() as *mut menu_t,
+            tempstring: [0; 80],
+            epi: 0,
+            responder_joywait: 0,
+            responder_mousewait: 0,
+            responder_mousey: 0,
+            responder_lasty: 0,
+            responder_mousex: 0,
+            responder_lastx: 0,
+            drawer_x: 0,
+            drawer_y: 0,
+        }
+    }
+
+    // Each menu_t's `menuitems` points at this same struct's own XxxMenu
+    // array, and most also `prevMenu`-link to a sibling menu_t -- both are
+    // only known once this value is at its final, permanently-stable
+    // 'static address (inside GameState, behind OnceLock). Called once
+    // from `game_state()` itself, strictly after `OnceLock::get_or_init`
+    // returns, same pattern as `sounds::fixup_self_links`/
+    // `p_maputl::fixup_intercepts_overrun`/`m_controls::fixup_weapon_keys`.
+    pub fn fixup_menu_links(&mut self) {
+        self.defs.MainDef.menuitems = &raw mut self.menus.MainMenu as *mut menuitem_t;
+        self.defs.EpiDef.menuitems = &raw mut self.menus.EpisodeMenu as *mut menuitem_t;
+        self.defs.EpiDef.prevMenu = &raw mut self.defs.MainDef as *mut menu_s;
+        self.defs.NewDef.menuitems = &raw mut self.menus.NewGameMenu as *mut menuitem_t;
+        self.defs.NewDef.prevMenu = &raw mut self.defs.EpiDef as *mut menu_s;
+        self.defs.OptionsDef.menuitems = &raw mut self.menus.OptionsMenu as *mut menuitem_t;
+        self.defs.OptionsDef.prevMenu = &raw mut self.defs.MainDef as *mut menu_s;
+        self.defs.ReadDef1.menuitems = &raw mut self.menus.ReadMenu1 as *mut menuitem_t;
+        self.defs.ReadDef1.prevMenu = &raw mut self.defs.MainDef as *mut menu_s;
+        self.defs.ReadDef2.menuitems = &raw mut self.menus.ReadMenu2 as *mut menuitem_t;
+        self.defs.ReadDef2.prevMenu = &raw mut self.defs.ReadDef1 as *mut menu_s;
+        self.defs.SoundDef.menuitems = &raw mut self.menus.SoundMenu as *mut menuitem_t;
+        self.defs.SoundDef.prevMenu = &raw mut self.defs.OptionsDef as *mut menu_s;
+        self.defs.LoadDef.menuitems = &raw mut self.menus.LoadMenu as *mut menuitem_t;
+        self.defs.LoadDef.prevMenu = &raw mut self.defs.MainDef as *mut menu_s;
+        self.defs.SaveDef.menuitems = &raw mut self.menus.SaveMenu as *mut menuitem_t;
+        self.defs.SaveDef.prevMenu = &raw mut self.defs.MainDef as *mut menu_s;
+    }
+}
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct menuitem_t {
@@ -137,511 +738,27 @@ pub const GAMMALVL4: &str = "Gamma correction level 4\0";
 pub const EMPTYSTRING: &str = "empty slot\0";
 pub const NUM_QUITMESSAGES: i32 = 8;
 pub const SAVESTRINGSIZE: i32 = 24;
-pub static mut mouseSensitivity: i32 = 5;
-pub static mut showMessages: i32 = 1;
-pub static mut detailLevel: i32 = 0;
-pub static mut screenblocks: i32 = 10;
-#[no_mangle]
-pub static mut screenSize: i32 = 0;
-#[no_mangle]
-pub static mut quickSaveSlot: i32 = 0;
-#[no_mangle]
-pub static mut messageToPrint: i32 = 0;
-pub static mut messageString: String = String::new();
-#[no_mangle]
-pub static mut messx: i32 = 0;
-#[no_mangle]
-pub static mut messy: i32 = 0;
-#[no_mangle]
-pub static mut messageLastMenuActive: i32 = 0;
-#[no_mangle]
-pub static mut messageNeedsInput: bool = false;
-#[no_mangle]
-pub static mut messageRoutine: Option<unsafe extern "C" fn(i32) -> ()> = None;
 pub static gammamsg: [&str; 5] = [GAMMALVL0, GAMMALVL1, GAMMALVL2, GAMMALVL3, GAMMALVL4];
-#[no_mangle]
-pub static mut saveStringEnter: i32 = 0;
-#[no_mangle]
-pub static mut saveSlot: i32 = 0;
-#[no_mangle]
-pub static mut saveCharIndex: i32 = 0;
-#[no_mangle]
-pub static mut saveOldString: String = String::new();
-pub static mut inhelpscreens: bool = false;
-pub static mut menuactive: bool = false;
 pub const SKULLXOFF: i32 = -(32 as i32);
 pub const LINEHEIGHT: i32 = 16;
-pub static mut savegamestrings: [String; 10] = [
-    String::new(),
-    String::new(),
-    String::new(),
-    String::new(),
-    String::new(),
-    String::new(),
-    String::new(),
-    String::new(),
-    String::new(),
-    String::new(),
-];
-#[no_mangle]
-pub static mut endstring: [::core::ffi::c_char; 160] = [0; 160];
-#[no_mangle]
-pub static mut itemOn: i16 = 0;
-#[no_mangle]
-pub static mut skullAnimCounter: i16 = 0;
-#[no_mangle]
-pub static mut whichSkull: i16 = 0;
 #[no_mangle]
 pub static skullName: [&str; 2] = ["M_SKULL1", "M_SKULL2"];
 #[no_mangle]
-pub static mut currentMenu: *mut menu_t = ::core::ptr::null::<menu_t>() as *mut menu_t;
+pub static main_e: C2RustUnnamed_1 = newgame;
 #[no_mangle]
-pub static mut main_e: C2RustUnnamed_1 = newgame;
+pub static episodes_e: C2RustUnnamed_2 = ep1;
 #[no_mangle]
-pub static mut MainMenu: [menuitem_t; 6] = unsafe {
-    [
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_NGAME\0\0\0"),
-            routine: Some(M_NewGame as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'n' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_OPTION\0\0"),
-            routine: Some(M_Options as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'o' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_LOADG\0\0\0"),
-            routine: Some(M_LoadGame as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'l' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_SAVEG\0\0\0"),
-            routine: Some(M_SaveGame as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 's' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_RDTHIS\0\0"),
-            routine: Some(M_ReadThis as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'r' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_QUITG\0\0\0"),
-            routine: Some(M_QuitDOOM as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'q' as i32 as ::core::ffi::c_char,
-        },
-    ]
-};
+pub static newgame_e: C2RustUnnamed_3 = killthings;
 #[no_mangle]
-pub static mut MainDef: menu_t = unsafe {
-    menu_s {
-        numitems: main_end as i32 as i16,
-        prevMenu: ::core::ptr::null::<menu_s>() as *mut menu_s,
-        menuitems: &raw const MainMenu as *mut menuitem_t,
-        routine: Some(M_DrawMainMenu as unsafe extern "C" fn() -> ()),
-        x: 97 as i16,
-        y: 64 as i16,
-        lastOn: 0 as i16,
-    }
-};
+pub static options_e: C2RustUnnamed_4 = endgame;
 #[no_mangle]
-pub static mut episodes_e: C2RustUnnamed_2 = ep1;
+pub static read_e: C2RustUnnamed_5 = rdthsempty1;
 #[no_mangle]
-pub static mut EpisodeMenu: [menuitem_t; 4] = unsafe {
-    [
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_EPI1\0\0\0\0"),
-            routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'k' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_EPI2\0\0\0\0"),
-            routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 't' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_EPI3\0\0\0\0"),
-            routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'i' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_EPI4\0\0\0\0"),
-            routine: Some(M_Episode as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 't' as i32 as ::core::ffi::c_char,
-        },
-    ]
-};
+pub static read_e2: C2RustUnnamed_6 = rdthsempty2;
 #[no_mangle]
-pub static mut EpiDef: menu_t = unsafe {
-    menu_s {
-        numitems: ep_end as i32 as i16,
-        prevMenu: &raw const MainDef as *mut menu_s,
-        menuitems: &raw const EpisodeMenu as *mut menuitem_t,
-        routine: Some(M_DrawEpisode as unsafe extern "C" fn() -> ()),
-        x: 48 as i16,
-        y: 63 as i16,
-        lastOn: ep1 as i32 as i16,
-    }
-};
+pub static sound_e: C2RustUnnamed_7 = sfx_vol;
 #[no_mangle]
-pub static mut newgame_e: C2RustUnnamed_3 = killthings;
-#[no_mangle]
-pub static mut NewGameMenu: [menuitem_t; 5] = unsafe {
-    [
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_JKILL\0\0\0"),
-            routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'i' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_ROUGH\0\0\0"),
-            routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'h' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_HURT\0\0\0\0"),
-            routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'h' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_ULTRA\0\0\0"),
-            routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'u' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_NMARE\0\0\0"),
-            routine: Some(M_ChooseSkill as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'n' as i32 as ::core::ffi::c_char,
-        },
-    ]
-};
-#[no_mangle]
-pub static mut NewDef: menu_t = unsafe {
-    menu_s {
-        numitems: newg_end as i32 as i16,
-        prevMenu: &raw const EpiDef as *mut menu_s,
-        menuitems: &raw const NewGameMenu as *mut menuitem_t,
-        routine: Some(M_DrawNewGame as unsafe extern "C" fn() -> ()),
-        x: 48 as i16,
-        y: 63 as i16,
-        lastOn: hurtme as i32 as i16,
-    }
-};
-#[no_mangle]
-pub static mut options_e: C2RustUnnamed_4 = endgame;
-#[no_mangle]
-pub static mut OptionsMenu: [menuitem_t; 8] = unsafe {
-    [
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_ENDGAM\0\0"),
-            routine: Some(M_EndGame as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'e' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_MESSG\0\0\0"),
-            routine: Some(M_ChangeMessages as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'm' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_DETAIL\0\0"),
-            routine: Some(M_ChangeDetail as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'g' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 2 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_SCRNSZ\0\0"),
-            routine: Some(M_SizeDisplay as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 's' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: -(1 as i32) as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: None,
-            alphaKey: '\0' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 2 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_MSENS\0\0\0"),
-            routine: Some(M_ChangeSensitivity as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'm' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: -(1 as i32) as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: None,
-            alphaKey: '\0' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_SVOL\0\0\0\0"),
-            routine: Some(M_Sound as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 's' as i32 as ::core::ffi::c_char,
-        },
-    ]
-};
-#[no_mangle]
-pub static mut OptionsDef: menu_t = unsafe {
-    menu_s {
-        numitems: opt_end as i32 as i16,
-        prevMenu: &raw const MainDef as *mut menu_s,
-        menuitems: &raw const OptionsMenu as *mut menuitem_t,
-        routine: Some(M_DrawOptions as unsafe extern "C" fn() -> ()),
-        x: 60 as i16,
-        y: 37 as i16,
-        lastOn: 0 as i16,
-    }
-};
-#[no_mangle]
-pub static mut read_e: C2RustUnnamed_5 = rdthsempty1;
-#[no_mangle]
-pub static mut ReadMenu1: [menuitem_t; 1] = unsafe {
-    [menuitem_t {
-        status: 1 as i16,
-        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-            *b"\0\0\0\0\0\0\0\0\0\0",
-        ),
-        routine: Some(M_ReadThis2 as unsafe extern "C" fn(i32) -> ()),
-        alphaKey: 0 as ::core::ffi::c_char,
-    }]
-};
-#[no_mangle]
-pub static mut ReadDef1: menu_t = unsafe {
-    menu_s {
-        numitems: read1_end as i32 as i16,
-        prevMenu: &raw const MainDef as *mut menu_s,
-        menuitems: &raw const ReadMenu1 as *mut menuitem_t,
-        routine: Some(M_DrawReadThis1 as unsafe extern "C" fn() -> ()),
-        x: 280 as i16,
-        y: 185 as i16,
-        lastOn: 0 as i16,
-    }
-};
-#[no_mangle]
-pub static mut read_e2: C2RustUnnamed_6 = rdthsempty2;
-#[no_mangle]
-pub static mut ReadMenu2: [menuitem_t; 1] = unsafe {
-    [menuitem_t {
-        status: 1 as i16,
-        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-            *b"\0\0\0\0\0\0\0\0\0\0",
-        ),
-        routine: Some(M_FinishReadThis as unsafe extern "C" fn(i32) -> ()),
-        alphaKey: 0 as ::core::ffi::c_char,
-    }]
-};
-#[no_mangle]
-pub static mut ReadDef2: menu_t = unsafe {
-    menu_s {
-        numitems: read2_end as i32 as i16,
-        prevMenu: &raw const ReadDef1 as *mut menu_s,
-        menuitems: &raw const ReadMenu2 as *mut menuitem_t,
-        routine: Some(M_DrawReadThis2 as unsafe extern "C" fn() -> ()),
-        x: 330 as i16,
-        y: 175 as i16,
-        lastOn: 0 as i16,
-    }
-};
-#[no_mangle]
-pub static mut sound_e: C2RustUnnamed_7 = sfx_vol;
-#[no_mangle]
-pub static mut SoundMenu: [menuitem_t; 4] = unsafe {
-    [
-        menuitem_t {
-            status: 2 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_SFXVOL\0\0"),
-            routine: Some(M_SfxVol as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 's' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: -(1 as i32) as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: None,
-            alphaKey: '\0' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 2 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"M_MUSVOL\0\0"),
-            routine: Some(M_MusicVol as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: 'm' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: -(1 as i32) as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: None,
-            alphaKey: '\0' as i32 as ::core::ffi::c_char,
-        },
-    ]
-};
-#[no_mangle]
-pub static mut SoundDef: menu_t = unsafe {
-    menu_s {
-        numitems: sound_end as i32 as i16,
-        prevMenu: &raw const OptionsDef as *mut menu_s,
-        menuitems: &raw const SoundMenu as *mut menuitem_t,
-        routine: Some(M_DrawSound as unsafe extern "C" fn() -> ()),
-        x: 80 as i16,
-        y: 64 as i16,
-        lastOn: 0 as i16,
-    }
-};
-#[no_mangle]
-pub static mut load_e: C2RustUnnamed_8 = load1;
-#[no_mangle]
-pub static mut LoadMenu: [menuitem_t; 6] = unsafe {
-    [
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '1' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '2' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '3' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '4' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '5' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_LoadSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '6' as i32 as ::core::ffi::c_char,
-        },
-    ]
-};
-#[no_mangle]
-pub static mut LoadDef: menu_t = unsafe {
-    menu_s {
-        numitems: load_end as i32 as i16,
-        prevMenu: &raw const MainDef as *mut menu_s,
-        menuitems: &raw const LoadMenu as *mut menuitem_t,
-        routine: Some(M_DrawLoad as unsafe extern "C" fn() -> ()),
-        x: 80 as i16,
-        y: 54 as i16,
-        lastOn: 0 as i16,
-    }
-};
-#[no_mangle]
-pub static mut SaveMenu: [menuitem_t; 6] = unsafe {
-    [
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '1' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '2' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '3' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '4' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '5' as i32 as ::core::ffi::c_char,
-        },
-        menuitem_t {
-            status: 1 as i16,
-            name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                *b"\0\0\0\0\0\0\0\0\0\0",
-            ),
-            routine: Some(M_SaveSelect as unsafe extern "C" fn(i32) -> ()),
-            alphaKey: '6' as i32 as ::core::ffi::c_char,
-        },
-    ]
-};
-#[no_mangle]
-pub static mut SaveDef: menu_t = unsafe {
-    menu_s {
-        numitems: load_end as i32 as i16,
-        prevMenu: &raw const MainDef as *mut menu_s,
-        menuitems: &raw const SaveMenu as *mut menuitem_t,
-        routine: Some(M_DrawSave as unsafe extern "C" fn() -> ()),
-        x: 80 as i16,
-        y: 54 as i16,
-        lastOn: 0 as i16,
-    }
-};
+pub static load_e: C2RustUnnamed_8 = load1;
 pub unsafe fn M_ReadSaveStrings() {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
     let mut i: i32 = 0;
@@ -658,8 +775,9 @@ pub unsafe fn M_ReadSaveStrings() {
             b"rb\0" as *const u8 as *const ::core::ffi::c_char,
         ) as *mut FILE;
         if handle.is_null() {
-            savegamestrings[i as usize] = EMPTYSTRING.trim_end_matches('\0').to_string();
-            LoadMenu[i as usize].status = 0 as i16;
+            unsafe { game_state() }.m_menu.savegamestrings[i as usize] =
+                EMPTYSTRING.trim_end_matches('\0').to_string();
+            unsafe { game_state() }.m_menu.menus.LoadMenu[i as usize].status = 0 as i16;
         } else {
             let mut buf: [u8; 24] = [0; 24];
             fread(
@@ -669,9 +787,10 @@ pub unsafe fn M_ReadSaveStrings() {
                 handle,
             );
             let len = buf.iter().position(|&b| b == 0).unwrap_or(buf.len());
-            savegamestrings[i as usize] = String::from_utf8_lossy(&buf[..len]).into_owned();
+            unsafe { game_state() }.m_menu.savegamestrings[i as usize] =
+                String::from_utf8_lossy(&buf[..len]).into_owned();
             fclose(handle);
-            LoadMenu[i as usize].status = 1 as i16;
+            unsafe { game_state() }.m_menu.menus.LoadMenu[i as usize].status = 1 as i16;
         }
         i += 1;
     }
@@ -687,11 +806,14 @@ pub unsafe extern "C" fn M_DrawLoad() {
     );
     i = 0 as i32;
     while i < load_end as i32 {
-        M_DrawSaveLoadBorder(LoadDef.x as i32, LoadDef.y as i32 + LINEHEIGHT * i);
+        M_DrawSaveLoadBorder(
+            unsafe { game_state() }.m_menu.defs.LoadDef.x as i32,
+            unsafe { game_state() }.m_menu.defs.LoadDef.y as i32 + LINEHEIGHT * i,
+        );
         M_WriteText(
-            LoadDef.x as i32,
-            LoadDef.y as i32 + LINEHEIGHT * i,
-            &savegamestrings[i as usize],
+            unsafe { game_state() }.m_menu.defs.LoadDef.x as i32,
+            unsafe { game_state() }.m_menu.defs.LoadDef.y as i32 + LINEHEIGHT * i,
+            &unsafe { game_state() }.m_menu.savegamestrings[i as usize],
         );
         i += 1;
     }
@@ -743,7 +865,7 @@ pub unsafe extern "C" fn M_LoadGame(mut choice: i32) {
         );
         return;
     }
-    M_SetupNextMenu(&raw mut LoadDef);
+    M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.LoadDef);
     M_ReadSaveStrings();
 }
 #[no_mangle]
@@ -757,40 +879,54 @@ pub unsafe extern "C" fn M_DrawSave() {
     );
     i = 0 as i32;
     while i < load_end as i32 {
-        M_DrawSaveLoadBorder(LoadDef.x as i32, LoadDef.y as i32 + LINEHEIGHT * i);
+        M_DrawSaveLoadBorder(
+            unsafe { game_state() }.m_menu.defs.LoadDef.x as i32,
+            unsafe { game_state() }.m_menu.defs.LoadDef.y as i32 + LINEHEIGHT * i,
+        );
         M_WriteText(
-            LoadDef.x as i32,
-            LoadDef.y as i32 + LINEHEIGHT * i,
-            &savegamestrings[i as usize],
+            unsafe { game_state() }.m_menu.defs.LoadDef.x as i32,
+            unsafe { game_state() }.m_menu.defs.LoadDef.y as i32 + LINEHEIGHT * i,
+            &unsafe { game_state() }.m_menu.savegamestrings[i as usize],
         );
         i += 1;
     }
-    if saveStringEnter != 0 {
-        i = M_StringWidth(&savegamestrings[saveSlot as usize]);
+    if unsafe { game_state() }.m_menu.saveStringEnter != 0 {
+        i = M_StringWidth(
+            &unsafe { game_state() }.m_menu.savegamestrings
+                [unsafe { game_state() }.m_menu.saveSlot as usize],
+        );
         M_WriteText(
-            LoadDef.x as i32 + i,
-            LoadDef.y as i32 + LINEHEIGHT * saveSlot,
+            unsafe { game_state() }.m_menu.defs.LoadDef.x as i32 + i,
+            unsafe { game_state() }.m_menu.defs.LoadDef.y as i32
+                + LINEHEIGHT * unsafe { game_state() }.m_menu.saveSlot,
             "_",
         );
     }
 }
 pub unsafe fn M_DoSave(mut slot: i32) {
-    let name_cstring = ::std::ffi::CString::new(savegamestrings[slot as usize].as_str()).unwrap();
+    let name_cstring = ::std::ffi::CString::new(
+        unsafe { game_state() }.m_menu.savegamestrings[slot as usize].as_str(),
+    )
+    .unwrap();
     G_SaveGame(slot, name_cstring.as_ptr() as *mut ::core::ffi::c_char);
     M_ClearMenus();
-    if quickSaveSlot == -(2 as i32) {
-        quickSaveSlot = slot;
+    if unsafe { game_state() }.m_menu.quickSaveSlot == -(2 as i32) {
+        unsafe { game_state() }.m_menu.quickSaveSlot = slot;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveSelect(mut choice: i32) {
-    saveStringEnter = 1 as i32;
-    saveSlot = choice;
-    saveOldString = savegamestrings[choice as usize].clone();
-    if savegamestrings[choice as usize] == EMPTYSTRING.trim_end_matches('\0') {
-        savegamestrings[choice as usize].clear();
+    unsafe { game_state() }.m_menu.saveStringEnter = 1 as i32;
+    unsafe { game_state() }.m_menu.saveSlot = choice;
+    unsafe { game_state() }.m_menu.saveOldString =
+        unsafe { game_state() }.m_menu.savegamestrings[choice as usize].clone();
+    if unsafe { game_state() }.m_menu.savegamestrings[choice as usize]
+        == EMPTYSTRING.trim_end_matches('\0')
+    {
+        unsafe { game_state() }.m_menu.savegamestrings[choice as usize].clear();
     }
-    saveCharIndex = savegamestrings[choice as usize].len() as i32;
+    unsafe { game_state() }.m_menu.saveCharIndex =
+        unsafe { game_state() }.m_menu.savegamestrings[choice as usize].len() as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveGame(mut choice: i32) {
@@ -805,15 +941,13 @@ pub unsafe extern "C" fn M_SaveGame(mut choice: i32) {
     if unsafe { game_state() }.g_game.gamestate as u32 != GS_LEVEL as i32 as u32 {
         return;
     }
-    M_SetupNextMenu(&raw mut SaveDef);
+    M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.SaveDef);
     M_ReadSaveStrings();
 }
 #[no_mangle]
-pub static mut tempstring: [::core::ffi::c_char; 80] = [0; 80];
-#[no_mangle]
 pub unsafe extern "C" fn M_QuickSaveResponse(mut key: i32) {
     if key == unsafe { game_state() }.m_controls.key_menu_confirm {
-        M_DoSave(quickSaveSlot);
+        M_DoSave(unsafe { game_state() }.m_menu.quickSaveSlot);
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
     }
 }
@@ -825,26 +959,32 @@ pub unsafe fn M_QuickSave() {
     if unsafe { game_state() }.g_game.gamestate as u32 != GS_LEVEL as i32 as u32 {
         return;
     }
-    if quickSaveSlot < 0 as i32 {
+    if unsafe { game_state() }.m_menu.quickSaveSlot < 0 as i32 {
         M_StartControlPanel();
         M_ReadSaveStrings();
-        M_SetupNextMenu(&raw mut SaveDef);
-        quickSaveSlot = -(2 as i32);
+        M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.SaveDef);
+        unsafe { game_state() }.m_menu.quickSaveSlot = -(2 as i32);
         return;
     }
-    let quicksave_name_cstring =
-        ::std::ffi::CString::new(savegamestrings[quickSaveSlot as usize].as_str()).unwrap();
+    let quicksave_name_cstring = ::std::ffi::CString::new(
+        unsafe { game_state() }.m_menu.savegamestrings
+            [unsafe { game_state() }.m_menu.quickSaveSlot as usize]
+            .as_str(),
+    )
+    .unwrap();
     snprintf(
-        &raw mut tempstring as *mut ::core::ffi::c_char,
+        &raw mut unsafe { game_state() }.m_menu.tempstring as *mut ::core::ffi::c_char,
         80 as size_t,
         b"quicksave over your game named\n\n'%s'?\n\npress y or n.\0" as *const u8
             as *const ::core::ffi::c_char,
         quicksave_name_cstring.as_ptr(),
     );
     M_StartMessage(
-        ::std::ffi::CStr::from_ptr(&raw mut tempstring as *mut ::core::ffi::c_char)
-            .to_str()
-            .unwrap(),
+        ::std::ffi::CStr::from_ptr(
+            &raw mut unsafe { game_state() }.m_menu.tempstring as *mut ::core::ffi::c_char,
+        )
+        .to_str()
+        .unwrap(),
         ::core::mem::transmute::<Option<unsafe extern "C" fn(i32) -> ()>, *mut ::core::ffi::c_void>(
             Some(M_QuickSaveResponse as unsafe extern "C" fn(i32) -> ()),
         ),
@@ -854,7 +994,7 @@ pub unsafe fn M_QuickSave() {
 #[no_mangle]
 pub unsafe extern "C" fn M_QuickLoadResponse(mut key: i32) {
     if key == unsafe { game_state() }.m_controls.key_menu_confirm {
-        M_LoadSelect(quickSaveSlot);
+        M_LoadSelect(unsafe { game_state() }.m_menu.quickSaveSlot);
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
     }
 }
@@ -867,7 +1007,7 @@ pub unsafe fn M_QuickLoad() {
         );
         return;
     }
-    if quickSaveSlot < 0 as i32 {
+    if unsafe { game_state() }.m_menu.quickSaveSlot < 0 as i32 {
         M_StartMessage(
             "you haven't picked a quicksave slot yet!\n\npress a key.",
             NULL,
@@ -875,19 +1015,25 @@ pub unsafe fn M_QuickLoad() {
         );
         return;
     }
-    let quickload_name_cstring =
-        ::std::ffi::CString::new(savegamestrings[quickSaveSlot as usize].as_str()).unwrap();
+    let quickload_name_cstring = ::std::ffi::CString::new(
+        unsafe { game_state() }.m_menu.savegamestrings
+            [unsafe { game_state() }.m_menu.quickSaveSlot as usize]
+            .as_str(),
+    )
+    .unwrap();
     snprintf(
-        &raw mut tempstring as *mut ::core::ffi::c_char,
+        &raw mut unsafe { game_state() }.m_menu.tempstring as *mut ::core::ffi::c_char,
         80 as size_t,
         b"do you want to quickload the game named\n\n'%s'?\n\npress y or n.\0" as *const u8
             as *const ::core::ffi::c_char,
         quickload_name_cstring.as_ptr(),
     );
     M_StartMessage(
-        ::std::ffi::CStr::from_ptr(&raw mut tempstring as *mut ::core::ffi::c_char)
-            .to_str()
-            .unwrap(),
+        ::std::ffi::CStr::from_ptr(
+            &raw mut unsafe { game_state() }.m_menu.tempstring as *mut ::core::ffi::c_char,
+        )
+        .to_str()
+        .unwrap(),
         ::core::mem::transmute::<Option<unsafe extern "C" fn(i32) -> ()>, *mut ::core::ffi::c_void>(
             Some(M_QuickLoadResponse as unsafe extern "C" fn(i32) -> ()),
         ),
@@ -900,7 +1046,7 @@ pub unsafe extern "C" fn M_DrawReadThis1() {
         b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     let mut skullx: i32 = 330 as i32;
     let mut skully: i32 = 175 as i32;
-    inhelpscreens = true;
+    unsafe { game_state() }.m_menu.inhelpscreens = true;
     match unsafe { game_state() }.doomstat.gameversion as u32 {
         1 | 2 | 3 | 4 | 5 => {
             if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
@@ -934,12 +1080,12 @@ pub unsafe extern "C" fn M_DrawReadThis1() {
         0 as i32,
         W_CacheLumpName(&wad_name8_to_string(lumpname), PU_CACHE as i32) as *mut patch_t,
     );
-    ReadDef1.x = skullx as i16;
-    ReadDef1.y = skully as i16;
+    unsafe { game_state() }.m_menu.defs.ReadDef1.x = skullx as i16;
+    unsafe { game_state() }.m_menu.defs.ReadDef1.y = skully as i16;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawReadThis2() {
-    inhelpscreens = true;
+    unsafe { game_state() }.m_menu.inhelpscreens = true;
     V_DrawPatchDirect(
         unsafe { &mut game_state().v_video },
         0 as i32,
@@ -956,21 +1102,23 @@ pub unsafe extern "C" fn M_DrawSound() {
         W_CacheLumpName("M_SVOL", PU_CACHE as i32) as *mut patch_t,
     );
     M_DrawThermo(
-        SoundDef.x as i32,
-        SoundDef.y as i32 + LINEHEIGHT * (sfx_vol as i32 + 1 as i32),
+        unsafe { game_state() }.m_menu.defs.SoundDef.x as i32,
+        unsafe { game_state() }.m_menu.defs.SoundDef.y as i32
+            + LINEHEIGHT * (sfx_vol as i32 + 1 as i32),
         16 as i32,
         sfxVolume,
     );
     M_DrawThermo(
-        SoundDef.x as i32,
-        SoundDef.y as i32 + LINEHEIGHT * (music_vol as i32 + 1 as i32),
+        unsafe { game_state() }.m_menu.defs.SoundDef.x as i32,
+        unsafe { game_state() }.m_menu.defs.SoundDef.y as i32
+            + LINEHEIGHT * (music_vol as i32 + 1 as i32),
         16 as i32,
         musicVolume,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_Sound(mut choice: i32) {
-    M_SetupNextMenu(&raw mut SoundDef);
+    M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.SoundDef);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SfxVol(mut choice: i32) {
@@ -1043,13 +1191,11 @@ pub unsafe extern "C" fn M_NewGame(mut choice: i32) {
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
         || unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as i32 as u32
     {
-        M_SetupNextMenu(&raw mut NewDef);
+        M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.NewDef);
     } else {
-        M_SetupNextMenu(&raw mut EpiDef);
+        M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.EpiDef);
     };
 }
-#[no_mangle]
-pub static mut epi: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawEpisode() {
     V_DrawPatchDirect(
@@ -1064,7 +1210,11 @@ pub unsafe extern "C" fn M_VerifyNightmare(mut key: i32) {
     if key != unsafe { game_state() }.m_controls.key_menu_confirm {
         return;
     }
-    G_DeferedInitNew(nightmare as i32 as skill_t, epi + 1 as i32, 1 as i32);
+    G_DeferedInitNew(
+        nightmare as i32 as skill_t,
+        unsafe { game_state() }.m_menu.epi + 1 as i32,
+        1 as i32,
+    );
     M_ClearMenus();
 }
 #[no_mangle]
@@ -1080,7 +1230,11 @@ pub unsafe extern "C" fn M_ChooseSkill(mut choice: i32) {
         );
         return;
     }
-    G_DeferedInitNew(choice as skill_t, epi + 1 as i32, 1 as i32);
+    G_DeferedInitNew(
+        choice as skill_t,
+        unsafe { game_state() }.m_menu.epi + 1 as i32,
+        1 as i32,
+    );
     M_ClearMenus();
 }
 #[no_mangle]
@@ -1091,7 +1245,7 @@ pub unsafe extern "C" fn M_Episode(mut choice: i32) {
             NULL,
             false,
         );
-        M_SetupNextMenu(&raw mut ReadDef1);
+        M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.ReadDef1);
         return;
     }
     if unsafe { game_state() }.doomstat.gamemode as u32 == registered as i32 as u32
@@ -1104,8 +1258,8 @@ pub unsafe extern "C" fn M_Episode(mut choice: i32) {
         );
         choice = 0 as i32;
     }
-    epi = choice;
-    M_SetupNextMenu(&raw mut NewDef);
+    unsafe { game_state() }.m_menu.epi = choice;
+    M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.NewDef);
 }
 static detailNames: [&str; 2] = ["M_GDHIGH", "M_GDLOW"];
 static msgNames: [&str; 2] = ["M_MSGOFF", "M_MSGON"];
@@ -1119,38 +1273,47 @@ pub unsafe extern "C" fn M_DrawOptions() {
     );
     V_DrawPatchDirect(
         unsafe { &mut game_state().v_video },
-        OptionsDef.x as i32 + 175 as i32,
-        OptionsDef.y as i32 + LINEHEIGHT * detail as i32,
-        W_CacheLumpName(detailNames[detailLevel as usize], PU_CACHE as i32) as *mut patch_t,
+        unsafe { game_state() }.m_menu.defs.OptionsDef.x as i32 + 175 as i32,
+        unsafe { game_state() }.m_menu.defs.OptionsDef.y as i32 + LINEHEIGHT * detail as i32,
+        W_CacheLumpName(
+            detailNames[unsafe { game_state() }.m_menu.detailLevel as usize],
+            PU_CACHE as i32,
+        ) as *mut patch_t,
     );
     V_DrawPatchDirect(
         unsafe { &mut game_state().v_video },
-        OptionsDef.x as i32 + 120 as i32,
-        OptionsDef.y as i32 + LINEHEIGHT * messages as i32,
-        W_CacheLumpName(msgNames[showMessages as usize], PU_CACHE as i32) as *mut patch_t,
+        unsafe { game_state() }.m_menu.defs.OptionsDef.x as i32 + 120 as i32,
+        unsafe { game_state() }.m_menu.defs.OptionsDef.y as i32 + LINEHEIGHT * messages as i32,
+        W_CacheLumpName(
+            msgNames[unsafe { game_state() }.m_menu.showMessages as usize],
+            PU_CACHE as i32,
+        ) as *mut patch_t,
     );
     M_DrawThermo(
-        OptionsDef.x as i32,
-        OptionsDef.y as i32 + LINEHEIGHT * (mousesens as i32 + 1 as i32),
+        unsafe { game_state() }.m_menu.defs.OptionsDef.x as i32,
+        unsafe { game_state() }.m_menu.defs.OptionsDef.y as i32
+            + LINEHEIGHT * (mousesens as i32 + 1 as i32),
         10 as i32,
-        mouseSensitivity,
+        unsafe { game_state() }.m_menu.mouseSensitivity,
     );
     M_DrawThermo(
-        OptionsDef.x as i32,
-        OptionsDef.y as i32 + LINEHEIGHT * (scrnsize as i32 + 1 as i32),
+        unsafe { game_state() }.m_menu.defs.OptionsDef.x as i32,
+        unsafe { game_state() }.m_menu.defs.OptionsDef.y as i32
+            + LINEHEIGHT * (scrnsize as i32 + 1 as i32),
         9 as i32,
-        screenSize,
+        unsafe { game_state() }.m_menu.screenSize,
     );
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_Options(mut choice: i32) {
-    M_SetupNextMenu(&raw mut OptionsDef);
+    M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.OptionsDef);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ChangeMessages(mut choice: i32) {
     choice = 0 as i32;
-    showMessages = 1 as i32 - showMessages;
-    if showMessages == 0 {
+    unsafe { game_state() }.m_menu.showMessages =
+        1 as i32 - unsafe { game_state() }.m_menu.showMessages;
+    if unsafe { game_state() }.m_menu.showMessages == 0 {
         unsafe { game_state() }.g_game.players
             [unsafe { game_state() }.g_game.consoleplayer as usize]
             .message = b"Messages OFF\0" as *const u8 as *const ::core::ffi::c_char
@@ -1168,7 +1331,7 @@ pub unsafe extern "C" fn M_EndGameResponse(mut key: i32) {
     if key != unsafe { game_state() }.m_controls.key_menu_confirm {
         return;
     }
-    (*currentMenu).lastOn = itemOn;
+    (*unsafe { game_state() }.m_menu.currentMenu).lastOn = unsafe { game_state() }.m_menu.itemOn;
     M_ClearMenus();
     D_StartTitle();
 }
@@ -1194,7 +1357,7 @@ pub unsafe extern "C" fn M_EndGame(mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_ReadThis(mut choice: i32) {
     choice = 0 as i32;
-    M_SetupNextMenu(&raw mut ReadDef1);
+    M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.ReadDef1);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ReadThis2(mut choice: i32) {
@@ -1202,7 +1365,7 @@ pub unsafe extern "C" fn M_ReadThis2(mut choice: i32) {
         && unsafe { game_state() }.doomstat.gamemode as u32 != commercial as i32 as u32
     {
         choice = 0 as i32;
-        M_SetupNextMenu(&raw mut ReadDef2);
+        M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.ReadDef2);
     } else {
         M_FinishReadThis(0 as i32);
     };
@@ -1210,10 +1373,10 @@ pub unsafe extern "C" fn M_ReadThis2(mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_FinishReadThis(mut choice: i32) {
     choice = 0 as i32;
-    M_SetupNextMenu(&raw mut MainDef);
+    M_SetupNextMenu(&raw mut unsafe { game_state() }.m_menu.defs.MainDef);
 }
 #[no_mangle]
-pub static mut quitsounds: [i32; 8] = [
+pub static quitsounds: [i32; 8] = [
     sfx_pldeth as i32,
     sfx_dmpain as i32,
     sfx_popain as i32,
@@ -1224,7 +1387,7 @@ pub static mut quitsounds: [i32; 8] = [
     sfx_sgtatk as i32,
 ];
 #[no_mangle]
-pub static mut quitsounds2: [i32; 8] = [
+pub static quitsounds2: [i32; 8] = [
     sfx_vilact as i32,
     sfx_getpow as i32,
     sfx_boscub as i32,
@@ -1280,15 +1443,17 @@ unsafe fn M_SelectEndMessage() -> &'static str {
 pub unsafe extern "C" fn M_QuitDOOM(mut choice: i32) {
     let endmsg_cstring = ::std::ffi::CString::new(M_SelectEndMessage()).unwrap();
     snprintf(
-        &raw mut endstring as *mut ::core::ffi::c_char,
+        &raw mut unsafe { game_state() }.m_menu.endstring as *mut ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 160]>() as size_t,
         b"%s\n\n(press y to quit to dos.)\0" as *const u8 as *const ::core::ffi::c_char,
         endmsg_cstring.as_ptr(),
     );
     M_StartMessage(
-        ::std::ffi::CStr::from_ptr(&raw mut endstring as *mut ::core::ffi::c_char)
-            .to_str()
-            .unwrap(),
+        ::std::ffi::CStr::from_ptr(
+            &raw mut unsafe { game_state() }.m_menu.endstring as *mut ::core::ffi::c_char,
+        )
+        .to_str()
+        .unwrap(),
         ::core::mem::transmute::<Option<unsafe extern "C" fn(i32) -> ()>, *mut ::core::ffi::c_void>(
             Some(M_QuitResponse as unsafe extern "C" fn(i32) -> ()),
         ),
@@ -1299,13 +1464,13 @@ pub unsafe extern "C" fn M_QuitDOOM(mut choice: i32) {
 pub unsafe extern "C" fn M_ChangeSensitivity(mut choice: i32) {
     match choice {
         0 => {
-            if mouseSensitivity != 0 {
-                mouseSensitivity -= 1;
+            if unsafe { game_state() }.m_menu.mouseSensitivity != 0 {
+                unsafe { game_state() }.m_menu.mouseSensitivity -= 1;
             }
         }
         1 => {
-            if mouseSensitivity < 9 as i32 {
-                mouseSensitivity += 1;
+            if unsafe { game_state() }.m_menu.mouseSensitivity < 9 as i32 {
+                unsafe { game_state() }.m_menu.mouseSensitivity += 1;
             }
         }
         _ => {}
@@ -1314,9 +1479,13 @@ pub unsafe extern "C" fn M_ChangeSensitivity(mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_ChangeDetail(mut choice: i32) {
     choice = 0 as i32;
-    detailLevel = 1 as i32 - detailLevel;
-    R_SetViewSize(screenblocks, detailLevel);
-    if detailLevel == 0 {
+    unsafe { game_state() }.m_menu.detailLevel =
+        1 as i32 - unsafe { game_state() }.m_menu.detailLevel;
+    R_SetViewSize(
+        unsafe { game_state() }.m_menu.screenblocks,
+        unsafe { game_state() }.m_menu.detailLevel,
+    );
+    if unsafe { game_state() }.m_menu.detailLevel == 0 {
         unsafe { game_state() }.g_game.players
             [unsafe { game_state() }.g_game.consoleplayer as usize]
             .message =
@@ -1332,20 +1501,23 @@ pub unsafe extern "C" fn M_ChangeDetail(mut choice: i32) {
 pub unsafe extern "C" fn M_SizeDisplay(mut choice: i32) {
     match choice {
         0 => {
-            if screenSize > 0 as i32 {
-                screenblocks -= 1;
-                screenSize -= 1;
+            if unsafe { game_state() }.m_menu.screenSize > 0 as i32 {
+                unsafe { game_state() }.m_menu.screenblocks -= 1;
+                unsafe { game_state() }.m_menu.screenSize -= 1;
             }
         }
         1 => {
-            if screenSize < 8 as i32 {
-                screenblocks += 1;
-                screenSize += 1;
+            if unsafe { game_state() }.m_menu.screenSize < 8 as i32 {
+                unsafe { game_state() }.m_menu.screenblocks += 1;
+                unsafe { game_state() }.m_menu.screenSize += 1;
             }
         }
         _ => {}
     }
-    R_SetViewSize(screenblocks, detailLevel);
+    R_SetViewSize(
+        unsafe { game_state() }.m_menu.screenblocks,
+        unsafe { game_state() }.m_menu.detailLevel,
+    );
 }
 pub unsafe fn M_DrawThermo(mut x: i32, mut y: i32, mut thermWidth: i32, mut thermDot: i32) {
     let mut xx: i32 = 0;
@@ -1399,19 +1571,21 @@ pub unsafe fn M_DrawSelCell(mut menu: *mut menu_t, mut item: i32) {
     );
 }
 pub unsafe fn M_StartMessage(string: &str, mut routine: *mut ::core::ffi::c_void, mut input: bool) {
-    messageLastMenuActive = menuactive as i32;
-    messageToPrint = 1 as i32;
-    messageString = string.to_string();
-    messageRoutine = ::core::mem::transmute::<
+    unsafe { game_state() }.m_menu.messageLastMenuActive =
+        unsafe { game_state() }.m_menu.menuactive as i32;
+    unsafe { game_state() }.m_menu.messageToPrint = 1 as i32;
+    unsafe { game_state() }.m_menu.messageString = string.to_string();
+    unsafe { game_state() }.m_menu.messageRoutine = ::core::mem::transmute::<
         *mut ::core::ffi::c_void,
         Option<unsafe extern "C" fn(i32) -> ()>,
     >(routine);
-    messageNeedsInput = input;
-    menuactive = true;
+    unsafe { game_state() }.m_menu.messageNeedsInput = input;
+    unsafe { game_state() }.m_menu.menuactive = true;
 }
 pub unsafe fn M_StopMessage() {
-    menuactive = messageLastMenuActive != 0;
-    messageToPrint = 0 as i32;
+    unsafe { game_state() }.m_menu.menuactive =
+        unsafe { game_state() }.m_menu.messageLastMenuActive != 0;
+    unsafe { game_state() }.m_menu.messageToPrint = 0 as i32;
 }
 pub unsafe fn M_StringWidth(string: &str) -> i32 {
     let mut w: i32 = 0 as i32;
@@ -1476,12 +1650,6 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     let mut ch: i32 = 0;
     let mut key: i32 = 0;
     let mut i: i32 = 0;
-    static mut joywait: i32 = 0;
-    static mut mousewait: i32 = 0;
-    static mut mousey: i32 = 0;
-    static mut lasty: i32 = 0;
-    static mut mousex: i32 = 0;
-    static mut lastx: i32 = 0;
     if unsafe { game_state() }.g_game.testcontrols {
         if (*ev).type_0 as u32 == ev_quit as i32 as u32
             || (*ev).type_0 as u32 == ev_keydown as i32 as u32
@@ -1494,9 +1662,10 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
         return false;
     }
     if (*ev).type_0 as u32 == ev_quit as i32 as u32 {
-        if menuactive
-            && messageToPrint != 0
-            && messageRoutine == Some(M_QuitResponse as unsafe extern "C" fn(i32) -> ())
+        if unsafe { game_state() }.m_menu.menuactive
+            && unsafe { game_state() }.m_menu.messageToPrint != 0
+            && unsafe { game_state() }.m_menu.messageRoutine
+                == Some(M_QuitResponse as unsafe extern "C" fn(i32) -> ())
         {
             M_QuitResponse(unsafe { game_state() }.m_controls.key_menu_confirm);
         } else {
@@ -1508,70 +1677,97 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     ch = 0 as i32;
     key = -(1 as i32);
     if (*ev).type_0 as u32 == ev_joystick as i32 as u32
-        && joywait < I_GetTime(unsafe { &mut game_state().i_timer })
+        && unsafe { game_state() }.m_menu.responder_joywait
+            < I_GetTime(unsafe { &mut game_state().i_timer })
     {
         if (*ev).data3 < 0 as i32 {
             key = unsafe { game_state() }.m_controls.key_menu_up;
-            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_joywait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         } else if (*ev).data3 > 0 as i32 {
             key = unsafe { game_state() }.m_controls.key_menu_down;
-            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_joywait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
         if (*ev).data2 < 0 as i32 {
             key = unsafe { game_state() }.m_controls.key_menu_left;
-            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 2 as i32;
+            unsafe { game_state() }.m_menu.responder_joywait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 2 as i32;
         } else if (*ev).data2 > 0 as i32 {
             key = unsafe { game_state() }.m_controls.key_menu_right;
-            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 2 as i32;
+            unsafe { game_state() }.m_menu.responder_joywait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 2 as i32;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = unsafe { game_state() }.m_controls.key_menu_forward;
-            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_joywait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
             key = unsafe { game_state() }.m_controls.key_menu_back;
-            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_joywait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
         if unsafe { game_state() }.m_controls.joybmenu >= 0 as i32
             && (*ev).data1 & (1 as i32) << unsafe { game_state() }.m_controls.joybmenu != 0 as i32
         {
             key = unsafe { game_state() }.m_controls.key_menu_activate;
-            joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_joywait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_mouse as i32 as u32
-        && mousewait < I_GetTime(unsafe { &mut game_state().i_timer })
+        && unsafe { game_state() }.m_menu.responder_mousewait
+            < I_GetTime(unsafe { &mut game_state().i_timer })
     {
-        unsafe { game_state() }.g_game.mousey += (*ev).data3;
-        if unsafe { game_state() }.g_game.mousey < lasty - 30 as i32 {
+        unsafe { game_state() }.m_menu.responder_mousey += (*ev).data3;
+        if unsafe { game_state() }.m_menu.responder_mousey
+            < unsafe { game_state() }.m_menu.responder_lasty - 30 as i32
+        {
             key = unsafe { game_state() }.m_controls.key_menu_down;
-            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
-            lasty -= 30 as i32;
-            unsafe { game_state() }.g_game.mousey = lasty;
-        } else if unsafe { game_state() }.g_game.mousey > lasty + 30 as i32 {
+            unsafe { game_state() }.m_menu.responder_mousewait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_lasty -= 30 as i32;
+            unsafe { game_state() }.m_menu.responder_mousey =
+                unsafe { game_state() }.m_menu.responder_lasty;
+        } else if unsafe { game_state() }.m_menu.responder_mousey
+            > unsafe { game_state() }.m_menu.responder_lasty + 30 as i32
+        {
             key = unsafe { game_state() }.m_controls.key_menu_up;
-            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
-            lasty += 30 as i32;
-            unsafe { game_state() }.g_game.mousey = lasty;
+            unsafe { game_state() }.m_menu.responder_mousewait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_lasty += 30 as i32;
+            unsafe { game_state() }.m_menu.responder_mousey =
+                unsafe { game_state() }.m_menu.responder_lasty;
         }
-        unsafe { game_state() }.g_game.mousex += (*ev).data2;
-        if unsafe { game_state() }.g_game.mousex < lastx - 30 as i32 {
+        unsafe { game_state() }.m_menu.responder_mousex += (*ev).data2;
+        if unsafe { game_state() }.m_menu.responder_mousex
+            < unsafe { game_state() }.m_menu.responder_lastx - 30 as i32
+        {
             key = unsafe { game_state() }.m_controls.key_menu_left;
-            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
-            lastx -= 30 as i32;
-            unsafe { game_state() }.g_game.mousex = lastx;
-        } else if unsafe { game_state() }.g_game.mousex > lastx + 30 as i32 {
+            unsafe { game_state() }.m_menu.responder_mousewait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_lastx -= 30 as i32;
+            unsafe { game_state() }.m_menu.responder_mousex =
+                unsafe { game_state() }.m_menu.responder_lastx;
+        } else if unsafe { game_state() }.m_menu.responder_mousex
+            > unsafe { game_state() }.m_menu.responder_lastx + 30 as i32
+        {
             key = unsafe { game_state() }.m_controls.key_menu_right;
-            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
-            lastx += 30 as i32;
-            unsafe { game_state() }.g_game.mousex = lastx;
+            unsafe { game_state() }.m_menu.responder_mousewait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
+            unsafe { game_state() }.m_menu.responder_lastx += 30 as i32;
+            unsafe { game_state() }.m_menu.responder_mousex =
+                unsafe { game_state() }.m_menu.responder_lastx;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = unsafe { game_state() }.m_controls.key_menu_forward;
-            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 15 as i32;
+            unsafe { game_state() }.m_menu.responder_mousewait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 15 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
             key = unsafe { game_state() }.m_controls.key_menu_back;
-            mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 15 as i32;
+            unsafe { game_state() }.m_menu.responder_mousewait =
+                I_GetTime(unsafe { &mut game_state().i_timer }) + 15 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
         key = (*ev).data1;
@@ -1580,22 +1776,29 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     if key == -(1 as i32) {
         return false;
     }
-    if saveStringEnter != 0 {
+    if unsafe { game_state() }.m_menu.saveStringEnter != 0 {
         match key {
             KEY_BACKSPACE => {
-                if saveCharIndex > 0 as i32 {
-                    saveCharIndex -= 1;
-                    savegamestrings[saveSlot as usize].truncate(saveCharIndex as usize);
+                if unsafe { game_state() }.m_menu.saveCharIndex > 0 as i32 {
+                    unsafe { game_state() }.m_menu.saveCharIndex -= 1;
+                    unsafe { game_state() }.m_menu.savegamestrings
+                        [unsafe { game_state() }.m_menu.saveSlot as usize]
+                        .truncate(unsafe { game_state() }.m_menu.saveCharIndex as usize);
                 }
             }
             KEY_ESCAPE => {
-                saveStringEnter = 0 as i32;
-                savegamestrings[saveSlot as usize] = saveOldString.clone();
+                unsafe { game_state() }.m_menu.saveStringEnter = 0 as i32;
+                unsafe { game_state() }.m_menu.savegamestrings
+                    [unsafe { game_state() }.m_menu.saveSlot as usize] =
+                    unsafe { game_state() }.m_menu.saveOldString.clone();
             }
             KEY_ENTER => {
-                saveStringEnter = 0 as i32;
-                if !savegamestrings[saveSlot as usize].is_empty() {
-                    M_DoSave(saveSlot);
+                unsafe { game_state() }.m_menu.saveStringEnter = 0 as i32;
+                if !unsafe { game_state() }.m_menu.savegamestrings
+                    [unsafe { game_state() }.m_menu.saveSlot as usize]
+                    .is_empty()
+                {
+                    M_DoSave(unsafe { game_state() }.m_menu.saveSlot);
                 }
             }
             _ => {
@@ -1625,20 +1828,24 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
                 {
                     if ch >= 32 as i32
                         && ch <= 127 as i32
-                        && saveCharIndex < SAVESTRINGSIZE - 1 as i32
-                        && M_StringWidth(&savegamestrings[saveSlot as usize])
-                            < (SAVESTRINGSIZE - 2 as i32) * 8 as i32
+                        && unsafe { game_state() }.m_menu.saveCharIndex < SAVESTRINGSIZE - 1 as i32
+                        && M_StringWidth(
+                            &unsafe { game_state() }.m_menu.savegamestrings
+                                [unsafe { game_state() }.m_menu.saveSlot as usize],
+                        ) < (SAVESTRINGSIZE - 2 as i32) * 8 as i32
                     {
-                        saveCharIndex += 1;
-                        savegamestrings[saveSlot as usize].push(ch as u8 as char);
+                        unsafe { game_state() }.m_menu.saveCharIndex += 1;
+                        unsafe { game_state() }.m_menu.savegamestrings
+                            [unsafe { game_state() }.m_menu.saveSlot as usize]
+                            .push(ch as u8 as char);
                     }
                 }
             }
         }
         return true;
     }
-    if messageToPrint != 0 {
-        if messageNeedsInput {
+    if unsafe { game_state() }.m_menu.messageToPrint != 0 {
+        if unsafe { game_state() }.m_menu.messageNeedsInput {
             if key != ' ' as i32
                 && key != KEY_ESCAPE
                 && key != unsafe { game_state() }.m_controls.key_menu_confirm
@@ -1647,12 +1854,16 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
                 return false;
             }
         }
-        menuactive = messageLastMenuActive != 0;
-        messageToPrint = 0 as i32;
-        if messageRoutine.is_some() {
-            messageRoutine.expect("non-null function pointer")(key);
+        unsafe { game_state() }.m_menu.menuactive =
+            unsafe { game_state() }.m_menu.messageLastMenuActive != 0;
+        unsafe { game_state() }.m_menu.messageToPrint = 0 as i32;
+        if unsafe { game_state() }.m_menu.messageRoutine.is_some() {
+            unsafe { game_state() }
+                .m_menu
+                .messageRoutine
+                .expect("non-null function pointer")(key);
         }
-        menuactive = false;
+        unsafe { game_state() }.m_menu.menuactive = false;
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
         return true;
     }
@@ -1662,7 +1873,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
         G_ScreenShot();
         return true;
     }
-    if !menuactive {
+    if !unsafe { game_state() }.m_menu.menuactive {
         if key == unsafe { game_state() }.m_controls.key_menu_decscreen {
             if automapactive || unsafe { game_state() }.hu_stuff.chat_on {
                 return false;
@@ -1680,11 +1891,13 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
         } else if key == unsafe { game_state() }.m_controls.key_menu_help {
             M_StartControlPanel();
             if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
-                currentMenu = &raw mut ReadDef2;
+                unsafe { game_state() }.m_menu.currentMenu =
+                    &raw mut unsafe { game_state() }.m_menu.defs.ReadDef2;
             } else {
-                currentMenu = &raw mut ReadDef1;
+                unsafe { game_state() }.m_menu.currentMenu =
+                    &raw mut unsafe { game_state() }.m_menu.defs.ReadDef1;
             }
-            itemOn = 0 as i16;
+            unsafe { game_state() }.m_menu.itemOn = 0 as i16;
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
         } else if key == unsafe { game_state() }.m_controls.key_menu_save {
@@ -1699,8 +1912,9 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             return true;
         } else if key == unsafe { game_state() }.m_controls.key_menu_volume {
             M_StartControlPanel();
-            currentMenu = &raw mut SoundDef;
-            itemOn = sfx_vol as i32 as i16;
+            unsafe { game_state() }.m_menu.currentMenu =
+                &raw mut unsafe { game_state() }.m_menu.defs.SoundDef;
+            unsafe { game_state() }.m_menu.itemOn = sfx_vol as i32 as i16;
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
         } else if key == unsafe { game_state() }.m_controls.key_menu_detail {
@@ -1739,7 +1953,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             return true;
         }
     }
-    if !menuactive {
+    if !unsafe { game_state() }.m_menu.menuactive {
         if key == unsafe { game_state() }.m_controls.key_menu_activate {
             M_StartControlPanel();
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
@@ -1749,101 +1963,166 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     }
     if key == unsafe { game_state() }.m_controls.key_menu_down {
         loop {
-            if itemOn as i32 + 1 as i32 > (*currentMenu).numitems as i32 - 1 as i32 {
-                itemOn = 0 as i16;
+            if unsafe { game_state() }.m_menu.itemOn as i32 + 1 as i32
+                > (*unsafe { game_state() }.m_menu.currentMenu).numitems as i32 - 1 as i32
+            {
+                unsafe { game_state() }.m_menu.itemOn = 0 as i16;
             } else {
-                itemOn += 1;
+                unsafe { game_state() }.m_menu.itemOn += 1;
             }
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pstop as i32);
-            if !((*(*currentMenu).menuitems.offset(itemOn as isize)).status as i32 == -(1 as i32)) {
+            if !((*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+            .status as i32
+                == -(1 as i32))
+            {
                 break;
             }
         }
         return true;
     } else if key == unsafe { game_state() }.m_controls.key_menu_up {
         loop {
-            if itemOn == 0 {
-                itemOn = ((*currentMenu).numitems as i32 - 1 as i32) as i16;
+            if unsafe { game_state() }.m_menu.itemOn == 0 {
+                unsafe { game_state() }.m_menu.itemOn =
+                    ((*unsafe { game_state() }.m_menu.currentMenu).numitems as i32 - 1 as i32)
+                        as i16;
             } else {
-                itemOn -= 1;
+                unsafe { game_state() }.m_menu.itemOn -= 1;
             }
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pstop as i32);
-            if !((*(*currentMenu).menuitems.offset(itemOn as isize)).status as i32 == -(1 as i32)) {
+            if !((*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+            .status as i32
+                == -(1 as i32))
+            {
                 break;
             }
         }
         return true;
     } else if key == unsafe { game_state() }.m_controls.key_menu_left {
-        if (*(*currentMenu).menuitems.offset(itemOn as isize))
-            .routine
-            .is_some()
-            && (*(*currentMenu).menuitems.offset(itemOn as isize)).status as i32 == 2 as i32
+        if (*(*unsafe { game_state() }.m_menu.currentMenu)
+            .menuitems
+            .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+        .routine
+        .is_some()
+            && (*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+            .status as i32
+                == 2 as i32
         {
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
-            (*(*currentMenu).menuitems.offset(itemOn as isize))
-                .routine
-                .expect("non-null function pointer")(0 as i32);
+            (*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+            .routine
+            .expect("non-null function pointer")(0 as i32);
         }
         return true;
     } else if key == unsafe { game_state() }.m_controls.key_menu_right {
-        if (*(*currentMenu).menuitems.offset(itemOn as isize))
-            .routine
-            .is_some()
-            && (*(*currentMenu).menuitems.offset(itemOn as isize)).status as i32 == 2 as i32
+        if (*(*unsafe { game_state() }.m_menu.currentMenu)
+            .menuitems
+            .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+        .routine
+        .is_some()
+            && (*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+            .status as i32
+                == 2 as i32
         {
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
-            (*(*currentMenu).menuitems.offset(itemOn as isize))
-                .routine
-                .expect("non-null function pointer")(1 as i32);
+            (*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+            .routine
+            .expect("non-null function pointer")(1 as i32);
         }
         return true;
     } else if key == unsafe { game_state() }.m_controls.key_menu_forward {
-        if (*(*currentMenu).menuitems.offset(itemOn as isize))
-            .routine
-            .is_some()
-            && (*(*currentMenu).menuitems.offset(itemOn as isize)).status as i32 != 0
+        if (*(*unsafe { game_state() }.m_menu.currentMenu)
+            .menuitems
+            .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+        .routine
+        .is_some()
+            && (*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+            .status as i32
+                != 0
         {
-            (*currentMenu).lastOn = itemOn;
-            if (*(*currentMenu).menuitems.offset(itemOn as isize)).status as i32 == 2 as i32 {
-                (*(*currentMenu).menuitems.offset(itemOn as isize))
-                    .routine
-                    .expect("non-null function pointer")(1 as i32);
+            (*unsafe { game_state() }.m_menu.currentMenu).lastOn =
+                unsafe { game_state() }.m_menu.itemOn;
+            if (*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+            .status as i32
+                == 2 as i32
+            {
+                (*(*unsafe { game_state() }.m_menu.currentMenu)
+                    .menuitems
+                    .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+                .routine
+                .expect("non-null function pointer")(1 as i32);
                 S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             } else {
-                (*(*currentMenu).menuitems.offset(itemOn as isize))
-                    .routine
-                    .expect("non-null function pointer")(itemOn as i32);
+                (*(*unsafe { game_state() }.m_menu.currentMenu)
+                    .menuitems
+                    .offset(unsafe { game_state() }.m_menu.itemOn as isize))
+                .routine
+                .expect("non-null function pointer")(
+                    unsafe { game_state() }.m_menu.itemOn as i32
+                );
                 S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pistol as i32);
             }
         }
         return true;
     } else if key == unsafe { game_state() }.m_controls.key_menu_activate {
-        (*currentMenu).lastOn = itemOn;
+        (*unsafe { game_state() }.m_menu.currentMenu).lastOn =
+            unsafe { game_state() }.m_menu.itemOn;
         M_ClearMenus();
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
         return true;
     } else if key == unsafe { game_state() }.m_controls.key_menu_back {
-        (*currentMenu).lastOn = itemOn;
-        if !(*currentMenu).prevMenu.is_null() {
-            currentMenu = (*currentMenu).prevMenu as *mut menu_t;
-            itemOn = (*currentMenu).lastOn;
+        (*unsafe { game_state() }.m_menu.currentMenu).lastOn =
+            unsafe { game_state() }.m_menu.itemOn;
+        if !(*unsafe { game_state() }.m_menu.currentMenu)
+            .prevMenu
+            .is_null()
+        {
+            unsafe { game_state() }.m_menu.currentMenu =
+                (*unsafe { game_state() }.m_menu.currentMenu).prevMenu as *mut menu_t;
+            unsafe { game_state() }.m_menu.itemOn =
+                (*unsafe { game_state() }.m_menu.currentMenu).lastOn;
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
         }
         return true;
     } else if ch != 0 as i32 || IsNullKey(key) {
-        i = itemOn as i32 + 1 as i32;
-        while i < (*currentMenu).numitems as i32 {
-            if (*(*currentMenu).menuitems.offset(i as isize)).alphaKey as i32 == ch {
-                itemOn = i as i16;
+        i = unsafe { game_state() }.m_menu.itemOn as i32 + 1 as i32;
+        while i < (*unsafe { game_state() }.m_menu.currentMenu).numitems as i32 {
+            if (*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(i as isize))
+            .alphaKey as i32
+                == ch
+            {
+                unsafe { game_state() }.m_menu.itemOn = i as i16;
                 S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pstop as i32);
                 return true;
             }
             i += 1;
         }
         i = 0 as i32;
-        while i <= itemOn as i32 {
-            if (*(*currentMenu).menuitems.offset(i as isize)).alphaKey as i32 == ch {
-                itemOn = i as i16;
+        while i <= unsafe { game_state() }.m_menu.itemOn as i32 {
+            if (*(*unsafe { game_state() }.m_menu.currentMenu)
+                .menuitems
+                .offset(i as isize))
+            .alphaKey as i32
+                == ch
+            {
+                unsafe { game_state() }.m_menu.itemOn = i as i16;
                 S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_pstop as i32);
                 return true;
             }
@@ -1853,101 +2132,127 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     return false;
 }
 pub unsafe fn M_StartControlPanel() {
-    if menuactive {
+    if unsafe { game_state() }.m_menu.menuactive {
         return;
     }
-    menuactive = true;
-    currentMenu = &raw mut MainDef;
-    itemOn = (*currentMenu).lastOn;
+    unsafe { game_state() }.m_menu.menuactive = true;
+    unsafe { game_state() }.m_menu.currentMenu =
+        &raw mut unsafe { game_state() }.m_menu.defs.MainDef;
+    unsafe { game_state() }.m_menu.itemOn = (*unsafe { game_state() }.m_menu.currentMenu).lastOn;
 }
 pub unsafe fn M_Drawer() {
-    static mut x: i16 = 0;
-    static mut y: i16 = 0;
     let mut i: u32 = 0;
     let mut max: u32 = 0;
     let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    inhelpscreens = false;
-    if messageToPrint != 0 {
-        y = (SCREENHEIGHT / 2 as i32 - M_StringHeight(&messageString) / 2 as i32) as i16;
-        for line in messageString.split('\n') {
+    unsafe { game_state() }.m_menu.inhelpscreens = false;
+    if unsafe { game_state() }.m_menu.messageToPrint != 0 {
+        unsafe { game_state() }.m_menu.drawer_y = (SCREENHEIGHT / 2 as i32
+            - M_StringHeight(&unsafe { game_state() }.m_menu.messageString) / 2 as i32)
+            as i16;
+        for line in unsafe { game_state() }.m_menu.messageString.split('\n') {
             let line = if line.len() > 79 { &line[..79] } else { line };
-            x = (SCREENWIDTH / 2 as i32 - M_StringWidth(line) / 2 as i32) as i16;
-            M_WriteText(x as i32, y as i32, line);
-            y = (y as i32
+            unsafe { game_state() }.m_menu.drawer_x =
+                (SCREENWIDTH / 2 as i32 - M_StringWidth(line) / 2 as i32) as i16;
+            M_WriteText(
+                unsafe { game_state() }.m_menu.drawer_x as i32,
+                unsafe { game_state() }.m_menu.drawer_y as i32,
+                line,
+            );
+            unsafe { game_state() }.m_menu.drawer_y = (unsafe { game_state() }.m_menu.drawer_y
+                as i32
                 + (*unsafe { game_state() }.hu_stuff.hu_font[0 as i32 as usize]).height as i32)
                 as i16;
         }
         return;
     }
-    if !menuactive {
+    if !unsafe { game_state() }.m_menu.menuactive {
         return;
     }
-    if (*currentMenu).routine.is_some() {
+    if (*unsafe { game_state() }.m_menu.currentMenu)
+        .routine
+        .is_some()
+    {
         ::core::mem::transmute::<_, fn()>(
-            (*currentMenu).routine.expect("non-null function pointer"),
+            (*unsafe { game_state() }.m_menu.currentMenu)
+                .routine
+                .expect("non-null function pointer"),
         )();
     }
-    x = (*currentMenu).x;
-    y = (*currentMenu).y;
-    max = (*currentMenu).numitems as u32;
+    unsafe { game_state() }.m_menu.drawer_x = (*unsafe { game_state() }.m_menu.currentMenu).x;
+    unsafe { game_state() }.m_menu.drawer_y = (*unsafe { game_state() }.m_menu.currentMenu).y;
+    max = (*unsafe { game_state() }.m_menu.currentMenu).numitems as u32;
     i = 0 as u32;
     while i < max {
-        name = &raw mut (*(*currentMenu).menuitems.offset(i as isize)).name
-            as *mut ::core::ffi::c_char;
+        name = &raw mut (*(*unsafe { game_state() }.m_menu.currentMenu)
+            .menuitems
+            .offset(i as isize))
+        .name as *mut ::core::ffi::c_char;
         if *name.offset(0 as i32 as isize) != 0 {
             V_DrawPatchDirect(
                 unsafe { &mut game_state().v_video },
-                x as i32,
-                y as i32,
+                unsafe { game_state() }.m_menu.drawer_x as i32,
+                unsafe { game_state() }.m_menu.drawer_y as i32,
                 W_CacheLumpName(&wad_name8_to_string(name), PU_CACHE as i32) as *mut patch_t,
             );
         }
-        y = (y as i32 + LINEHEIGHT) as i16;
+        unsafe { game_state() }.m_menu.drawer_y =
+            (unsafe { game_state() }.m_menu.drawer_y as i32 + LINEHEIGHT) as i16;
         i = i.wrapping_add(1);
     }
     V_DrawPatchDirect(
         unsafe { &mut game_state().v_video },
-        x as i32 + SKULLXOFF,
-        (*currentMenu).y as i32 - 5 as i32 + itemOn as i32 * LINEHEIGHT,
-        W_CacheLumpName(skullName[whichSkull as usize], PU_CACHE as i32) as *mut patch_t,
+        unsafe { game_state() }.m_menu.drawer_x as i32 + SKULLXOFF,
+        (*unsafe { game_state() }.m_menu.currentMenu).y as i32 - 5 as i32
+            + unsafe { game_state() }.m_menu.itemOn as i32 * LINEHEIGHT,
+        W_CacheLumpName(
+            skullName[unsafe { game_state() }.m_menu.whichSkull as usize],
+            PU_CACHE as i32,
+        ) as *mut patch_t,
     );
 }
 pub unsafe fn M_ClearMenus() {
-    menuactive = false;
+    unsafe { game_state() }.m_menu.menuactive = false;
 }
 pub unsafe fn M_SetupNextMenu(mut menudef: *mut menu_t) {
-    currentMenu = menudef;
-    itemOn = (*currentMenu).lastOn;
+    unsafe { game_state() }.m_menu.currentMenu = menudef;
+    unsafe { game_state() }.m_menu.itemOn = (*unsafe { game_state() }.m_menu.currentMenu).lastOn;
 }
 pub unsafe fn M_Ticker() {
-    skullAnimCounter -= 1;
-    if skullAnimCounter as i32 <= 0 as i32 {
-        whichSkull = (whichSkull as i32 ^ 1 as i32) as i16;
-        skullAnimCounter = 8 as i16;
+    unsafe { game_state() }.m_menu.skullAnimCounter -= 1;
+    if unsafe { game_state() }.m_menu.skullAnimCounter as i32 <= 0 as i32 {
+        unsafe { game_state() }.m_menu.whichSkull =
+            (unsafe { game_state() }.m_menu.whichSkull as i32 ^ 1 as i32) as i16;
+        unsafe { game_state() }.m_menu.skullAnimCounter = 8 as i16;
     }
 }
 pub unsafe fn M_Init() {
-    currentMenu = &raw mut MainDef;
-    menuactive = false;
-    itemOn = (*currentMenu).lastOn;
-    whichSkull = 0 as i16;
-    skullAnimCounter = 10 as i16;
-    screenSize = screenblocks - 3 as i32;
-    messageToPrint = 0 as i32;
-    messageString = String::new();
-    messageLastMenuActive = menuactive as i32;
-    quickSaveSlot = -(1 as i32);
+    unsafe { game_state() }.m_menu.currentMenu =
+        &raw mut unsafe { game_state() }.m_menu.defs.MainDef;
+    unsafe { game_state() }.m_menu.menuactive = false;
+    unsafe { game_state() }.m_menu.itemOn = (*unsafe { game_state() }.m_menu.currentMenu).lastOn;
+    unsafe { game_state() }.m_menu.whichSkull = 0 as i16;
+    unsafe { game_state() }.m_menu.skullAnimCounter = 10 as i16;
+    unsafe { game_state() }.m_menu.screenSize =
+        unsafe { game_state() }.m_menu.screenblocks - 3 as i32;
+    unsafe { game_state() }.m_menu.messageToPrint = 0 as i32;
+    unsafe { game_state() }.m_menu.messageString = String::new();
+    unsafe { game_state() }.m_menu.messageLastMenuActive =
+        unsafe { game_state() }.m_menu.menuactive as i32;
+    unsafe { game_state() }.m_menu.quickSaveSlot = -(1 as i32);
     match unsafe { game_state() }.doomstat.gamemode as u32 {
         2 => {
-            MainMenu[readthis as i32 as usize] = MainMenu[quitdoom as i32 as usize];
-            MainDef.numitems -= 1;
-            MainDef.y = (MainDef.y as i32 + 8 as i32) as i16;
-            NewDef.prevMenu = &raw mut MainDef as *mut menu_s;
+            unsafe { game_state() }.m_menu.menus.MainMenu[readthis as i32 as usize] =
+                unsafe { game_state() }.m_menu.menus.MainMenu[quitdoom as i32 as usize];
+            unsafe { game_state() }.m_menu.defs.MainDef.numitems -= 1;
+            unsafe { game_state() }.m_menu.defs.MainDef.y =
+                (unsafe { game_state() }.m_menu.defs.MainDef.y as i32 + 8 as i32) as i16;
+            unsafe { game_state() }.m_menu.defs.NewDef.prevMenu =
+                &raw mut unsafe { game_state() }.m_menu.defs.MainDef as *mut menu_s;
         }
         0 => {}
         1 | 3 | _ => {}
     }
     if (unsafe { game_state() }.doomstat.gameversion as u32) < exe_ultimate as i32 as u32 {
-        EpiDef.numitems -= 1;
+        unsafe { game_state() }.m_menu.defs.EpiDef.numitems -= 1;
     }
 }

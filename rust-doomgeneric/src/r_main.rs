@@ -9,8 +9,6 @@ use crate::src::m_fixed::FixedDiv;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
-use crate::src::m_menu::detailLevel;
-use crate::src::m_menu::screenblocks;
 use crate::src::p_mobj::subsector_t;
 use crate::src::p_setup::nodes;
 use crate::src::p_setup::numnodes;
@@ -462,7 +460,10 @@ pub unsafe fn R_Init() {
     R_InitData();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    R_SetViewSize(screenblocks, detailLevel);
+    R_SetViewSize(
+        unsafe { game_state() }.m_menu.screenblocks,
+        unsafe { game_state() }.m_menu.detailLevel,
+    );
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitLightTables();
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);

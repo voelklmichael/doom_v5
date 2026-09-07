@@ -20,7 +20,6 @@ use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_controls::KEY_ESCAPE;
 use crate::src::m_controls::KEY_RALT;
 use crate::src::m_controls::KEY_RSHIFT;
-use crate::src::m_menu::showMessages;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::{sfx_radio, sfx_tink};
@@ -500,7 +499,9 @@ pub unsafe fn HU_Ticker() {
         unsafe { game_state() }.hu_stuff.message_on = false;
         unsafe { game_state() }.hu_stuff.message_nottobefuckedwith = false;
     }
-    if showMessages != 0 || unsafe { game_state() }.hu_stuff.message_dontfuckwithme {
+    if unsafe { game_state() }.m_menu.showMessages != 0
+        || unsafe { game_state() }.hu_stuff.message_dontfuckwithme
+    {
         if !(*unsafe { game_state() }.hu_stuff.plr).message.is_null()
             && !unsafe { game_state() }.hu_stuff.message_nottobefuckedwith
             || !(*unsafe { game_state() }.hu_stuff.plr).message.is_null()
