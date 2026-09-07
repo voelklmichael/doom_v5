@@ -1232,7 +1232,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
     if state.g_game.oldgamestate as u32 == GS_INTERMISSION as u32
         && state.g_game.gamestate as u32 != GS_INTERMISSION as u32
     {
-        WI_End();
+        WI_End(state);
     }
     state.g_game.oldgamestate = state.g_game.gamestate;
     match state.g_game.gamestate as u32 {
@@ -1666,7 +1666,8 @@ pub unsafe fn G_DoCompleted(state: &mut GameState) {
         &mut state.statdump,
         &raw mut state.g_game.wminfo,
     );
-    WI_Start(&raw mut state.g_game.wminfo);
+    let wminfo = &raw mut state.g_game.wminfo;
+    WI_Start(state, wminfo);
 }
 pub unsafe fn G_WorldDone(state: &mut GameState) {
     state.g_game.gameaction = ga_worlddone;

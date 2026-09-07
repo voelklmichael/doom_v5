@@ -965,30 +965,30 @@ pub unsafe fn WI_drawOnLnode(state: &mut GameState, mut n: i32, mut c: *mut *mut
         );
     };
 }
-pub unsafe fn WI_initAnimatedBack() {
+pub unsafe fn WI_initAnimatedBack(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         return;
     }
-    if (*unsafe { game_state() }.wi_stuff.wbs).epsd > 2 as i32 {
+    if (*state.wi_stuff.wbs).epsd > 2 as i32 {
         return;
     }
     i = 0 as i32;
-    while i < unsafe { game_state() }.wi_stuff.NUMANIMS[(*unsafe { game_state() }.wi_stuff.wbs).epsd as usize] {
-        a = (*(&raw mut unsafe { game_state() }.wi_stuff.anims as *mut *mut anim_t).offset((*unsafe { game_state() }.wi_stuff.wbs).epsd as isize)).offset(i as isize)
+    while i < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
+        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t).offset((*state.wi_stuff.wbs).epsd as isize)).offset(i as isize)
             as *mut anim_t;
         (*a).ctr = -(1 as i32);
         if (*a).type_0 as u32 == ANIM_ALWAYS as i32 as u32 {
             (*a).nexttic =
-                unsafe { game_state() }.wi_stuff.bcnt + 1 as i32 + M_Random(unsafe { &mut game_state().m_random }) % (*a).period;
+                state.wi_stuff.bcnt + 1 as i32 + M_Random(&mut state.m_random) % (*a).period;
         } else if (*a).type_0 as u32 == ANIM_RANDOM as i32 as u32 {
-            (*a).nexttic = unsafe { game_state() }.wi_stuff.bcnt
+            (*a).nexttic = state.wi_stuff.bcnt
                 + 1 as i32
                 + (*a).data2
-                + M_Random(unsafe { &mut game_state().m_random }) % (*a).data1;
+                + M_Random(&mut state.m_random) % (*a).data1;
         } else if (*a).type_0 as u32 == ANIM_LEVEL as i32 as u32 {
-            (*a).nexttic = unsafe { game_state() }.wi_stuff.bcnt + 1 as i32;
+            (*a).nexttic = state.wi_stuff.bcnt + 1 as i32;
         }
         i += 1;
     }
@@ -1146,13 +1146,13 @@ pub unsafe fn WI_drawTime(state: &mut GameState, mut x: i32, mut y: i32, mut t: 
         );
     };
 }
-pub unsafe fn WI_End() {
-    pub unsafe fn WI_unloadData_0() {
-        WI_loadUnloadData(Some(
+pub unsafe fn WI_End(state: &mut GameState) {
+    pub unsafe fn WI_unloadData_0(state: &mut GameState) {
+        WI_loadUnloadData(state, Some(
             WI_unloadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
         ));
     }
-    WI_unloadData_0();
+    WI_unloadData_0(state);
 }
 pub unsafe fn WI_initNoState(state: &mut GameState) {
     state.wi_stuff.state = NoState;
@@ -1170,7 +1170,7 @@ pub unsafe fn WI_initShowNextLoc(state: &mut GameState) {
     state.wi_stuff.state = ShowNextLoc;
     state.wi_stuff.acceleratestage = 0 as i32;
     state.wi_stuff.cnt = SHOWNEXTLOCDELAY * TICRATE;
-    WI_initAnimatedBack();
+    WI_initAnimatedBack(state);
 }
 pub unsafe fn WI_updateShowNextLoc(state: &mut GameState) {
     WI_updateAnimatedBack(state);
@@ -1235,28 +1235,28 @@ pub unsafe fn WI_fragSum(state: &mut GameState, mut playernum: i32) -> i32 {
     frags_0 -= (*state.wi_stuff.plrs.offset(playernum as isize)).frags[playernum as usize];
     return frags_0;
 }
-pub unsafe fn WI_initDeathmatchStats() {
+pub unsafe fn WI_initDeathmatchStats(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
-    unsafe { game_state() }.wi_stuff.state = StatCount;
-    unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
-    unsafe { game_state() }.wi_stuff.dm_state = 1 as i32;
-    unsafe { game_state() }.wi_stuff.cnt_pause = TICRATE;
+    state.wi_stuff.state = StatCount;
+    state.wi_stuff.acceleratestage = 0 as i32;
+    state.wi_stuff.dm_state = 1 as i32;
+    state.wi_stuff.cnt_pause = TICRATE;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
+        if state.g_game.playeringame[i as usize] != 0 {
             j = 0 as i32;
             while j < MAXPLAYERS {
-                if unsafe { game_state() }.g_game.playeringame[j as usize] != 0 {
-                    unsafe { game_state() }.wi_stuff.dm_frags[i as usize][j as usize] = 0 as i32;
+                if state.g_game.playeringame[j as usize] != 0 {
+                    state.wi_stuff.dm_frags[i as usize][j as usize] = 0 as i32;
                 }
                 j += 1;
             }
-            unsafe { game_state() }.wi_stuff.dm_totals[i as usize] = 0 as i32;
+            state.wi_stuff.dm_totals[i as usize] = 0 as i32;
         }
         i += 1;
     }
-    WI_initAnimatedBack();
+    WI_initAnimatedBack(state);
 }
 pub unsafe fn WI_updateDeathmatchStats(state: &mut GameState) {
     let mut i: i32 = 0;
@@ -1444,26 +1444,26 @@ pub unsafe fn WI_drawDeathmatchStats(state: &mut GameState) {
         i += 1;
     }
 }
-pub unsafe fn WI_initNetgameStats() {
+pub unsafe fn WI_initNetgameStats(state: &mut GameState) {
     let mut i: i32 = 0;
-    unsafe { game_state() }.wi_stuff.state = StatCount;
-    unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
-    unsafe { game_state() }.wi_stuff.ng_state = 1 as i32;
-    unsafe { game_state() }.wi_stuff.cnt_pause = TICRATE;
+    state.wi_stuff.state = StatCount;
+    state.wi_stuff.acceleratestage = 0 as i32;
+    state.wi_stuff.ng_state = 1 as i32;
+    state.wi_stuff.cnt_pause = TICRATE;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
-            unsafe { game_state() }.wi_stuff.cnt_frags[i as usize] = 0 as i32;
-            unsafe { game_state() }.wi_stuff.cnt_secret[i as usize] = unsafe { game_state() }.wi_stuff.cnt_frags[i as usize];
-            unsafe { game_state() }.wi_stuff.cnt_items[i as usize] = unsafe { game_state() }.wi_stuff.cnt_secret[i as usize];
-            unsafe { game_state() }.wi_stuff.cnt_kills[i as usize] = unsafe { game_state() }.wi_stuff.cnt_items[i as usize];
-            let fragsum = WI_fragSum(unsafe { game_state() }, i);
-            unsafe { game_state() }.wi_stuff.dofrags += fragsum;
+        if !(state.g_game.playeringame[i as usize] == 0) {
+            state.wi_stuff.cnt_frags[i as usize] = 0 as i32;
+            state.wi_stuff.cnt_secret[i as usize] = state.wi_stuff.cnt_frags[i as usize];
+            state.wi_stuff.cnt_items[i as usize] = state.wi_stuff.cnt_secret[i as usize];
+            state.wi_stuff.cnt_kills[i as usize] = state.wi_stuff.cnt_items[i as usize];
+            let fragsum = WI_fragSum(state, i);
+            state.wi_stuff.dofrags += fragsum;
         }
         i += 1;
     }
-    unsafe { game_state() }.wi_stuff.dofrags = (unsafe { game_state() }.wi_stuff.dofrags != 0) as i32;
-    WI_initAnimatedBack();
+    state.wi_stuff.dofrags = (state.wi_stuff.dofrags != 0) as i32;
+    WI_initAnimatedBack(state);
 }
 pub unsafe fn WI_updateNetgameStats(state: &mut GameState) {
     let mut i: i32 = 0;
@@ -1729,17 +1729,17 @@ pub unsafe fn WI_drawNetgameStats(state: &mut GameState) {
         i += 1;
     }
 }
-pub unsafe fn WI_initStats() {
-    unsafe { game_state() }.wi_stuff.state = StatCount;
-    unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
-    unsafe { game_state() }.wi_stuff.sp_state = 1 as i32;
-    unsafe { game_state() }.wi_stuff.cnt_secret[0 as i32 as usize] = -(1 as i32);
-    unsafe { game_state() }.wi_stuff.cnt_items[0 as i32 as usize] = unsafe { game_state() }.wi_stuff.cnt_secret[0 as i32 as usize];
-    unsafe { game_state() }.wi_stuff.cnt_kills[0 as i32 as usize] = unsafe { game_state() }.wi_stuff.cnt_items[0 as i32 as usize];
-    unsafe { game_state() }.wi_stuff.cnt_par = -(1 as i32);
-    unsafe { game_state() }.wi_stuff.cnt_time = unsafe { game_state() }.wi_stuff.cnt_par;
-    unsafe { game_state() }.wi_stuff.cnt_pause = TICRATE;
-    WI_initAnimatedBack();
+pub unsafe fn WI_initStats(state: &mut GameState) {
+    state.wi_stuff.state = StatCount;
+    state.wi_stuff.acceleratestage = 0 as i32;
+    state.wi_stuff.sp_state = 1 as i32;
+    state.wi_stuff.cnt_secret[0 as i32 as usize] = -(1 as i32);
+    state.wi_stuff.cnt_items[0 as i32 as usize] = state.wi_stuff.cnt_secret[0 as i32 as usize];
+    state.wi_stuff.cnt_kills[0 as i32 as usize] = state.wi_stuff.cnt_items[0 as i32 as usize];
+    state.wi_stuff.cnt_par = -(1 as i32);
+    state.wi_stuff.cnt_time = state.wi_stuff.cnt_par;
+    state.wi_stuff.cnt_pause = TICRATE;
+    WI_initAnimatedBack(state);
 }
 pub unsafe fn WI_updateStats(state: &mut GameState) {
     WI_updateAnimatedBack(state);
@@ -1982,14 +1982,14 @@ pub unsafe fn WI_Ticker(state: &mut GameState) {
         _ => {}
     };
 }
-unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
+unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut name: [::core::ffi::c_char; 9] = [0; 9];
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         i = 0 as i32;
-        while i < unsafe { game_state() }.wi_stuff.NUMCMAPS {
+        while i < state.wi_stuff.NUMCMAPS {
             snprintf(
                 &raw mut name as *mut ::core::ffi::c_char,
                 9 as size_t,
@@ -1998,7 +1998,7 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
             );
             callback.expect("non-null function pointer")(
                 &raw mut name as *mut ::core::ffi::c_char,
-                unsafe { game_state() }.wi_stuff.lnames.offset(i as isize) as *mut *mut patch_t,
+                state.wi_stuff.lnames.offset(i as isize) as *mut *mut patch_t,
             );
             i += 1;
         }
@@ -2009,40 +2009,40 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
                 &raw mut name as *mut ::core::ffi::c_char,
                 9 as size_t,
                 b"WILV%d%d\0" as *const u8 as *const ::core::ffi::c_char,
-                (*unsafe { game_state() }.wi_stuff.wbs).epsd,
+                (*state.wi_stuff.wbs).epsd,
                 i,
             );
             callback.expect("non-null function pointer")(
                 &raw mut name as *mut ::core::ffi::c_char,
-                unsafe { game_state() }.wi_stuff.lnames.offset(i as isize) as *mut *mut patch_t,
+                state.wi_stuff.lnames.offset(i as isize) as *mut *mut patch_t,
             );
             i += 1;
         }
         callback.expect("non-null function pointer")(
             b"WIURH0\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut unsafe { game_state() }.wi_stuff.yah as *mut *mut patch_t).offset(0 as i32 as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(0 as i32 as isize) as *mut *mut patch_t,
         );
         callback.expect("non-null function pointer")(
             b"WIURH1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut unsafe { game_state() }.wi_stuff.yah as *mut *mut patch_t).offset(1 as i32 as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(1 as i32 as isize) as *mut *mut patch_t,
         );
         callback.expect("non-null function pointer")(
             b"WISPLAT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut unsafe { game_state() }.wi_stuff.splat as *mut *mut patch_t).offset(0 as i32 as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.splat as *mut *mut patch_t).offset(0 as i32 as isize) as *mut *mut patch_t,
         );
-        if (*unsafe { game_state() }.wi_stuff.wbs).epsd < 3 as i32 {
+        if (*state.wi_stuff.wbs).epsd < 3 as i32 {
             j = 0 as i32;
-            while j < unsafe { game_state() }.wi_stuff.NUMANIMS[(*unsafe { game_state() }.wi_stuff.wbs).epsd as usize] {
-                a = (*(&raw mut unsafe { game_state() }.wi_stuff.anims as *mut *mut anim_t).offset((*unsafe { game_state() }.wi_stuff.wbs).epsd as isize))
+            while j < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
+                a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t).offset((*state.wi_stuff.wbs).epsd as isize))
                     .offset(j as isize) as *mut anim_t;
                 i = 0 as i32;
                 while i < (*a).nanims {
-                    if (*unsafe { game_state() }.wi_stuff.wbs).epsd != 1 as i32 || j != 8 as i32 {
+                    if (*state.wi_stuff.wbs).epsd != 1 as i32 || j != 8 as i32 {
                         snprintf(
                             &raw mut name as *mut ::core::ffi::c_char,
                             9 as size_t,
                             b"WIA%d%.2d%.2d\0" as *const u8 as *const ::core::ffi::c_char,
-                            (*unsafe { game_state() }.wi_stuff.wbs).epsd,
+                            (*state.wi_stuff.wbs).epsd,
                             j,
                             i,
                         );
@@ -2053,7 +2053,7 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
                         );
                     } else {
                         (*a).p[i as usize] =
-                            (*unsafe { game_state() }.wi_stuff.anims[1 as i32 as usize].offset(4 as i32 as isize)).p[i as usize];
+                            (*state.wi_stuff.anims[1 as i32 as usize].offset(4 as i32 as isize)).p[i as usize];
                     }
                     i += 1;
                 }
@@ -2063,7 +2063,7 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
     }
     callback.expect("non-null function pointer")(
         b"WIMINUS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.wiminus,
+        &raw mut state.wi_stuff.wiminus,
     );
     i = 0 as i32;
     while i < 10 as i32 {
@@ -2075,84 +2075,84 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
         );
         callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut unsafe { game_state() }.wi_stuff.num as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.num as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
         );
         i += 1;
     }
     callback.expect("non-null function pointer")(
         b"WIPCNT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.percent,
+        &raw mut state.wi_stuff.percent,
     );
     callback.expect("non-null function pointer")(
         b"WIF\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.finished,
+        &raw mut state.wi_stuff.finished,
     );
     callback.expect("non-null function pointer")(
         b"WIENTER\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.entering,
+        &raw mut state.wi_stuff.entering,
     );
     callback.expect("non-null function pointer")(
         b"WIOSTK\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.kills,
+        &raw mut state.wi_stuff.kills,
     );
     callback.expect("non-null function pointer")(
         b"WIOSTS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.secret,
+        &raw mut state.wi_stuff.secret,
     );
     callback.expect("non-null function pointer")(
         b"WISCRT2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.sp_secret,
+        &raw mut state.wi_stuff.sp_secret,
     );
     if W_CheckNumForName("WIOBJ") >= 0 as i32 {
-        if unsafe { game_state() }.g_game.netgame && unsafe { game_state() }.g_game.deathmatch == 0
+        if state.g_game.netgame && state.g_game.deathmatch == 0
         {
             callback.expect("non-null function pointer")(
                 b"WIOBJ\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                &raw mut unsafe { game_state() }.wi_stuff.items,
+                &raw mut state.wi_stuff.items,
             );
         } else {
             callback.expect("non-null function pointer")(
                 b"WIOSTI\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                &raw mut unsafe { game_state() }.wi_stuff.items,
+                &raw mut state.wi_stuff.items,
             );
         }
     } else {
         callback.expect("non-null function pointer")(
             b"WIOSTI\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            &raw mut unsafe { game_state() }.wi_stuff.items,
+            &raw mut state.wi_stuff.items,
         );
     }
     callback.expect("non-null function pointer")(
         b"WIFRGS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.frags,
+        &raw mut state.wi_stuff.frags,
     );
     callback.expect("non-null function pointer")(
         b"WICOLON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.colon,
+        &raw mut state.wi_stuff.colon,
     );
     callback.expect("non-null function pointer")(
         b"WITIME\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.timepatch,
+        &raw mut state.wi_stuff.timepatch,
     );
     callback.expect("non-null function pointer")(
         b"WISUCKS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.sucks,
+        &raw mut state.wi_stuff.sucks,
     );
     callback.expect("non-null function pointer")(
         b"WIPAR\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.par,
+        &raw mut state.wi_stuff.par,
     );
     callback.expect("non-null function pointer")(
         b"WIKILRS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.killers,
+        &raw mut state.wi_stuff.killers,
     );
     callback.expect("non-null function pointer")(
         b"WIVCTMS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.victims,
+        &raw mut state.wi_stuff.victims,
     );
     callback.expect("non-null function pointer")(
         b"WIMSTT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.total,
+        &raw mut state.wi_stuff.total,
     );
     i = 0 as i32;
     while i < MAXPLAYERS {
@@ -2164,7 +2164,7 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
         );
         callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut unsafe { game_state() }.wi_stuff.p as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.p as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
         );
         snprintf(
             &raw mut name as *mut ::core::ffi::c_char,
@@ -2174,18 +2174,18 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
         );
         callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut unsafe { game_state() }.wi_stuff.bp as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.bp as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
         );
         i += 1;
     }
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
             b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char,
             ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
         );
-    } else if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32
-        && (*unsafe { game_state() }.wi_stuff.wbs).epsd == 3 as i32
+    } else if state.doomstat.gamemode as u32 == retail as i32 as u32
+        && (*state.wi_stuff.wbs).epsd == 3 as i32
     {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
@@ -2197,40 +2197,40 @@ unsafe fn WI_loadUnloadData(mut callback: load_callback_t) {
             &raw mut name as *mut ::core::ffi::c_char,
             ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             b"WIMAP%d\0" as *const u8 as *const ::core::ffi::c_char,
-            (*unsafe { game_state() }.wi_stuff.wbs).epsd,
+            (*state.wi_stuff.wbs).epsd,
         );
     }
     callback.expect("non-null function pointer")(
         &raw mut name as *mut ::core::ffi::c_char,
-        &raw mut unsafe { game_state() }.wi_stuff.background,
+        &raw mut state.wi_stuff.background,
     );
 }
 unsafe fn WI_loadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
     *variable = W_CacheLumpName(&wad_name8_to_string(name), PU_STATIC as i32) as *mut patch_t;
 }
-pub unsafe fn WI_loadData() {
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-        unsafe { game_state() }.wi_stuff.NUMCMAPS = 32 as i32;
-        unsafe { game_state() }.wi_stuff.lnames = Z_Malloc(
-            unsafe { &mut game_state().z_zone },
-            (::core::mem::size_of::<*mut patch_t>() as usize).wrapping_mul(unsafe { game_state() }.wi_stuff.NUMCMAPS as usize)
+pub unsafe fn WI_loadData(state: &mut GameState) {
+    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+        state.wi_stuff.NUMCMAPS = 32 as i32;
+        state.wi_stuff.lnames = Z_Malloc(
+            &mut state.z_zone,
+            (::core::mem::size_of::<*mut patch_t>() as usize).wrapping_mul(state.wi_stuff.NUMCMAPS as usize)
                 as i32,
             PU_STATIC as i32,
             NULL,
         ) as *mut *mut patch_t;
     } else {
-        unsafe { game_state() }.wi_stuff.lnames = Z_Malloc(
-            unsafe { &mut game_state().z_zone },
+        state.wi_stuff.lnames = Z_Malloc(
+            &mut state.z_zone,
             (::core::mem::size_of::<*mut patch_t>() as usize).wrapping_mul(NUMMAPS as usize) as i32,
             PU_STATIC as i32,
             NULL,
         ) as *mut *mut patch_t;
     }
-    WI_loadUnloadData(Some(
+    WI_loadUnloadData(state, Some(
         WI_loadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
     ));
-    unsafe { game_state() }.wi_stuff.star = W_CacheLumpName("STFST01", PU_STATIC as i32) as *mut patch_t;
-    unsafe { game_state() }.wi_stuff.bstar = W_CacheLumpName("STFDEAD0", PU_STATIC as i32) as *mut patch_t;
+    state.wi_stuff.star = W_CacheLumpName("STFST01", PU_STATIC as i32) as *mut patch_t;
+    state.wi_stuff.bstar = W_CacheLumpName("STFDEAD0", PU_STATIC as i32) as *mut patch_t;
 }
 unsafe fn WI_unloadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
     W_ReleaseLumpName(&wad_name8_to_string(name));
@@ -2256,38 +2256,38 @@ pub unsafe fn WI_Drawer(state: &mut GameState) {
         _ => {}
     };
 }
-pub unsafe fn WI_initVariables(mut wbstartstruct: *mut wbstartstruct_t) {
-    unsafe { game_state() }.wi_stuff.wbs = wbstartstruct;
-    unsafe { game_state() }.wi_stuff.acceleratestage = 0 as i32;
-    unsafe { game_state() }.wi_stuff.bcnt = 0 as i32;
-    unsafe { game_state() }.wi_stuff.cnt = unsafe { game_state() }.wi_stuff.bcnt;
-    unsafe { game_state() }.wi_stuff.firstrefresh = 1 as i32;
-    unsafe { game_state() }.wi_stuff.me = (*unsafe { game_state() }.wi_stuff.wbs).pnum;
-    unsafe { game_state() }.wi_stuff.plrs = &raw mut (*unsafe { game_state() }.wi_stuff.wbs).plyr as *mut wbplayerstruct_t;
-    if (*unsafe { game_state() }.wi_stuff.wbs).maxkills == 0 {
-        (*unsafe { game_state() }.wi_stuff.wbs).maxkills = 1 as i32;
+pub unsafe fn WI_initVariables(state: &mut GameState, mut wbstartstruct: *mut wbstartstruct_t) {
+    state.wi_stuff.wbs = wbstartstruct;
+    state.wi_stuff.acceleratestage = 0 as i32;
+    state.wi_stuff.bcnt = 0 as i32;
+    state.wi_stuff.cnt = state.wi_stuff.bcnt;
+    state.wi_stuff.firstrefresh = 1 as i32;
+    state.wi_stuff.me = (*state.wi_stuff.wbs).pnum;
+    state.wi_stuff.plrs = &raw mut (*state.wi_stuff.wbs).plyr as *mut wbplayerstruct_t;
+    if (*state.wi_stuff.wbs).maxkills == 0 {
+        (*state.wi_stuff.wbs).maxkills = 1 as i32;
     }
-    if (*unsafe { game_state() }.wi_stuff.wbs).maxitems == 0 {
-        (*unsafe { game_state() }.wi_stuff.wbs).maxitems = 1 as i32;
+    if (*state.wi_stuff.wbs).maxitems == 0 {
+        (*state.wi_stuff.wbs).maxitems = 1 as i32;
     }
-    if (*unsafe { game_state() }.wi_stuff.wbs).maxsecret == 0 {
-        (*unsafe { game_state() }.wi_stuff.wbs).maxsecret = 1 as i32;
+    if (*state.wi_stuff.wbs).maxsecret == 0 {
+        (*state.wi_stuff.wbs).maxsecret = 1 as i32;
     }
-    if unsafe { game_state() }.doomstat.gamemode as u32 != retail as i32 as u32 {
-        if (*unsafe { game_state() }.wi_stuff.wbs).epsd > 2 as i32 {
-            (*unsafe { game_state() }.wi_stuff.wbs).epsd -= 3 as i32;
+    if state.doomstat.gamemode as u32 != retail as i32 as u32 {
+        if (*state.wi_stuff.wbs).epsd > 2 as i32 {
+            (*state.wi_stuff.wbs).epsd -= 3 as i32;
         }
     }
 }
-pub unsafe fn WI_Start(mut wbstartstruct: *mut wbstartstruct_t) {
-    WI_initVariables(wbstartstruct);
-    WI_loadData();
-    if unsafe { game_state() }.g_game.deathmatch != 0 {
-        WI_initDeathmatchStats();
-    } else if unsafe { game_state() }.g_game.netgame {
-        WI_initNetgameStats();
+pub unsafe fn WI_Start(state: &mut GameState, mut wbstartstruct: *mut wbstartstruct_t) {
+    WI_initVariables(state, wbstartstruct);
+    WI_loadData(state);
+    if state.g_game.deathmatch != 0 {
+        WI_initDeathmatchStats(state);
+    } else if state.g_game.netgame {
+        WI_initNetgameStats(state);
     } else {
-        WI_initStats();
+        WI_initStats(state);
     };
 }
 unsafe extern "C" fn run_static_initializers() {
