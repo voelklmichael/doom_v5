@@ -335,7 +335,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
     if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && state.d_loop.gametic != 0
     {
-        HU_Erase();
+        HU_Erase(state);
     }
     match state.g_game.gamestate as u32 {
         0 => {
@@ -1412,7 +1412,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     D_CheckNetGame(state);
     PrintGameVersion();
     printf(b"HU_Init: Setting up heads up display.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    HU_Init();
+    HU_Init(state);
     printf(b"ST_Init: Init status bar.\n\0" as *const u8 as *const ::core::ffi::c_char);
     ST_Init(state);
     if state.doomstat.gamemode as u32 == commercial as i32 as u32

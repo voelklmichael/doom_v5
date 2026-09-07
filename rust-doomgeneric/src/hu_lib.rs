@@ -2,7 +2,7 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_controls::KEY_BACKSPACE;
 use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_misc::__ctype_toupper_loc;
@@ -116,20 +116,22 @@ pub unsafe fn HUlib_drawTextLine(
         V_DrawPatchDirect(state, x, (*l).y, *(*l).f.offset(('_' as i32 - (*l).sc) as isize));
     }
 }
-pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
+pub unsafe fn HUlib_eraseTextLine(state: &mut GameState, mut l: *mut hu_textline_t) {
     let mut lh: i32 = 0;
     let mut y: i32 = 0;
     let mut yoffset: i32 = 0;
-    if !unsafe { game_state() }.am_map.automapactive && unsafe { game_state() }.r_draw.viewwindowx != 0 && (*l).needsupdate != 0 {
+    if !state.am_map.automapactive && state.r_draw.viewwindowx != 0 && (*l).needsupdate != 0 {
         lh = (**(*l).f.offset(0 as i32 as isize)).height as i32 + 1 as i32;
         y = (*l).y;
         yoffset = y * SCREENWIDTH;
         while y < (*l).y + lh {
-            if y < unsafe { game_state() }.r_draw.viewwindowy || y >= unsafe { game_state() }.r_draw.viewwindowy + unsafe { game_state() }.r_draw.viewheight {
-                R_VideoErase(unsafe { game_state() }, yoffset as u32, SCREENWIDTH);
+            if y < state.r_draw.viewwindowy || y >= state.r_draw.viewwindowy + state.r_draw.viewheight {
+                R_VideoErase(state, yoffset as u32, SCREENWIDTH);
             } else {
-                R_VideoErase(unsafe { game_state() }, yoffset as u32, unsafe { game_state() }.r_draw.viewwindowx);
-                R_VideoErase(unsafe { game_state() }, (yoffset + unsafe { game_state() }.r_draw.viewwindowx + unsafe { game_state() }.r_draw.viewwidth) as u32, unsafe { game_state() }.r_draw.viewwindowx);
+                let viewwindowx = state.r_draw.viewwindowx;
+                let second_ofs = (yoffset + state.r_draw.viewwindowx + state.r_draw.viewwidth) as u32;
+                R_VideoErase(state, yoffset as u32, viewwindowx);
+                R_VideoErase(state, second_ofs, viewwindowx);
             }
             y += 1;
             yoffset += SCREENWIDTH;
@@ -225,7 +227,7 @@ pub unsafe fn HUlib_drawSText(
         i += 1;
     }
 }
-pub unsafe fn HUlib_eraseSText(mut s: *mut hu_stext_t) {
+pub unsafe fn HUlib_eraseSText(state: &mut GameState, mut s: *mut hu_stext_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < (*s).h {
@@ -233,6 +235,7 @@ pub unsafe fn HUlib_eraseSText(mut s: *mut hu_stext_t) {
             (*s).l[i as usize].needsupdate = 4 as i32;
         }
         HUlib_eraseTextLine(
+            state,
             (&raw mut (*s).l as *mut hu_textline_t).offset(i as isize) as *mut hu_textline_t
         );
         i += 1;
@@ -310,10 +313,10 @@ pub unsafe fn HUlib_drawIText(
     }
     HUlib_drawTextLine(state, l, true_0 as boolean);
 }
-pub unsafe fn HUlib_eraseIText(mut it: *mut hu_itext_t) {
+pub unsafe fn HUlib_eraseIText(state: &mut GameState, mut it: *mut hu_itext_t) {
     if (*it).laston && !*(*it).on {
         (*it).l.needsupdate = 4 as i32;
     }
-    HUlib_eraseTextLine(&raw mut (*it).l);
+    HUlib_eraseTextLine(state, &raw mut (*it).l);
     (*it).laston = *(*it).on;
 }
