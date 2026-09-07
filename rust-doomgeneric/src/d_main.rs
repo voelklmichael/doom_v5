@@ -349,7 +349,8 @@ pub unsafe fn D_Display(state: &mut GameState) {
                 if state.d_main.d_display_inhelpscreensstate && !state.m_menu.inhelpscreens {
                     redrawsbar = true;
                 }
-                ST_Drawer(state.r_draw.viewheight == 200 as i32, redrawsbar);
+                let fullscreen = state.r_draw.viewheight == 200 as i32;
+                ST_Drawer(state, fullscreen, redrawsbar);
                 state.d_main.d_display_fullscreen = state.r_draw.viewheight == 200 as i32;
             }
         }
