@@ -1080,7 +1080,7 @@ pub unsafe fn G_Ticker(state: &mut MRandomState, d_net_state: &mut DNetState) {
             && unsafe { game_state() }.g_game.players[i as usize].playerstate as u32
                 == PST_REBORN as u32
         {
-            G_DoReborn(i);
+            G_DoReborn(unsafe { game_state() }, i);
         }
         i += 1;
     }
@@ -1337,21 +1337,21 @@ pub unsafe fn G_PlayerReborn(state: &mut GGameState, mut player: i32) {
         i += 1;
     }
 }
-pub unsafe fn G_CheckSpot(mut playernum: i32, mut mthing: *mut mapthing_t) -> bool {
+pub unsafe fn G_CheckSpot(state: &mut GameState, mut playernum: i32, mut mthing: *mut mapthing_t) -> bool {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut i: i32 = 0;
-    if unsafe { game_state() }.g_game.players[playernum as usize]
+    if state.g_game.players[playernum as usize]
         .mo
         .is_null()
     {
         i = 0 as i32;
         while i < playernum {
-            if (*unsafe { game_state() }.g_game.players[i as usize].mo).x
+            if (*state.g_game.players[i as usize].mo).x
                 == ((*mthing).x as i32) << FRACBITS
-                && (*unsafe { game_state() }.g_game.players[i as usize].mo).y
+                && (*state.g_game.players[i as usize].mo).y
                     == ((*mthing).y as i32) << FRACBITS
             {
                 return false;
@@ -1363,23 +1363,23 @@ pub unsafe fn G_CheckSpot(mut playernum: i32, mut mthing: *mut mapthing_t) -> bo
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
     if !P_CheckPosition(
-        unsafe { game_state() }.g_game.players[playernum as usize].mo,
+        state.g_game.players[playernum as usize].mo,
         x,
         y,
     ) {
         return false;
     }
-    if unsafe { game_state() }.g_game.bodyqueslot >= BODYQUESIZE {
+    if state.g_game.bodyqueslot >= BODYQUESIZE {
         P_RemoveMobj(
-            unsafe { &mut game_state().p_mobj },
-            unsafe { game_state() }.g_game.bodyque
-                [(unsafe { game_state() }.g_game.bodyqueslot % BODYQUESIZE) as usize],
+            &mut state.p_mobj,
+            state.g_game.bodyque
+                [(state.g_game.bodyqueslot % BODYQUESIZE) as usize],
         );
     }
-    unsafe { game_state() }.g_game.bodyque
-        [(unsafe { game_state() }.g_game.bodyqueslot % BODYQUESIZE) as usize] =
-        unsafe { game_state() }.g_game.players[playernum as usize].mo;
-    unsafe { game_state() }.g_game.bodyqueslot += 1;
+    state.g_game.bodyque
+        [(state.g_game.bodyqueslot % BODYQUESIZE) as usize] =
+        state.g_game.players[playernum as usize].mo;
+    state.g_game.bodyqueslot += 1;
     ss = R_PointInSubsector(x, y);
     let mut xa: fixed_t = 0;
     let mut ya: fixed_t = 0;
@@ -1415,92 +1415,81 @@ pub unsafe fn G_CheckSpot(mut playernum: i32, mut mthing: *mut mapthing_t) -> bo
     mo = P_SpawnMobj(
         x + 20 as fixed_t * xa,
         y + 20 as fixed_t * ya,
-        (*unsafe { game_state() }.p_setup.sector_mut((*ss).sector)).floorheight,
+        (*state.p_setup.sector_mut((*ss).sector)).floorheight,
         MT_TFOG,
     );
-    if unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
+    if state.g_game.players[state.g_game.consoleplayer as usize]
         .viewz
         != 1 as i32
     {
         S_StartSound(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             mo as *mut ::core::ffi::c_void,
             sfx_telept as i32,
         );
     }
     return true;
 }
-pub unsafe fn G_DeathMatchSpawnPlayer(mut playernum: i32) {
+pub unsafe fn G_DeathMatchSpawnPlayer(state: &mut GameState, mut playernum: i32) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut selections: i32 = 0;
     selections =
-        unsafe { game_state() }.p_setup.deathmatch_p.offset_from(&raw mut unsafe { game_state() }.p_setup.deathmatchstarts as *mut mapthing_t) as i64 as i32;
+        state.p_setup.deathmatch_p.offset_from(&raw mut state.p_setup.deathmatchstarts as *mut mapthing_t) as i64 as i32;
     if selections < 4 as i32 {
         I_Error(&format!("Only {} deathmatch spots, 4 required", selections));
     }
     j = 0 as i32;
     while j < 20 as i32 {
-        i = P_Random(unsafe { &mut game_state().m_random }) % selections;
-        if G_CheckSpot(
-            playernum,
-            (&raw mut unsafe { game_state() }.p_setup.deathmatchstarts as *mut mapthing_t).offset(i as isize) as *mut mapthing_t,
-        ) {
-            unsafe { game_state() }.p_setup.deathmatchstarts[i as usize].type_0 = (playernum + 1 as i32) as i16;
-            P_SpawnPlayer(
-                (&raw mut unsafe { game_state() }.p_setup.deathmatchstarts as *mut mapthing_t).offset(i as isize)
-                    as *mut mapthing_t,
-            );
+        i = P_Random(&mut state.m_random) % selections;
+        let dm_spot = (&raw mut state.p_setup.deathmatchstarts as *mut mapthing_t).offset(i as isize) as *mut mapthing_t;
+        if G_CheckSpot(state, playernum, dm_spot) {
+            state.p_setup.deathmatchstarts[i as usize].type_0 = (playernum + 1 as i32) as i16;
+            let dm_spot = (&raw mut state.p_setup.deathmatchstarts as *mut mapthing_t).offset(i as isize)
+                as *mut mapthing_t;
+            P_SpawnPlayer(state, dm_spot);
             return;
         }
         j += 1;
     }
-    P_SpawnPlayer(
-        (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize) as *mut mapthing_t,
-    );
+    let spot = (&raw mut state.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize) as *mut mapthing_t;
+    P_SpawnPlayer(state, spot);
 }
-pub unsafe fn G_DoReborn(mut playernum: i32) {
+pub unsafe fn G_DoReborn(state: &mut GameState, mut playernum: i32) {
     let mut i: i32 = 0;
-    if !unsafe { game_state() }.g_game.netgame {
-        unsafe { game_state() }.g_game.gameaction = ga_loadlevel;
+    if !state.g_game.netgame {
+        state.g_game.gameaction = ga_loadlevel;
     } else {
-        (*unsafe { game_state() }.g_game.players[playernum as usize].mo).player =
+        (*state.g_game.players[playernum as usize].mo).player =
             ::core::ptr::null_mut::<player_s>();
-        if unsafe { game_state() }.g_game.deathmatch != 0 {
-            G_DeathMatchSpawnPlayer(playernum);
+        if state.g_game.deathmatch != 0 {
+            G_DeathMatchSpawnPlayer(state, playernum);
             return;
         }
-        if G_CheckSpot(
-            playernum,
-            (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
-                as *mut mapthing_t,
-        ) {
-            P_SpawnPlayer(
-                (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
-                    as *mut mapthing_t,
-            );
+        let spot = (&raw mut state.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
+            as *mut mapthing_t;
+        if G_CheckSpot(state, playernum, spot) {
+            let spot = (&raw mut state.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
+                as *mut mapthing_t;
+            P_SpawnPlayer(state, spot);
             return;
         }
         i = 0 as i32;
         while i < MAXPLAYERS {
-            if G_CheckSpot(
-                playernum,
-                (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(i as isize) as *mut mapthing_t,
-            ) {
-                unsafe { game_state() }.p_setup.playerstarts[i as usize].type_0 = (playernum + 1 as i32) as i16;
-                P_SpawnPlayer(
-                    (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(i as isize)
-                        as *mut mapthing_t,
-                );
-                unsafe { game_state() }.p_setup.playerstarts[i as usize].type_0 = (i + 1 as i32) as i16;
+            let spot = (&raw mut state.p_setup.playerstarts as *mut mapthing_t).offset(i as isize) as *mut mapthing_t;
+            if G_CheckSpot(state, playernum, spot) {
+                state.p_setup.playerstarts[i as usize].type_0 = (playernum + 1 as i32) as i16;
+                let spot = (&raw mut state.p_setup.playerstarts as *mut mapthing_t).offset(i as isize)
+                    as *mut mapthing_t;
+                P_SpawnPlayer(state, spot);
+                state.p_setup.playerstarts[i as usize].type_0 = (i + 1 as i32) as i16;
                 return;
             }
             i += 1;
         }
-        P_SpawnPlayer(
-            (&raw mut unsafe { game_state() }.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
-                as *mut mapthing_t,
-        );
+        let spot = (&raw mut state.p_setup.playerstarts as *mut mapthing_t).offset(playernum as isize)
+            as *mut mapthing_t;
+        P_SpawnPlayer(state, spot);
     };
 }
 pub unsafe fn G_ScreenShot(state: &mut GameState) {
