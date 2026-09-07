@@ -1000,7 +1000,7 @@ pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
         return false;
     }
     if state.g_game.gamestate == GS_LEVEL {
-        if HU_Responder(&ev) {
+        if HU_Responder(state, &ev) {
             return true;
         }
         if ST_Responder(state, &ev) {
@@ -1240,7 +1240,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
             P_Ticker(state);
             ST_Ticker(state);
             AM_Ticker(state);
-            HU_Ticker();
+            HU_Ticker(state);
         }
         1 => {
             WI_Ticker(state);
