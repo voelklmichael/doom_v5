@@ -9,6 +9,7 @@ use crate::src::doomdef::false_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::TICRATE;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_lib::{
     hu_itext_t, hu_stext_t, hu_textline_t, patch_t, HUlib_addCharToTextLine,
     HUlib_addMessageToSText, HUlib_drawIText, HUlib_drawSText, HUlib_drawTextLine,
@@ -472,12 +473,13 @@ pub unsafe fn HU_Start() {
     }
     unsafe { game_state() }.hu_stuff.headsupactive = true;
 }
-pub unsafe fn HU_Drawer() {
-    HUlib_drawSText(&raw mut unsafe { game_state() }.hu_stuff.w_message);
-    HUlib_drawIText(&raw mut unsafe { game_state() }.hu_stuff.w_chat);
-    if unsafe { game_state() }.am_map.automapactive {
+pub unsafe fn HU_Drawer(state: &mut GameState) {
+    HUlib_drawSText(&mut state.v_video, &raw mut state.hu_stuff.w_message);
+    HUlib_drawIText(&mut state.v_video, &raw mut state.hu_stuff.w_chat);
+    if state.am_map.automapactive {
         HUlib_drawTextLine(
-            &raw mut unsafe { game_state() }.hu_stuff.w_title,
+            &mut state.v_video,
+            &raw mut state.hu_stuff.w_title,
             false_0 as boolean,
         );
     }

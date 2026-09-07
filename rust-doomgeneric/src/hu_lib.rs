@@ -82,7 +82,11 @@ pub unsafe fn HUlib_delCharFromTextLine(mut t: *mut hu_textline_t) -> bool {
         return true;
     };
 }
-pub unsafe fn HUlib_drawTextLine(mut l: *mut hu_textline_t, mut drawcursor: boolean) {
+pub unsafe fn HUlib_drawTextLine(
+    state: &mut crate::src::v_video::VVideoState,
+    mut l: *mut hu_textline_t,
+    mut drawcursor: boolean,
+) {
     let mut i: i32 = 0;
     let mut w: i32 = 0;
     let mut x: i32 = 0;
@@ -96,12 +100,7 @@ pub unsafe fn HUlib_drawTextLine(mut l: *mut hu_textline_t, mut drawcursor: bool
             if x + w > SCREENWIDTH {
                 break;
             }
-            V_DrawPatchDirect(
-                unsafe { &mut game_state().v_video },
-                x,
-                (*l).y,
-                *(*l).f.offset((c as i32 - (*l).sc) as isize),
-            );
+            V_DrawPatchDirect(state, x, (*l).y, *(*l).f.offset((c as i32 - (*l).sc) as isize));
             x += w;
         } else {
             x += 4 as i32;
@@ -114,12 +113,7 @@ pub unsafe fn HUlib_drawTextLine(mut l: *mut hu_textline_t, mut drawcursor: bool
     if drawcursor != 0
         && x + (**(*l).f.offset(('_' as i32 - (*l).sc) as isize)).width as i32 <= SCREENWIDTH
     {
-        V_DrawPatchDirect(
-            unsafe { &mut game_state().v_video },
-            x,
-            (*l).y,
-            *(*l).f.offset(('_' as i32 - (*l).sc) as isize),
-        );
+        V_DrawPatchDirect(state, x, (*l).y, *(*l).f.offset(('_' as i32 - (*l).sc) as isize));
     }
 }
 pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
@@ -210,7 +204,10 @@ pub unsafe fn HUlib_addMessageToSText(
         );
     }
 }
-pub unsafe fn HUlib_drawSText(mut s: *mut hu_stext_t) {
+pub unsafe fn HUlib_drawSText(
+    state: &mut crate::src::v_video::VVideoState,
+    mut s: *mut hu_stext_t,
+) {
     let mut i: i32 = 0;
     let mut idx: i32 = 0;
     let mut l: *mut hu_textline_t = ::core::ptr::null_mut::<hu_textline_t>();
@@ -224,7 +221,7 @@ pub unsafe fn HUlib_drawSText(mut s: *mut hu_stext_t) {
             idx += (*s).h;
         }
         l = (&raw mut (*s).l as *mut hu_textline_t).offset(idx as isize) as *mut hu_textline_t;
-        HUlib_drawTextLine(l, false_0 as boolean);
+        HUlib_drawTextLine(state, l, false_0 as boolean);
         i += 1;
     }
 }
@@ -303,12 +300,15 @@ pub unsafe fn HUlib_keyInIText(mut it: *mut hu_itext_t, mut ch: u8) -> boolean {
     }
     return true_0 as boolean;
 }
-pub unsafe fn HUlib_drawIText(mut it: *mut hu_itext_t) {
+pub unsafe fn HUlib_drawIText(
+    state: &mut crate::src::v_video::VVideoState,
+    mut it: *mut hu_itext_t,
+) {
     let mut l: *mut hu_textline_t = &raw mut (*it).l;
     if !*(*it).on {
         return;
     }
-    HUlib_drawTextLine(l, true_0 as boolean);
+    HUlib_drawTextLine(state, l, true_0 as boolean);
 }
 pub unsafe fn HUlib_eraseIText(mut it: *mut hu_itext_t) {
     if (*it).laston && !*(*it).on {
