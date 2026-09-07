@@ -733,19 +733,19 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
     }
     return false;
 }
-pub unsafe fn ST_calcPainOffset() -> i32 {
+pub unsafe fn ST_calcPainOffset(state: &mut GameState) -> i32 {
     let mut health: i32 = 0;
-    health = if (*unsafe { game_state() }.st_stuff.plyr).health > 100 as i32 {
+    health = if (*state.st_stuff.plyr).health > 100 as i32 {
         100 as i32
     } else {
-        (*unsafe { game_state() }.st_stuff.plyr).health
+        (*state.st_stuff.plyr).health
     };
-    if health != unsafe { game_state() }.st_stuff.st_calcpainoffset_oldhealth {
-        unsafe { game_state() }.st_stuff.st_calcpainoffset_lastcalc =
+    if health != state.st_stuff.st_calcpainoffset_oldhealth {
+        state.st_stuff.st_calcpainoffset_lastcalc =
             ST_FACESTRIDE * ((100 as i32 - health) * ST_NUMPAINFACES / 101 as i32);
-        unsafe { game_state() }.st_stuff.st_calcpainoffset_oldhealth = health;
+        state.st_stuff.st_calcpainoffset_oldhealth = health;
     }
-    return unsafe { game_state() }.st_stuff.st_calcpainoffset_lastcalc;
+    return state.st_stuff.st_calcpainoffset_lastcalc;
 }
 pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
     let mut i: i32 = 0;
@@ -773,7 +773,7 @@ pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
             if doevilgrin {
                 state.st_stuff.st_updatefacewidget_priority = 8 as i32;
                 state.st_stuff.st_facecount = ST_EVILGRINCOUNT;
-                state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_EVILGRINOFFSET;
+                state.st_stuff.st_faceindex = ST_calcPainOffset(state) + ST_EVILGRINOFFSET;
             }
         }
     }
@@ -788,7 +788,7 @@ pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
             state.st_stuff.st_updatefacewidget_priority = 7 as i32;
             if (*state.st_stuff.plyr).health - state.st_stuff.st_oldhealth > ST_MUCHPAIN {
                 state.st_stuff.st_facecount = ST_TURNCOUNT;
-                state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
+                state.st_stuff.st_faceindex = ST_calcPainOffset(state) + ST_OUCHOFFSET;
             } else {
                 let plyr_attacker = plyr_attacker.unwrap();
                 let (plyr_mo_x, plyr_mo_y) = (
@@ -810,7 +810,7 @@ pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
                     i = (diffang <= ANG180) as i32;
                 }
                 state.st_stuff.st_facecount = ST_TURNCOUNT;
-                state.st_stuff.st_faceindex = ST_calcPainOffset();
+                state.st_stuff.st_faceindex = ST_calcPainOffset(state);
                 if diffang < ANG45 as angle_t {
                     state.st_stuff.st_faceindex += ST_RAMPAGEOFFSET;
                 } else if i != 0 {
@@ -826,11 +826,11 @@ pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
             if (*state.st_stuff.plyr).health - state.st_stuff.st_oldhealth > ST_MUCHPAIN {
                 state.st_stuff.st_updatefacewidget_priority = 7 as i32;
                 state.st_stuff.st_facecount = ST_TURNCOUNT;
-                state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
+                state.st_stuff.st_faceindex = ST_calcPainOffset(state) + ST_OUCHOFFSET;
             } else {
                 state.st_stuff.st_updatefacewidget_priority = 6 as i32;
                 state.st_stuff.st_facecount = ST_TURNCOUNT;
-                state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
+                state.st_stuff.st_faceindex = ST_calcPainOffset(state) + ST_RAMPAGEOFFSET;
             }
         }
     }
@@ -842,7 +842,7 @@ pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
                 state.st_stuff.st_updatefacewidget_lastattackdown -= 1;
                 if state.st_stuff.st_updatefacewidget_lastattackdown == 0 {
                     state.st_stuff.st_updatefacewidget_priority = 5 as i32;
-                    state.st_stuff.st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
+                    state.st_stuff.st_faceindex = ST_calcPainOffset(state) + ST_RAMPAGEOFFSET;
                     state.st_stuff.st_facecount = 1 as i32;
                     state.st_stuff.st_updatefacewidget_lastattackdown = 1 as i32;
                 }
@@ -861,7 +861,7 @@ pub unsafe fn ST_updateFaceWidget(state: &mut GameState) {
         }
     }
     if state.st_stuff.st_facecount == 0 {
-        state.st_stuff.st_faceindex = ST_calcPainOffset() + state.st_stuff.st_randomnumber % 3 as i32;
+        state.st_stuff.st_faceindex = ST_calcPainOffset(state) + state.st_stuff.st_randomnumber % 3 as i32;
         state.st_stuff.st_facecount = ST_STRAIGHTFACECOUNT;
         state.st_stuff.st_updatefacewidget_priority = 0 as i32;
     }
