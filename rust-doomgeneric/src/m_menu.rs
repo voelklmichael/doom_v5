@@ -1519,10 +1519,8 @@ pub unsafe extern "C" fn M_ChangeDetail(state: &mut GameState, mut choice: i32) 
     choice = 0 as i32;
     state.m_menu.detailLevel =
         1 as i32 - state.m_menu.detailLevel;
-    R_SetViewSize(
-        state.m_menu.screenblocks,
-        state.m_menu.detailLevel,
-    );
+    let (screenblocks, detail_level) = (state.m_menu.screenblocks, state.m_menu.detailLevel);
+    R_SetViewSize(state, screenblocks, detail_level);
     if state.m_menu.detailLevel == 0 {
         state.g_game.players
             [state.g_game.consoleplayer as usize]
@@ -1552,10 +1550,8 @@ pub unsafe extern "C" fn M_SizeDisplay(state: &mut GameState, mut choice: i32) {
         }
         _ => {}
     }
-    R_SetViewSize(
-        state.m_menu.screenblocks,
-        state.m_menu.detailLevel,
-    );
+    let (screenblocks, detail_level) = (state.m_menu.screenblocks, state.m_menu.detailLevel);
+    R_SetViewSize(state, screenblocks, detail_level);
 }
 pub unsafe fn M_DrawThermo(state: &mut GameState, mut x: i32, mut y: i32, mut thermWidth: i32, mut thermDot: i32) {
     let mut xx: i32 = 0;
