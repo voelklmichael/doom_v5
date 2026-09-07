@@ -560,32 +560,32 @@ pub unsafe extern "C" fn doomgeneric_Tick(state: *mut ::core::ffi::c_void) {
         D_Display();
     }
 }
-pub unsafe fn D_DoomLoop() {
-    if unsafe { game_state() }.d_main.bfgedition
-        && (unsafe { game_state() }.g_game.demorecording
-            || unsafe { game_state() }.g_game.gameaction as u32 == ga_playdemo as i32 as u32
-            || unsafe { game_state() }.g_game.netgame)
+pub unsafe fn D_DoomLoop(state: &mut GameState) {
+    if state.d_main.bfgedition
+        && (state.g_game.demorecording
+            || state.g_game.gameaction as u32 == ga_playdemo as i32 as u32
+            || state.g_game.netgame)
     {
         printf(
             b" WARNING: You are playing using one of the Doom Classic\n IWAD files shipped with the Doom 3: BFG Edition. These are\n known to be incompatible with the regular IWAD files and\n may cause demos and network games to get out of sync.\n\0"
                 as *const u8 as *const ::core::ffi::c_char,
         );
     }
-    if unsafe { game_state() }.g_game.demorecording {
+    if state.g_game.demorecording {
         G_BeginRecording();
     }
-    unsafe { game_state() }.d_main.main_loop_started = true;
+    state.d_main.main_loop_started = true;
     TryRunTics();
-    I_SetWindowTitle(unsafe { game_state() }.doomstat.gamedescription);
+    I_SetWindowTitle(state.doomstat.gamedescription);
     I_SetGrabMouseCallback(Some(D_GrabMouseCallback as unsafe fn() -> boolean));
     I_InitGraphics();
-    V_RestoreBuffer(unsafe { &mut game_state().v_video });
+    V_RestoreBuffer(&mut state.v_video);
     R_ExecuteSetViewSize();
     D_StartGameLoop();
-    if unsafe { game_state() }.g_game.testcontrols {
-        unsafe { game_state() }.d_main.wipegamestate = unsafe { game_state() }.g_game.gamestate;
+    if state.g_game.testcontrols {
+        state.d_main.wipegamestate = state.g_game.gamestate;
     }
-    doomgeneric_Tick(unsafe { game_state() } as *mut GameState as *mut ::core::ffi::c_void);
+    doomgeneric_Tick(state as *mut GameState as *mut ::core::ffi::c_void);
 }
 pub unsafe fn D_PageTicker() {
     unsafe { game_state() }.d_main.pagetic -= 1;
@@ -1431,13 +1431,13 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     if p != 0 {
         state.g_game.singledemo = true;
         G_DeferedPlayDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
-        D_DoomLoop();
+        D_DoomLoop(state);
         return;
     }
     p = M_CheckParmWithArgs("-timedemo", 1 as i32);
     if p != 0 {
         G_TimeDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
-        D_DoomLoop();
+        D_DoomLoop(state);
         return;
     }
     if state.d_main.startloadgame >= 0 as i32 {
@@ -1455,5 +1455,5 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
             D_StartTitle();
         }
     }
-    D_DoomLoop();
+    D_DoomLoop(state);
 }
