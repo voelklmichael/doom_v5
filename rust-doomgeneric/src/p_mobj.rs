@@ -474,6 +474,7 @@ pub struct mobj_s {
     pub lastlook: i32,
     pub spawnpoint: mapthing_t,
     pub tracer: *mut mobj_s,
+    pub id: MobjId,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -904,6 +905,7 @@ pub unsafe fn P_SpawnMobj(
     (*mobj).tics = (*st).tics;
     (*mobj).sprite = (*st).sprite;
     (*mobj).frame = (*st).frame;
+    (*mobj).id = unsafe { game_state() }.p_mobj.register(mobj);
     P_SetThingPosition(mobj);
     (*mobj).floorz = (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
     (*mobj).ceilingz = (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).ceilingheight;
@@ -918,6 +920,18 @@ pub unsafe fn P_SpawnMobj(
     P_AddThinker(&raw mut (*mobj).thinker);
     return mobj;
 }
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
+pub struct MobjId {
+    index: u32,
+    generation: u32,
+}
+
+#[derive(Copy, Clone)]
+struct MobjSlot {
+    generation: u32,
+    ptr: Option<*mut mobj_t>,
+}
+
 pub struct PMobjState {
     // Genuinely unused anywhere in the codebase (confirmed by full-codebase
     // grep) -- a vestigial c2rust-transpiled global. Kept, not deleted:
@@ -928,9 +942,59 @@ pub struct PMobjState {
     pub iquehead: i32,
     pub iquetail: i32,
     pub dummy_mobj: mobj_t,
+    mobjs: Vec<MobjSlot>,
+    free_list: Vec<u32>,
 }
 
 impl PMobjState {
+    // Registers a freshly Z_Malloc'd, fully-live mobj and hands back a
+    // stable generation-checked handle. The only two call sites are
+    // P_SpawnMobj and p_saveg.rs's P_UnArchiveThinkers mobj-reconstruction
+    // branch -- the only two places that construct a mobj_t from scratch.
+    pub fn register(&mut self, ptr: *mut mobj_t) -> MobjId {
+        if let Some(index) = self.free_list.pop() {
+            let slot = &mut self.mobjs[index as usize];
+            slot.generation = slot.generation.wrapping_add(1);
+            slot.ptr = Some(ptr);
+            return MobjId {
+                index,
+                generation: slot.generation,
+            };
+        }
+        let index = self.mobjs.len() as u32;
+        self.mobjs.push(MobjSlot {
+            generation: 0,
+            ptr: Some(ptr),
+        });
+        MobjId {
+            index,
+            generation: 0,
+        }
+    }
+
+    // Logical removal: bumps the slot's generation and marks it free,
+    // without touching the backing memory (Z_Free of the mobj_t itself
+    // stays on P_RemoveThinker's existing deferred-free schedule).
+    pub fn retire(&mut self, id: MobjId) {
+        if let Some(slot) = self.mobjs.get_mut(id.index as usize) {
+            if slot.generation == id.generation {
+                slot.ptr = None;
+                self.free_list.push(id.index);
+            }
+        }
+    }
+
+    // Fallible materialization: None if the id is stale (the mobj was
+    // already removed) -- a normal, expected runtime state (a lost combat
+    // target), not a programming error, unlike SectorId/SideId's panicking
+    // accessors.
+    pub fn mobj_get(&self, id: MobjId) -> Option<*mut mobj_t> {
+        self.mobjs
+            .get(id.index as usize)
+            .filter(|slot| slot.generation == id.generation)
+            .and_then(|slot| slot.ptr)
+    }
+
     pub const fn new() -> Self {
         PMobjState {
             test: 0,
@@ -944,6 +1008,8 @@ impl PMobjState {
             itemrespawntime: [0; 128],
             iquehead: 0,
             iquetail: 0,
+            mobjs: Vec::new(),
+            free_list: Vec::new(),
             dummy_mobj: mobj_s {
                 thinker: thinker_s {
                     prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
@@ -990,12 +1056,17 @@ impl PMobjState {
                     options: 0,
                 },
                 tracer: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
+                id: MobjId {
+                    index: 0,
+                    generation: 0,
+                },
             },
         }
     }
 }
 
 pub unsafe fn P_RemoveMobj(state: &mut PMobjState, mut mobj: *mut mobj_t) {
+    state.retire((*mobj).id);
     if (*mobj).flags & MF_SPECIAL as i32 != 0
         && (*mobj).flags & MF_DROPPED as i32 == 0
         && (*mobj).type_0 as u32 != MT_INV as i32 as u32
