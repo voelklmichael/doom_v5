@@ -250,22 +250,23 @@ pub unsafe fn D_StartGameLoop(state: &mut GameState) {
     state.d_loop.lasttime = GetAdjustedTime(state) / state.d_loop.ticdup;
 }
 pub unsafe fn D_StartNetGame(
+    state: &mut GameState,
     mut settings: *mut net_gamesettings_t,
     mut callback: netgame_startup_callback_t,
 ) {
     (*settings).consoleplayer = 0 as i32;
     (*settings).num_players = 1 as i32;
-    (*settings).player_classes[0 as i32 as usize] = unsafe { game_state() }.d_loop.player_class;
+    (*settings).player_classes[0 as i32 as usize] = state.d_loop.player_class;
     (*settings).new_sync = 0 as i32;
     (*settings).extratics = 1 as i32;
     (*settings).ticdup = 1 as i32;
-    unsafe { game_state() }.d_loop.ticdup = (*settings).ticdup;
-    unsafe { game_state() }.d_loop.new_sync = (*settings).new_sync != 0;
+    state.d_loop.ticdup = (*settings).ticdup;
+    state.d_loop.new_sync = (*settings).new_sync != 0;
 }
-pub unsafe fn D_InitNetGame(mut connect_data: *mut net_connect_data_t) -> bool {
+pub unsafe fn D_InitNetGame(state: &mut GameState, mut connect_data: *mut net_connect_data_t) -> bool {
     let mut result: bool = false;
     I_AtExit(Some(D_QuitNetGame as unsafe extern "C" fn() -> ()), true);
-    unsafe { game_state() }.d_loop.player_class = (*connect_data).player_class;
+    state.d_loop.player_class = (*connect_data).player_class;
     return result;
 }
 #[no_mangle]
@@ -447,6 +448,6 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
         NetUpdate(state);
     }
 }
-pub unsafe fn D_RegisterLoopCallbacks(mut i: *mut loop_interface_t) {
-    unsafe { game_state() }.d_loop.loop_interface = i;
+pub unsafe fn D_RegisterLoopCallbacks(state: &mut GameState, mut i: *mut loop_interface_t) {
+    state.d_loop.loop_interface = i;
 }

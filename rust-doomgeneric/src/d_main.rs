@@ -1306,7 +1306,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     printf(b"I_Init: Setting up machine state.\n\0" as *const u8 as *const ::core::ffi::c_char);
     I_InitSound(state, true);
     I_InitMusic(&mut state.i_sound);
-    D_ConnectNetGame();
+    D_ConnectNetGame(state);
     state.d_main.startskill = sk_medium;
     state.d_main.startepisode = 1 as i32;
     state.d_main.startmap = 1 as i32;
@@ -1403,7 +1403,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         b"D_CheckNetGame: Checking network game status.\n\0" as *const u8
             as *const ::core::ffi::c_char,
     );
-    D_CheckNetGame();
+    D_CheckNetGame(state);
     PrintGameVersion();
     printf(b"HU_Init: Setting up heads up display.\n\0" as *const u8 as *const ::core::ffi::c_char);
     HU_Init();
