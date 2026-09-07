@@ -14,7 +14,6 @@ use crate::src::r_main::R_PointToAngle;
 use crate::src::r_plane::ceilingplane;
 use crate::src::r_plane::floorplane;
 use crate::src::r_plane::R_FindPlane;
-use crate::src::r_segs::rw_angle1;
 use crate::src::r_segs::R_StoreWallRange;
 use crate::src::r_things::R_AddSprites;
 use crate::src::tables::angle_t;
@@ -171,7 +170,7 @@ pub unsafe fn R_AddLine(mut line: *mut seg_t) {
     if span >= ANG180 {
         return;
     }
-    rw_angle1 = angle1 as i32;
+    unsafe { game_state() }.r_segs.rw_angle1 = angle1 as i32;
     angle1 = angle1.wrapping_sub(unsafe { game_state() }.r_main.viewangle);
     angle2 = angle2.wrapping_sub(unsafe { game_state() }.r_main.viewangle);
     tspan = angle1.wrapping_add(unsafe { game_state() }.r_main.clipangle);
