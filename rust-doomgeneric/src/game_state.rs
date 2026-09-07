@@ -25,6 +25,7 @@ use crate::src::i_input::IInputState;
 use crate::src::i_joystick::IJoystickState;
 use crate::src::i_scale::IScaleState;
 use crate::src::i_sound::ISoundState;
+use crate::src::i_video::IVideoState;
 use crate::src::i_system::ISystemState;
 use crate::src::i_timer::ITimerState;
 use crate::src::m_argv::MArgvState;
@@ -82,6 +83,7 @@ pub struct GameState {
     pub i_joystick: IJoystickState,
     pub i_scale: IScaleState,
     pub i_sound: ISoundState,
+    pub i_video: IVideoState,
     pub i_system: ISystemState,
     pub i_timer: ITimerState,
     pub m_argv: MArgvState,
@@ -141,6 +143,7 @@ impl GameState {
             i_joystick: IJoystickState::new(),
             i_scale: IScaleState::new(),
             i_sound: ISoundState::new(),
+            i_video: IVideoState::new(),
             i_system: ISystemState::new(),
             i_timer: ITimerState::new(),
             m_argv: MArgvState::new(),

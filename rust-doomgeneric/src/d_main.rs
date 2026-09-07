@@ -57,8 +57,6 @@ use crate::src::i_system::I_PrintDivider;
 use crate::src::i_system::I_PrintStartupBanner;
 use crate::src::i_timer::I_GetTime;
 use crate::src::i_timer::I_Sleep;
-use crate::src::i_video::screensaver_mode;
-use crate::src::i_video::screenvisible;
 use crate::src::i_video::I_FinishUpdate;
 use crate::src::i_video::I_InitGraphics;
 use crate::src::i_video::I_SetGrabMouseCallback;
@@ -560,7 +558,7 @@ pub unsafe extern "C" fn doomgeneric_Tick() {
             [unsafe { game_state() }.g_game.consoleplayer as usize]
             .mo,
     );
-    if screenvisible {
+    if unsafe { game_state() }.i_video.screenvisible {
         D_Display();
     }
 }
@@ -1082,7 +1080,7 @@ pub unsafe fn PrintGameVersion() {
 unsafe extern "C" fn D_Endoom() {
     if unsafe { game_state() }.d_main.show_endoom == 0
         || !unsafe { game_state() }.d_main.main_loop_started
-        || screensaver_mode
+        || unsafe { game_state() }.i_video.screensaver_mode
         || M_CheckParm("-testcontrols") > 0 as i32
     {
         return;

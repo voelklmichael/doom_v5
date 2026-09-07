@@ -5,7 +5,6 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
-use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::r_defs::lighttable_t;
@@ -447,7 +446,7 @@ pub unsafe fn R_InitBuffer(mut width: i32, mut height: i32) {
     }
     i = 0 as i32;
     while i < height {
-        unsafe { game_state() }.r_draw.ylookup[i as usize] = I_VideoBuffer.offset(((i + unsafe { game_state() }.r_draw.viewwindowy) * SCREENWIDTH) as isize);
+        unsafe { game_state() }.r_draw.ylookup[i as usize] = unsafe { game_state() }.i_video.I_VideoBuffer.offset(((i + unsafe { game_state() }.r_draw.viewwindowy) * SCREENWIDTH) as isize);
         i += 1;
     }
 }
@@ -583,7 +582,7 @@ pub unsafe fn R_FillBackScreen() {
 pub unsafe fn R_VideoErase(mut ofs: u32, mut count: i32) {
     if !unsafe { game_state() }.r_draw.background_buffer.is_null() {
         memcpy(
-            I_VideoBuffer.offset(ofs as isize) as *mut ::core::ffi::c_void,
+            unsafe { game_state() }.i_video.I_VideoBuffer.offset(ofs as isize) as *mut ::core::ffi::c_void,
             unsafe { game_state() }.r_draw.background_buffer.offset(ofs as isize) as *const ::core::ffi::c_void,
             count as size_t,
         );

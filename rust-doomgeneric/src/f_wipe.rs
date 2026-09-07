@@ -3,7 +3,6 @@ use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
 use crate::src::i_video::I_ReadScreen;
-use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_random::M_Random;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
@@ -248,7 +247,7 @@ pub unsafe fn wipe_ScreenWipe(
     };
     if !go {
         go = true;
-        wipe_scr = I_VideoBuffer;
+        wipe_scr = unsafe { game_state() }.i_video.I_VideoBuffer;
         Some(
             (*(&raw mut wipes as *mut Option<unsafe extern "C" fn(i32, i32, i32) -> i32>)
                 .offset((wipeno * 3 as i32) as isize))
