@@ -309,7 +309,7 @@ pub unsafe fn D_ProcessEvents() {
         G_Responder(ev);
     }
 }
-pub unsafe fn D_Display() {
+pub unsafe fn D_Display(state: &mut GameState) {
     let mut nowtime: i32 = 0;
     let mut tics: i32 = 0;
     let mut wipestart: i32 = 0;
@@ -317,108 +317,108 @@ pub unsafe fn D_Display() {
     let mut done: bool = false;
     let mut wipe: bool = false;
     let mut redrawsbar: bool = false;
-    if unsafe { game_state() }.g_game.nodrawers {
+    if state.g_game.nodrawers {
         return;
     }
     redrawsbar = false;
-    if unsafe { game_state() }.r_main.setsizeneeded {
-        R_ExecuteSetViewSize(unsafe { game_state() });
-        unsafe { game_state() }.d_main.d_display_oldgamestate = 4294967295 as gamestate_t;
-        unsafe { game_state() }.d_main.d_display_borderdrawcount = 3 as i32;
+    if state.r_main.setsizeneeded {
+        R_ExecuteSetViewSize(state);
+        state.d_main.d_display_oldgamestate = 4294967295 as gamestate_t;
+        state.d_main.d_display_borderdrawcount = 3 as i32;
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 != unsafe { game_state() }.d_main.wipegamestate as u32 {
+    if state.g_game.gamestate as u32 != state.d_main.wipegamestate as u32 {
         wipe = true;
         wipe_StartScreen(0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
     } else {
         wipe = false;
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && unsafe { game_state() }.d_loop.gametic != 0
+    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && state.d_loop.gametic != 0
     {
         HU_Erase();
     }
-    match unsafe { game_state() }.g_game.gamestate as u32 {
+    match state.g_game.gamestate as u32 {
         0 => {
-            if !(unsafe { game_state() }.d_loop.gametic == 0) {
-                if unsafe { game_state() }.am_map.automapactive {
+            if !(state.d_loop.gametic == 0) {
+                if state.am_map.automapactive {
                     AM_Drawer();
                 }
-                if wipe || unsafe { game_state() }.r_draw.viewheight != 200 as i32 && unsafe { game_state() }.d_main.d_display_fullscreen {
+                if wipe || state.r_draw.viewheight != 200 as i32 && state.d_main.d_display_fullscreen {
                     redrawsbar = true;
                 }
-                if unsafe { game_state() }.d_main.d_display_inhelpscreensstate && !unsafe { game_state() }.m_menu.inhelpscreens {
+                if state.d_main.d_display_inhelpscreensstate && !state.m_menu.inhelpscreens {
                     redrawsbar = true;
                 }
-                ST_Drawer(unsafe { game_state() }.r_draw.viewheight == 200 as i32, redrawsbar);
-                unsafe { game_state() }.d_main.d_display_fullscreen = unsafe { game_state() }.r_draw.viewheight == 200 as i32;
+                ST_Drawer(state.r_draw.viewheight == 200 as i32, redrawsbar);
+                state.d_main.d_display_fullscreen = state.r_draw.viewheight == 200 as i32;
             }
         }
         1 => {
             WI_Drawer();
         }
         2 => {
-            F_Drawer(unsafe { &mut game_state().f_finale });
+            F_Drawer(&mut state.f_finale);
         }
         3 => {
             D_PageDrawer();
         }
         _ => {}
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && !unsafe { game_state() }.am_map.automapactive
-        && unsafe { game_state() }.d_loop.gametic != 0
+    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && !state.am_map.automapactive
+        && state.d_loop.gametic != 0
     {
         R_RenderPlayerView(
-            (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
-                .offset(unsafe { game_state() }.g_game.displayplayer as isize)
+            (&raw mut state.g_game.players as *mut player_t)
+                .offset(state.g_game.displayplayer as isize)
                 as *mut player_t,
         );
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && unsafe { game_state() }.d_loop.gametic != 0
+    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && state.d_loop.gametic != 0
     {
         HU_Drawer();
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 != unsafe { game_state() }.d_main.d_display_oldgamestate as u32
-        && unsafe { game_state() }.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
+    if state.g_game.gamestate as u32 != state.d_main.d_display_oldgamestate as u32
+        && state.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
     {
         I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && unsafe { game_state() }.d_main.d_display_oldgamestate as u32 != GS_LEVEL as i32 as u32
+    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && state.d_main.d_display_oldgamestate as u32 != GS_LEVEL as i32 as u32
     {
-        unsafe { game_state() }.d_main.d_display_viewactivestate = false;
+        state.d_main.d_display_viewactivestate = false;
         R_FillBackScreen();
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && !unsafe { game_state() }.am_map.automapactive
-        && unsafe { game_state() }.r_draw.scaledviewwidth != 320 as i32
+    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+        && !state.am_map.automapactive
+        && state.r_draw.scaledviewwidth != 320 as i32
     {
-        if unsafe { game_state() }.m_menu.menuactive || unsafe { game_state() }.d_main.d_display_menuactivestate || !unsafe { game_state() }.d_main.d_display_viewactivestate {
-            unsafe { game_state() }.d_main.d_display_borderdrawcount = 3 as i32;
+        if state.m_menu.menuactive || state.d_main.d_display_menuactivestate || !state.d_main.d_display_viewactivestate {
+            state.d_main.d_display_borderdrawcount = 3 as i32;
         }
-        if unsafe { game_state() }.d_main.d_display_borderdrawcount != 0 {
+        if state.d_main.d_display_borderdrawcount != 0 {
             R_DrawViewBorder();
-            unsafe { game_state() }.d_main.d_display_borderdrawcount -= 1;
+            state.d_main.d_display_borderdrawcount -= 1;
         }
     }
-    if unsafe { game_state() }.g_game.testcontrols {
-        V_DrawMouseSpeedBox(unsafe { game_state() }.g_game.testcontrols_mousespeed);
+    if state.g_game.testcontrols {
+        V_DrawMouseSpeedBox(state.g_game.testcontrols_mousespeed);
     }
-    unsafe { game_state() }.d_main.d_display_menuactivestate = unsafe { game_state() }.m_menu.menuactive;
-    unsafe { game_state() }.d_main.d_display_viewactivestate = unsafe { game_state() }.g_game.viewactive;
-    unsafe { game_state() }.d_main.d_display_inhelpscreensstate = unsafe { game_state() }.m_menu.inhelpscreens;
-    unsafe { game_state() }.d_main.wipegamestate = unsafe { game_state() }.g_game.gamestate;
-    unsafe { game_state() }.d_main.d_display_oldgamestate = unsafe { game_state() }.d_main.wipegamestate;
-    if unsafe { game_state() }.g_game.paused {
-        if unsafe { game_state() }.am_map.automapactive {
+    state.d_main.d_display_menuactivestate = state.m_menu.menuactive;
+    state.d_main.d_display_viewactivestate = state.g_game.viewactive;
+    state.d_main.d_display_inhelpscreensstate = state.m_menu.inhelpscreens;
+    state.d_main.wipegamestate = state.g_game.gamestate;
+    state.d_main.d_display_oldgamestate = state.d_main.wipegamestate;
+    if state.g_game.paused {
+        if state.am_map.automapactive {
             y = 4 as i32;
         } else {
-            y = unsafe { game_state() }.r_draw.viewwindowy + 4 as i32;
+            y = state.r_draw.viewwindowy + 4 as i32;
         }
         V_DrawPatchDirect(
-            unsafe { &mut game_state().v_video },
-            unsafe { game_state() }.r_draw.viewwindowx + (unsafe { game_state() }.r_draw.scaledviewwidth - 68 as i32) / 2 as i32,
+            &mut state.v_video,
+            state.r_draw.viewwindowx + (state.r_draw.scaledviewwidth - 68 as i32) / 2 as i32,
             y,
             W_CacheLumpName("M_PAUSE", PU_CACHE as i32) as *mut patch_t,
         );
@@ -430,10 +430,10 @@ pub unsafe fn D_Display() {
         return;
     }
     wipe_EndScreen(0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
-    wipestart = I_GetTime(unsafe { &mut game_state().i_timer }) - 1 as i32;
+    wipestart = I_GetTime(&mut state.i_timer) - 1 as i32;
     loop {
         loop {
-            nowtime = I_GetTime(unsafe { &mut game_state().i_timer });
+            nowtime = I_GetTime(&mut state.i_timer);
             tics = nowtime - wipestart;
             I_Sleep(1 as i32);
             if !(tics <= 0 as i32) {
@@ -557,7 +557,7 @@ pub unsafe extern "C" fn doomgeneric_Tick(state: *mut ::core::ffi::c_void) {
     TryRunTics(state);
     S_UpdateSounds(state.g_game.players[state.g_game.consoleplayer as usize].mo);
     if state.i_video.screenvisible {
-        D_Display();
+        D_Display(state);
     }
 }
 pub unsafe fn D_DoomLoop(state: &mut GameState) {
