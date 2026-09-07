@@ -5,7 +5,6 @@ use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
@@ -169,6 +168,7 @@ pub const MAXVISSPRITES: i32 = 128;
 pub const MINZ: i32 = FRACUNIT * 4 as i32;
 pub const BASEYCENTER: i32 = 100;
 pub unsafe fn R_InstallSpriteLump(
+    state: &mut GameState,
     mut lump: i32,
     mut frame: u32,
     mut rotation: u32,
@@ -181,68 +181,68 @@ pub unsafe fn R_InstallSpriteLump(
             lump
         ));
     }
-    if frame as i32 > unsafe { game_state() }.r_things.maxframe {
-        unsafe { game_state() }.r_things.maxframe = frame as i32;
+    if frame as i32 > state.r_things.maxframe {
+        state.r_things.maxframe = frame as i32;
     }
     if rotation == 0 as u32 {
-        if unsafe { game_state() }.r_things.sprtemp[frame as usize].rotate == false_0 as boolean {
+        if state.r_things.sprtemp[frame as usize].rotate == false_0 as boolean {
             I_Error(&format!(
                 "R_InitSprites: Sprite {} frame {} has multip rot=0 lump",
-                ::std::ffi::CStr::from_ptr(unsafe { game_state() }.r_things.spritename)
+                ::std::ffi::CStr::from_ptr(state.r_things.spritename)
                     .to_str()
                     .unwrap(),
                 ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
             ));
         }
-        if unsafe { game_state() }.r_things.sprtemp[frame as usize].rotate == true_0 as boolean {
+        if state.r_things.sprtemp[frame as usize].rotate == true_0 as boolean {
             I_Error(&format!(
                 "R_InitSprites: Sprite {} frame {} has rotations and a rot=0 lump",
-                ::std::ffi::CStr::from_ptr(unsafe { game_state() }.r_things.spritename)
+                ::std::ffi::CStr::from_ptr(state.r_things.spritename)
                     .to_str()
                     .unwrap(),
                 ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
             ));
         }
-        unsafe { game_state() }.r_things.sprtemp[frame as usize].rotate = false_0 as boolean;
+        state.r_things.sprtemp[frame as usize].rotate = false_0 as boolean;
         r = 0 as i32;
         while r < 8 as i32 {
-            unsafe { game_state() }.r_things.sprtemp[frame as usize].lump[r as usize] =
-                (lump - unsafe { game_state() }.r_data.firstspritelump) as i16;
-            unsafe { game_state() }.r_things.sprtemp[frame as usize].flip[r as usize] =
+            state.r_things.sprtemp[frame as usize].lump[r as usize] =
+                (lump - state.r_data.firstspritelump) as i16;
+            state.r_things.sprtemp[frame as usize].flip[r as usize] =
                 flipped as byte;
             r += 1;
         }
         return;
     }
-    if unsafe { game_state() }.r_things.sprtemp[frame as usize].rotate == false_0 as boolean {
+    if state.r_things.sprtemp[frame as usize].rotate == false_0 as boolean {
         I_Error(&format!(
             "R_InitSprites: Sprite {} frame {} has rotations and a rot=0 lump",
-            ::std::ffi::CStr::from_ptr(unsafe { game_state() }.r_things.spritename)
+            ::std::ffi::CStr::from_ptr(state.r_things.spritename)
                 .to_str()
                 .unwrap(),
             ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
         ));
     }
-    unsafe { game_state() }.r_things.sprtemp[frame as usize].rotate = true_0 as boolean;
+    state.r_things.sprtemp[frame as usize].rotate = true_0 as boolean;
     rotation = rotation.wrapping_sub(1);
-    if unsafe { game_state() }.r_things.sprtemp[frame as usize].lump[rotation as usize] as i32
+    if state.r_things.sprtemp[frame as usize].lump[rotation as usize] as i32
         != -(1 as i32)
     {
         I_Error(&format!(
             "R_InitSprites: Sprite {} : {} : {} has two lumps mapped to it",
-            ::std::ffi::CStr::from_ptr(unsafe { game_state() }.r_things.spritename)
+            ::std::ffi::CStr::from_ptr(state.r_things.spritename)
                 .to_str()
                 .unwrap(),
             ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
             ('1' as i32 as u32).wrapping_add(rotation) as u8 as char,
         ));
     }
-    unsafe { game_state() }.r_things.sprtemp[frame as usize].lump[rotation as usize] =
-        (lump - unsafe { game_state() }.r_data.firstspritelump) as i16;
-    unsafe { game_state() }.r_things.sprtemp[frame as usize].flip[rotation as usize] =
+    state.r_things.sprtemp[frame as usize].lump[rotation as usize] =
+        (lump - state.r_data.firstspritelump) as i16;
+    state.r_things.sprtemp[frame as usize].flip[rotation as usize] =
         flipped as byte;
 }
-pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
+pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::core::ffi::c_char) {
     let mut check: *mut *mut ::core::ffi::c_char =
         ::core::ptr::null_mut::<*mut ::core::ffi::c_char>();
     let mut i: i32 = 0;
@@ -256,79 +256,79 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
     while !(*check).is_null() {
         check = check.offset(1);
     }
-    unsafe { game_state() }.r_things.numsprites = check.offset_from(namelist) as i64 as i32;
-    if unsafe { game_state() }.r_things.numsprites == 0 {
+    state.r_things.numsprites = check.offset_from(namelist) as i64 as i32;
+    if state.r_things.numsprites == 0 {
         return;
     }
-    unsafe { game_state() }.r_things.sprites = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
-        (unsafe { game_state() }.r_things.numsprites as usize)
+    state.r_things.sprites = Z_Malloc(
+        &mut state.z_zone,
+        (state.r_things.numsprites as usize)
             .wrapping_mul(::core::mem::size_of::<spritedef_t>() as usize) as i32,
         PU_STATIC as i32,
         NULL,
     ) as *mut spritedef_t;
-    start = unsafe { game_state() }.r_data.firstspritelump - 1 as i32;
-    end = unsafe { game_state() }.r_data.lastspritelump + 1 as i32;
+    start = state.r_data.firstspritelump - 1 as i32;
+    end = state.r_data.lastspritelump + 1 as i32;
     i = 0 as i32;
-    while i < unsafe { game_state() }.r_things.numsprites {
-        unsafe { game_state() }.r_things.spritename = *namelist.offset(i as isize);
+    while i < state.r_things.numsprites {
+        state.r_things.spritename = *namelist.offset(i as isize);
         memset(
-            &raw mut unsafe { game_state() }.r_things.sprtemp as *mut spriteframe_t
+            &raw mut state.r_things.sprtemp as *mut spriteframe_t
                 as *mut ::core::ffi::c_void,
             -(1 as i32),
             ::core::mem::size_of::<[spriteframe_t; 29]>() as size_t,
         );
-        unsafe { game_state() }.r_things.maxframe = -(1 as i32);
+        state.r_things.maxframe = -(1 as i32);
         l = start + 1 as i32;
         while l < end {
             if strncasecmp(
-                &raw mut (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                &raw mut (*state.w_wad.lumpinfo.offset(l as isize)).name
                     as *mut ::core::ffi::c_char,
-                unsafe { game_state() }.r_things.spritename,
+                state.r_things.spritename,
                 4 as size_t,
             ) == 0
             {
-                frame = (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                frame = (*state.w_wad.lumpinfo.offset(l as isize)).name
                     [4 as i32 as usize] as i32
                     - 'A' as i32;
-                rotation = (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                rotation = (*state.w_wad.lumpinfo.offset(l as isize)).name
                     [5 as i32 as usize] as i32
                     - '0' as i32;
-                if unsafe { game_state() }.doomstat.modifiedgame {
+                if state.doomstat.modifiedgame {
                     patched = W_GetNumForName(&wad_name8_to_string(
-                        &raw const (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                        &raw const (*state.w_wad.lumpinfo.offset(l as isize)).name
                             as *const ::core::ffi::c_char,
                     ));
                 } else {
                     patched = l;
                 }
-                R_InstallSpriteLump(patched, frame as u32, rotation as u32, false);
-                if (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                R_InstallSpriteLump(state, patched, frame as u32, rotation as u32, false);
+                if (*state.w_wad.lumpinfo.offset(l as isize)).name
                     [6 as i32 as usize]
                     != 0
                 {
-                    frame = (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                    frame = (*state.w_wad.lumpinfo.offset(l as isize)).name
                         [6 as i32 as usize] as i32
                         - 'A' as i32;
-                    rotation = (*unsafe { game_state() }.w_wad.lumpinfo.offset(l as isize)).name
+                    rotation = (*state.w_wad.lumpinfo.offset(l as isize)).name
                         [7 as i32 as usize] as i32
                         - '0' as i32;
-                    R_InstallSpriteLump(l, frame as u32, rotation as u32, true);
+                    R_InstallSpriteLump(state, l, frame as u32, rotation as u32, true);
                 }
             }
             l += 1;
         }
-        if unsafe { game_state() }.r_things.maxframe == -(1 as i32) {
-            (*unsafe { game_state() }.r_things.sprites.offset(i as isize)).numframes = 0 as i32;
+        if state.r_things.maxframe == -(1 as i32) {
+            (*state.r_things.sprites.offset(i as isize)).numframes = 0 as i32;
         } else {
-            unsafe { game_state() }.r_things.maxframe += 1;
+            state.r_things.maxframe += 1;
             frame = 0 as i32;
-            while frame < unsafe { game_state() }.r_things.maxframe {
-                match unsafe { game_state() }.r_things.sprtemp[frame as usize].rotate as i32 {
+            while frame < state.r_things.maxframe {
+                match state.r_things.sprtemp[frame as usize].rotate as i32 {
                     -1 => {
                         I_Error(&format!(
                             "R_InitSprites: No patches found for {} frame {}",
-                            ::std::ffi::CStr::from_ptr(unsafe { game_state() }.r_things.spritename)
+                            ::std::ffi::CStr::from_ptr(state.r_things.spritename)
                                 .to_str()
                                 .unwrap(),
                             (frame + 'A' as i32) as u8 as char,
@@ -337,14 +337,14 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
                     1 => {
                         rotation = 0 as i32;
                         while rotation < 8 as i32 {
-                            if unsafe { game_state() }.r_things.sprtemp[frame as usize].lump
+                            if state.r_things.sprtemp[frame as usize].lump
                                 [rotation as usize] as i32
                                 == -(1 as i32)
                             {
                                 I_Error(&format!(
                                     "R_InitSprites: Sprite {} frame {} is missing rotations",
                                     ::std::ffi::CStr::from_ptr(
-                                        unsafe { game_state() }.r_things.spritename
+                                        state.r_things.spritename
                                     )
                                     .to_str()
                                     .unwrap(),
@@ -358,24 +358,24 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
                 }
                 frame += 1;
             }
-            (*unsafe { game_state() }.r_things.sprites.offset(i as isize)).numframes =
-                unsafe { game_state() }.r_things.maxframe;
+            (*state.r_things.sprites.offset(i as isize)).numframes =
+                state.r_things.maxframe;
             let ref mut fresh1 =
-                (*unsafe { game_state() }.r_things.sprites.offset(i as isize)).spriteframes;
+                (*state.r_things.sprites.offset(i as isize)).spriteframes;
             *fresh1 = Z_Malloc(
-                unsafe { &mut game_state().z_zone },
-                (unsafe { game_state() }.r_things.maxframe as usize)
+                &mut state.z_zone,
+                (state.r_things.maxframe as usize)
                     .wrapping_mul(::core::mem::size_of::<spriteframe_t>() as usize)
                     as i32,
                 PU_STATIC as i32,
                 NULL,
             ) as *mut spriteframe_t;
             memcpy(
-                (*unsafe { game_state() }.r_things.sprites.offset(i as isize)).spriteframes
+                (*state.r_things.sprites.offset(i as isize)).spriteframes
                     as *mut ::core::ffi::c_void,
-                &raw mut unsafe { game_state() }.r_things.sprtemp as *mut spriteframe_t
+                &raw mut state.r_things.sprtemp as *mut spriteframe_t
                     as *const ::core::ffi::c_void,
-                (unsafe { game_state() }.r_things.maxframe as size_t)
+                (state.r_things.maxframe as size_t)
                     .wrapping_mul(::core::mem::size_of::<spriteframe_t>() as size_t),
             );
         }
@@ -384,14 +384,14 @@ pub unsafe fn R_InitSpriteDefs(mut namelist: *mut *mut ::core::ffi::c_char) {
 }
 #[no_mangle]
 pub static newvissprite: i32 = 0;
-pub unsafe fn R_InitSprites(mut namelist: *mut *mut ::core::ffi::c_char) {
+pub unsafe fn R_InitSprites(state: &mut GameState, mut namelist: *mut *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < SCREENWIDTH {
-        unsafe { game_state() }.r_things.negonearray[i as usize] = -(1 as i32) as i16;
+        state.r_things.negonearray[i as usize] = -(1 as i32) as i16;
         i += 1;
     }
-    R_InitSpriteDefs(namelist);
+    R_InitSpriteDefs(state, namelist);
 }
 pub unsafe fn R_ClearSprites(state: &mut GameState) {
     state.r_things.vissprite_p =
