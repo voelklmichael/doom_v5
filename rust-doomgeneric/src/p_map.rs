@@ -254,7 +254,7 @@ pub unsafe extern "C" fn PIT_CheckLine(mut ld: *mut line_t) -> boolean {
     {
         return true_0 as boolean;
     }
-    if (*ld).backsector.is_null() {
+    if (*ld).backsector.is_none() {
         return false_0 as boolean;
     }
     if (*unsafe { game_state() }.p_map.tmthing).flags & MF_MISSILE as i32 == 0 {
@@ -737,8 +737,8 @@ pub unsafe extern "C" fn PTR_AimTraverse(mut in_0: *mut intercept_t) -> boolean 
             return false_0 as boolean;
         }
         dist = FixedMul(unsafe { game_state() }.p_map.attackrange, (*in_0).frac);
-        if (*li).backsector.is_null()
-            || (*(*li).frontsector).floorheight != (*(*li).backsector).floorheight
+        if (*li).backsector.is_none()
+            || (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).floorheight != (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).floorheight
         {
             slope = FixedDiv(
                 unsafe { game_state() }.p_maputl.openbottom - unsafe { game_state() }.p_map.shootz,
@@ -748,8 +748,8 @@ pub unsafe extern "C" fn PTR_AimTraverse(mut in_0: *mut intercept_t) -> boolean 
                 game_state().p_sight.bottomslope = slope;
             }
         }
-        if (*li).backsector.is_null()
-            || (*(*li).frontsector).ceilingheight != (*(*li).backsector).ceilingheight
+        if (*li).backsector.is_none()
+            || (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).ceilingheight != (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).ceilingheight
         {
             slope = FixedDiv(
                 unsafe { game_state() }.p_maputl.opentop - unsafe { game_state() }.p_map.shootz,
@@ -815,7 +815,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
         if !((*li).flags as i32 & ML_TWOSIDED == 0) {
             P_LineOpening(li);
             dist = FixedMul(unsafe { game_state() }.p_map.attackrange, (*in_0).frac);
-            if (*li).backsector.is_null() {
+            if (*li).backsector.is_none() {
                 slope = FixedDiv(
                     unsafe { game_state() }.p_maputl.openbottom
                         - unsafe { game_state() }.p_map.shootz,
@@ -836,7 +836,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
                     }
                 }
             } else {
-                if (*(*li).frontsector).floorheight != (*(*li).backsector).floorheight {
+                if (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).floorheight != (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).floorheight {
                     slope = FixedDiv(
                         unsafe { game_state() }.p_maputl.openbottom
                             - unsafe { game_state() }.p_map.shootz,
@@ -853,7 +853,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
                 match current_block {
                     15534775465039326179 => {}
                     _ => {
-                        if (*(*li).frontsector).ceilingheight != (*(*li).backsector).ceilingheight {
+                        if (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).ceilingheight != (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).ceilingheight {
                             slope = FixedDiv(
                                 unsafe { game_state() }.p_maputl.opentop
                                     - unsafe { game_state() }.p_map.shootz,
@@ -889,12 +889,12 @@ pub unsafe extern "C" fn PTR_ShootTraverse(mut in_0: *mut intercept_t) -> boolea
                 unsafe { game_state() }.p_map.aimslope,
                 FixedMul(frac, unsafe { game_state() }.p_map.attackrange),
             );
-        if (*(*li).frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum {
-            if z > (*(*li).frontsector).ceilingheight {
+        if (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum {
+            if z > (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).ceilingheight {
                 return false_0 as boolean;
             }
-            if !(*li).backsector.is_null()
-                && (*(*li).backsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+            if !(*li).backsector.is_none()
+                && (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
             {
                 return false_0 as boolean;
             }

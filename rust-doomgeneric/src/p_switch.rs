@@ -339,7 +339,10 @@ pub unsafe fn P_StartButton(
             state.buttonlist[i as usize].where_0 = w;
             state.buttonlist[i as usize].btexture = texture;
             state.buttonlist[i as usize].btimer = time;
-            state.buttonlist[i as usize].soundorg = &raw mut (*(*line).frontsector).soundorg;
+            state.buttonlist[i as usize].soundorg = &raw mut (*unsafe { game_state() }
+                .p_setup
+                .sector_mut((*line).frontsector.unwrap()))
+            .soundorg;
             return;
         }
         i += 1;

@@ -1,7 +1,8 @@
 use crate::src::doomdef::boolean;
 use crate::src::m_fixed::fixed_t;
-use crate::src::p_mobj::{line_t, sector_t, vertex_t};
+use crate::src::p_mobj::{line_t, vertex_t};
 use crate::src::p_setup::SectorId;
+use crate::src::p_setup::SideId;
 use crate::src::stdint_types::byte;
 use crate::src::tables::angle_t;
 pub type lighttable_t = byte;
@@ -24,10 +25,10 @@ pub struct seg_t {
     pub v2: *mut vertex_t,
     pub offset: fixed_t,
     pub angle: angle_t,
-    pub sidedef: *mut side_t,
+    pub sidedef: SideId,
     pub linedef: *mut line_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
+    pub frontsector: Option<SectorId>,
+    pub backsector: Option<SectorId>,
 }
 
 #[derive(Copy, Clone)]

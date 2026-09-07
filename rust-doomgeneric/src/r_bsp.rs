@@ -2,9 +2,11 @@ use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
-use crate::src::p_mobj::{line_t, sector_t, subsector_t};
+use crate::src::p_mobj::{line_t, subsector_t};
+use crate::src::p_setup::SectorId;
+use crate::src::p_setup::SideId;
 use crate::src::p_setup::SubsectorId;
-use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, side_t, visplane_t};
+use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, visplane_t};
 use crate::src::r_main::R_PointOnSide;
 use crate::src::r_main::R_PointToAngle;
 use crate::src::r_plane::R_FindPlane;
@@ -17,10 +19,10 @@ use crate::src::tables::ANGLETOFINESHIFT;
 
 pub struct RBspState {
     pub curline: *mut seg_t,
-    pub sidedef: *mut side_t,
+    pub sidedef: SideId,
     pub linedef: *mut line_t,
-    pub frontsector: *mut sector_t,
-    pub backsector: *mut sector_t,
+    pub frontsector: Option<SectorId>,
+    pub backsector: Option<SectorId>,
     pub drawsegs: [drawseg_t; 256],
     pub ds_p: *mut drawseg_t,
     pub newend: *mut cliprange_t,
@@ -31,10 +33,10 @@ impl RBspState {
     pub const fn new() -> Self {
         RBspState {
             curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
-            sidedef: ::core::ptr::null::<side_t>() as *mut side_t,
+            sidedef: SideId(0),
             linedef: ::core::ptr::null::<line_t>() as *mut line_t,
-            frontsector: ::core::ptr::null::<sector_t>() as *mut sector_t,
-            backsector: ::core::ptr::null::<sector_t>() as *mut sector_t,
+            frontsector: None,
+            backsector: None,
             drawsegs: [drawseg_s {
         curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
         x1: 0,
@@ -209,17 +211,17 @@ pub unsafe fn R_AddLine(mut line: *mut seg_t) {
         return;
     }
     unsafe { game_state() }.r_bsp.backsector = (*line).backsector;
-    if !unsafe { game_state() }.r_bsp.backsector.is_null() {
-        if !((*unsafe { game_state() }.r_bsp.backsector).ceilingheight <= (*unsafe { game_state() }.r_bsp.frontsector).floorheight
-            || (*unsafe { game_state() }.r_bsp.backsector).floorheight >= (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight)
+    if !unsafe { game_state() }.r_bsp.backsector.is_none() {
+        if !((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight <= (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight
+            || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight >= (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight)
         {
-            if !((*unsafe { game_state() }.r_bsp.backsector).ceilingheight != (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight
-                || (*unsafe { game_state() }.r_bsp.backsector).floorheight != (*unsafe { game_state() }.r_bsp.frontsector).floorheight)
+            if !((*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingheight != (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight
+                || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorheight != (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight)
             {
-                if (*unsafe { game_state() }.r_bsp.backsector).ceilingpic as i32 == (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32
-                    && (*unsafe { game_state() }.r_bsp.backsector).floorpic as i32 == (*unsafe { game_state() }.r_bsp.frontsector).floorpic as i32
-                    && (*unsafe { game_state() }.r_bsp.backsector).lightlevel as i32 == (*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32
-                    && (*(*unsafe { game_state() }.r_bsp.curline).sidedef).midtexture as i32 == 0 as i32
+                if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).ceilingpic as i32 == (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32
+                    && (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).floorpic as i32 == (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorpic as i32
+                    && (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.backsector.unwrap())).lightlevel as i32 == (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32
+                    && (*unsafe { game_state() }.p_setup.side_mut((*unsafe { game_state() }.r_bsp.curline).sidedef)).midtexture as i32 == 0 as i32
                 {
                     return;
                 }
@@ -335,31 +337,30 @@ pub unsafe fn R_Subsector(mut num: i32) {
     sub = unsafe { game_state() }
         .p_setup
         .subsector_mut(SubsectorId(num as u32));
-    unsafe { game_state() }.r_bsp.frontsector =
-        unsafe { game_state() }.p_setup.sector_mut((*sub).sector);
+    unsafe { game_state() }.r_bsp.frontsector = Some((*sub).sector);
     count = (*sub).numlines as i32;
     line = unsafe { game_state() }.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
-    if (*unsafe { game_state() }.r_bsp.frontsector).floorheight < unsafe { game_state() }.r_main.viewz {
+    if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight < unsafe { game_state() }.r_main.viewz {
         unsafe { game_state() }.r_plane.floorplane = R_FindPlane(
-            (*unsafe { game_state() }.r_bsp.frontsector).floorheight,
-            (*unsafe { game_state() }.r_bsp.frontsector).floorpic as i32,
-            (*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32,
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorheight,
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).floorpic as i32,
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32,
         );
     } else {
         unsafe { game_state() }.r_plane.floorplane = ::core::ptr::null_mut::<visplane_t>();
     }
-    if (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight > unsafe { game_state() }.r_main.viewz
-        || (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
+    if (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight > unsafe { game_state() }.r_main.viewz
+        || (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
     {
         unsafe { game_state() }.r_plane.ceilingplane = R_FindPlane(
-            (*unsafe { game_state() }.r_bsp.frontsector).ceilingheight,
-            (*unsafe { game_state() }.r_bsp.frontsector).ceilingpic as i32,
-            (*unsafe { game_state() }.r_bsp.frontsector).lightlevel as i32,
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingheight,
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).ceilingpic as i32,
+            (*unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap())).lightlevel as i32,
         );
     } else {
         unsafe { game_state() }.r_plane.ceilingplane = ::core::ptr::null_mut::<visplane_t>();
     }
-    R_AddSprites(unsafe { game_state() }.r_bsp.frontsector);
+    R_AddSprites(unsafe { game_state() }.p_setup.sector_mut(unsafe { game_state() }.r_bsp.frontsector.unwrap()));
     loop {
         let fresh1 = count;
         count = count - 1;

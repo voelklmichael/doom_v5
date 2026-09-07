@@ -108,8 +108,7 @@ pub struct PSetupState {
     pub deathmatchstarts: [mapthing_t; 10],
     pub deathmatch_p: *mut mapthing_t,
     pub playerstarts: [mapthing_t; 4],
-    pub getsectoratnulladdress_null_sector_is_initialized: bool,
-    pub getsectoratnulladdress_null_sector: sector_t,
+    pub null_sector_id: Option<SectorId>,
 }
 
 impl PSetupState {
@@ -154,8 +153,7 @@ impl PSetupState {
         type_0: 0,
         options: 0,
     }; 4],
-            getsectoratnulladdress_null_sector_is_initialized: false,
-            getsectoratnulladdress_null_sector: ZERO_SECTOR,
+            null_sector_id: None,
         }
     }
 
@@ -272,26 +270,24 @@ pub unsafe fn P_LoadVertexes(mut lump: i32) {
     }
     W_ReleaseLumpNum(lump);
 }
-pub unsafe fn GetSectorAtNullAddress() -> *mut sector_t {
-    if !unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector_is_initialized {
-        memset(
-            &raw mut unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector as *mut ::core::ffi::c_void,
-            0 as i32,
-            ::core::mem::size_of::<sector_t>() as size_t,
-        );
+pub unsafe fn GetSectorAtNullAddress() -> SectorId {
+    if unsafe { game_state() }.p_setup.null_sector_id.is_none() {
+        let mut sentinel = ZERO_SECTOR;
         I_GetMemoryValue(
             0 as u32,
-            &raw mut unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector.floorheight as *mut ::core::ffi::c_void,
+            &raw mut sentinel.floorheight as *mut ::core::ffi::c_void,
             4 as i32,
         );
         I_GetMemoryValue(
             4 as u32,
-            &raw mut unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector.ceilingheight as *mut ::core::ffi::c_void,
+            &raw mut sentinel.ceilingheight as *mut ::core::ffi::c_void,
             4 as i32,
         );
-        unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector_is_initialized = true;
+        let id = SectorId(unsafe { game_state() }.p_setup.sectors.len() as u32);
+        unsafe { game_state() }.p_setup.sectors.push(sentinel);
+        unsafe { game_state() }.p_setup.null_sector_id = Some(id);
     }
-    return &raw mut unsafe { game_state() }.p_setup.getsectoratnulladdress_null_sector;
+    unsafe { game_state() }.p_setup.null_sector_id.unwrap()
 }
 pub unsafe fn P_LoadSegs(mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -330,21 +326,19 @@ pub unsafe fn P_LoadSegs(mut lump: i32) {
         side = (*ml).side as i32;
         let seg_sidenum =
             *(&raw mut (*ldef).sidenum as *mut i16).offset(side as isize) as u32;
-        (*li).sidedef = unsafe { game_state() }.p_setup.side_mut(SideId(seg_sidenum));
-        (*li).frontsector = unsafe { game_state() }
-            .p_setup
-            .sector_mut(unsafe { game_state() }.p_setup.sides[seg_sidenum as usize].sector);
+        (*li).sidedef = SideId(seg_sidenum);
+        (*li).frontsector = Some(unsafe { game_state() }.p_setup.sides[seg_sidenum as usize].sector);
         if (*ldef).flags as i32 & ML_TWOSIDED != 0 {
             sidenum = (*ldef).sidenum[(side ^ 1 as i32) as usize] as i32;
             if sidenum < 0 as i32 || sidenum >= unsafe { game_state() }.p_setup.numsides {
-                (*li).backsector = GetSectorAtNullAddress();
+                (*li).backsector = Some(GetSectorAtNullAddress());
             } else {
-                (*li).backsector = unsafe { game_state() }.p_setup.sector_mut(
+                (*li).backsector = Some(
                     unsafe { game_state() }.p_setup.sides[sidenum as usize].sector,
                 );
             }
         } else {
-            (*li).backsector = ::core::ptr::null_mut::<sector_t>();
+            (*li).backsector = None;
         }
         i += 1;
         li = li.offset(1);
@@ -622,17 +616,17 @@ pub unsafe fn P_LoadLineDefs(mut lump: i32) {
             let side_sector = unsafe { game_state() }.p_setup.sides
                 [(*ld).sidenum[0 as i32 as usize] as usize]
                 .sector;
-            (*ld).frontsector = unsafe { game_state() }.p_setup.sector_mut(side_sector);
+            (*ld).frontsector = Some(side_sector);
         } else {
-            (*ld).frontsector = ::core::ptr::null_mut::<sector_t>();
+            (*ld).frontsector = None;
         }
         if (*ld).sidenum[1 as i32 as usize] as i32 != -(1 as i32) {
             let side_sector = unsafe { game_state() }.p_setup.sides
                 [(*ld).sidenum[1 as i32 as usize] as usize]
                 .sector;
-            (*ld).backsector = unsafe { game_state() }.p_setup.sector_mut(side_sector);
+            (*ld).backsector = Some(side_sector);
         } else {
-            (*ld).backsector = ::core::ptr::null_mut::<sector_t>();
+            (*ld).backsector = None;
         }
         i += 1;
         mld = mld.offset(1);
@@ -721,7 +715,9 @@ pub unsafe fn P_GroupLines() {
     while i < unsafe { game_state() }.p_setup.numsubsectors {
         let firstline = unsafe { game_state() }.p_setup.subsectors[i as usize].firstline;
         seg = unsafe { game_state() }.p_setup.segs.offset(firstline as isize) as *mut seg_t;
-        unsafe { game_state() }.p_setup.subsectors[i as usize].sector = (*(*seg).sidedef).sector;
+        let seg_sidedef = (*seg).sidedef;
+        unsafe { game_state() }.p_setup.subsectors[i as usize].sector =
+            unsafe { game_state() }.p_setup.sides[seg_sidedef.0 as usize].sector;
         i += 1;
     }
     li = unsafe { game_state() }.p_setup.lines;
@@ -729,9 +725,11 @@ pub unsafe fn P_GroupLines() {
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numlines {
         unsafe { game_state() }.p_setup.totallines += 1;
-        (*(*li).frontsector).linecount += 1;
-        if !(*li).backsector.is_null() && (*li).backsector != (*li).frontsector {
-            (*(*li).backsector).linecount += 1;
+        let front_id = (*li).frontsector.unwrap();
+        (*unsafe { game_state() }.p_setup.sector_mut(front_id)).linecount += 1;
+        if (*li).backsector.is_some() && (*li).backsector != (*li).frontsector {
+            let back_id = (*li).backsector.unwrap();
+            (*unsafe { game_state() }.p_setup.sector_mut(back_id)).linecount += 1;
             unsafe { game_state() }.p_setup.totallines += 1;
         }
         i += 1;
@@ -754,17 +752,19 @@ pub unsafe fn P_GroupLines() {
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numlines {
         li = unsafe { game_state() }.p_setup.lines.offset(i as isize) as *mut line_t;
-        if !(*li).frontsector.is_null() {
-            sector = (*li).frontsector;
+        if let Some(front_id) = (*li).frontsector {
+            sector = unsafe { game_state() }.p_setup.sector_mut(front_id);
             let ref mut fresh1 = *(*sector).lines.offset((*sector).linecount as isize);
             *fresh1 = li as *mut line_s;
             (*sector).linecount += 1;
         }
-        if !(*li).backsector.is_null() && (*li).frontsector != (*li).backsector {
-            sector = (*li).backsector;
-            let ref mut fresh2 = *(*sector).lines.offset((*sector).linecount as isize);
-            *fresh2 = li as *mut line_s;
-            (*sector).linecount += 1;
+        if let Some(back_id) = (*li).backsector {
+            if (*li).frontsector != (*li).backsector {
+                sector = unsafe { game_state() }.p_setup.sector_mut(back_id);
+                let ref mut fresh2 = *(*sector).lines.offset((*sector).linecount as isize);
+                *fresh2 = li as *mut line_s;
+                (*sector).linecount += 1;
+            }
         }
         i += 1;
     }

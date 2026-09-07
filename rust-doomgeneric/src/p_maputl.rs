@@ -379,8 +379,8 @@ pub unsafe fn P_LineOpening(mut linedef: *mut line_t) {
         unsafe { game_state() }.p_maputl.openrange = 0 as i32 as fixed_t;
         return;
     }
-    front = (*linedef).frontsector;
-    back = (*linedef).backsector;
+    front = unsafe { game_state() }.p_setup.sector_mut((*linedef).frontsector.unwrap());
+    back = unsafe { game_state() }.p_setup.sector_mut((*linedef).backsector.unwrap());
     if (*front).ceilingheight < (*back).ceilingheight {
         unsafe { game_state() }.p_maputl.opentop = (*front).ceilingheight;
     } else {
@@ -553,7 +553,7 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
     if frac < 0 as i32 {
         return true_0 as boolean;
     }
-    if unsafe { game_state() }.p_maputl.earlyout && frac < FRACUNIT && (*ld).backsector.is_null() {
+    if unsafe { game_state() }.p_maputl.earlyout && frac < FRACUNIT && (*ld).backsector.is_none() {
         return false_0 as boolean;
     }
     (*unsafe { game_state() }.p_maputl.intercept_p).frac = frac;

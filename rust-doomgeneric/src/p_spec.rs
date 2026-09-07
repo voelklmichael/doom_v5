@@ -416,10 +416,14 @@ pub unsafe fn getNextSector(mut line: *mut line_t, mut sec: *mut sector_t) -> *m
     if (*line).flags as i32 & ML_TWOSIDED == 0 {
         return ::core::ptr::null_mut::<sector_t>();
     }
-    if (*line).frontsector == sec {
-        return (*line).backsector;
+    let front = unsafe { game_state() }.p_setup.sector_mut((*line).frontsector.unwrap());
+    if front == sec {
+        return match (*line).backsector {
+            Some(id) => unsafe { game_state() }.p_setup.sector_mut(id),
+            None => ::core::ptr::null_mut::<sector_t>(),
+        };
     }
-    return (*line).frontsector;
+    return front;
 }
 pub unsafe fn P_FindLowestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
@@ -1163,7 +1167,10 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
             );
             i = 0 as i32;
             while i < (*s2).linecount {
-                s3 = (**(*s2).lines.offset(i as isize)).backsector;
+                s3 = match (**(*s2).lines.offset(i as isize)).backsector {
+                    Some(id) => unsafe { game_state() }.p_setup.sector_mut(id),
+                    None => ::core::ptr::null_mut::<sector_t>(),
+                };
                 if s3 == s1 {
                     i += 1;
                 } else {

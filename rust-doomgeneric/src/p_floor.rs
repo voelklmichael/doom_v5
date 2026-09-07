@@ -296,8 +296,9 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight =
                     ((*sec).floorheight as i32 + 24 as i32 * FRACUNIT) as fixed_t;
-                (*sec).floorpic = (*(*line).frontsector).floorpic;
-                (*sec).special = (*(*line).frontsector).special;
+                let fsec = unsafe { game_state() }.p_setup.sector_mut((*line).frontsector.unwrap());
+                (*sec).floorpic = (*fsec).floorpic;
+                (*sec).special = (*fsec).special;
                 current_block_84 = 15514718523126015390;
             }
             5 => {
@@ -437,11 +438,12 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
             i = 0 as i32;
             while i < (*sec).linecount {
                 if !((**(*sec).lines.offset(i as isize)).flags as i32 & ML_TWOSIDED == 0) {
-                    tsec = (**(*sec).lines.offset(i as isize)).frontsector;
-                    newsecnum = tsec.offset_from(unsafe { game_state() }.p_setup.sectors.as_mut_ptr()) as i64 as i32;
+                    let front_id = (**(*sec).lines.offset(i as isize)).frontsector.unwrap();
+                    newsecnum = front_id.0 as i32;
                     if !(secnum != newsecnum) {
-                        tsec = (**(*sec).lines.offset(i as isize)).backsector;
-                        newsecnum = tsec.offset_from(unsafe { game_state() }.p_setup.sectors.as_mut_ptr()) as i64 as i32;
+                        let back_id = (**(*sec).lines.offset(i as isize)).backsector.unwrap();
+                        newsecnum = back_id.0 as i32;
+                        tsec = unsafe { game_state() }.p_setup.sector_mut(back_id);
                         if !((*tsec).floorpic as i32 != texture) {
                             height += stairsize as i32;
                             if (*tsec).specialdata.is_null() {

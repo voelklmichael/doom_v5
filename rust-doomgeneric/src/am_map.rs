@@ -20,6 +20,7 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::m_misc::M_snprintf;
 use crate::src::p_maputl::MAPBLOCKUNITS;
+use crate::src::p_mobj::line_t;
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_spec::ML_MAPPED;
 use crate::src::p_spec::ML_SECRET;
@@ -1249,28 +1250,29 @@ pub unsafe fn AM_drawWalls() {
     };
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numlines {
-        l.a.x = (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).v1).x;
-        l.a.y = (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).v1).y;
-        l.b.x = (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).v2).x;
-        l.b.y = (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).v2).y;
-        if unsafe { game_state() }.am_map.cheating != 0 || (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).flags as i32 & ML_MAPPED != 0 {
-            if !((*unsafe { game_state() }.p_setup.lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE != 0 && unsafe { game_state() }.am_map.cheating == 0) {
-                if (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).backsector.is_null() {
+        let li = unsafe { game_state() }.p_setup.lines.offset(i as isize) as *mut line_t;
+        l.a.x = (*(*li).v1).x;
+        l.a.y = (*(*li).v1).y;
+        l.b.x = (*(*li).v2).x;
+        l.b.y = (*(*li).v2).y;
+        if unsafe { game_state() }.am_map.cheating != 0 || (*li).flags as i32 & ML_MAPPED != 0 {
+            if !((*li).flags as i32 & LINE_NEVERSEE != 0 && unsafe { game_state() }.am_map.cheating == 0) {
+                if (*li).backsector.is_none() {
                     AM_drawMline(&raw mut l, WALLCOLORS + unsafe { game_state() }.am_map.lightlev);
-                } else if (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).special as i32 == 39 as i32 {
+                } else if (*li).special as i32 == 39 as i32 {
                     AM_drawMline(&raw mut l, WALLCOLORS + WALLRANGE / 2 as i32);
-                } else if (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).flags as i32 & ML_SECRET != 0 {
+                } else if (*li).flags as i32 & ML_SECRET != 0 {
                     if unsafe { game_state() }.am_map.cheating != 0 {
                         AM_drawMline(&raw mut l, SECRETWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
                     } else {
                         AM_drawMline(&raw mut l, WALLCOLORS + unsafe { game_state() }.am_map.lightlev);
                     }
-                } else if (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).backsector).floorheight
-                    != (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).frontsector).floorheight
+                } else if (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).floorheight
+                    != (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).floorheight
                 {
                     AM_drawMline(&raw mut l, FDWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
-                } else if (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).backsector).ceilingheight
-                    != (*(*unsafe { game_state() }.p_setup.lines.offset(i as isize)).frontsector).ceilingheight
+                } else if (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).ceilingheight
+                    != (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).ceilingheight
                 {
                     AM_drawMline(&raw mut l, CDWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
                 } else if unsafe { game_state() }.am_map.cheating != 0 {
@@ -1278,7 +1280,7 @@ pub unsafe fn AM_drawWalls() {
                 }
             }
         } else if (*unsafe { game_state() }.am_map.plr).powers[pw_allmap as i32 as usize] != 0 {
-            if (*unsafe { game_state() }.p_setup.lines.offset(i as isize)).flags as i32 & LINE_NEVERSEE == 0 {
+            if (*li).flags as i32 & LINE_NEVERSEE == 0 {
                 AM_drawMline(&raw mut l, GRAYS + 3 as i32);
             }
         }
