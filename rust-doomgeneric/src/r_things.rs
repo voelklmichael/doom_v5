@@ -551,7 +551,7 @@ pub unsafe fn R_ProjectSprite(state: &mut GameState, mut thing: *mut mobj_t) {
         .spriteframes
         .offset(((*thing).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
     if (*sprframe).rotate != 0 {
-        ang = R_PointToAngle((*thing).x, (*thing).y);
+        ang = R_PointToAngle(state, (*thing).x, (*thing).y);
         rot = (ang as u32)
             .wrapping_sub((*thing).angle as u32)
             .wrapping_add(((ANG45 / 2 as i32) as u32).wrapping_mul(9 as u32))

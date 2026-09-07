@@ -240,7 +240,7 @@ unsafe fn S_AdjustSoundParams(
     if unsafe { game_state() }.g_game.gamemap != 8 as i32 && approx_dist > S_CLIPPING_DIST {
         return 0 as i32;
     }
-    angle = R_PointToAngle2((*listener).x, (*listener).y, (*source).x, (*source).y);
+    angle = R_PointToAngle2(unsafe { game_state() }, (*listener).x, (*listener).y, (*source).x, (*source).y);
     if angle > (*listener).angle {
         angle = angle.wrapping_sub((*listener).angle);
     } else {

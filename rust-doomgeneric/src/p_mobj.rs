@@ -1352,7 +1352,7 @@ pub unsafe fn P_SpawnMissile(
         );
     }
     (*th).target = Some((*source).id);
-    an = R_PointToAngle2((*source).x, (*source).y, (*dest).x, (*dest).y);
+    an = R_PointToAngle2(unsafe { game_state() }, (*source).x, (*source).y, (*dest).x, (*dest).y);
     if (*dest).flags & MF_SHADOW as i32 != 0 {
         an = an.wrapping_add(
             (P_Random(unsafe { &mut game_state().m_random })

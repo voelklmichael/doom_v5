@@ -742,7 +742,7 @@ pub unsafe fn P_DamageMobj(
             || (*source).player.is_null()
             || (*(*source).player).readyweapon as u32 != wp_chainsaw as i32 as u32)
     {
-        ang = R_PointToAngle2((*inflictor).x, (*inflictor).y, (*target).x, (*target).y) as u32;
+        ang = R_PointToAngle2(unsafe { game_state() }, (*inflictor).x, (*inflictor).y, (*target).x, (*target).y) as u32;
         thrust = (damage * (FRACUNIT >> 3 as i32) * 100 as i32 / (*(*target).info).mass) as fixed_t;
         if damage < 40 as i32
             && damage > (*target).health

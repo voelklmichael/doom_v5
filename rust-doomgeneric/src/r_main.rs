@@ -210,9 +210,9 @@ pub unsafe fn R_PointOnSegSide(mut x: fixed_t, mut y: fixed_t, mut line: *mut se
     }
     return 1 as i32;
 }
-pub unsafe fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle_t {
-    x -= unsafe { game_state() }.r_main.viewx;
-    y -= unsafe { game_state() }.r_main.viewy;
+pub unsafe fn R_PointToAngle(state: &mut GameState, mut x: fixed_t, mut y: fixed_t) -> angle_t {
+    x -= state.r_main.viewx;
+    y -= state.r_main.viewy;
     if x == 0 && y == 0 {
         return 0 as angle_t;
     }
@@ -256,14 +256,15 @@ pub unsafe fn R_PointToAngle(mut x: fixed_t, mut y: fixed_t) -> angle_t {
     };
 }
 pub unsafe fn R_PointToAngle2(
+    state: &mut GameState,
     mut x1: fixed_t,
     mut y1: fixed_t,
     mut x2: fixed_t,
     mut y2: fixed_t,
 ) -> angle_t {
-    unsafe { game_state() }.r_main.viewx = x1;
-    unsafe { game_state() }.r_main.viewy = y1;
-    return R_PointToAngle(x2, y2);
+    state.r_main.viewx = x1;
+    state.r_main.viewy = y1;
+    return R_PointToAngle(state, x2, y2);
 }
 pub unsafe fn R_PointToDist(state: &mut GameState, mut x: fixed_t, mut y: fixed_t) -> fixed_t {
     let mut angle: i32 = 0;
