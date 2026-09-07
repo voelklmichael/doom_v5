@@ -198,21 +198,29 @@ impl GameState {
 
 static mut GAME_STATE: OnceLock<GameState> = OnceLock::new();
 
-pub unsafe fn game_state() -> &'static mut GameState {
-    let cell: &'static mut OnceLock<GameState> = &mut GAME_STATE;
-    let just_initialized = cell.get().is_none();
-    cell.get_or_init(GameState::new);
-    let state = cell.get_mut().unwrap();
-    if just_initialized {
-        // Self-referential pointers (e.g. sounds.S_sfx's one aliased entry)
-        // can only be computed once the value is at its final, permanently-
-        // stable 'static address -- i.e. here, not inside any XxxState::new().
+// Self-referential pointers (e.g. sounds.S_sfx's one aliased entry) can only
+// be computed once the value is at its final, permanently-stable address --
+// i.e. here, not inside any XxxState::new(). Must run exactly once, right
+// after the GameState this reference points at is constructed and will never
+// move again.
+pub fn finish_init(state: &mut GameState) {
+    unsafe {
         state.sounds.fixup_self_links();
         fixup_intercepts_overrun(state);
         state.m_config.fixup_defaults();
         state.m_controls.fixup_weapon_keys();
         state.m_menu.fixup_menu_links();
         state.wi_stuff.fixup_anims();
+    }
+}
+
+pub unsafe fn game_state() -> &'static mut GameState {
+    let cell: &'static mut OnceLock<GameState> = &mut GAME_STATE;
+    let just_initialized = cell.get().is_none();
+    cell.get_or_init(GameState::new);
+    let state = cell.get_mut().unwrap();
+    if just_initialized {
+        finish_init(state);
     }
     state
 }

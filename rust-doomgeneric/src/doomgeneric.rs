@@ -1,6 +1,6 @@
 use crate::src::d_main::D_DoomMain;
 use crate::src::doomdef::pixel_t;
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_argv::M_FindResponseFile;
 use crate::src::stdint_types::size_t;
 use libc::malloc;
@@ -12,8 +12,8 @@ pub const DOOMGENERIC_RESX: i32 = 640;
 pub const DOOMGENERIC_RESY: i32 = 400;
 #[no_mangle]
 pub static mut DG_ScreenBuffer: *mut pixel_t = ::core::ptr::null::<pixel_t>() as *mut pixel_t;
-pub unsafe fn doomgeneric_Create(args: Vec<String>) {
-    unsafe { game_state() }.m_argv.myargv = args
+pub unsafe fn doomgeneric_Create(state: &mut GameState, args: Vec<String>) {
+    state.m_argv.myargv = args
         .into_iter()
         .map(|arg| ::std::ffi::CString::new(arg).expect("argument contains a nul byte"))
         .collect();
