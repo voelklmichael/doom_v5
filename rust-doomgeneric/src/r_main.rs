@@ -551,7 +551,8 @@ pub unsafe fn R_RenderPlayerView(state: &mut GameState, mut player: *mut player_
     R_ClearPlanes();
     R_ClearSprites();
     NetUpdate(state);
-    R_RenderBSPNode(state.p_setup.numnodes - 1 as i32);
+    let root_bspnum = state.p_setup.numnodes - 1 as i32;
+    R_RenderBSPNode(state, root_bspnum);
     NetUpdate(state);
     R_DrawPlanes();
     NetUpdate(state);
