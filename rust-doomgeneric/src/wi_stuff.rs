@@ -1163,7 +1163,7 @@ pub unsafe fn WI_updateNoState() {
     WI_updateAnimatedBack();
     unsafe { game_state() }.wi_stuff.cnt -= 1;
     if unsafe { game_state() }.wi_stuff.cnt == 0 {
-        G_WorldDone();
+        G_WorldDone(unsafe { game_state() });
     }
 }
 pub unsafe fn WI_initShowNextLoc() {
