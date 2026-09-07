@@ -59,7 +59,6 @@ use crate::src::m_argv::{M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
-use crate::src::m_menu::mouseSensitivity;
 use crate::src::m_menu::M_StartControlPanel;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::m_misc::M_TempFile;
@@ -1064,9 +1063,9 @@ pub unsafe fn G_Responder(mut ev: event_t) -> bool {
         2 => {
             SetMouseButtons(ev.data1 as u32);
             unsafe { game_state() }.g_game.mousex =
-                ev.data2 * (mouseSensitivity + 5 as i32) / 10 as i32;
+                ev.data2 * (unsafe { game_state() }.m_menu.mouseSensitivity + 5 as i32) / 10 as i32;
             unsafe { game_state() }.g_game.mousey =
-                ev.data3 * (mouseSensitivity + 5 as i32) / 10 as i32;
+                ev.data3 * (unsafe { game_state() }.m_menu.mouseSensitivity + 5 as i32) / 10 as i32;
             return true;
         }
         3 => {

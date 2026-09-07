@@ -76,12 +76,6 @@ use crate::src::m_controls::M_BindChatControls;
 use crate::src::m_controls::M_BindMapControls;
 use crate::src::m_controls::M_BindMenuControls;
 use crate::src::m_controls::M_BindWeaponControls;
-use crate::src::m_menu::detailLevel;
-use crate::src::m_menu::inhelpscreens;
-use crate::src::m_menu::menuactive;
-use crate::src::m_menu::mouseSensitivity;
-use crate::src::m_menu::screenblocks;
-use crate::src::m_menu::showMessages;
 use crate::src::m_menu::M_Drawer;
 use crate::src::m_menu::M_Init;
 use crate::src::m_menu::M_Responder;
@@ -263,7 +257,7 @@ pub unsafe fn D_Display() {
                 if wipe || viewheight != 200 as i32 && fullscreen {
                     redrawsbar = true;
                 }
-                if inhelpscreensstate && !inhelpscreens {
+                if inhelpscreensstate && !unsafe { game_state() }.m_menu.inhelpscreens {
                     redrawsbar = true;
                 }
                 ST_Drawer(viewheight == 200 as i32, redrawsbar);
@@ -312,7 +306,7 @@ pub unsafe fn D_Display() {
         && !automapactive
         && scaledviewwidth != 320 as i32
     {
-        if menuactive || menuactivestate || !viewactivestate {
+        if unsafe { game_state() }.m_menu.menuactive || menuactivestate || !viewactivestate {
             borderdrawcount = 3 as i32;
         }
         if borderdrawcount != 0 {
@@ -323,9 +317,9 @@ pub unsafe fn D_Display() {
     if unsafe { game_state() }.g_game.testcontrols {
         V_DrawMouseSpeedBox(unsafe { game_state() }.g_game.testcontrols_mousespeed);
     }
-    menuactivestate = menuactive;
+    menuactivestate = unsafe { game_state() }.m_menu.menuactive;
     viewactivestate = unsafe { game_state() }.g_game.viewactive;
-    inhelpscreensstate = inhelpscreens;
+    inhelpscreensstate = unsafe { game_state() }.m_menu.inhelpscreens;
     wipegamestate = unsafe { game_state() }.g_game.gamestate;
     unsafe { game_state() }.g_game.oldgamestate = wipegamestate;
     if unsafe { game_state() }.g_game.paused {
@@ -390,7 +384,7 @@ pub unsafe fn D_BindVariables() {
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "mouse_sensitivity",
-        &raw mut mouseSensitivity as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.m_menu.mouseSensitivity as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
@@ -405,17 +399,17 @@ pub unsafe fn D_BindVariables() {
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "show_messages",
-        &raw mut showMessages as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.m_menu.showMessages as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "screenblocks",
-        &raw mut screenblocks as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.m_menu.screenblocks as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "detaillevel",
-        &raw mut detailLevel as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.m_menu.detailLevel as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
         unsafe { &mut game_state().m_config },
@@ -462,7 +456,7 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
     if drone {
         return false_0 as boolean;
     }
-    if menuactive || unsafe { game_state() }.g_game.paused {
+    if unsafe { game_state() }.m_menu.menuactive || unsafe { game_state() }.g_game.paused {
         return false_0 as boolean;
     }
     return (unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
