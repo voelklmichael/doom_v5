@@ -210,6 +210,7 @@ pub fn finish_init(state: &mut GameState) {
         state.m_config.fixup_defaults();
         state.m_controls.fixup_weapon_keys();
         state.m_menu.fixup_menu_links();
+        state.m_menu.fixup_menu_routines();
         state.wi_stuff.fixup_anims();
     }
 }

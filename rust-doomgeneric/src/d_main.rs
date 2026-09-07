@@ -303,7 +303,7 @@ pub unsafe fn D_ProcessEvents(state: &mut GameState) {
     }
     loop {
         let Some( mut ev) = D_PopEvent(&mut state.d_event) else {break;};
-        if M_Responder(&mut ev) {
+        if M_Responder(state, &mut ev) {
             continue;
         }
         G_Responder(state, ev);
@@ -1393,7 +1393,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.d_main.startloadgame = -(1 as i32);
     }
     printf(b"M_Init: Init miscellaneous info.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    M_Init();
+    M_Init(state);
     printf(b"R_Init: Init DOOM refresh daemon - \0" as *const u8 as *const ::core::ffi::c_char);
     R_Init();
     printf(b"\nP_Init: Init Playloop state.\n\0" as *const u8 as *const ::core::ffi::c_char);
