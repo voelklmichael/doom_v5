@@ -504,7 +504,8 @@ pub unsafe fn P_LookForPlayers(mut actor: *mut mobj_t, mut allaround: bool) -> b
         (*actor).lastlook = (*actor).lastlook + 1 as i32 & 3 as i32;
     }
 }
-pub unsafe fn A_KeenDie(mut mo: *mut mobj_t) {
+pub unsafe fn A_KeenDie(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut mo2: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut junk: line_t = line_s {
@@ -523,7 +524,7 @@ pub unsafe fn A_KeenDie(mut mo: *mut mobj_t) {
         validcount: 0,
         specialdata: ::core::ptr::null_mut::<::core::ffi::c_void>(),
     };
-    A_Fall(mo);
+    A_Fall((*mo).id);
     th = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
     while th != &raw mut unsafe { game_state() }.p_tick.thinkercap {
         if matches!((*th).function, ThinkerFn::Mobj(_)) {
@@ -538,7 +539,8 @@ pub unsafe fn A_KeenDie(mut mo: *mut mobj_t) {
     junk.tag = 666 as i16;
     EV_DoDoor(&raw mut junk, vld_open);
 }
-pub unsafe fn A_Look(mut actor: *mut mobj_t) {
+pub unsafe fn A_Look(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut current_block: u64;
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     (*actor).threshold = 0 as i32;
@@ -599,7 +601,8 @@ pub unsafe fn A_Look(mut actor: *mut mobj_t) {
     }
     P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
 }
-pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
+pub unsafe fn A_Chase(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut delta: i32 = 0;
     if (*actor).reactiontime != 0 {
         (*actor).reactiontime -= 1;
@@ -684,7 +687,8 @@ pub unsafe fn A_Chase(mut actor: *mut mobj_t) {
         );
     }
 }
-pub unsafe fn A_FaceTarget(mut actor: *mut mobj_t) {
+pub unsafe fn A_FaceTarget(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let target = match (*actor)
         .target
         .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id))
@@ -702,14 +706,15 @@ pub unsafe fn A_FaceTarget(mut actor: *mut mobj_t) {
         );
     }
 }
-pub unsafe fn A_PosAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_PosAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut angle: i32 = 0;
     let mut damage: i32 = 0;
     let mut slope: i32 = 0;
     if (*actor).target.is_none() {
         return;
     }
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     angle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, angle as angle_t, MISSILERANGE) as i32;
     S_StartSound(
@@ -729,7 +734,8 @@ pub unsafe fn A_PosAttack(mut actor: *mut mobj_t) {
         damage,
     );
 }
-pub unsafe fn A_SPosAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_SPosAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut i: i32 = 0;
     let mut angle: i32 = 0;
     let mut bangle: i32 = 0;
@@ -743,7 +749,7 @@ pub unsafe fn A_SPosAttack(mut actor: *mut mobj_t) {
         actor as *mut ::core::ffi::c_void,
         sfx_shotgn as i32,
     );
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     bangle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE) as i32;
     i = 0 as i32;
@@ -763,7 +769,8 @@ pub unsafe fn A_SPosAttack(mut actor: *mut mobj_t) {
         i += 1;
     }
 }
-pub unsafe fn A_CPosAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_CPosAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut angle: i32 = 0;
     let mut bangle: i32 = 0;
     let mut damage: i32 = 0;
@@ -776,7 +783,7 @@ pub unsafe fn A_CPosAttack(mut actor: *mut mobj_t) {
         actor as *mut ::core::ffi::c_void,
         sfx_shotgn as i32,
     );
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     bangle = (*actor).angle as i32;
     slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE) as i32;
     angle = bangle
@@ -792,8 +799,9 @@ pub unsafe fn A_CPosAttack(mut actor: *mut mobj_t) {
         damage,
     );
 }
-pub unsafe fn A_CPosRefire(mut actor: *mut mobj_t) {
-    A_FaceTarget(actor);
+pub unsafe fn A_CPosRefire(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
+    A_FaceTarget((*actor).id);
     if P_Random(unsafe { &mut game_state().m_random }) < 40 as i32 {
         return;
     }
@@ -807,8 +815,9 @@ pub unsafe fn A_CPosRefire(mut actor: *mut mobj_t) {
         P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
     }
 }
-pub unsafe fn A_SpidRefire(mut actor: *mut mobj_t) {
-    A_FaceTarget(actor);
+pub unsafe fn A_SpidRefire(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
+    A_FaceTarget((*actor).id);
     if P_Random(unsafe { &mut game_state().m_random }) < 10 as i32 {
         return;
     }
@@ -822,7 +831,8 @@ pub unsafe fn A_SpidRefire(mut actor: *mut mobj_t) {
         P_SetMobjState(actor, (*(*actor).info).seestate as statenum_t);
     }
 }
-pub unsafe fn A_BspiAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_BspiAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let target = match (*actor)
         .target
         .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id))
@@ -830,10 +840,11 @@ pub unsafe fn A_BspiAttack(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     P_SpawnMissile(actor, target, MT_ARACHPLAZ);
 }
-pub unsafe fn A_TroopAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_TroopAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut damage: i32 = 0;
     let target = match (*actor)
         .target
@@ -842,7 +853,7 @@ pub unsafe fn A_TroopAttack(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     if P_CheckMeleeRange(actor) {
         S_StartSound(
             unsafe { &mut game_state().sounds },
@@ -855,7 +866,8 @@ pub unsafe fn A_TroopAttack(mut actor: *mut mobj_t) {
     }
     P_SpawnMissile(actor, target, MT_TROOPSHOT);
 }
-pub unsafe fn A_SargAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_SargAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut damage: i32 = 0;
     let target = match (*actor)
         .target
@@ -864,14 +876,15 @@ pub unsafe fn A_SargAttack(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     if P_CheckMeleeRange(actor) {
         damage =
             (P_Random(unsafe { &mut game_state().m_random }) % 10 as i32 + 1 as i32) * 4 as i32;
         P_DamageMobj(target, actor, actor, damage);
     }
 }
-pub unsafe fn A_HeadAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_HeadAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut damage: i32 = 0;
     let target = match (*actor)
         .target
@@ -880,7 +893,7 @@ pub unsafe fn A_HeadAttack(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     if P_CheckMeleeRange(actor) {
         damage =
             (P_Random(unsafe { &mut game_state().m_random }) % 6 as i32 + 1 as i32) * 10 as i32;
@@ -889,7 +902,8 @@ pub unsafe fn A_HeadAttack(mut actor: *mut mobj_t) {
     }
     P_SpawnMissile(actor, target, MT_HEADSHOT);
 }
-pub unsafe fn A_CyberAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_CyberAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let target = match (*actor)
         .target
         .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id))
@@ -897,10 +911,11 @@ pub unsafe fn A_CyberAttack(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     P_SpawnMissile(actor, target, MT_ROCKET);
 }
-pub unsafe fn A_BruisAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_BruisAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut damage: i32 = 0;
     let target = match (*actor)
         .target
@@ -922,7 +937,8 @@ pub unsafe fn A_BruisAttack(mut actor: *mut mobj_t) {
     }
     P_SpawnMissile(actor, target, MT_BRUISERSHOT);
 }
-pub unsafe fn A_SkelMissile(mut actor: *mut mobj_t) {
+pub unsafe fn A_SkelMissile(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let target = match (*actor)
         .target
@@ -931,7 +947,7 @@ pub unsafe fn A_SkelMissile(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     (*actor).z += 16 as i32 * FRACUNIT;
     mo = P_SpawnMissile(actor, target, MT_TRACER);
     (*actor).z -= 16 as i32 * FRACUNIT;
@@ -941,7 +957,8 @@ pub unsafe fn A_SkelMissile(mut actor: *mut mobj_t) {
 }
 #[no_mangle]
 pub static TRACEANGLE: i32 = 0xc000000;
-pub unsafe fn A_Tracer(mut actor: *mut mobj_t) {
+pub unsafe fn A_Tracer(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut exact: angle_t = 0;
     let mut dist: fixed_t = 0;
     let mut slope: fixed_t = 0;
@@ -1001,18 +1018,20 @@ pub unsafe fn A_Tracer(mut actor: *mut mobj_t) {
         (*actor).momz += FRACUNIT / 8 as i32;
     };
 }
-pub unsafe fn A_SkelWhoosh(mut actor: *mut mobj_t) {
+pub unsafe fn A_SkelWhoosh(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     if (*actor).target.is_none() {
         return;
     }
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     S_StartSound(
         unsafe { &mut game_state().sounds },
         actor as *mut ::core::ffi::c_void,
         sfx_skeswg as i32,
     );
 }
-pub unsafe fn A_SkelFist(mut actor: *mut mobj_t) {
+pub unsafe fn A_SkelFist(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut damage: i32 = 0;
     let target = match (*actor)
         .target
@@ -1021,7 +1040,7 @@ pub unsafe fn A_SkelFist(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     if P_CheckMeleeRange(actor) {
         damage =
             (P_Random(unsafe { &mut game_state().m_random }) % 10 as i32 + 1 as i32) * 6 as i32;
@@ -1069,7 +1088,8 @@ pub unsafe extern "C" fn PIT_VileCheck(mut thing_id: MobjId) -> boolean {
     }
     return false_0 as boolean;
 }
-pub unsafe fn A_VileChase(mut actor: *mut mobj_t) {
+pub unsafe fn A_VileChase(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut xl: i32 = 0;
     let mut xh: i32 = 0;
     let mut yl: i32 = 0;
@@ -1110,7 +1130,7 @@ pub unsafe fn A_VileChase(mut actor: *mut mobj_t) {
                     temp = (*actor).target;
                     (*actor).target =
                         Some((*unsafe { game_state() }.p_enemy.corpsehit).id);
-                    A_FaceTarget(actor);
+                    A_FaceTarget((*actor).id);
                     (*actor).target = temp;
                     P_SetMobjState(actor, S_VILE_HEAL1);
                     S_StartSound(
@@ -1134,32 +1154,36 @@ pub unsafe fn A_VileChase(mut actor: *mut mobj_t) {
             bx += 1;
         }
     }
-    A_Chase(actor);
+    A_Chase((*actor).id);
 }
-pub unsafe fn A_VileStart(mut actor: *mut mobj_t) {
+pub unsafe fn A_VileStart(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(
         unsafe { &mut game_state().sounds },
         actor as *mut ::core::ffi::c_void,
         sfx_vilatk as i32,
     );
 }
-pub unsafe fn A_StartFire(mut actor: *mut mobj_t) {
+pub unsafe fn A_StartFire(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(
         unsafe { &mut game_state().sounds },
         actor as *mut ::core::ffi::c_void,
         sfx_flamst as i32,
     );
-    A_Fire(actor);
+    A_Fire((*actor).id);
 }
-pub unsafe fn A_FireCrackle(mut actor: *mut mobj_t) {
+pub unsafe fn A_FireCrackle(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(
         unsafe { &mut game_state().sounds },
         actor as *mut ::core::ffi::c_void,
         sfx_flame as i32,
     );
-    A_Fire(actor);
+    A_Fire((*actor).id);
 }
-pub unsafe fn A_Fire(mut actor: *mut mobj_t) {
+pub unsafe fn A_Fire(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut dest: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: u32 = 0;
@@ -1187,7 +1211,8 @@ pub unsafe fn A_Fire(mut actor: *mut mobj_t) {
     (*actor).z = (*dest).z;
     P_SetThingPosition(actor);
 }
-pub unsafe fn A_VileTarget(mut actor: *mut mobj_t) {
+pub unsafe fn A_VileTarget(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut fog: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let target = match (*actor)
         .target
@@ -1196,14 +1221,15 @@ pub unsafe fn A_VileTarget(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     fog = P_SpawnMobj((*target).x, (*target).x, (*target).z, MT_FIRE);
     (*actor).tracer = Some((*fog).id);
     (*fog).target = Some((*actor).id);
     (*fog).tracer = (*actor).target;
-    A_Fire(fog);
+    A_Fire((*fog).id);
 }
-pub unsafe fn A_VileAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_VileAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut fire: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
     let target = match (*actor)
@@ -1213,7 +1239,7 @@ pub unsafe fn A_VileAttack(mut actor: *mut mobj_t) {
         Some(target) => target,
         None => return,
     };
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     if !P_CheckSight(unsafe { &mut game_state().p_sight }, actor, target) {
         return;
     }
@@ -1237,19 +1263,21 @@ pub unsafe fn A_VileAttack(mut actor: *mut mobj_t) {
     P_RadiusAttack(fire, actor, 70 as i32);
 }
 pub const FATSPREAD: i32 = ANG90 / 8 as i32;
-pub unsafe fn A_FatRaise(mut actor: *mut mobj_t) {
-    A_FaceTarget(actor);
+pub unsafe fn A_FatRaise(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
+    A_FaceTarget((*actor).id);
     S_StartSound(
         unsafe { &mut game_state().sounds },
         actor as *mut ::core::ffi::c_void,
         sfx_manatk as i32,
     );
 }
-pub unsafe fn A_FatAttack1(mut actor: *mut mobj_t) {
+pub unsafe fn A_FatAttack1(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     (*actor).angle = (*actor).angle.wrapping_add(FATSPREAD as angle_t);
     target = P_SubstNullMobj(
         unsafe { &mut game_state().p_mobj },
@@ -1265,11 +1293,12 @@ pub unsafe fn A_FatAttack1(mut actor: *mut mobj_t) {
     (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
-pub unsafe fn A_FatAttack2(mut actor: *mut mobj_t) {
+pub unsafe fn A_FatAttack2(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     (*actor).angle = (*actor).angle.wrapping_sub(FATSPREAD as angle_t);
     target = P_SubstNullMobj(
         unsafe { &mut game_state().p_mobj },
@@ -1285,11 +1314,12 @@ pub unsafe fn A_FatAttack2(mut actor: *mut mobj_t) {
     (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
-pub unsafe fn A_FatAttack3(mut actor: *mut mobj_t) {
+pub unsafe fn A_FatAttack3(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut target: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: i32 = 0;
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     target = P_SubstNullMobj(
         unsafe { &mut game_state().p_mobj },
         (*actor)
@@ -1309,7 +1339,8 @@ pub unsafe fn A_FatAttack3(mut actor: *mut mobj_t) {
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
 }
 pub const SKULLSPEED: i32 = 20 * FRACUNIT;
-pub unsafe fn A_SkullAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_SkullAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut dest: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: angle_t = 0;
     let mut dist: i32 = 0;
@@ -1326,7 +1357,7 @@ pub unsafe fn A_SkullAttack(mut actor: *mut mobj_t) {
         actor as *mut ::core::ffi::c_void,
         (*(*actor).info).attacksound,
     );
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     an = (*actor).angle >> ANGLETOFINESHIFT;
     (*actor).momx = FixedMul(SKULLSPEED, finecosine[an as isize]);
     (*actor).momy = FixedMul(SKULLSPEED, finesine[an as usize]);
@@ -1373,22 +1404,25 @@ pub unsafe fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
         return;
     }
     (*newmobj).target = (*actor).target;
-    A_SkullAttack(newmobj);
+    A_SkullAttack((*newmobj).id);
 }
-pub unsafe fn A_PainAttack(mut actor: *mut mobj_t) {
+pub unsafe fn A_PainAttack(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     if (*actor).target.is_none() {
         return;
     }
-    A_FaceTarget(actor);
+    A_FaceTarget((*actor).id);
     A_PainShootSkull(actor, (*actor).angle);
 }
-pub unsafe fn A_PainDie(mut actor: *mut mobj_t) {
-    A_Fall(actor);
+pub unsafe fn A_PainDie(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
+    A_Fall((*actor).id);
     A_PainShootSkull(actor, (*actor).angle.wrapping_add(ANG90 as angle_t));
     A_PainShootSkull(actor, (*actor).angle.wrapping_add(ANG180));
     A_PainShootSkull(actor, (*actor).angle.wrapping_add(ANG270));
 }
-pub unsafe fn A_Scream(mut actor: *mut mobj_t) {
+pub unsafe fn A_Scream(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut sound: i32 = 0;
     match (*(*actor).info).deathsound {
         0 => return,
@@ -1414,14 +1448,16 @@ pub unsafe fn A_Scream(mut actor: *mut mobj_t) {
         );
     };
 }
-pub unsafe fn A_XScream(mut actor: *mut mobj_t) {
+pub unsafe fn A_XScream(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(
         unsafe { &mut game_state().sounds },
         actor as *mut ::core::ffi::c_void,
         sfx_slop as i32,
     );
 }
-pub unsafe fn A_Pain(mut actor: *mut mobj_t) {
+pub unsafe fn A_Pain(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     if (*(*actor).info).painsound != 0 {
         S_StartSound(
             unsafe { &mut game_state().sounds },
@@ -1430,10 +1466,12 @@ pub unsafe fn A_Pain(mut actor: *mut mobj_t) {
         );
     }
 }
-pub unsafe fn A_Fall(mut actor: *mut mobj_t) {
+pub unsafe fn A_Fall(id: MobjId) {
+    let actor = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     (*actor).flags &= !(MF_SOLID as i32);
 }
-pub unsafe fn A_Explode(mut thingy: *mut mobj_t) {
+pub unsafe fn A_Explode(id: MobjId) {
+    let thingy = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let target = (*thingy)
         .target
         .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id))
@@ -1477,7 +1515,8 @@ unsafe fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
         }
     };
 }
-pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
+pub unsafe fn A_BossDeath(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut mo2: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut junk: line_t = line_s {
@@ -1570,29 +1609,32 @@ pub unsafe fn A_BossDeath(mut mo: *mut mobj_t) {
     }
     G_ExitLevel();
 }
-pub unsafe fn A_Hoof(mut mo: *mut mobj_t) {
+pub unsafe fn A_Hoof(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(
         unsafe { &mut game_state().sounds },
         mo as *mut ::core::ffi::c_void,
         sfx_hoof as i32,
     );
-    A_Chase(mo);
+    A_Chase((*mo).id);
 }
-pub unsafe fn A_Metal(mut mo: *mut mobj_t) {
+pub unsafe fn A_Metal(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(
         unsafe { &mut game_state().sounds },
         mo as *mut ::core::ffi::c_void,
         sfx_metal as i32,
     );
-    A_Chase(mo);
+    A_Chase((*mo).id);
 }
-pub unsafe fn A_BabyMetal(mut mo: *mut mobj_t) {
+pub unsafe fn A_BabyMetal(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(
         unsafe { &mut game_state().sounds },
         mo as *mut ::core::ffi::c_void,
         sfx_bspwlk as i32,
     );
-    A_Chase(mo);
+    A_Chase((*mo).id);
 }
 pub unsafe fn A_OpenShotgun2(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     S_StartSound(
@@ -1616,7 +1658,8 @@ pub unsafe fn A_CloseShotgun2(mut player: *mut player_t, mut psp: *mut pspdef_t)
     );
     A_ReFire(player, psp);
 }
-pub unsafe fn A_BrainAwake(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainAwake(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut thinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     unsafe { game_state() }.p_enemy.numbraintargets = 0 as i32;
@@ -1636,10 +1679,12 @@ pub unsafe fn A_BrainAwake(mut mo: *mut mobj_t) {
     }
     S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_bossit as i32);
 }
-pub unsafe fn A_BrainPain(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainPain(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_bospn as i32);
 }
-pub unsafe fn A_BrainScream(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainScream(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut z: i32 = 0;
@@ -1659,7 +1704,8 @@ pub unsafe fn A_BrainScream(mut mo: *mut mobj_t) {
     }
     S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_bosdth as i32);
 }
-pub unsafe fn A_BrainExplode(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainExplode(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut z: i32 = 0;
@@ -1678,10 +1724,12 @@ pub unsafe fn A_BrainExplode(mut mo: *mut mobj_t) {
         (*th).tics = 1 as i32;
     }
 }
-pub unsafe fn A_BrainDie(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainDie(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     G_ExitLevel();
 }
-pub unsafe fn A_BrainSpit(mut mo: *mut mobj_t) {
+pub unsafe fn A_BrainSpit(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let state = unsafe { game_state() };
@@ -1699,15 +1747,17 @@ pub unsafe fn A_BrainSpit(mut mo: *mut mobj_t) {
         ((*targ).y as i32 - (*mo).y as i32) / (*newmobj).momy as i32 / (*(*newmobj).state).tics;
     S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_bospit as i32);
 }
-pub unsafe fn A_SpawnSound(mut mo: *mut mobj_t) {
+pub unsafe fn A_SpawnSound(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     S_StartSound(
         unsafe { &mut game_state().sounds },
         mo as *mut ::core::ffi::c_void,
         sfx_boscub as i32,
     );
-    A_SpawnFly(mo);
+    A_SpawnFly((*mo).id);
 }
-pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
+pub unsafe fn A_SpawnFly(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut newmobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut fog: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
@@ -1761,7 +1811,8 @@ pub unsafe fn A_SpawnFly(mut mo: *mut mobj_t) {
     P_TeleportMove(newmobj, (*newmobj).x, (*newmobj).y);
     P_RemoveMobj(unsafe { &mut game_state().p_mobj }, mo);
 }
-pub unsafe fn A_PlayerScream(mut mo: *mut mobj_t) {
+pub unsafe fn A_PlayerScream(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut sound: i32 = sfx_pldeth as i32;
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
         && (*mo).health < -(50 as i32)

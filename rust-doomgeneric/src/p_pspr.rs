@@ -25,6 +25,7 @@ use crate::src::p_inter::P_DamageMobj;
 use crate::src::p_map::P_AimLineAttack;
 use crate::src::p_map::P_LineAttack;
 use crate::src::p_mobj::statenum_t;
+use crate::src::p_mobj::MobjId;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::P_SpawnPlayerMissile;
@@ -569,7 +570,8 @@ pub unsafe fn A_Light1(mut player: *mut player_t, mut psp: *mut pspdef_t) {
 pub unsafe fn A_Light2(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     (*player).extralight = 2 as i32;
 }
-pub unsafe fn A_BFGSpray(mut mo: *mut mobj_t) {
+pub unsafe fn A_BFGSpray(id: MobjId) {
+    let mo = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut damage: i32 = 0;

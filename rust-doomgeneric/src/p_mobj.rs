@@ -54,7 +54,7 @@ pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
 pub enum StateAction {
     None,
-    Mobj(unsafe fn(*mut mobj_t)),
+    Mobj(unsafe fn(MobjId)),
     Weapon(unsafe fn(*mut player_t, *mut pspdef_t)),
 }
 #[derive(Copy, Clone)]
@@ -573,7 +573,7 @@ pub unsafe fn P_SetMobjState(mut mobj: *mut mobj_t, mut state: statenum_t) -> bo
         (*mobj).sprite = (*st).sprite;
         (*mobj).frame = (*st).frame;
         if let StateAction::Mobj(f) = (*st).action {
-            f(mobj);
+            f((*mobj).id);
         }
         state = (*st).nextstate;
         if !((*mobj).tics == 0) {
