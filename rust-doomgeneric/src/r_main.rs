@@ -434,7 +434,9 @@ pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
         state.r_main.transcolfunc = Some(R_DrawTranslatedColumnLow as unsafe fn() -> ());
         state.r_main.spanfunc = Some(R_DrawSpanLow as unsafe fn() -> ());
     }
-    R_InitBuffer(state.r_draw.scaledviewwidth, state.r_draw.viewheight);
+    let scaledviewwidth = state.r_draw.scaledviewwidth;
+    let viewheight = state.r_draw.viewheight;
+    R_InitBuffer(state, scaledviewwidth, viewheight);
     R_InitTextureMapping();
     state.r_things.pspritescale = (FRACUNIT * state.r_draw.viewwidth / SCREENWIDTH) as fixed_t;
     state.r_things.pspriteiscale =

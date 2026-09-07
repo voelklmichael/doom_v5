@@ -132,10 +132,10 @@ pub unsafe fn HUlib_eraseTextLine(mut l: *mut hu_textline_t) {
         yoffset = y * SCREENWIDTH;
         while y < (*l).y + lh {
             if y < unsafe { game_state() }.r_draw.viewwindowy || y >= unsafe { game_state() }.r_draw.viewwindowy + unsafe { game_state() }.r_draw.viewheight {
-                R_VideoErase(yoffset as u32, SCREENWIDTH);
+                R_VideoErase(unsafe { game_state() }, yoffset as u32, SCREENWIDTH);
             } else {
-                R_VideoErase(yoffset as u32, unsafe { game_state() }.r_draw.viewwindowx);
-                R_VideoErase((yoffset + unsafe { game_state() }.r_draw.viewwindowx + unsafe { game_state() }.r_draw.viewwidth) as u32, unsafe { game_state() }.r_draw.viewwindowx);
+                R_VideoErase(unsafe { game_state() }, yoffset as u32, unsafe { game_state() }.r_draw.viewwindowx);
+                R_VideoErase(unsafe { game_state() }, (yoffset + unsafe { game_state() }.r_draw.viewwindowx + unsafe { game_state() }.r_draw.viewwidth) as u32, unsafe { game_state() }.r_draw.viewwindowx);
             }
             y += 1;
             yoffset += SCREENWIDTH;
