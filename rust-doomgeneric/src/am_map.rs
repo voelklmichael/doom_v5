@@ -22,18 +22,6 @@ use crate::src::i_system::{fprintf, stderr};
 use crate::src::i_video::I_VideoBuffer;
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::m_cheat::cht_CheckCheat;
-use crate::src::m_controls::key_map_clearmark;
-use crate::src::m_controls::key_map_east;
-use crate::src::m_controls::key_map_follow;
-use crate::src::m_controls::key_map_grid;
-use crate::src::m_controls::key_map_mark;
-use crate::src::m_controls::key_map_maxzoom;
-use crate::src::m_controls::key_map_north;
-use crate::src::m_controls::key_map_south;
-use crate::src::m_controls::key_map_toggle;
-use crate::src::m_controls::key_map_west;
-use crate::src::m_controls::key_map_zoomin;
-use crate::src::m_controls::key_map_zoomout;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedDiv;
 use crate::src::m_fixed::FixedMul;
@@ -751,7 +739,9 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
     let mut key: i32 = 0;
     rc = false_0;
     if !automapactive {
-        if (*ev).type_0 as u32 == ev_keydown as i32 as u32 && (*ev).data1 == key_map_toggle {
+        if (*ev).type_0 as u32 == ev_keydown as i32 as u32
+            && (*ev).data1 == unsafe { game_state() }.m_controls.key_map_toggle
+        {
             AM_Start();
             viewactive = false;
             rc = true_0;
@@ -759,41 +749,41 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
         rc = true_0;
         key = (*ev).data1;
-        if key == key_map_east {
+        if key == unsafe { game_state() }.m_controls.key_map_east {
             if followplayer == 0 {
                 m_paninc.x = FixedMul((4 as fixed_t) << 16 as i32, scale_ftom);
             } else {
                 rc = false_0;
             }
-        } else if key == key_map_west {
+        } else if key == unsafe { game_state() }.m_controls.key_map_west {
             if followplayer == 0 {
                 m_paninc.x = -FixedMul((4 as fixed_t) << 16 as i32, scale_ftom);
             } else {
                 rc = false_0;
             }
-        } else if key == key_map_north {
+        } else if key == unsafe { game_state() }.m_controls.key_map_north {
             if followplayer == 0 {
                 m_paninc.y = FixedMul((4 as fixed_t) << 16 as i32, scale_ftom);
             } else {
                 rc = false_0;
             }
-        } else if key == key_map_south {
+        } else if key == unsafe { game_state() }.m_controls.key_map_south {
             if followplayer == 0 {
                 m_paninc.y = -FixedMul((4 as fixed_t) << 16 as i32, scale_ftom);
             } else {
                 rc = false_0;
             }
-        } else if key == key_map_zoomout {
+        } else if key == unsafe { game_state() }.m_controls.key_map_zoomout {
             mtof_zoommul = M_ZOOMOUT as fixed_t;
             ftom_zoommul = M_ZOOMIN as fixed_t;
-        } else if key == key_map_zoomin {
+        } else if key == unsafe { game_state() }.m_controls.key_map_zoomin {
             mtof_zoommul = M_ZOOMIN as fixed_t;
             ftom_zoommul = M_ZOOMOUT as fixed_t;
-        } else if key == key_map_toggle {
+        } else if key == unsafe { game_state() }.m_controls.key_map_toggle {
             bigstate = 0 as i32;
             viewactive = true;
             AM_Stop();
-        } else if key == key_map_maxzoom {
+        } else if key == unsafe { game_state() }.m_controls.key_map_maxzoom {
             bigstate = (bigstate == 0) as i32;
             if bigstate != 0 {
                 AM_saveScaleAndLoc();
@@ -801,7 +791,7 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
             } else {
                 AM_restoreScaleAndLoc();
             }
-        } else if key == key_map_follow {
+        } else if key == unsafe { game_state() }.m_controls.key_map_follow {
             followplayer = (followplayer == 0) as i32;
             f_oldloc.x = INT_MAX as fixed_t;
             if followplayer != 0 {
@@ -813,7 +803,7 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
                     as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
             }
-        } else if key == key_map_grid {
+        } else if key == unsafe { game_state() }.m_controls.key_map_grid {
             grid = (grid == 0) as i32;
             if grid != 0 {
                 (*unsafe { game_state() }.hu_stuff.plr).message = b"Grid ON\0" as *const u8
@@ -824,7 +814,7 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
                     as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
             }
-        } else if key == key_map_mark {
+        } else if key == unsafe { game_state() }.m_controls.key_map_mark {
             M_snprintf(
                 &raw mut buffer as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 20]>() as size_t,
@@ -835,7 +825,7 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
             (*unsafe { game_state() }.hu_stuff.plr).message =
                 &raw mut buffer as *mut ::core::ffi::c_char;
             AM_addMark();
-        } else if key == key_map_clearmark {
+        } else if key == unsafe { game_state() }.m_controls.key_map_clearmark {
             AM_clearMarks();
             (*unsafe { game_state() }.hu_stuff.plr).message = b"All Marks Cleared\0" as *const u8
                 as *const ::core::ffi::c_char
@@ -852,23 +842,25 @@ pub unsafe fn AM_Responder(mut ev: &event_t) -> bool {
     } else if (*ev).type_0 as u32 == ev_keyup as i32 as u32 {
         rc = false_0;
         key = (*ev).data1;
-        if key == key_map_east {
+        if key == unsafe { game_state() }.m_controls.key_map_east {
             if followplayer == 0 {
                 m_paninc.x = 0 as i32 as fixed_t;
             }
-        } else if key == key_map_west {
+        } else if key == unsafe { game_state() }.m_controls.key_map_west {
             if followplayer == 0 {
                 m_paninc.x = 0 as i32 as fixed_t;
             }
-        } else if key == key_map_north {
+        } else if key == unsafe { game_state() }.m_controls.key_map_north {
             if followplayer == 0 {
                 m_paninc.y = 0 as i32 as fixed_t;
             }
-        } else if key == key_map_south {
+        } else if key == unsafe { game_state() }.m_controls.key_map_south {
             if followplayer == 0 {
                 m_paninc.y = 0 as i32 as fixed_t;
             }
-        } else if key == key_map_zoomout || key == key_map_zoomin {
+        } else if key == unsafe { game_state() }.m_controls.key_map_zoomout
+            || key == unsafe { game_state() }.m_controls.key_map_zoomin
+        {
             mtof_zoommul = FRACUNIT as fixed_t;
             ftom_zoommul = FRACUNIT as fixed_t;
         }

@@ -22,9 +22,6 @@ use crate::src::hu_lib::{
     HUlib_eraseIText, HUlib_eraseSText, HUlib_eraseTextLine, HUlib_initIText, HUlib_initSText,
     HUlib_initTextLine, HUlib_keyInIText, HUlib_resetIText,
 };
-use crate::src::m_controls::key_message_refresh;
-use crate::src::m_controls::key_multi_msg;
-use crate::src::m_controls::key_multi_msgplayer;
 use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_controls::KEY_ESCAPE;
 use crate::src::m_controls::KEY_RALT;
@@ -645,11 +642,11 @@ pub unsafe fn HU_Responder(mut ev: &event_t) -> bool {
         return false;
     }
     if !unsafe { game_state() }.hu_stuff.chat_on {
-        if (*ev).data1 == key_message_refresh {
+        if (*ev).data1 == unsafe { game_state() }.m_controls.key_message_refresh {
             unsafe { game_state() }.hu_stuff.message_on = true;
             unsafe { game_state() }.hu_stuff.message_counter = HU_MSGTIMEOUT;
             eatkey = true;
-        } else if netgame && (*ev).data2 == key_multi_msg {
+        } else if netgame && (*ev).data2 == unsafe { game_state() }.m_controls.key_multi_msg {
             unsafe { game_state() }.hu_stuff.chat_on = true;
             eatkey = unsafe { game_state() }.hu_stuff.chat_on;
             HUlib_resetIText(&raw mut unsafe { game_state() }.hu_stuff.w_chat);
@@ -657,7 +654,8 @@ pub unsafe fn HU_Responder(mut ev: &event_t) -> bool {
         } else if netgame && numplayers > 2 as i32 {
             i = 0 as i32;
             while i < MAXPLAYERS {
-                if (*ev).data2 == key_multi_msgplayer[i as usize] {
+                if (*ev).data2 == unsafe { game_state() }.m_controls.key_multi_msgplayer[i as usize]
+                {
                     if playeringame[i as usize] != 0 && i != consoleplayer {
                         unsafe { game_state() }.hu_stuff.chat_on = true;
                         eatkey = unsafe { game_state() }.hu_stuff.chat_on;

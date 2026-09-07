@@ -92,7 +92,6 @@ use crate::src::m_config::M_GetSaveGameDir;
 use crate::src::m_config::M_LoadDefaults;
 use crate::src::m_config::M_SetConfigDir;
 use crate::src::m_config::M_SetConfigFilenames;
-use crate::src::m_controls::key_multi_msgplayer;
 use crate::src::m_controls::M_BindBaseControls;
 use crate::src::m_controls::M_BindChatControls;
 use crate::src::m_controls::M_BindMapControls;
@@ -392,10 +391,10 @@ pub unsafe fn D_BindVariables() {
     M_BindMapControls();
     M_BindMenuControls();
     M_BindChatControls(MAXPLAYERS as u32);
-    key_multi_msgplayer[0 as i32 as usize] = HUSTR_KEYGREEN;
-    key_multi_msgplayer[1 as i32 as usize] = HUSTR_KEYINDIGO;
-    key_multi_msgplayer[2 as i32 as usize] = HUSTR_KEYBROWN;
-    key_multi_msgplayer[3 as i32 as usize] = HUSTR_KEYRED;
+    unsafe { game_state() }.m_controls.key_multi_msgplayer[0 as i32 as usize] = HUSTR_KEYGREEN;
+    unsafe { game_state() }.m_controls.key_multi_msgplayer[1 as i32 as usize] = HUSTR_KEYINDIGO;
+    unsafe { game_state() }.m_controls.key_multi_msgplayer[2 as i32 as usize] = HUSTR_KEYBROWN;
+    unsafe { game_state() }.m_controls.key_multi_msgplayer[3 as i32 as usize] = HUSTR_KEYRED;
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "mouse_sensitivity",

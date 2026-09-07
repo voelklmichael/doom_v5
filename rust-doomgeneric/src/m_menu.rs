@@ -36,30 +36,6 @@ use crate::src::i_system::{fclose, fopen, fprintf, fread, stderr};
 use crate::src::i_timer::I_GetTime;
 use crate::src::i_video::usegamma;
 use crate::src::i_video::I_SetPalette;
-use crate::src::m_controls::joybmenu;
-use crate::src::m_controls::key_menu_abort;
-use crate::src::m_controls::key_menu_activate;
-use crate::src::m_controls::key_menu_back;
-use crate::src::m_controls::key_menu_confirm;
-use crate::src::m_controls::key_menu_decscreen;
-use crate::src::m_controls::key_menu_detail;
-use crate::src::m_controls::key_menu_down;
-use crate::src::m_controls::key_menu_endgame;
-use crate::src::m_controls::key_menu_forward;
-use crate::src::m_controls::key_menu_gamma;
-use crate::src::m_controls::key_menu_help;
-use crate::src::m_controls::key_menu_incscreen;
-use crate::src::m_controls::key_menu_left;
-use crate::src::m_controls::key_menu_load;
-use crate::src::m_controls::key_menu_messages;
-use crate::src::m_controls::key_menu_qload;
-use crate::src::m_controls::key_menu_qsave;
-use crate::src::m_controls::key_menu_quit;
-use crate::src::m_controls::key_menu_right;
-use crate::src::m_controls::key_menu_save;
-use crate::src::m_controls::key_menu_screenshot;
-use crate::src::m_controls::key_menu_up;
-use crate::src::m_controls::key_menu_volume;
 use crate::src::m_controls::KEY_BACKSPACE;
 use crate::src::m_controls::KEY_CAPSLOCK;
 use crate::src::m_controls::KEY_ENTER;
@@ -843,7 +819,7 @@ pub unsafe extern "C" fn M_SaveGame(mut choice: i32) {
 pub static mut tempstring: [::core::ffi::c_char; 80] = [0; 80];
 #[no_mangle]
 pub unsafe extern "C" fn M_QuickSaveResponse(mut key: i32) {
-    if key == key_menu_confirm {
+    if key == unsafe { game_state() }.m_controls.key_menu_confirm {
         M_DoSave(quickSaveSlot);
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
     }
@@ -884,7 +860,7 @@ pub unsafe fn M_QuickSave() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_QuickLoadResponse(mut key: i32) {
-    if key == key_menu_confirm {
+    if key == unsafe { game_state() }.m_controls.key_menu_confirm {
         M_LoadSelect(quickSaveSlot);
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
     }
@@ -1092,7 +1068,7 @@ pub unsafe extern "C" fn M_DrawEpisode() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_VerifyNightmare(mut key: i32) {
-    if key != key_menu_confirm {
+    if key != unsafe { game_state() }.m_controls.key_menu_confirm {
         return;
     }
     G_DeferedInitNew(nightmare as i32 as skill_t, epi + 1 as i32, 1 as i32);
@@ -1193,7 +1169,7 @@ pub unsafe extern "C" fn M_ChangeMessages(mut choice: i32) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_EndGameResponse(mut key: i32) {
-    if key != key_menu_confirm {
+    if key != unsafe { game_state() }.m_controls.key_menu_confirm {
         return;
     }
     (*currentMenu).lastOn = itemOn;
@@ -1264,7 +1240,7 @@ pub static mut quitsounds2: [i32; 8] = [
 ];
 #[no_mangle]
 pub unsafe extern "C" fn M_QuitResponse(mut key: i32) {
-    if key != key_menu_confirm {
+    if key != unsafe { game_state() }.m_controls.key_menu_confirm {
         return;
     }
     if !netgame {
@@ -1509,7 +1485,8 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     if testcontrols {
         if (*ev).type_0 as u32 == ev_quit as i32 as u32
             || (*ev).type_0 as u32 == ev_keydown as i32 as u32
-                && ((*ev).data1 == key_menu_activate || (*ev).data1 == key_menu_quit)
+                && ((*ev).data1 == unsafe { game_state() }.m_controls.key_menu_activate
+                    || (*ev).data1 == unsafe { game_state() }.m_controls.key_menu_quit)
         {
             I_Quit();
             return true;
@@ -1521,7 +1498,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             && messageToPrint != 0
             && messageRoutine == Some(M_QuitResponse as unsafe extern "C" fn(i32) -> ())
         {
-            M_QuitResponse(key_menu_confirm);
+            M_QuitResponse(unsafe { game_state() }.m_controls.key_menu_confirm);
         } else {
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_QuitDOOM(0 as i32);
@@ -1534,29 +1511,31 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
         && joywait < I_GetTime(unsafe { &mut game_state().i_timer })
     {
         if (*ev).data3 < 0 as i32 {
-            key = key_menu_up;
+            key = unsafe { game_state() }.m_controls.key_menu_up;
             joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         } else if (*ev).data3 > 0 as i32 {
-            key = key_menu_down;
+            key = unsafe { game_state() }.m_controls.key_menu_down;
             joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
         if (*ev).data2 < 0 as i32 {
-            key = key_menu_left;
+            key = unsafe { game_state() }.m_controls.key_menu_left;
             joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 2 as i32;
         } else if (*ev).data2 > 0 as i32 {
-            key = key_menu_right;
+            key = unsafe { game_state() }.m_controls.key_menu_right;
             joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 2 as i32;
         }
         if (*ev).data1 & 1 as i32 != 0 {
-            key = key_menu_forward;
+            key = unsafe { game_state() }.m_controls.key_menu_forward;
             joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
-            key = key_menu_back;
+            key = unsafe { game_state() }.m_controls.key_menu_back;
             joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
-        if joybmenu >= 0 as i32 && (*ev).data1 & (1 as i32) << joybmenu != 0 as i32 {
-            key = key_menu_activate;
+        if unsafe { game_state() }.m_controls.joybmenu >= 0 as i32
+            && (*ev).data1 & (1 as i32) << unsafe { game_state() }.m_controls.joybmenu != 0 as i32
+        {
+            key = unsafe { game_state() }.m_controls.key_menu_activate;
             joywait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_mouse as i32 as u32
@@ -1564,34 +1543,34 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
     {
         mousey += (*ev).data3;
         if mousey < lasty - 30 as i32 {
-            key = key_menu_down;
+            key = unsafe { game_state() }.m_controls.key_menu_down;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lasty -= 30 as i32;
             mousey = lasty;
         } else if mousey > lasty + 30 as i32 {
-            key = key_menu_up;
+            key = unsafe { game_state() }.m_controls.key_menu_up;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lasty += 30 as i32;
             mousey = lasty;
         }
         mousex += (*ev).data2;
         if mousex < lastx - 30 as i32 {
-            key = key_menu_left;
+            key = unsafe { game_state() }.m_controls.key_menu_left;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lastx -= 30 as i32;
             mousex = lastx;
         } else if mousex > lastx + 30 as i32 {
-            key = key_menu_right;
+            key = unsafe { game_state() }.m_controls.key_menu_right;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 5 as i32;
             lastx += 30 as i32;
             mousex = lastx;
         }
         if (*ev).data1 & 1 as i32 != 0 {
-            key = key_menu_forward;
+            key = unsafe { game_state() }.m_controls.key_menu_forward;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 15 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
-            key = key_menu_back;
+            key = unsafe { game_state() }.m_controls.key_menu_back;
             mousewait = I_GetTime(unsafe { &mut game_state().i_timer }) + 15 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
@@ -1662,8 +1641,8 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
         if messageNeedsInput {
             if key != ' ' as i32
                 && key != KEY_ESCAPE
-                && key != key_menu_confirm
-                && key != key_menu_abort
+                && key != unsafe { game_state() }.m_controls.key_menu_confirm
+                && key != unsafe { game_state() }.m_controls.key_menu_abort
             {
                 return false;
             }
@@ -1677,26 +1656,28 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
         return true;
     }
-    if devparm && key == key_menu_help || key != 0 as i32 && key == key_menu_screenshot {
+    if devparm && key == unsafe { game_state() }.m_controls.key_menu_help
+        || key != 0 as i32 && key == unsafe { game_state() }.m_controls.key_menu_screenshot
+    {
         G_ScreenShot();
         return true;
     }
     if !menuactive {
-        if key == key_menu_decscreen {
+        if key == unsafe { game_state() }.m_controls.key_menu_decscreen {
             if automapactive || unsafe { game_state() }.hu_stuff.chat_on {
                 return false;
             }
             M_SizeDisplay(0 as i32);
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             return true;
-        } else if key == key_menu_incscreen {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_incscreen {
             if automapactive || unsafe { game_state() }.hu_stuff.chat_on {
                 return false;
             }
             M_SizeDisplay(1 as i32);
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_stnmov as i32);
             return true;
-        } else if key == key_menu_help {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_help {
             M_StartControlPanel();
             if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
                 currentMenu = &raw mut ReadDef2;
@@ -1706,47 +1687,47 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             itemOn = 0 as i16;
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
-        } else if key == key_menu_save {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_save {
             M_StartControlPanel();
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_SaveGame(0 as i32);
             return true;
-        } else if key == key_menu_load {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_load {
             M_StartControlPanel();
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_LoadGame(0 as i32);
             return true;
-        } else if key == key_menu_volume {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_volume {
             M_StartControlPanel();
             currentMenu = &raw mut SoundDef;
             itemOn = sfx_vol as i32 as i16;
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
-        } else if key == key_menu_detail {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_detail {
             M_ChangeDetail(0 as i32);
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
-        } else if key == key_menu_qsave {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_qsave {
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_QuickSave();
             return true;
-        } else if key == key_menu_endgame {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_endgame {
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_EndGame(0 as i32);
             return true;
-        } else if key == key_menu_messages {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_messages {
             M_ChangeMessages(0 as i32);
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
-        } else if key == key_menu_qload {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_qload {
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_QuickLoad();
             return true;
-        } else if key == key_menu_quit {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_quit {
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             M_QuitDOOM(0 as i32);
             return true;
-        } else if key == key_menu_gamma {
+        } else if key == unsafe { game_state() }.m_controls.key_menu_gamma {
             usegamma += 1;
             if usegamma > 4 as i32 {
                 usegamma = 0 as i32;
@@ -1758,14 +1739,14 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
         }
     }
     if !menuactive {
-        if key == key_menu_activate {
+        if key == unsafe { game_state() }.m_controls.key_menu_activate {
             M_StartControlPanel();
             S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchn as i32);
             return true;
         }
         return false;
     }
-    if key == key_menu_down {
+    if key == unsafe { game_state() }.m_controls.key_menu_down {
         loop {
             if itemOn as i32 + 1 as i32 > (*currentMenu).numitems as i32 - 1 as i32 {
                 itemOn = 0 as i16;
@@ -1778,7 +1759,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             }
         }
         return true;
-    } else if key == key_menu_up {
+    } else if key == unsafe { game_state() }.m_controls.key_menu_up {
         loop {
             if itemOn == 0 {
                 itemOn = ((*currentMenu).numitems as i32 - 1 as i32) as i16;
@@ -1791,7 +1772,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             }
         }
         return true;
-    } else if key == key_menu_left {
+    } else if key == unsafe { game_state() }.m_controls.key_menu_left {
         if (*(*currentMenu).menuitems.offset(itemOn as isize))
             .routine
             .is_some()
@@ -1803,7 +1784,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
                 .expect("non-null function pointer")(0 as i32);
         }
         return true;
-    } else if key == key_menu_right {
+    } else if key == unsafe { game_state() }.m_controls.key_menu_right {
         if (*(*currentMenu).menuitems.offset(itemOn as isize))
             .routine
             .is_some()
@@ -1815,7 +1796,7 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
                 .expect("non-null function pointer")(1 as i32);
         }
         return true;
-    } else if key == key_menu_forward {
+    } else if key == unsafe { game_state() }.m_controls.key_menu_forward {
         if (*(*currentMenu).menuitems.offset(itemOn as isize))
             .routine
             .is_some()
@@ -1835,12 +1816,12 @@ pub unsafe fn M_Responder(ev: &mut event_t) -> bool {
             }
         }
         return true;
-    } else if key == key_menu_activate {
+    } else if key == unsafe { game_state() }.m_controls.key_menu_activate {
         (*currentMenu).lastOn = itemOn;
         M_ClearMenus();
         S_StartSound(unsafe { &mut game_state().sounds }, NULL, sfx_swtchx as i32);
         return true;
-    } else if key == key_menu_back {
+    } else if key == unsafe { game_state() }.m_controls.key_menu_back {
         (*currentMenu).lastOn = itemOn;
         if !(*currentMenu).prevMenu.is_null() {
             currentMenu = (*currentMenu).prevMenu as *mut menu_t;
