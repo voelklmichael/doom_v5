@@ -1450,7 +1450,8 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     if state.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
         if state.d_main.autostart || state.g_game.netgame {
-            G_InitNew(state.d_main.startskill, state.d_main.startepisode, state.d_main.startmap);
+            let (startskill, startepisode, startmap) = (state.d_main.startskill, state.d_main.startepisode, state.d_main.startmap);
+            G_InitNew(state, startskill, startepisode, startmap);
         } else {
             D_StartTitle();
         }
