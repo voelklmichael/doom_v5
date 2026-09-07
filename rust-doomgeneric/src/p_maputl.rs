@@ -13,7 +13,7 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::p_mobj::{line_t, mapthing_t, sector_t, subsector_s, subsector_t};
 use crate::src::p_mobj::{mobj_s, mobj_t};
-use crate::src::p_mobj::{MF_NOBLOCKMAP, MF_NOSECTOR};
+use crate::src::p_mobj::{MobjId, MF_NOBLOCKMAP, MF_NOSECTOR};
 use crate::src::r_main::R_PointInSubsector;
 
 pub struct PMaputlState {
@@ -492,7 +492,7 @@ pub unsafe fn P_BlockLinesIterator(
 pub unsafe fn P_BlockThingsIterator(
     mut x: i32,
     mut y: i32,
-    mut func: Option<unsafe extern "C" fn(*mut mobj_t) -> boolean>,
+    mut func: Option<unsafe extern "C" fn(MobjId) -> boolean>,
 ) -> bool {
     let mut mobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     if x < 0 as i32 || y < 0 as i32 || x >= unsafe { game_state() }.p_setup.bmapwidth || y >= unsafe { game_state() }.p_setup.bmapheight {
@@ -500,7 +500,7 @@ pub unsafe fn P_BlockThingsIterator(
     }
     mobj = *unsafe { game_state() }.p_setup.blocklinks.offset((y * unsafe { game_state() }.p_setup.bmapwidth + x) as isize);
     while !mobj.is_null() {
-        if func.expect("non-null function pointer")(mobj) == 0 {
+        if func.expect("non-null function pointer")((*mobj).id) == 0 {
             return false;
         }
         mobj = (*mobj).bnext as *mut mobj_t;
@@ -572,7 +572,8 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(mut ld: *mut line_t) -> boolean {
     return true_0 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn PIT_AddThingIntercepts(mut thing_id: MobjId) -> boolean {
+    let thing = unsafe { game_state() }.p_mobj.mobj_get(thing_id).unwrap();
     let mut x1: fixed_t = 0;
     let mut y1: fixed_t = 0;
     let mut x2: fixed_t = 0;
@@ -819,7 +820,7 @@ pub unsafe fn P_PathTraverse(
             if !P_BlockThingsIterator(
                 mapx,
                 mapy,
-                Some(PIT_AddThingIntercepts as unsafe extern "C" fn(*mut mobj_t) -> boolean),
+                Some(PIT_AddThingIntercepts as unsafe extern "C" fn(MobjId) -> boolean),
             ) {
                 return false;
             }

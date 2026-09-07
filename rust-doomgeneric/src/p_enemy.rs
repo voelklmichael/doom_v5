@@ -1034,7 +1034,8 @@ pub unsafe fn A_SkelFist(mut actor: *mut mobj_t) {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_VileCheck(mut thing: *mut mobj_t) -> boolean {
+pub unsafe extern "C" fn PIT_VileCheck(mut thing_id: MobjId) -> boolean {
+    let thing = unsafe { game_state() }.p_mobj.mobj_get(thing_id).unwrap();
     let mut maxdist: i32 = 0;
     let mut check: bool = false;
     if (*thing).flags & MF_CORPSE as i32 == 0 {
@@ -1104,7 +1105,7 @@ pub unsafe fn A_VileChase(mut actor: *mut mobj_t) {
                 if !P_BlockThingsIterator(
                     bx,
                     by,
-                    Some(PIT_VileCheck as unsafe extern "C" fn(*mut mobj_t) -> boolean),
+                    Some(PIT_VileCheck as unsafe extern "C" fn(MobjId) -> boolean),
                 ) {
                     temp = (*actor).target;
                     (*actor).target =
