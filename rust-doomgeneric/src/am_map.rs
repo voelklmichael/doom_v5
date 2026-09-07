@@ -8,6 +8,7 @@ use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::m_cheat::cheatseq_t;
@@ -994,70 +995,70 @@ pub unsafe fn AM_Ticker() {
         AM_changeWindowLoc();
     }
 }
-pub unsafe fn AM_clearFB(mut color: i32) {
-    memset(unsafe { game_state() }.am_map.fb as *mut ::core::ffi::c_void, color, (unsafe { game_state() }.am_map.f_w * unsafe { game_state() }.am_map.f_h) as size_t);
+pub unsafe fn AM_clearFB(state: &mut GameState, mut color: i32) {
+    memset(state.am_map.fb as *mut ::core::ffi::c_void, color, (state.am_map.f_w * state.am_map.f_h) as size_t);
 }
-pub unsafe fn AM_clipMline(mut ml: *mut mline_t, mut fl: *mut fline_t) -> bool {
+pub unsafe fn AM_clipMline(state: &mut GameState, mut ml: *mut mline_t, mut fl: *mut fline_t) -> bool {
     let mut outcode1: i32 = 0 as i32;
     let mut outcode2: i32 = 0 as i32;
     let mut outside: i32 = 0;
     let mut tmp: fpoint_t = fpoint_t { x: 0, y: 0 };
     let mut dx: i32 = 0;
     let mut dy: i32 = 0;
-    if (*ml).a.y > unsafe { game_state() }.am_map.m_y2 {
+    if (*ml).a.y > state.am_map.m_y2 {
         outcode1 = TOP as i32;
-    } else if (*ml).a.y < unsafe { game_state() }.am_map.m_y {
+    } else if (*ml).a.y < state.am_map.m_y {
         outcode1 = BOTTOM as i32;
     }
-    if (*ml).b.y > unsafe { game_state() }.am_map.m_y2 {
+    if (*ml).b.y > state.am_map.m_y2 {
         outcode2 = TOP as i32;
-    } else if (*ml).b.y < unsafe { game_state() }.am_map.m_y {
+    } else if (*ml).b.y < state.am_map.m_y {
         outcode2 = BOTTOM as i32;
     }
     if outcode1 & outcode2 != 0 {
         return false;
     }
-    if (*ml).a.x < unsafe { game_state() }.am_map.m_x {
+    if (*ml).a.x < state.am_map.m_x {
         outcode1 |= LEFT as i32;
-    } else if (*ml).a.x > unsafe { game_state() }.am_map.m_x2 {
+    } else if (*ml).a.x > state.am_map.m_x2 {
         outcode1 |= RIGHT as i32;
     }
-    if (*ml).b.x < unsafe { game_state() }.am_map.m_x {
+    if (*ml).b.x < state.am_map.m_x {
         outcode2 |= LEFT as i32;
-    } else if (*ml).b.x > unsafe { game_state() }.am_map.m_x2 {
+    } else if (*ml).b.x > state.am_map.m_x2 {
         outcode2 |= RIGHT as i32;
     }
     if outcode1 & outcode2 != 0 {
         return false;
     }
-    (*fl).a.x = (unsafe { game_state() }.am_map.f_x as fixed_t + (FixedMul((*ml).a.x - unsafe { game_state() }.am_map.m_x, unsafe { game_state() }.am_map.scale_mtof) >> 16 as i32)) as i32;
-    (*fl).a.y = (unsafe { game_state() }.am_map.f_y as fixed_t
-        + (unsafe { game_state() }.am_map.f_h as fixed_t - (FixedMul((*ml).a.y - unsafe { game_state() }.am_map.m_y, unsafe { game_state() }.am_map.scale_mtof) >> 16 as i32)))
+    (*fl).a.x = (state.am_map.f_x as fixed_t + (FixedMul((*ml).a.x - state.am_map.m_x, state.am_map.scale_mtof) >> 16 as i32)) as i32;
+    (*fl).a.y = (state.am_map.f_y as fixed_t
+        + (state.am_map.f_h as fixed_t - (FixedMul((*ml).a.y - state.am_map.m_y, state.am_map.scale_mtof) >> 16 as i32)))
         as i32;
-    (*fl).b.x = (unsafe { game_state() }.am_map.f_x as fixed_t + (FixedMul((*ml).b.x - unsafe { game_state() }.am_map.m_x, unsafe { game_state() }.am_map.scale_mtof) >> 16 as i32)) as i32;
-    (*fl).b.y = (unsafe { game_state() }.am_map.f_y as fixed_t
-        + (unsafe { game_state() }.am_map.f_h as fixed_t - (FixedMul((*ml).b.y - unsafe { game_state() }.am_map.m_y, unsafe { game_state() }.am_map.scale_mtof) >> 16 as i32)))
+    (*fl).b.x = (state.am_map.f_x as fixed_t + (FixedMul((*ml).b.x - state.am_map.m_x, state.am_map.scale_mtof) >> 16 as i32)) as i32;
+    (*fl).b.y = (state.am_map.f_y as fixed_t
+        + (state.am_map.f_h as fixed_t - (FixedMul((*ml).b.y - state.am_map.m_y, state.am_map.scale_mtof) >> 16 as i32)))
         as i32;
     outcode1 = 0 as i32;
     if (*fl).a.y < 0 as i32 {
         outcode1 |= TOP as i32;
-    } else if (*fl).a.y >= unsafe { game_state() }.am_map.f_h {
+    } else if (*fl).a.y >= state.am_map.f_h {
         outcode1 |= BOTTOM as i32;
     }
     if (*fl).a.x < 0 as i32 {
         outcode1 |= LEFT as i32;
-    } else if (*fl).a.x >= unsafe { game_state() }.am_map.f_w {
+    } else if (*fl).a.x >= state.am_map.f_w {
         outcode1 |= RIGHT as i32;
     }
     outcode2 = 0 as i32;
     if (*fl).b.y < 0 as i32 {
         outcode2 |= TOP as i32;
-    } else if (*fl).b.y >= unsafe { game_state() }.am_map.f_h {
+    } else if (*fl).b.y >= state.am_map.f_h {
         outcode2 |= BOTTOM as i32;
     }
     if (*fl).b.x < 0 as i32 {
         outcode2 |= LEFT as i32;
-    } else if (*fl).b.x >= unsafe { game_state() }.am_map.f_w {
+    } else if (*fl).b.x >= state.am_map.f_w {
         outcode2 |= RIGHT as i32;
     }
     if outcode1 & outcode2 != 0 {
@@ -1077,13 +1078,13 @@ pub unsafe fn AM_clipMline(mut ml: *mut mline_t, mut fl: *mut fline_t) -> bool {
         } else if outside & BOTTOM as i32 != 0 {
             dy = (*fl).a.y - (*fl).b.y;
             dx = (*fl).b.x - (*fl).a.x;
-            tmp.x = (*fl).a.x + dx * ((*fl).a.y - unsafe { game_state() }.am_map.f_h) / dy;
-            tmp.y = unsafe { game_state() }.am_map.f_h - 1 as i32;
+            tmp.x = (*fl).a.x + dx * ((*fl).a.y - state.am_map.f_h) / dy;
+            tmp.y = state.am_map.f_h - 1 as i32;
         } else if outside & RIGHT as i32 != 0 {
             dy = (*fl).b.y - (*fl).a.y;
             dx = (*fl).b.x - (*fl).a.x;
-            tmp.y = (*fl).a.y + dy * (unsafe { game_state() }.am_map.f_w - 1 as i32 - (*fl).a.x) / dx;
-            tmp.x = unsafe { game_state() }.am_map.f_w - 1 as i32;
+            tmp.y = (*fl).a.y + dy * (state.am_map.f_w - 1 as i32 - (*fl).a.x) / dx;
+            tmp.x = state.am_map.f_w - 1 as i32;
         } else if outside & LEFT as i32 != 0 {
             dy = (*fl).b.y - (*fl).a.y;
             dx = (*fl).b.x - (*fl).a.x;
@@ -1098,12 +1099,12 @@ pub unsafe fn AM_clipMline(mut ml: *mut mline_t, mut fl: *mut fline_t) -> bool {
             outcode1 = 0 as i32;
             if (*fl).a.y < 0 as i32 {
                 outcode1 |= TOP as i32;
-            } else if (*fl).a.y >= unsafe { game_state() }.am_map.f_h {
+            } else if (*fl).a.y >= state.am_map.f_h {
                 outcode1 |= BOTTOM as i32;
             }
             if (*fl).a.x < 0 as i32 {
                 outcode1 |= LEFT as i32;
-            } else if (*fl).a.x >= unsafe { game_state() }.am_map.f_w {
+            } else if (*fl).a.x >= state.am_map.f_w {
                 outcode1 |= RIGHT as i32;
             }
         } else {
@@ -1111,12 +1112,12 @@ pub unsafe fn AM_clipMline(mut ml: *mut mline_t, mut fl: *mut fline_t) -> bool {
             outcode2 = 0 as i32;
             if (*fl).b.y < 0 as i32 {
                 outcode2 |= TOP as i32;
-            } else if (*fl).b.y >= unsafe { game_state() }.am_map.f_h {
+            } else if (*fl).b.y >= state.am_map.f_h {
                 outcode2 |= BOTTOM as i32;
             }
             if (*fl).b.x < 0 as i32 {
                 outcode2 |= LEFT as i32;
-            } else if (*fl).b.x >= unsafe { game_state() }.am_map.f_w {
+            } else if (*fl).b.x >= state.am_map.f_w {
                 outcode2 |= RIGHT as i32;
             }
         }
@@ -1126,7 +1127,7 @@ pub unsafe fn AM_clipMline(mut ml: *mut mline_t, mut fl: *mut fline_t) -> bool {
     }
     return true;
 }
-pub unsafe fn AM_drawFline(mut fl: *mut fline_t, mut color: i32) {
+pub unsafe fn AM_drawFline(state: &mut GameState, mut fl: *mut fline_t, mut color: i32) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut dx: i32 = 0;
@@ -1137,17 +1138,17 @@ pub unsafe fn AM_drawFline(mut fl: *mut fline_t, mut color: i32) {
     let mut ay: i32 = 0;
     let mut d: i32 = 0;
     if (*fl).a.x < 0 as i32
-        || (*fl).a.x >= unsafe { game_state() }.am_map.f_w
+        || (*fl).a.x >= state.am_map.f_w
         || (*fl).a.y < 0 as i32
-        || (*fl).a.y >= unsafe { game_state() }.am_map.f_h
+        || (*fl).a.y >= state.am_map.f_h
         || (*fl).b.x < 0 as i32
-        || (*fl).b.x >= unsafe { game_state() }.am_map.f_w
+        || (*fl).b.x >= state.am_map.f_w
         || (*fl).b.y < 0 as i32
-        || (*fl).b.y >= unsafe { game_state() }.am_map.f_h
+        || (*fl).b.y >= state.am_map.f_h
     {
-        let fresh0 = unsafe { game_state() }.am_map.am_drawfline_fuck;
-        unsafe { game_state() }.am_map.am_drawfline_fuck =
-            unsafe { game_state() }.am_map.am_drawfline_fuck + 1;
+        let fresh0 = state.am_map.am_drawfline_fuck;
+        state.am_map.am_drawfline_fuck =
+            state.am_map.am_drawfline_fuck + 1;
         fprintf(
             stderr,
             b"fuck %d \r\0" as *const u8 as *const ::core::ffi::c_char,
@@ -1166,7 +1167,7 @@ pub unsafe fn AM_drawFline(mut fl: *mut fline_t, mut color: i32) {
     if ax > ay {
         d = ay - ax / 2 as i32;
         loop {
-            *unsafe { game_state() }.am_map.fb.offset((y * unsafe { game_state() }.am_map.f_w + x) as isize) = color as byte;
+            *state.am_map.fb.offset((y * state.am_map.f_w + x) as isize) = color as byte;
             if x == (*fl).b.x {
                 return;
             }
@@ -1180,7 +1181,7 @@ pub unsafe fn AM_drawFline(mut fl: *mut fline_t, mut color: i32) {
     } else {
         d = ax - ay / 2 as i32;
         loop {
-            *unsafe { game_state() }.am_map.fb.offset((y * unsafe { game_state() }.am_map.f_w + x) as isize) = color as byte;
+            *state.am_map.fb.offset((y * state.am_map.f_w + x) as isize) = color as byte;
             if y == (*fl).b.y {
                 return;
             }
@@ -1193,16 +1194,16 @@ pub unsafe fn AM_drawFline(mut fl: *mut fline_t, mut color: i32) {
         }
     };
 }
-pub unsafe fn AM_drawMline(mut ml: *mut mline_t, mut color: i32) {
+pub unsafe fn AM_drawMline(state: &mut GameState, mut ml: *mut mline_t, mut color: i32) {
     let mut fl: fline_t = fline_t {
         a: fpoint_t { x: 0, y: 0 },
         b: fpoint_t { x: 0, y: 0 },
     };
-    if AM_clipMline(ml, &raw mut fl) {
-        AM_drawFline(&raw mut fl, color);
+    if AM_clipMline(state, ml, &raw mut fl) {
+        AM_drawFline(state, &raw mut fl, color);
     }
 }
-pub unsafe fn AM_drawGrid(mut color: i32) {
+pub unsafe fn AM_drawGrid(state: &mut GameState, mut color: i32) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut start: fixed_t = 0;
@@ -1211,77 +1212,78 @@ pub unsafe fn AM_drawGrid(mut color: i32) {
         a: mpoint_t { x: 0, y: 0 },
         b: mpoint_t { x: 0, y: 0 },
     };
-    start = unsafe { game_state() }.am_map.m_x;
-    if (start as i32 - unsafe { game_state() }.p_setup.bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
+    start = state.am_map.m_x;
+    if (start as i32 - state.p_setup.bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
         start += (MAPBLOCKUNITS << FRACBITS)
-            - (start as i32 - unsafe { game_state() }.p_setup.bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS);
+            - (start as i32 - state.p_setup.bmaporgx as i32) % (MAPBLOCKUNITS << FRACBITS);
     }
-    end = unsafe { game_state() }.am_map.m_x + unsafe { game_state() }.am_map.m_w;
-    ml.a.y = unsafe { game_state() }.am_map.m_y;
-    ml.b.y = unsafe { game_state() }.am_map.m_y + unsafe { game_state() }.am_map.m_h;
+    end = state.am_map.m_x + state.am_map.m_w;
+    ml.a.y = state.am_map.m_y;
+    ml.b.y = state.am_map.m_y + state.am_map.m_h;
     x = start;
     while x < end {
         ml.a.x = x;
         ml.b.x = x;
-        AM_drawMline(&raw mut ml, color);
+        AM_drawMline(state, &raw mut ml, color);
         x += MAPBLOCKUNITS << FRACBITS;
     }
-    start = unsafe { game_state() }.am_map.m_y;
-    if (start as i32 - unsafe { game_state() }.p_setup.bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
+    start = state.am_map.m_y;
+    if (start as i32 - state.p_setup.bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS) != 0 {
         start += (MAPBLOCKUNITS << FRACBITS)
-            - (start as i32 - unsafe { game_state() }.p_setup.bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS);
+            - (start as i32 - state.p_setup.bmaporgy as i32) % (MAPBLOCKUNITS << FRACBITS);
     }
-    end = unsafe { game_state() }.am_map.m_y + unsafe { game_state() }.am_map.m_h;
-    ml.a.x = unsafe { game_state() }.am_map.m_x;
-    ml.b.x = unsafe { game_state() }.am_map.m_x + unsafe { game_state() }.am_map.m_w;
+    end = state.am_map.m_y + state.am_map.m_h;
+    ml.a.x = state.am_map.m_x;
+    ml.b.x = state.am_map.m_x + state.am_map.m_w;
     y = start;
     while y < end {
         ml.a.y = y;
         ml.b.y = y;
-        AM_drawMline(&raw mut ml, color);
+        AM_drawMline(state, &raw mut ml, color);
         y += MAPBLOCKUNITS << FRACBITS;
     }
 }
-pub unsafe fn AM_drawWalls() {
+pub unsafe fn AM_drawWalls(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut l: mline_t = mline_t {
         a: mpoint_t { x: 0, y: 0 },
         b: mpoint_t { x: 0, y: 0 },
     };
     i = 0 as i32;
-    while i < unsafe { game_state() }.p_setup.numlines {
-        let li = unsafe { game_state() }.p_setup.lines.offset(i as isize) as *mut line_t;
+    while i < state.p_setup.numlines {
+        let li = state.p_setup.lines.offset(i as isize) as *mut line_t;
         l.a.x = (*(*li).v1).x;
         l.a.y = (*(*li).v1).y;
         l.b.x = (*(*li).v2).x;
         l.b.y = (*(*li).v2).y;
-        if unsafe { game_state() }.am_map.cheating != 0 || (*li).flags as i32 & ML_MAPPED != 0 {
-            if !((*li).flags as i32 & LINE_NEVERSEE != 0 && unsafe { game_state() }.am_map.cheating == 0) {
+        let lightlev = state.am_map.lightlev;
+        if state.am_map.cheating != 0 || (*li).flags as i32 & ML_MAPPED != 0 {
+            if !((*li).flags as i32 & LINE_NEVERSEE != 0 && state.am_map.cheating == 0) {
                 if (*li).backsector.is_none() {
-                    AM_drawMline(&raw mut l, WALLCOLORS + unsafe { game_state() }.am_map.lightlev);
+                    AM_drawMline(state, &raw mut l, WALLCOLORS + lightlev);
                 } else if (*li).special as i32 == 39 as i32 {
-                    AM_drawMline(&raw mut l, WALLCOLORS + WALLRANGE / 2 as i32);
+                    AM_drawMline(state, &raw mut l, WALLCOLORS + WALLRANGE / 2 as i32);
                 } else if (*li).flags as i32 & ML_SECRET != 0 {
-                    if unsafe { game_state() }.am_map.cheating != 0 {
-                        AM_drawMline(&raw mut l, SECRETWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
+                    if state.am_map.cheating != 0 {
+                        AM_drawMline(state, &raw mut l, SECRETWALLCOLORS + lightlev);
                     } else {
-                        AM_drawMline(&raw mut l, WALLCOLORS + unsafe { game_state() }.am_map.lightlev);
+                        AM_drawMline(state, &raw mut l, WALLCOLORS + lightlev);
                     }
-                } else if (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).floorheight
-                    != (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).floorheight
+                } else if (*state.p_setup.sector_mut((*li).backsector.unwrap())).floorheight
+                    != (*state.p_setup.sector_mut((*li).frontsector.unwrap())).floorheight
                 {
-                    AM_drawMline(&raw mut l, FDWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
-                } else if (*unsafe { game_state() }.p_setup.sector_mut((*li).backsector.unwrap())).ceilingheight
-                    != (*unsafe { game_state() }.p_setup.sector_mut((*li).frontsector.unwrap())).ceilingheight
+                    AM_drawMline(state, &raw mut l, FDWALLCOLORS + lightlev);
+                } else if (*state.p_setup.sector_mut((*li).backsector.unwrap())).ceilingheight
+                    != (*state.p_setup.sector_mut((*li).frontsector.unwrap())).ceilingheight
                 {
-                    AM_drawMline(&raw mut l, CDWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
-                } else if unsafe { game_state() }.am_map.cheating != 0 {
-                    AM_drawMline(&raw mut l, TSWALLCOLORS + unsafe { game_state() }.am_map.lightlev);
+                    AM_drawMline(state, &raw mut l, CDWALLCOLORS + lightlev);
+                } else if state.am_map.cheating != 0 {
+                    AM_drawMline(state, &raw mut l, TSWALLCOLORS + lightlev);
                 }
             }
-        } else if (*unsafe { game_state() }.am_map.plr).powers[pw_allmap as i32 as usize] != 0 {
+        } else if (*state.am_map.plr).powers[pw_allmap as i32 as usize] != 0 {
             if (*li).flags as i32 & LINE_NEVERSEE == 0 {
-                AM_drawMline(&raw mut l, GRAYS + 3 as i32);
+                AM_drawMline(state, &raw mut l, GRAYS + 3 as i32);
             }
         }
         i += 1;
@@ -1296,6 +1298,7 @@ pub unsafe fn AM_rotate(mut x: *mut fixed_t, mut y: *mut fixed_t, mut a: angle_t
     *x = tmpx;
 }
 pub unsafe fn AM_drawLineCharacter(
+    state: &mut GameState,
     mut lineguy: *mut mline_t,
     mut lineguylines: i32,
     mut scale: fixed_t,
@@ -1333,40 +1336,43 @@ pub unsafe fn AM_drawLineCharacter(
         }
         l.b.x += x;
         l.b.y += y;
-        AM_drawMline(&raw mut l, color);
+        AM_drawMline(state, &raw mut l, color);
         i += 1;
     }
 }
-pub unsafe fn AM_drawPlayers() {
+pub unsafe fn AM_drawPlayers(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
     const their_colors: [i32; 4] = [GREENS, GRAYS, BROWNS, REDS];
     let mut their_color: i32 = -(1 as i32);
     let mut color: i32 = 0;
-    if !unsafe { game_state() }.g_game.netgame {
-        if unsafe { game_state() }.am_map.cheating != 0 {
+    if !state.g_game.netgame {
+        let plr_mo = (*state.am_map.plr).mo;
+        if state.am_map.cheating != 0 {
             AM_drawLineCharacter(
+                state,
                 &raw const cheat_player_arrow as *mut mline_t,
                 (::core::mem::size_of::<[mline_t; 16]>() as usize)
                     .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
                     as i32,
                 0 as fixed_t,
-                (*(*unsafe { game_state() }.am_map.plr).mo).angle,
+                (*plr_mo).angle,
                 WHITE,
-                (*(*unsafe { game_state() }.am_map.plr).mo).x,
-                (*(*unsafe { game_state() }.am_map.plr).mo).y,
+                (*plr_mo).x,
+                (*plr_mo).y,
             );
         } else {
             AM_drawLineCharacter(
+                state,
                 &raw const player_arrow as *mut mline_t,
                 (::core::mem::size_of::<[mline_t; 7]>() as usize)
                     .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
                     as i32,
                 0 as fixed_t,
-                (*(*unsafe { game_state() }.am_map.plr).mo).angle,
+                (*plr_mo).angle,
                 WHITE,
-                (*(*unsafe { game_state() }.am_map.plr).mo).x,
-                (*(*unsafe { game_state() }.am_map.plr).mo).y,
+                (*plr_mo).x,
+                (*plr_mo).y,
             );
         }
         return;
@@ -1374,19 +1380,20 @@ pub unsafe fn AM_drawPlayers() {
     i = 0 as i32;
     while i < MAXPLAYERS {
         their_color += 1;
-        p = (&raw mut unsafe { game_state() }.g_game.players as *mut player_t).offset(i as isize)
+        p = (&raw mut state.g_game.players as *mut player_t).offset(i as isize)
             as *mut player_t;
-        if !(unsafe { game_state() }.g_game.deathmatch != 0
-            && !unsafe { game_state() }.g_game.singledemo
-            && p != unsafe { game_state() }.am_map.plr)
+        if !(state.g_game.deathmatch != 0
+            && !state.g_game.singledemo
+            && p != state.am_map.plr)
         {
-            if !(unsafe { game_state() }.g_game.playeringame[i as usize] == 0) {
+            if !(state.g_game.playeringame[i as usize] == 0) {
                 if (*p).powers[pw_invisibility as i32 as usize] != 0 {
                     color = 246 as i32;
                 } else {
                     color = their_colors[their_color as usize];
                 }
                 AM_drawLineCharacter(
+                    state,
                     &raw const player_arrow as *mut mline_t,
                     (::core::mem::size_of::<[mline_t; 7]>() as usize)
                         .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
@@ -1402,21 +1409,23 @@ pub unsafe fn AM_drawPlayers() {
         i += 1;
     }
 }
-pub unsafe fn AM_drawThings(mut colors: i32, mut colorrange: i32) {
+pub unsafe fn AM_drawThings(state: &mut GameState, mut colors: i32, mut colorrange: i32) {
     let mut i: i32 = 0;
     let mut t: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     i = 0 as i32;
-    while i < unsafe { game_state() }.p_setup.numsectors {
-        t = unsafe { game_state() }.p_setup.sectors[i as usize].thinglist;
+    while i < state.p_setup.numsectors {
+        t = state.p_setup.sectors[i as usize].thinglist;
         while !t.is_null() {
+            let lightlev = state.am_map.lightlev;
             AM_drawLineCharacter(
+                state,
                 &raw const thintriangle_guy as *mut mline_t,
                 (::core::mem::size_of::<[mline_t; 3]>() as usize)
                     .wrapping_div(::core::mem::size_of::<mline_t>() as usize)
                     as i32,
                 (16 as fixed_t) << FRACBITS,
                 (*t).angle,
-                colors + unsafe { game_state() }.am_map.lightlev,
+                colors + lightlev,
                 (*t).x,
                 (*t).y,
             );
@@ -1425,7 +1434,7 @@ pub unsafe fn AM_drawThings(mut colors: i32, mut colorrange: i32) {
         i += 1;
     }
 }
-pub unsafe fn AM_drawMarks() {
+pub unsafe fn AM_drawMarks(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut fx: i32 = 0;
     let mut fy: i32 = 0;
@@ -1433,47 +1442,48 @@ pub unsafe fn AM_drawMarks() {
     let mut h: i32 = 0;
     i = 0 as i32;
     while i < AM_NUMMARKPOINTS {
-        if unsafe { game_state() }.am_map.markpoints[i as usize].x != -(1 as i32) {
+        if state.am_map.markpoints[i as usize].x != -(1 as i32) {
             w = 5 as i32;
             h = 6 as i32;
-            fx = (unsafe { game_state() }.am_map.f_x as fixed_t
-                + (FixedMul(unsafe { game_state() }.am_map.markpoints[i as usize].x - unsafe { game_state() }.am_map.m_x, unsafe { game_state() }.am_map.scale_mtof) >> 16 as i32))
+            fx = (state.am_map.f_x as fixed_t
+                + (FixedMul(state.am_map.markpoints[i as usize].x - state.am_map.m_x, state.am_map.scale_mtof) >> 16 as i32))
                 as i32;
-            fy = (unsafe { game_state() }.am_map.f_y as fixed_t
-                + (unsafe { game_state() }.am_map.f_h as fixed_t
-                    - (FixedMul(unsafe { game_state() }.am_map.markpoints[i as usize].y - unsafe { game_state() }.am_map.m_y, unsafe { game_state() }.am_map.scale_mtof) >> 16 as i32)))
+            fy = (state.am_map.f_y as fixed_t
+                + (state.am_map.f_h as fixed_t
+                    - (FixedMul(state.am_map.markpoints[i as usize].y - state.am_map.m_y, state.am_map.scale_mtof) >> 16 as i32)))
                 as i32;
-            if fx >= unsafe { game_state() }.am_map.f_x && fx <= unsafe { game_state() }.am_map.f_w - w && fy >= unsafe { game_state() }.am_map.f_y && fy <= unsafe { game_state() }.am_map.f_h - h {
+            if fx >= state.am_map.f_x && fx <= state.am_map.f_w - w && fy >= state.am_map.f_y && fy <= state.am_map.f_h - h {
                 V_DrawPatch(
-                    unsafe { &mut game_state().v_video },
+                    &mut state.v_video,
                     fx,
                     fy,
-                    unsafe { game_state() }.am_map.marknums[i as usize],
+                    state.am_map.marknums[i as usize],
                 );
             }
         }
         i += 1;
     }
 }
-pub unsafe fn AM_drawCrosshair(mut color: i32) {
-    *unsafe { game_state() }.am_map.fb.offset((unsafe { game_state() }.am_map.f_w * (unsafe { game_state() }.am_map.f_h + 1 as i32) / 2 as i32) as isize) = color as byte;
+pub unsafe fn AM_drawCrosshair(state: &mut GameState, mut color: i32) {
+    *state.am_map.fb.offset((state.am_map.f_w * (state.am_map.f_h + 1 as i32) / 2 as i32) as isize) = color as byte;
 }
-pub unsafe fn AM_Drawer() {
-    if !unsafe { game_state() }.am_map.automapactive {
+pub unsafe fn AM_Drawer(state: &mut GameState) {
+    if !state.am_map.automapactive {
         return;
     }
-    AM_clearFB(BACKGROUND);
-    if unsafe { game_state() }.am_map.grid != 0 {
-        AM_drawGrid(GRIDCOLORS);
+    AM_clearFB(state, BACKGROUND);
+    if state.am_map.grid != 0 {
+        AM_drawGrid(state, GRIDCOLORS);
     }
-    AM_drawWalls();
-    AM_drawPlayers();
-    if unsafe { game_state() }.am_map.cheating == 2 as i32 {
-        AM_drawThings(THINGCOLORS, THINGRANGE);
+    AM_drawWalls(state);
+    AM_drawPlayers(state);
+    if state.am_map.cheating == 2 as i32 {
+        AM_drawThings(state, THINGCOLORS, THINGRANGE);
     }
-    AM_drawCrosshair(XHAIRCOLORS);
-    AM_drawMarks();
-    V_MarkRect(unsafe { &mut game_state().v_video }, unsafe { game_state() }.am_map.f_x, unsafe { game_state() }.am_map.f_y, unsafe { game_state() }.am_map.f_w, unsafe { game_state() }.am_map.f_h);
+    AM_drawCrosshair(state, XHAIRCOLORS);
+    AM_drawMarks(state);
+    let (f_x, f_y, f_w, f_h) = (state.am_map.f_x, state.am_map.f_y, state.am_map.f_w, state.am_map.f_h);
+    V_MarkRect(&mut state.v_video, f_x, f_y, f_w, f_h);
 }
 unsafe extern "C" fn run_static_initializers() {
     unsafe { game_state() }.am_map.cheat_amap = cheatseq_t {
