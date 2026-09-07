@@ -546,8 +546,8 @@ pub unsafe fn R_SetupFrame(mut player: *mut player_t) {
 }
 pub unsafe fn R_RenderPlayerView(state: &mut GameState, mut player: *mut player_t) {
     R_SetupFrame(player);
-    R_ClearClipSegs();
-    R_ClearDrawSegs();
+    R_ClearClipSegs(state);
+    R_ClearDrawSegs(state);
     R_ClearPlanes();
     R_ClearSprites();
     NetUpdate(state);
