@@ -1100,7 +1100,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
                 G_DoPlayDemo();
             }
             6 => {
-                G_DoCompleted();
+                G_DoCompleted(state);
             }
             7 => {
                 F_StartFinale(state);
@@ -1529,35 +1529,35 @@ pub unsafe fn G_SecretExitLevel(state: &mut GameState) {
     }
     state.g_game.gameaction = ga_completed;
 }
-pub unsafe fn G_DoCompleted() {
+pub unsafe fn G_DoCompleted(state: &mut GameState) {
     let mut i: i32 = 0;
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
+    state.g_game.gameaction = ga_nothing;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0 {
-            G_PlayerFinishLevel(&mut unsafe { game_state() }.g_game, i);
+        if state.g_game.playeringame[i as usize] != 0 {
+            G_PlayerFinishLevel(&mut state.g_game, i);
         }
         i += 1;
     }
-    if unsafe { game_state() }.am_map.automapactive {
+    if state.am_map.automapactive {
         AM_Stop();
     }
-    if unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32 {
-        if unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as u32 {
-            if unsafe { game_state() }.g_game.gamemap == 5 as i32 {
-                unsafe { game_state() }.g_game.gameaction = ga_victory;
+    if state.doomstat.gamemode as u32 != commercial as u32 {
+        if state.doomstat.gameversion as u32 == exe_chex as u32 {
+            if state.g_game.gamemap == 5 as i32 {
+                state.g_game.gameaction = ga_victory;
                 return;
             }
         } else {
-            match unsafe { game_state() }.g_game.gamemap {
+            match state.g_game.gamemap {
                 8 => {
-                    unsafe { game_state() }.g_game.gameaction = ga_victory;
+                    state.g_game.gameaction = ga_victory;
                     return;
                 }
                 9 => {
                     i = 0 as i32;
                     while i < MAXPLAYERS {
-                        unsafe { game_state() }.g_game.players[i as usize].didsecret = true;
+                        state.g_game.players[i as usize].didsecret = true;
                         i += 1;
                     }
                 }
@@ -1565,117 +1565,117 @@ pub unsafe fn G_DoCompleted() {
             }
         }
     }
-    if unsafe { game_state() }.g_game.gamemap == 8 as i32
-        && unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32
+    if state.g_game.gamemap == 8 as i32
+        && state.doomstat.gamemode as u32 != commercial as u32
     {
-        unsafe { game_state() }.g_game.gameaction = ga_victory;
+        state.g_game.gameaction = ga_victory;
         return;
     }
-    if unsafe { game_state() }.g_game.gamemap == 9 as i32
-        && unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32
+    if state.g_game.gamemap == 9 as i32
+        && state.doomstat.gamemode as u32 != commercial as u32
     {
         i = 0 as i32;
         while i < MAXPLAYERS {
-            unsafe { game_state() }.g_game.players[i as usize].didsecret = true;
+            state.g_game.players[i as usize].didsecret = true;
             i += 1;
         }
     }
-    unsafe { game_state() }.g_game.wminfo.didsecret = unsafe { game_state() }.g_game.players
-        [unsafe { game_state() }.g_game.consoleplayer as usize]
+    state.g_game.wminfo.didsecret = state.g_game.players
+        [state.g_game.consoleplayer as usize]
         .didsecret;
-    unsafe { game_state() }.g_game.wminfo.epsd =
-        unsafe { game_state() }.g_game.gameepisode - 1 as i32;
-    unsafe { game_state() }.g_game.wminfo.last = unsafe { game_state() }.g_game.gamemap - 1 as i32;
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32 {
-        if unsafe { game_state() }.g_game.secretexit {
-            match unsafe { game_state() }.g_game.gamemap {
+    state.g_game.wminfo.epsd =
+        state.g_game.gameepisode - 1 as i32;
+    state.g_game.wminfo.last = state.g_game.gamemap - 1 as i32;
+    if state.doomstat.gamemode as u32 == commercial as u32 {
+        if state.g_game.secretexit {
+            match state.g_game.gamemap {
                 15 => {
-                    unsafe { game_state() }.g_game.wminfo.next = 30 as i32;
+                    state.g_game.wminfo.next = 30 as i32;
                 }
                 31 => {
-                    unsafe { game_state() }.g_game.wminfo.next = 31 as i32;
+                    state.g_game.wminfo.next = 31 as i32;
                 }
                 _ => {}
             }
         } else {
-            match unsafe { game_state() }.g_game.gamemap {
+            match state.g_game.gamemap {
                 31 | 32 => {
-                    unsafe { game_state() }.g_game.wminfo.next = 15 as i32;
+                    state.g_game.wminfo.next = 15 as i32;
                 }
                 _ => {
-                    unsafe { game_state() }.g_game.wminfo.next =
-                        unsafe { game_state() }.g_game.gamemap;
+                    state.g_game.wminfo.next =
+                        state.g_game.gamemap;
                 }
             }
         }
-    } else if unsafe { game_state() }.g_game.secretexit {
-        unsafe { game_state() }.g_game.wminfo.next = 8 as i32;
-    } else if unsafe { game_state() }.g_game.gamemap == 9 as i32 {
-        match unsafe { game_state() }.g_game.gameepisode {
+    } else if state.g_game.secretexit {
+        state.g_game.wminfo.next = 8 as i32;
+    } else if state.g_game.gamemap == 9 as i32 {
+        match state.g_game.gameepisode {
             1 => {
-                unsafe { game_state() }.g_game.wminfo.next = 3 as i32;
+                state.g_game.wminfo.next = 3 as i32;
             }
             2 => {
-                unsafe { game_state() }.g_game.wminfo.next = 5 as i32;
+                state.g_game.wminfo.next = 5 as i32;
             }
             3 => {
-                unsafe { game_state() }.g_game.wminfo.next = 6 as i32;
+                state.g_game.wminfo.next = 6 as i32;
             }
             4 => {
-                unsafe { game_state() }.g_game.wminfo.next = 2 as i32;
+                state.g_game.wminfo.next = 2 as i32;
             }
             _ => {}
         }
     } else {
-        unsafe { game_state() }.g_game.wminfo.next = unsafe { game_state() }.g_game.gamemap;
+        state.g_game.wminfo.next = state.g_game.gamemap;
     }
-    unsafe { game_state() }.g_game.wminfo.maxkills = unsafe { game_state() }.g_game.totalkills;
-    unsafe { game_state() }.g_game.wminfo.maxitems = unsafe { game_state() }.g_game.totalitems;
-    unsafe { game_state() }.g_game.wminfo.maxsecret = unsafe { game_state() }.g_game.totalsecret;
-    unsafe { game_state() }.g_game.wminfo.maxfrags = 0 as i32;
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32 {
-        unsafe { game_state() }.g_game.wminfo.partime =
-            TICRATE * cpars[(unsafe { game_state() }.g_game.gamemap - 1 as i32) as usize];
-    } else if unsafe { game_state() }.g_game.gameepisode < 4 as i32 {
-        unsafe { game_state() }.g_game.wminfo.partime = TICRATE
-            * pars[unsafe { game_state() }.g_game.gameepisode as usize]
-                [unsafe { game_state() }.g_game.gamemap as usize];
+    state.g_game.wminfo.maxkills = state.g_game.totalkills;
+    state.g_game.wminfo.maxitems = state.g_game.totalitems;
+    state.g_game.wminfo.maxsecret = state.g_game.totalsecret;
+    state.g_game.wminfo.maxfrags = 0 as i32;
+    if state.doomstat.gamemode as u32 == commercial as u32 {
+        state.g_game.wminfo.partime =
+            TICRATE * cpars[(state.g_game.gamemap - 1 as i32) as usize];
+    } else if state.g_game.gameepisode < 4 as i32 {
+        state.g_game.wminfo.partime = TICRATE
+            * pars[state.g_game.gameepisode as usize]
+                [state.g_game.gamemap as usize];
     } else {
-        unsafe { game_state() }.g_game.wminfo.partime =
-            TICRATE * cpars[unsafe { game_state() }.g_game.gamemap as usize];
+        state.g_game.wminfo.partime =
+            TICRATE * cpars[state.g_game.gamemap as usize];
     }
-    unsafe { game_state() }.g_game.wminfo.pnum = unsafe { game_state() }.g_game.consoleplayer;
+    state.g_game.wminfo.pnum = state.g_game.consoleplayer;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        unsafe { game_state() }.g_game.wminfo.plyr[i as usize].in_0 =
-            unsafe { game_state() }.g_game.playeringame[i as usize] != 0;
-        unsafe { game_state() }.g_game.wminfo.plyr[i as usize].skills =
-            unsafe { game_state() }.g_game.players[i as usize].killcount;
-        unsafe { game_state() }.g_game.wminfo.plyr[i as usize].sitems =
-            unsafe { game_state() }.g_game.players[i as usize].itemcount;
-        unsafe { game_state() }.g_game.wminfo.plyr[i as usize].ssecret =
-            unsafe { game_state() }.g_game.players[i as usize].secretcount;
-        unsafe { game_state() }.g_game.wminfo.plyr[i as usize].stime = unsafe { game_state() }.p_tick.leveltime;
+        state.g_game.wminfo.plyr[i as usize].in_0 =
+            state.g_game.playeringame[i as usize] != 0;
+        state.g_game.wminfo.plyr[i as usize].skills =
+            state.g_game.players[i as usize].killcount;
+        state.g_game.wminfo.plyr[i as usize].sitems =
+            state.g_game.players[i as usize].itemcount;
+        state.g_game.wminfo.plyr[i as usize].ssecret =
+            state.g_game.players[i as usize].secretcount;
+        state.g_game.wminfo.plyr[i as usize].stime = state.p_tick.leveltime;
         memcpy(
-            &raw mut (*(&raw mut unsafe { game_state() }.g_game.wminfo.plyr
+            &raw mut (*(&raw mut state.g_game.wminfo.plyr
                 as *mut wbplayerstruct_t)
                 .offset(i as isize))
             .frags as *mut i32 as *mut ::core::ffi::c_void,
-            &raw mut (*(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+            &raw mut (*(&raw mut state.g_game.players as *mut player_t)
                 .offset(i as isize))
             .frags as *mut i32 as *const ::core::ffi::c_void,
             ::core::mem::size_of::<[i32; 4]>() as size_t,
         );
         i += 1;
     }
-    unsafe { game_state() }.g_game.gamestate = GS_INTERMISSION;
-    unsafe { game_state() }.g_game.viewactive = false;
-    unsafe { game_state() }.am_map.automapactive = false;
+    state.g_game.gamestate = GS_INTERMISSION;
+    state.g_game.viewactive = false;
+    state.am_map.automapactive = false;
     StatCopy(
-        unsafe { &mut game_state().statdump },
-        &raw mut unsafe { game_state() }.g_game.wminfo,
+        &mut state.statdump,
+        &raw mut state.g_game.wminfo,
     );
-    WI_Start(&raw mut unsafe { game_state() }.g_game.wminfo);
+    WI_Start(&raw mut state.g_game.wminfo);
 }
 pub unsafe fn G_WorldDone(state: &mut GameState) {
     state.g_game.gameaction = ga_worlddone;
