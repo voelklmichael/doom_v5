@@ -26,6 +26,7 @@ use crate::src::i_system::ISystemState;
 use crate::src::i_timer::ITimerState;
 use crate::src::m_argv::MArgvState;
 use crate::src::m_config::MConfigState;
+use crate::src::m_controls::MControlsState;
 use crate::src::m_random::MRandomState;
 use crate::src::p_ceilng::PCeilngState;
 use crate::src::p_enemy::PEnemyState;
@@ -68,6 +69,7 @@ pub struct GameState {
     pub i_timer: ITimerState,
     pub m_argv: MArgvState,
     pub m_config: MConfigState,
+    pub m_controls: MControlsState,
     pub m_random: MRandomState,
     pub p_ceilng: PCeilngState,
     pub p_enemy: PEnemyState,
@@ -112,6 +114,7 @@ impl GameState {
             i_timer: ITimerState::new(),
             m_argv: MArgvState::new(),
             m_config: MConfigState::new(),
+            m_controls: MControlsState::new(),
             m_random: MRandomState::new(),
             p_ceilng: PCeilngState::new(),
             p_enemy: PEnemyState::new(),
@@ -153,6 +156,7 @@ pub unsafe fn game_state() -> &'static mut GameState {
         state.sounds.fixup_self_links();
         fixup_intercepts_overrun(state);
         state.m_config.fixup_defaults();
+        state.m_controls.fixup_weapon_keys();
     }
     state
 }

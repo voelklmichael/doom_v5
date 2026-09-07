@@ -56,47 +56,6 @@ use crate::src::info::mobjinfo;
 use crate::src::info::states;
 use crate::src::info::{S_SARG_PAIN2, S_SARG_RUN1};
 use crate::src::m_argv::{M_CheckParm, M_CheckParmWithArgs};
-use crate::src::m_controls::dclick_use;
-use crate::src::m_controls::joybfire;
-use crate::src::m_controls::joybnextweapon;
-use crate::src::m_controls::joybprevweapon;
-use crate::src::m_controls::joybspeed;
-use crate::src::m_controls::joybstrafe;
-use crate::src::m_controls::joybstrafeleft;
-use crate::src::m_controls::joybstraferight;
-use crate::src::m_controls::joybuse;
-use crate::src::m_controls::key_demo_quit;
-use crate::src::m_controls::key_down;
-use crate::src::m_controls::key_fire;
-use crate::src::m_controls::key_left;
-use crate::src::m_controls::key_nextweapon;
-use crate::src::m_controls::key_pause;
-use crate::src::m_controls::key_prevweapon;
-use crate::src::m_controls::key_right;
-use crate::src::m_controls::key_speed;
-use crate::src::m_controls::key_spy;
-use crate::src::m_controls::key_strafe;
-use crate::src::m_controls::key_strafeleft;
-use crate::src::m_controls::key_straferight;
-use crate::src::m_controls::key_up;
-use crate::src::m_controls::key_use;
-use crate::src::m_controls::key_weapon1;
-use crate::src::m_controls::key_weapon2;
-use crate::src::m_controls::key_weapon3;
-use crate::src::m_controls::key_weapon4;
-use crate::src::m_controls::key_weapon5;
-use crate::src::m_controls::key_weapon6;
-use crate::src::m_controls::key_weapon7;
-use crate::src::m_controls::key_weapon8;
-use crate::src::m_controls::mousebbackward;
-use crate::src::m_controls::mousebfire;
-use crate::src::m_controls::mousebforward;
-use crate::src::m_controls::mousebnextweapon;
-use crate::src::m_controls::mousebprevweapon;
-use crate::src::m_controls::mousebstrafe;
-use crate::src::m_controls::mousebstrafeleft;
-use crate::src::m_controls::mousebstraferight;
-use crate::src::m_controls::mousebuse;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
@@ -324,18 +283,6 @@ pub static mut forwardmove: [fixed_t; 2] = [0x19 as i32, 0x32 as i32];
 pub static mut sidemove: [fixed_t; 2] = [0x18 as i32, 0x28 as i32];
 #[no_mangle]
 pub static mut angleturn: [fixed_t; 3] = [640 as i32, 1280 as i32, 320 as i32];
-static mut weapon_keys: [*mut i32; 8] = unsafe {
-    [
-        &raw const key_weapon1 as *mut i32,
-        &raw const key_weapon2 as *mut i32,
-        &raw const key_weapon3 as *mut i32,
-        &raw const key_weapon4 as *mut i32,
-        &raw const key_weapon5 as *mut i32,
-        &raw const key_weapon6 as *mut i32,
-        &raw const key_weapon7 as *mut i32,
-        &raw const key_weapon8 as *mut i32,
-    ]
-};
 static mut next_weapon: i32 = 0;
 static mut weapon_order_table: [C2RustUnnamed_5; 9] = [
     C2RustUnnamed_5 {
@@ -501,19 +448,20 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
         ::core::mem::size_of::<ticcmd_t>() as size_t,
     );
     (*cmd).consistancy = consistancy[consoleplayer as usize][(maketic % BACKUPTICS) as usize];
-    strafe = gamekeydown[key_strafe as usize] != 0
-        || *mousebuttons.offset(mousebstrafe as isize) != 0
-        || *joybuttons.offset(joybstrafe as isize) != 0;
-    speed = (key_speed >= NUMKEYS
-        || joybspeed >= MAX_JOY_BUTTONS
-        || gamekeydown[key_speed as usize] != 0
-        || *joybuttons.offset(joybspeed as isize) != 0) as i32;
+    strafe = gamekeydown[unsafe { game_state() }.m_controls.key_strafe as usize] != 0
+        || *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebstrafe as isize) != 0
+        || *joybuttons.offset(unsafe { game_state() }.m_controls.joybstrafe as isize) != 0;
+    speed = (unsafe { game_state() }.m_controls.key_speed >= NUMKEYS
+        || unsafe { game_state() }.m_controls.joybspeed >= MAX_JOY_BUTTONS
+        || gamekeydown[unsafe { game_state() }.m_controls.key_speed as usize] != 0
+        || *joybuttons.offset(unsafe { game_state() }.m_controls.joybspeed as isize) != 0)
+        as i32;
     side = 0 as i32;
     forward = side;
     if joyxmove < 0 as i32
         || joyxmove > 0 as i32
-        || gamekeydown[key_right as usize] != 0
-        || gamekeydown[key_left as usize] != 0
+        || gamekeydown[unsafe { game_state() }.m_controls.key_right as usize] != 0
+        || gamekeydown[unsafe { game_state() }.m_controls.key_left as usize] != 0
     {
         turnheld += unsafe { game_state() }.d_loop.ticdup;
     } else {
@@ -525,10 +473,10 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
         tspeed = speed;
     }
     if strafe {
-        if gamekeydown[key_right as usize] != 0 {
+        if gamekeydown[unsafe { game_state() }.m_controls.key_right as usize] != 0 {
             side += sidemove[speed as usize] as i32;
         }
-        if gamekeydown[key_left as usize] != 0 {
+        if gamekeydown[unsafe { game_state() }.m_controls.key_left as usize] != 0 {
             side -= sidemove[speed as usize] as i32;
         }
         if joyxmove > 0 as i32 {
@@ -538,10 +486,10 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
             side -= sidemove[speed as usize] as i32;
         }
     } else {
-        if gamekeydown[key_right as usize] != 0 {
+        if gamekeydown[unsafe { game_state() }.m_controls.key_right as usize] != 0 {
             (*cmd).angleturn = ((*cmd).angleturn as i32 - angleturn[tspeed as usize] as i32) as i16;
         }
-        if gamekeydown[key_left as usize] != 0 {
+        if gamekeydown[unsafe { game_state() }.m_controls.key_left as usize] != 0 {
             (*cmd).angleturn = ((*cmd).angleturn as i32 + angleturn[tspeed as usize] as i32) as i16;
         }
         if joyxmove > 0 as i32 {
@@ -551,10 +499,10 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
             (*cmd).angleturn = ((*cmd).angleturn as i32 + angleturn[tspeed as usize] as i32) as i16;
         }
     }
-    if gamekeydown[key_up as usize] != 0 {
+    if gamekeydown[unsafe { game_state() }.m_controls.key_up as usize] != 0 {
         forward += forwardmove[speed as usize] as i32;
     }
-    if gamekeydown[key_down as usize] != 0 {
+    if gamekeydown[unsafe { game_state() }.m_controls.key_down as usize] != 0 {
         forward -= forwardmove[speed as usize] as i32;
     }
     if joyymove < 0 as i32 {
@@ -563,30 +511,30 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
     if joyymove > 0 as i32 {
         forward -= forwardmove[speed as usize] as i32;
     }
-    if gamekeydown[key_strafeleft as usize] != 0
-        || *joybuttons.offset(joybstrafeleft as isize) != 0
-        || *mousebuttons.offset(mousebstrafeleft as isize) != 0
+    if gamekeydown[unsafe { game_state() }.m_controls.key_strafeleft as usize] != 0
+        || *joybuttons.offset(unsafe { game_state() }.m_controls.joybstrafeleft as isize) != 0
+        || *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebstrafeleft as isize) != 0
         || joystrafemove < 0 as i32
     {
         side -= sidemove[speed as usize] as i32;
     }
-    if gamekeydown[key_straferight as usize] != 0
-        || *joybuttons.offset(joybstraferight as isize) != 0
-        || *mousebuttons.offset(mousebstraferight as isize) != 0
+    if gamekeydown[unsafe { game_state() }.m_controls.key_straferight as usize] != 0
+        || *joybuttons.offset(unsafe { game_state() }.m_controls.joybstraferight as isize) != 0
+        || *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebstraferight as isize) != 0
         || joystrafemove > 0 as i32
     {
         side += sidemove[speed as usize] as i32;
     }
     (*cmd).chatchar = HU_dequeueChatChar() as byte;
-    if gamekeydown[key_fire as usize] != 0
-        || *mousebuttons.offset(mousebfire as isize) != 0
-        || *joybuttons.offset(joybfire as isize) != 0
+    if gamekeydown[unsafe { game_state() }.m_controls.key_fire as usize] != 0
+        || *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebfire as isize) != 0
+        || *joybuttons.offset(unsafe { game_state() }.m_controls.joybfire as isize) != 0
     {
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_ATTACK as i32) as byte;
     }
-    if gamekeydown[key_use as usize] != 0
-        || *joybuttons.offset(joybuse as isize) != 0
-        || *mousebuttons.offset(mousebuse as isize) != 0
+    if gamekeydown[unsafe { game_state() }.m_controls.key_use as usize] != 0
+        || *joybuttons.offset(unsafe { game_state() }.m_controls.joybuse as isize) != 0
+        || *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebuse as isize) != 0
     {
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_USE as i32) as byte;
         dclicks = 0 as i32;
@@ -601,7 +549,7 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
             < (::core::mem::size_of::<[*mut i32; 8]>() as usize)
                 .wrapping_div(::core::mem::size_of::<*mut i32>() as usize)
         {
-            let mut key: i32 = *weapon_keys[i as usize];
+            let mut key: i32 = *unsafe { game_state() }.m_controls.weapon_keys[i as usize];
             if gamekeydown[key as usize] != 0 {
                 (*cmd).buttons = ((*cmd).buttons as i32 | BT_CHANGE as i32) as byte;
                 (*cmd).buttons = ((*cmd).buttons as i32 | i << BT_WEAPONSHIFT as i32) as byte;
@@ -612,15 +560,19 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
         }
     }
     next_weapon = 0 as i32;
-    if *mousebuttons.offset(mousebforward as isize) != 0 {
+    if *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebforward as isize) != 0 {
         forward += forwardmove[speed as usize] as i32;
     }
-    if *mousebuttons.offset(mousebbackward as isize) != 0 {
+    if *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebbackward as isize) != 0 {
         forward -= forwardmove[speed as usize] as i32;
     }
-    if dclick_use != 0 {
-        if *mousebuttons.offset(mousebforward as isize) != dclickstate && dclicktime > 1 as i32 {
-            dclickstate = *mousebuttons.offset(mousebforward as isize);
+    if unsafe { game_state() }.m_controls.dclick_use != 0 {
+        if *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebforward as isize)
+            != dclickstate
+            && dclicktime > 1 as i32
+        {
+            dclickstate =
+                *mousebuttons.offset(unsafe { game_state() }.m_controls.mousebforward as isize);
             if dclickstate != 0 {
                 dclicks += 1;
             }
@@ -637,8 +589,10 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
                 dclickstate = 0 as boolean;
             }
         }
-        bstrafe = (*mousebuttons.offset(mousebstrafe as isize) != 0
-            || *joybuttons.offset(joybstrafe as isize) != 0) as i32 as boolean;
+        bstrafe = (*mousebuttons.offset(unsafe { game_state() }.m_controls.mousebstrafe as isize)
+            != 0
+            || *joybuttons.offset(unsafe { game_state() }.m_controls.joybstrafe as isize) != 0)
+            as i32 as boolean;
         if bstrafe != dclickstate2 && dclicktime2 > 1 as i32 {
             dclickstate2 = bstrafe;
             if dclickstate2 != 0 {
@@ -783,9 +737,9 @@ unsafe fn SetJoyButtons(mut buttons_mask: u32) {
     while i < MAX_JOY_BUTTONS {
         let mut button_on: i32 = (buttons_mask & ((1 as i32) << i) as u32 != 0 as u32) as i32;
         if *joybuttons.offset(i as isize) == 0 && button_on != 0 {
-            if i == joybprevweapon {
+            if i == unsafe { game_state() }.m_controls.joybprevweapon {
                 next_weapon = -(1 as i32);
-            } else if i == joybnextweapon {
+            } else if i == unsafe { game_state() }.m_controls.joybnextweapon {
                 next_weapon = 1 as i32;
             }
         }
@@ -799,9 +753,9 @@ unsafe fn SetMouseButtons(mut buttons_mask: u32) {
     while i < MAX_MOUSE_BUTTONS {
         let mut button_on: u32 = (buttons_mask & ((1 as i32) << i) as u32 != 0 as u32) as u32;
         if *mousebuttons.offset(i as isize) == 0 && button_on != 0 {
-            if i == mousebprevweapon {
+            if i == unsafe { game_state() }.m_controls.mousebprevweapon {
                 next_weapon = -(1 as i32);
-            } else if i == mousebnextweapon {
+            } else if i == unsafe { game_state() }.m_controls.mousebnextweapon {
                 next_weapon = 1 as i32;
             }
         }
@@ -812,7 +766,7 @@ unsafe fn SetMouseButtons(mut buttons_mask: u32) {
 pub unsafe fn G_Responder(mut ev: event_t) -> bool {
     if gamestate == GS_LEVEL
         && ev.type_0 as u32 == ev_keydown as u32
-        && ev.data1 == key_spy
+        && ev.data1 == unsafe { game_state() }.m_controls.key_spy
         && (singledemo || deathmatch == 0)
     {
         loop {
@@ -855,14 +809,16 @@ pub unsafe fn G_Responder(mut ev: event_t) -> bool {
     if testcontrols && ev.type_0 == ev_mouse {
         testcontrols_mousespeed = (ev.data2).abs();
     }
-    if ev.type_0 == ev_keydown && ev.data1 == key_prevweapon {
+    if ev.type_0 == ev_keydown && ev.data1 == unsafe { game_state() }.m_controls.key_prevweapon {
         next_weapon = -1;
-    } else if ev.type_0 == ev_keydown && ev.data1 == key_nextweapon {
+    } else if ev.type_0 == ev_keydown
+        && ev.data1 == unsafe { game_state() }.m_controls.key_nextweapon
+    {
         next_weapon = 1;
     }
     match ev.type_0 as u32 {
         0 => {
-            if ev.data1 == key_pause {
+            if ev.data1 == unsafe { game_state() }.m_controls.key_pause {
                 sendpause = true;
             } else if ev.data1 < NUMKEYS {
                 gamekeydown[ev.data1 as usize] = true_0 as boolean;
@@ -1790,7 +1746,7 @@ unsafe fn IncreaseDemoBuffer() {
 }
 pub unsafe fn G_WriteDemoTiccmd(mut cmd: *mut ticcmd_t) {
     let mut demo_start: *mut byte = ::core::ptr::null_mut::<byte>();
-    if gamekeydown[key_demo_quit as usize] != 0 {
+    if gamekeydown[unsafe { game_state() }.m_controls.key_demo_quit as usize] != 0 {
         G_CheckDemoStatus();
     }
     demo_start = demo_p;
