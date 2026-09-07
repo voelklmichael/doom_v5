@@ -994,7 +994,7 @@ pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
             || ev.type_0 == ev_mouse && ev.data1 != 0
             || ev.type_0 == ev_joystick && ev.data1 != 0
         {
-            M_StartControlPanel();
+            M_StartControlPanel(state);
             return true;
         }
         return false;
