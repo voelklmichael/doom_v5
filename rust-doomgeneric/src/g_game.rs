@@ -840,22 +840,22 @@ pub unsafe fn G_BuildTiccmd(mut cmd: *mut ticcmd_t, mut maketic: i32) {
             (desired_angleturn as i32 - (*cmd).angleturn as i32) as i16;
     }
 }
-pub unsafe fn G_DoLoadLevel() {
+pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
     let mut i: i32 = 0;
-    unsafe { game_state() }.r_sky.skyflatnum = R_FlatNumForName(
-        unsafe { &mut game_state().r_data },
+    state.r_sky.skyflatnum = R_FlatNumForName(
+        &mut state.r_data,
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     );
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32
-        && (unsafe { game_state() }.doomstat.gameversion as u32 == exe_final2 as u32
-            || unsafe { game_state() }.doomstat.gameversion as u32 == exe_chex as u32)
+    if state.doomstat.gamemode as u32 == commercial as u32
+        && (state.doomstat.gameversion as u32 == exe_final2 as u32
+            || state.doomstat.gameversion as u32 == exe_chex as u32)
     {
         let mut skytexturename: *mut ::core::ffi::c_char =
             ::core::ptr::null_mut::<::core::ffi::c_char>();
-        if unsafe { game_state() }.g_game.gamemap < 12 as i32 {
+        if state.g_game.gamemap < 12 as i32 {
             skytexturename =
                 b"SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-        } else if unsafe { game_state() }.g_game.gamemap < 21 as i32 {
+        } else if state.g_game.gamemap < 21 as i32 {
             skytexturename =
                 b"SKY2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         } else {
@@ -863,24 +863,24 @@ pub unsafe fn G_DoLoadLevel() {
                 b"SKY3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         skytexturename = skytexturename;
-        unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(unsafe { &mut game_state().r_data }, skytexturename);
+        state.r_sky.skytexture = R_TextureNumForName(&mut state.r_data, skytexturename);
     }
-    unsafe { game_state() }.g_game.levelstarttic = unsafe { game_state() }.d_loop.gametic;
-    if unsafe { game_state() }.d_main.wipegamestate as u32 == GS_LEVEL as u32 {
-        unsafe { game_state() }.d_main.wipegamestate = 4294967295 as gamestate_t;
+    state.g_game.levelstarttic = state.d_loop.gametic;
+    if state.d_main.wipegamestate as u32 == GS_LEVEL as u32 {
+        state.d_main.wipegamestate = 4294967295 as gamestate_t;
     }
-    unsafe { game_state() }.g_game.gamestate = GS_LEVEL;
+    state.g_game.gamestate = GS_LEVEL;
     i = 0 as i32;
     while i < MAXPLAYERS {
-        unsafe { game_state() }.g_game.turbodetected[i as usize] = false_0 as boolean;
-        if unsafe { game_state() }.g_game.playeringame[i as usize] != 0
-            && unsafe { game_state() }.g_game.players[i as usize].playerstate as u32
+        state.g_game.turbodetected[i as usize] = false_0 as boolean;
+        if state.g_game.playeringame[i as usize] != 0
+            && state.g_game.players[i as usize].playerstate as u32
                 == PST_DEAD as u32
         {
-            unsafe { game_state() }.g_game.players[i as usize].playerstate = PST_REBORN;
+            state.g_game.players[i as usize].playerstate = PST_REBORN;
         }
         memset(
-            &raw mut (*(&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
+            &raw mut (*(&raw mut state.g_game.players as *mut player_t)
                 .offset(i as isize))
             .frags as *mut i32 as *mut ::core::ffi::c_void,
             0 as i32,
@@ -889,43 +889,43 @@ pub unsafe fn G_DoLoadLevel() {
         i += 1;
     }
     P_SetupLevel(
-        unsafe { game_state() }.g_game.gameepisode,
-        unsafe { game_state() }.g_game.gamemap,
+        state.g_game.gameepisode,
+        state.g_game.gamemap,
         0 as i32,
-        unsafe { game_state() }.g_game.gameskill,
+        state.g_game.gameskill,
     );
-    unsafe { game_state() }.g_game.displayplayer = unsafe { game_state() }.g_game.consoleplayer;
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
-    Z_CheckHeap(unsafe { &mut game_state().z_zone });
+    state.g_game.displayplayer = state.g_game.consoleplayer;
+    state.g_game.gameaction = ga_nothing;
+    Z_CheckHeap(&mut state.z_zone);
     memset(
-        &raw mut unsafe { game_state() }.g_game.gamekeydown as *mut boolean
+        &raw mut state.g_game.gamekeydown as *mut boolean
             as *mut ::core::ffi::c_void,
         0 as i32,
         ::core::mem::size_of::<[boolean; 256]>() as size_t,
     );
-    unsafe { game_state() }.g_game.joystrafemove = 0 as i32;
-    unsafe { game_state() }.g_game.joyymove = unsafe { game_state() }.g_game.joystrafemove;
-    unsafe { game_state() }.g_game.joyxmove = unsafe { game_state() }.g_game.joyymove;
-    unsafe { game_state() }.g_game.mousey = 0 as i32;
-    unsafe { game_state() }.g_game.mousex = unsafe { game_state() }.g_game.mousey;
-    unsafe { game_state() }.g_game.paused = false;
-    unsafe { game_state() }.g_game.sendsave = unsafe { game_state() }.g_game.paused;
-    unsafe { game_state() }.g_game.sendpause = unsafe { game_state() }.g_game.sendsave;
+    state.g_game.joystrafemove = 0 as i32;
+    state.g_game.joyymove = state.g_game.joystrafemove;
+    state.g_game.joyxmove = state.g_game.joyymove;
+    state.g_game.mousey = 0 as i32;
+    state.g_game.mousex = state.g_game.mousey;
+    state.g_game.paused = false;
+    state.g_game.sendsave = state.g_game.paused;
+    state.g_game.sendpause = state.g_game.sendsave;
     memset(
-        &raw mut unsafe { game_state() }.g_game.mousearray as *mut boolean
+        &raw mut state.g_game.mousearray as *mut boolean
             as *mut ::core::ffi::c_void,
         0 as i32,
         ::core::mem::size_of::<[boolean; 9]>() as size_t,
     );
     memset(
-        &raw mut unsafe { game_state() }.g_game.joyarray as *mut boolean
+        &raw mut state.g_game.joyarray as *mut boolean
             as *mut ::core::ffi::c_void,
         0 as i32,
         ::core::mem::size_of::<[boolean; 21]>() as size_t,
     );
-    if unsafe { game_state() }.g_game.testcontrols {
-        unsafe { game_state() }.g_game.players
-            [unsafe { game_state() }.g_game.consoleplayer as usize]
+    if state.g_game.testcontrols {
+        state.g_game.players
+            [state.g_game.consoleplayer as usize]
             .message = b"Press escape to quit.\0" as *const u8 as *const ::core::ffi::c_char
             as *mut ::core::ffi::c_char;
     }
@@ -1085,7 +1085,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
     while state.g_game.gameaction as u32 != ga_nothing as u32 {
         match state.g_game.gameaction as u32 {
             1 => {
-                G_DoLoadLevel();
+                G_DoLoadLevel(state);
             }
             2 => {
                 G_DoNewGame(state);
@@ -1106,7 +1106,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
                 F_StartFinale(state);
             }
             8 => {
-                G_DoWorldDone();
+                G_DoWorldDone(state);
             }
             9 => {
                 V_ScreenShot(
@@ -1709,12 +1709,12 @@ pub unsafe fn G_WorldDone(state: &mut GameState) {
         }
     }
 }
-pub unsafe fn G_DoWorldDone() {
-    unsafe { game_state() }.g_game.gamestate = GS_LEVEL;
-    unsafe { game_state() }.g_game.gamemap = unsafe { game_state() }.g_game.wminfo.next + 1 as i32;
-    G_DoLoadLevel();
-    unsafe { game_state() }.g_game.gameaction = ga_nothing;
-    unsafe { game_state() }.g_game.viewactive = true;
+pub unsafe fn G_DoWorldDone(state: &mut GameState) {
+    state.g_game.gamestate = GS_LEVEL;
+    state.g_game.gamemap = state.g_game.wminfo.next + 1 as i32;
+    G_DoLoadLevel(state);
+    state.g_game.gameaction = ga_nothing;
+    state.g_game.viewactive = true;
 }
 pub unsafe fn G_LoadGame(state: &mut GameState, mut name: *mut ::core::ffi::c_char) {
     M_StringCopy(
@@ -1974,7 +1974,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
     }
     skytexturename = skytexturename;
     unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(unsafe { &mut game_state().r_data }, skytexturename);
-    G_DoLoadLevel();
+    G_DoLoadLevel(unsafe { game_state() });
 }
 pub const DEMOMARKER: i32 = 0x80;
 pub unsafe fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
