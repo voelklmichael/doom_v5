@@ -116,6 +116,139 @@ use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{atoi, strcasecmp, strcmp, strlen, strncasecmp};
 use libc::{exit, printf, snprintf};
 
+pub struct DMainState {
+    pub savegamedir: *mut ::core::ffi::c_char,
+    pub iwadfile: *mut ::core::ffi::c_char,
+    pub devparm: bool,
+    pub nomonsters: bool,
+    pub respawnparm: bool,
+    pub fastparm: bool,
+    pub startskill: skill_t,
+    pub startepisode: i32,
+    pub startmap: i32,
+    pub autostart: bool,
+    pub startloadgame: i32,
+    pub advancedemo: bool,
+    pub storedemo: bool,
+    pub bfgedition: bool,
+    pub main_loop_started: bool,
+    pub wadfile: [::core::ffi::c_char; 1024],
+    pub mapdir: [::core::ffi::c_char; 1024],
+    pub show_endoom: i32,
+    pub wipegamestate: gamestate_t,
+    pub d_display_viewactivestate: bool,
+    pub d_display_menuactivestate: bool,
+    pub d_display_inhelpscreensstate: bool,
+    pub d_display_fullscreen: bool,
+    pub d_display_oldgamestate: gamestate_t,
+    pub d_display_borderdrawcount: i32,
+    pub demosequence: i32,
+    pub pagetic: i32,
+    pub pagename: *mut ::core::ffi::c_char,
+    pub gameversions: [C2RustUnnamed_4; 10],
+}
+
+impl DMainState {
+    pub const fn new() -> Self {
+        DMainState {
+            savegamedir: 
+        ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            iwadfile: 
+        ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            devparm: false,
+            nomonsters: false,
+            respawnparm: false,
+            fastparm: false,
+            startskill: sk_baby,
+            startepisode: 0,
+            startmap: 0,
+            autostart: false,
+            startloadgame: 0,
+            advancedemo: false,
+            storedemo: false,
+            bfgedition: false,
+            main_loop_started: false,
+            wadfile: [0; 1024],
+            mapdir: [0; 1024],
+            show_endoom: 1,
+            wipegamestate: GS_DEMOSCREEN,
+            d_display_viewactivestate: false,
+            d_display_menuactivestate: false,
+            d_display_inhelpscreensstate: false,
+            d_display_fullscreen: false,
+            d_display_oldgamestate: 4294967295,
+            d_display_borderdrawcount: 0,
+            demosequence: 0,
+            pagetic: 0,
+            pagename: 
+        ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            gameversions: [
+        C2RustUnnamed_4 {
+            description: b"Doom 1.666\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"1.666\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            version: exe_doom_1_666,
+        },
+        C2RustUnnamed_4 {
+            description: b"Doom 1.7/1.7a\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"1.7\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            version: exe_doom_1_7,
+        },
+        C2RustUnnamed_4 {
+            description: b"Doom 1.8\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"1.8\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            version: exe_doom_1_8,
+        },
+        C2RustUnnamed_4 {
+            description: b"Doom 1.9\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"1.9\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            version: exe_doom_1_9,
+        },
+        C2RustUnnamed_4 {
+            description: b"Hacx\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"hacx\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            version: exe_hacx,
+        },
+        C2RustUnnamed_4 {
+            description: b"Ultimate Doom\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"ultimate\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            version: exe_ultimate,
+        },
+        C2RustUnnamed_4 {
+            description: b"Final Doom\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"final\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            version: exe_final,
+        },
+        C2RustUnnamed_4 {
+            description: b"Final Doom (alt)\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"final2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            version: exe_final2,
+        },
+        C2RustUnnamed_4 {
+            description: b"Chex Quest\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char,
+            cmdline: b"chex\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            version: exe_chex,
+        },
+        C2RustUnnamed_4 {
+            description: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            cmdline: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            version: exe_doom_1_2,
+        },
+    ],
+        }
+    }
+}
+
+
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
     fn memmove(
@@ -167,36 +300,9 @@ pub const HUSTR_KEYGREEN: i32 = 'g' as i32;
 pub const HUSTR_KEYINDIGO: i32 = 'i' as i32;
 pub const HUSTR_KEYBROWN: i32 = 'b' as i32;
 pub const HUSTR_KEYRED: i32 = 'r' as i32;
-pub static mut savegamedir: *mut ::core::ffi::c_char =
-    ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char;
-#[no_mangle]
-pub static mut iwadfile: *mut ::core::ffi::c_char =
-    ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char;
-pub static mut devparm: bool = false;
-pub static mut nomonsters: bool = false;
-pub static mut respawnparm: bool = false;
-pub static mut fastparm: bool = false;
-pub static mut startskill: skill_t = sk_baby;
-pub static mut startepisode: i32 = 0;
-pub static mut startmap: i32 = 0;
-pub static mut autostart: bool = false;
-pub static mut startloadgame: i32 = 0;
-pub static mut advancedemo: bool = false;
-#[no_mangle]
-pub static mut storedemo: bool = false;
-#[no_mangle]
-pub static mut bfgedition: bool = false;
-#[no_mangle]
-pub static mut main_loop_started: bool = false;
-#[no_mangle]
-pub static mut wadfile: [::core::ffi::c_char; 1024] = [0; 1024];
-#[no_mangle]
-pub static mut mapdir: [::core::ffi::c_char; 1024] = [0; 1024];
-#[no_mangle]
-pub static mut show_endoom: i32 = 1;
 pub unsafe fn D_ProcessEvents() {
     let mut ev: *mut event_t = ::core::ptr::null_mut::<event_t>();
-    if storedemo {
+    if unsafe { game_state() }.d_main.storedemo {
         return;
     }
     loop {
@@ -207,14 +313,7 @@ pub unsafe fn D_ProcessEvents() {
         G_Responder(ev);
     }
 }
-pub static mut wipegamestate: gamestate_t = GS_DEMOSCREEN;
 pub unsafe fn D_Display() {
-    static mut viewactivestate: bool = false;
-    static mut menuactivestate: bool = false;
-    static mut inhelpscreensstate: bool = false;
-    static mut fullscreen: bool = false;
-    static mut oldgamestate: gamestate_t = 4294967295;
-    static mut borderdrawcount: i32 = 0;
     let mut nowtime: i32 = 0;
     let mut tics: i32 = 0;
     let mut wipestart: i32 = 0;
@@ -228,10 +327,10 @@ pub unsafe fn D_Display() {
     redrawsbar = false;
     if unsafe { game_state() }.r_main.setsizeneeded {
         R_ExecuteSetViewSize();
-        oldgamestate = 4294967295 as gamestate_t;
-        borderdrawcount = 3 as i32;
+        unsafe { game_state() }.d_main.d_display_oldgamestate = 4294967295 as gamestate_t;
+        unsafe { game_state() }.d_main.d_display_borderdrawcount = 3 as i32;
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 != wipegamestate as u32 {
+    if unsafe { game_state() }.g_game.gamestate as u32 != unsafe { game_state() }.d_main.wipegamestate as u32 {
         wipe = true;
         wipe_StartScreen(0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
     } else {
@@ -248,14 +347,14 @@ pub unsafe fn D_Display() {
                 if unsafe { game_state() }.am_map.automapactive {
                     AM_Drawer();
                 }
-                if wipe || unsafe { game_state() }.r_draw.viewheight != 200 as i32 && fullscreen {
+                if wipe || unsafe { game_state() }.r_draw.viewheight != 200 as i32 && unsafe { game_state() }.d_main.d_display_fullscreen {
                     redrawsbar = true;
                 }
-                if inhelpscreensstate && !unsafe { game_state() }.m_menu.inhelpscreens {
+                if unsafe { game_state() }.d_main.d_display_inhelpscreensstate && !unsafe { game_state() }.m_menu.inhelpscreens {
                     redrawsbar = true;
                 }
                 ST_Drawer(unsafe { game_state() }.r_draw.viewheight == 200 as i32, redrawsbar);
-                fullscreen = unsafe { game_state() }.r_draw.viewheight == 200 as i32;
+                unsafe { game_state() }.d_main.d_display_fullscreen = unsafe { game_state() }.r_draw.viewheight == 200 as i32;
             }
         }
         1 => {
@@ -284,37 +383,37 @@ pub unsafe fn D_Display() {
     {
         HU_Drawer();
     }
-    if unsafe { game_state() }.g_game.gamestate as u32 != oldgamestate as u32
+    if unsafe { game_state() }.g_game.gamestate as u32 != unsafe { game_state() }.d_main.d_display_oldgamestate as u32
         && unsafe { game_state() }.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
     {
         I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
     }
     if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && oldgamestate as u32 != GS_LEVEL as i32 as u32
+        && unsafe { game_state() }.d_main.d_display_oldgamestate as u32 != GS_LEVEL as i32 as u32
     {
-        viewactivestate = false;
+        unsafe { game_state() }.d_main.d_display_viewactivestate = false;
         R_FillBackScreen();
     }
     if unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && !unsafe { game_state() }.am_map.automapactive
         && unsafe { game_state() }.r_draw.scaledviewwidth != 320 as i32
     {
-        if unsafe { game_state() }.m_menu.menuactive || menuactivestate || !viewactivestate {
-            borderdrawcount = 3 as i32;
+        if unsafe { game_state() }.m_menu.menuactive || unsafe { game_state() }.d_main.d_display_menuactivestate || !unsafe { game_state() }.d_main.d_display_viewactivestate {
+            unsafe { game_state() }.d_main.d_display_borderdrawcount = 3 as i32;
         }
-        if borderdrawcount != 0 {
+        if unsafe { game_state() }.d_main.d_display_borderdrawcount != 0 {
             R_DrawViewBorder();
-            borderdrawcount -= 1;
+            unsafe { game_state() }.d_main.d_display_borderdrawcount -= 1;
         }
     }
     if unsafe { game_state() }.g_game.testcontrols {
         V_DrawMouseSpeedBox(unsafe { game_state() }.g_game.testcontrols_mousespeed);
     }
-    menuactivestate = unsafe { game_state() }.m_menu.menuactive;
-    viewactivestate = unsafe { game_state() }.g_game.viewactive;
-    inhelpscreensstate = unsafe { game_state() }.m_menu.inhelpscreens;
-    wipegamestate = unsafe { game_state() }.g_game.gamestate;
-    oldgamestate = wipegamestate;
+    unsafe { game_state() }.d_main.d_display_menuactivestate = unsafe { game_state() }.m_menu.menuactive;
+    unsafe { game_state() }.d_main.d_display_viewactivestate = unsafe { game_state() }.g_game.viewactive;
+    unsafe { game_state() }.d_main.d_display_inhelpscreensstate = unsafe { game_state() }.m_menu.inhelpscreens;
+    unsafe { game_state() }.d_main.wipegamestate = unsafe { game_state() }.g_game.gamestate;
+    unsafe { game_state() }.d_main.d_display_oldgamestate = unsafe { game_state() }.d_main.wipegamestate;
     if unsafe { game_state() }.g_game.paused {
         if unsafe { game_state() }.am_map.automapactive {
             y = 4 as i32;
@@ -422,7 +521,7 @@ pub unsafe fn D_BindVariables() {
     M_BindVariable(
         unsafe { &mut game_state().m_config },
         "show_endoom",
-        &raw mut show_endoom as *mut ::core::ffi::c_void,
+        &raw mut unsafe { game_state() }.d_main.show_endoom as *mut ::core::ffi::c_void,
     );
     i = 0 as i32;
     while i < 10 as i32 {
@@ -454,7 +553,7 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
     }
     return (unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && !unsafe { game_state() }.g_game.demoplayback
-        && !advancedemo) as i32 as boolean;
+        && !unsafe { game_state() }.d_main.advancedemo) as i32 as boolean;
 }
 #[no_mangle]
 pub unsafe extern "C" fn doomgeneric_Tick() {
@@ -469,7 +568,7 @@ pub unsafe extern "C" fn doomgeneric_Tick() {
     }
 }
 pub unsafe fn D_DoomLoop() {
-    if bfgedition
+    if unsafe { game_state() }.d_main.bfgedition
         && (unsafe { game_state() }.g_game.demorecording
             || unsafe { game_state() }.g_game.gameaction as u32 == ga_playdemo as i32 as u32
             || unsafe { game_state() }.g_game.netgame)
@@ -482,7 +581,7 @@ pub unsafe fn D_DoomLoop() {
     if unsafe { game_state() }.g_game.demorecording {
         G_BeginRecording();
     }
-    main_loop_started = true;
+    unsafe { game_state() }.d_main.main_loop_started = true;
     TryRunTics();
     I_SetWindowTitle(unsafe { game_state() }.doomstat.gamedescription);
     I_SetGrabMouseCallback(Some(D_GrabMouseCallback as unsafe fn() -> boolean));
@@ -491,20 +590,13 @@ pub unsafe fn D_DoomLoop() {
     R_ExecuteSetViewSize();
     D_StartGameLoop();
     if unsafe { game_state() }.g_game.testcontrols {
-        wipegamestate = unsafe { game_state() }.g_game.gamestate;
+        unsafe { game_state() }.d_main.wipegamestate = unsafe { game_state() }.g_game.gamestate;
     }
     doomgeneric_Tick();
 }
-#[no_mangle]
-pub static mut demosequence: i32 = 0;
-#[no_mangle]
-pub static mut pagetic: i32 = 0;
-#[no_mangle]
-pub static mut pagename: *mut ::core::ffi::c_char =
-    ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char;
 pub unsafe fn D_PageTicker() {
-    pagetic -= 1;
-    if pagetic < 0 as i32 {
+    unsafe { game_state() }.d_main.pagetic -= 1;
+    if unsafe { game_state() }.d_main.pagetic < 0 as i32 {
         D_AdvanceDemo();
     }
 }
@@ -513,35 +605,35 @@ pub unsafe fn D_PageDrawer() {
         unsafe { &mut game_state().v_video },
         0 as i32,
         0 as i32,
-        W_CacheLumpName(&wad_name8_to_string(pagename), PU_CACHE as i32) as *mut patch_t,
+        W_CacheLumpName(&wad_name8_to_string(unsafe { game_state() }.d_main.pagename), PU_CACHE as i32) as *mut patch_t,
     );
 }
 pub unsafe fn D_AdvanceDemo() {
-    advancedemo = true;
+    unsafe { game_state() }.d_main.advancedemo = true;
 }
 pub unsafe fn D_DoAdvanceDemo() {
     unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]
         .playerstate = PST_LIVE;
-    advancedemo = false;
+    unsafe { game_state() }.d_main.advancedemo = false;
     unsafe { game_state() }.g_game.usergame = false;
     unsafe { game_state() }.g_game.paused = false;
     unsafe { game_state() }.g_game.gameaction = ga_nothing;
     if unsafe { game_state() }.doomstat.gameversion as u32 == exe_ultimate as i32 as u32
         || unsafe { game_state() }.doomstat.gameversion as u32 == exe_final as i32 as u32
     {
-        demosequence = (demosequence + 1 as i32) % 7 as i32;
+        unsafe { game_state() }.d_main.demosequence = (unsafe { game_state() }.d_main.demosequence + 1 as i32) % 7 as i32;
     } else {
-        demosequence = (demosequence + 1 as i32) % 6 as i32;
+        unsafe { game_state() }.d_main.demosequence = (unsafe { game_state() }.d_main.demosequence + 1 as i32) % 6 as i32;
     }
-    match demosequence {
+    match unsafe { game_state() }.d_main.demosequence {
         0 => {
             if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                pagetic = TICRATE * 11 as i32;
+                unsafe { game_state() }.d_main.pagetic = TICRATE * 11 as i32;
             } else {
-                pagetic = 170 as i32;
+                unsafe { game_state() }.d_main.pagetic = 170 as i32;
             }
             unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
-            pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
+            unsafe { game_state() }.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
             if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
@@ -555,9 +647,9 @@ pub unsafe fn D_DoAdvanceDemo() {
             );
         }
         2 => {
-            pagetic = 200 as i32;
+            unsafe { game_state() }.d_main.pagetic = 200 as i32;
             unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
-            pagename =
+            unsafe { game_state() }.d_main.pagename =
                 b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
         3 => {
@@ -568,17 +660,17 @@ pub unsafe fn D_DoAdvanceDemo() {
         4 => {
             unsafe { game_state() }.g_game.gamestate = GS_DEMOSCREEN;
             if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                pagetic = TICRATE * 11 as i32;
-                pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
+                unsafe { game_state() }.d_main.pagetic = TICRATE * 11 as i32;
+                unsafe { game_state() }.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
                 S_StartMusic(unsafe { &mut game_state().sounds }, mus_dm2ttl as i32);
             } else {
-                pagetic = 200 as i32;
+                unsafe { game_state() }.d_main.pagetic = 200 as i32;
                 if unsafe { game_state() }.doomstat.gamemode as u32 == retail as i32 as u32 {
-                    pagename = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
+                    unsafe { game_state() }.d_main.pagename = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 } else {
-                    pagename = b"HELP2\0" as *const u8 as *const ::core::ffi::c_char
+                    unsafe { game_state() }.d_main.pagename = b"HELP2\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
                 }
             }
@@ -595,20 +687,20 @@ pub unsafe fn D_DoAdvanceDemo() {
         }
         _ => {}
     }
-    if bfgedition
+    if unsafe { game_state() }.d_main.bfgedition
         && strcasecmp(
-            pagename,
+            unsafe { game_state() }.d_main.pagename,
             b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char,
         ) == 0
         && W_CheckNumForName("titlepic") < 0 as i32
     {
-        pagename =
+        unsafe { game_state() }.d_main.pagename =
             b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
 }
 pub unsafe fn D_StartTitle() {
     unsafe { game_state() }.g_game.gameaction = ga_nothing;
-    demosequence = -(1 as i32);
+    unsafe { game_state() }.d_main.demosequence = -(1 as i32);
     D_AdvanceDemo();
 }
 static banners: [&str; 7] = [
@@ -677,7 +769,7 @@ unsafe fn GetGameName(mut gamename: *mut ::core::ffi::c_char) -> *mut ::core::ff
 }
 unsafe fn SetMissionForPackName(mut pack_name: *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
-    static mut packs: [C2RustUnnamed_3; 3] = [
+    const packs: [C2RustUnnamed_3; 3] = [
         C2RustUnnamed_3 {
             name: b"doom2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             mission: doom2 as i32,
@@ -873,7 +965,7 @@ pub unsafe fn D_SetGameDescription() {
     }
 }
 #[no_mangle]
-pub static mut title: [::core::ffi::c_char; 128] = [0; 128];
+pub static title: [::core::ffi::c_char; 128] = [0; 128];
 unsafe fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> bool {
     let mut handle: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     printf(
@@ -906,94 +998,32 @@ pub unsafe fn PrintDehackedBanners() {
         i = i.wrapping_add(1);
     }
 }
-static mut gameversions: [C2RustUnnamed_4; 10] = [
-    C2RustUnnamed_4 {
-        description: b"Doom 1.666\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"1.666\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        version: exe_doom_1_666,
-    },
-    C2RustUnnamed_4 {
-        description: b"Doom 1.7/1.7a\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"1.7\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        version: exe_doom_1_7,
-    },
-    C2RustUnnamed_4 {
-        description: b"Doom 1.8\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"1.8\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        version: exe_doom_1_8,
-    },
-    C2RustUnnamed_4 {
-        description: b"Doom 1.9\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"1.9\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        version: exe_doom_1_9,
-    },
-    C2RustUnnamed_4 {
-        description: b"Hacx\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"hacx\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        version: exe_hacx,
-    },
-    C2RustUnnamed_4 {
-        description: b"Ultimate Doom\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"ultimate\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        version: exe_ultimate,
-    },
-    C2RustUnnamed_4 {
-        description: b"Final Doom\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"final\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        version: exe_final,
-    },
-    C2RustUnnamed_4 {
-        description: b"Final Doom (alt)\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"final2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        version: exe_final2,
-    },
-    C2RustUnnamed_4 {
-        description: b"Chex Quest\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-        cmdline: b"chex\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        version: exe_chex,
-    },
-    C2RustUnnamed_4 {
-        description: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
-        cmdline: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
-        version: exe_doom_1_2,
-    },
-];
 unsafe fn InitGameVersion() {
     let mut p: i32 = 0;
     let mut i: i32 = 0;
     p = M_CheckParmWithArgs("-gameversion", 1 as i32);
     if p != 0 {
         i = 0 as i32;
-        while !gameversions[i as usize].description.is_null() {
+        while !unsafe { game_state() }.d_main.gameversions[i as usize].description.is_null() {
             if strcmp(
                 unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
-                gameversions[i as usize].cmdline,
+                unsafe { game_state() }.d_main.gameversions[i as usize].cmdline,
             ) == 0
             {
-                unsafe { game_state() }.doomstat.gameversion = gameversions[i as usize].version;
+                unsafe { game_state() }.doomstat.gameversion = unsafe { game_state() }.d_main.gameversions[i as usize].version;
                 break;
             } else {
                 i += 1;
             }
         }
-        if gameversions[i as usize].description.is_null() {
+        if unsafe { game_state() }.d_main.gameversions[i as usize].description.is_null() {
             printf(b"Supported game versions:\n\0" as *const u8 as *const ::core::ffi::c_char);
             i = 0 as i32;
-            while !gameversions[i as usize].description.is_null() {
+            while !unsafe { game_state() }.d_main.gameversions[i as usize].description.is_null() {
                 printf(
                     b"\t%s (%s)\n\0" as *const u8 as *const ::core::ffi::c_char,
-                    gameversions[i as usize].cmdline,
-                    gameversions[i as usize].description,
+                    unsafe { game_state() }.d_main.gameversions[i as usize].cmdline,
+                    unsafe { game_state() }.d_main.gameversions[i as usize].description,
                 );
                 i += 1;
             }
@@ -1037,14 +1067,14 @@ unsafe fn InitGameVersion() {
 pub unsafe fn PrintGameVersion() {
     let mut i: i32 = 0;
     i = 0 as i32;
-    while !gameversions[i as usize].description.is_null() {
-        if gameversions[i as usize].version as u32
+    while !unsafe { game_state() }.d_main.gameversions[i as usize].description.is_null() {
+        if unsafe { game_state() }.d_main.gameversions[i as usize].version as u32
             == unsafe { game_state() }.doomstat.gameversion as u32
         {
             printf(
                 b"Emulating the behavior of the '%s' executable.\n\0" as *const u8
                     as *const ::core::ffi::c_char,
-                gameversions[i as usize].description,
+                unsafe { game_state() }.d_main.gameversions[i as usize].description,
             );
             break;
         } else {
@@ -1053,8 +1083,8 @@ pub unsafe fn PrintGameVersion() {
     }
 }
 unsafe extern "C" fn D_Endoom() {
-    if show_endoom == 0
-        || !main_loop_started
+    if unsafe { game_state() }.d_main.show_endoom == 0
+        || !unsafe { game_state() }.d_main.main_loop_started
         || screensaver_mode
         || M_CheckParm("-testcontrols") > 0 as i32
     {
@@ -1073,17 +1103,17 @@ pub unsafe fn D_DoomMain() {
             as *const ::core::ffi::c_char,
     );
     Z_Init(unsafe { &mut game_state().z_zone });
-    nomonsters = M_CheckParm("-nomonsters") != 0;
-    respawnparm = M_CheckParm("-respawn") != 0;
-    fastparm = M_CheckParm("-fast") != 0;
-    devparm = M_CheckParm("-devparm") != 0;
+    unsafe { game_state() }.d_main.nomonsters = M_CheckParm("-nomonsters") != 0;
+    unsafe { game_state() }.d_main.respawnparm = M_CheckParm("-respawn") != 0;
+    unsafe { game_state() }.d_main.fastparm = M_CheckParm("-fast") != 0;
+    unsafe { game_state() }.d_main.devparm = M_CheckParm("-devparm") != 0;
     if M_CheckParm("-deathmatch") != 0 {
         unsafe { game_state() }.g_game.deathmatch = 1 as i32;
     }
     if M_CheckParm("-altdeath") != 0 {
         unsafe { game_state() }.g_game.deathmatch = 2 as i32;
     }
-    if devparm {
+    if unsafe { game_state() }.d_main.devparm {
         printf(D_DEVSTR.as_ptr());
     }
     M_SetConfigDir(
@@ -1129,7 +1159,7 @@ pub unsafe fn D_DoomMain() {
     D_BindVariables();
     M_LoadDefaults(unsafe { &mut game_state().m_config });
     I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
-    iwadfile = D_FindIWAD(
+    unsafe { game_state() }.d_main.iwadfile = D_FindIWAD(
         unsafe { &mut game_state().d_iwad },
         (1 as i32) << doom as i32
             | (1 as i32) << doom2 as i32
@@ -1139,14 +1169,14 @@ pub unsafe fn D_DoomMain() {
             | (1 as i32) << pack_hacx as i32,
         &raw mut unsafe { game_state() }.doomstat.gamemission,
     );
-    if iwadfile.is_null() {
+    if unsafe { game_state() }.d_main.iwadfile.is_null() {
         I_Error(
             "Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n",
         );
     }
     unsafe { game_state() }.doomstat.modifiedgame = false;
     printf(b"W_Init: Init WADfiles.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    D_AddFile(iwadfile);
+    D_AddFile(unsafe { game_state() }.d_main.iwadfile);
     W_CheckCorrectIWAD(doom);
     D_IdentifyVersion();
     InitGameVersion();
@@ -1155,7 +1185,7 @@ pub unsafe fn D_DoomMain() {
             b"BFG Edition: Using workarounds as needed.\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
-        bfgedition = true;
+        unsafe { game_state() }.d_main.bfgedition = true;
     }
     unsafe { game_state() }.doomstat.modifiedgame = W_ParseCommandLine();
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);
@@ -1217,7 +1247,7 @@ pub unsafe fn D_DoomMain() {
     );
     W_GenerateHashTable();
     D_SetGameDescription();
-    savegamedir = M_GetSaveGameDir(
+    unsafe { game_state() }.d_main.savegamedir = M_GetSaveGameDir(
         unsafe { &mut game_state().m_config },
         D_SaveGameIWADName(unsafe { game_state() }.doomstat.gamemission),
     );
@@ -1285,30 +1315,30 @@ pub unsafe fn D_DoomMain() {
     I_InitSound(unsafe { &mut game_state().i_sound }, true);
     I_InitMusic(unsafe { &mut game_state().i_sound });
     D_ConnectNetGame();
-    startskill = sk_medium;
-    startepisode = 1 as i32;
-    startmap = 1 as i32;
-    autostart = false;
+    unsafe { game_state() }.d_main.startskill = sk_medium;
+    unsafe { game_state() }.d_main.startepisode = 1 as i32;
+    unsafe { game_state() }.d_main.startmap = 1 as i32;
+    unsafe { game_state() }.d_main.autostart = false;
     p = M_CheckParmWithArgs("-skill", 1 as i32);
     if p != 0 {
-        startskill = (unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+        unsafe { game_state() }.d_main.startskill = (unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
             .as_bytes()
             .first()
             .copied()
             .unwrap_or(0) as i32
             - '1' as i32) as skill_t;
-        autostart = true;
+        unsafe { game_state() }.d_main.autostart = true;
     }
     p = M_CheckParmWithArgs("-episode", 1 as i32);
     if p != 0 {
-        startepisode = unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+        unsafe { game_state() }.d_main.startepisode = unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
             .as_bytes()
             .first()
             .copied()
             .unwrap_or(0) as i32
             - '0' as i32;
-        startmap = 1 as i32;
-        autostart = true;
+        unsafe { game_state() }.d_main.startmap = 1 as i32;
+        unsafe { game_state() }.d_main.autostart = true;
     }
     unsafe { game_state() }.g_game.timelimit = 0 as i32;
     p = M_CheckParmWithArgs("-timer", 1 as i32);
@@ -1325,45 +1355,45 @@ pub unsafe fn D_DoomMain() {
     p = M_CheckParmWithArgs("-warp", 1 as i32);
     if p != 0 {
         if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32 {
-            startmap = atoi(
+            unsafe { game_state() }.d_main.startmap = atoi(
                 unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                     as *mut ::core::ffi::c_char,
             );
         } else {
-            startepisode = unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
+            unsafe { game_state() }.d_main.startepisode = unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize]
                 .as_bytes()
                 .first()
                 .copied()
                 .unwrap_or(0) as i32
                 - '0' as i32;
             if (p + 2 as i32) < unsafe { game_state() }.m_argv.myargv.len() as i32 {
-                startmap = unsafe { game_state() }.m_argv.myargv[(p + 2 as i32) as usize]
+                unsafe { game_state() }.d_main.startmap = unsafe { game_state() }.m_argv.myargv[(p + 2 as i32) as usize]
                     .as_bytes()
                     .first()
                     .copied()
                     .unwrap_or(0) as i32
                     - '0' as i32;
             } else {
-                startmap = 1 as i32;
+                unsafe { game_state() }.d_main.startmap = 1 as i32;
             }
         }
-        autostart = true;
+        unsafe { game_state() }.d_main.autostart = true;
     }
     p = M_CheckParm("-testcontrols");
     if p > 0 as i32 {
-        startepisode = 1 as i32;
-        startmap = 1 as i32;
-        autostart = true;
+        unsafe { game_state() }.d_main.startepisode = 1 as i32;
+        unsafe { game_state() }.d_main.startmap = 1 as i32;
+        unsafe { game_state() }.d_main.autostart = true;
         unsafe { game_state() }.g_game.testcontrols = true;
     }
     p = M_CheckParmWithArgs("-loadgame", 1 as i32);
     if p != 0 {
-        startloadgame = atoi(
+        unsafe { game_state() }.d_main.startloadgame = atoi(
             unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
     } else {
-        startloadgame = -(1 as i32);
+        unsafe { game_state() }.d_main.startloadgame = -(1 as i32);
     }
     printf(b"M_Init: Init miscellaneous info.\n\0" as *const u8 as *const ::core::ffi::c_char);
     M_Init();
@@ -1390,7 +1420,7 @@ pub unsafe fn D_DoomMain() {
     if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
         && W_CheckNumForName("map01") < 0 as i32
     {
-        storedemo = true;
+        unsafe { game_state() }.d_main.storedemo = true;
     }
     if M_CheckParmWithArgs("-statdump", 1 as i32) != 0 {
         I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true);
@@ -1402,7 +1432,7 @@ pub unsafe fn D_DoomMain() {
             unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
-        autostart = true;
+        unsafe { game_state() }.d_main.autostart = true;
     }
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p != 0 {
@@ -1417,17 +1447,17 @@ pub unsafe fn D_DoomMain() {
         D_DoomLoop();
         return;
     }
-    if startloadgame >= 0 as i32 {
+    if unsafe { game_state() }.d_main.startloadgame >= 0 as i32 {
         M_StringCopy(
             &raw mut file as *mut ::core::ffi::c_char,
-            P_SaveGameFile(startloadgame),
+            P_SaveGameFile(unsafe { game_state() }.d_main.startloadgame),
             ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
         );
         G_LoadGame(&raw mut file as *mut ::core::ffi::c_char);
     }
     if unsafe { game_state() }.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
-        if autostart || unsafe { game_state() }.g_game.netgame {
-            G_InitNew(startskill, startepisode, startmap);
+        if unsafe { game_state() }.d_main.autostart || unsafe { game_state() }.g_game.netgame {
+            G_InitNew(unsafe { game_state() }.d_main.startskill, unsafe { game_state() }.d_main.startepisode, unsafe { game_state() }.d_main.startmap);
         } else {
             D_StartTitle();
         }

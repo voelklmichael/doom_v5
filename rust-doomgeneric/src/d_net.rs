@@ -2,15 +2,6 @@ use crate::src::d_loop::D_InitNetGame;
 use crate::src::d_loop::D_RegisterLoopCallbacks;
 use crate::src::d_loop::D_StartNetGame;
 use crate::src::d_loop::{loop_interface_t, net_connect_data_t, net_gamesettings_t};
-use crate::src::d_main::advancedemo;
-use crate::src::d_main::autostart;
-use crate::src::d_main::fastparm;
-use crate::src::d_main::nomonsters;
-use crate::src::d_main::respawnparm;
-use crate::src::d_main::startepisode;
-use crate::src::d_main::startloadgame;
-use crate::src::d_main::startmap;
-use crate::src::d_main::startskill;
 use crate::src::d_main::D_DoAdvanceDemo;
 use crate::src::d_mode::skill_t;
 use crate::src::d_player::player_t;
@@ -86,7 +77,7 @@ unsafe fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
     }
     let gs = game_state();
     gs.d_net.netcmds = cmds;
-    if advancedemo {
+    if unsafe { game_state() }.d_main.advancedemo {
         D_DoAdvanceDemo();
     }
     G_Ticker(&mut gs.m_random, &mut gs.d_net);
@@ -102,14 +93,14 @@ static mut doom_loop_interface: loop_interface_t = unsafe {
 unsafe fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
     let mut i: u32 = 0;
     unsafe { game_state() }.g_game.deathmatch = (*settings).deathmatch;
-    startepisode = (*settings).episode;
-    startmap = (*settings).map;
-    startskill = (*settings).skill as skill_t;
-    startloadgame = (*settings).loadgame;
+    unsafe { game_state() }.d_main.startepisode = (*settings).episode;
+    unsafe { game_state() }.d_main.startmap = (*settings).map;
+    unsafe { game_state() }.d_main.startskill = (*settings).skill as skill_t;
+    unsafe { game_state() }.d_main.startloadgame = (*settings).loadgame;
     unsafe { game_state() }.g_game.lowres_turn = (*settings).lowres_turn != 0;
-    nomonsters = (*settings).nomonsters != 0;
-    fastparm = (*settings).fast_monsters != 0;
-    respawnparm = (*settings).respawn_monsters != 0;
+    unsafe { game_state() }.d_main.nomonsters = (*settings).nomonsters != 0;
+    unsafe { game_state() }.d_main.fastparm = (*settings).fast_monsters != 0;
+    unsafe { game_state() }.d_main.respawnparm = (*settings).respawn_monsters != 0;
     unsafe { game_state() }.g_game.timelimit = (*settings).timelimit;
     unsafe { game_state() }.g_game.consoleplayer = (*settings).consoleplayer;
     if unsafe { game_state() }.g_game.lowres_turn {
@@ -127,14 +118,14 @@ unsafe fn LoadGameSettings(mut settings: *mut net_gamesettings_t) {
 }
 unsafe fn SaveGameSettings(mut settings: *mut net_gamesettings_t) {
     (*settings).deathmatch = unsafe { game_state() }.g_game.deathmatch;
-    (*settings).episode = startepisode;
-    (*settings).map = startmap;
-    (*settings).skill = startskill as i32;
-    (*settings).loadgame = startloadgame;
+    (*settings).episode = unsafe { game_state() }.d_main.startepisode;
+    (*settings).map = unsafe { game_state() }.d_main.startmap;
+    (*settings).skill = unsafe { game_state() }.d_main.startskill as i32;
+    (*settings).loadgame = unsafe { game_state() }.d_main.startloadgame;
     (*settings).gameversion = unsafe { game_state() }.doomstat.gameversion as i32;
-    (*settings).nomonsters = nomonsters as i32;
-    (*settings).fast_monsters = fastparm as i32;
-    (*settings).respawn_monsters = respawnparm as i32;
+    (*settings).nomonsters = unsafe { game_state() }.d_main.nomonsters as i32;
+    (*settings).fast_monsters = unsafe { game_state() }.d_main.fastparm as i32;
+    (*settings).respawn_monsters = unsafe { game_state() }.d_main.respawnparm as i32;
     (*settings).timelimit = unsafe { game_state() }.g_game.timelimit;
     (*settings).lowres_turn =
         (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
@@ -200,7 +191,7 @@ pub unsafe fn D_CheckNetGame() {
         player_classes: [0; 8],
     };
     if unsafe { game_state() }.g_game.netgame {
-        autostart = true;
+        unsafe { game_state() }.d_main.autostart = true;
     }
     D_RegisterLoopCallbacks(&raw mut doom_loop_interface);
     SaveGameSettings(&raw mut settings);
@@ -209,10 +200,10 @@ pub unsafe fn D_CheckNetGame() {
     printf(
         b"startskill %i  deathmatch: %i  startmap: %i  startepisode: %i\n\0" as *const u8
             as *const ::core::ffi::c_char,
-        startskill as i32,
+        unsafe { game_state() }.d_main.startskill as i32,
         unsafe { game_state() }.g_game.deathmatch,
-        startmap,
-        startepisode,
+        unsafe { game_state() }.d_main.startmap,
+        unsafe { game_state() }.d_main.startepisode,
     );
     printf(
         b"player %i of %i (%i nodes)\n\0" as *const u8 as *const ::core::ffi::c_char,

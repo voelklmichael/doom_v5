@@ -1,4 +1,3 @@
-use crate::src::d_main::savegamedir;
 use crate::src::d_mode::skill_t;
 use crate::src::d_player::NUMPOWERS;
 use crate::src::d_player::NUMPSPRITES;
@@ -112,7 +111,7 @@ pub unsafe fn P_TempSaveGameFile() -> *mut ::core::ffi::c_char {
     let state = unsafe { game_state() };
     if state.p_saveg.temp_savegame_filename.is_null() {
         state.p_saveg.temp_savegame_filename = M_StringJoin(
-            savegamedir,
+            unsafe { game_state() }.d_main.savegamedir,
             b"temp.dsg\0" as *const u8 as *const ::core::ffi::c_char,
             NULL,
         );
@@ -123,7 +122,7 @@ pub unsafe fn P_SaveGameFile(mut slot: i32) -> *mut ::core::ffi::c_char {
     let state = unsafe { game_state() };
     let mut basename: [::core::ffi::c_char; 32] = [0; 32];
     if state.p_saveg.savegame_file_filename.is_null() {
-        state.p_saveg.savegame_file_filename_size = strlen(savegamedir).wrapping_add(32 as size_t);
+        state.p_saveg.savegame_file_filename_size = strlen(unsafe { game_state() }.d_main.savegamedir).wrapping_add(32 as size_t);
         state.p_saveg.savegame_file_filename =
             malloc(state.p_saveg.savegame_file_filename_size) as *mut ::core::ffi::c_char;
     }
@@ -137,7 +136,7 @@ pub unsafe fn P_SaveGameFile(mut slot: i32) -> *mut ::core::ffi::c_char {
         state.p_saveg.savegame_file_filename,
         state.p_saveg.savegame_file_filename_size,
         b"%s%s\0" as *const u8 as *const ::core::ffi::c_char,
-        savegamedir,
+        unsafe { game_state() }.d_main.savegamedir,
         &raw mut basename as *mut ::core::ffi::c_char,
     );
     return state.p_saveg.savegame_file_filename;

@@ -1,4 +1,3 @@
-use crate::src::d_main::nomonsters;
 use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_baby, sk_nightmare};
 use crate::src::d_player::CF_NOMOMENTUM;
@@ -1176,7 +1175,7 @@ pub unsafe fn P_SpawnMapThing(mut mthing: *mut mapthing_t) {
     {
         return;
     }
-    if nomonsters && (i == MT_SKULL as i32 || mobjinfo[i as usize].flags & MF_COUNTKILL as i32 != 0)
+    if unsafe { game_state() }.d_main.nomonsters && (i == MT_SKULL as i32 || mobjinfo[i as usize].flags & MF_COUNTKILL as i32 != 0)
     {
         return;
     }

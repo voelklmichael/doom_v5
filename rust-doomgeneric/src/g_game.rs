@@ -9,10 +9,6 @@ use crate::src::d_event::{
 };
 use crate::src::d_event::{gamestate_t, GS_DEMOSCREEN, GS_FINALE, GS_INTERMISSION, GS_LEVEL};
 use crate::src::d_loop::BACKUPTICS;
-use crate::src::d_main::fastparm;
-use crate::src::d_main::nomonsters;
-use crate::src::d_main::respawnparm;
-use crate::src::d_main::wipegamestate;
 use crate::src::d_main::D_AdvanceDemo;
 use crate::src::d_main::D_PageTicker;
 use crate::src::d_mode::{commercial, shareware};
@@ -875,8 +871,8 @@ pub unsafe fn G_DoLoadLevel() {
         unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(skytexturename);
     }
     unsafe { game_state() }.g_game.levelstarttic = unsafe { game_state() }.d_loop.gametic;
-    if wipegamestate as u32 == GS_LEVEL as u32 {
-        wipegamestate = 4294967295 as gamestate_t;
+    if unsafe { game_state() }.d_main.wipegamestate as u32 == GS_LEVEL as u32 {
+        unsafe { game_state() }.d_main.wipegamestate = 4294967295 as gamestate_t;
     }
     unsafe { game_state() }.g_game.gamestate = GS_LEVEL;
     i = 0 as i32;
@@ -1874,9 +1870,9 @@ pub unsafe fn G_DoNewGame() {
         unsafe { game_state() }.g_game.playeringame[3 as i32 as usize];
     unsafe { game_state() }.g_game.playeringame[1 as i32 as usize] =
         unsafe { game_state() }.g_game.playeringame[2 as i32 as usize];
-    respawnparm = false;
-    fastparm = false;
-    nomonsters = false;
+    unsafe { game_state() }.d_main.respawnparm = false;
+    unsafe { game_state() }.d_main.fastparm = false;
+    unsafe { game_state() }.d_main.nomonsters = false;
     unsafe { game_state() }.g_game.consoleplayer = 0 as i32;
     G_InitNew(
         unsafe { game_state() }.g_game.d_skill,
@@ -1918,12 +1914,12 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
         map = 9 as i32;
     }
     M_ClearRandom(unsafe { &mut game_state().m_random });
-    if skill as i32 == sk_nightmare as i32 || respawnparm {
+    if skill as i32 == sk_nightmare as i32 || unsafe { game_state() }.d_main.respawnparm {
         unsafe { game_state() }.g_game.respawnmonsters = true;
     } else {
         unsafe { game_state() }.g_game.respawnmonsters = false;
     }
-    if fastparm
+    if unsafe { game_state() }.d_main.fastparm
         || skill as i32 == sk_nightmare as i32
             && unsafe { game_state() }.g_game.gameskill as i32 != sk_nightmare as i32
     {
@@ -2186,13 +2182,13 @@ pub unsafe fn G_BeginRecording() {
     *fresh5 = unsafe { game_state() }.g_game.deathmatch as byte;
     let fresh6 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh6 = respawnparm as byte;
+    *fresh6 = unsafe { game_state() }.d_main.respawnparm as byte;
     let fresh7 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh7 = fastparm as byte;
+    *fresh7 = unsafe { game_state() }.d_main.fastparm as byte;
     let fresh8 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    *fresh8 = nomonsters as byte;
+    *fresh8 = unsafe { game_state() }.d_main.nomonsters as byte;
     let fresh9 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
     *fresh9 = unsafe { game_state() }.g_game.consoleplayer as byte;
@@ -2297,13 +2293,13 @@ pub unsafe fn G_DoPlayDemo() {
     unsafe { game_state() }.g_game.deathmatch = *fresh28 as i32;
     let fresh29 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    respawnparm = *fresh29 != 0;
+    unsafe { game_state() }.d_main.respawnparm = *fresh29 != 0;
     let fresh30 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    fastparm = *fresh30 != 0;
+    unsafe { game_state() }.d_main.fastparm = *fresh30 != 0;
     let fresh31 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
-    nomonsters = *fresh31 != 0;
+    unsafe { game_state() }.d_main.nomonsters = *fresh31 != 0;
     let fresh32 = unsafe { game_state() }.g_game.demo_p;
     unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
     unsafe { game_state() }.g_game.consoleplayer = *fresh32 as i32;
@@ -2366,9 +2362,9 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
             unsafe { game_state() }.g_game.playeringame[3 as i32 as usize];
         unsafe { game_state() }.g_game.playeringame[1 as i32 as usize] =
             unsafe { game_state() }.g_game.playeringame[2 as i32 as usize];
-        respawnparm = false;
-        fastparm = false;
-        nomonsters = false;
+        unsafe { game_state() }.d_main.respawnparm = false;
+        unsafe { game_state() }.d_main.fastparm = false;
+        unsafe { game_state() }.d_main.nomonsters = false;
         unsafe { game_state() }.g_game.consoleplayer = 0 as i32;
         if unsafe { game_state() }.g_game.singledemo {
             I_Quit();
