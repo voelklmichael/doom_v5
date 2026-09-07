@@ -98,7 +98,6 @@ use crate::src::p_tick::P_Ticker;
 use crate::src::r_data::R_FlatNumForName;
 use crate::src::r_data::R_TextureNumForName;
 use crate::src::r_draw::R_FillBackScreen;
-use crate::src::r_main::setsizeneeded;
 use crate::src::r_main::R_ExecuteSetViewSize;
 use crate::src::r_main::R_PointInSubsector;
 use crate::src::s_sound::S_PauseSound;
@@ -1775,7 +1774,7 @@ pub unsafe fn G_DoLoadGame() {
         I_Error("Bad savegame");
     }
     fclose(unsafe { game_state() }.p_saveg.save_stream);
-    if setsizeneeded {
+    if unsafe { game_state() }.r_main.setsizeneeded {
         R_ExecuteSetViewSize();
     }
     R_FillBackScreen();

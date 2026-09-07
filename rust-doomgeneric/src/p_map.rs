@@ -53,7 +53,6 @@ use crate::src::p_spec::P_ShootSpecialLine;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_switch::P_UseSpecialLine;
 use crate::src::p_tick::leveltime;
-use crate::src::r_main::validcount;
 use crate::src::r_main::R_PointInSubsector;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::s_sound::S_StartSound;
@@ -198,7 +197,7 @@ pub unsafe fn P_TeleportMove(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fixe
     unsafe { game_state() }.p_map.tmdropoffz = (*(*newsubsec).sector).floorheight;
     unsafe { game_state() }.p_map.tmfloorz = unsafe { game_state() }.p_map.tmdropoffz;
     unsafe { game_state() }.p_map.tmceilingz = (*(*newsubsec).sector).ceilingheight;
-    validcount += 1;
+    unsafe { game_state() }.r_main.validcount += 1;
     unsafe { game_state() }.p_map.numspechit = 0 as i32;
     xl = unsafe { game_state() }.p_map.tmbbox[BOXLEFT as i32 as usize]
         - bmaporgx as i32
@@ -403,7 +402,7 @@ pub unsafe fn P_CheckPosition(mut thing: *mut mobj_t, mut x: fixed_t, mut y: fix
     unsafe { game_state() }.p_map.tmdropoffz = (*(*newsubsec).sector).floorheight;
     unsafe { game_state() }.p_map.tmfloorz = unsafe { game_state() }.p_map.tmdropoffz;
     unsafe { game_state() }.p_map.tmceilingz = (*(*newsubsec).sector).ceilingheight;
-    validcount += 1;
+    unsafe { game_state() }.r_main.validcount += 1;
     unsafe { game_state() }.p_map.numspechit = 0 as i32;
     if unsafe { game_state() }.p_map.tmflags & MF_NOCLIP as i32 != 0 {
         return true;

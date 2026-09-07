@@ -28,14 +28,6 @@ use crate::src::r_draw::dc_yh;
 use crate::src::r_draw::dc_yl;
 use crate::src::r_draw::viewheight;
 use crate::src::r_draw::viewwidth;
-use crate::src::r_main::centeryfrac;
-use crate::src::r_main::colfunc;
-use crate::src::r_main::extralight;
-use crate::src::r_main::fixedcolormap;
-use crate::src::r_main::scalelight;
-use crate::src::r_main::viewangle;
-use crate::src::r_main::viewz;
-use crate::src::r_main::xtoviewangle;
 use crate::src::r_main::R_PointToDist;
 use crate::src::r_main::R_ScaleFromGlobalAngle;
 use crate::src::r_main::LIGHTLEVELS;
@@ -138,21 +130,21 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
     frontsector = (*curline).frontsector;
     backsector = (*curline).backsector;
     texnum = *texturetranslation.offset((*(*curline).sidedef).midtexture as isize);
-    lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + extralight;
+    lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;
     if (*(*curline).v1).y == (*(*curline).v2).y {
         lightnum -= 1;
     } else if (*(*curline).v1).x == (*(*curline).v2).x {
         lightnum += 1;
     }
     if lightnum < 0 as i32 {
-        walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
+        walllights = &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
             .offset(0 as i32 as isize) as *mut *mut lighttable_t;
     } else if lightnum >= LIGHTLEVELS {
-        walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
+        walllights = &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
             .offset((LIGHTLEVELS - 1 as i32) as isize)
             as *mut *mut lighttable_t;
     } else {
-        walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
+        walllights = &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
             .offset(lightnum as isize) as *mut *mut lighttable_t;
     }
     maskedtexturecol = (*ds).maskedtexturecol;
@@ -167,23 +159,23 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
         } else {
             (*backsector).floorheight
         };
-        dc_texturemid = dc_texturemid + *textureheight.offset(texnum as isize) - viewz;
+        dc_texturemid = dc_texturemid + *textureheight.offset(texnum as isize) - unsafe { game_state() }.r_main.viewz;
     } else {
         dc_texturemid = if (*frontsector).ceilingheight < (*backsector).ceilingheight {
             (*frontsector).ceilingheight
         } else {
             (*backsector).ceilingheight
         };
-        dc_texturemid = dc_texturemid - viewz;
+        dc_texturemid = dc_texturemid - unsafe { game_state() }.r_main.viewz;
     }
     dc_texturemid += (*(*curline).sidedef).rowoffset;
-    if !fixedcolormap.is_null() {
-        dc_colormap = fixedcolormap;
+    if !unsafe { game_state() }.r_main.fixedcolormap.is_null() {
+        dc_colormap = unsafe { game_state() }.r_main.fixedcolormap;
     }
     dc_x = x1;
     while dc_x <= x2 {
         if *maskedtexturecol.offset(dc_x as isize) as i32 != SHRT_MAX {
-            if fixedcolormap.is_null() {
+            if unsafe { game_state() }.r_main.fixedcolormap.is_null() {
                 index = (unsafe { game_state() }.r_things.spryscale >> LIGHTSCALESHIFT) as u32;
                 if index >= MAXLIGHTSCALE as u32 {
                     index = (MAXLIGHTSCALE - 1 as i32) as u32;
@@ -191,7 +183,7 @@ pub unsafe fn R_RenderMaskedSegRange(mut ds: *mut drawseg_t, mut x1: i32, mut x2
                 dc_colormap = *walllights.offset(index as isize);
             }
             unsafe { game_state() }.r_things.sprtopscreen =
-                centeryfrac - FixedMul(dc_texturemid, unsafe { game_state() }.r_things.spryscale);
+                unsafe { game_state() }.r_main.centeryfrac - FixedMul(dc_texturemid, unsafe { game_state() }.r_things.spryscale);
             dc_iscale = (0xffffffff as u32)
                 .wrapping_div(unsafe { game_state() }.r_things.spryscale as u32)
                 as fixed_t;
@@ -247,7 +239,7 @@ pub unsafe fn R_RenderSegLoop() {
             }
         }
         if segtextured {
-            angle = rw_centerangle.wrapping_add(xtoviewangle[rw_x as usize]) >> ANGLETOFINESHIFT;
+            angle = rw_centerangle.wrapping_add(unsafe { game_state() }.r_main.xtoviewangle[rw_x as usize]) >> ANGLETOFINESHIFT;
             texturecolumn = rw_offset - FixedMul(finetangent[angle as usize], rw_distance);
             texturecolumn >>= FRACBITS;
             index = (rw_scale >> LIGHTSCALESHIFT) as u32;
@@ -265,7 +257,7 @@ pub unsafe fn R_RenderSegLoop() {
             dc_yh = yh;
             dc_texturemid = rw_midtexturemid;
             dc_source = R_GetColumn(midtexture, texturecolumn as i32);
-            colfunc.expect("non-null function pointer")();
+            unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
             ceilingclip[rw_x as usize] = viewheight as i16;
             floorclip[rw_x as usize] = -(1 as i32) as i16;
         } else {
@@ -280,7 +272,7 @@ pub unsafe fn R_RenderSegLoop() {
                     dc_yh = mid;
                     dc_texturemid = rw_toptexturemid;
                     dc_source = R_GetColumn(toptexture, texturecolumn as i32);
-                    colfunc.expect("non-null function pointer")();
+                    unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
                     ceilingclip[rw_x as usize] = mid as i16;
                 } else {
                     ceilingclip[rw_x as usize] = (yl - 1 as i32) as i16;
@@ -299,7 +291,7 @@ pub unsafe fn R_RenderSegLoop() {
                     dc_yh = yh;
                     dc_texturemid = rw_bottomtexturemid;
                     dc_source = R_GetColumn(bottomtexture, texturecolumn as i32);
-                    colfunc.expect("non-null function pointer")();
+                    unsafe { game_state() }.r_main.colfunc.expect("non-null function pointer")();
                     floorclip[rw_x as usize] = mid as i16;
                 } else {
                     floorclip[rw_x as usize] = (yh + 1 as i32) as i16;
@@ -348,18 +340,18 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
     (*ds_p).x2 = stop;
     (*ds_p).curline = curline;
     rw_stopx = stop + 1 as i32;
-    rw_scale = R_ScaleFromGlobalAngle(viewangle.wrapping_add(xtoviewangle[start as usize]));
+    rw_scale = R_ScaleFromGlobalAngle(unsafe { game_state() }.r_main.viewangle.wrapping_add(unsafe { game_state() }.r_main.xtoviewangle[start as usize]));
     (*ds_p).scale1 = rw_scale;
     if stop > start {
         (*ds_p).scale2 =
-            R_ScaleFromGlobalAngle(viewangle.wrapping_add(xtoviewangle[stop as usize]));
+            R_ScaleFromGlobalAngle(unsafe { game_state() }.r_main.viewangle.wrapping_add(unsafe { game_state() }.r_main.xtoviewangle[stop as usize]));
         rw_scalestep = (((*ds_p).scale2 as i32 - rw_scale as i32) / (stop - start)) as fixed_t;
         (*ds_p).scalestep = rw_scalestep;
     } else {
         (*ds_p).scale2 = (*ds_p).scale1;
     }
-    worldtop = ((*frontsector).ceilingheight - viewz) as i32;
-    worldbottom = ((*frontsector).floorheight - viewz) as i32;
+    worldtop = ((*frontsector).ceilingheight - unsafe { game_state() }.r_main.viewz) as i32;
+    worldbottom = ((*frontsector).floorheight - unsafe { game_state() }.r_main.viewz) as i32;
     maskedtexture = false;
     bottomtexture = maskedtexture as i32;
     toptexture = bottomtexture;
@@ -372,7 +364,7 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         if (*linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
             vtop =
                 (*frontsector).floorheight + *textureheight.offset((*sidedef).midtexture as isize);
-            rw_midtexturemid = vtop - viewz;
+            rw_midtexturemid = vtop - unsafe { game_state() }.r_main.viewz;
         } else {
             rw_midtexturemid = worldtop as fixed_t;
         }
@@ -390,14 +382,14 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         if (*frontsector).floorheight > (*backsector).floorheight {
             (*ds_p).silhouette = SIL_BOTTOM;
             (*ds_p).bsilheight = (*frontsector).floorheight;
-        } else if (*backsector).floorheight > viewz {
+        } else if (*backsector).floorheight > unsafe { game_state() }.r_main.viewz {
             (*ds_p).silhouette = SIL_BOTTOM;
             (*ds_p).bsilheight = INT_MAX as fixed_t;
         }
         if (*frontsector).ceilingheight < (*backsector).ceilingheight {
             (*ds_p).silhouette |= SIL_TOP;
             (*ds_p).tsilheight = (*frontsector).ceilingheight;
-        } else if (*backsector).ceilingheight < viewz {
+        } else if (*backsector).ceilingheight < unsafe { game_state() }.r_main.viewz {
             (*ds_p).silhouette |= SIL_TOP;
             (*ds_p).tsilheight = INT_MIN as fixed_t;
         }
@@ -413,8 +405,8 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
             (*ds_p).tsilheight = INT_MIN as fixed_t;
             (*ds_p).silhouette |= SIL_TOP;
         }
-        worldhigh = ((*backsector).ceilingheight - viewz) as i32;
-        worldlow = ((*backsector).floorheight - viewz) as i32;
+        worldhigh = ((*backsector).ceilingheight - unsafe { game_state() }.r_main.viewz) as i32;
+        worldlow = ((*backsector).floorheight - unsafe { game_state() }.r_main.viewz) as i32;
         if (*frontsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
             && (*backsector).ceilingpic as i32 == unsafe { game_state() }.r_sky.skyflatnum
         {
@@ -449,7 +441,7 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
             } else {
                 vtop = (*backsector).ceilingheight
                     + *textureheight.offset((*sidedef).toptexture as isize);
-                rw_toptexturemid = vtop - viewz;
+                rw_toptexturemid = vtop - unsafe { game_state() }.r_main.viewz;
             }
         }
         if worldlow > worldbottom {
@@ -485,34 +477,34 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
         }
         rw_offset += (*sidedef).textureoffset + (*curline).offset;
         rw_centerangle = (ANG90 as angle_t)
-            .wrapping_add(viewangle)
+            .wrapping_add(unsafe { game_state() }.r_main.viewangle)
             .wrapping_sub(rw_normalangle);
-        if fixedcolormap.is_null() {
-            lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + extralight;
+        if unsafe { game_state() }.r_main.fixedcolormap.is_null() {
+            lightnum = ((*frontsector).lightlevel as i32 >> LIGHTSEGSHIFT) + unsafe { game_state() }.r_main.extralight;
             if (*(*curline).v1).y == (*(*curline).v2).y {
                 lightnum -= 1;
             } else if (*(*curline).v1).x == (*(*curline).v2).x {
                 lightnum += 1;
             }
             if lightnum < 0 as i32 {
-                walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
+                walllights = &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
                     .offset(0 as i32 as isize)
                     as *mut *mut lighttable_t;
             } else if lightnum >= LIGHTLEVELS {
-                walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
+                walllights = &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
                     .offset((LIGHTLEVELS - 1 as i32) as isize)
                     as *mut *mut lighttable_t;
             } else {
-                walllights = &raw mut *(&raw mut scalelight as *mut [*mut lighttable_t; 48])
+                walllights = &raw mut *(&raw mut unsafe { game_state() }.r_main.scalelight as *mut [*mut lighttable_t; 48])
                     .offset(lightnum as isize)
                     as *mut *mut lighttable_t;
             }
         }
     }
-    if (*frontsector).floorheight >= viewz {
+    if (*frontsector).floorheight >= unsafe { game_state() }.r_main.viewz {
         markfloor = false;
     }
-    if (*frontsector).ceilingheight <= viewz
+    if (*frontsector).ceilingheight <= unsafe { game_state() }.r_main.viewz
         && (*frontsector).ceilingpic as i32 != unsafe { game_state() }.r_sky.skyflatnum
     {
         markceiling = false;
@@ -520,18 +512,18 @@ pub unsafe fn R_StoreWallRange(mut start: i32, mut stop: i32) {
     worldtop >>= 4 as i32;
     worldbottom >>= 4 as i32;
     topstep = -FixedMul(rw_scalestep, worldtop as fixed_t);
-    topfrac = (centeryfrac >> 4 as i32) - FixedMul(worldtop as fixed_t, rw_scale);
+    topfrac = (unsafe { game_state() }.r_main.centeryfrac >> 4 as i32) - FixedMul(worldtop as fixed_t, rw_scale);
     bottomstep = -FixedMul(rw_scalestep, worldbottom as fixed_t);
-    bottomfrac = (centeryfrac >> 4 as i32) - FixedMul(worldbottom as fixed_t, rw_scale);
+    bottomfrac = (unsafe { game_state() }.r_main.centeryfrac >> 4 as i32) - FixedMul(worldbottom as fixed_t, rw_scale);
     if !backsector.is_null() {
         worldhigh >>= 4 as i32;
         worldlow >>= 4 as i32;
         if worldhigh < worldtop {
-            pixhigh = (centeryfrac >> 4 as i32) - FixedMul(worldhigh as fixed_t, rw_scale);
+            pixhigh = (unsafe { game_state() }.r_main.centeryfrac >> 4 as i32) - FixedMul(worldhigh as fixed_t, rw_scale);
             pixhighstep = -FixedMul(rw_scalestep, worldhigh as fixed_t);
         }
         if worldlow > worldbottom {
-            pixlow = (centeryfrac >> 4 as i32) - FixedMul(worldlow as fixed_t, rw_scale);
+            pixlow = (unsafe { game_state() }.r_main.centeryfrac >> 4 as i32) - FixedMul(worldlow as fixed_t, rw_scale);
             pixlowstep = -FixedMul(rw_scalestep, worldlow as fixed_t);
         }
     }

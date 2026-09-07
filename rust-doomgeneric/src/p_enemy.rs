@@ -53,7 +53,6 @@ use crate::src::p_setup::sides;
 use crate::src::p_sight::P_CheckSight;
 use crate::src::p_switch::P_UseSpecialLine;
 use crate::src::p_tick::thinkercap;
-use crate::src::r_main::validcount;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::{
@@ -142,10 +141,10 @@ pub unsafe fn P_RecursiveSound(mut sec: *mut sector_t, mut soundblocks: i32) {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    if (*sec).validcount == validcount && (*sec).soundtraversed <= soundblocks + 1 as i32 {
+    if (*sec).validcount == unsafe { game_state() }.r_main.validcount && (*sec).soundtraversed <= soundblocks + 1 as i32 {
         return;
     }
-    (*sec).validcount = validcount;
+    (*sec).validcount = unsafe { game_state() }.r_main.validcount;
     (*sec).soundtraversed = soundblocks + 1 as i32;
     (*sec).soundtarget = unsafe { game_state() }.p_enemy.soundtarget;
     i = 0 as i32;
@@ -173,7 +172,7 @@ pub unsafe fn P_RecursiveSound(mut sec: *mut sector_t, mut soundblocks: i32) {
 }
 pub unsafe fn P_NoiseAlert(mut target: *mut mobj_t, mut emmiter: *mut mobj_t) {
     unsafe { game_state() }.p_enemy.soundtarget = target;
-    validcount += 1;
+    unsafe { game_state() }.r_main.validcount += 1;
     P_RecursiveSound((*(*emmiter).subsector).sector, 0 as i32);
 }
 pub unsafe fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> bool {

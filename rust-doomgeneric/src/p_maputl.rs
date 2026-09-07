@@ -23,7 +23,6 @@ use crate::src::p_setup::bmaporgy;
 use crate::src::p_setup::bmapwidth;
 use crate::src::p_setup::lines;
 use crate::src::p_setup::playerstarts;
-use crate::src::r_main::validcount;
 use crate::src::r_main::R_PointInSubsector;
 
 pub struct PMaputlState {
@@ -477,8 +476,8 @@ pub unsafe fn P_BlockLinesIterator(
     list = blockmaplump.offset(offset as isize);
     while *list as i32 != -(1 as i32) {
         ld = lines.offset(*list as isize) as *mut line_t;
-        if !((*ld).validcount == validcount) {
-            (*ld).validcount = validcount;
+        if !((*ld).validcount == unsafe { game_state() }.r_main.validcount) {
+            (*ld).validcount = unsafe { game_state() }.r_main.validcount;
             if func.expect("non-null function pointer")(ld) == 0 {
                 return false;
             }
@@ -741,7 +740,7 @@ pub unsafe fn P_PathTraverse(
     let mut mapystep: i32 = 0;
     let mut count: i32 = 0;
     unsafe { game_state() }.p_maputl.earlyout = (flags & PT_EARLYOUT) != 0;
-    validcount += 1;
+    unsafe { game_state() }.r_main.validcount += 1;
     unsafe { game_state() }.p_maputl.intercept_p =
         &raw mut unsafe { game_state() }.p_maputl.intercepts as *mut intercept_t;
     if x1 as i32 - bmaporgx as i32 & MAPBLOCKSIZE - 1 as i32 == 0 as i32 {
