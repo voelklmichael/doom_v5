@@ -1740,11 +1740,8 @@ pub unsafe fn G_DoLoadGame(state: &mut GameState) {
         return;
     }
     savedleveltime = state.p_tick.leveltime;
-    G_InitNew(
-        state.g_game.gameskill,
-        state.g_game.gameepisode,
-        state.g_game.gamemap,
-    );
+    let (skill, episode, map) = (state.g_game.gameskill, state.g_game.gameepisode, state.g_game.gamemap);
+    G_InitNew(state, skill, episode, map);
     state.p_tick.leveltime = savedleveltime;
     P_UnArchivePlayers();
     P_UnArchiveWorld();
@@ -1858,25 +1855,22 @@ pub unsafe fn G_DoNewGame(state: &mut GameState) {
     state.d_main.fastparm = false;
     state.d_main.nomonsters = false;
     state.g_game.consoleplayer = 0 as i32;
-    G_InitNew(
-        state.g_game.d_skill,
-        state.g_game.d_episode,
-        state.g_game.d_map,
-    );
+    let (d_skill, d_episode, d_map) = (state.g_game.d_skill, state.g_game.d_episode, state.g_game.d_map);
+    G_InitNew(state, d_skill, d_episode, d_map);
     state.g_game.gameaction = ga_nothing;
 }
-pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
+pub unsafe fn G_InitNew(state: &mut GameState, mut skill: skill_t, mut episode: i32, mut map: i32) {
     let mut skytexturename: *mut ::core::ffi::c_char =
         ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut i: i32 = 0;
-    if unsafe { game_state() }.g_game.paused {
-        unsafe { game_state() }.g_game.paused = false;
-        S_ResumeSound(unsafe { game_state() });
+    if state.g_game.paused {
+        state.g_game.paused = false;
+        S_ResumeSound(state);
     }
     if skill as i32 > sk_nightmare as i32 {
         skill = sk_nightmare;
     }
-    if unsafe { game_state() }.doomstat.gameversion as u32 >= exe_ultimate as u32 {
+    if state.doomstat.gameversion as u32 >= exe_ultimate as u32 {
         if episode == 0 as i32 {
             episode = 4 as i32;
         }
@@ -1888,64 +1882,64 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
             episode = 3 as i32;
         }
     }
-    if episode > 1 as i32 && unsafe { game_state() }.doomstat.gamemode as u32 == shareware as u32 {
+    if episode > 1 as i32 && state.doomstat.gamemode as u32 == shareware as u32 {
         episode = 1 as i32;
     }
     if map < 1 as i32 {
         map = 1 as i32;
     }
-    if map > 9 as i32 && unsafe { game_state() }.doomstat.gamemode as u32 != commercial as u32 {
+    if map > 9 as i32 && state.doomstat.gamemode as u32 != commercial as u32 {
         map = 9 as i32;
     }
-    M_ClearRandom(unsafe { &mut game_state().m_random });
-    if skill as i32 == sk_nightmare as i32 || unsafe { game_state() }.d_main.respawnparm {
-        unsafe { game_state() }.g_game.respawnmonsters = true;
+    M_ClearRandom(&mut state.m_random);
+    if skill as i32 == sk_nightmare as i32 || state.d_main.respawnparm {
+        state.g_game.respawnmonsters = true;
     } else {
-        unsafe { game_state() }.g_game.respawnmonsters = false;
+        state.g_game.respawnmonsters = false;
     }
-    if unsafe { game_state() }.d_main.fastparm
+    if state.d_main.fastparm
         || skill as i32 == sk_nightmare as i32
-            && unsafe { game_state() }.g_game.gameskill as i32 != sk_nightmare as i32
+            && state.g_game.gameskill as i32 != sk_nightmare as i32
     {
         i = S_SARG_RUN1 as i32;
         while i <= S_SARG_PAIN2 as i32 {
-            unsafe { game_state() }.info.states[i as usize].tics >>= 1 as i32;
+            state.info.states[i as usize].tics >>= 1 as i32;
             i += 1;
         }
-        unsafe { game_state() }.info.mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
-        unsafe { game_state() }.info.mobjinfo[MT_HEADSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
-        unsafe { game_state() }.info.mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
+        state.info.mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
+        state.info.mobjinfo[MT_HEADSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
+        state.info.mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 20 as i32 * FRACUNIT;
     } else if skill as i32 != sk_nightmare as i32
-        && unsafe { game_state() }.g_game.gameskill as i32 == sk_nightmare as i32
+        && state.g_game.gameskill as i32 == sk_nightmare as i32
     {
         i = S_SARG_RUN1 as i32;
         while i <= S_SARG_PAIN2 as i32 {
-            unsafe { game_state() }.info.states[i as usize].tics <<= 1 as i32;
+            state.info.states[i as usize].tics <<= 1 as i32;
             i += 1;
         }
-        unsafe { game_state() }.info.mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 15 as i32 * FRACUNIT;
-        unsafe { game_state() }.info.mobjinfo[MT_HEADSHOT as i32 as usize].speed = 10 as i32 * FRACUNIT;
-        unsafe { game_state() }.info.mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 10 as i32 * FRACUNIT;
+        state.info.mobjinfo[MT_BRUISERSHOT as i32 as usize].speed = 15 as i32 * FRACUNIT;
+        state.info.mobjinfo[MT_HEADSHOT as i32 as usize].speed = 10 as i32 * FRACUNIT;
+        state.info.mobjinfo[MT_TROOPSHOT as i32 as usize].speed = 10 as i32 * FRACUNIT;
     }
     i = 0 as i32;
     while i < MAXPLAYERS {
-        unsafe { game_state() }.g_game.players[i as usize].playerstate = PST_REBORN;
+        state.g_game.players[i as usize].playerstate = PST_REBORN;
         i += 1;
     }
-    unsafe { game_state() }.g_game.usergame = true;
-    unsafe { game_state() }.g_game.paused = false;
-    unsafe { game_state() }.g_game.demoplayback = false;
-    unsafe { game_state() }.am_map.automapactive = false;
-    unsafe { game_state() }.g_game.viewactive = true;
-    unsafe { game_state() }.g_game.gameepisode = episode;
-    unsafe { game_state() }.g_game.gamemap = map;
-    unsafe { game_state() }.g_game.gameskill = skill;
-    unsafe { game_state() }.g_game.viewactive = true;
-    if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as u32 {
-        if unsafe { game_state() }.g_game.gamemap < 12 as i32 {
+    state.g_game.usergame = true;
+    state.g_game.paused = false;
+    state.g_game.demoplayback = false;
+    state.am_map.automapactive = false;
+    state.g_game.viewactive = true;
+    state.g_game.gameepisode = episode;
+    state.g_game.gamemap = map;
+    state.g_game.gameskill = skill;
+    state.g_game.viewactive = true;
+    if state.doomstat.gamemode as u32 == commercial as u32 {
+        if state.g_game.gamemap < 12 as i32 {
             skytexturename =
                 b"SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-        } else if unsafe { game_state() }.g_game.gamemap < 21 as i32 {
+        } else if state.g_game.gamemap < 21 as i32 {
             skytexturename =
                 b"SKY2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         } else {
@@ -1953,7 +1947,7 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
                 b"SKY3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
     } else {
-        match unsafe { game_state() }.g_game.gameepisode {
+        match state.g_game.gameepisode {
             2 => {
                 skytexturename = b"SKY2\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char;
@@ -1973,8 +1967,8 @@ pub unsafe fn G_InitNew(mut skill: skill_t, mut episode: i32, mut map: i32) {
         }
     }
     skytexturename = skytexturename;
-    unsafe { game_state() }.r_sky.skytexture = R_TextureNumForName(unsafe { &mut game_state().r_data }, skytexturename);
-    G_DoLoadLevel(unsafe { game_state() });
+    state.r_sky.skytexture = R_TextureNumForName(&mut state.r_data, skytexturename);
+    G_DoLoadLevel(state);
 }
 pub const DEMOMARKER: i32 = 0x80;
 pub unsafe fn G_ReadDemoTiccmd(mut cmd: *mut ticcmd_t) {
@@ -2302,7 +2296,7 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
         state.g_game.netdemo = true;
     }
     state.g_game.precache = false;
-    G_InitNew(skill, episode, map);
+    G_InitNew(state, skill, episode, map);
     state.g_game.precache = true;
     state.g_game.starttime = I_GetTime(&mut state.i_timer);
     state.g_game.usergame = false;
