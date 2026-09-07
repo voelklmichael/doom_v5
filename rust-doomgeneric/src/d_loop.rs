@@ -250,9 +250,8 @@ pub unsafe fn D_ReceiveTic(mut ticcmds: *mut ticcmd_t, mut players_mask: *mut bo
     }
     unsafe { game_state() }.d_loop.recvtic += 1;
 }
-pub unsafe fn D_StartGameLoop() {
-    unsafe { game_state() }.d_loop.lasttime =
-        GetAdjustedTime() / unsafe { game_state() }.d_loop.ticdup;
+pub unsafe fn D_StartGameLoop(state: &mut GameState) {
+    state.d_loop.lasttime = GetAdjustedTime() / state.d_loop.ticdup;
 }
 pub unsafe fn D_StartNetGame(
     mut settings: *mut net_gamesettings_t,
