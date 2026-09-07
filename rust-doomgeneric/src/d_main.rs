@@ -572,7 +572,7 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
         );
     }
     if state.g_game.demorecording {
-        G_BeginRecording();
+        G_BeginRecording(state);
     }
     state.d_main.main_loop_started = true;
     TryRunTics(state);
@@ -636,6 +636,7 @@ pub unsafe fn D_DoAdvanceDemo() {
         }
         1 => {
             G_DeferedPlayDemo(
+                unsafe { game_state() },
                 b"demo1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         }
@@ -647,6 +648,7 @@ pub unsafe fn D_DoAdvanceDemo() {
         }
         3 => {
             G_DeferedPlayDemo(
+                unsafe { game_state() },
                 b"demo2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         }
@@ -670,11 +672,13 @@ pub unsafe fn D_DoAdvanceDemo() {
         }
         5 => {
             G_DeferedPlayDemo(
+                unsafe { game_state() },
                 b"demo3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         }
         6 => {
             G_DeferedPlayDemo(
+                unsafe { game_state() },
                 b"demo4\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         }
@@ -1421,22 +1425,20 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     p = M_CheckParmWithArgs("-record", 1 as i32);
     if p != 0 {
-        G_RecordDemo(
-            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                as *mut ::core::ffi::c_char,
-        );
+        let record_name = state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
+        G_RecordDemo(state, record_name);
         state.d_main.autostart = true;
     }
     p = M_CheckParmWithArgs("-playdemo", 1 as i32);
     if p != 0 {
         state.g_game.singledemo = true;
-        G_DeferedPlayDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
+        G_DeferedPlayDemo(state, &raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop(state);
         return;
     }
     p = M_CheckParmWithArgs("-timedemo", 1 as i32);
     if p != 0 {
-        G_TimeDemo(&raw mut demolumpname as *mut ::core::ffi::c_char);
+        G_TimeDemo(state, &raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop(state);
         return;
     }
