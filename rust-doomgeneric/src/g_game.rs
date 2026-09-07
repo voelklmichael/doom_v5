@@ -1006,7 +1006,7 @@ pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
         if ST_Responder(state, &ev) {
             return true;
         }
-        if AM_Responder(&ev) {
+        if AM_Responder(state, &ev) {
             return true;
         }
     }
@@ -1531,7 +1531,7 @@ pub unsafe fn G_DoCompleted(state: &mut GameState) {
         i += 1;
     }
     if state.am_map.automapactive {
-        AM_Stop();
+        AM_Stop(state);
     }
     if state.doomstat.gamemode as u32 != commercial as u32 {
         if state.doomstat.gameversion as u32 == exe_chex as u32 {
