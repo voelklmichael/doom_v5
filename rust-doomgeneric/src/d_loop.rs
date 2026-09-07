@@ -6,6 +6,7 @@ use crate::src::doomdef::TICRATE;
 use crate::src::dummy::drone;
 use crate::src::dummy::net_client_connected;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_system::I_AtExit;
 use crate::src::i_system::I_Error;
 use crate::src::i_timer::I_GetTime;
@@ -351,7 +352,7 @@ unsafe fn SinglePlayerClear(mut set: *mut ticcmd_set_t) {
         i = i.wrapping_add(1);
     }
 }
-pub unsafe fn TryRunTics() {
+pub unsafe fn TryRunTics(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut lowtic: i32 = 0;
     let mut entertic: i32 = 0;
@@ -359,18 +360,18 @@ pub unsafe fn TryRunTics() {
     let mut availabletics: i32 = 0;
     let mut counts: i32 = 0;
     entertic =
-        I_GetTime(unsafe { &mut game_state().i_timer }) / unsafe { game_state() }.d_loop.ticdup;
-    realtics = entertic - unsafe { game_state() }.d_loop.try_run_tics_oldentertics;
-    unsafe { game_state() }.d_loop.try_run_tics_oldentertics = entertic;
-    if unsafe { game_state() }.d_loop.singletics {
+        I_GetTime(&mut state.i_timer) / state.d_loop.ticdup;
+    realtics = entertic - state.d_loop.try_run_tics_oldentertics;
+    state.d_loop.try_run_tics_oldentertics = entertic;
+    if state.d_loop.singletics {
         BuildNewTic();
     } else {
         NetUpdate();
     }
     lowtic = GetLowTic();
     availabletics =
-        lowtic - unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup;
-    if unsafe { game_state() }.d_loop.new_sync {
+        lowtic - state.d_loop.gametic / state.d_loop.ticdup;
+    if state.d_loop.new_sync {
         counts = availabletics;
     } else {
         if realtics < availabletics - 1 as i32 {
@@ -392,15 +393,15 @@ pub unsafe fn TryRunTics() {
     }
     while !PlayersInGame()
         || lowtic
-            < unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup
+            < state.d_loop.gametic / state.d_loop.ticdup
                 + counts
     {
         NetUpdate();
         lowtic = GetLowTic();
-        if lowtic < unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup {
+        if lowtic < state.d_loop.gametic / state.d_loop.ticdup {
             I_Error("TryRunTics: lowtic < gametic");
         }
-        if I_GetTime(unsafe { &mut game_state().i_timer }) / unsafe { game_state() }.d_loop.ticdup
+        if I_GetTime(&mut state.i_timer) / state.d_loop.ticdup
             - entertic
             > 0 as i32
         {
@@ -418,33 +419,33 @@ pub unsafe fn TryRunTics() {
         if !PlayersInGame() {
             return;
         }
-        set = (&raw mut unsafe { game_state() }.d_loop.ticdata as *mut ticcmd_set_t).offset(
-            (unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup
+        set = (&raw mut state.d_loop.ticdata as *mut ticcmd_set_t).offset(
+            (state.d_loop.gametic / state.d_loop.ticdup
                 % BACKUPTICS) as isize,
         ) as *mut ticcmd_set_t;
         if !net_client_connected {
             SinglePlayerClear(set);
         }
         i = 0 as i32;
-        while i < unsafe { game_state() }.d_loop.ticdup {
-            if unsafe { game_state() }.d_loop.gametic / unsafe { game_state() }.d_loop.ticdup
+        while i < state.d_loop.ticdup {
+            if state.d_loop.gametic / state.d_loop.ticdup
                 > lowtic
             {
                 I_Error("gametic>lowtic");
             }
             memcpy(
-                &raw mut unsafe { game_state() }.d_loop.local_playeringame as *mut boolean
+                &raw mut state.d_loop.local_playeringame as *mut boolean
                     as *mut ::core::ffi::c_void,
                 &raw mut (*set).ingame as *mut boolean as *const ::core::ffi::c_void,
                 ::core::mem::size_of::<[boolean; 8]>() as size_t,
             );
-            (*unsafe { game_state() }.d_loop.loop_interface)
+            (*state.d_loop.loop_interface)
                 .RunTic
                 .expect("non-null function pointer")(
                 &raw mut (*set).cmds as *mut ticcmd_t,
                 &raw mut (*set).ingame as *mut boolean,
             );
-            unsafe { game_state() }.d_loop.gametic += 1;
+            state.d_loop.gametic += 1;
             TicdupSquash(set);
             i += 1;
         }
