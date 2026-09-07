@@ -556,7 +556,7 @@ pub unsafe fn R_RenderPlayerView(state: &mut GameState, mut player: *mut player_
     NetUpdate(state);
     R_DrawPlanes();
     NetUpdate(state);
-    R_DrawMasked();
+    R_DrawMasked(state);
     NetUpdate(state);
 }
 pub const LIGHTLEVELS: i32 = 16;

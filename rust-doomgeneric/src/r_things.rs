@@ -858,7 +858,7 @@ pub unsafe fn R_SortVisSprites(state: &mut GameState) {
         i += 1;
     }
 }
-pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
+pub unsafe fn R_DrawSprite(state: &mut GameState, mut spr: *mut vissprite_t) {
     let mut ds: *mut drawseg_t = ::core::ptr::null_mut::<drawseg_t>();
     let mut x: i32 = 0;
     let mut r1: i32 = 0;
@@ -868,13 +868,13 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
     let mut silhouette: i32 = 0;
     x = (*spr).x1;
     while x <= (*spr).x2 {
-        unsafe { game_state() }.r_things.cliptop[x as usize] = -(2 as i32) as i16;
-        unsafe { game_state() }.r_things.clipbot[x as usize] =
-            unsafe { game_state() }.r_things.cliptop[x as usize];
+        state.r_things.cliptop[x as usize] = -(2 as i32) as i16;
+        state.r_things.clipbot[x as usize] =
+            state.r_things.cliptop[x as usize];
         x += 1;
     }
-    ds = unsafe { game_state() }.r_bsp.ds_p.offset(-(1 as i32 as isize));
-    while ds >= &raw mut unsafe { game_state() }.r_bsp.drawsegs as *mut drawseg_t {
+    ds = state.r_bsp.ds_p.offset(-(1 as i32 as isize));
+    while ds >= &raw mut state.r_bsp.drawsegs as *mut drawseg_t {
         if !((*ds).x1 > (*spr).x2
             || (*ds).x2 < (*spr).x1
             || (*ds).silhouette == 0 && (*ds).maskedtexturecol.is_null())
@@ -901,7 +901,7 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
                     && R_PointOnSegSide((*spr).gx, (*spr).gy, (*ds).curline) == 0
             {
                 if !(*ds).maskedtexturecol.is_null() {
-                    R_RenderMaskedSegRange(ds, r1, r2);
+                    R_RenderMaskedSegRange(state, ds, r1, r2);
                 }
             } else {
                 silhouette = (*ds).silhouette;
@@ -914,10 +914,10 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
                 if silhouette == 1 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if unsafe { game_state() }.r_things.clipbot[x as usize] as i32
+                        if state.r_things.clipbot[x as usize] as i32
                             == -(2 as i32)
                         {
-                            unsafe { game_state() }.r_things.clipbot[x as usize] =
+                            state.r_things.clipbot[x as usize] =
                                 *(*ds).sprbottomclip.offset(x as isize);
                         }
                         x += 1;
@@ -925,10 +925,10 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
                 } else if silhouette == 2 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if unsafe { game_state() }.r_things.cliptop[x as usize] as i32
+                        if state.r_things.cliptop[x as usize] as i32
                             == -(2 as i32)
                         {
-                            unsafe { game_state() }.r_things.cliptop[x as usize] =
+                            state.r_things.cliptop[x as usize] =
                                 *(*ds).sprtopclip.offset(x as isize);
                         }
                         x += 1;
@@ -936,16 +936,16 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
                 } else if silhouette == 3 as i32 {
                     x = r1;
                     while x <= r2 {
-                        if unsafe { game_state() }.r_things.clipbot[x as usize] as i32
+                        if state.r_things.clipbot[x as usize] as i32
                             == -(2 as i32)
                         {
-                            unsafe { game_state() }.r_things.clipbot[x as usize] =
+                            state.r_things.clipbot[x as usize] =
                                 *(*ds).sprbottomclip.offset(x as isize);
                         }
-                        if unsafe { game_state() }.r_things.cliptop[x as usize] as i32
+                        if state.r_things.cliptop[x as usize] as i32
                             == -(2 as i32)
                         {
-                            unsafe { game_state() }.r_things.cliptop[x as usize] =
+                            state.r_things.cliptop[x as usize] =
                                 *(*ds).sprtopclip.offset(x as isize);
                         }
                         x += 1;
@@ -957,41 +957,41 @@ pub unsafe fn R_DrawSprite(mut spr: *mut vissprite_t) {
     }
     x = (*spr).x1;
     while x <= (*spr).x2 {
-        if unsafe { game_state() }.r_things.clipbot[x as usize] as i32 == -(2 as i32) {
-            unsafe { game_state() }.r_things.clipbot[x as usize] = unsafe { game_state() }.r_draw.viewheight as i16;
+        if state.r_things.clipbot[x as usize] as i32 == -(2 as i32) {
+            state.r_things.clipbot[x as usize] = state.r_draw.viewheight as i16;
         }
-        if unsafe { game_state() }.r_things.cliptop[x as usize] as i32 == -(2 as i32) {
-            unsafe { game_state() }.r_things.cliptop[x as usize] = -(1 as i32) as i16;
+        if state.r_things.cliptop[x as usize] as i32 == -(2 as i32) {
+            state.r_things.cliptop[x as usize] = -(1 as i32) as i16;
         }
         x += 1;
     }
-    unsafe { game_state() }.r_things.mfloorclip =
-        &raw mut unsafe { game_state() }.r_things.clipbot as *mut i16;
-    unsafe { game_state() }.r_things.mceilingclip =
-        &raw mut unsafe { game_state() }.r_things.cliptop as *mut i16;
-    R_DrawVisSprite(unsafe { game_state() }, spr, (*spr).x1, (*spr).x2);
+    state.r_things.mfloorclip =
+        &raw mut state.r_things.clipbot as *mut i16;
+    state.r_things.mceilingclip =
+        &raw mut state.r_things.cliptop as *mut i16;
+    R_DrawVisSprite(state, spr, (*spr).x1, (*spr).x2);
 }
-pub unsafe fn R_DrawMasked() {
+pub unsafe fn R_DrawMasked(state: &mut GameState) {
     let mut spr: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();
     let mut ds: *mut drawseg_t = ::core::ptr::null_mut::<drawseg_t>();
-    R_SortVisSprites(unsafe { game_state() });
-    if unsafe { game_state() }.r_things.vissprite_p
-        > &raw mut unsafe { game_state() }.r_things.vissprites as *mut vissprite_t
+    R_SortVisSprites(state);
+    if state.r_things.vissprite_p
+        > &raw mut state.r_things.vissprites as *mut vissprite_t
     {
-        spr = unsafe { game_state() }.r_things.vsprsortedhead.next as *mut vissprite_t;
-        while spr != &raw mut unsafe { game_state() }.r_things.vsprsortedhead {
-            R_DrawSprite(spr);
+        spr = state.r_things.vsprsortedhead.next as *mut vissprite_t;
+        while spr != &raw mut state.r_things.vsprsortedhead {
+            R_DrawSprite(state, spr);
             spr = (*spr).next as *mut vissprite_t;
         }
     }
-    ds = unsafe { game_state() }.r_bsp.ds_p.offset(-(1 as i32 as isize));
-    while ds >= &raw mut unsafe { game_state() }.r_bsp.drawsegs as *mut drawseg_t {
+    ds = state.r_bsp.ds_p.offset(-(1 as i32 as isize));
+    while ds >= &raw mut state.r_bsp.drawsegs as *mut drawseg_t {
         if !(*ds).maskedtexturecol.is_null() {
-            R_RenderMaskedSegRange(ds, (*ds).x1, (*ds).x2);
+            R_RenderMaskedSegRange(state, ds, (*ds).x1, (*ds).x2);
         }
         ds = ds.offset(-1);
     }
-    if unsafe { game_state() }.r_main.viewangleoffset == 0 {
-        R_DrawPlayerSprites(unsafe { game_state() });
+    if state.r_main.viewangleoffset == 0 {
+        R_DrawPlayerSprites(state);
     }
 }
