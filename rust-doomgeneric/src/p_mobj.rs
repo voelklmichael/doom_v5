@@ -13,6 +13,7 @@ use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
+use crate::src::p_setup::SectorId;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::m_fixed::INT_MIN;
 use crate::src::m_random::P_Random;
@@ -487,7 +488,7 @@ pub use crate::src::d_player::{player_s, player_t, playerstate_t, PST_DEAD, PST_
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct subsector_s {
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub numlines: i16,
     pub firstline: i16,
 }
@@ -682,7 +683,7 @@ pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
             || (*mo).momy > FRACUNIT / 4 as i32
             || (*mo).momy < -FRACUNIT / 4 as i32
         {
-            if (*mo).floorz != (*(*(*mo).subsector).sector).floorheight {
+            if (*mo).floorz != (*unsafe { game_state() }.p_setup.sector_mut((*(*mo).subsector).sector)).floorheight {
                 return;
             }
         }
@@ -792,7 +793,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) 
     mo = P_SpawnMobj(
         (*mobj).x,
         (*mobj).y,
-        (*(*(*mobj).subsector).sector).floorheight,
+        (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight,
         MT_TFOG,
     );
     S_StartSound(
@@ -801,7 +802,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) 
         sfx_telept as i32,
     );
     ss = R_PointInSubsector(x, y);
-    mo = P_SpawnMobj(x, y, (*(*ss).sector).floorheight, MT_TFOG);
+    mo = P_SpawnMobj(x, y, (*unsafe { game_state() }.p_setup.sector_mut((*ss).sector)).floorheight, MT_TFOG);
     S_StartSound(
         unsafe { &mut game_state().sounds },
         mo as *mut ::core::ffi::c_void,
@@ -901,8 +902,8 @@ pub unsafe fn P_SpawnMobj(
     (*mobj).sprite = (*st).sprite;
     (*mobj).frame = (*st).frame;
     P_SetThingPosition(mobj);
-    (*mobj).floorz = (*(*(*mobj).subsector).sector).floorheight;
-    (*mobj).ceilingz = (*(*(*mobj).subsector).sector).ceilingheight;
+    (*mobj).floorz = (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
+    (*mobj).ceilingz = (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).ceilingheight;
     if z == ONFLOORZ {
         (*mobj).z = (*mobj).floorz;
     } else if z == ONCEILINGZ {
@@ -1030,7 +1031,7 @@ pub unsafe fn P_RespawnSpecials(state: &mut PMobjState) {
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
     ss = R_PointInSubsector(x, y);
-    mo = P_SpawnMobj(x, y, (*(*ss).sector).floorheight, MT_IFOG);
+    mo = P_SpawnMobj(x, y, (*unsafe { game_state() }.p_setup.sector_mut((*ss).sector)).floorheight, MT_IFOG);
     S_StartSound(
         unsafe { &mut game_state().sounds },
         mo as *mut ::core::ffi::c_void,

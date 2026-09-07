@@ -6,6 +6,7 @@ use crate::src::m_fixed::FRACBITS;
 use crate::src::p_maputl::divline_t;
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::{line_t, sector_t, subsector_t, vertex_t};
+use crate::src::p_setup::SubsectorId;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::r_bsp::NF_SUBSECTOR;
 use crate::src::r_defs::{node_t, seg_t};
@@ -114,7 +115,9 @@ pub unsafe fn P_CrossSubsector(state: &mut PSightState, mut num: i32) -> bool {
             num, unsafe { game_state() }.p_setup.numsubsectors
         ));
     }
-    sub = unsafe { game_state() }.p_setup.subsectors.offset(num as isize) as *mut subsector_t;
+    sub = unsafe { game_state() }
+        .p_setup
+        .subsector_mut(SubsectorId(num as u32));
     count = (*sub).numlines as i32;
     seg = unsafe { game_state() }.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
     while count != 0 {
@@ -215,8 +218,8 @@ pub unsafe fn P_CheckSight(
     let mut pnum: i32 = 0;
     let mut bytenum: i32 = 0;
     let mut bitnum: i32 = 0;
-    s1 = (*(*t1).subsector).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32;
-    s2 = (*(*t2).subsector).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32;
+    s1 = (*(*t1).subsector).sector.0 as i32;
+    s2 = (*(*t2).subsector).sector.0 as i32;
     pnum = s1 * unsafe { game_state() }.p_setup.numsectors + s2;
     bytenum = pnum >> 3 as i32;
     bitnum = (1 as i32) << (pnum & 7 as i32);

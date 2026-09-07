@@ -9,6 +9,7 @@ use crate::src::p_floor::T_MovePlane;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
+use crate::src::p_setup::SectorId;
 use crate::src::p_spec::plat_t;
 use crate::src::p_spec::P_FindHighestFloorSurrounding;
 use crate::src::p_spec::P_FindLowestFloorSurrounding;
@@ -49,10 +50,11 @@ impl PPlatsState {
 
 pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
     let mut res: result_e = ok;
+    let sec = unsafe { game_state() }.p_setup.sector_mut((*plat).sector);
     match (*plat).status as u32 {
         0 => {
             res = T_MovePlane(
-                (*plat).sector,
+                sec,
                 (*plat).speed,
                 (*plat).high,
                 (*plat).crush,
@@ -65,7 +67,7 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
                 if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
                     S_StartSound(
                         unsafe { &mut game_state().sounds },
-                        &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
+                        &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                         sfx_stnmov as i32,
                     );
                 }
@@ -75,7 +77,7 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
                 (*plat).status = down;
                 S_StartSound(
                     unsafe { &mut game_state().sounds },
-                    &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
+                    &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
             } else if res as u32 == pastdest as i32 as u32 {
@@ -83,7 +85,7 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
                 (*plat).status = waiting;
                 S_StartSound(
                     unsafe { &mut game_state().sounds },
-                    &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
+                    &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstop as i32,
                 );
                 match (*plat).type_0 as u32 {
@@ -99,7 +101,7 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
         }
         1 => {
             res = T_MovePlane(
-                (*plat).sector,
+                sec,
                 (*plat).speed,
                 (*plat).low,
                 false,
@@ -111,7 +113,7 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
                 (*plat).status = waiting;
                 S_StartSound(
                     unsafe { &mut game_state().sounds },
-                    &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
+                    &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstop as i32,
                 );
             }
@@ -119,14 +121,14 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
         2 => {
             (*plat).count -= 1;
             if (*plat).count == 0 {
-                if (*(*plat).sector).floorheight == (*plat).low {
+                if (*sec).floorheight == (*plat).low {
                     (*plat).status = up;
                 } else {
                     (*plat).status = down;
                 }
                 S_StartSound(
                     unsafe { &mut game_state().sounds },
-                    &raw mut (*(*plat).sector).soundorg as *mut ::core::ffi::c_void,
+                    &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
             }
@@ -157,7 +159,7 @@ pub unsafe fn EV_DoPlat(
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -170,16 +172,19 @@ pub unsafe fn EV_DoPlat(
         ) as *mut plat_t;
         P_AddThinker(&raw mut (*plat).thinker);
         (*plat).type_0 = type_0;
-        (*plat).sector = sec;
-        (*(*plat).sector).specialdata = plat as *mut ::core::ffi::c_void;
+        (*plat).sector = SectorId(secnum as u32);
+        (*sec).specialdata = plat as *mut ::core::ffi::c_void;
         (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
         (*plat).crush = false;
         (*plat).tag = (*line).tag as i32;
         match type_0 as u32 {
             3 => {
                 (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
+                let neighbor_sector_id = unsafe { game_state() }.p_setup.sides
+                    [(*line).sidenum[0 as i32 as usize] as usize]
+                    .sector;
                 (*sec).floorpic =
-                    (*(*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).sector).floorpic;
+                    (*unsafe { game_state() }.p_setup.sector_mut(neighbor_sector_id)).floorpic;
                 (*plat).high = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
@@ -192,8 +197,11 @@ pub unsafe fn EV_DoPlat(
             }
             2 => {
                 (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
+                let neighbor_sector_id = unsafe { game_state() }.p_setup.sides
+                    [(*line).sidenum[0 as i32 as usize] as usize]
+                    .sector;
                 (*sec).floorpic =
-                    (*(*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).sector).floorpic;
+                    (*unsafe { game_state() }.p_setup.sector_mut(neighbor_sector_id)).floorpic;
                 (*plat).high = ((*sec).floorheight as i32 + amount * FRACUNIT) as fixed_t;
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
@@ -304,7 +312,7 @@ pub unsafe fn P_RemoveActivePlat(state: &mut PPlatsState, mut plat: *mut plat_t)
     i = 0 as i32;
     while i < MAXPLATS {
         if plat == state.activeplats[i as usize] {
-            (*(*state.activeplats[i as usize]).sector).specialdata = NULL;
+            (*unsafe { game_state() }.p_setup.sector_mut((*state.activeplats[i as usize]).sector)).specialdata = NULL;
             P_RemoveThinker(
                 &raw mut (**(&raw mut state.activeplats as *mut *mut plat_t).offset(i as isize))
                     .thinker,

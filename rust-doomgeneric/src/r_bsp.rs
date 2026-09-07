@@ -3,6 +3,7 @@ use crate::src::i_system::I_Error;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_mobj::{line_t, sector_t, subsector_t};
+use crate::src::p_setup::SubsectorId;
 use crate::src::r_defs::{drawseg_s, drawseg_t, node_t, seg_t, side_t, visplane_t};
 use crate::src::r_main::R_PointOnSide;
 use crate::src::r_main::R_PointToAngle;
@@ -331,8 +332,11 @@ pub unsafe fn R_Subsector(mut num: i32) {
         ));
     }
     unsafe { game_state() }.r_main.sscount += 1;
-    sub = unsafe { game_state() }.p_setup.subsectors.offset(num as isize) as *mut subsector_t;
-    unsafe { game_state() }.r_bsp.frontsector = (*sub).sector;
+    sub = unsafe { game_state() }
+        .p_setup
+        .subsector_mut(SubsectorId(num as u32));
+    unsafe { game_state() }.r_bsp.frontsector =
+        unsafe { game_state() }.p_setup.sector_mut((*sub).sector);
     count = (*sub).numlines as i32;
     line = unsafe { game_state() }.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
     if (*unsafe { game_state() }.r_bsp.frontsector).floorheight < unsafe { game_state() }.r_main.viewz {

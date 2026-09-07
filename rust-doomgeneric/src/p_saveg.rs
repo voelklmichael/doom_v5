@@ -27,6 +27,8 @@ use crate::src::p_mobj::{
     line_t, mapthing_t, mobjinfo_t, sector_t, state_t, subsector_s, thinker_s, thinker_t, ThinkerFn,
 };
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
+use crate::src::p_setup::SectorId;
+use crate::src::p_setup::SideId;
 use crate::src::p_plats::plat_e;
 use crate::src::p_plats::plattype_e;
 use crate::src::p_plats::P_AddActivePlat;
@@ -538,7 +540,7 @@ unsafe fn saveg_read_ceiling_t(mut str: *mut ceiling_t) {
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as ceiling_e;
     sector = saveg_read32();
-    (*str).sector = unsafe { game_state() }.p_setup.sectors.offset(sector as isize) as *mut sector_t;
+    (*str).sector = SectorId(sector as u32);
     (*str).bottomheight = saveg_read32() as fixed_t;
     (*str).topheight = saveg_read32() as fixed_t;
     (*str).speed = saveg_read32() as fixed_t;
@@ -550,7 +552,7 @@ unsafe fn saveg_read_ceiling_t(mut str: *mut ceiling_t) {
 unsafe fn saveg_write_ceiling_t(mut str: *mut ceiling_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32((*str).type_0 as i32);
-    saveg_write32((*str).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32);
+    saveg_write32((*str).sector.0 as i32);
     saveg_write32((*str).bottomheight as i32);
     saveg_write32((*str).topheight as i32);
     saveg_write32((*str).speed as i32);
@@ -564,7 +566,7 @@ unsafe fn saveg_read_vldoor_t(mut str: *mut vldoor_t) {
     saveg_read_thinker_t(&raw mut (*str).thinker);
     (*str).type_0 = saveg_read32() as vldoor_e;
     sector = saveg_read32();
-    (*str).sector = unsafe { game_state() }.p_setup.sectors.offset(sector as isize) as *mut sector_t;
+    (*str).sector = SectorId(sector as u32);
     (*str).topheight = saveg_read32() as fixed_t;
     (*str).speed = saveg_read32() as fixed_t;
     (*str).direction = saveg_read32();
@@ -574,7 +576,7 @@ unsafe fn saveg_read_vldoor_t(mut str: *mut vldoor_t) {
 unsafe fn saveg_write_vldoor_t(mut str: *mut vldoor_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32((*str).type_0 as i32);
-    saveg_write32((*str).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32);
+    saveg_write32((*str).sector.0 as i32);
     saveg_write32((*str).topheight as i32);
     saveg_write32((*str).speed as i32);
     saveg_write32((*str).direction);
@@ -587,7 +589,7 @@ unsafe fn saveg_read_floormove_t(mut str: *mut floormove_t) {
     (*str).type_0 = saveg_read32() as floor_e;
     (*str).crush = saveg_read32() != 0;
     sector = saveg_read32();
-    (*str).sector = unsafe { game_state() }.p_setup.sectors.offset(sector as isize) as *mut sector_t;
+    (*str).sector = SectorId(sector as u32);
     (*str).direction = saveg_read32();
     (*str).newspecial = saveg_read32();
     (*str).texture = saveg_read16();
@@ -598,7 +600,7 @@ unsafe fn saveg_write_floormove_t(mut str: *mut floormove_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
     saveg_write32((*str).type_0 as i32);
     saveg_write32((*str).crush as i32);
-    saveg_write32((*str).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32);
+    saveg_write32((*str).sector.0 as i32);
     saveg_write32((*str).direction);
     saveg_write32((*str).newspecial);
     saveg_write16((*str).texture);
@@ -609,7 +611,7 @@ unsafe fn saveg_read_plat_t(mut str: *mut plat_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
-    (*str).sector = unsafe { game_state() }.p_setup.sectors.offset(sector as isize) as *mut sector_t;
+    (*str).sector = SectorId(sector as u32);
     (*str).speed = saveg_read32() as fixed_t;
     (*str).low = saveg_read32() as fixed_t;
     (*str).high = saveg_read32() as fixed_t;
@@ -623,7 +625,7 @@ unsafe fn saveg_read_plat_t(mut str: *mut plat_t) {
 }
 unsafe fn saveg_write_plat_t(mut str: *mut plat_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
-    saveg_write32((*str).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32);
+    saveg_write32((*str).sector.0 as i32);
     saveg_write32((*str).speed as i32);
     saveg_write32((*str).low as i32);
     saveg_write32((*str).high as i32);
@@ -639,7 +641,7 @@ unsafe fn saveg_read_lightflash_t(mut str: *mut lightflash_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
-    (*str).sector = unsafe { game_state() }.p_setup.sectors.offset(sector as isize) as *mut sector_t;
+    (*str).sector = SectorId(sector as u32);
     (*str).count = saveg_read32();
     (*str).maxlight = saveg_read32();
     (*str).minlight = saveg_read32();
@@ -648,7 +650,7 @@ unsafe fn saveg_read_lightflash_t(mut str: *mut lightflash_t) {
 }
 unsafe fn saveg_write_lightflash_t(mut str: *mut lightflash_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
-    saveg_write32((*str).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32);
+    saveg_write32((*str).sector.0 as i32);
     saveg_write32((*str).count);
     saveg_write32((*str).maxlight);
     saveg_write32((*str).minlight);
@@ -659,7 +661,7 @@ unsafe fn saveg_read_strobe_t(mut str: *mut strobe_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
-    (*str).sector = unsafe { game_state() }.p_setup.sectors.offset(sector as isize) as *mut sector_t;
+    (*str).sector = SectorId(sector as u32);
     (*str).count = saveg_read32();
     (*str).minlight = saveg_read32();
     (*str).maxlight = saveg_read32();
@@ -668,7 +670,7 @@ unsafe fn saveg_read_strobe_t(mut str: *mut strobe_t) {
 }
 unsafe fn saveg_write_strobe_t(mut str: *mut strobe_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
-    saveg_write32((*str).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32);
+    saveg_write32((*str).sector.0 as i32);
     saveg_write32((*str).count);
     saveg_write32((*str).minlight);
     saveg_write32((*str).maxlight);
@@ -679,14 +681,14 @@ unsafe fn saveg_read_glow_t(mut str: *mut glow_t) {
     let mut sector: i32 = 0;
     saveg_read_thinker_t(&raw mut (*str).thinker);
     sector = saveg_read32();
-    (*str).sector = unsafe { game_state() }.p_setup.sectors.offset(sector as isize) as *mut sector_t;
+    (*str).sector = SectorId(sector as u32);
     (*str).minlight = saveg_read32();
     (*str).maxlight = saveg_read32();
     (*str).direction = saveg_read32();
 }
 unsafe fn saveg_write_glow_t(mut str: *mut glow_t) {
     saveg_write_thinker_t(&raw mut (*str).thinker);
-    saveg_write32((*str).sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 as i32);
+    saveg_write32((*str).sector.0 as i32);
     saveg_write32((*str).minlight);
     saveg_write32((*str).maxlight);
     saveg_write32((*str).direction);
@@ -829,8 +831,8 @@ pub unsafe fn P_ArchiveWorld() {
     let mut li: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut si: *mut side_t = ::core::ptr::null_mut::<side_t>();
     i = 0 as i32;
-    sec = unsafe { game_state() }.p_setup.sectors;
     while i < unsafe { game_state() }.p_setup.numsectors {
+        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(i as u32));
         saveg_write16(((*sec).floorheight >> FRACBITS) as i16);
         saveg_write16(((*sec).ceilingheight >> FRACBITS) as i16);
         saveg_write16((*sec).floorpic);
@@ -839,7 +841,6 @@ pub unsafe fn P_ArchiveWorld() {
         saveg_write16((*sec).special);
         saveg_write16((*sec).tag);
         i += 1;
-        sec = sec.offset(1);
     }
     i = 0 as i32;
     li = unsafe { game_state() }.p_setup.lines;
@@ -850,8 +851,9 @@ pub unsafe fn P_ArchiveWorld() {
         j = 0 as i32;
         while j < 2 as i32 {
             if !((*li).sidenum[j as usize] as i32 == -(1 as i32)) {
-                si = unsafe { game_state() }.p_setup.sides.offset(*(&raw mut (*li).sidenum as *mut i16).offset(j as isize) as isize)
-                    as *mut side_t;
+                si = unsafe { game_state() }.p_setup.side_mut(SideId(
+                    *(&raw mut (*li).sidenum as *mut i16).offset(j as isize) as u32,
+                ));
                 saveg_write16(((*si).textureoffset >> FRACBITS) as i16);
                 saveg_write16(((*si).rowoffset >> FRACBITS) as i16);
                 saveg_write16((*si).toptexture);
@@ -871,8 +873,8 @@ pub unsafe fn P_UnArchiveWorld() {
     let mut li: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut si: *mut side_t = ::core::ptr::null_mut::<side_t>();
     i = 0 as i32;
-    sec = unsafe { game_state() }.p_setup.sectors;
     while i < unsafe { game_state() }.p_setup.numsectors {
+        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(i as u32));
         (*sec).floorheight = ((saveg_read16() as i32) << FRACBITS) as fixed_t;
         (*sec).ceilingheight = ((saveg_read16() as i32) << FRACBITS) as fixed_t;
         (*sec).floorpic = saveg_read16();
@@ -883,7 +885,6 @@ pub unsafe fn P_UnArchiveWorld() {
         (*sec).specialdata = ::core::ptr::null_mut::<::core::ffi::c_void>();
         (*sec).soundtarget = ::core::ptr::null_mut::<mobj_t>();
         i += 1;
-        sec = sec.offset(1);
     }
     i = 0 as i32;
     li = unsafe { game_state() }.p_setup.lines;
@@ -894,8 +895,9 @@ pub unsafe fn P_UnArchiveWorld() {
         j = 0 as i32;
         while j < 2 as i32 {
             if !((*li).sidenum[j as usize] as i32 == -(1 as i32)) {
-                si = unsafe { game_state() }.p_setup.sides.offset(*(&raw mut (*li).sidenum as *mut i16).offset(j as isize) as isize)
-                    as *mut side_t;
+                si = unsafe { game_state() }.p_setup.side_mut(SideId(
+                    *(&raw mut (*li).sidenum as *mut i16).offset(j as isize) as u32,
+                ));
                 (*si).textureoffset = ((saveg_read16() as i32) << FRACBITS) as fixed_t;
                 (*si).rowoffset = ((saveg_read16() as i32) << FRACBITS) as fixed_t;
                 (*si).toptexture = saveg_read16();
@@ -962,8 +964,8 @@ pub unsafe fn P_UnArchiveThinkers() {
                 (*mobj).info = (&raw mut unsafe { game_state() }.info.mobjinfo as *mut mobjinfo_t)
                     .offset((*mobj).type_0 as isize)
                     as *mut mobjinfo_t;
-                (*mobj).floorz = (*(*(*mobj).subsector).sector).floorheight;
-                (*mobj).ceilingz = (*(*(*mobj).subsector).sector).ceilingheight;
+                (*mobj).floorz = (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
+                (*mobj).ceilingz = (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).ceilingheight;
                 (*mobj).thinker.function = ThinkerFn::Mobj(P_MobjThinker);
                 P_AddThinker(&raw mut (*mobj).thinker);
             }
@@ -1058,7 +1060,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
                     NULL,
                 ) as *mut ceiling_t;
                 saveg_read_ceiling_t(ceiling);
-                (*(*ceiling).sector).specialdata = ceiling as *mut ::core::ffi::c_void;
+                (*unsafe { game_state() }.p_setup.sector_mut((*ceiling).sector)).specialdata = ceiling as *mut ::core::ffi::c_void;
                 if matches!((*ceiling).thinker.function, ThinkerFn::Unresolved) {
                     (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
                 }
@@ -1074,7 +1076,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
                     NULL,
                 ) as *mut vldoor_t;
                 saveg_read_vldoor_t(door);
-                (*(*door).sector).specialdata = door as *mut ::core::ffi::c_void;
+                (*unsafe { game_state() }.p_setup.sector_mut((*door).sector)).specialdata = door as *mut ::core::ffi::c_void;
                 (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
                 P_AddThinker(&raw mut (*door).thinker);
             }
@@ -1087,7 +1089,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
                     NULL,
                 ) as *mut floormove_t;
                 saveg_read_floormove_t(floor);
-                (*(*floor).sector).specialdata = floor as *mut ::core::ffi::c_void;
+                (*unsafe { game_state() }.p_setup.sector_mut((*floor).sector)).specialdata = floor as *mut ::core::ffi::c_void;
                 (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                 P_AddThinker(&raw mut (*floor).thinker);
             }
@@ -1100,7 +1102,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut PCeilngState) {
                     NULL,
                 ) as *mut plat_t;
                 saveg_read_plat_t(plat);
-                (*(*plat).sector).specialdata = plat as *mut ::core::ffi::c_void;
+                (*unsafe { game_state() }.p_setup.sector_mut((*plat).sector)).specialdata = plat as *mut ::core::ffi::c_void;
                 if matches!((*plat).thinker.function, ThinkerFn::Unresolved) {
                     (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
                 }

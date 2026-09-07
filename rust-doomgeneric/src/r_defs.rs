@@ -1,6 +1,7 @@
 use crate::src::doomdef::boolean;
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_mobj::{line_t, sector_t, vertex_t};
+use crate::src::p_setup::SectorId;
 use crate::src::stdint_types::byte;
 use crate::src::tables::angle_t;
 pub type lighttable_t = byte;
@@ -13,7 +14,7 @@ pub struct side_t {
     pub toptexture: i16,
     pub bottomtexture: i16,
     pub midtexture: i16,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
 }
 
 #[derive(Copy, Clone)]

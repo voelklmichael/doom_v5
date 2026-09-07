@@ -1411,7 +1411,7 @@ pub unsafe fn G_CheckSpot(mut playernum: i32, mut mthing: *mut mapthing_t) -> bo
     mo = P_SpawnMobj(
         x + 20 as fixed_t * xa,
         y + 20 as fixed_t * ya,
-        (*(*ss).sector).floorheight,
+        (*unsafe { game_state() }.p_setup.sector_mut((*ss).sector)).floorheight,
         MT_TFOG,
     );
     if unsafe { game_state() }.g_game.players[unsafe { game_state() }.g_game.consoleplayer as usize]

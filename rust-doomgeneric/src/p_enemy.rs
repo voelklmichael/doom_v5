@@ -27,6 +27,7 @@ use crate::src::p_maputl::P_UnsetThingPosition;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_SpawnMissile;
+use crate::src::p_setup::SectorId;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::P_SpawnPuff;
 use crate::src::p_mobj::P_SubstNullMobj;
@@ -135,6 +136,9 @@ pub unsafe fn P_RecursiveSound(mut sec: *mut sector_t, mut soundblocks: i32) {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
+    let sec_id = SectorId(
+        sec.offset_from(unsafe { game_state() }.p_setup.sectors.as_mut_ptr()) as i64 as u32,
+    );
     if (*sec).validcount == unsafe { game_state() }.r_main.validcount && (*sec).soundtraversed <= soundblocks + 1 as i32 {
         return;
     }
@@ -147,11 +151,16 @@ pub unsafe fn P_RecursiveSound(mut sec: *mut sector_t, mut soundblocks: i32) {
         if !((*check).flags as i32 & ML_TWOSIDED == 0) {
             P_LineOpening(check);
             if !(unsafe { game_state() }.p_maputl.openrange <= 0 as i32) {
-                if (*unsafe { game_state() }.p_setup.sides.offset((*check).sidenum[0 as i32 as usize] as isize)).sector == sec {
-                    other = (*unsafe { game_state() }.p_setup.sides.offset((*check).sidenum[1 as i32 as usize] as isize)).sector;
+                let other_id = if unsafe { game_state() }.p_setup.sides
+                    [(*check).sidenum[0 as i32 as usize] as usize]
+                    .sector
+                    == sec_id
+                {
+                    unsafe { game_state() }.p_setup.sides[(*check).sidenum[1 as i32 as usize] as usize].sector
                 } else {
-                    other = (*unsafe { game_state() }.p_setup.sides.offset((*check).sidenum[0 as i32 as usize] as isize)).sector;
-                }
+                    unsafe { game_state() }.p_setup.sides[(*check).sidenum[0 as i32 as usize] as usize].sector
+                };
+                other = unsafe { game_state() }.p_setup.sector_mut(other_id);
                 if (*check).flags as i32 & ML_SOUNDBLOCK != 0 {
                     if soundblocks == 0 {
                         P_RecursiveSound(other, 1 as i32);
@@ -167,7 +176,12 @@ pub unsafe fn P_RecursiveSound(mut sec: *mut sector_t, mut soundblocks: i32) {
 pub unsafe fn P_NoiseAlert(mut target: *mut mobj_t, mut emmiter: *mut mobj_t) {
     unsafe { game_state() }.p_enemy.soundtarget = target;
     unsafe { game_state() }.r_main.validcount += 1;
-    P_RecursiveSound((*(*emmiter).subsector).sector, 0 as i32);
+    P_RecursiveSound(
+        unsafe { game_state() }
+            .p_setup
+            .sector_mut((*(*emmiter).subsector).sector),
+        0 as i32,
+    );
 }
 pub unsafe fn P_CheckMeleeRange(mut actor: *mut mobj_t) -> bool {
     let mut pl: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
@@ -517,7 +531,10 @@ pub unsafe fn A_Look(mut actor: *mut mobj_t) {
     let mut current_block: u64;
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     (*actor).threshold = 0 as i32;
-    targ = (*(*(*actor).subsector).sector).soundtarget;
+    targ = (*unsafe { game_state() }
+        .p_setup
+        .sector_mut((*(*actor).subsector).sector))
+    .soundtarget;
     if !targ.is_null() && (*targ).flags & MF_SHOOTABLE as i32 != 0 {
         (*actor).target = targ as *mut mobj_s;
         if (*actor).flags & MF_AMBUSH as i32 != 0 {

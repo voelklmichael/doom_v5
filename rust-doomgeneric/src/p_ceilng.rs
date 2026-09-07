@@ -6,6 +6,7 @@ use crate::src::p_floor::T_MovePlane;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
+use crate::src::p_setup::SectorId;
 use crate::src::p_spec::ceiling_t;
 use crate::src::p_spec::P_FindHighestCeilingSurrounding;
 use crate::src::p_spec::P_FindSectorFromLineTag;
@@ -39,10 +40,11 @@ impl PCeilngState {
 
 pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
     let mut res: result_e = ok;
+    let sec = unsafe { game_state() }.p_setup.sector_mut((*ceiling).sector);
     match (*ceiling).direction {
         1 => {
             res = T_MovePlane(
-                (*ceiling).sector,
+                sec,
                 (*ceiling).speed,
                 (*ceiling).topheight,
                 false,
@@ -55,7 +57,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                     _ => {
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*ceiling).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_stnmov as i32,
                         );
                     }
@@ -71,7 +73,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                     5 => {
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*ceiling).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_pstop as i32,
                         );
                         current_block_7 = 16040908003852494439;
@@ -93,7 +95,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
         }
         -1 => {
             res = T_MovePlane(
-                (*ceiling).sector,
+                sec,
                 (*ceiling).speed,
                 (*ceiling).bottomheight,
                 (*ceiling).crush,
@@ -106,7 +108,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                     _ => {
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*ceiling).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_stnmov as i32,
                         );
                     }
@@ -118,7 +120,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                     5 => {
                         S_StartSound(
                             unsafe { &mut game_state().sounds },
-                            &raw mut (*(*ceiling).sector).soundorg as *mut ::core::ffi::c_void,
+                            &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_pstop as i32,
                         );
                         current_block_19 = 3850642056257311267;
@@ -184,7 +186,7 @@ pub unsafe fn EV_DoCeiling(
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
+        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
@@ -198,7 +200,7 @@ pub unsafe fn EV_DoCeiling(
         P_AddThinker(&raw mut (*ceiling).thinker);
         (*sec).specialdata = ceiling as *mut ::core::ffi::c_void;
         (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
-        (*ceiling).sector = sec;
+        (*ceiling).sector = SectorId(secnum as u32);
         (*ceiling).crush = false;
         let mut current_block_26: u64;
         match type_0 as u32 {
@@ -262,7 +264,7 @@ pub unsafe fn P_RemoveActiveCeiling(state: &mut PCeilngState, mut c: *mut ceilin
     i = 0 as i32;
     while i < MAXCEILINGS {
         if state.activeceilings[i as usize] == c {
-            (*(*state.activeceilings[i as usize]).sector).specialdata = NULL;
+            (*unsafe { game_state() }.p_setup.sector_mut((*state.activeceilings[i as usize]).sector)).specialdata = NULL;
             P_RemoveThinker(
                 &raw mut (**(&raw mut state.activeceilings as *mut *mut ceiling_t)
                     .offset(i as isize))

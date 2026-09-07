@@ -186,7 +186,12 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
         P_MovePlayer(state, player);
     }
     P_CalcHeight(state, player);
-    if (*(*(*(*player).mo).subsector).sector).special != 0 {
+    if (*unsafe { game_state() }
+        .p_setup
+        .sector_mut((*(*(*player).mo).subsector).sector))
+    .special
+        != 0
+    {
         P_PlayerInSpecialSector(player);
     }
     if (*cmd).buttons as i32 & BT_SPECIAL as i32 != 0 {

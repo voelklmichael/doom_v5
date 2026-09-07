@@ -12,6 +12,8 @@ use crate::src::m_random::P_Random;
 use crate::src::p_ceilng::EV_CeilingCrushStop;
 use crate::src::p_ceilng::EV_DoCeiling;
 use crate::src::p_ceilng::PCeilngState;
+use crate::src::p_setup::SectorId;
+use crate::src::p_setup::SideId;
 use crate::src::p_ceilng::{
     ceiling_e, crushAndRaise, fastCrushAndRaise, lowerAndCrush, raiseToHighest, silentCrushAndRaise,
 };
@@ -142,7 +144,7 @@ pub struct button_t {
 #[repr(C)]
 pub struct plat_t {
     pub thinker: thinker_t,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub speed: fixed_t,
     pub low: fixed_t,
     pub high: fixed_t,
@@ -159,7 +161,7 @@ pub struct plat_t {
 pub struct ceiling_t {
     pub thinker: thinker_t,
     pub type_0: ceiling_e,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub bottomheight: fixed_t,
     pub topheight: fixed_t,
     pub speed: fixed_t,
@@ -174,7 +176,7 @@ pub struct floormove_t {
     pub thinker: thinker_t,
     pub type_0: floor_e,
     pub crush: bool,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub direction: i32,
     pub newspecial: i32,
     pub texture: i16,
@@ -395,29 +397,20 @@ pub unsafe fn P_InitPicAnims() {
     }
 }
 pub unsafe fn getSide(mut currentSector: i32, mut line: i32, mut side: i32) -> *mut side_t {
-    return unsafe { game_state() }.p_setup.sides.offset(
-        *(&raw mut (**(*unsafe { game_state() }.p_setup.sectors.offset(currentSector as isize))
-            .lines
-            .offset(line as isize))
-        .sidenum as *mut i16)
-            .offset(side as isize) as isize,
-    ) as *mut side_t;
+    let sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(currentSector as u32));
+    let sidenum =
+        *(&raw mut (**(*sec).lines.offset(line as isize)).sidenum as *mut i16).offset(side as isize);
+    return unsafe { game_state() }.p_setup.side_mut(SideId(sidenum as u32));
 }
 pub unsafe fn getSector(mut currentSector: i32, mut line: i32, mut side: i32) -> *mut sector_t {
-    return (*unsafe { game_state() }.p_setup.sides.offset(
-        (**(*unsafe { game_state() }.p_setup.sectors.offset(currentSector as isize))
-            .lines
-            .offset(line as isize))
-        .sidenum[side as usize] as isize,
-    ))
-    .sector;
+    let sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(currentSector as u32));
+    let sidenum = (**(*sec).lines.offset(line as isize)).sidenum[side as usize];
+    let sector_id = unsafe { game_state() }.p_setup.sides[sidenum as usize].sector;
+    return unsafe { game_state() }.p_setup.sector_mut(sector_id);
 }
 pub unsafe fn twoSided(mut sector: i32, mut line: i32) -> i32 {
-    return (**(*unsafe { game_state() }.p_setup.sectors.offset(sector as isize))
-        .lines
-        .offset(line as isize))
-    .flags as i32
-        & ML_TWOSIDED;
+    let sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(sector as u32));
+    return (**(*sec).lines.offset(line as isize)).flags as i32 & ML_TWOSIDED;
 }
 pub unsafe fn getNextSector(mut line: *mut line_t, mut sec: *mut sector_t) -> *mut sector_t {
     if (*line).flags as i32 & ML_TWOSIDED == 0 {
@@ -545,7 +538,7 @@ pub unsafe fn P_FindSectorFromLineTag(mut line: *mut line_t, mut start: i32) -> 
     let mut i: i32 = 0;
     i = start + 1 as i32;
     while i < unsafe { game_state() }.p_setup.numsectors {
-        if (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).tag as i32 == (*line).tag as i32 {
+        if unsafe { game_state() }.p_setup.sectors[i as usize].tag as i32 == (*line).tag as i32 {
             return i;
         }
         i += 1;
@@ -943,7 +936,9 @@ pub unsafe fn P_ShootSpecialLine(mut thing: *mut mobj_t, mut line: *mut line_t) 
 }
 pub unsafe fn P_PlayerInSpecialSector(mut player: *mut player_t) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
-    sector = (*(*(*player).mo).subsector).sector;
+    sector = unsafe { game_state() }
+        .p_setup
+        .sector_mut((*(*(*player).mo).subsector).sector);
     if (*(*player).mo).z != (*sector).floorheight {
         return;
     }
@@ -1042,8 +1037,9 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
         line = unsafe { game_state() }.p_spec.linespeciallist[i as usize];
         match (*line).special as i32 {
             48 => {
-                let ref mut fresh0 =
-                    (*unsafe { game_state() }.p_setup.sides.offset((*line).sidenum[0 as i32 as usize] as isize)).textureoffset;
+                let ref mut fresh0 = unsafe { game_state() }.p_setup.sides
+                    [(*line).sidenum[0 as i32 as usize] as usize]
+                    .textureoffset;
                 *fresh0 += FRACUNIT;
             }
             _ => {}
@@ -1057,25 +1053,19 @@ pub unsafe fn P_UpdateSpecials(state: &mut PSwitchState) {
             if state.buttonlist[i as usize].btimer == 0 {
                 match state.buttonlist[i as usize].where_0 as u32 {
                     0 => {
-                        (*unsafe { game_state() }.p_setup.sides.offset(
-                            (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
-                                as isize,
-                        ))
-                        .toptexture = state.buttonlist[i as usize].btexture as i16;
+                        unsafe { game_state() }.p_setup.sides
+                            [(*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize] as usize]
+                            .toptexture = state.buttonlist[i as usize].btexture as i16;
                     }
                     1 => {
-                        (*unsafe { game_state() }.p_setup.sides.offset(
-                            (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
-                                as isize,
-                        ))
-                        .midtexture = state.buttonlist[i as usize].btexture as i16;
+                        unsafe { game_state() }.p_setup.sides
+                            [(*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize] as usize]
+                            .midtexture = state.buttonlist[i as usize].btexture as i16;
                     }
                     2 => {
-                        (*unsafe { game_state() }.p_setup.sides.offset(
-                            (*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize]
-                                as isize,
-                        ))
-                        .bottomtexture = state.buttonlist[i as usize].btexture as i16;
+                        unsafe { game_state() }.p_setup.sides
+                            [(*state.buttonlist[i as usize].line).sidenum[0 as i32 as usize] as usize]
+                            .bottomtexture = state.buttonlist[i as usize].btexture as i16;
                     }
                     _ => {}
                 }
@@ -1154,7 +1144,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
         if !(secnum >= 0 as i32) {
             break;
         }
-        s1 = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
+        s1 = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*s1).specialdata.is_null() {
             continue;
         }
@@ -1168,6 +1158,9 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
             );
             break;
         } else {
+            let s2_id = SectorId(
+                s2.offset_from(unsafe { game_state() }.p_setup.sectors.as_mut_ptr()) as i64 as u32,
+            );
             i = 0 as i32;
             while i < (*s2).linecount {
                 s3 = (**(*s2).lines.offset(i as isize)).backsector;
@@ -1197,7 +1190,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
                     (*floor).type_0 = donutRaise;
                     (*floor).crush = false;
                     (*floor).direction = 1 as i32;
-                    (*floor).sector = s2;
+                    (*floor).sector = s2_id;
                     (*floor).speed = (FLOORSPEED / 2 as i32) as fixed_t;
                     (*floor).texture = s3_floorpic;
                     (*floor).newspecial = 0 as i32;
@@ -1214,7 +1207,7 @@ pub unsafe fn EV_DoDonut(mut line: *mut line_t) -> i32 {
                     (*floor).type_0 = lowerFloor;
                     (*floor).crush = false;
                     (*floor).direction = -(1 as i32);
-                    (*floor).sector = s1;
+                    (*floor).sector = SectorId(secnum as u32);
                     (*floor).speed = (FLOORSPEED / 2 as i32) as fixed_t;
                     (*floor).floordestheight = s3_floorheight;
                     break;
@@ -1240,50 +1233,50 @@ pub unsafe fn P_SpawnSpecials(
     } else {
         unsafe { game_state() }.p_spec.levelTimer = false;
     }
-    sector = unsafe { game_state() }.p_setup.sectors;
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numsectors {
+        let secid = SectorId(i as u32);
+        sector = unsafe { game_state() }.p_setup.sector_mut(secid);
         if !((*sector).special == 0) {
             match (*sector).special as i32 {
                 1 => {
-                    P_SpawnLightFlash(sector);
+                    P_SpawnLightFlash(secid);
                 }
                 2 => {
-                    P_SpawnStrobeFlash(sector, FASTDARK, 0 as i32);
+                    P_SpawnStrobeFlash(secid, FASTDARK, 0 as i32);
                 }
                 3 => {
-                    P_SpawnStrobeFlash(sector, SLOWDARK, 0 as i32);
+                    P_SpawnStrobeFlash(secid, SLOWDARK, 0 as i32);
                 }
                 4 => {
-                    P_SpawnStrobeFlash(sector, FASTDARK, 0 as i32);
+                    P_SpawnStrobeFlash(secid, FASTDARK, 0 as i32);
                     (*sector).special = 4 as i16;
                 }
                 8 => {
-                    P_SpawnGlowingLight(sector);
+                    P_SpawnGlowingLight(secid);
                 }
                 9 => {
                     unsafe { game_state() }.g_game.totalsecret += 1;
                 }
                 10 => {
-                    P_SpawnDoorCloseIn30(sector);
+                    P_SpawnDoorCloseIn30(secid);
                 }
                 12 => {
-                    P_SpawnStrobeFlash(sector, SLOWDARK, 1 as i32);
+                    P_SpawnStrobeFlash(secid, SLOWDARK, 1 as i32);
                 }
                 13 => {
-                    P_SpawnStrobeFlash(sector, FASTDARK, 1 as i32);
+                    P_SpawnStrobeFlash(secid, FASTDARK, 1 as i32);
                 }
                 14 => {
-                    P_SpawnDoorRaiseIn5Mins(sector, i);
+                    P_SpawnDoorRaiseIn5Mins(secid, i);
                 }
                 17 => {
-                    P_SpawnFireFlicker(sector);
+                    P_SpawnFireFlicker(secid);
                 }
                 _ => {}
             }
         }
         i += 1;
-        sector = sector.offset(1);
     }
     unsafe { game_state() }.p_spec.numlinespecials = 0 as i16;
     i = 0 as i32;

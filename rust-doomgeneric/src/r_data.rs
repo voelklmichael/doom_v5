@@ -739,9 +739,9 @@ pub unsafe fn R_PrecacheLevel() {
     );
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numsectors {
-        *flatpresent.offset((*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).floorpic as isize) =
+        *flatpresent.offset(unsafe { game_state() }.p_setup.sectors[i as usize].floorpic as isize) =
             1 as ::core::ffi::c_char;
-        *flatpresent.offset((*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).ceilingpic as isize) =
+        *flatpresent.offset(unsafe { game_state() }.p_setup.sectors[i as usize].ceilingpic as isize) =
             1 as ::core::ffi::c_char;
         i += 1;
     }
@@ -772,11 +772,11 @@ pub unsafe fn R_PrecacheLevel() {
     );
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numsides {
-        *texturepresent.offset((*unsafe { game_state() }.p_setup.sides.offset(i as isize)).toptexture as isize) =
+        *texturepresent.offset(unsafe { game_state() }.p_setup.sides[i as usize].toptexture as isize) =
             1 as ::core::ffi::c_char;
-        *texturepresent.offset((*unsafe { game_state() }.p_setup.sides.offset(i as isize)).midtexture as isize) =
+        *texturepresent.offset(unsafe { game_state() }.p_setup.sides[i as usize].midtexture as isize) =
             1 as ::core::ffi::c_char;
-        *texturepresent.offset((*unsafe { game_state() }.p_setup.sides.offset(i as isize)).bottomtexture as isize) =
+        *texturepresent.offset(unsafe { game_state() }.p_setup.sides[i as usize].bottomtexture as isize) =
             1 as ::core::ffi::c_char;
         i += 1;
     }

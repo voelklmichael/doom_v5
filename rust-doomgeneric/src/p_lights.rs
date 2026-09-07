@@ -2,6 +2,7 @@ use crate::src::game_state::game_state;
 use crate::src::m_random::P_Random;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t, thinker_t};
+use crate::src::p_setup::SectorId;
 use crate::src::p_spec::getNextSector;
 use crate::src::p_spec::P_FindMinSurroundingLight;
 use crate::src::p_spec::P_FindSectorFromLineTag;
@@ -13,7 +14,7 @@ use crate::src::z_zone::PU_LEVSPEC;
 #[repr(C)]
 pub struct fireflicker_t {
     pub thinker: thinker_t,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub count: i32,
     pub maxlight: i32,
     pub minlight: i32,
@@ -22,7 +23,7 @@ pub struct fireflicker_t {
 #[repr(C)]
 pub struct lightflash_t {
     pub thinker: thinker_t,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub count: i32,
     pub maxlight: i32,
     pub minlight: i32,
@@ -33,7 +34,7 @@ pub struct lightflash_t {
 #[repr(C)]
 pub struct strobe_t {
     pub thinker: thinker_t,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub count: i32,
     pub minlight: i32,
     pub maxlight: i32,
@@ -44,7 +45,7 @@ pub struct strobe_t {
 #[repr(C)]
 pub struct glow_t {
     pub thinker: thinker_t,
-    pub sector: *mut sector_t,
+    pub sector: SectorId,
     pub minlight: i32,
     pub maxlight: i32,
     pub direction: i32,
@@ -59,16 +60,18 @@ pub unsafe fn T_FireFlicker(mut flick: *mut fireflicker_t) {
         return;
     }
     amount = (P_Random(unsafe { &mut game_state().m_random }) & 3 as i32) * 16 as i32;
-    if (*(*flick).sector).lightlevel as i32 - amount < (*flick).minlight {
-        (*(*flick).sector).lightlevel = (*flick).minlight as i16;
+    let sec = unsafe { game_state() }.p_setup.sector_mut((*flick).sector);
+    if (*sec).lightlevel as i32 - amount < (*flick).minlight {
+        (*sec).lightlevel = (*flick).minlight as i16;
     } else {
-        (*(*flick).sector).lightlevel = ((*flick).maxlight - amount) as i16;
+        (*sec).lightlevel = ((*flick).maxlight - amount) as i16;
     }
     (*flick).count = 4 as i32;
 }
-pub unsafe fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
+pub unsafe fn P_SpawnFireFlicker(mut sector: SectorId) {
     let mut flick: *mut fireflicker_t = ::core::ptr::null_mut::<fireflicker_t>();
-    (*sector).special = 0 as i16;
+    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
+    (*sec).special = 0 as i16;
     flick = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<fireflicker_t>() as i32,
@@ -78,8 +81,8 @@ pub unsafe fn P_SpawnFireFlicker(mut sector: *mut sector_t) {
     P_AddThinker(&raw mut (*flick).thinker);
     (*flick).thinker.function = ThinkerFn::FireFlicker(T_FireFlicker);
     (*flick).sector = sector;
-    (*flick).maxlight = (*sector).lightlevel as i32;
-    (*flick).minlight = P_FindMinSurroundingLight(sector, (*sector).lightlevel as i32) + 16 as i32;
+    (*flick).maxlight = (*sec).lightlevel as i32;
+    (*flick).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32) + 16 as i32;
     (*flick).count = 4 as i32;
 }
 pub unsafe fn T_LightFlash(mut flash: *mut lightflash_t) {
@@ -87,19 +90,21 @@ pub unsafe fn T_LightFlash(mut flash: *mut lightflash_t) {
     if (*flash).count != 0 {
         return;
     }
-    if (*(*flash).sector).lightlevel as i32 == (*flash).maxlight {
-        (*(*flash).sector).lightlevel = (*flash).minlight as i16;
+    let sec = unsafe { game_state() }.p_setup.sector_mut((*flash).sector);
+    if (*sec).lightlevel as i32 == (*flash).maxlight {
+        (*sec).lightlevel = (*flash).minlight as i16;
         (*flash).count =
             (P_Random(unsafe { &mut game_state().m_random }) & (*flash).mintime) + 1 as i32;
     } else {
-        (*(*flash).sector).lightlevel = (*flash).maxlight as i16;
+        (*sec).lightlevel = (*flash).maxlight as i16;
         (*flash).count =
             (P_Random(unsafe { &mut game_state().m_random }) & (*flash).maxtime) + 1 as i32;
     };
 }
-pub unsafe fn P_SpawnLightFlash(mut sector: *mut sector_t) {
+pub unsafe fn P_SpawnLightFlash(mut sector: SectorId) {
     let mut flash: *mut lightflash_t = ::core::ptr::null_mut::<lightflash_t>();
-    (*sector).special = 0 as i16;
+    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
+    (*sec).special = 0 as i16;
     flash = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<lightflash_t>() as i32,
@@ -109,8 +114,8 @@ pub unsafe fn P_SpawnLightFlash(mut sector: *mut sector_t) {
     P_AddThinker(&raw mut (*flash).thinker);
     (*flash).thinker.function = ThinkerFn::LightFlash(T_LightFlash);
     (*flash).sector = sector;
-    (*flash).maxlight = (*sector).lightlevel as i32;
-    (*flash).minlight = P_FindMinSurroundingLight(sector, (*sector).lightlevel as i32);
+    (*flash).maxlight = (*sec).lightlevel as i32;
+    (*flash).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32);
     (*flash).maxtime = 64 as i32;
     (*flash).mintime = 7 as i32;
     (*flash).count =
@@ -121,16 +126,18 @@ pub unsafe fn T_StrobeFlash(mut flash: *mut strobe_t) {
     if (*flash).count != 0 {
         return;
     }
-    if (*(*flash).sector).lightlevel as i32 == (*flash).minlight {
-        (*(*flash).sector).lightlevel = (*flash).maxlight as i16;
+    let sec = unsafe { game_state() }.p_setup.sector_mut((*flash).sector);
+    if (*sec).lightlevel as i32 == (*flash).minlight {
+        (*sec).lightlevel = (*flash).maxlight as i16;
         (*flash).count = (*flash).brighttime;
     } else {
-        (*(*flash).sector).lightlevel = (*flash).minlight as i16;
+        (*sec).lightlevel = (*flash).minlight as i16;
         (*flash).count = (*flash).darktime;
     };
 }
-pub unsafe fn P_SpawnStrobeFlash(mut sector: *mut sector_t, mut fastOrSlow: i32, mut inSync: i32) {
+pub unsafe fn P_SpawnStrobeFlash(mut sector: SectorId, mut fastOrSlow: i32, mut inSync: i32) {
     let mut flash: *mut strobe_t = ::core::ptr::null_mut::<strobe_t>();
+    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
     flash = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<strobe_t>() as i32,
@@ -142,12 +149,12 @@ pub unsafe fn P_SpawnStrobeFlash(mut sector: *mut sector_t, mut fastOrSlow: i32,
     (*flash).darktime = fastOrSlow;
     (*flash).brighttime = STROBEBRIGHT;
     (*flash).thinker.function = ThinkerFn::Strobe(T_StrobeFlash);
-    (*flash).maxlight = (*sector).lightlevel as i32;
-    (*flash).minlight = P_FindMinSurroundingLight(sector, (*sector).lightlevel as i32);
+    (*flash).maxlight = (*sec).lightlevel as i32;
+    (*flash).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32);
     if (*flash).minlight == (*flash).maxlight {
         (*flash).minlight = 0 as i32;
     }
-    (*sector).special = 0 as i16;
+    (*sec).special = 0 as i16;
     if inSync == 0 {
         (*flash).count = (P_Random(unsafe { &mut game_state().m_random }) & 7 as i32) + 1 as i32;
     } else {
@@ -156,18 +163,17 @@ pub unsafe fn P_SpawnStrobeFlash(mut sector: *mut sector_t, mut fastOrSlow: i32,
 }
 pub unsafe fn EV_StartLightStrobing(mut line: *mut line_t) {
     let mut secnum: i32 = 0;
-    let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     secnum = -(1 as i32);
     loop {
         secnum = P_FindSectorFromLineTag(line, secnum);
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sectors.offset(secnum as isize) as *mut sector_t;
+        let sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
-        P_SpawnStrobeFlash(sec, SLOWDARK, 0 as i32);
+        P_SpawnStrobeFlash(SectorId(secnum as u32), SLOWDARK, 0 as i32);
     }
 }
 pub unsafe fn EV_TurnTagLightsOff(mut line: *mut line_t) {
@@ -177,9 +183,9 @@ pub unsafe fn EV_TurnTagLightsOff(mut line: *mut line_t) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut tsec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut templine: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    sector = unsafe { game_state() }.p_setup.sectors;
     j = 0 as i32;
     while j < unsafe { game_state() }.p_setup.numsectors {
+        sector = unsafe { game_state() }.p_setup.sector_mut(SectorId(j as u32));
         if (*sector).tag as i32 == (*line).tag as i32 {
             min = (*sector).lightlevel as i32;
             i = 0 as i32;
@@ -196,7 +202,6 @@ pub unsafe fn EV_TurnTagLightsOff(mut line: *mut line_t) {
             (*sector).lightlevel = min as i16;
         }
         j += 1;
-        sector = sector.offset(1);
     }
 }
 pub unsafe fn EV_LightTurnOn(mut line: *mut line_t, mut bright: i32) {
@@ -205,9 +210,9 @@ pub unsafe fn EV_LightTurnOn(mut line: *mut line_t, mut bright: i32) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut temp: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut templine: *mut line_t = ::core::ptr::null_mut::<line_t>();
-    sector = unsafe { game_state() }.p_setup.sectors;
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numsectors {
+        sector = unsafe { game_state() }.p_setup.sector_mut(SectorId(i as u32));
         if (*sector).tag as i32 == (*line).tag as i32 {
             if bright == 0 {
                 j = 0 as i32;
@@ -225,30 +230,31 @@ pub unsafe fn EV_LightTurnOn(mut line: *mut line_t, mut bright: i32) {
             (*sector).lightlevel = bright as i16;
         }
         i += 1;
-        sector = sector.offset(1);
     }
 }
 pub unsafe fn T_Glow(mut g: *mut glow_t) {
+    let sec = unsafe { game_state() }.p_setup.sector_mut((*g).sector);
     match (*g).direction {
         -1 => {
-            (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as i32 - GLOWSPEED) as i16;
-            if (*(*g).sector).lightlevel as i32 <= (*g).minlight {
-                (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as i32 + GLOWSPEED) as i16;
+            (*sec).lightlevel = ((*sec).lightlevel as i32 - GLOWSPEED) as i16;
+            if (*sec).lightlevel as i32 <= (*g).minlight {
+                (*sec).lightlevel = ((*sec).lightlevel as i32 + GLOWSPEED) as i16;
                 (*g).direction = 1 as i32;
             }
         }
         1 => {
-            (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as i32 + GLOWSPEED) as i16;
-            if (*(*g).sector).lightlevel as i32 >= (*g).maxlight {
-                (*(*g).sector).lightlevel = ((*(*g).sector).lightlevel as i32 - GLOWSPEED) as i16;
+            (*sec).lightlevel = ((*sec).lightlevel as i32 + GLOWSPEED) as i16;
+            if (*sec).lightlevel as i32 >= (*g).maxlight {
+                (*sec).lightlevel = ((*sec).lightlevel as i32 - GLOWSPEED) as i16;
                 (*g).direction = -(1 as i32);
             }
         }
         _ => {}
     };
 }
-pub unsafe fn P_SpawnGlowingLight(mut sector: *mut sector_t) {
+pub unsafe fn P_SpawnGlowingLight(mut sector: SectorId) {
     let mut g: *mut glow_t = ::core::ptr::null_mut::<glow_t>();
+    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
     g = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         ::core::mem::size_of::<glow_t>() as i32,
@@ -257,9 +263,9 @@ pub unsafe fn P_SpawnGlowingLight(mut sector: *mut sector_t) {
     ) as *mut glow_t;
     P_AddThinker(&raw mut (*g).thinker);
     (*g).sector = sector;
-    (*g).minlight = P_FindMinSurroundingLight(sector, (*sector).lightlevel as i32);
-    (*g).maxlight = (*sector).lightlevel as i32;
+    (*g).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32);
+    (*g).maxlight = (*sec).lightlevel as i32;
     (*g).thinker.function = ThinkerFn::Glow(T_Glow);
     (*g).direction = -(1 as i32);
-    (*sector).special = 0 as i16;
+    (*sec).special = 0 as i16;
 }

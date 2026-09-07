@@ -6,7 +6,8 @@ use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::MF_MISSILE;
-use crate::src::p_mobj::{line_t, sector_t, thinker_t};
+use crate::src::p_mobj::{line_t, thinker_t};
+use crate::src::p_setup::SectorId;
 use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG};
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::sfx_telept;
@@ -20,7 +21,7 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
     let mut fog: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut an: u32 = 0;
     let mut thinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
-    let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
+    let mut sector: SectorId = SectorId(0);
     let mut oldx: fixed_t = 0;
     let mut oldy: fixed_t = 0;
     let mut oldz: fixed_t = 0;
@@ -33,7 +34,7 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
     tag = (*line).tag as i32;
     i = 0 as i32;
     while i < unsafe { game_state() }.p_setup.numsectors {
-        if (*unsafe { game_state() }.p_setup.sectors.offset(i as isize)).tag as i32 == tag {
+        if unsafe { game_state() }.p_setup.sectors[i as usize].tag as i32 == tag {
             thinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
             thinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
             while thinker != &raw mut unsafe { game_state() }.p_tick.thinkercap {
@@ -41,7 +42,7 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
                     m = thinker as *mut mobj_t;
                     if !((*m).type_0 as u32 != MT_TELEPORTMAN as i32 as u32) {
                         sector = (*(*m).subsector).sector;
-                        if !(sector.offset_from(unsafe { game_state() }.p_setup.sectors) as i64 != i as i64) {
+                        if !(sector.0 != i as u32) {
                             oldx = (*thing).x;
                             oldy = (*thing).y;
                             oldz = (*thing).z;
