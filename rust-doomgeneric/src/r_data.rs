@@ -661,7 +661,7 @@ pub unsafe fn R_InitData(state: &mut GameState) {
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitColormaps(state);
 }
-pub unsafe fn R_FlatNumForName(mut name: *mut ::core::ffi::c_char) -> i32 {
+pub unsafe fn R_FlatNumForName(state: &mut RDataState, mut name: *mut ::core::ffi::c_char) -> i32 {
     let mut i: i32 = 0;
     let mut namet: [::core::ffi::c_char; 9] = [0; 9];
     i = W_CheckNumForName(&wad_name8_to_string(name));
@@ -677,16 +677,16 @@ pub unsafe fn R_FlatNumForName(mut name: *mut ::core::ffi::c_char) -> i32 {
             wad_name8_to_string(&raw mut namet as *mut ::core::ffi::c_char),
         ));
     }
-    return i - unsafe { game_state() }.r_data.firstflat;
+    return i - state.firstflat;
 }
-pub unsafe fn R_CheckTextureNumForName(mut name: *mut ::core::ffi::c_char) -> i32 {
+pub unsafe fn R_CheckTextureNumForName(state: &mut RDataState, mut name: *mut ::core::ffi::c_char) -> i32 {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut key: i32 = 0;
     if *name.offset(0 as i32 as isize) as i32 == '-' as i32 {
         return 0 as i32;
     }
-    key = W_LumpNameHash(name).wrapping_rem(unsafe { game_state() }.r_data.numtextures as u32) as i32;
-    texture = *unsafe { game_state() }.r_data.textures_hashtable.offset(key as isize);
+    key = W_LumpNameHash(name).wrapping_rem(state.numtextures as u32) as i32;
+    texture = *state.textures_hashtable.offset(key as isize);
     while !texture.is_null() {
         if strncasecmp(
             &raw mut (*texture).name as *mut ::core::ffi::c_char,
@@ -700,9 +700,9 @@ pub unsafe fn R_CheckTextureNumForName(mut name: *mut ::core::ffi::c_char) -> i3
     }
     return -(1 as i32);
 }
-pub unsafe fn R_TextureNumForName(mut name: *mut ::core::ffi::c_char) -> i32 {
+pub unsafe fn R_TextureNumForName(state: &mut RDataState, mut name: *mut ::core::ffi::c_char) -> i32 {
     let mut i: i32 = 0;
-    i = R_CheckTextureNumForName(name);
+    i = R_CheckTextureNumForName(state, name);
     if i == -(1 as i32) {
         I_Error(&format!(
             "R_TextureNumForName: {} not found",
