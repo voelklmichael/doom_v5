@@ -81,7 +81,7 @@ unsafe fn RunTic(mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {
     if unsafe { game_state() }.d_main.advancedemo {
         D_DoAdvanceDemo();
     }
-    G_Ticker(&mut gs.m_random, &mut gs.d_net);
+    G_Ticker(gs);
 }
 static mut doom_loop_interface: loop_interface_t = unsafe {
     loop_interface_t {
