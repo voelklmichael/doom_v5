@@ -1176,7 +1176,7 @@ pub unsafe fn P_SpawnPlayer(state: &mut GameState, mut mthing: *mut mapthing_t) 
     (*p).extralight = 0 as i32;
     (*p).fixedcolormap = 0 as i32;
     (*p).viewheight = VIEWHEIGHT as fixed_t;
-    P_SetupPsprites(p);
+    P_SetupPsprites(state, p);
     if state.g_game.deathmatch != 0 {
         i = 0 as i32;
         while i < NUMCARDS as i32 {
