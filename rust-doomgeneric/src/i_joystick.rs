@@ -92,8 +92,8 @@ pub unsafe fn I_BindJoystickVariables(state: &mut GameState) {
             ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),
-            (&raw mut state.i_joystick.joystick_physical_buttons as *mut i32).offset(i as isize) as *mut i32
-                as *mut ::core::ffi::c_void,
+            (&raw mut state.i_joystick.joystick_physical_buttons as *mut i32).offset(i as isize)
+                as *mut i32 as *mut ::core::ffi::c_void,
         );
         i += 1;
     }

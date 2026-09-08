@@ -78,11 +78,7 @@ pub unsafe fn W_Checksum(state: &mut GameState, mut digest: *mut byte) {
     i = 0 as u32;
     while i < state.w_wad.numlumps {
         let lump = state.w_wad.lumpinfo.offset(i as isize) as *mut lumpinfo_t;
-        ChecksumAddLump(
-            &mut state.w_checksum,
-            &raw mut sha1_context,
-            lump,
-        );
+        ChecksumAddLump(&mut state.w_checksum, &raw mut sha1_context, lump);
         i = i.wrapping_add(1);
     }
     SHA1_Final(digest, &raw mut sha1_context);

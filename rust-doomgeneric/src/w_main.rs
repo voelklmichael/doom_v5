@@ -7,7 +7,7 @@ use libc::printf;
 pub unsafe fn W_ParseCommandLine() -> bool {
     let mut modifiedgame: bool = false;
     let mut p: i32 = 0;
-    p = M_CheckParmWithArgs("-file", 1 as i32);
+    p = M_CheckParmWithArgs(unsafe { game_state() }, "-file", 1 as i32);
     if p != 0 {
         modifiedgame = true;
         loop {

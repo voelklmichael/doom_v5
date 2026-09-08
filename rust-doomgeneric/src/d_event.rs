@@ -9,11 +9,14 @@ pub const ga_loadgame: gameaction_t = 3;
 pub const ga_newgame: gameaction_t = 2;
 pub const ga_loadlevel: gameaction_t = 1;
 pub const ga_nothing: gameaction_t = 0;
-pub type gamestate_t = u32;
-pub const GS_DEMOSCREEN: gamestate_t = 3;
-pub const GS_FINALE: gamestate_t = 2;
-pub const GS_INTERMISSION: gamestate_t = 1;
-pub const GS_LEVEL: gamestate_t = 0;
+#[derive(Copy, Clone, PartialEq)]
+pub enum GameScreenState {
+    GS_LEVEL = 0,
+    GS_INTERMISSION = 1,
+    GS_FINALE = 2,
+    GS_DEMOSCREEN = 3,
+    GS_WIPPED = 4294967295,
+}
 pub type evtype_t = u32;
 pub const ev_quit: evtype_t = 4;
 pub const ev_joystick: evtype_t = 3;
@@ -29,12 +32,12 @@ pub struct event_t {
     pub data3: i32,
     pub data4: i32,
 }
-const MAXEVENTS: i32 = 64;
+const MAXEVENTS: usize = 64;
 
 pub struct DEventState {
-    events: [event_t; MAXEVENTS as usize],
-    eventhead: i32,
-    eventtail: i32,
+    events: [event_t; MAXEVENTS],
+    eventhead: usize,
+    eventtail: usize,
 }
 
 impl DEventState {
@@ -54,15 +57,15 @@ impl DEventState {
 }
 
 pub fn D_PostEvent(state: &mut DEventState, ev: event_t) {
-    state.events[state.eventhead as usize] = ev;
-    state.eventhead = (state.eventhead + 1 as i32) % MAXEVENTS;
+    state.events[state.eventhead] = ev;
+    state.eventhead = (state.eventhead + 1) % MAXEVENTS;
 }
 pub fn D_PopEvent(state: &mut DEventState) -> Option<event_t> {
     if state.eventtail == state.eventhead {
         return None;
     }
-    let event = state.events[state.eventtail as usize].clone();
+    let event = state.events[state.eventtail].clone();
 
-    state.eventtail = (state.eventtail + 1 as i32) % MAXEVENTS;
+    state.eventtail = (state.eventtail + 1) % MAXEVENTS;
     return Some(event);
 }

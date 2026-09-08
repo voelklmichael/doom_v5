@@ -95,519 +95,517 @@ impl WiStuffState {
                 ::core::ptr::null_mut::<anim_t>(),
             ],
             epsd0animinfo: [
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 224 as i32,
-                y: 104 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 224 as i32,
+                        y: 104 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 184 as i32,
+                        y: 160 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 112 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 72 as i32,
+                        y: 112 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 88 as i32,
+                        y: 96 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 64 as i32,
+                        y: 48 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 192 as i32,
+                        y: 40 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 136 as i32,
+                        y: 16 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 80 as i32,
+                        y: 16 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 64 as i32,
+                        y: 24 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
             ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 184 as i32,
-                y: 160 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 112 as i32,
-                y: 136 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 72 as i32,
-                y: 112 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 88 as i32,
-                y: 96 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 64 as i32,
-                y: 48 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 192 as i32,
-                y: 40 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 136 as i32,
-                y: 16 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 80 as i32,
-                y: 16 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 64 as i32,
-                y: 24 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-    ],
             epsd1animinfo: [
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 1 as i32,
-            loc: point_t {
-                x: 128 as i32,
-                y: 136 as i32,
-            },
-            data1: 1 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 1 as i32,
+                    loc: point_t {
+                        x: 128 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 1 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 1 as i32,
+                    loc: point_t {
+                        x: 128 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 2 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 1 as i32,
+                    loc: point_t {
+                        x: 128 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 3 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 1 as i32,
+                    loc: point_t {
+                        x: 128 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 4 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 1 as i32,
+                    loc: point_t {
+                        x: 128 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 5 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 1 as i32,
+                    loc: point_t {
+                        x: 128 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 6 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 1 as i32,
+                    loc: point_t {
+                        x: 128 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 7 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 192 as i32,
+                        y: 144 as i32,
+                    },
+                    data1: 8 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_LEVEL,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 1 as i32,
+                    loc: point_t {
+                        x: 128 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 8 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
             ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 1 as i32,
-            loc: point_t {
-                x: 128 as i32,
-                y: 136 as i32,
-            },
-            data1: 2 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 1 as i32,
-            loc: point_t {
-                x: 128 as i32,
-                y: 136 as i32,
-            },
-            data1: 3 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 1 as i32,
-            loc: point_t {
-                x: 128 as i32,
-                y: 136 as i32,
-            },
-            data1: 4 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 1 as i32,
-            loc: point_t {
-                x: 128 as i32,
-                y: 136 as i32,
-            },
-            data1: 5 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 1 as i32,
-            loc: point_t {
-                x: 128 as i32,
-                y: 136 as i32,
-            },
-            data1: 6 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 1 as i32,
-            loc: point_t {
-                x: 128 as i32,
-                y: 136 as i32,
-            },
-            data1: 7 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 192 as i32,
-                y: 144 as i32,
-            },
-            data1: 8 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_LEVEL,
-            period: 35 as i32 / 3 as i32,
-            nanims: 1 as i32,
-            loc: point_t {
-                x: 128 as i32,
-                y: 136 as i32,
-            },
-            data1: 8 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-    ],
             epsd2animinfo: [
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 104 as i32,
-                y: 168 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 104 as i32,
+                        y: 168 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 40 as i32,
+                        y: 136 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 160 as i32,
+                        y: 96 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 104 as i32,
+                        y: 80 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 3 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 120 as i32,
+                        y: 32 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
+                anim_t {
+                    type_0: ANIM_ALWAYS,
+                    period: 35 as i32 / 4 as i32,
+                    nanims: 3 as i32,
+                    loc: point_t {
+                        x: 40 as i32,
+                        y: 0 as i32,
+                    },
+                    data1: 0 as i32,
+                    data2: 0 as i32,
+                    p: [
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                        ::core::ptr::null::<patch_t>() as *mut patch_t,
+                    ],
+                    nexttic: 0 as i32,
+                    lastdrawn: 0 as i32,
+                    ctr: 0 as i32,
+                    state: 0 as i32,
+                },
             ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 40 as i32,
-                y: 136 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 160 as i32,
-                y: 96 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 104 as i32,
-                y: 80 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 3 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 120 as i32,
-                y: 32 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-        anim_t {
-            type_0: ANIM_ALWAYS,
-            period: 35 as i32 / 4 as i32,
-            nanims: 3 as i32,
-            loc: point_t {
-                x: 40 as i32,
-                y: 0 as i32,
-            },
-            data1: 0 as i32,
-            data2: 0 as i32,
-            p: [
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-                ::core::ptr::null::<patch_t>() as *mut patch_t,
-            ],
-            nexttic: 0 as i32,
-            lastdrawn: 0 as i32,
-            ctr: 0 as i32,
-            state: 0 as i32,
-        },
-    ],
             NUMANIMS: [0; 4],
             acceleratestage: 0,
             me: 0,
             state: StatCount,
-            wbs: 
-        ::core::ptr::null::<wbstartstruct_t>() as *mut wbstartstruct_t,
-            plrs: 
-        ::core::ptr::null::<wbplayerstruct_t>() as *mut wbplayerstruct_t,
+            wbs: ::core::ptr::null::<wbstartstruct_t>() as *mut wbstartstruct_t,
+            plrs: ::core::ptr::null::<wbplayerstruct_t>() as *mut wbplayerstruct_t,
             cnt: 0,
             bcnt: 0,
             firstrefresh: 0,
@@ -619,14 +617,14 @@ impl WiStuffState {
             cnt_pause: 0,
             NUMCMAPS: 0,
             yah: [
-        ::core::ptr::null::<patch_t>() as *mut patch_t,
-        ::core::ptr::null::<patch_t>() as *mut patch_t,
-        ::core::ptr::null::<patch_t>() as *mut patch_t,
-    ],
+                ::core::ptr::null::<patch_t>() as *mut patch_t,
+                ::core::ptr::null::<patch_t>() as *mut patch_t,
+                ::core::ptr::null::<patch_t>() as *mut patch_t,
+            ],
             splat: [
-        ::core::ptr::null::<patch_t>() as *mut patch_t,
-        ::core::ptr::null::<patch_t>() as *mut patch_t,
-    ],
+                ::core::ptr::null::<patch_t>() as *mut patch_t,
+                ::core::ptr::null::<patch_t>() as *mut patch_t,
+            ],
             percent: ::core::ptr::null::<patch_t>() as *mut patch_t,
             colon: ::core::ptr::null::<patch_t>() as *mut patch_t,
             num: [::core::ptr::null::<patch_t>() as *mut patch_t; 10],
@@ -670,7 +668,6 @@ impl WiStuffState {
         ];
     }
 }
-
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -880,11 +877,26 @@ pub unsafe fn WI_drawLF(state: &mut GameState) {
     {
         V_DrawPatch(
             &mut state.v_video,
-            (SCREENWIDTH - (**state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).last as isize)).width as i32) / 2 as i32,
+            (SCREENWIDTH
+                - (**state
+                    .wi_stuff
+                    .lnames
+                    .offset((*state.wi_stuff.wbs).last as isize))
+                .width as i32)
+                / 2 as i32,
             y,
-            *state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).last as isize),
+            *state
+                .wi_stuff
+                .lnames
+                .offset((*state.wi_stuff.wbs).last as isize),
         );
-        y += 5 as i32 * (**state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).last as isize)).height as i32 / 4 as i32;
+        y += 5 as i32
+            * (**state
+                .wi_stuff
+                .lnames
+                .offset((*state.wi_stuff.wbs).last as isize))
+            .height as i32
+            / 4 as i32;
         V_DrawPatch(
             &mut state.v_video,
             (SCREENWIDTH - (*state.wi_stuff.finished).width as i32) / 2 as i32,
@@ -902,12 +914,7 @@ pub unsafe fn WI_drawLF(state: &mut GameState) {
                     0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32,
                 ],
             };
-            V_DrawPatch(
-                &mut state.v_video,
-                0 as i32,
-                y,
-                &raw mut tmp,
-            );
+            V_DrawPatch(&mut state.v_video, 0 as i32, y, &raw mut tmp);
         }
     }
 }
@@ -919,12 +926,27 @@ pub unsafe fn WI_drawEL(state: &mut GameState) {
         y,
         state.wi_stuff.entering,
     );
-    y += 5 as i32 * (**state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).next as isize)).height as i32 / 4 as i32;
+    y += 5 as i32
+        * (**state
+            .wi_stuff
+            .lnames
+            .offset((*state.wi_stuff.wbs).next as isize))
+        .height as i32
+        / 4 as i32;
     V_DrawPatch(
         &mut state.v_video,
-        (SCREENWIDTH - (**state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).next as isize)).width as i32) / 2 as i32,
+        (SCREENWIDTH
+            - (**state
+                .wi_stuff
+                .lnames
+                .offset((*state.wi_stuff.wbs).next as isize))
+            .width as i32)
+            / 2 as i32,
         y,
-        *state.wi_stuff.lnames.offset((*state.wi_stuff.wbs).next as isize),
+        *state
+            .wi_stuff
+            .lnames
+            .offset((*state.wi_stuff.wbs).next as isize),
     );
 }
 pub unsafe fn WI_drawOnLnode(state: &mut GameState, mut n: i32, mut c: *mut *mut patch_t) {
@@ -936,10 +958,10 @@ pub unsafe fn WI_drawOnLnode(state: &mut GameState, mut n: i32, mut c: *mut *mut
     let mut fits: bool = false;
     i = 0 as i32;
     loop {
-        left =
-            lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].x - (**c.offset(i as isize)).leftoffset as i32;
-        top =
-            lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].y - (**c.offset(i as isize)).topoffset as i32;
+        left = lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].x
+            - (**c.offset(i as isize)).leftoffset as i32;
+        top = lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].y
+            - (**c.offset(i as isize)).topoffset as i32;
         right = left + (**c.offset(i as isize)).width as i32;
         bottom = top + (**c.offset(i as isize)).height as i32;
         if left >= 0 as i32 && right < SCREENWIDTH && top >= 0 as i32 && bottom < SCREENHEIGHT {
@@ -976,8 +998,9 @@ pub unsafe fn WI_initAnimatedBack(state: &mut GameState) {
     }
     i = 0 as i32;
     while i < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
-        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t).offset((*state.wi_stuff.wbs).epsd as isize)).offset(i as isize)
-            as *mut anim_t;
+        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t)
+            .offset((*state.wi_stuff.wbs).epsd as isize))
+        .offset(i as isize) as *mut anim_t;
         (*a).ctr = -(1 as i32);
         if (*a).type_0 as u32 == ANIM_ALWAYS as i32 as u32 {
             (*a).nexttic =
@@ -1004,8 +1027,9 @@ pub unsafe fn WI_updateAnimatedBack(state: &mut GameState) {
     }
     i = 0 as i32;
     while i < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
-        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t).offset((*state.wi_stuff.wbs).epsd as isize)).offset(i as isize)
-            as *mut anim_t;
+        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t)
+            .offset((*state.wi_stuff.wbs).epsd as isize))
+        .offset(i as isize) as *mut anim_t;
         if state.wi_stuff.bcnt == (*a).nexttic {
             match (*a).type_0 as u32 {
                 0 => {
@@ -1054,8 +1078,9 @@ pub unsafe fn WI_drawAnimatedBack(state: &mut GameState) {
     }
     i = 0 as i32;
     while i < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
-        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t).offset((*state.wi_stuff.wbs).epsd as isize)).offset(i as isize)
-            as *mut anim_t;
+        a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t)
+            .offset((*state.wi_stuff.wbs).epsd as isize))
+        .offset(i as isize) as *mut anim_t;
         if (*a).ctr >= 0 as i32 {
             V_DrawPatch(
                 &mut state.v_video,
@@ -1067,7 +1092,13 @@ pub unsafe fn WI_drawAnimatedBack(state: &mut GameState) {
         i += 1;
     }
 }
-pub unsafe fn WI_drawNum(state: &mut GameState, mut x: i32, mut y: i32, mut n: i32, mut digits: i32) -> i32 {
+pub unsafe fn WI_drawNum(
+    state: &mut GameState,
+    mut x: i32,
+    mut y: i32,
+    mut n: i32,
+    mut digits: i32,
+) -> i32 {
     let mut fontwidth: i32 = (*state.wi_stuff.num[0 as i32 as usize]).width as i32;
     let mut neg: i32 = 0;
     let mut temp: i32 = 0;
@@ -1148,9 +1179,10 @@ pub unsafe fn WI_drawTime(state: &mut GameState, mut x: i32, mut y: i32, mut t: 
 }
 pub unsafe fn WI_End(state: &mut GameState) {
     pub unsafe fn WI_unloadData_0(state: &mut GameState) {
-        WI_loadUnloadData(state, Some(
-            WI_unloadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
-        ));
+        WI_loadUnloadData(
+            state,
+            Some(WI_unloadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> ()),
+        );
     }
     WI_unloadData_0(state);
 }
@@ -1476,11 +1508,14 @@ pub unsafe fn WI_updateNetgameStats(state: &mut GameState) {
         while i < MAXPLAYERS {
             if !(state.g_game.playeringame[i as usize] == 0) {
                 state.wi_stuff.cnt_kills[i as usize] =
-                    (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills;
+                    (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32
+                        / (*state.wi_stuff.wbs).maxkills;
                 state.wi_stuff.cnt_items[i as usize] =
-                    (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems;
+                    (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32
+                        / (*state.wi_stuff.wbs).maxitems;
                 state.wi_stuff.cnt_secret[i as usize] =
-                    (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret;
+                    (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32
+                        / (*state.wi_stuff.wbs).maxsecret;
                 if state.wi_stuff.dofrags != 0 {
                     state.wi_stuff.cnt_frags[i as usize] = WI_fragSum(state, i);
                 }
@@ -1508,10 +1543,12 @@ pub unsafe fn WI_updateNetgameStats(state: &mut GameState) {
             if !(state.g_game.playeringame[i as usize] == 0) {
                 state.wi_stuff.cnt_kills[i as usize] += 2 as i32;
                 if state.wi_stuff.cnt_kills[i as usize]
-                    >= (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills
+                    >= (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32
+                        / (*state.wi_stuff.wbs).maxkills
                 {
                     state.wi_stuff.cnt_kills[i as usize] =
-                        (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills;
+                        (*state.wi_stuff.plrs.offset(i as isize)).skills * 100 as i32
+                            / (*state.wi_stuff.wbs).maxkills;
                 } else {
                     stillticking = true;
                 }
@@ -1540,10 +1577,12 @@ pub unsafe fn WI_updateNetgameStats(state: &mut GameState) {
             if !(state.g_game.playeringame[i as usize] == 0) {
                 state.wi_stuff.cnt_items[i as usize] += 2 as i32;
                 if state.wi_stuff.cnt_items[i as usize]
-                    >= (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems
+                    >= (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32
+                        / (*state.wi_stuff.wbs).maxitems
                 {
                     state.wi_stuff.cnt_items[i as usize] =
-                        (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems;
+                        (*state.wi_stuff.plrs.offset(i as isize)).sitems * 100 as i32
+                            / (*state.wi_stuff.wbs).maxitems;
                 } else {
                     stillticking = true;
                 }
@@ -1572,10 +1611,12 @@ pub unsafe fn WI_updateNetgameStats(state: &mut GameState) {
             if !(state.g_game.playeringame[i as usize] == 0) {
                 state.wi_stuff.cnt_secret[i as usize] += 2 as i32;
                 if state.wi_stuff.cnt_secret[i as usize]
-                    >= (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret
+                    >= (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32
+                        / (*state.wi_stuff.wbs).maxsecret
                 {
                     state.wi_stuff.cnt_secret[i as usize] =
-                        (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret;
+                        (*state.wi_stuff.plrs.offset(i as isize)).ssecret * 100 as i32
+                            / (*state.wi_stuff.wbs).maxsecret;
                 } else {
                     stillticking = true;
                 }
@@ -1695,7 +1736,9 @@ pub unsafe fn WI_drawNetgameStats(state: &mut GameState) {
     i = 0 as i32;
     while i < MAXPLAYERS {
         if !(state.g_game.playeringame[i as usize] == 0) {
-            x = 32 as i32 + (*state.wi_stuff.star).width as i32 / 2 as i32 + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32;
+            x = 32 as i32
+                + (*state.wi_stuff.star).width as i32 / 2 as i32
+                + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32;
             V_DrawPatch(
                 &mut state.v_video,
                 x - (*state.wi_stuff.p[i as usize]).width as i32,
@@ -1746,12 +1789,16 @@ pub unsafe fn WI_updateStats(state: &mut GameState) {
     if state.wi_stuff.acceleratestage != 0 && state.wi_stuff.sp_state != 10 as i32 {
         state.wi_stuff.acceleratestage = 0 as i32;
         state.wi_stuff.cnt_kills[0 as i32 as usize] =
-            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills;
+            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32
+                / (*state.wi_stuff.wbs).maxkills;
         state.wi_stuff.cnt_items[0 as i32 as usize] =
-            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems;
+            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32
+                / (*state.wi_stuff.wbs).maxitems;
         state.wi_stuff.cnt_secret[0 as i32 as usize] =
-            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret;
-        state.wi_stuff.cnt_time = (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE;
+            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32
+                / (*state.wi_stuff.wbs).maxsecret;
+        state.wi_stuff.cnt_time =
+            (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE;
         state.wi_stuff.cnt_par = (*state.wi_stuff.wbs).partime / TICRATE;
         S_StartSound(
             &mut state.sounds,
@@ -1770,10 +1817,12 @@ pub unsafe fn WI_updateStats(state: &mut GameState) {
             );
         }
         if state.wi_stuff.cnt_kills[0 as i32 as usize]
-            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills
+            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32
+                / (*state.wi_stuff.wbs).maxkills
         {
             state.wi_stuff.cnt_kills[0 as i32 as usize] =
-                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32 / (*state.wi_stuff.wbs).maxkills;
+                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).skills * 100 as i32
+                    / (*state.wi_stuff.wbs).maxkills;
             S_StartSound(
                 &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -1791,10 +1840,12 @@ pub unsafe fn WI_updateStats(state: &mut GameState) {
             );
         }
         if state.wi_stuff.cnt_items[0 as i32 as usize]
-            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems
+            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32
+                / (*state.wi_stuff.wbs).maxitems
         {
             state.wi_stuff.cnt_items[0 as i32 as usize] =
-                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32 / (*state.wi_stuff.wbs).maxitems;
+                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).sitems * 100 as i32
+                    / (*state.wi_stuff.wbs).maxitems;
             S_StartSound(
                 &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -1812,10 +1863,12 @@ pub unsafe fn WI_updateStats(state: &mut GameState) {
             );
         }
         if state.wi_stuff.cnt_secret[0 as i32 as usize]
-            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret
+            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32
+                / (*state.wi_stuff.wbs).maxsecret
         {
             state.wi_stuff.cnt_secret[0 as i32 as usize] =
-                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32 / (*state.wi_stuff.wbs).maxsecret;
+                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).ssecret * 100 as i32
+                    / (*state.wi_stuff.wbs).maxsecret;
             S_StartSound(
                 &mut state.sounds,
                 ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -1832,13 +1885,18 @@ pub unsafe fn WI_updateStats(state: &mut GameState) {
             );
         }
         state.wi_stuff.cnt_time += 3 as i32;
-        if state.wi_stuff.cnt_time >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE {
-            state.wi_stuff.cnt_time = (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE;
+        if state.wi_stuff.cnt_time
+            >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE
+        {
+            state.wi_stuff.cnt_time =
+                (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE;
         }
         state.wi_stuff.cnt_par += 3 as i32;
         if state.wi_stuff.cnt_par >= (*state.wi_stuff.wbs).partime / TICRATE {
             state.wi_stuff.cnt_par = (*state.wi_stuff.wbs).partime / TICRATE;
-            if state.wi_stuff.cnt_time >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE {
+            if state.wi_stuff.cnt_time
+                >= (*state.wi_stuff.plrs.offset(state.wi_stuff.me as isize)).stime / TICRATE
+            {
                 S_StartSound(
                     &mut state.sounds,
                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -1897,7 +1955,12 @@ pub unsafe fn WI_drawStats(state: &mut GameState) {
         state.wi_stuff.sp_secret,
     );
     let cnt_secret = state.wi_stuff.cnt_secret[0 as i32 as usize];
-    WI_drawPercent(state, SCREENWIDTH - SP_STATSX, SP_STATSY + 2 as i32 * lh, cnt_secret);
+    WI_drawPercent(
+        state,
+        SCREENWIDTH - SP_STATSX,
+        SP_STATSY + 2 as i32 * lh,
+        cnt_secret,
+    );
     V_DrawPatch(
         &mut state.v_video,
         SP_TIMEX,
@@ -1949,17 +2012,9 @@ pub unsafe fn WI_Ticker(state: &mut GameState) {
     state.wi_stuff.bcnt += 1;
     if state.wi_stuff.bcnt == 1 as i32 {
         if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
-            S_ChangeMusic(
-                state,
-                mus_dm2int as i32,
-                true_0,
-            );
+            S_ChangeMusic(state, mus_dm2int as i32, true_0);
         } else {
-            S_ChangeMusic(
-                state,
-                mus_inter as i32,
-                true_0,
-            );
+            S_ChangeMusic(state, mus_inter as i32, true_0);
         }
     }
     WI_checkForAccelerate(state);
@@ -2020,21 +2075,25 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
         }
         callback.expect("non-null function pointer")(
             b"WIURH0\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(0 as i32 as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(0 as i32 as isize)
+                as *mut *mut patch_t,
         );
         callback.expect("non-null function pointer")(
             b"WIURH1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(1 as i32 as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(1 as i32 as isize)
+                as *mut *mut patch_t,
         );
         callback.expect("non-null function pointer")(
             b"WISPLAT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.splat as *mut *mut patch_t).offset(0 as i32 as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.splat as *mut *mut patch_t).offset(0 as i32 as isize)
+                as *mut *mut patch_t,
         );
         if (*state.wi_stuff.wbs).epsd < 3 as i32 {
             j = 0 as i32;
             while j < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
-                a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t).offset((*state.wi_stuff.wbs).epsd as isize))
-                    .offset(j as isize) as *mut anim_t;
+                a = (*(&raw mut state.wi_stuff.anims as *mut *mut anim_t)
+                    .offset((*state.wi_stuff.wbs).epsd as isize))
+                .offset(j as isize) as *mut anim_t;
                 i = 0 as i32;
                 while i < (*a).nanims {
                     if (*state.wi_stuff.wbs).epsd != 1 as i32 || j != 8 as i32 {
@@ -2052,8 +2111,9 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
                                 as *mut *mut patch_t,
                         );
                     } else {
-                        (*a).p[i as usize] =
-                            (*state.wi_stuff.anims[1 as i32 as usize].offset(4 as i32 as isize)).p[i as usize];
+                        (*a).p[i as usize] = (*state.wi_stuff.anims[1 as i32 as usize]
+                            .offset(4 as i32 as isize))
+                        .p[i as usize];
                     }
                     i += 1;
                 }
@@ -2075,7 +2135,8 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
         );
         callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.num as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.num as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,
         );
         i += 1;
     }
@@ -2104,8 +2165,7 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
         &raw mut state.wi_stuff.sp_secret,
     );
     if W_CheckNumForName("WIOBJ") >= 0 as i32 {
-        if state.g_game.netgame && state.g_game.deathmatch == 0
-        {
+        if state.g_game.netgame && state.g_game.deathmatch == 0 {
             callback.expect("non-null function pointer")(
                 b"WIOBJ\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
                 &raw mut state.wi_stuff.items,
@@ -2164,7 +2224,8 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
         );
         callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.p as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.p as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,
         );
         snprintf(
             &raw mut name as *mut ::core::ffi::c_char,
@@ -2174,7 +2235,8 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
         );
         callback.expect("non-null function pointer")(
             &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.bp as *mut *mut patch_t).offset(i as isize) as *mut *mut patch_t,
+            (&raw mut state.wi_stuff.bp as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,
         );
         i += 1;
     }
@@ -2213,8 +2275,8 @@ pub unsafe fn WI_loadData(state: &mut GameState) {
         state.wi_stuff.NUMCMAPS = 32 as i32;
         state.wi_stuff.lnames = Z_Malloc(
             &mut state.z_zone,
-            (::core::mem::size_of::<*mut patch_t>() as usize).wrapping_mul(state.wi_stuff.NUMCMAPS as usize)
-                as i32,
+            (::core::mem::size_of::<*mut patch_t>() as usize)
+                .wrapping_mul(state.wi_stuff.NUMCMAPS as usize) as i32,
             PU_STATIC as i32,
             NULL,
         ) as *mut *mut patch_t;
@@ -2226,9 +2288,10 @@ pub unsafe fn WI_loadData(state: &mut GameState) {
             NULL,
         ) as *mut *mut patch_t;
     }
-    WI_loadUnloadData(state, Some(
-        WI_loadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> (),
-    ));
+    WI_loadUnloadData(
+        state,
+        Some(WI_loadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> ()),
+    );
     state.wi_stuff.star = W_CacheLumpName("STFST01", PU_STATIC as i32) as *mut patch_t;
     state.wi_stuff.bstar = W_CacheLumpName("STFDEAD0", PU_STATIC as i32) as *mut patch_t;
 }

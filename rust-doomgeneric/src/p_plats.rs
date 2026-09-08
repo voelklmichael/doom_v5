@@ -182,11 +182,9 @@ pub unsafe fn EV_DoPlat(
         match type_0 as u32 {
             3 => {
                 (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
-                let neighbor_sector_id = state.p_setup.sides
-                    [(*line).sidenum[0 as i32 as usize] as usize]
-                    .sector;
-                (*sec).floorpic =
-                    (*state.p_setup.sector_mut(neighbor_sector_id)).floorpic;
+                let neighbor_sector_id =
+                    state.p_setup.sides[(*line).sidenum[0 as i32 as usize] as usize].sector;
+                (*sec).floorpic = (*state.p_setup.sector_mut(neighbor_sector_id)).floorpic;
                 (*plat).high = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
@@ -199,11 +197,9 @@ pub unsafe fn EV_DoPlat(
             }
             2 => {
                 (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
-                let neighbor_sector_id = state.p_setup.sides
-                    [(*line).sidenum[0 as i32 as usize] as usize]
-                    .sector;
-                (*sec).floorpic =
-                    (*state.p_setup.sector_mut(neighbor_sector_id)).floorpic;
+                let neighbor_sector_id =
+                    state.p_setup.sides[(*line).sidenum[0 as i32 as usize] as usize].sector;
+                (*sec).floorpic = (*state.p_setup.sector_mut(neighbor_sector_id)).floorpic;
                 (*plat).high = ((*sec).floorheight as i32 + amount * FRACUNIT) as fixed_t;
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
@@ -254,8 +250,7 @@ pub unsafe fn EV_DoPlat(
                     (*plat).high = (*sec).floorheight;
                 }
                 (*plat).wait = TICRATE * PLATWAIT;
-                (*plat).status =
-                    (P_Random(&mut state.m_random) & 1 as i32) as plat_e;
+                (*plat).status = (P_Random(&mut state.m_random) & 1 as i32) as plat_e;
                 S_StartSound(
                     &mut state.sounds,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
@@ -314,10 +309,14 @@ pub unsafe fn P_RemoveActivePlat(state: &mut GameState, mut plat: *mut plat_t) {
     i = 0 as i32;
     while i < MAXPLATS {
         if plat == state.p_plats.activeplats[i as usize] {
-            (*state.p_setup.sector_mut((*state.p_plats.activeplats[i as usize]).sector)).specialdata = NULL;
+            (*state
+                .p_setup
+                .sector_mut((*state.p_plats.activeplats[i as usize]).sector))
+            .specialdata = NULL;
             P_RemoveThinker(
-                &raw mut (**(&raw mut state.p_plats.activeplats as *mut *mut plat_t).offset(i as isize))
-                    .thinker,
+                &raw mut (**(&raw mut state.p_plats.activeplats as *mut *mut plat_t)
+                    .offset(i as isize))
+                .thinker,
             );
             state.p_plats.activeplats[i as usize] = ::core::ptr::null_mut::<plat_t>();
             return;

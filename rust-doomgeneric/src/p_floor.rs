@@ -200,7 +200,11 @@ pub unsafe fn T_MoveFloor(state: &mut GameState, mut floor: *mut floormove_t) {
         );
     }
 }
-pub unsafe fn EV_DoFloor(state: &mut GameState, mut line: *mut line_t, mut floortype: floor_e) -> i32 {
+pub unsafe fn EV_DoFloor(
+    state: &mut GameState,
+    mut line: *mut line_t,
+    mut floortype: floor_e,
+) -> i32 {
     let mut secnum: i32 = 0;
     let mut rtn: i32 = 0;
     let mut i: i32 = 0;
@@ -314,23 +318,38 @@ pub unsafe fn EV_DoFloor(state: &mut GameState, mut line: *mut line_t, mut floor
                     if twoSided(state, secnum, i) != 0 {
                         side = getSide(state, secnum, i, 0 as i32);
                         if (*side).bottomtexture as i32 >= 0 as i32 {
-                            if *state.r_data.textureheight.offset((*side).bottomtexture as isize) < minsize {
-                                minsize =
-                                    *state.r_data.textureheight.offset((*side).bottomtexture as isize) as i32;
+                            if *state
+                                .r_data
+                                .textureheight
+                                .offset((*side).bottomtexture as isize)
+                                < minsize
+                            {
+                                minsize = *state
+                                    .r_data
+                                    .textureheight
+                                    .offset((*side).bottomtexture as isize)
+                                    as i32;
                             }
                         }
                         side = getSide(state, secnum, i, 1 as i32);
                         if (*side).bottomtexture as i32 >= 0 as i32 {
-                            if *state.r_data.textureheight.offset((*side).bottomtexture as isize) < minsize {
-                                minsize =
-                                    *state.r_data.textureheight.offset((*side).bottomtexture as isize) as i32;
+                            if *state
+                                .r_data
+                                .textureheight
+                                .offset((*side).bottomtexture as isize)
+                                < minsize
+                            {
+                                minsize = *state
+                                    .r_data
+                                    .textureheight
+                                    .offset((*side).bottomtexture as isize)
+                                    as i32;
                             }
                         }
                     }
                     i += 1;
                 }
-                (*floor).floordestheight =
-                    ((*sec).floorheight as i32 + minsize) as fixed_t;
+                (*floor).floordestheight = ((*sec).floorheight as i32 + minsize) as fixed_t;
                 current_block_84 = 15514718523126015390;
             }
             6 => {
@@ -384,7 +403,11 @@ pub unsafe fn EV_DoFloor(state: &mut GameState, mut line: *mut line_t, mut floor
     }
     return rtn;
 }
-pub unsafe fn EV_BuildStairs(state: &mut GameState, mut line: *mut line_t, mut type_0: stair_e) -> i32 {
+pub unsafe fn EV_BuildStairs(
+    state: &mut GameState,
+    mut line: *mut line_t,
+    mut type_0: stair_e,
+) -> i32 {
     let mut secnum: i32 = 0;
     let mut height: i32 = 0;
     let mut i: i32 = 0;

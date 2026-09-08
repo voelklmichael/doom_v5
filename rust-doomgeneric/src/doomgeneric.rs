@@ -17,7 +17,7 @@ pub unsafe fn doomgeneric_Create(state: &mut GameState, args: Vec<String>) {
         .into_iter()
         .map(|arg| ::std::ffi::CString::new(arg).expect("argument contains a nul byte"))
         .collect();
-    M_FindResponseFile();
+    M_FindResponseFile(state);
     DG_ScreenBuffer =
         malloc((DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4 as i32) as size_t) as *mut pixel_t;
     DG_Init();

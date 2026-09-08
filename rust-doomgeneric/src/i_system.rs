@@ -107,12 +107,10 @@ pub unsafe fn I_ZoneBase(state: &mut GameState, mut size: *mut i32) -> *mut byte
     let mut min_ram: i32 = 0;
     let mut default_ram: i32 = 0;
     let mut p: i32 = 0;
-    p = M_CheckParmWithArgs("-mb", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-mb", 1 as i32);
     if p > 0 as i32 {
-        default_ram = atoi(
-            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                as *mut ::core::ffi::c_char,
-        );
+        default_ram =
+            atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
         min_ram = default_ram;
     } else {
         default_ram = DEFAULT_RAM;
@@ -259,7 +257,7 @@ pub unsafe fn I_Error(message: &str) {
         }
         entry = (*entry).next;
     }
-    exit_gui_popup = !M_ParmExists("-nogui");
+    exit_gui_popup = !M_ParmExists(unsafe { game_state() }, "-nogui");
     if exit_gui_popup && !I_ConsoleStdout() {
         ZenityErrorBox(message_cstring.as_ptr() as *mut ::core::ffi::c_char);
     }
@@ -314,45 +312,38 @@ pub unsafe fn I_GetMemoryValue(
         let mut val: i32 = 0;
         state.i_system.get_memory_value_firsttime = false;
         i = 0 as i32;
-        p = M_CheckParmWithArgs("-setmem", 1 as i32);
+        p = M_CheckParmWithArgs(state, "-setmem", 1 as i32);
         if p > 0 as i32 {
             if strcasecmp(
                 state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos622\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                state.i_system.dos_mem_dump =
-                    &raw const mem_dump_dos622 as *const u8;
+                state.i_system.dos_mem_dump = &raw const mem_dump_dos622 as *const u8;
             }
             if strcasecmp(
                 state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos71\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                state.i_system.dos_mem_dump =
-                    &raw const mem_dump_win98 as *const u8;
+                state.i_system.dos_mem_dump = &raw const mem_dump_win98 as *const u8;
             } else if strcasecmp(
                 state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dosbox\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                state.i_system.dos_mem_dump =
-                    &raw const mem_dump_dosbox as *const u8;
+                state.i_system.dos_mem_dump = &raw const mem_dump_dosbox as *const u8;
             } else {
                 i = 0 as i32;
                 while i < DOS_MEM_DUMP_SIZE {
                     p += 1;
                     if p >= state.m_argv.myargv.len() as i32
-                        || state.m_argv.myargv[p as usize]
-                            .as_bytes()
-                            .first()
-                            == Some(&b'-')
+                        || state.m_argv.myargv[p as usize].as_bytes().first() == Some(&b'-')
                     {
                         break;
                     }
                     M_StrToInt(
-                        state.m_argv.myargv[p as usize].as_ptr()
-                            as *mut ::core::ffi::c_char,
+                        state.m_argv.myargv[p as usize].as_ptr() as *mut ::core::ffi::c_char,
                         &raw mut val,
                     );
                     let fresh0 = i;
@@ -360,24 +351,17 @@ pub unsafe fn I_GetMemoryValue(
                     state.i_system.mem_dump_custom[fresh0 as usize] = val as u8;
                     i += 1;
                 }
-                state.i_system.dos_mem_dump =
-                    &raw mut state.i_system.mem_dump_custom as *mut u8;
+                state.i_system.dos_mem_dump = &raw mut state.i_system.mem_dump_custom as *mut u8;
             }
         }
     }
     match size {
         1 => {
-            *(value as *mut u8) = *state
-                .i_system
-                .dos_mem_dump
-                .offset(offset as isize);
+            *(value as *mut u8) = *state.i_system.dos_mem_dump.offset(offset as isize);
             return true;
         }
         2 => {
-            *(value as *mut u16) = (*state
-                .i_system
-                .dos_mem_dump
-                .offset(offset as isize) as i32
+            *(value as *mut u16) = (*state.i_system.dos_mem_dump.offset(offset as isize) as i32
                 | (*state
                     .i_system
                     .dos_mem_dump
@@ -386,10 +370,7 @@ pub unsafe fn I_GetMemoryValue(
             return true;
         }
         4 => {
-            *(value as *mut u32) = (*state
-                .i_system
-                .dos_mem_dump
-                .offset(offset as isize) as i32
+            *(value as *mut u32) = (*state.i_system.dos_mem_dump.offset(offset as isize) as i32
                 | (*state
                     .i_system
                     .dos_mem_dump

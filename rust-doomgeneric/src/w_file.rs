@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
@@ -37,7 +38,7 @@ pub unsafe fn W_OpenFile(
 ) -> *mut wad_file_t {
     let mut result: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     let mut i: i32 = 0;
-    if M_CheckParm("-mmap") == 0 {
+    if M_CheckParm(unsafe { game_state() }, "-mmap") == 0 {
         return stdc_wad_file.OpenFile.expect("non-null function pointer")(path);
     }
     result = ::core::ptr::null_mut::<wad_file_t>();

@@ -1,7 +1,6 @@
 use crate::src::am_map::AM_Stop;
 use crate::src::d_items::weaponinfo;
-use crate::src::d_mode::commercial;
-use crate::src::d_mode::exe_chex;
+use crate::src::d_mode::{commercial, GameVersion};
 use crate::src::d_mode::{sk_baby, sk_nightmare};
 use crate::src::d_player::CF_GODMODE;
 use crate::src::d_player::{am_cell, am_clip, am_misl, am_noammo, am_shell, ammotype_t, NUMAMMO};
@@ -22,13 +21,13 @@ use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_random::P_Random;
+use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::state_t;
 use crate::src::p_mobj::statenum_t;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::ONFLOORZ;
-use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::{
     mobjtype_t, MT_CHAINGUN, MT_CLIP, MT_PLAYER, MT_SHOTGUN, MT_SKULL, MT_VILE,
 };
@@ -78,7 +77,12 @@ pub const BONUSADD: i32 = 6;
 pub static maxammo: [i32; 4] = [200 as i32, 50 as i32, 300 as i32, 50 as i32];
 #[no_mangle]
 pub static clipammo: [i32; 4] = [10 as i32, 4 as i32, 20 as i32, 1 as i32];
-pub unsafe fn P_GiveAmmo(state: &mut GameState, mut player: *mut player_t, mut ammo: ammotype_t, mut num: i32) -> bool {
+pub unsafe fn P_GiveAmmo(
+    state: &mut GameState,
+    mut player: *mut player_t,
+    mut ammo: ammotype_t,
+    mut num: i32,
+) -> bool {
     let mut oldammo: i32 = 0;
     if ammo as u32 == am_noammo as i32 as u32 {
         return false;
@@ -154,10 +158,7 @@ pub unsafe fn P_GiveWeapon(
 ) -> bool {
     let mut gaveammo: bool = false;
     let mut gaveweapon: bool;
-    if state.g_game.netgame
-        && state.g_game.deathmatch != 2 as i32
-        && !dropped
-    {
+    if state.g_game.netgame && state.g_game.deathmatch != 2 as i32 && !dropped {
         if (*player).weaponowned[weapon as usize] {
             return false;
         }
@@ -171,8 +172,7 @@ pub unsafe fn P_GiveWeapon(
         (*player).pendingweapon = weapon;
         if player
             == (&raw mut state.g_game.players as *mut player_t)
-                .offset(state.g_game.consoleplayer as isize)
-                as *mut player_t
+                .offset(state.g_game.consoleplayer as isize) as *mut player_t
         {
             S_StartSound(&mut state.sounds, NULL, sfx_wpnup as i32);
         }
@@ -253,7 +253,11 @@ pub unsafe fn P_GivePower(mut player: *mut player_t, mut power: i32) -> bool {
     (*player).powers[power as usize] = 1 as i32;
     return true;
 }
-pub unsafe fn P_TouchSpecialThing(state: &mut GameState, mut special: *mut mobj_t, mut toucher: *mut mobj_t) {
+pub unsafe fn P_TouchSpecialThing(
+    state: &mut GameState,
+    mut special: *mut mobj_t,
+    mut toucher: *mut mobj_t,
+) {
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut i: i32 = 0;
     let mut delta: fixed_t = 0;
@@ -561,7 +565,8 @@ pub unsafe fn P_TouchSpecialThing(state: &mut GameState, mut special: *mut mobj_
             sound = sfx_wpnup as i32;
         }
         88 => {
-            if !P_GiveWeapon(state, 
+            if !P_GiveWeapon(
+                state,
                 player,
                 wp_chaingun,
                 (*special).flags & MF_DROPPED as i32 != 0,
@@ -601,7 +606,8 @@ pub unsafe fn P_TouchSpecialThing(state: &mut GameState, mut special: *mut mobj_
             sound = sfx_wpnup as i32;
         }
         92 => {
-            if !P_GiveWeapon(state, 
+            if !P_GiveWeapon(
+                state,
                 player,
                 wp_shotgun,
                 (*special).flags & MF_DROPPED as i32 != 0,
@@ -613,7 +619,8 @@ pub unsafe fn P_TouchSpecialThing(state: &mut GameState, mut special: *mut mobj_
             sound = sfx_wpnup as i32;
         }
         93 => {
-            if !P_GiveWeapon(state, 
+            if !P_GiveWeapon(
+                state,
                 player,
                 wp_supershotgun,
                 (*special).flags & MF_DROPPED as i32 != 0,
@@ -636,8 +643,7 @@ pub unsafe fn P_TouchSpecialThing(state: &mut GameState, mut special: *mut mobj_
     (*player).bonuscount += BONUSADD;
     if player
         == (&raw mut state.g_game.players as *mut player_t)
-            .offset(state.g_game.consoleplayer as isize)
-            as *mut player_t
+            .offset(state.g_game.consoleplayer as isize) as *mut player_t
     {
         S_StartSound(&mut state.sounds, NULL, sound);
     }
@@ -661,8 +667,7 @@ pub unsafe fn P_KillMobj(state: &mut GameState, mut source: *mut mobj_t, mut tar
                 .offset_from(&raw mut state.g_game.players as *mut player_t)
                 as i64 as usize] += 1;
         }
-    } else if !state.g_game.netgame && (*target).flags & MF_COUNTKILL as i32 != 0
-    {
+    } else if !state.g_game.netgame && (*target).flags & MF_COUNTKILL as i32 != 0 {
         state.g_game.players[0 as i32 as usize].killcount += 1;
     }
     if !(*target).player.is_null() {
@@ -677,8 +682,7 @@ pub unsafe fn P_KillMobj(state: &mut GameState, mut source: *mut mobj_t, mut tar
         P_DropWeapon(state, (*target).player as *mut player_t);
         if (*target).player
             == (&raw mut state.g_game.players as *mut player_t)
-                .offset(state.g_game.consoleplayer as isize)
-                as *mut player_t
+                .offset(state.g_game.consoleplayer as isize) as *mut player_t
             && state.am_map.automapactive
         {
             AM_Stop(state);
@@ -693,7 +697,7 @@ pub unsafe fn P_KillMobj(state: &mut GameState, mut source: *mut mobj_t, mut tar
     if (*target).tics < 1 as i32 {
         (*target).tics = 1 as i32;
     }
-    if state.doomstat.gameversion as u32 == exe_chex as i32 as u32 {
+    if state.doomstat.gameversion == GameVersion::chex {
         return;
     }
     match (*target).type_0 as u32 {
@@ -744,7 +748,13 @@ pub unsafe fn P_DamageMobj(
             || (*source).player.is_null()
             || (*(*source).player).readyweapon as u32 != wp_chainsaw as i32 as u32)
     {
-        ang = R_PointToAngle2(state, (*inflictor).x, (*inflictor).y, (*target).x, (*target).y) as u32;
+        ang = R_PointToAngle2(
+            state,
+            (*inflictor).x,
+            (*inflictor).y,
+            (*target).x,
+            (*target).y,
+        ) as u32;
         thrust = (damage * (FRACUNIT >> 3 as i32) * 100 as i32 / (*(*target).info).mass) as fixed_t;
         if damage < 40 as i32
             && damage > (*target).health
@@ -759,11 +769,7 @@ pub unsafe fn P_DamageMobj(
         (*target).momy += FixedMul(thrust, finesine[ang as usize]);
     }
     if !player.is_null() {
-        if (*state
-            .p_setup
-            .sector_mut((*(*target).subsector).sector))
-        .special as i32
-            == 11 as i32
+        if (*state.p_setup.sector_mut((*(*target).subsector).sector)).special as i32 == 11 as i32
             && damage >= (*target).health
         {
             damage = (*target).health - 1 as i32;
@@ -807,8 +813,7 @@ pub unsafe fn P_DamageMobj(
         };
         if player
             == (&raw mut state.g_game.players as *mut player_t)
-                .offset(state.g_game.consoleplayer as isize)
-                as *mut player_t
+                .offset(state.g_game.consoleplayer as isize) as *mut player_t
         {
             I_Tactile(40 as i32, 10 as i32, 40 as i32 + temp * 2 as i32);
         }
@@ -833,8 +838,8 @@ pub unsafe fn P_DamageMobj(
         (*target).target = Some((*source).id);
         (*target).threshold = BASETHRESHOLD;
         if (*target).state
-            == (&raw mut state.info.states as *mut state_t).offset((*(*target).info).spawnstate as isize)
-                as *mut state_t
+            == (&raw mut state.info.states as *mut state_t)
+                .offset((*(*target).info).spawnstate as isize) as *mut state_t
             && (*(*target).info).seestate != S_NULL as i32
         {
             P_SetMobjState(state, target, (*(*target).info).seestate as statenum_t);

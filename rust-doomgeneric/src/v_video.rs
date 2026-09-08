@@ -6,19 +6,18 @@ use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
-use crate::src::i_video::I_GetPaletteIndex;
 use crate::src::i_video::IVideoState;
+use crate::src::i_video::I_GetPaletteIndex;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_misc::M_FileExists;
 use crate::src::m_misc::M_WriteFile;
-use crate::src::m_misc::M_snprintf;
 use crate::src::r_data::column_t;
 use crate::src::stdint_types::size_t;
 use crate::src::stdint_types::{byte, uint8_t};
 use crate::src::w_wad::W_CacheLumpName;
-use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::ZZoneState;
+use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{memcpy, memset};
@@ -579,7 +578,13 @@ pub unsafe fn V_DrawFilledBox(
         y1 += 1;
     }
 }
-pub unsafe fn V_DrawHorizLine(state: &mut IVideoState, mut x: i32, mut y: i32, mut w: i32, mut c: i32) {
+pub unsafe fn V_DrawHorizLine(
+    state: &mut IVideoState,
+    mut x: i32,
+    mut y: i32,
+    mut w: i32,
+    mut c: i32,
+) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut x1: i32 = 0;
     buf = state
@@ -594,7 +599,13 @@ pub unsafe fn V_DrawHorizLine(state: &mut IVideoState, mut x: i32, mut y: i32, m
         x1 += 1;
     }
 }
-pub unsafe fn V_DrawVertLine(state: &mut IVideoState, mut x: i32, mut y: i32, mut h: i32, mut c: i32) {
+pub unsafe fn V_DrawVertLine(
+    state: &mut IVideoState,
+    mut x: i32,
+    mut y: i32,
+    mut h: i32,
+    mut c: i32,
+) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut y1: i32 = 0;
     buf = state
@@ -608,7 +619,14 @@ pub unsafe fn V_DrawVertLine(state: &mut IVideoState, mut x: i32, mut y: i32, mu
         y1 += 1;
     }
 }
-pub unsafe fn V_DrawBox(state: &mut IVideoState, mut x: i32, mut y: i32, mut w: i32, mut h: i32, mut c: i32) {
+pub unsafe fn V_DrawBox(
+    state: &mut IVideoState,
+    mut x: i32,
+    mut y: i32,
+    mut w: i32,
+    mut h: i32,
+    mut c: i32,
+) {
     V_DrawHorizLine(state, x, y, w, c);
     V_DrawHorizLine(state, x, y + h - 1 as i32, w, c);
     V_DrawVertLine(state, x, y, h, c);
@@ -705,21 +723,13 @@ pub unsafe fn WritePCXfile(
     M_WriteFile(filename, pcx as *mut ::core::ffi::c_void, length);
     Z_Free(state, pcx as *mut ::core::ffi::c_void);
 }
-pub unsafe fn V_ScreenShot(state: &mut GameState, mut format: *mut ::core::ffi::c_char) {
-    let mut i: i32 = 0;
-    let mut lbmname: [::core::ffi::c_char; 16] = [0; 16];
-    let mut ext: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    ext = b"pcx\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    i = 0 as i32;
-    while i <= 99 as i32 {
-        M_snprintf(
-            &raw mut lbmname as *mut ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
-            format,
-            i,
-            ext,
-        );
-        if !M_FileExists(&raw mut lbmname as *mut ::core::ffi::c_char) {
+pub unsafe fn V_ScreenShot(state: &mut GameState) {
+    let mut i = 0i32;
+    let mut lbmname = String::new();
+    while i <= 99 {
+        lbmname = format!("DOOM{i:02}.pcx\0");
+        let lbmname = lbmname.as_ptr() as *mut ::core::ffi::c_char;
+        if !M_FileExists(lbmname) {
             break;
         }
         i += 1;
@@ -727,9 +737,10 @@ pub unsafe fn V_ScreenShot(state: &mut GameState, mut format: *mut ::core::ffi::
     if i == 100 as i32 {
         I_Error("V_ScreenShot: Couldn't create a PCX");
     }
+    let lbmname = lbmname.as_ptr() as *mut ::core::ffi::c_char;
     WritePCXfile(
         &mut state.z_zone,
-        &raw mut lbmname as *mut ::core::ffi::c_char,
+        lbmname,
         state.i_video.I_VideoBuffer,
         SCREENWIDTH,
         SCREENHEIGHT,

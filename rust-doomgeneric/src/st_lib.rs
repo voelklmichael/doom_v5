@@ -115,7 +115,12 @@ pub unsafe fn STlib_drawNum(state: &mut GameState, mut n: *mut st_number_t, mut 
     }
     x = (*n).x;
     if num == 0 {
-        V_DrawPatch(&mut state.v_video, x - w, (*n).y, *(*n).p.offset(0 as i32 as isize));
+        V_DrawPatch(
+            &mut state.v_video,
+            x - w,
+            (*n).y,
+            *(*n).p.offset(0 as i32 as isize),
+        );
     }
     while num != 0 && {
         let fresh0 = numdigits;
@@ -123,11 +128,21 @@ pub unsafe fn STlib_drawNum(state: &mut GameState, mut n: *mut st_number_t, mut 
         fresh0 != 0
     } {
         x -= w;
-        V_DrawPatch(&mut state.v_video, x, (*n).y, *(*n).p.offset((num % 10 as i32) as isize));
+        V_DrawPatch(
+            &mut state.v_video,
+            x,
+            (*n).y,
+            *(*n).p.offset((num % 10 as i32) as isize),
+        );
         num /= 10 as i32;
     }
     if neg != 0 {
-        V_DrawPatch(&mut state.v_video, x - 8 as i32, (*n).y, state.st_lib.sttminus);
+        V_DrawPatch(
+            &mut state.v_video,
+            x - 8 as i32,
+            (*n).y,
+            state.st_lib.sttminus,
+        );
     }
 }
 pub unsafe fn STlib_updateNum(state: &mut GameState, mut n: *mut st_number_t, mut refresh: bool) {
@@ -172,7 +187,11 @@ pub unsafe fn STlib_initMultIcon(
     (*i).on = on;
     (*i).p = il;
 }
-pub unsafe fn STlib_updateMultIcon(state: &mut GameState, mut mi: *mut st_multicon_t, mut refresh: bool) {
+pub unsafe fn STlib_updateMultIcon(
+    state: &mut GameState,
+    mut mi: *mut st_multicon_t,
+    mut refresh: bool,
+) {
     let mut w: i32 = 0;
     let mut h: i32 = 0;
     let mut x: i32 = 0;
@@ -197,7 +216,12 @@ pub unsafe fn STlib_updateMultIcon(state: &mut GameState, mut mi: *mut st_multic
                 y,
             );
         }
-        V_DrawPatch(&mut state.v_video, (*mi).x, (*mi).y, *(*mi).p.offset(*(*mi).inum as isize));
+        V_DrawPatch(
+            &mut state.v_video,
+            (*mi).x,
+            (*mi).y,
+            *(*mi).p.offset(*(*mi).inum as isize),
+        );
         (*mi).oldinum = *(*mi).inum;
     }
 }
@@ -216,7 +240,11 @@ pub unsafe fn STlib_initBinIcon(
     (*b).on = on;
     (*b).p = i;
 }
-pub unsafe fn STlib_updateBinIcon(state: &mut GameState, mut bi: *mut st_binicon_t, mut refresh: bool) {
+pub unsafe fn STlib_updateBinIcon(
+    state: &mut GameState,
+    mut bi: *mut st_binicon_t,
+    mut refresh: bool,
+) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut w: i32 = 0;

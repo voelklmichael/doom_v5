@@ -1,4 +1,4 @@
-use crate::src::d_mode::exe_final;
+use crate::src::d_mode::GameVersion;
 use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_map::P_TeleportMove;
@@ -7,14 +7,19 @@ use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::MF_MISSILE;
 use crate::src::p_mobj::{line_t, thinker_t};
-use crate::src::p_setup::SectorId;
 use crate::src::p_mobj::{MT_TELEPORTMAN, MT_TFOG};
+use crate::src::p_setup::SectorId;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::sfx_telept;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::tables::ANGLETOFINESHIFT;
-pub unsafe fn EV_Teleport(state: &mut GameState, mut line: *mut line_t, mut side: i32, mut thing: *mut mobj_t) -> i32 {
+pub unsafe fn EV_Teleport(
+    state: &mut GameState,
+    mut line: *mut line_t,
+    mut side: i32,
+    mut thing: *mut mobj_t,
+) -> i32 {
     let mut i: i32 = 0;
     let mut tag: i32 = 0;
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
@@ -49,9 +54,7 @@ pub unsafe fn EV_Teleport(state: &mut GameState, mut line: *mut line_t, mut side
                             if !P_TeleportMove(state, thing, (*m).x, (*m).y) {
                                 return 0 as i32;
                             }
-                            if state.doomstat.gameversion as u32
-                                != exe_final as i32 as u32
-                            {
+                            if state.doomstat.gameversion != GameVersion::r#final {
                                 (*thing).z = (*thing).floorz;
                             }
                             if !(*thing).player.is_null() {
@@ -65,7 +68,8 @@ pub unsafe fn EV_Teleport(state: &mut GameState, mut line: *mut line_t, mut side
                                 sfx_telept as i32,
                             );
                             an = ((*m).angle >> ANGLETOFINESHIFT) as u32;
-                            fog = P_SpawnMobj(state, 
+                            fog = P_SpawnMobj(
+                                state,
                                 (*m).x + 20 as fixed_t * finecosine[an as isize],
                                 (*m).y + 20 as fixed_t * finesine[an as usize],
                                 (*thing).z,

@@ -43,9 +43,7 @@ impl DNetState {
 unsafe fn PlayerQuitGame(state: &mut GameState, mut player: *mut player_t) {
     static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
     let mut player_num: u32 = 0;
-    player_num = player
-        .offset_from(&raw mut state.g_game.players as *mut player_t)
-        as i64 as u32;
+    player_num = player.offset_from(&raw mut state.g_game.players as *mut player_t) as i64 as u32;
     M_StringCopy(
         &raw mut exitmsg as *mut ::core::ffi::c_char,
         b"Player 1 left the game\0" as *const u8 as *const ::core::ffi::c_char,
@@ -54,8 +52,8 @@ unsafe fn PlayerQuitGame(state: &mut GameState, mut player: *mut player_t) {
     exitmsg[7 as i32 as usize] = (exitmsg[7 as i32 as usize] as u32).wrapping_add(player_num)
         as ::core::ffi::c_char as ::core::ffi::c_char;
     state.g_game.playeringame[player_num as usize] = false_0 as boolean;
-    state.g_game.players[state.g_game.consoleplayer as usize]
-        .message = &raw mut exitmsg as *mut ::core::ffi::c_char;
+    state.g_game.players[state.g_game.consoleplayer as usize].message =
+        &raw mut exitmsg as *mut ::core::ffi::c_char;
     if state.g_game.demorecording {
         G_CheckDemoStatus();
     }
@@ -68,7 +66,8 @@ unsafe fn RunTic(state: &mut GameState, mut cmds: *mut ticcmd_t, mut ingame: *mu
             && state.g_game.playeringame[i as usize] != 0
             && *ingame.offset(i as isize) == 0
         {
-            let quitter = (&raw mut state.g_game.players as *mut player_t).offset(i as isize) as *mut player_t;
+            let quitter = (&raw mut state.g_game.players as *mut player_t).offset(i as isize)
+                as *mut player_t;
             PlayerQuitGame(state, quitter);
         }
         i = i.wrapping_add(1);
@@ -124,28 +123,25 @@ unsafe fn SaveGameSettings(state: &mut GameState, mut settings: *mut net_gameset
     (*settings).fast_monsters = state.d_main.fastparm as i32;
     (*settings).respawn_monsters = state.d_main.respawnparm as i32;
     (*settings).timelimit = state.g_game.timelimit;
-    (*settings).lowres_turn =
-        (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
+    (*settings).lowres_turn = (M_CheckParm(state, "-record") > 0 as i32
+        && M_CheckParm(state, "-longtics") == 0 as i32) as i32;
 }
 unsafe fn InitConnectData(state: &mut GameState, mut connect_data: *mut net_connect_data_t) {
     (*connect_data).max_players = MAXPLAYERS;
     (*connect_data).drone = false_0;
-    if M_CheckParm("-left") > 0 as i32 {
+    if M_CheckParm(state, "-left") > 0 as i32 {
         state.r_main.viewangleoffset = ANG90;
         (*connect_data).drone = true_0;
     }
-    if M_CheckParm("-right") > 0 as i32 {
+    if M_CheckParm(state, "-right") > 0 as i32 {
         state.r_main.viewangleoffset = ANG270 as i32;
         (*connect_data).drone = true_0;
     }
     (*connect_data).gamemode = state.doomstat.gamemode as i32;
     (*connect_data).gamemission = state.doomstat.gamemission as i32;
-    (*connect_data).lowres_turn =
-        (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
-    W_Checksum(
-        state,
-        &raw mut (*connect_data).wad_sha1sum as *mut byte,
-    );
+    (*connect_data).lowres_turn = (M_CheckParm(state, "-record") > 0 as i32
+        && M_CheckParm(state, "-longtics") == 0 as i32) as i32;
+    W_Checksum(state, &raw mut (*connect_data).wad_sha1sum as *mut byte);
     (*connect_data).is_freedoom = (W_CheckNumForName("FREEDOOM") >= 0 as i32) as i32;
 }
 pub unsafe fn D_ConnectNetGame(state: &mut GameState) {
@@ -162,7 +158,7 @@ pub unsafe fn D_ConnectNetGame(state: &mut GameState) {
     };
     InitConnectData(state, &raw mut connect_data);
     state.g_game.netgame = D_InitNetGame(state, &raw mut connect_data);
-    if M_CheckParm("-solo-net") > 0 as i32 {
+    if M_CheckParm(state, "-solo-net") > 0 as i32 {
         state.g_game.netgame = true;
     }
 }
@@ -208,10 +204,8 @@ pub unsafe fn D_CheckNetGame(state: &mut GameState) {
         settings.num_players,
         settings.num_players,
     );
-    if state.g_game.timelimit > 0 as i32
-        && state.g_game.deathmatch != 0
-    {
-        if state.g_game.timelimit == 20 as i32 && M_CheckParm("-avg") != 0 {
+    if state.g_game.timelimit > 0 as i32 && state.g_game.deathmatch != 0 {
+        if state.g_game.timelimit == 20 as i32 && M_CheckParm(state, "-avg") != 0 {
             printf(
                 b"Austin Virtual Gaming: Levels will end after 20 minutes\n\0" as *const u8
                     as *const ::core::ffi::c_char,

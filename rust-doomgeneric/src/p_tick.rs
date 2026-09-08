@@ -21,14 +21,13 @@ impl PTickState {
         PTickState {
             leveltime: 0,
             thinkercap: thinker_s {
-        prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-        next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
-        function: ThinkerFn::Paused,
-    },
+                prev: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
+                next: ::core::ptr::null::<thinker_s>() as *mut thinker_s,
+                function: ThinkerFn::Paused,
+            },
         }
     }
 }
-
 
 pub unsafe fn P_InitThinkers(state: &mut GameState) {
     state.p_tick.thinkercap.next = &raw mut state.p_tick.thinkercap as *mut thinker_s;
@@ -88,7 +87,8 @@ pub unsafe fn P_Ticker(state: &mut GameState) {
     i = 0 as i32;
     while i < MAXPLAYERS {
         if state.g_game.playeringame[i as usize] != 0 {
-            let player = (&raw mut state.g_game.players as *mut player_t).offset(i as isize) as *mut player_t;
+            let player = (&raw mut state.g_game.players as *mut player_t).offset(i as isize)
+                as *mut player_t;
             P_PlayerThink(state, player);
         }
         i += 1;

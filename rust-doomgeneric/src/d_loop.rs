@@ -263,7 +263,10 @@ pub unsafe fn D_StartNetGame(
     state.d_loop.ticdup = (*settings).ticdup;
     state.d_loop.new_sync = (*settings).new_sync != 0;
 }
-pub unsafe fn D_InitNetGame(state: &mut GameState, mut connect_data: *mut net_connect_data_t) -> bool {
+pub unsafe fn D_InitNetGame(
+    state: &mut GameState,
+    mut connect_data: *mut net_connect_data_t,
+) -> bool {
     let mut result: bool = false;
     I_AtExit(Some(D_QuitNetGame as unsafe extern "C" fn() -> ()), true);
     state.d_loop.player_class = (*connect_data).player_class;
@@ -296,10 +299,8 @@ unsafe fn OldNetSync(state: &mut GameState) {
         if state.d_loop.maketic <= state.d_loop.recvtic {
             state.d_loop.lasttime -= 1;
         }
-        state.d_loop.frameskip
-            [(state.d_loop.frameon & 3 as i32) as usize] =
-            (state.d_loop.oldnettics > state.d_loop.recvtic)
-                as i32;
+        state.d_loop.frameskip[(state.d_loop.frameon & 3 as i32) as usize] =
+            (state.d_loop.oldnettics > state.d_loop.recvtic) as i32;
         state.d_loop.oldnettics = state.d_loop.maketic;
         if state.d_loop.frameskip[0 as i32 as usize] != 0
             && state.d_loop.frameskip[1 as i32 as usize] != 0
@@ -355,8 +356,7 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
     let mut realtics: i32 = 0;
     let mut availabletics: i32 = 0;
     let mut counts: i32 = 0;
-    entertic =
-        I_GetTime(&mut state.i_timer) / state.d_loop.ticdup;
+    entertic = I_GetTime(&mut state.i_timer) / state.d_loop.ticdup;
     realtics = entertic - state.d_loop.try_run_tics_oldentertics;
     state.d_loop.try_run_tics_oldentertics = entertic;
     if state.d_loop.singletics {
@@ -365,8 +365,7 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
         NetUpdate(state);
     }
     lowtic = GetLowTic(state);
-    availabletics =
-        lowtic - state.d_loop.gametic / state.d_loop.ticdup;
+    availabletics = lowtic - state.d_loop.gametic / state.d_loop.ticdup;
     if state.d_loop.new_sync {
         counts = availabletics;
     } else {
@@ -387,20 +386,13 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
     if counts < 1 as i32 {
         counts = 1 as i32;
     }
-    while !PlayersInGame(state)
-        || lowtic
-            < state.d_loop.gametic / state.d_loop.ticdup
-                + counts
-    {
+    while !PlayersInGame(state) || lowtic < state.d_loop.gametic / state.d_loop.ticdup + counts {
         NetUpdate(state);
         lowtic = GetLowTic(state);
         if lowtic < state.d_loop.gametic / state.d_loop.ticdup {
             I_Error("TryRunTics: lowtic < gametic");
         }
-        if I_GetTime(&mut state.i_timer) / state.d_loop.ticdup
-            - entertic
-            > 0 as i32
-        {
+        if I_GetTime(&mut state.i_timer) / state.d_loop.ticdup - entertic > 0 as i32 {
             return;
         }
         I_Sleep(1 as i32);
@@ -415,18 +407,15 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
         if !PlayersInGame(state) {
             return;
         }
-        set = (&raw mut state.d_loop.ticdata as *mut ticcmd_set_t).offset(
-            (state.d_loop.gametic / state.d_loop.ticdup
-                % BACKUPTICS) as isize,
-        ) as *mut ticcmd_set_t;
+        set = (&raw mut state.d_loop.ticdata as *mut ticcmd_set_t)
+            .offset((state.d_loop.gametic / state.d_loop.ticdup % BACKUPTICS) as isize)
+            as *mut ticcmd_set_t;
         if !net_client_connected {
             SinglePlayerClear(set);
         }
         i = 0 as i32;
         while i < state.d_loop.ticdup {
-            if state.d_loop.gametic / state.d_loop.ticdup
-                > lowtic
-            {
+            if state.d_loop.gametic / state.d_loop.ticdup > lowtic {
                 I_Error("gametic>lowtic");
             }
             memcpy(

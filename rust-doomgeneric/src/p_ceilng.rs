@@ -266,7 +266,10 @@ pub unsafe fn P_RemoveActiveCeiling(state: &mut GameState, mut c: *mut ceiling_t
     i = 0 as i32;
     while i < MAXCEILINGS {
         if state.p_ceilng.activeceilings[i as usize] == c {
-            (*state.p_setup.sector_mut((*state.p_ceilng.activeceilings[i as usize]).sector)).specialdata = NULL;
+            (*state
+                .p_setup
+                .sector_mut((*state.p_ceilng.activeceilings[i as usize]).sector))
+            .specialdata = NULL;
             P_RemoveThinker(
                 &raw mut (**(&raw mut state.p_ceilng.activeceilings as *mut *mut ceiling_t)
                     .offset(i as isize))
