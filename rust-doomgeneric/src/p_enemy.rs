@@ -66,6 +66,7 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::info::{S_BRAINEXPLODE1, S_NULL, S_VILE_HEAL1};
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_maputl::MAPBLOCKSHIFT;
@@ -296,7 +297,7 @@ pub unsafe fn P_Move(mut actor: *mut mobj_t) -> bool {
     }
     tryx = (*actor).x + (*(*actor).info).speed as fixed_t * xspeed[(*actor).movedir as usize];
     tryy = (*actor).y + (*(*actor).info).speed as fixed_t * yspeed[(*actor).movedir as usize];
-    try_ok = P_TryMove(actor, tryx, tryy);
+    try_ok = P_TryMove(unsafe { game_state() }, actor, tryx, tryy);
     if !try_ok {
         if (*actor).flags & MF_FLOAT as i32 != 0 && unsafe { game_state() }.p_map.floatok {
             if (*actor).z < unsafe { game_state() }.p_map.tmfloorz {
@@ -717,7 +718,7 @@ pub unsafe fn A_PosAttack(id: MobjId) {
     }
     A_FaceTarget((*actor).id);
     angle = (*actor).angle as i32;
-    slope = P_AimLineAttack(actor, angle as angle_t, MISSILERANGE) as i32;
+    slope = P_AimLineAttack(unsafe { game_state() }, actor, angle as angle_t, MISSILERANGE) as i32;
     S_StartSound(
         unsafe { &mut game_state().sounds },
         actor as *mut ::core::ffi::c_void,
@@ -727,7 +728,7 @@ pub unsafe fn A_PosAttack(id: MobjId) {
         - P_Random(unsafe { &mut game_state().m_random })
         << 20 as i32;
     damage = (P_Random(unsafe { &mut game_state().m_random }) % 5 as i32 + 1 as i32) * 3 as i32;
-    P_LineAttack(
+    P_LineAttack(unsafe { game_state() }, 
         actor,
         angle as angle_t,
         MISSILERANGE,
@@ -752,7 +753,7 @@ pub unsafe fn A_SPosAttack(id: MobjId) {
     );
     A_FaceTarget((*actor).id);
     bangle = (*actor).angle as i32;
-    slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE) as i32;
+    slope = P_AimLineAttack(unsafe { game_state() }, actor, bangle as angle_t, MISSILERANGE) as i32;
     i = 0 as i32;
     while i < 3 as i32 {
         angle = bangle
@@ -760,7 +761,7 @@ pub unsafe fn A_SPosAttack(id: MobjId) {
                 - P_Random(unsafe { &mut game_state().m_random })
                 << 20 as i32);
         damage = (P_Random(unsafe { &mut game_state().m_random }) % 5 as i32 + 1 as i32) * 3 as i32;
-        P_LineAttack(
+        P_LineAttack(unsafe { game_state() }, 
             actor,
             angle as angle_t,
             MISSILERANGE,
@@ -786,13 +787,13 @@ pub unsafe fn A_CPosAttack(id: MobjId) {
     );
     A_FaceTarget((*actor).id);
     bangle = (*actor).angle as i32;
-    slope = P_AimLineAttack(actor, bangle as angle_t, MISSILERANGE) as i32;
+    slope = P_AimLineAttack(unsafe { game_state() }, actor, bangle as angle_t, MISSILERANGE) as i32;
     angle = bangle
         + (P_Random(unsafe { &mut game_state().m_random })
             - P_Random(unsafe { &mut game_state().m_random })
             << 20 as i32);
     damage = (P_Random(unsafe { &mut game_state().m_random }) % 5 as i32 + 1 as i32) * 3 as i32;
-    P_LineAttack(
+    P_LineAttack(unsafe { game_state() }, 
         actor,
         angle as angle_t,
         MISSILERANGE,
@@ -1054,8 +1055,8 @@ pub unsafe fn A_SkelFist(id: MobjId) {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_VileCheck(mut thing_id: MobjId) -> boolean {
-    let thing = unsafe { game_state() }.p_mobj.mobj_get(thing_id).unwrap();
+pub unsafe extern "C" fn PIT_VileCheck(state: &mut GameState, mut thing_id: MobjId) -> boolean {
+    let thing = state.p_mobj.mobj_get(thing_id).unwrap();
     let mut maxdist: i32 = 0;
     let mut check: bool = false;
     if (*thing).flags & MF_CORPSE as i32 == 0 {
@@ -1067,23 +1068,23 @@ pub unsafe extern "C" fn PIT_VileCheck(mut thing_id: MobjId) -> boolean {
     if (*(*thing).info).raisestate == S_NULL as i32 {
         return true_0 as boolean;
     }
-    maxdist = (*(*thing).info).radius + unsafe { game_state() }.info.mobjinfo[MT_VILE as i32 as usize].radius;
-    if ((*thing).x as i32 - unsafe { game_state() }.p_enemy.viletryx as i32).abs() > maxdist
-        || ((*thing).y as i32 - unsafe { game_state() }.p_enemy.viletryy as i32).abs() > maxdist
+    maxdist = (*(*thing).info).radius + state.info.mobjinfo[MT_VILE as i32 as usize].radius;
+    if ((*thing).x as i32 - state.p_enemy.viletryx as i32).abs() > maxdist
+        || ((*thing).y as i32 - state.p_enemy.viletryy as i32).abs() > maxdist
     {
         return true_0 as boolean;
     }
-    unsafe { game_state() }.p_enemy.corpsehit = thing;
-    (*unsafe { game_state() }.p_enemy.corpsehit).momy = 0 as i32 as fixed_t;
-    (*unsafe { game_state() }.p_enemy.corpsehit).momx =
-        (*unsafe { game_state() }.p_enemy.corpsehit).momy;
-    (*unsafe { game_state() }.p_enemy.corpsehit).height <<= 2 as i32;
-    check = P_CheckPosition(
-        unsafe { game_state() }.p_enemy.corpsehit,
-        (*unsafe { game_state() }.p_enemy.corpsehit).x,
-        (*unsafe { game_state() }.p_enemy.corpsehit).y,
+    state.p_enemy.corpsehit = thing;
+    (*state.p_enemy.corpsehit).momy = 0 as i32 as fixed_t;
+    (*state.p_enemy.corpsehit).momx =
+        (*state.p_enemy.corpsehit).momy;
+    (*state.p_enemy.corpsehit).height <<= 2 as i32;
+    check = P_CheckPosition(state, 
+        state.p_enemy.corpsehit,
+        (*state.p_enemy.corpsehit).x,
+        (*state.p_enemy.corpsehit).y,
     );
-    (*unsafe { game_state() }.p_enemy.corpsehit).height >>= 2 as i32;
+    (*state.p_enemy.corpsehit).height >>= 2 as i32;
     if !check {
         return true_0 as boolean;
     }
@@ -1123,10 +1124,10 @@ pub unsafe fn A_VileChase(id: MobjId) {
         while bx <= xh {
             by = yl;
             while by <= yh {
-                if !P_BlockThingsIterator(
+                if !P_BlockThingsIterator(unsafe { game_state() }, 
                     bx,
                     by,
-                    Some(PIT_VileCheck as unsafe extern "C" fn(MobjId) -> boolean),
+                    Some(PIT_VileCheck as unsafe extern "C" fn(&mut GameState, MobjId) -> boolean),
                 ) {
                     temp = (*actor).target;
                     (*actor).target =
@@ -1261,7 +1262,7 @@ pub unsafe fn A_VileAttack(id: MobjId) {
     }
     (*fire).x = (*target).x - FixedMul(24 as fixed_t * FRACUNIT, finecosine[an as isize]);
     (*fire).y = (*target).y - FixedMul(24 as fixed_t * FRACUNIT, finesine[an as usize]);
-    P_RadiusAttack(fire, actor, 70 as i32);
+    P_RadiusAttack(unsafe { game_state() }, fire, actor, 70 as i32);
 }
 pub const FATSPREAD: i32 = ANG90 / 8 as i32;
 pub unsafe fn A_FatRaise(id: MobjId) {
@@ -1400,7 +1401,7 @@ pub unsafe fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
     y = (*actor).y + FixedMul(prestep as fixed_t, finesine[an as usize]);
     z = ((*actor).z as i32 + 8 as i32 * FRACUNIT) as fixed_t;
     newmobj = P_SpawnMobj(x, y, z, MT_SKULL);
-    if !P_TryMove(newmobj, (*newmobj).x, (*newmobj).y) {
+    if !P_TryMove(unsafe { game_state() }, newmobj, (*newmobj).x, (*newmobj).y) {
         P_DamageMobj(newmobj, actor, actor, 10000 as i32);
         return;
     }
@@ -1477,7 +1478,7 @@ pub unsafe fn A_Explode(id: MobjId) {
         .target
         .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id))
         .unwrap_or(::core::ptr::null_mut());
-    P_RadiusAttack(thingy, target, 128 as i32);
+    P_RadiusAttack(unsafe { game_state() }, thingy, target, 128 as i32);
 }
 unsafe fn CheckBossEnd(mut motype: mobjtype_t) -> bool {
     if (unsafe { game_state() }.doomstat.gameversion as u32) < exe_ultimate as i32 as u32 {
@@ -1809,7 +1810,7 @@ pub unsafe fn A_SpawnFly(id: MobjId) {
     if P_LookForPlayers(newmobj, true) {
         P_SetMobjState(newmobj, (*(*newmobj).info).seestate as statenum_t);
     }
-    P_TeleportMove(newmobj, (*newmobj).x, (*newmobj).y);
+    P_TeleportMove(unsafe { game_state() }, newmobj, (*newmobj).x, (*newmobj).y);
     P_RemoveMobj(unsafe { &mut game_state().p_mobj }, mo);
 }
 pub unsafe fn A_PlayerScream(id: MobjId) {

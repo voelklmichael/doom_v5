@@ -63,19 +63,19 @@ pub unsafe fn T_MovePlane(
                 if (*sector).floorheight - speed < dest {
                     lastpos = (*sector).floorheight;
                     (*sector).floorheight = dest;
-                    flag = P_ChangeSector(sector, crush);
+                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
                     if flag {
                         (*sector).floorheight = lastpos;
-                        P_ChangeSector(sector, crush);
+                        P_ChangeSector(unsafe { game_state() }, sector, crush);
                     }
                     return pastdest;
                 } else {
                     lastpos = (*sector).floorheight;
                     (*sector).floorheight -= speed;
-                    flag = P_ChangeSector(sector, crush);
+                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
                     if flag {
                         (*sector).floorheight = lastpos;
-                        P_ChangeSector(sector, crush);
+                        P_ChangeSector(unsafe { game_state() }, sector, crush);
                         return crushed;
                     }
                 }
@@ -84,22 +84,22 @@ pub unsafe fn T_MovePlane(
                 if (*sector).floorheight + speed > dest {
                     lastpos = (*sector).floorheight;
                     (*sector).floorheight = dest;
-                    flag = P_ChangeSector(sector, crush);
+                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
                     if flag {
                         (*sector).floorheight = lastpos;
-                        P_ChangeSector(sector, crush);
+                        P_ChangeSector(unsafe { game_state() }, sector, crush);
                     }
                     return pastdest;
                 } else {
                     lastpos = (*sector).floorheight;
                     (*sector).floorheight += speed;
-                    flag = P_ChangeSector(sector, crush);
+                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
                     if flag {
                         if crush {
                             return crushed;
                         }
                         (*sector).floorheight = lastpos;
-                        P_ChangeSector(sector, crush);
+                        P_ChangeSector(unsafe { game_state() }, sector, crush);
                         return crushed;
                     }
                 }
@@ -111,22 +111,22 @@ pub unsafe fn T_MovePlane(
                 if (*sector).ceilingheight - speed < dest {
                     lastpos = (*sector).ceilingheight;
                     (*sector).ceilingheight = dest;
-                    flag = P_ChangeSector(sector, crush);
+                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
                     if flag {
                         (*sector).ceilingheight = lastpos;
-                        P_ChangeSector(sector, crush);
+                        P_ChangeSector(unsafe { game_state() }, sector, crush);
                     }
                     return pastdest;
                 } else {
                     lastpos = (*sector).ceilingheight;
                     (*sector).ceilingheight -= speed;
-                    flag = P_ChangeSector(sector, crush);
+                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
                     if flag {
                         if crush {
                             return crushed;
                         }
                         (*sector).ceilingheight = lastpos;
-                        P_ChangeSector(sector, crush);
+                        P_ChangeSector(unsafe { game_state() }, sector, crush);
                         return crushed;
                     }
                 }
@@ -135,16 +135,16 @@ pub unsafe fn T_MovePlane(
                 if (*sector).ceilingheight + speed > dest {
                     lastpos = (*sector).ceilingheight;
                     (*sector).ceilingheight = dest;
-                    flag = P_ChangeSector(sector, crush);
+                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
                     if flag {
                         (*sector).ceilingheight = lastpos;
-                        P_ChangeSector(sector, crush);
+                        P_ChangeSector(unsafe { game_state() }, sector, crush);
                     }
                     return pastdest;
                 } else {
                     lastpos = (*sector).ceilingheight;
                     (*sector).ceilingheight += speed;
-                    flag = P_ChangeSector(sector, crush);
+                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
                 }
             }
             _ => {}

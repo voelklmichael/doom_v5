@@ -1351,7 +1351,7 @@ pub unsafe fn G_CheckSpot(state: &mut GameState, mut playernum: i32, mut mthing:
     }
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
-    if !P_CheckPosition(
+    if !P_CheckPosition(state, 
         state.g_game.players[playernum as usize].mo,
         x,
         y,

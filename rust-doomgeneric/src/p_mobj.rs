@@ -644,9 +644,9 @@ pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
             ymove = 0 as i32 as fixed_t;
             xmove = ymove;
         }
-        if !P_TryMove(mo, ptryx, ptryy) {
+        if !P_TryMove(unsafe { game_state() }, mo, ptryx, ptryy) {
             if !(*mo).player.is_null() {
-                P_SlideMove(mo);
+                P_SlideMove(unsafe { game_state() }, mo);
             } else if (*mo).flags & MF_MISSILE as i32 != 0 {
                 if !unsafe { game_state() }.p_map.ceilingline.is_null()
                     && (*unsafe { game_state() }.p_map.ceilingline)
@@ -794,7 +794,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) 
     let mut mthing: *mut mapthing_t = ::core::ptr::null_mut::<mapthing_t>();
     x = (((*mobj).spawnpoint.x as i32) << FRACBITS) as fixed_t;
     y = (((*mobj).spawnpoint.y as i32) << FRACBITS) as fixed_t;
-    if !P_CheckPosition(mobj, x, y) {
+    if !P_CheckPosition(unsafe { game_state() }, mobj, x, y) {
         return;
     }
     mo = P_SpawnMobj(
@@ -1316,7 +1316,7 @@ pub unsafe fn P_CheckMissileSpawn(mut th: *mut mobj_t) {
     (*th).x += (*th).momx >> 1 as i32;
     (*th).y += (*th).momy >> 1 as i32;
     (*th).z += (*th).momz >> 1 as i32;
-    if !P_TryMove(th, (*th).x, (*th).y) {
+    if !P_TryMove(unsafe { game_state() }, th, (*th).x, (*th).y) {
         P_ExplodeMissile(th);
     }
 }
@@ -1381,13 +1381,13 @@ pub unsafe fn P_SpawnPlayerMissile(mut source: *mut mobj_t, mut type_0: mobjtype
     let mut z: fixed_t = 0;
     let mut slope: fixed_t = 0;
     an = (*source).angle;
-    slope = P_AimLineAttack(source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+    slope = P_AimLineAttack(unsafe { game_state() }, source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
     if unsafe { game_state() }.p_map.linetarget.is_null() {
         an = an.wrapping_add(((1 as i32) << 26 as i32) as angle_t);
-        slope = P_AimLineAttack(source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+        slope = P_AimLineAttack(unsafe { game_state() }, source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         if unsafe { game_state() }.p_map.linetarget.is_null() {
             an = an.wrapping_sub(((2 as i32) << 26 as i32) as angle_t);
-            slope = P_AimLineAttack(source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+            slope = P_AimLineAttack(unsafe { game_state() }, source, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         }
         if unsafe { game_state() }.p_map.linetarget.is_null() {
             an = (*source).angle;
