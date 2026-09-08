@@ -189,7 +189,7 @@ pub unsafe fn P_FireWeapon(mut player: *mut player_t) {
     P_SetMobjState(unsafe { game_state() }, (*player).mo, S_PLAY_ATK1);
     newstate = weaponinfo[(*player).readyweapon as usize].atkstate as statenum_t;
     P_SetPsprite(unsafe { game_state() }, player, ps_weapon as i32, newstate);
-    P_NoiseAlert((*player).mo, (*player).mo);
+    P_NoiseAlert(unsafe { game_state() }, (*player).mo, (*player).mo);
 }
 pub unsafe fn P_DropWeapon(mut player: *mut player_t) {
     P_SetPsprite(unsafe { game_state() }, 
