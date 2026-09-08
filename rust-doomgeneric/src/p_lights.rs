@@ -78,7 +78,7 @@ pub unsafe fn P_SpawnFireFlicker(state: &mut GameState, mut sector: SectorId) {
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fireflicker_t;
-    P_AddThinker(&raw mut (*flick).thinker);
+    P_AddThinker(state, &raw mut (*flick).thinker);
     (*flick).thinker.function = ThinkerFn::FireFlicker(T_FireFlicker);
     (*flick).sector = sector;
     (*flick).maxlight = (*sec).lightlevel as i32;
@@ -111,7 +111,7 @@ pub unsafe fn P_SpawnLightFlash(state: &mut GameState, mut sector: SectorId) {
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut lightflash_t;
-    P_AddThinker(&raw mut (*flash).thinker);
+    P_AddThinker(state, &raw mut (*flash).thinker);
     (*flash).thinker.function = ThinkerFn::LightFlash(T_LightFlash);
     (*flash).sector = sector;
     (*flash).maxlight = (*sec).lightlevel as i32;
@@ -144,7 +144,7 @@ pub unsafe fn P_SpawnStrobeFlash(state: &mut GameState, mut sector: SectorId, mu
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut strobe_t;
-    P_AddThinker(&raw mut (*flash).thinker);
+    P_AddThinker(state, &raw mut (*flash).thinker);
     (*flash).sector = sector;
     (*flash).darktime = fastOrSlow;
     (*flash).brighttime = STROBEBRIGHT;
@@ -261,7 +261,7 @@ pub unsafe fn P_SpawnGlowingLight(state: &mut GameState, mut sector: SectorId) {
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut glow_t;
-    P_AddThinker(&raw mut (*g).thinker);
+    P_AddThinker(state, &raw mut (*g).thinker);
     (*g).sector = sector;
     (*g).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32);
     (*g).maxlight = (*sec).lightlevel as i32;

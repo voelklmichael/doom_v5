@@ -248,7 +248,7 @@ pub unsafe fn EV_DoDoor(state: &mut GameState, mut line: *mut line_t, mut type_0
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut vldoor_t;
-        P_AddThinker(&raw mut (*door).thinker);
+        P_AddThinker(state, &raw mut (*door).thinker);
         (*sec).specialdata = door as *mut ::core::ffi::c_void;
         (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
         (*door).sector = SectorId(secnum as u32);
@@ -432,7 +432,7 @@ pub unsafe fn EV_VerticalDoor(state: &mut GameState, mut line: *mut line_t, mut 
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut vldoor_t;
-    P_AddThinker(&raw mut (*door).thinker);
+    P_AddThinker(state, &raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
     (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
     (*door).sector = door_sector_id;
@@ -470,7 +470,7 @@ pub unsafe fn P_SpawnDoorCloseIn30(state: &mut GameState, mut sector: SectorId) 
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut vldoor_t;
-    P_AddThinker(&raw mut (*door).thinker);
+    P_AddThinker(state, &raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
     (*sec).special = 0 as i16;
     (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
@@ -489,7 +489,7 @@ pub unsafe fn P_SpawnDoorRaiseIn5Mins(state: &mut GameState, mut sector: SectorI
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut vldoor_t;
-    P_AddThinker(&raw mut (*door).thinker);
+    P_AddThinker(state, &raw mut (*door).thinker);
     (*sec).specialdata = door as *mut ::core::ffi::c_void;
     (*sec).special = 0 as i16;
     (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);

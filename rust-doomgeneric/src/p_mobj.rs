@@ -924,7 +924,7 @@ pub unsafe fn P_SpawnMobj(
         (*mobj).z = z;
     }
     (*mobj).thinker.function = ThinkerFn::Mobj(P_MobjThinker);
-    P_AddThinker(&raw mut (*mobj).thinker);
+    P_AddThinker(state, &raw mut (*mobj).thinker);
     return mobj;
 }
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]

@@ -224,7 +224,7 @@ pub unsafe fn EV_DoFloor(state: &mut GameState, mut line: *mut line_t, mut floor
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut floormove_t;
-        P_AddThinker(&raw mut (*floor).thinker);
+        P_AddThinker(state, &raw mut (*floor).thinker);
         (*sec).specialdata = floor as *mut ::core::ffi::c_void;
         (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
         (*floor).type_0 = floortype;
@@ -415,7 +415,7 @@ pub unsafe fn EV_BuildStairs(state: &mut GameState, mut line: *mut line_t, mut t
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut floormove_t;
-        P_AddThinker(&raw mut (*floor).thinker);
+        P_AddThinker(state, &raw mut (*floor).thinker);
         (*sec).specialdata = floor as *mut ::core::ffi::c_void;
         (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
         (*floor).direction = 1 as i32;
@@ -457,7 +457,7 @@ pub unsafe fn EV_BuildStairs(state: &mut GameState, mut line: *mut line_t, mut t
                                     PU_LEVSPEC as i32,
                                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                 ) as *mut floormove_t;
-                                P_AddThinker(&raw mut (*floor).thinker);
+                                P_AddThinker(state, &raw mut (*floor).thinker);
                                 (*sec).specialdata = floor as *mut ::core::ffi::c_void;
                                 (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                                 (*floor).direction = 1 as i32;
