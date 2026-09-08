@@ -458,7 +458,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
 }
 pub unsafe fn D_BindVariables(state: &mut GameState) {
     let mut i: i32 = 0;
-    I_BindJoystickVariables(&mut state.i_joystick);
+    I_BindJoystickVariables(state);
     I_BindSoundVariables(state);
     M_BindBaseControls(state);
     M_BindWeaponControls(state);
@@ -1156,16 +1156,18 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     D_BindVariables(state);
     M_LoadDefaults(state);
     I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
+    let mut gamemission_out = state.doomstat.gamemission;
     state.d_main.iwadfile = D_FindIWAD(
-        &mut state.d_iwad,
+        state,
         (1 as i32) << doom as i32
             | (1 as i32) << doom2 as i32
             | (1 as i32) << pack_tnt as i32
             | (1 as i32) << pack_plut as i32
             | (1 as i32) << pack_chex as i32
             | (1 as i32) << pack_hacx as i32,
-        &raw mut state.doomstat.gamemission,
+        &raw mut gamemission_out,
     );
+    state.doomstat.gamemission = gamemission_out;
     if state.d_main.iwadfile.is_null() {
         I_Error(
             "Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n",
