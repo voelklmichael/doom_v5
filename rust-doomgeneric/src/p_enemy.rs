@@ -863,7 +863,7 @@ pub unsafe fn A_TroopAttack(state: &mut GameState, id: MobjId) {
             sfx_claw as i32,
         );
         damage = (P_Random(&mut state.m_random) % 8 as i32 + 1 as i32) * 3 as i32;
-        P_DamageMobj(target, actor, actor, damage);
+        P_DamageMobj(state, target, actor, actor, damage);
         return;
     }
     P_SpawnMissile(state, actor, target, MT_TROOPSHOT);
@@ -882,7 +882,7 @@ pub unsafe fn A_SargAttack(state: &mut GameState, id: MobjId) {
     if P_CheckMeleeRange(actor) {
         damage =
             (P_Random(&mut state.m_random) % 10 as i32 + 1 as i32) * 4 as i32;
-        P_DamageMobj(target, actor, actor, damage);
+        P_DamageMobj(state, target, actor, actor, damage);
     }
 }
 pub unsafe fn A_HeadAttack(state: &mut GameState, id: MobjId) {
@@ -899,7 +899,7 @@ pub unsafe fn A_HeadAttack(state: &mut GameState, id: MobjId) {
     if P_CheckMeleeRange(actor) {
         damage =
             (P_Random(&mut state.m_random) % 6 as i32 + 1 as i32) * 10 as i32;
-        P_DamageMobj(target, actor, actor, damage);
+        P_DamageMobj(state, target, actor, actor, damage);
         return;
     }
     P_SpawnMissile(state, actor, target, MT_HEADSHOT);
@@ -934,7 +934,7 @@ pub unsafe fn A_BruisAttack(state: &mut GameState, id: MobjId) {
         );
         damage =
             (P_Random(&mut state.m_random) % 8 as i32 + 1 as i32) * 10 as i32;
-        P_DamageMobj(target, actor, actor, damage);
+        P_DamageMobj(state, target, actor, actor, damage);
         return;
     }
     P_SpawnMissile(state, actor, target, MT_BRUISERSHOT);
@@ -1051,7 +1051,7 @@ pub unsafe fn A_SkelFist(state: &mut GameState, id: MobjId) {
             actor as *mut ::core::ffi::c_void,
             sfx_skepch as i32,
         );
-        P_DamageMobj(target, actor, actor, damage);
+        P_DamageMobj(state, target, actor, actor, damage);
     }
 }
 #[no_mangle]
@@ -1248,7 +1248,7 @@ pub unsafe fn A_VileAttack(state: &mut GameState, id: MobjId) {
         actor as *mut ::core::ffi::c_void,
         sfx_barexp as i32,
     );
-    P_DamageMobj(target, actor, actor, 20 as i32);
+    P_DamageMobj(state, target, actor, actor, 20 as i32);
     (*target).momz = (1000 as i32 * FRACUNIT / (*(*target).info).mass) as fixed_t;
     an = ((*actor).angle >> ANGLETOFINESHIFT) as i32;
     fire = (*actor)
@@ -1394,7 +1394,7 @@ pub unsafe fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
     z = ((*actor).z as i32 + 8 as i32 * FRACUNIT) as fixed_t;
     newmobj = P_SpawnMobj(unsafe { game_state() }, x, y, z, MT_SKULL);
     if !P_TryMove(unsafe { game_state() }, newmobj, (*newmobj).x, (*newmobj).y) {
-        P_DamageMobj(newmobj, actor, actor, 10000 as i32);
+        P_DamageMobj(unsafe { game_state() }, newmobj, actor, actor, 10000 as i32);
         return;
     }
     (*newmobj).target = (*actor).target;
