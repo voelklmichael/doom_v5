@@ -433,7 +433,7 @@ pub unsafe fn HU_Start(state: &mut GameState) {
             s = "Unknown level";
         }
     }
-    if state.doomstat.gameversion  == GameVersion::exe_chex {
+    if state.doomstat.gameversion  == GameVersion::chex {
         s = mapnames[(state.g_game.gamemap - 1 as i32) as usize];
     }
     for b in s.bytes() {

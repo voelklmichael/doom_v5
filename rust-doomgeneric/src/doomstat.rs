@@ -13,7 +13,7 @@ impl DoomstatState {
         DoomstatState {
             gamemode: indetermined,
             gamemission: doom,
-            gameversion: GameVersion::exe_final2,
+            gameversion: GameVersion::final2,
             gamedescription: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
             modifiedgame: false,
         }

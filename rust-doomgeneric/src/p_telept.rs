@@ -54,7 +54,7 @@ pub unsafe fn EV_Teleport(
                             if !P_TeleportMove(state, thing, (*m).x, (*m).y) {
                                 return 0 as i32;
                             }
-                            if state.doomstat.gameversion != GameVersion::exe_final {
+                            if state.doomstat.gameversion != GameVersion::r#final {
                                 (*thing).z = (*thing).floorz;
                             }
                             if !(*thing).player.is_null() {

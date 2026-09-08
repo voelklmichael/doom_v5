@@ -1268,7 +1268,7 @@ pub unsafe extern "C" fn M_NewGame(state: &mut GameState, mut choice: i32) {
         return;
     }
     if state.doomstat.gamemode as u32 == commercial as i32 as u32
-        || state.doomstat.gameversion  == GameVersion::exe_chex
+        || state.doomstat.gameversion  == GameVersion::chex
     {
         let menudef = &raw mut state.m_menu.defs.NewDef;
         M_SetupNextMenu(state, menudef);

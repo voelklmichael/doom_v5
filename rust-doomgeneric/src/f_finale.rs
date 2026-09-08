@@ -327,7 +327,7 @@ pub unsafe fn F_StartFinale(state: &mut GameState) {
         let mut screen: *mut textscreen_t = (&raw mut state.f_finale.textscreens
             as *mut textscreen_t)
             .offset(i as isize) as *mut textscreen_t;
-        if state.doomstat.gameversion == GameVersion::exe_chex
+        if state.doomstat.gameversion == GameVersion::chex
             && (*screen).mission as u32 == doom as i32 as u32
         {
             (*screen).level = 5 as i32;

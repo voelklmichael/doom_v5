@@ -709,7 +709,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                 epsd = buf_1[0 as i32 as usize] as i32 - '0' as i32;
                 map = buf_1[1 as i32 as usize] as i32 - '0' as i32;
             }
-            if state.doomstat.gameversion == GameVersion::exe_chex {
+            if state.doomstat.gameversion == GameVersion::chex {
                 epsd = 1 as i32;
             }
             if epsd < 1 as i32 {
@@ -973,7 +973,7 @@ pub unsafe fn ST_doPaletteStuff(state: &mut GameState) {
     } else {
         palette = 0 as i32;
     }
-    if state.doomstat.gameversion == GameVersion::exe_chex
+    if state.doomstat.gameversion == GameVersion::chex
         && palette >= STARTREDPALS
         && palette < STARTREDPALS + NUMREDPALS
     {

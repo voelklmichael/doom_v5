@@ -1,6 +1,6 @@
 use crate::src::am_map::AM_Stop;
 use crate::src::d_items::weaponinfo;
-use crate::src::d_mode::{GameVersion, commercial};
+use crate::src::d_mode::{commercial, GameVersion};
 use crate::src::d_mode::{sk_baby, sk_nightmare};
 use crate::src::d_player::CF_GODMODE;
 use crate::src::d_player::{am_cell, am_clip, am_misl, am_noammo, am_shell, ammotype_t, NUMAMMO};
@@ -697,7 +697,7 @@ pub unsafe fn P_KillMobj(state: &mut GameState, mut source: *mut mobj_t, mut tar
     if (*target).tics < 1 as i32 {
         (*target).tics = 1 as i32;
     }
-    if state.doomstat.gameversion == GameVersion::exe_chex {
+    if state.doomstat.gameversion == GameVersion::chex {
         return;
     }
     match (*target).type_0 as u32 {

@@ -797,7 +797,7 @@ pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     );
     if state.doomstat.gamemode as u32 == commercial as u32
-        && [GameVersion::exe_final2, GameVersion::exe_chex].contains(&state.doomstat.gameversion)
+        && [GameVersion::final2, GameVersion::chex].contains(&state.doomstat.gameversion)
     {
         let mut skytexturename: *mut ::core::ffi::c_char =
             ::core::ptr::null_mut::<::core::ffi::c_char>();
@@ -1434,7 +1434,7 @@ pub unsafe fn G_DoCompleted(state: &mut GameState) {
         AM_Stop(state);
     }
     if state.doomstat.gamemode as u32 != commercial as u32 {
-        if state.doomstat.gameversion == GameVersion::exe_chex {
+        if state.doomstat.gameversion == GameVersion::chex {
             if state.g_game.gamemap == 5 as i32 {
                 state.g_game.gameaction = ga_victory;
                 return;
