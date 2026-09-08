@@ -1,5 +1,4 @@
 use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_ConsoleStdout;
@@ -318,19 +317,19 @@ pub unsafe fn R_GenerateLookup(state: &mut GameState, mut texnum: i32) {
         patchcount as *mut ::core::ffi::c_void,
     );
 }
-pub unsafe fn R_GetColumn(mut tex: i32, mut col: i32) -> *mut byte {
+pub unsafe fn R_GetColumn(state: &mut GameState, mut tex: i32, mut col: i32) -> *mut byte {
     let mut lump: i32 = 0;
     let mut ofs: i32 = 0;
-    col &= *unsafe { game_state() }.r_data.texturewidthmask.offset(tex as isize);
-    lump = *(*unsafe { game_state() }.r_data.texturecolumnlump.offset(tex as isize)).offset(col as isize) as i32;
-    ofs = *(*unsafe { game_state() }.r_data.texturecolumnofs.offset(tex as isize)).offset(col as isize) as i32;
+    col &= *state.r_data.texturewidthmask.offset(tex as isize);
+    lump = *(*state.r_data.texturecolumnlump.offset(tex as isize)).offset(col as isize) as i32;
+    ofs = *(*state.r_data.texturecolumnofs.offset(tex as isize)).offset(col as isize) as i32;
     if lump > 0 as i32 {
         return (W_CacheLumpNum(lump, PU_CACHE as i32) as *mut byte).offset(ofs as isize);
     }
-    if (*unsafe { game_state() }.r_data.texturecomposite.offset(tex as isize)).is_null() {
-        R_GenerateComposite(unsafe { game_state() }, tex);
+    if (*state.r_data.texturecomposite.offset(tex as isize)).is_null() {
+        R_GenerateComposite(state, tex);
     }
-    return (*unsafe { game_state() }.r_data.texturecomposite.offset(tex as isize)).offset(ofs as isize);
+    return (*state.r_data.texturecomposite.offset(tex as isize)).offset(ofs as isize);
 }
 unsafe fn GenerateTextureHashTable(state: &mut GameState) {
     let mut rover: *mut *mut texture_t = ::core::ptr::null_mut::<*mut texture_t>();
