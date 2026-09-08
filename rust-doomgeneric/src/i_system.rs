@@ -1,4 +1,5 @@
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_argv::{M_CheckParmWithArgs, M_ParmExists};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::m_misc::M_snprintf;
@@ -101,7 +102,7 @@ unsafe fn AutoAllocMemory(mut size: *mut i32, mut default_ram: i32, mut min_ram:
     }
     return zonemem;
 }
-pub unsafe fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
+pub unsafe fn I_ZoneBase(state: &mut GameState, mut size: *mut i32) -> *mut byte {
     let mut zonemem: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut min_ram: i32 = 0;
     let mut default_ram: i32 = 0;
@@ -109,7 +110,7 @@ pub unsafe fn I_ZoneBase(mut size: *mut i32) -> *mut byte {
     p = M_CheckParmWithArgs("-mb", 1 as i32);
     if p > 0 as i32 {
         default_ram = atoi(
-            unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
         min_ram = default_ram;
@@ -302,46 +303,47 @@ static mem_dump_dosbox: [u8; 10] = [
     0 as i32 as u8,
 ];
 pub unsafe fn I_GetMemoryValue(
+    state: &mut GameState,
     mut offset: u32,
     mut value: *mut ::core::ffi::c_void,
     mut size: i32,
 ) -> bool {
-    if unsafe { game_state() }.i_system.get_memory_value_firsttime {
+    if state.i_system.get_memory_value_firsttime {
         let mut p: i32 = 0;
         let mut i: i32 = 0;
         let mut val: i32 = 0;
-        unsafe { game_state() }.i_system.get_memory_value_firsttime = false;
+        state.i_system.get_memory_value_firsttime = false;
         i = 0 as i32;
         p = M_CheckParmWithArgs("-setmem", 1 as i32);
         if p > 0 as i32 {
             if strcasecmp(
-                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos622\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                unsafe { game_state() }.i_system.dos_mem_dump =
+                state.i_system.dos_mem_dump =
                     &raw const mem_dump_dos622 as *const u8;
             }
             if strcasecmp(
-                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dos71\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                unsafe { game_state() }.i_system.dos_mem_dump =
+                state.i_system.dos_mem_dump =
                     &raw const mem_dump_win98 as *const u8;
             } else if strcasecmp(
-                unsafe { game_state() }.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
                 b"dosbox\0" as *const u8 as *const ::core::ffi::c_char,
             ) == 0
             {
-                unsafe { game_state() }.i_system.dos_mem_dump =
+                state.i_system.dos_mem_dump =
                     &raw const mem_dump_dosbox as *const u8;
             } else {
                 i = 0 as i32;
                 while i < DOS_MEM_DUMP_SIZE {
                     p += 1;
-                    if p >= unsafe { game_state() }.m_argv.myargv.len() as i32
-                        || unsafe { game_state() }.m_argv.myargv[p as usize]
+                    if p >= state.m_argv.myargv.len() as i32
+                        || state.m_argv.myargv[p as usize]
                             .as_bytes()
                             .first()
                             == Some(&b'-')
@@ -349,34 +351,34 @@ pub unsafe fn I_GetMemoryValue(
                         break;
                     }
                     M_StrToInt(
-                        unsafe { game_state() }.m_argv.myargv[p as usize].as_ptr()
+                        state.m_argv.myargv[p as usize].as_ptr()
                             as *mut ::core::ffi::c_char,
                         &raw mut val,
                     );
                     let fresh0 = i;
                     i = i + 1;
-                    unsafe { game_state() }.i_system.mem_dump_custom[fresh0 as usize] = val as u8;
+                    state.i_system.mem_dump_custom[fresh0 as usize] = val as u8;
                     i += 1;
                 }
-                unsafe { game_state() }.i_system.dos_mem_dump =
-                    &raw mut unsafe { game_state() }.i_system.mem_dump_custom as *mut u8;
+                state.i_system.dos_mem_dump =
+                    &raw mut state.i_system.mem_dump_custom as *mut u8;
             }
         }
     }
     match size {
         1 => {
-            *(value as *mut u8) = *unsafe { game_state() }
+            *(value as *mut u8) = *state
                 .i_system
                 .dos_mem_dump
                 .offset(offset as isize);
             return true;
         }
         2 => {
-            *(value as *mut u16) = (*unsafe { game_state() }
+            *(value as *mut u16) = (*state
                 .i_system
                 .dos_mem_dump
                 .offset(offset as isize) as i32
-                | (*unsafe { game_state() }
+                | (*state
                     .i_system
                     .dos_mem_dump
                     .offset(offset.wrapping_add(1 as u32) as isize) as i32)
@@ -384,21 +386,21 @@ pub unsafe fn I_GetMemoryValue(
             return true;
         }
         4 => {
-            *(value as *mut u32) = (*unsafe { game_state() }
+            *(value as *mut u32) = (*state
                 .i_system
                 .dos_mem_dump
                 .offset(offset as isize) as i32
-                | (*unsafe { game_state() }
+                | (*state
                     .i_system
                     .dos_mem_dump
                     .offset(offset.wrapping_add(1 as u32) as isize) as i32)
                     << 8 as i32
-                | (*unsafe { game_state() }
+                | (*state
                     .i_system
                     .dos_mem_dump
                     .offset(offset.wrapping_add(2 as u32) as isize) as i32)
                     << 16 as i32
-                | (*unsafe { game_state() }
+                | (*state
                     .i_system
                     .dos_mem_dump
                     .offset(offset.wrapping_add(3 as u32) as isize) as i32)

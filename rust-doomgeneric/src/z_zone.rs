@@ -1,3 +1,4 @@
+use crate::src::game_state::GameState;
 use crate::src::i_system::fprintf;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_ZoneBase;
@@ -60,24 +61,24 @@ pub unsafe fn Z_ClearZone(mut zone: *mut memzone_t) {
     (*block).size =
         ((*zone).size as usize).wrapping_sub(::core::mem::size_of::<memzone_t>() as usize) as i32;
 }
-pub unsafe fn Z_Init(state: &mut ZZoneState) {
+pub unsafe fn Z_Init(state: &mut GameState) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
     let mut size: i32 = 0;
-    state.mainzone = I_ZoneBase(&raw mut size) as *mut memzone_t;
-    (*state.mainzone).size = size;
-    block = (state.mainzone as *mut byte)
+    state.z_zone.mainzone = I_ZoneBase(state, &raw mut size) as *mut memzone_t;
+    (*state.z_zone.mainzone).size = size;
+    block = (state.z_zone.mainzone as *mut byte)
         .offset(::core::mem::size_of::<memzone_t>() as usize as isize)
         as *mut memblock_t;
-    (*state.mainzone).blocklist.prev = block as *mut memblock_s;
-    (*state.mainzone).blocklist.next = (*state.mainzone).blocklist.prev;
-    (*state.mainzone).blocklist.user =
-        state.mainzone as *mut ::core::ffi::c_void as *mut *mut ::core::ffi::c_void;
-    (*state.mainzone).blocklist.tag = PU_STATIC as i32;
-    (*state.mainzone).rover = block;
-    (*block).next = &raw mut (*state.mainzone).blocklist as *mut memblock_s;
+    (*state.z_zone.mainzone).blocklist.prev = block as *mut memblock_s;
+    (*state.z_zone.mainzone).blocklist.next = (*state.z_zone.mainzone).blocklist.prev;
+    (*state.z_zone.mainzone).blocklist.user =
+        state.z_zone.mainzone as *mut ::core::ffi::c_void as *mut *mut ::core::ffi::c_void;
+    (*state.z_zone.mainzone).blocklist.tag = PU_STATIC as i32;
+    (*state.z_zone.mainzone).rover = block;
+    (*block).next = &raw mut (*state.z_zone.mainzone).blocklist as *mut memblock_s;
     (*block).prev = (*block).next;
     (*block).tag = PU_FREE as i32;
-    (*block).size = ((*state.mainzone).size as usize)
+    (*block).size = ((*state.z_zone.mainzone).size as usize)
         .wrapping_sub(::core::mem::size_of::<memzone_t>() as usize) as i32;
 }
 pub unsafe fn Z_Free(state: &mut ZZoneState, mut ptr: *mut ::core::ffi::c_void) {

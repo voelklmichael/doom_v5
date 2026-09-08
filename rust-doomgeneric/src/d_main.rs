@@ -1099,7 +1099,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         b"Z_Init: Init zone memory allocation daemon. \n\0" as *const u8
             as *const ::core::ffi::c_char,
     );
-    Z_Init(&mut state.z_zone);
+    Z_Init(state);
     state.d_main.nomonsters = M_CheckParm("-nomonsters") != 0;
     state.d_main.respawnparm = M_CheckParm("-respawn") != 0;
     state.d_main.fastparm = M_CheckParm("-fast") != 0;
