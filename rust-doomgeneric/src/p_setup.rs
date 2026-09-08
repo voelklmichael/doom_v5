@@ -273,12 +273,12 @@ pub unsafe fn P_LoadVertexes(state: &mut GameState, mut lump: i32) {
 pub unsafe fn GetSectorAtNullAddress(state: &mut GameState) -> SectorId {
     if state.p_setup.null_sector_id.is_none() {
         let mut sentinel = ZERO_SECTOR;
-        I_GetMemoryValue(
+        I_GetMemoryValue(state, 
             0 as u32,
             &raw mut sentinel.floorheight as *mut ::core::ffi::c_void,
             4 as i32,
         );
-        I_GetMemoryValue(
+        I_GetMemoryValue(state, 
             4 as u32,
             &raw mut sentinel.ceilingheight as *mut ::core::ffi::c_void,
             4 as i32,
