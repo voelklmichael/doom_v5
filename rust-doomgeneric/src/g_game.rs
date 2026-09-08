@@ -1727,7 +1727,7 @@ pub unsafe fn G_DoLoadGame(state: &mut GameState) {
         return;
     }
     state.p_saveg.savegame_error = false;
-    if !P_ReadSaveGameHeader() {
+    if !P_ReadSaveGameHeader(state) {
         fclose(state.p_saveg.save_stream);
         return;
     }
@@ -1735,11 +1735,11 @@ pub unsafe fn G_DoLoadGame(state: &mut GameState) {
     let (skill, episode, map) = (state.g_game.gameskill, state.g_game.gameepisode, state.g_game.gamemap);
     G_InitNew(state, skill, episode, map);
     state.p_tick.leveltime = savedleveltime;
-    P_UnArchivePlayers();
-    P_UnArchiveWorld();
-    P_UnArchiveThinkers();
-    P_UnArchiveSpecials(&mut state.p_ceilng);
-    if !P_ReadSaveGameEOF() {
+    P_UnArchivePlayers(state);
+    P_UnArchiveWorld(state);
+    P_UnArchiveThinkers(state);
+    P_UnArchiveSpecials(state);
+    if !P_ReadSaveGameEOF(state) {
         I_Error("Bad savegame");
     }
     fclose(state.p_saveg.save_stream);
@@ -1765,8 +1765,8 @@ pub unsafe fn G_DoSaveGame(state: &mut GameState) {
     let mut recovery_savegame_file: *mut ::core::ffi::c_char =
         ::core::ptr::null_mut::<::core::ffi::c_char>();
     recovery_savegame_file = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    temp_savegame_file = P_TempSaveGameFile();
-    savegame_file = P_SaveGameFile(state.g_game.savegameslot);
+    temp_savegame_file = P_TempSaveGameFile(state);
+    savegame_file = P_SaveGameFile(state, state.g_game.savegameslot);
     state.p_saveg.save_stream = fopen(
         temp_savegame_file,
         b"wb\0" as *const u8 as *const ::core::ffi::c_char,
@@ -1793,14 +1793,13 @@ pub unsafe fn G_DoSaveGame(state: &mut GameState) {
         }
     }
     state.p_saveg.savegame_error = false;
-    P_WriteSaveGameHeader(
-        &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char,
-    );
-    P_ArchivePlayers();
-    P_ArchiveWorld();
-    P_ArchiveThinkers();
-    P_ArchiveSpecials(&mut state.p_ceilng);
-    P_WriteSaveGameEOF();
+    let savedescription = &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char;
+    P_WriteSaveGameHeader(state, savedescription);
+    P_ArchivePlayers(state);
+    P_ArchiveWorld(state);
+    P_ArchiveThinkers(state);
+    P_ArchiveSpecials(state);
+    P_WriteSaveGameEOF(state);
     if state.g_game.vanilla_savegame_limit != 0
         && ftell(state.p_saveg.save_stream) > SAVEGAMESIZE as i64
     {

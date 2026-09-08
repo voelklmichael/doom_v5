@@ -1445,7 +1445,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     if state.d_main.startloadgame >= 0 as i32 {
         M_StringCopy(
             &raw mut file as *mut ::core::ffi::c_char,
-            P_SaveGameFile(state.d_main.startloadgame),
+            P_SaveGameFile(state, state.d_main.startloadgame),
             ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
         );
         G_LoadGame(state, &raw mut file as *mut ::core::ffi::c_char);

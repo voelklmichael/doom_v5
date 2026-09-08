@@ -810,7 +810,7 @@ pub unsafe fn M_ReadSaveStrings(state: &mut GameState) {
     while i < load_end as i32 {
         M_StringCopy(
             &raw mut name as *mut ::core::ffi::c_char,
-            P_SaveGameFile(i),
+            P_SaveGameFile(state, i),
             ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
         );
         handle = fopen(
@@ -888,7 +888,7 @@ pub unsafe extern "C" fn M_LoadSelect(state: &mut GameState, mut choice: i32) {
     let mut name: [::core::ffi::c_char; 256] = [0; 256];
     M_StringCopy(
         &raw mut name as *mut ::core::ffi::c_char,
-        P_SaveGameFile(choice),
+        P_SaveGameFile(state, choice),
         ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
     );
     G_LoadGame(state, &raw mut name as *mut ::core::ffi::c_char);
