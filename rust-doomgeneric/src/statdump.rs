@@ -1,3 +1,4 @@
+use crate::src::game_state::game_state;
 use crate::src::m_argv::M_ParmExists;
 use crate::src::stdint_types::size_t;
 use crate::src::wi_stuff::{wbplayerstruct_t, wbstartstruct_t};
@@ -39,7 +40,7 @@ impl StatDumpState {
 }
 
 pub unsafe fn StatCopy(state: &mut StatDumpState, mut stats: *mut wbstartstruct_t) {
-    if M_ParmExists("-statdump") && state.num_captured_stats < MAX_CAPTURES {
+    if M_ParmExists(unsafe { game_state() }, "-statdump") && state.num_captured_stats < MAX_CAPTURES {
         memcpy(
             (&raw mut state.captured_stats as *mut wbstartstruct_t)
                 .offset(state.num_captured_stats as isize) as *mut wbstartstruct_t

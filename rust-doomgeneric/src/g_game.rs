@@ -2092,7 +2092,7 @@ pub unsafe fn G_RecordDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_
         name,
     );
     maxsize = 0x20000 as i32;
-    i = M_CheckParmWithArgs("-maxdemo", 1 as i32);
+    i = M_CheckParmWithArgs(state, "-maxdemo", 1 as i32);
     if i != 0 {
         maxsize = atoi(
             state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
@@ -2125,7 +2125,7 @@ pub unsafe fn G_VanillaVersionCode(state: &mut DoomstatState) -> i32 {
 }
 pub unsafe fn G_BeginRecording(state: &mut GameState) {
     let mut i: i32 = 0;
-    state.g_game.longtics = M_CheckParm("-longtics") != 0 as i32;
+    state.g_game.longtics = M_CheckParm(state, "-longtics") != 0 as i32;
     state.g_game.lowres_turn = !state.g_game.longtics;
     state.g_game.demo_p = state.g_game.demobuffer;
     if state.g_game.longtics {
@@ -2280,8 +2280,8 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
         i += 1;
     }
     if state.g_game.playeringame[1 as i32 as usize] != 0
-        || M_CheckParm("-solo-net") > 0 as i32
-        || M_CheckParm("-netdemo") > 0 as i32
+        || M_CheckParm(state, "-solo-net") > 0 as i32
+        || M_CheckParm(state, "-netdemo") > 0 as i32
     {
         state.g_game.netgame = true;
         state.g_game.netdemo = true;
@@ -2294,7 +2294,7 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
     state.g_game.demoplayback = true;
 }
 pub unsafe fn G_TimeDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_char) {
-    state.g_game.nodrawers = M_CheckParm("-nodraw") != 0;
+    state.g_game.nodrawers = M_CheckParm(state, "-nodraw") != 0;
     state.g_game.timingdemo = true;
     state.d_loop.singletics = true;
     state.g_game.defdemoname = name;

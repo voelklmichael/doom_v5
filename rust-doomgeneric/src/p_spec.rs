@@ -1091,7 +1091,7 @@ unsafe fn DonutOverrun(
         state.p_spec.donut_overrun_first = 0 as i32;
         state.p_spec.donut_overrun_tmp_s3_floorheight = DONUT_FLOORHEIGHT_DEFAULT;
         state.p_spec.donut_overrun_tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
-        p = M_CheckParmWithArgs("-donut", 2 as i32);
+        p = M_CheckParmWithArgs(state, "-donut", 2 as i32);
         if p > 0 as i32 {
             M_StrToInt(
                 state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()

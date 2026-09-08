@@ -862,7 +862,7 @@ pub unsafe fn D_IdentifyVersion(state: &mut GameState) {
     } else {
         let mut p: i32 = 0;
         state.doomstat.gamemode = commercial;
-        p = M_CheckParmWithArgs("-pack", 1 as i32);
+        p = M_CheckParmWithArgs(state, "-pack", 1 as i32);
         if p > 0 as i32 {
             let pack_name = state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char;
@@ -998,7 +998,7 @@ pub unsafe fn PrintDehackedBanners() {
 unsafe fn InitGameVersion(state: &mut GameState) {
     let mut p: i32 = 0;
     let mut i: i32 = 0;
-    p = M_CheckParmWithArgs("-gameversion", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-gameversion", 1 as i32);
     if p != 0 {
         i = 0 as i32;
         while !state.d_main.gameversions[i as usize].description.is_null() {
@@ -1083,7 +1083,7 @@ unsafe extern "C" fn D_Endoom() {
     if unsafe { game_state() }.d_main.show_endoom == 0
         || !unsafe { game_state() }.d_main.main_loop_started
         || unsafe { game_state() }.i_video.screensaver_mode
-        || M_CheckParm("-testcontrols") > 0 as i32
+        || M_CheckParm(unsafe { game_state() }, "-testcontrols") > 0 as i32
     {
         return;
     }
@@ -1100,14 +1100,14 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
             as *const ::core::ffi::c_char,
     );
     Z_Init(state);
-    state.d_main.nomonsters = M_CheckParm("-nomonsters") != 0;
-    state.d_main.respawnparm = M_CheckParm("-respawn") != 0;
-    state.d_main.fastparm = M_CheckParm("-fast") != 0;
-    state.d_main.devparm = M_CheckParm("-devparm") != 0;
-    if M_CheckParm("-deathmatch") != 0 {
+    state.d_main.nomonsters = M_CheckParm(state, "-nomonsters") != 0;
+    state.d_main.respawnparm = M_CheckParm(state, "-respawn") != 0;
+    state.d_main.fastparm = M_CheckParm(state, "-fast") != 0;
+    state.d_main.devparm = M_CheckParm(state, "-devparm") != 0;
+    if M_CheckParm(state, "-deathmatch") != 0 {
         state.g_game.deathmatch = 1 as i32;
     }
-    if M_CheckParm("-altdeath") != 0 {
+    if M_CheckParm(state, "-altdeath") != 0 {
         state.g_game.deathmatch = 2 as i32;
     }
     if state.d_main.devparm {
@@ -1117,7 +1117,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         &mut state.m_config,
         ::core::ptr::null_mut::<::core::ffi::c_char>(),
     );
-    p = M_CheckParm("-turbo");
+    p = M_CheckParm(state, "-turbo");
     if p != 0 {
         let mut scale: i32 = 200 as i32;
         if p < state.m_argv.myargv.len() as i32 - 1 as i32 {
@@ -1187,9 +1187,9 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.d_main.bfgedition = true;
     }
     state.doomstat.modifiedgame = W_ParseCommandLine();
-    p = M_CheckParmWithArgs("-playdemo", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-playdemo", 1 as i32);
     if p == 0 {
-        p = M_CheckParmWithArgs("-timedemo", 1 as i32);
+        p = M_CheckParmWithArgs(state, "-timedemo", 1 as i32);
     }
     if p != 0 {
         if M_StringEndsWith(
@@ -1318,7 +1318,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     state.d_main.startepisode = 1 as i32;
     state.d_main.startmap = 1 as i32;
     state.d_main.autostart = false;
-    p = M_CheckParmWithArgs("-skill", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-skill", 1 as i32);
     if p != 0 {
         state.d_main.startskill = (state.m_argv.myargv[(p + 1 as i32) as usize]
             .as_bytes()
@@ -1328,7 +1328,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
             - '1' as i32) as skill_t;
         state.d_main.autostart = true;
     }
-    p = M_CheckParmWithArgs("-episode", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-episode", 1 as i32);
     if p != 0 {
         state.d_main.startepisode = state.m_argv.myargv[(p + 1 as i32) as usize]
             .as_bytes()
@@ -1340,18 +1340,18 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.d_main.autostart = true;
     }
     state.g_game.timelimit = 0 as i32;
-    p = M_CheckParmWithArgs("-timer", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-timer", 1 as i32);
     if p != 0 {
         state.g_game.timelimit = atoi(
             state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
                 as *mut ::core::ffi::c_char,
         );
     }
-    p = M_CheckParm("-avg");
+    p = M_CheckParm(state, "-avg");
     if p != 0 {
         state.g_game.timelimit = 20 as i32;
     }
-    p = M_CheckParmWithArgs("-warp", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-warp", 1 as i32);
     if p != 0 {
         if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
             state.d_main.startmap = atoi(
@@ -1378,14 +1378,14 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         }
         state.d_main.autostart = true;
     }
-    p = M_CheckParm("-testcontrols");
+    p = M_CheckParm(state, "-testcontrols");
     if p > 0 as i32 {
         state.d_main.startepisode = 1 as i32;
         state.d_main.startmap = 1 as i32;
         state.d_main.autostart = true;
         state.g_game.testcontrols = true;
     }
-    p = M_CheckParmWithArgs("-loadgame", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-loadgame", 1 as i32);
     if p != 0 {
         state.d_main.startloadgame = atoi(
             state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
@@ -1421,24 +1421,24 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     {
         state.d_main.storedemo = true;
     }
-    if M_CheckParmWithArgs("-statdump", 1 as i32) != 0 {
+    if M_CheckParmWithArgs(state, "-statdump", 1 as i32) != 0 {
         I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true);
         printf(b"External statistics registered.\n\0" as *const u8 as *const ::core::ffi::c_char);
     }
-    p = M_CheckParmWithArgs("-record", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-record", 1 as i32);
     if p != 0 {
         let record_name = state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
         G_RecordDemo(state, record_name);
         state.d_main.autostart = true;
     }
-    p = M_CheckParmWithArgs("-playdemo", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-playdemo", 1 as i32);
     if p != 0 {
         state.g_game.singledemo = true;
         G_DeferedPlayDemo(state, &raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop(state);
         return;
     }
-    p = M_CheckParmWithArgs("-timedemo", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-timedemo", 1 as i32);
     if p != 0 {
         G_TimeDemo(state, &raw mut demolumpname as *mut ::core::ffi::c_char);
         D_DoomLoop(state);

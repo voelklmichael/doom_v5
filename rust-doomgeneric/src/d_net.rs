@@ -125,23 +125,23 @@ unsafe fn SaveGameSettings(state: &mut GameState, mut settings: *mut net_gameset
     (*settings).respawn_monsters = state.d_main.respawnparm as i32;
     (*settings).timelimit = state.g_game.timelimit;
     (*settings).lowres_turn =
-        (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
+        (M_CheckParm(state, "-record") > 0 as i32 && M_CheckParm(state, "-longtics") == 0 as i32) as i32;
 }
 unsafe fn InitConnectData(state: &mut GameState, mut connect_data: *mut net_connect_data_t) {
     (*connect_data).max_players = MAXPLAYERS;
     (*connect_data).drone = false_0;
-    if M_CheckParm("-left") > 0 as i32 {
+    if M_CheckParm(state, "-left") > 0 as i32 {
         state.r_main.viewangleoffset = ANG90;
         (*connect_data).drone = true_0;
     }
-    if M_CheckParm("-right") > 0 as i32 {
+    if M_CheckParm(state, "-right") > 0 as i32 {
         state.r_main.viewangleoffset = ANG270 as i32;
         (*connect_data).drone = true_0;
     }
     (*connect_data).gamemode = state.doomstat.gamemode as i32;
     (*connect_data).gamemission = state.doomstat.gamemission as i32;
     (*connect_data).lowres_turn =
-        (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
+        (M_CheckParm(state, "-record") > 0 as i32 && M_CheckParm(state, "-longtics") == 0 as i32) as i32;
     W_Checksum(
         state,
         &raw mut (*connect_data).wad_sha1sum as *mut byte,
@@ -162,7 +162,7 @@ pub unsafe fn D_ConnectNetGame(state: &mut GameState) {
     };
     InitConnectData(state, &raw mut connect_data);
     state.g_game.netgame = D_InitNetGame(state, &raw mut connect_data);
-    if M_CheckParm("-solo-net") > 0 as i32 {
+    if M_CheckParm(state, "-solo-net") > 0 as i32 {
         state.g_game.netgame = true;
     }
 }
@@ -211,7 +211,7 @@ pub unsafe fn D_CheckNetGame(state: &mut GameState) {
     if state.g_game.timelimit > 0 as i32
         && state.g_game.deathmatch != 0
     {
-        if state.g_game.timelimit == 20 as i32 && M_CheckParm("-avg") != 0 {
+        if state.g_game.timelimit == 20 as i32 && M_CheckParm(state, "-avg") != 0 {
             printf(
                 b"Austin Virtual Gaming: Levels will end after 20 minutes\n\0" as *const u8
                     as *const ::core::ffi::c_char,

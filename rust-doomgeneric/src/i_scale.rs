@@ -1169,7 +1169,7 @@ unsafe fn I_Stretch5x(
         bufp = bufp.offset(SCREENWIDTH as isize);
         y += 1 as i32;
     }
-    if M_CheckParm("-scanline") > 0 as i32 {
+    if M_CheckParm(unsafe { game_state() }, "-scanline") > 0 as i32 {
         screenp = state
             .dest_buffer
             .offset((2 as i32 * state.dest_pitch) as isize);

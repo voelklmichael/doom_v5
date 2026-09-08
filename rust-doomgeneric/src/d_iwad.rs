@@ -223,7 +223,7 @@ pub unsafe fn D_FindIWAD(
     mut mask: i32,
     mut mission: *mut GameMission_t,
 ) -> *mut ::core::ffi::c_char {
-    let iwadparm = M_CheckParmWithArgs("-iwad", 1 as i32);
+    let iwadparm = M_CheckParmWithArgs(state, "-iwad", 1 as i32);
     if iwadparm != 0 {
         let iwadfile = state.m_argv.myargv[(iwadparm + 1 as i32) as usize]
             .as_ptr() as *mut ::core::ffi::c_char;

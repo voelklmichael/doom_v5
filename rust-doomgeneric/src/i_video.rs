@@ -193,7 +193,7 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
     state.i_video.s_Fb.yres = DOOMGENERIC_RESY as uint32_t;
     state.i_video.s_Fb.xres_virtual = state.i_video.s_Fb.xres;
     state.i_video.s_Fb.yres_virtual = state.i_video.s_Fb.yres;
-    gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1 as i32);
+    gfxmodeparm = M_CheckParmWithArgs(state, "-gfxmode", 1 as i32);
     if gfxmodeparm != 0 {
         mode = state.m_argv.myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr()
             as *mut ::core::ffi::c_char;
@@ -257,7 +257,7 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
         SCREENWIDTH,
         SCREENHEIGHT,
     );
-    i = M_CheckParmWithArgs("-scaling", 1 as i32);
+    i = M_CheckParmWithArgs(state, "-scaling", 1 as i32);
     if i > 0 as i32 {
         i = atoi(
             state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()

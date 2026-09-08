@@ -843,7 +843,7 @@ unsafe fn PadRejectArray(state: &mut GameState, mut array: *mut byte, mut len: u
             len,
             ::core::mem::size_of::<[u32; 4]>() as i32,
         );
-        if M_CheckParm("-reject_pad_with_ff") != 0 {
+        if M_CheckParm(state, "-reject_pad_with_ff") != 0 {
             padvalue = 0xff as u32;
         } else {
             padvalue = 0xf00 as u32;

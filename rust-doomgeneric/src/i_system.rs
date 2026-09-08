@@ -107,7 +107,7 @@ pub unsafe fn I_ZoneBase(state: &mut GameState, mut size: *mut i32) -> *mut byte
     let mut min_ram: i32 = 0;
     let mut default_ram: i32 = 0;
     let mut p: i32 = 0;
-    p = M_CheckParmWithArgs("-mb", 1 as i32);
+    p = M_CheckParmWithArgs(state, "-mb", 1 as i32);
     if p > 0 as i32 {
         default_ram = atoi(
             state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
@@ -259,7 +259,7 @@ pub unsafe fn I_Error(message: &str) {
         }
         entry = (*entry).next;
     }
-    exit_gui_popup = !M_ParmExists("-nogui");
+    exit_gui_popup = !M_ParmExists(unsafe { game_state() }, "-nogui");
     if exit_gui_popup && !I_ConsoleStdout() {
         ZenityErrorBox(message_cstring.as_ptr() as *mut ::core::ffi::c_char);
     }
@@ -314,7 +314,7 @@ pub unsafe fn I_GetMemoryValue(
         let mut val: i32 = 0;
         state.i_system.get_memory_value_firsttime = false;
         i = 0 as i32;
-        p = M_CheckParmWithArgs("-setmem", 1 as i32);
+        p = M_CheckParmWithArgs(state, "-setmem", 1 as i32);
         if p > 0 as i32 {
             if strcasecmp(
                 state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),

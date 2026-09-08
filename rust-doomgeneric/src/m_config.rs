@@ -1898,7 +1898,7 @@ pub unsafe fn M_SaveDefaultsAlternate(
 }
 pub unsafe fn M_LoadDefaults(state: &mut GameState) {
     let mut i: i32 = 0;
-    i = M_CheckParmWithArgs("-config", 1 as i32);
+    i = M_CheckParmWithArgs(state, "-config", 1 as i32);
     if i != 0 {
         state.m_config.doom_defaults.filename = state.m_argv.myargv[(i + 1 as i32) as usize]
             .as_ptr() as *mut ::core::ffi::c_char;
@@ -1917,7 +1917,7 @@ pub unsafe fn M_LoadDefaults(state: &mut GameState) {
         b"saving config in %s\n\0" as *const u8 as *const ::core::ffi::c_char,
         state.m_config.doom_defaults.filename,
     );
-    i = M_CheckParmWithArgs("-extraconfig", 1 as i32);
+    i = M_CheckParmWithArgs(state, "-extraconfig", 1 as i32);
     if i != 0 {
         state.m_config.extra_defaults.filename = state.m_argv.myargv[(i + 1 as i32) as usize]
             .as_ptr() as *mut ::core::ffi::c_char;
