@@ -522,7 +522,7 @@ pub unsafe fn P_TryMove(state: &mut GameState, mut thing: *mut mobj_t, mut x: fi
             oldside = P_PointOnLineSide(oldx, oldy, ld);
             if side != oldside {
                 if (*ld).special != 0 {
-                    P_CrossSpecialLine(ld.offset_from(state.p_setup.lines) as i64 as i32, oldside, thing);
+                    P_CrossSpecialLine(state, ld.offset_from(state.p_setup.lines) as i64 as i32, oldside, thing);
                 }
             }
         }
@@ -820,7 +820,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(state: &mut GameState, mut in_0: *mut
     if (*in_0).isaline {
         li = (*in_0).d.line;
         if (*li).special != 0 {
-            P_ShootSpecialLine(state.p_map.shootthing, li);
+            P_ShootSpecialLine(state, state.p_map.shootthing, li);
         }
         if !((*li).flags as i32 & ML_TWOSIDED == 0) {
             P_LineOpening(state, li);

@@ -55,6 +55,7 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
     match (*plat).status as u32 {
         0 => {
             res = T_MovePlane(
+                state,
                 sec,
                 (*plat).speed,
                 (*plat).high,
@@ -102,6 +103,7 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
         }
         1 => {
             res = T_MovePlane(
+                state,
                 sec,
                 (*plat).speed,
                 (*plat).low,
@@ -138,7 +140,7 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
     };
 }
 pub unsafe fn EV_DoPlat(
-    state: &mut PPlatsState,
+    state: &mut GameState,
     mut line: *mut line_t,
     mut type_0: plattype_e,
     mut amount: i32,
@@ -151,22 +153,22 @@ pub unsafe fn EV_DoPlat(
     rtn = 0 as i32;
     match type_0 as u32 {
         0 => {
-            P_ActivateInStasis(state, (*line).tag as i32);
+            P_ActivateInStasis(&mut state.p_plats, (*line).tag as i32);
         }
         _ => {}
     }
     loop {
-        secnum = P_FindSectorFromLineTag(line, secnum);
+        secnum = P_FindSectorFromLineTag(state, line, secnum);
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
+        sec = state.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
         rtn = 1 as i32;
         plat = Z_Malloc(
-            unsafe { &mut game_state().z_zone },
+            &mut state.z_zone,
             ::core::mem::size_of::<plat_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -181,33 +183,33 @@ pub unsafe fn EV_DoPlat(
         match type_0 as u32 {
             3 => {
                 (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
-                let neighbor_sector_id = unsafe { game_state() }.p_setup.sides
+                let neighbor_sector_id = state.p_setup.sides
                     [(*line).sidenum[0 as i32 as usize] as usize]
                     .sector;
                 (*sec).floorpic =
-                    (*unsafe { game_state() }.p_setup.sector_mut(neighbor_sector_id)).floorpic;
+                    (*state.p_setup.sector_mut(neighbor_sector_id)).floorpic;
                 (*plat).high = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
                 (*sec).special = 0 as i16;
                 S_StartSound(
-                    unsafe { &mut game_state().sounds },
+                    &mut state.sounds,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_stnmov as i32,
                 );
             }
             2 => {
                 (*plat).speed = (PLATSPEED / 2 as i32) as fixed_t;
-                let neighbor_sector_id = unsafe { game_state() }.p_setup.sides
+                let neighbor_sector_id = state.p_setup.sides
                     [(*line).sidenum[0 as i32 as usize] as usize]
                     .sector;
                 (*sec).floorpic =
-                    (*unsafe { game_state() }.p_setup.sector_mut(neighbor_sector_id)).floorpic;
+                    (*state.p_setup.sector_mut(neighbor_sector_id)).floorpic;
                 (*plat).high = ((*sec).floorheight as i32 + amount * FRACUNIT) as fixed_t;
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
                 S_StartSound(
-                    unsafe { &mut game_state().sounds },
+                    &mut state.sounds,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_stnmov as i32,
                 );
@@ -222,7 +224,7 @@ pub unsafe fn EV_DoPlat(
                 (*plat).wait = TICRATE * PLATWAIT;
                 (*plat).status = down;
                 S_StartSound(
-                    unsafe { &mut game_state().sounds },
+                    &mut state.sounds,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
@@ -237,7 +239,7 @@ pub unsafe fn EV_DoPlat(
                 (*plat).wait = TICRATE * PLATWAIT;
                 (*plat).status = down;
                 S_StartSound(
-                    unsafe { &mut game_state().sounds },
+                    &mut state.sounds,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
@@ -254,16 +256,16 @@ pub unsafe fn EV_DoPlat(
                 }
                 (*plat).wait = TICRATE * PLATWAIT;
                 (*plat).status =
-                    (P_Random(unsafe { &mut game_state().m_random }) & 1 as i32) as plat_e;
+                    (P_Random(&mut state.m_random) & 1 as i32) as plat_e;
                 S_StartSound(
-                    unsafe { &mut game_state().sounds },
+                    &mut state.sounds,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
             }
             _ => {}
         }
-        P_AddActivePlat(state, plat);
+        P_AddActivePlat(&mut state.p_plats, plat);
     }
     return rtn;
 }

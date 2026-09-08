@@ -97,7 +97,7 @@ pub unsafe fn P_Ticker(state: &mut GameState) {
         i += 1;
     }
     P_RunThinkers(state);
-    P_UpdateSpecials(&mut state.p_switch);
+    P_UpdateSpecials(state);
     P_RespawnSpecials(&mut state.p_mobj);
     state.p_tick.leveltime += 1;
 }

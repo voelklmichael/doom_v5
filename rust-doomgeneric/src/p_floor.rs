@@ -1,5 +1,4 @@
 use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
@@ -49,6 +48,7 @@ pub const crushed: result_e = 1;
 pub const ok: result_e = 0;
 pub const FLOORSPEED: i32 = FRACUNIT;
 pub unsafe fn T_MovePlane(
+    state: &mut GameState,
     mut sector: *mut sector_t,
     mut speed: fixed_t,
     mut dest: fixed_t,
@@ -64,19 +64,19 @@ pub unsafe fn T_MovePlane(
                 if (*sector).floorheight - speed < dest {
                     lastpos = (*sector).floorheight;
                     (*sector).floorheight = dest;
-                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
+                    flag = P_ChangeSector(state, sector, crush);
                     if flag {
                         (*sector).floorheight = lastpos;
-                        P_ChangeSector(unsafe { game_state() }, sector, crush);
+                        P_ChangeSector(state, sector, crush);
                     }
                     return pastdest;
                 } else {
                     lastpos = (*sector).floorheight;
                     (*sector).floorheight -= speed;
-                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
+                    flag = P_ChangeSector(state, sector, crush);
                     if flag {
                         (*sector).floorheight = lastpos;
-                        P_ChangeSector(unsafe { game_state() }, sector, crush);
+                        P_ChangeSector(state, sector, crush);
                         return crushed;
                     }
                 }
@@ -85,22 +85,22 @@ pub unsafe fn T_MovePlane(
                 if (*sector).floorheight + speed > dest {
                     lastpos = (*sector).floorheight;
                     (*sector).floorheight = dest;
-                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
+                    flag = P_ChangeSector(state, sector, crush);
                     if flag {
                         (*sector).floorheight = lastpos;
-                        P_ChangeSector(unsafe { game_state() }, sector, crush);
+                        P_ChangeSector(state, sector, crush);
                     }
                     return pastdest;
                 } else {
                     lastpos = (*sector).floorheight;
                     (*sector).floorheight += speed;
-                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
+                    flag = P_ChangeSector(state, sector, crush);
                     if flag {
                         if crush {
                             return crushed;
                         }
                         (*sector).floorheight = lastpos;
-                        P_ChangeSector(unsafe { game_state() }, sector, crush);
+                        P_ChangeSector(state, sector, crush);
                         return crushed;
                     }
                 }
@@ -112,22 +112,22 @@ pub unsafe fn T_MovePlane(
                 if (*sector).ceilingheight - speed < dest {
                     lastpos = (*sector).ceilingheight;
                     (*sector).ceilingheight = dest;
-                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
+                    flag = P_ChangeSector(state, sector, crush);
                     if flag {
                         (*sector).ceilingheight = lastpos;
-                        P_ChangeSector(unsafe { game_state() }, sector, crush);
+                        P_ChangeSector(state, sector, crush);
                     }
                     return pastdest;
                 } else {
                     lastpos = (*sector).ceilingheight;
                     (*sector).ceilingheight -= speed;
-                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
+                    flag = P_ChangeSector(state, sector, crush);
                     if flag {
                         if crush {
                             return crushed;
                         }
                         (*sector).ceilingheight = lastpos;
-                        P_ChangeSector(unsafe { game_state() }, sector, crush);
+                        P_ChangeSector(state, sector, crush);
                         return crushed;
                     }
                 }
@@ -136,16 +136,16 @@ pub unsafe fn T_MovePlane(
                 if (*sector).ceilingheight + speed > dest {
                     lastpos = (*sector).ceilingheight;
                     (*sector).ceilingheight = dest;
-                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
+                    flag = P_ChangeSector(state, sector, crush);
                     if flag {
                         (*sector).ceilingheight = lastpos;
-                        P_ChangeSector(unsafe { game_state() }, sector, crush);
+                        P_ChangeSector(state, sector, crush);
                     }
                     return pastdest;
                 } else {
                     lastpos = (*sector).ceilingheight;
                     (*sector).ceilingheight += speed;
-                    flag = P_ChangeSector(unsafe { game_state() }, sector, crush);
+                    flag = P_ChangeSector(state, sector, crush);
                 }
             }
             _ => {}
@@ -158,6 +158,7 @@ pub unsafe fn T_MoveFloor(state: &mut GameState, mut floor: *mut floormove_t) {
     let mut res: result_e = ok;
     let sec = state.p_setup.sector_mut((*floor).sector);
     res = T_MovePlane(
+        state,
         sec,
         (*floor).speed,
         (*floor).floordestheight,
@@ -199,7 +200,7 @@ pub unsafe fn T_MoveFloor(state: &mut GameState, mut floor: *mut floormove_t) {
         );
     }
 }
-pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
+pub unsafe fn EV_DoFloor(state: &mut GameState, mut line: *mut line_t, mut floortype: floor_e) -> i32 {
     let mut secnum: i32 = 0;
     let mut rtn: i32 = 0;
     let mut i: i32 = 0;
@@ -208,17 +209,17 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
     secnum = -(1 as i32);
     rtn = 0 as i32;
     loop {
-        secnum = P_FindSectorFromLineTag(line, secnum);
+        secnum = P_FindSectorFromLineTag(state, line, secnum);
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
+        sec = state.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
         rtn = 1 as i32;
         floor = Z_Malloc(
-            unsafe { &mut game_state().z_zone },
+            &mut state.z_zone,
             ::core::mem::size_of::<floormove_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -297,7 +298,7 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
                 (*floor).speed = FLOORSPEED as fixed_t;
                 (*floor).floordestheight =
                     ((*sec).floorheight as i32 + 24 as i32 * FRACUNIT) as fixed_t;
-                let fsec = unsafe { game_state() }.p_setup.sector_mut((*line).frontsector.unwrap());
+                let fsec = state.p_setup.sector_mut((*line).frontsector.unwrap());
                 (*sec).floorpic = (*fsec).floorpic;
                 (*sec).special = (*fsec).special;
                 current_block_84 = 15514718523126015390;
@@ -310,19 +311,19 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
                 (*floor).speed = FLOORSPEED as fixed_t;
                 i = 0 as i32;
                 while i < (*sec).linecount {
-                    if twoSided(secnum, i) != 0 {
-                        side = getSide(secnum, i, 0 as i32);
+                    if twoSided(state, secnum, i) != 0 {
+                        side = getSide(state, secnum, i, 0 as i32);
                         if (*side).bottomtexture as i32 >= 0 as i32 {
-                            if *unsafe { game_state() }.r_data.textureheight.offset((*side).bottomtexture as isize) < minsize {
+                            if *state.r_data.textureheight.offset((*side).bottomtexture as isize) < minsize {
                                 minsize =
-                                    *unsafe { game_state() }.r_data.textureheight.offset((*side).bottomtexture as isize) as i32;
+                                    *state.r_data.textureheight.offset((*side).bottomtexture as isize) as i32;
                             }
                         }
-                        side = getSide(secnum, i, 1 as i32);
+                        side = getSide(state, secnum, i, 1 as i32);
                         if (*side).bottomtexture as i32 >= 0 as i32 {
-                            if *unsafe { game_state() }.r_data.textureheight.offset((*side).bottomtexture as isize) < minsize {
+                            if *state.r_data.textureheight.offset((*side).bottomtexture as isize) < minsize {
                                 minsize =
-                                    *unsafe { game_state() }.r_data.textureheight.offset((*side).bottomtexture as isize) as i32;
+                                    *state.r_data.textureheight.offset((*side).bottomtexture as isize) as i32;
                             }
                         }
                     }
@@ -340,16 +341,16 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
                 (*floor).texture = (*sec).floorpic;
                 i = 0 as i32;
                 while i < (*sec).linecount {
-                    if twoSided(secnum, i) != 0 {
-                        if (*getSide(secnum, i, 0 as i32)).sector.0 == secnum as u32 {
-                            sec = getSector(secnum, i, 1 as i32);
+                    if twoSided(state, secnum, i) != 0 {
+                        if (*getSide(state, secnum, i, 0 as i32)).sector.0 == secnum as u32 {
+                            sec = getSector(state, secnum, i, 1 as i32);
                             if (*sec).floorheight == (*floor).floordestheight {
                                 (*floor).texture = (*sec).floorpic;
                                 (*floor).newspecial = (*sec).special as i32;
                                 break;
                             }
                         } else {
-                            sec = getSector(secnum, i, 0 as i32);
+                            sec = getSector(state, secnum, i, 0 as i32);
                             if (*sec).floorheight == (*floor).floordestheight {
                                 (*floor).texture = (*sec).floorpic;
                                 (*floor).newspecial = (*sec).special as i32;
@@ -383,7 +384,7 @@ pub unsafe fn EV_DoFloor(mut line: *mut line_t, mut floortype: floor_e) -> i32 {
     }
     return rtn;
 }
-pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 {
+pub unsafe fn EV_BuildStairs(state: &mut GameState, mut line: *mut line_t, mut type_0: stair_e) -> i32 {
     let mut secnum: i32 = 0;
     let mut height: i32 = 0;
     let mut i: i32 = 0;
@@ -399,17 +400,17 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
     secnum = -(1 as i32);
     rtn = 0 as i32;
     loop {
-        secnum = P_FindSectorFromLineTag(line, secnum);
+        secnum = P_FindSectorFromLineTag(state, line, secnum);
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
+        sec = state.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
         rtn = 1 as i32;
         floor = Z_Malloc(
-            unsafe { &mut game_state().z_zone },
+            &mut state.z_zone,
             ::core::mem::size_of::<floormove_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -444,14 +445,14 @@ pub unsafe fn EV_BuildStairs(mut line: *mut line_t, mut type_0: stair_e) -> i32 
                     if !(secnum != newsecnum) {
                         let back_id = (**(*sec).lines.offset(i as isize)).backsector.unwrap();
                         newsecnum = back_id.0 as i32;
-                        tsec = unsafe { game_state() }.p_setup.sector_mut(back_id);
+                        tsec = state.p_setup.sector_mut(back_id);
                         if !((*tsec).floorpic as i32 != texture) {
                             height += stairsize as i32;
                             if (*tsec).specialdata.is_null() {
                                 sec = tsec;
                                 secnum = newsecnum;
                                 floor = Z_Malloc(
-                                    unsafe { &mut game_state().z_zone },
+                                    &mut state.z_zone,
                                     ::core::mem::size_of::<floormove_t>() as i32,
                                     PU_LEVSPEC as i32,
                                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
