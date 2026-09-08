@@ -879,7 +879,7 @@ pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
         );
         i += 1;
     }
-    P_SetupLevel(
+    P_SetupLevel(state, 
         state.g_game.gameepisode,
         state.g_game.gamemap,
         0 as i32,
