@@ -381,7 +381,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
     if state.g_game.gamestate as u32 != state.d_main.d_display_oldgamestate as u32
         && state.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
     {
-        I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
+        I_SetPalette(state, W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
     }
     if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && state.d_main.d_display_oldgamestate as u32 != GS_LEVEL as i32 as u32
@@ -425,7 +425,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
     M_Drawer(state);
     NetUpdate(state);
     if !wipe {
-        I_FinishUpdate();
+        I_FinishUpdate(state);
         return;
     }
     wipe_EndScreen(state, 0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
@@ -450,7 +450,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
             tics,
         ) != 0;
         M_Drawer(state);
-        I_FinishUpdate();
+        I_FinishUpdate(state);
         if done {
             break;
         }

@@ -961,7 +961,7 @@ pub unsafe fn ST_doPaletteStuff(state: &mut GameState) {
         state.st_stuff.st_palette = palette;
         pal = (W_CacheLumpNum(state.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte)
             .offset((palette * 768 as i32) as isize);
-        I_SetPalette(pal);
+        I_SetPalette(state, pal);
     }
 }
 pub unsafe fn ST_drawWidgets(state: &mut GameState, mut refresh: bool) {
@@ -1422,7 +1422,7 @@ pub unsafe fn ST_Stop(state: &mut GameState) {
     if state.st_stuff.st_stopped {
         return;
     }
-    I_SetPalette(W_CacheLumpNum(state.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte);
+    I_SetPalette(state, W_CacheLumpNum(state.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte);
     state.st_stuff.st_stopped = true;
 }
 pub unsafe fn ST_Init(state: &mut GameState) {

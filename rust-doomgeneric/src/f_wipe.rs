@@ -223,7 +223,7 @@ pub unsafe fn wipe_StartScreen(state: &mut GameState, mut x: i32, mut y_0: i32, 
         PU_STATIC as i32,
         NULL,
     ) as *mut byte;
-    I_ReadScreen(state.f_wipe.wipe_scr_start);
+    I_ReadScreen(state, state.f_wipe.wipe_scr_start);
     return 0 as i32;
 }
 pub unsafe fn wipe_EndScreen(state: &mut GameState, mut x: i32, mut y_0: i32, mut width: i32, mut height: i32) -> i32 {
@@ -233,7 +233,7 @@ pub unsafe fn wipe_EndScreen(state: &mut GameState, mut x: i32, mut y_0: i32, mu
         PU_STATIC as i32,
         NULL,
     ) as *mut byte;
-    I_ReadScreen(state.f_wipe.wipe_scr_end);
+    I_ReadScreen(state, state.f_wipe.wipe_scr_end);
     V_DrawBlock(
         &mut state.v_video,
         x,
