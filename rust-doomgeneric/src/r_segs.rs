@@ -179,7 +179,7 @@ pub unsafe fn R_RenderMaskedSegRange(state: &mut GameState, mut ds: *mut drawseg
             state.r_draw.dc_iscale = (0xffffffff as u32)
                 .wrapping_div(state.r_things.spryscale as u32)
                 as fixed_t;
-            col = R_GetColumn(texnum, *state.r_segs.maskedtexturecol.offset(state.r_draw.dc_x as isize) as i32)
+            col = R_GetColumn(state, texnum, *state.r_segs.maskedtexturecol.offset(state.r_draw.dc_x as isize) as i32)
                 .offset(-(3 as i32 as isize)) as *mut column_t;
             R_DrawMaskedColumn(state, col);
             *state.r_segs.maskedtexturecol.offset(state.r_draw.dc_x as isize) = SHRT_MAX as i16;
@@ -248,7 +248,7 @@ pub unsafe fn R_RenderSegLoop(state: &mut GameState) {
             state.r_draw.dc_yl = yl;
             state.r_draw.dc_yh = yh;
             state.r_draw.dc_texturemid = state.r_segs.rw_midtexturemid;
-            state.r_draw.dc_source = R_GetColumn(state.r_segs.midtexture, texturecolumn as i32);
+            state.r_draw.dc_source = R_GetColumn(state, state.r_segs.midtexture, texturecolumn as i32);
             state.r_main.colfunc.expect("non-null function pointer")(state);
             state.r_plane.ceilingclip[state.r_segs.rw_x as usize] = state.r_draw.viewheight as i16;
             state.r_plane.floorclip[state.r_segs.rw_x as usize] = -(1 as i32) as i16;
@@ -263,7 +263,7 @@ pub unsafe fn R_RenderSegLoop(state: &mut GameState) {
                     state.r_draw.dc_yl = yl;
                     state.r_draw.dc_yh = mid;
                     state.r_draw.dc_texturemid = state.r_segs.rw_toptexturemid;
-                    state.r_draw.dc_source = R_GetColumn(state.r_segs.toptexture, texturecolumn as i32);
+                    state.r_draw.dc_source = R_GetColumn(state, state.r_segs.toptexture, texturecolumn as i32);
                     state.r_main.colfunc.expect("non-null function pointer")(state);
                     state.r_plane.ceilingclip[state.r_segs.rw_x as usize] = mid as i16;
                 } else {
@@ -282,7 +282,7 @@ pub unsafe fn R_RenderSegLoop(state: &mut GameState) {
                     state.r_draw.dc_yl = mid;
                     state.r_draw.dc_yh = yh;
                     state.r_draw.dc_texturemid = state.r_segs.rw_bottomtexturemid;
-                    state.r_draw.dc_source = R_GetColumn(state.r_segs.bottomtexture, texturecolumn as i32);
+                    state.r_draw.dc_source = R_GetColumn(state, state.r_segs.bottomtexture, texturecolumn as i32);
                     state.r_main.colfunc.expect("non-null function pointer")(state);
                     state.r_plane.floorclip[state.r_segs.rw_x as usize] = mid as i16;
                 } else {

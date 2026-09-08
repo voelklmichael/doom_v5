@@ -309,7 +309,7 @@ pub unsafe fn R_DrawPlanes(state: &mut GameState) {
                         angle = (state.r_main.viewangle.wrapping_add(state.r_main.xtoviewangle[x as usize])
                             >> ANGLETOSKYSHIFT) as i32;
                         state.r_draw.dc_x = x;
-                        state.r_draw.dc_source = R_GetColumn(state.r_sky.skytexture, angle);
+                        state.r_draw.dc_source = R_GetColumn(state, state.r_sky.skytexture, angle);
                         state.r_main.colfunc.expect("non-null function pointer")(state);
                     }
                     x += 1;
