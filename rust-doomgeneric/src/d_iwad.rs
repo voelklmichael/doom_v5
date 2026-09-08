@@ -3,7 +3,7 @@ use crate::src::d_mode::{
     doom, doom2, heretic, hexen, none, pack_chex, pack_hacx, pack_plut, pack_tnt, strife,
     GameMission_t,
 };
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_misc::M_FileExists;
@@ -219,19 +219,19 @@ pub unsafe fn D_TryFindWADByName(
     }
 }
 pub unsafe fn D_FindIWAD(
-    state: &mut DIwadState,
+    state: &mut GameState,
     mut mask: i32,
     mut mission: *mut GameMission_t,
 ) -> *mut ::core::ffi::c_char {
     let iwadparm = M_CheckParmWithArgs("-iwad", 1 as i32);
     if iwadparm != 0 {
-        let iwadfile = unsafe { game_state() }.m_argv.myargv[(iwadparm + 1 as i32) as usize]
+        let iwadfile = state.m_argv.myargv[(iwadparm + 1 as i32) as usize]
             .as_ptr() as *mut ::core::ffi::c_char;
-        let result = D_FindWADByName(state, iwadfile);
+        let result = D_FindWADByName(&mut state.d_iwad, iwadfile);
         if result.is_null() {
             I_Error(&format!(
                 "IWAD file '{}' not found!",
-                unsafe { game_state() }.m_argv.myargv[(iwadparm + 1 as i32) as usize]
+                state.m_argv.myargv[(iwadparm + 1 as i32) as usize]
                     .to_str()
                     .unwrap(),
             ));
@@ -244,8 +244,8 @@ pub unsafe fn D_FindIWAD(
             b"-iwad not specified, trying a few iwad names\n\0" as *const u8
                 as *const ::core::ffi::c_char,
         );
-        build_iwad_dir_list(state);
-        for dir in state.iwad_dirs.iter() {
+        build_iwad_dir_list(&mut state.d_iwad);
+        for dir in state.d_iwad.iwad_dirs.iter() {
             if let Some(found) = search_directory_for_iwad(dir, mask, mission) {
                 return ::std::ffi::CString::new(found).unwrap().into_raw();
             }
