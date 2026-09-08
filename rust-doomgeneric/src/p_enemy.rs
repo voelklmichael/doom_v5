@@ -843,7 +843,7 @@ pub unsafe fn A_BspiAttack(state: &mut GameState, id: MobjId) {
         None => return,
     };
     A_FaceTarget(state, (*actor).id);
-    P_SpawnMissile(actor, target, MT_ARACHPLAZ);
+    P_SpawnMissile(state, actor, target, MT_ARACHPLAZ);
 }
 pub unsafe fn A_TroopAttack(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
@@ -866,7 +866,7 @@ pub unsafe fn A_TroopAttack(state: &mut GameState, id: MobjId) {
         P_DamageMobj(target, actor, actor, damage);
         return;
     }
-    P_SpawnMissile(actor, target, MT_TROOPSHOT);
+    P_SpawnMissile(state, actor, target, MT_TROOPSHOT);
 }
 pub unsafe fn A_SargAttack(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
@@ -902,7 +902,7 @@ pub unsafe fn A_HeadAttack(state: &mut GameState, id: MobjId) {
         P_DamageMobj(target, actor, actor, damage);
         return;
     }
-    P_SpawnMissile(actor, target, MT_HEADSHOT);
+    P_SpawnMissile(state, actor, target, MT_HEADSHOT);
 }
 pub unsafe fn A_CyberAttack(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
@@ -914,7 +914,7 @@ pub unsafe fn A_CyberAttack(state: &mut GameState, id: MobjId) {
         None => return,
     };
     A_FaceTarget(state, (*actor).id);
-    P_SpawnMissile(actor, target, MT_ROCKET);
+    P_SpawnMissile(state, actor, target, MT_ROCKET);
 }
 pub unsafe fn A_BruisAttack(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
@@ -937,7 +937,7 @@ pub unsafe fn A_BruisAttack(state: &mut GameState, id: MobjId) {
         P_DamageMobj(target, actor, actor, damage);
         return;
     }
-    P_SpawnMissile(actor, target, MT_BRUISERSHOT);
+    P_SpawnMissile(state, actor, target, MT_BRUISERSHOT);
 }
 pub unsafe fn A_SkelMissile(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
@@ -951,7 +951,7 @@ pub unsafe fn A_SkelMissile(state: &mut GameState, id: MobjId) {
     };
     A_FaceTarget(state, (*actor).id);
     (*actor).z += 16 as i32 * FRACUNIT;
-    mo = P_SpawnMissile(actor, target, MT_TRACER);
+    mo = P_SpawnMissile(state, actor, target, MT_TRACER);
     (*actor).z -= 16 as i32 * FRACUNIT;
     (*mo).x += (*mo).momx;
     (*mo).y += (*mo).momy;
@@ -969,8 +969,8 @@ pub unsafe fn A_Tracer(state: &mut GameState, id: MobjId) {
     if state.d_loop.gametic & 3 as i32 != 0 {
         return;
     }
-    P_SpawnPuff((*actor).x, (*actor).y, (*actor).z);
-    th = P_SpawnMobj(
+    P_SpawnPuff(state, (*actor).x, (*actor).y, (*actor).z);
+    th = P_SpawnMobj(state, 
         (*actor).x - (*actor).momx,
         (*actor).y - (*actor).momy,
         (*actor).z,
@@ -1222,7 +1222,7 @@ pub unsafe fn A_VileTarget(state: &mut GameState, id: MobjId) {
         None => return,
     };
     A_FaceTarget(state, (*actor).id);
-    fog = P_SpawnMobj((*target).x, (*target).x, (*target).z, MT_FIRE);
+    fog = P_SpawnMobj(state, (*target).x, (*target).x, (*target).z, MT_FIRE);
     (*actor).tracer = Some((*fog).id);
     (*fog).target = Some((*actor).id);
     (*fog).tracer = (*actor).target;
@@ -1284,8 +1284,8 @@ pub unsafe fn A_FatAttack1(state: &mut GameState, id: MobjId) {
         .and_then(|id| state.p_mobj.mobj_get(id))
         .unwrap_or(::core::ptr::null_mut());
     target = P_SubstNullMobj(&mut state.p_mobj, target_subst);
-    P_SpawnMissile(actor, target, MT_FATSHOT);
-    mo = P_SpawnMissile(actor, target, MT_FATSHOT);
+    P_SpawnMissile(state, actor, target, MT_FATSHOT);
+    mo = P_SpawnMissile(state, actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_add(FATSPREAD as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
@@ -1303,8 +1303,8 @@ pub unsafe fn A_FatAttack2(state: &mut GameState, id: MobjId) {
         .and_then(|id| state.p_mobj.mobj_get(id))
         .unwrap_or(::core::ptr::null_mut());
     target = P_SubstNullMobj(&mut state.p_mobj, target_subst);
-    P_SpawnMissile(actor, target, MT_FATSHOT);
-    mo = P_SpawnMissile(actor, target, MT_FATSHOT);
+    P_SpawnMissile(state, actor, target, MT_FATSHOT);
+    mo = P_SpawnMissile(state, actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_sub((FATSPREAD * 2 as i32) as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
@@ -1321,12 +1321,12 @@ pub unsafe fn A_FatAttack3(state: &mut GameState, id: MobjId) {
         .and_then(|id| state.p_mobj.mobj_get(id))
         .unwrap_or(::core::ptr::null_mut());
     target = P_SubstNullMobj(&mut state.p_mobj, target_subst);
-    mo = P_SpawnMissile(actor, target, MT_FATSHOT);
+    mo = P_SpawnMissile(state, actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_sub((FATSPREAD / 2 as i32) as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
     (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
-    mo = P_SpawnMissile(actor, target, MT_FATSHOT);
+    mo = P_SpawnMissile(state, actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_add((FATSPREAD / 2 as i32) as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
     (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
@@ -1392,7 +1392,7 @@ pub unsafe fn A_PainShootSkull(mut actor: *mut mobj_t, mut angle: angle_t) {
     x = (*actor).x + FixedMul(prestep as fixed_t, finecosine[an as isize]);
     y = (*actor).y + FixedMul(prestep as fixed_t, finesine[an as usize]);
     z = ((*actor).z as i32 + 8 as i32 * FRACUNIT) as fixed_t;
-    newmobj = P_SpawnMobj(x, y, z, MT_SKULL);
+    newmobj = P_SpawnMobj(unsafe { game_state() }, x, y, z, MT_SKULL);
     if !P_TryMove(unsafe { game_state() }, newmobj, (*newmobj).x, (*newmobj).y) {
         P_DamageMobj(newmobj, actor, actor, 10000 as i32);
         return;
@@ -1687,7 +1687,7 @@ pub unsafe fn A_BrainScream(state: &mut GameState, id: MobjId) {
     while x < (*mo).x as i32 + 320 as i32 * FRACUNIT {
         y = (*mo).y as i32 - 320 as i32 * FRACUNIT;
         z = 128 as i32 + P_Random(&mut state.m_random) * 2 as i32 * FRACUNIT;
-        th = P_SpawnMobj(x as fixed_t, y as fixed_t, z as fixed_t, MT_ROCKET);
+        th = P_SpawnMobj(state, x as fixed_t, y as fixed_t, z as fixed_t, MT_ROCKET);
         (*th).momz = (P_Random(&mut state.m_random) * 512 as i32) as fixed_t;
         P_SetMobjState(state, th, S_BRAINEXPLODE1);
         (*th).tics -= P_Random(&mut state.m_random) & 7 as i32;
@@ -1710,7 +1710,7 @@ pub unsafe fn A_BrainExplode(state: &mut GameState, id: MobjId) {
             * 2048 as i32;
     y = (*mo).y as i32;
     z = 128 as i32 + P_Random(&mut state.m_random) * 2 as i32 * FRACUNIT;
-    th = P_SpawnMobj(x as fixed_t, y as fixed_t, z as fixed_t, MT_ROCKET);
+    th = P_SpawnMobj(state, x as fixed_t, y as fixed_t, z as fixed_t, MT_ROCKET);
     (*th).momz = (P_Random(&mut state.m_random) * 512 as i32) as fixed_t;
     P_SetMobjState(state, th, S_BRAINEXPLODE1);
     (*th).tics -= P_Random(&mut state.m_random) & 7 as i32;
@@ -1735,7 +1735,7 @@ pub unsafe fn A_BrainSpit(state: &mut GameState, id: MobjId) {
     targ = state.p_enemy.braintargets[state.p_enemy.braintargeton as usize];
     state.p_enemy.braintargeton =
         (state.p_enemy.braintargeton + 1 as i32) % state.p_enemy.numbraintargets;
-    newmobj = P_SpawnMissile(mo, targ, MT_SPAWNSHOT);
+    newmobj = P_SpawnMissile(state, mo, targ, MT_SPAWNSHOT);
     (*newmobj).target = Some((*targ).id);
     (*newmobj).reactiontime =
         ((*targ).y as i32 - (*mo).y as i32) / (*newmobj).momy as i32 / (*(*newmobj).state).tics;
@@ -1769,7 +1769,7 @@ pub unsafe fn A_SpawnFly(state: &mut GameState, id: MobjId) {
         &mut state.p_mobj,
         targ_subst,
     );
-    fog = P_SpawnMobj((*targ).x, (*targ).y, (*targ).z, MT_SPAWNFIRE);
+    fog = P_SpawnMobj(state, (*targ).x, (*targ).y, (*targ).z, MT_SPAWNFIRE);
     S_StartSound(
         &mut state.sounds,
         fog as *mut ::core::ffi::c_void,
@@ -1799,12 +1799,12 @@ pub unsafe fn A_SpawnFly(state: &mut GameState, id: MobjId) {
     } else {
         type_0 = MT_BRUISER;
     }
-    newmobj = P_SpawnMobj((*targ).x, (*targ).y, (*targ).z, type_0);
+    newmobj = P_SpawnMobj(state, (*targ).x, (*targ).y, (*targ).z, type_0);
     if P_LookForPlayers(newmobj, true) {
         P_SetMobjState(state, newmobj, (*(*newmobj).info).seestate as statenum_t);
     }
     P_TeleportMove(state, newmobj, (*newmobj).x, (*newmobj).y);
-    P_RemoveMobj(&mut state.p_mobj, mo);
+    P_RemoveMobj(state, mo);
 }
 pub unsafe fn A_PlayerScream(state: &mut GameState, id: MobjId) {
     let mo = state.p_mobj.mobj_get(id).unwrap();

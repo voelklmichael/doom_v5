@@ -1359,8 +1359,7 @@ pub unsafe fn G_CheckSpot(state: &mut GameState, mut playernum: i32, mut mthing:
         return false;
     }
     if state.g_game.bodyqueslot >= BODYQUESIZE {
-        P_RemoveMobj(
-            &mut state.p_mobj,
+        P_RemoveMobj(state,
             state.g_game.bodyque
                 [(state.g_game.bodyqueslot % BODYQUESIZE) as usize],
         );
@@ -1401,10 +1400,11 @@ pub unsafe fn G_CheckSpot(state: &mut GameState, mut playernum: i32, mut mthing:
             xa = ya;
         }
     }
-    mo = P_SpawnMobj(
+    let floorheight = (*state.p_setup.sector_mut((*ss).sector)).floorheight;
+    mo = P_SpawnMobj(state,
         x + 20 as fixed_t * xa,
         y + 20 as fixed_t * ya,
-        (*state.p_setup.sector_mut((*ss).sector)).floorheight,
+        floorheight,
         MT_TFOG,
     );
     if state.g_game.players[state.g_game.consoleplayer as usize]

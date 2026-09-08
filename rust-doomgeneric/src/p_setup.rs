@@ -547,7 +547,7 @@ pub unsafe fn P_LoadThings(state: &mut GameState, mut lump: i32) {
         spawnthing.angle = (*mt).angle;
         spawnthing.type_0 = (*mt).type_0;
         spawnthing.options = (*mt).options;
-        P_SpawnMapThing(&raw mut spawnthing);
+        P_SpawnMapThing(state, &raw mut spawnthing);
         i += 1;
         mt = mt.offset(1);
     }

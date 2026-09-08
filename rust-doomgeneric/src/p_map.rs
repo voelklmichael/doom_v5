@@ -909,7 +909,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(state: &mut GameState, mut in_0: *mut
                 return false_0 as boolean;
             }
         }
-        P_SpawnPuff(x, y, z);
+        P_SpawnPuff(state, x, y, z);
         return false_0 as boolean;
     } else {
         th = (*in_0).d.thing;
@@ -946,9 +946,9 @@ pub unsafe extern "C" fn PTR_ShootTraverse(state: &mut GameState, mut in_0: *mut
                 FixedMul(frac, state.p_map.attackrange),
             );
         if (*(*in_0).d.thing).flags & MF_NOBLOOD as i32 != 0 {
-            P_SpawnPuff(x, y, z);
+            P_SpawnPuff(state, x, y, z);
         } else {
-            P_SpawnBlood(x, y, z, state.p_map.la_damage);
+            P_SpawnBlood(state, x, y, z, state.p_map.la_damage);
         }
         if state.p_map.la_damage != 0 {
             P_DamageMobj(
@@ -1161,7 +1161,7 @@ pub unsafe extern "C" fn PIT_ChangeSector(state: &mut GameState, mut thing_id: M
         return true_0 as boolean;
     }
     if (*thing).flags & MF_DROPPED as i32 != 0 {
-        P_RemoveMobj(&mut state.p_mobj, thing);
+        P_RemoveMobj(state, thing);
         return true_0 as boolean;
     }
     if (*thing).flags & MF_SHOOTABLE as i32 == 0 {
@@ -1175,7 +1175,7 @@ pub unsafe extern "C" fn PIT_ChangeSector(state: &mut GameState, mut thing_id: M
             ::core::ptr::null_mut::<mobj_t>(),
             10 as i32,
         );
-        mo = P_SpawnMobj(
+        mo = P_SpawnMobj(state, 
             (*thing).x,
             (*thing).y,
             (*thing).z + (*thing).height / 2 as fixed_t,

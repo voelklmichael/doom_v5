@@ -389,7 +389,7 @@ pub unsafe fn A_FireMissile(state: &mut GameState, mut player: *mut player_t, mu
         weaponinfo[(*player).readyweapon as usize].ammo as i32,
         1 as i32,
     );
-    P_SpawnPlayerMissile((*player).mo, MT_ROCKET);
+    P_SpawnPlayerMissile(state, (*player).mo, MT_ROCKET);
 }
 pub unsafe fn A_FireBFG(state: &mut GameState, mut player: *mut player_t, mut psp: *mut pspdef_t) {
     DecreaseAmmo(
@@ -397,7 +397,7 @@ pub unsafe fn A_FireBFG(state: &mut GameState, mut player: *mut player_t, mut ps
         weaponinfo[(*player).readyweapon as usize].ammo as i32,
         deh_bfg_cells_per_shot,
     );
-    P_SpawnPlayerMissile((*player).mo, MT_BFG);
+    P_SpawnPlayerMissile(state, (*player).mo, MT_BFG);
 }
 pub unsafe fn A_FirePlasma(state: &mut GameState, mut player: *mut player_t, mut psp: *mut pspdef_t) {
     DecreaseAmmo(
@@ -412,7 +412,7 @@ pub unsafe fn A_FirePlasma(state: &mut GameState, mut player: *mut player_t, mut
         ps_flash as i32,
         flashstate,
     );
-    P_SpawnPlayerMissile((*player).mo, MT_PLASMA);
+    P_SpawnPlayerMissile(state, (*player).mo, MT_PLASMA);
 }
 pub unsafe fn P_BulletSlope(state: &mut PPsprState, mut mo: *mut mobj_t) {
     let mut an: angle_t = 0;
@@ -596,7 +596,7 @@ pub unsafe fn A_BFGSpray(state: &mut GameState, id: MobjId) {
             16 as fixed_t * 64 as fixed_t * FRACUNIT,
         );
         if !state.p_map.linetarget.is_null() {
-            P_SpawnMobj(
+            P_SpawnMobj(state, 
                 (*state.p_map.linetarget).x,
                 (*state.p_map.linetarget).y,
                 (*state.p_map.linetarget).z
