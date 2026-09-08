@@ -2,7 +2,6 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
@@ -372,31 +371,31 @@ pub unsafe fn P_InterceptVector(mut v2: *mut divline_t, mut v1: *mut divline_t) 
     frac = FixedDiv(num, den);
     return frac;
 }
-pub unsafe fn P_LineOpening(mut linedef: *mut line_t) {
+pub unsafe fn P_LineOpening(state: &mut GameState, mut linedef: *mut line_t) {
     let mut front: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut back: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     if (*linedef).sidenum[1 as i32 as usize] as i32 == -(1 as i32) {
-        unsafe { game_state() }.p_maputl.openrange = 0 as i32 as fixed_t;
+        state.p_maputl.openrange = 0 as i32 as fixed_t;
         return;
     }
-    front = unsafe { game_state() }.p_setup.sector_mut((*linedef).frontsector.unwrap());
-    back = unsafe { game_state() }.p_setup.sector_mut((*linedef).backsector.unwrap());
+    front = state.p_setup.sector_mut((*linedef).frontsector.unwrap());
+    back = state.p_setup.sector_mut((*linedef).backsector.unwrap());
     if (*front).ceilingheight < (*back).ceilingheight {
-        unsafe { game_state() }.p_maputl.opentop = (*front).ceilingheight;
+        state.p_maputl.opentop = (*front).ceilingheight;
     } else {
-        unsafe { game_state() }.p_maputl.opentop = (*back).ceilingheight;
+        state.p_maputl.opentop = (*back).ceilingheight;
     }
     if (*front).floorheight > (*back).floorheight {
-        unsafe { game_state() }.p_maputl.openbottom = (*front).floorheight;
-        unsafe { game_state() }.p_maputl.lowfloor = (*back).floorheight;
+        state.p_maputl.openbottom = (*front).floorheight;
+        state.p_maputl.lowfloor = (*back).floorheight;
     } else {
-        unsafe { game_state() }.p_maputl.openbottom = (*back).floorheight;
-        unsafe { game_state() }.p_maputl.lowfloor = (*front).floorheight;
+        state.p_maputl.openbottom = (*back).floorheight;
+        state.p_maputl.lowfloor = (*front).floorheight;
     }
-    unsafe { game_state() }.p_maputl.openrange =
-        unsafe { game_state() }.p_maputl.opentop - unsafe { game_state() }.p_maputl.openbottom;
+    state.p_maputl.openrange =
+        state.p_maputl.opentop - state.p_maputl.openbottom;
 }
-pub unsafe fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
+pub unsafe fn P_UnsetThingPosition(state: &mut GameState, mut thing: *mut mobj_t) {
     let mut blockx: i32 = 0;
     let mut blocky: i32 = 0;
     if (*thing).flags & MF_NOSECTOR as i32 == 0 {
@@ -406,7 +405,7 @@ pub unsafe fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
         if !(*thing).sprev.is_null() {
             (*(*thing).sprev).snext = (*thing).snext;
         } else {
-            (*unsafe { game_state() }
+            (*state
                 .p_setup
                 .sector_mut((*(*thing).subsector).sector))
             .thinglist = (*thing).snext as *mut mobj_t;
@@ -419,26 +418,26 @@ pub unsafe fn P_UnsetThingPosition(mut thing: *mut mobj_t) {
         if !(*thing).bprev.is_null() {
             (*(*thing).bprev).bnext = (*thing).bnext;
         } else {
-            blockx = ((*thing).x - unsafe { game_state() }.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
-            blocky = ((*thing).y - unsafe { game_state() }.p_setup.bmaporgy >> MAPBLOCKSHIFT) as i32;
-            if blockx >= 0 as i32 && blockx < unsafe { game_state() }.p_setup.bmapwidth && blocky >= 0 as i32 && blocky < unsafe { game_state() }.p_setup.bmapheight
+            blockx = ((*thing).x - state.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
+            blocky = ((*thing).y - state.p_setup.bmaporgy >> MAPBLOCKSHIFT) as i32;
+            if blockx >= 0 as i32 && blockx < state.p_setup.bmapwidth && blocky >= 0 as i32 && blocky < state.p_setup.bmapheight
             {
-                let ref mut fresh1 = *unsafe { game_state() }.p_setup.blocklinks.offset((blocky * unsafe { game_state() }.p_setup.bmapwidth + blockx) as isize);
+                let ref mut fresh1 = *state.p_setup.blocklinks.offset((blocky * state.p_setup.bmapwidth + blockx) as isize);
                 *fresh1 = (*thing).bnext as *mut mobj_t;
             }
         }
     }
 }
-pub unsafe fn P_SetThingPosition(mut thing: *mut mobj_t) {
+pub unsafe fn P_SetThingPosition(state: &mut GameState, mut thing: *mut mobj_t) {
     let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut blockx: i32 = 0;
     let mut blocky: i32 = 0;
     let mut link: *mut *mut mobj_t = ::core::ptr::null_mut::<*mut mobj_t>();
-    ss = R_PointInSubsector(unsafe { game_state() }, (*thing).x, (*thing).y);
+    ss = R_PointInSubsector(state, (*thing).x, (*thing).y);
     (*thing).subsector = ss as *mut subsector_s;
     if (*thing).flags & MF_NOSECTOR as i32 == 0 {
-        sec = unsafe { game_state() }.p_setup.sector_mut((*ss).sector);
+        sec = state.p_setup.sector_mut((*ss).sector);
         (*thing).sprev = ::core::ptr::null_mut::<mobj_s>();
         (*thing).snext = (*sec).thinglist as *mut mobj_s;
         if !(*sec).thinglist.is_null() {
@@ -447,10 +446,10 @@ pub unsafe fn P_SetThingPosition(mut thing: *mut mobj_t) {
         (*sec).thinglist = thing;
     }
     if (*thing).flags & MF_NOBLOCKMAP as i32 == 0 {
-        blockx = ((*thing).x - unsafe { game_state() }.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
-        blocky = ((*thing).y - unsafe { game_state() }.p_setup.bmaporgy >> MAPBLOCKSHIFT) as i32;
-        if blockx >= 0 as i32 && blockx < unsafe { game_state() }.p_setup.bmapwidth && blocky >= 0 as i32 && blocky < unsafe { game_state() }.p_setup.bmapheight {
-            link = unsafe { game_state() }.p_setup.blocklinks.offset((blocky * unsafe { game_state() }.p_setup.bmapwidth + blockx) as isize) as *mut *mut mobj_t;
+        blockx = ((*thing).x - state.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
+        blocky = ((*thing).y - state.p_setup.bmaporgy >> MAPBLOCKSHIFT) as i32;
+        if blockx >= 0 as i32 && blockx < state.p_setup.bmapwidth && blocky >= 0 as i32 && blocky < state.p_setup.bmapheight {
+            link = state.p_setup.blocklinks.offset((blocky * state.p_setup.bmapwidth + blockx) as isize) as *mut *mut mobj_t;
             (*thing).bprev = ::core::ptr::null_mut::<mobj_s>();
             (*thing).bnext = *link as *mut mobj_s;
             if !(*link).is_null() {
@@ -561,14 +560,13 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(state: &mut GameState, mut ld: *m
     (*state.p_maputl.intercept_p).frac = frac;
     (*state.p_maputl.intercept_p).isaline = true;
     (*state.p_maputl.intercept_p).d.line = ld;
-    InterceptsOverrun(
-        state
-            .p_maputl
-            .intercept_p
-            .offset_from(&raw mut state.p_maputl.intercepts as *mut intercept_t)
-            as i64 as i32,
-        state.p_maputl.intercept_p,
-    );
+    let num_intercepts = state
+        .p_maputl
+        .intercept_p
+        .offset_from(&raw mut state.p_maputl.intercepts as *mut intercept_t)
+        as i64 as i32;
+    let intercept_p = state.p_maputl.intercept_p;
+    InterceptsOverrun(state, num_intercepts, intercept_p);
     state.p_maputl.intercept_p =
         state.p_maputl.intercept_p.offset(1);
     return true_0 as boolean;
@@ -620,14 +618,13 @@ pub unsafe extern "C" fn PIT_AddThingIntercepts(state: &mut GameState, mut thing
     (*state.p_maputl.intercept_p).frac = frac;
     (*state.p_maputl.intercept_p).isaline = false;
     (*state.p_maputl.intercept_p).d.thing = thing;
-    InterceptsOverrun(
-        state
-            .p_maputl
-            .intercept_p
-            .offset_from(&raw mut state.p_maputl.intercepts as *mut intercept_t)
-            as i64 as i32,
-        state.p_maputl.intercept_p,
-    );
+    let num_intercepts = state
+        .p_maputl
+        .intercept_p
+        .offset_from(&raw mut state.p_maputl.intercepts as *mut intercept_t)
+        as i64 as i32;
+    let intercept_p = state.p_maputl.intercept_p;
+    InterceptsOverrun(state, num_intercepts, intercept_p);
     state.p_maputl.intercept_p =
         state.p_maputl.intercept_p.offset(1);
     return true_0 as boolean;
@@ -695,18 +692,18 @@ pub unsafe fn fixup_intercepts_overrun(gs: &mut GameState) {
     gs.p_maputl.intercepts_overrun[21].addr =
         &raw mut gs.p_setup.bmapheight as *mut i32 as *mut ::core::ffi::c_void;
 }
-unsafe fn InterceptsMemoryOverrun(mut location: i32, mut value: i32) {
+unsafe fn InterceptsMemoryOverrun(state: &mut GameState, mut location: i32, mut value: i32) {
     let mut i: i32 = 0;
     let mut offset: i32 = 0;
     let mut index: i32 = 0;
     let mut addr: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<::core::ffi::c_void>();
     i = 0 as i32;
     offset = 0 as i32;
-    while unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].len != 0 as i32 {
-        if offset + unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].len > location {
-            addr = unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].addr;
+    while state.p_maputl.intercepts_overrun[i as usize].len != 0 as i32 {
+        if offset + state.p_maputl.intercepts_overrun[i as usize].len > location {
+            addr = state.p_maputl.intercepts_overrun[i as usize].addr;
             if !addr.is_null() {
-                if unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].int16_array {
+                if state.p_maputl.intercepts_overrun[i as usize].int16_array {
                     index = (location - offset) / 2 as i32;
                     *(addr as *mut i16).offset(index as isize) = (value & 0xffff as i32) as i16;
                     *(addr as *mut i16).offset((index + 1 as i32) as isize) =
@@ -718,20 +715,20 @@ unsafe fn InterceptsMemoryOverrun(mut location: i32, mut value: i32) {
             }
             break;
         } else {
-            offset += unsafe { game_state() }.p_maputl.intercepts_overrun[i as usize].len;
+            offset += state.p_maputl.intercepts_overrun[i as usize].len;
             i += 1;
         }
     }
 }
-unsafe fn InterceptsOverrun(mut num_intercepts: i32, mut intercept: *mut intercept_t) {
+unsafe fn InterceptsOverrun(state: &mut GameState, mut num_intercepts: i32, mut intercept: *mut intercept_t) {
     let mut location: i32 = 0;
     if num_intercepts <= MAXINTERCEPTS_ORIGINAL {
         return;
     }
     location = (num_intercepts - MAXINTERCEPTS_ORIGINAL - 1 as i32) * 12 as i32;
-    InterceptsMemoryOverrun(location, (*intercept).frac as i32);
-    InterceptsMemoryOverrun(location + 4 as i32, (*intercept).isaline as i32);
-    InterceptsMemoryOverrun(location + 8 as i32, (*intercept).d.thing as i32);
+    InterceptsMemoryOverrun(state, location, (*intercept).frac as i32);
+    InterceptsMemoryOverrun(state, location + 4 as i32, (*intercept).isaline as i32);
+    InterceptsMemoryOverrun(state, location + 8 as i32, (*intercept).d.thing as i32);
 }
 pub unsafe fn P_PathTraverse(
     state: &mut GameState,

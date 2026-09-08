@@ -911,7 +911,7 @@ pub unsafe fn P_SpawnMobj(
     (*mobj).sprite = (*st).sprite;
     (*mobj).frame = (*st).frame;
     (*mobj).id = unsafe { game_state() }.p_mobj.register(mobj);
-    P_SetThingPosition(mobj);
+    P_SetThingPosition(unsafe { game_state() }, mobj);
     (*mobj).floorz = (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
     (*mobj).ceilingz = (*unsafe { game_state() }.p_setup.sector_mut((*(*mobj).subsector).sector)).ceilingheight;
     if z == ONFLOORZ {
@@ -1085,7 +1085,7 @@ pub unsafe fn P_RemoveMobj(state: &mut PMobjState, mut mobj: *mut mobj_t) {
             state.iquetail = state.iquetail + 1 as i32 & ITEMQUESIZE - 1 as i32;
         }
     }
-    P_UnsetThingPosition(mobj);
+    P_UnsetThingPosition(unsafe { game_state() }, mobj);
     S_StopSound(unsafe { game_state() }, mobj);
     P_RemoveThinker(mobj as *mut thinker_t);
 }

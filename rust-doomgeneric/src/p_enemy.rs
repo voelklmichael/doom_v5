@@ -156,7 +156,7 @@ pub unsafe fn P_RecursiveSound(mut sec: *mut sector_t, mut soundblocks: i32) {
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
         if !((*check).flags as i32 & ML_TWOSIDED == 0) {
-            P_LineOpening(check);
+            P_LineOpening(unsafe { game_state() }, check);
             if !(unsafe { game_state() }.p_maputl.openrange <= 0 as i32) {
                 let other_id = if unsafe { game_state() }.p_setup.sides
                     [(*check).sidenum[0 as i32 as usize] as usize]
@@ -1205,11 +1205,11 @@ pub unsafe fn A_Fire(state: &mut GameState, id: MobjId) {
         return;
     }
     an = ((*dest).angle >> ANGLETOFINESHIFT) as u32;
-    P_UnsetThingPosition(actor);
+    P_UnsetThingPosition(state, actor);
     (*actor).x = (*dest).x + FixedMul(24 as fixed_t * FRACUNIT, finecosine[an as isize]);
     (*actor).y = (*dest).y + FixedMul(24 as fixed_t * FRACUNIT, finesine[an as usize]);
     (*actor).z = (*dest).z;
-    P_SetThingPosition(actor);
+    P_SetThingPosition(state, actor);
 }
 pub unsafe fn A_VileTarget(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
