@@ -57,7 +57,7 @@ pub struct InfoState {
 }
 
 impl InfoState {
-    pub const fn new() -> Self {
+    pub fn new() -> Self {
         InfoState {
             sprnames: [
         b"TROO\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,

@@ -55,23 +55,23 @@ pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
 pub enum StateAction {
     None,
-    Mobj(unsafe fn(MobjId)),
-    Weapon(unsafe fn(*mut player_t, *mut pspdef_t)),
+    Mobj(unsafe fn(&mut GameState, MobjId)),
+    Weapon(unsafe fn(&mut GameState, *mut player_t, *mut pspdef_t)),
 }
 #[derive(Copy, Clone)]
 pub enum ThinkerFn {
     Paused,
     Removed,
     Unresolved,
-    Mobj(unsafe fn(MobjId)),
-    Ceiling(unsafe fn(*mut ceiling_t)),
-    Door(unsafe fn(*mut vldoor_t)),
-    Floor(unsafe fn(*mut floormove_t)),
-    Plat(unsafe fn(*mut plat_t)),
-    FireFlicker(unsafe fn(*mut fireflicker_t)),
-    LightFlash(unsafe fn(*mut lightflash_t)),
-    Strobe(unsafe fn(*mut strobe_t)),
-    Glow(unsafe fn(*mut glow_t)),
+    Mobj(unsafe fn(&mut GameState, MobjId)),
+    Ceiling(unsafe fn(&mut GameState, *mut ceiling_t)),
+    Door(unsafe fn(&mut GameState, *mut vldoor_t)),
+    Floor(unsafe fn(&mut GameState, *mut floormove_t)),
+    Plat(unsafe fn(&mut GameState, *mut plat_t)),
+    FireFlicker(unsafe fn(&mut GameState, *mut fireflicker_t)),
+    LightFlash(unsafe fn(&mut GameState, *mut lightflash_t)),
+    Strobe(unsafe fn(&mut GameState, *mut strobe_t)),
+    Glow(unsafe fn(&mut GameState, *mut glow_t)),
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -560,23 +560,24 @@ pub const MAXMOVE: i32 = 30 * FRACUNIT;
 pub const ONFLOORZ: i32 = INT_MIN;
 pub const ONCEILINGZ: i32 = INT_MAX;
 pub const ITEMQUESIZE: i32 = 128;
-pub unsafe fn P_SetMobjState(mut mobj: *mut mobj_t, mut state: statenum_t) -> bool {
+pub unsafe fn P_SetMobjState(state: &mut GameState, mut mobj: *mut mobj_t, mut statenum: statenum_t) -> bool {
     let mut st: *mut state_t = ::core::ptr::null_mut::<state_t>();
     loop {
-        if state as u32 == S_NULL as i32 as u32 {
+        if statenum as u32 == S_NULL as i32 as u32 {
             (*mobj).state = ::core::ptr::null_mut::<state_t>();
-            P_RemoveMobj(unsafe { &mut game_state().p_mobj }, mobj);
+            P_RemoveMobj(&mut state.p_mobj, mobj);
             return false;
         }
-        st = (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(state as isize) as *mut state_t;
+        st = (&raw mut state.info.states as *mut state_t).offset(statenum as isize) as *mut state_t;
         (*mobj).state = st;
         (*mobj).tics = (*st).tics;
         (*mobj).sprite = (*st).sprite;
         (*mobj).frame = (*st).frame;
         if let StateAction::Mobj(f) = (*st).action {
-            f((*mobj).id);
+            let mobj_id = (*mobj).id;
+            f(state, mobj_id);
         }
-        state = (*st).nextstate;
+        statenum = (*st).nextstate;
         if !((*mobj).tics == 0) {
             break;
         }
@@ -587,7 +588,7 @@ pub unsafe fn P_ExplodeMissile(mut mo: *mut mobj_t) {
     (*mo).momz = 0 as i32 as fixed_t;
     (*mo).momy = (*mo).momz;
     (*mo).momx = (*mo).momy;
-    P_SetMobjState(mo, unsafe { game_state() }.info.mobjinfo[(*mo).type_0 as usize].deathstate as statenum_t);
+    P_SetMobjState(unsafe { game_state() }, mo, unsafe { game_state() }.info.mobjinfo[(*mo).type_0 as usize].deathstate as statenum_t);
     (*mo).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*mo).tics < 1 as i32 {
         (*mo).tics = 1 as i32;
@@ -615,7 +616,7 @@ pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
             (*mo).momz = 0 as i32 as fixed_t;
             (*mo).momy = (*mo).momz;
             (*mo).momx = (*mo).momy;
-            P_SetMobjState(mo, (*(*mo).info).spawnstate as statenum_t);
+            P_SetMobjState(unsafe { game_state() }, mo, (*(*mo).info).spawnstate as statenum_t);
         }
         return;
     }
@@ -708,7 +709,7 @@ pub unsafe fn P_XYMovement(state: &mut PMobjState, mut mo: *mut mobj_t) {
                 - S_PLAY_RUN1 as i32 as i64) as u32)
                 < 4 as u32
         {
-            P_SetMobjState((*player).mo, S_PLAY);
+            P_SetMobjState(unsafe { game_state() }, (*player).mo, S_PLAY);
         }
         (*mo).momx = 0 as i32 as fixed_t;
         (*mo).momy = 0 as i32 as fixed_t;
@@ -830,8 +831,8 @@ pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) 
     (*mo).reactiontime = 18 as i32;
     P_RemoveMobj(state, mobj);
 }
-pub unsafe fn P_MobjThinker(id: MobjId) {
-    let mobj = unsafe { game_state() }.p_mobj.mobj_get(id).unwrap();
+pub unsafe fn P_MobjThinker(state: &mut GameState, id: MobjId) {
+    let mobj = state.p_mobj.mobj_get(id).unwrap();
     if (*mobj).momx != 0 || (*mobj).momy != 0 || (*mobj).flags & MF_SKULLFLY as i32 != 0 {
         P_XYMovement(unsafe { &mut game_state().p_mobj }, mobj);
         if matches!((*mobj).thinker.function, ThinkerFn::Removed) {
@@ -847,7 +848,7 @@ pub unsafe fn P_MobjThinker(id: MobjId) {
     if (*mobj).tics != -(1 as i32) {
         (*mobj).tics -= 1;
         if (*mobj).tics == 0 {
-            if !P_SetMobjState(mobj, (*(*mobj).state).nextstate) {
+            if !P_SetMobjState(state, mobj, (*(*mobj).state).nextstate) {
                 return;
             }
         }
@@ -855,14 +856,14 @@ pub unsafe fn P_MobjThinker(id: MobjId) {
         if (*mobj).flags & MF_COUNTKILL as i32 == 0 {
             return;
         }
-        if !unsafe { game_state() }.g_game.respawnmonsters {
+        if !state.g_game.respawnmonsters {
             return;
         }
         (*mobj).movecount += 1;
         if (*mobj).movecount < 12 as i32 * TICRATE {
             return;
         }
-        if unsafe { game_state() }.p_tick.leveltime & 31 as i32 != 0 {
+        if state.p_tick.leveltime & 31 as i32 != 0 {
             return;
         }
         if P_Random(unsafe { &mut game_state().m_random }) > 4 as i32 {
@@ -1288,7 +1289,7 @@ pub unsafe fn P_SpawnPuff(mut x: fixed_t, mut y: fixed_t, mut z: fixed_t) {
         (*th).tics = 1 as i32;
     }
     if unsafe { game_state() }.p_map.attackrange == MELEERANGE {
-        P_SetMobjState(th, S_PUFF3);
+        P_SetMobjState(unsafe { game_state() }, th, S_PUFF3);
     }
 }
 pub unsafe fn P_SpawnBlood(mut x: fixed_t, mut y: fixed_t, mut z: fixed_t, mut damage: i32) {
@@ -1303,9 +1304,9 @@ pub unsafe fn P_SpawnBlood(mut x: fixed_t, mut y: fixed_t, mut z: fixed_t, mut d
         (*th).tics = 1 as i32;
     }
     if damage <= 12 as i32 && damage >= 9 as i32 {
-        P_SetMobjState(th, S_BLOOD2);
+        P_SetMobjState(unsafe { game_state() }, th, S_BLOOD2);
     } else if damage < 9 as i32 {
-        P_SetMobjState(th, S_BLOOD3);
+        P_SetMobjState(unsafe { game_state() }, th, S_BLOOD3);
     }
 }
 pub unsafe fn P_CheckMissileSpawn(mut th: *mut mobj_t) {

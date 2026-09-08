@@ -119,14 +119,14 @@ pub unsafe fn P_MovePlayer(state: &mut PUserState, mut player: *mut player_t) {
         && (*(*player).mo).state
             == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_PLAY as i32 as isize) as *mut state_t
     {
-        P_SetMobjState((*player).mo, S_PLAY_RUN1);
+        P_SetMobjState(unsafe { game_state() }, (*player).mo, S_PLAY_RUN1);
     }
 }
 pub const ANG5: i32 = ANG90 / 18 as i32;
 pub unsafe fn P_DeathThink(state: &mut PUserState, mut player: *mut player_t) {
     let mut angle: angle_t = 0;
     let mut delta: angle_t = 0;
-    P_MovePsprites(player);
+    P_MovePsprites(unsafe { game_state() }, player);
     if (*player).viewheight > 6 as i32 * FRACUNIT {
         (*player).viewheight -= FRACUNIT;
     }
@@ -238,7 +238,7 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
     } else {
         (*player).usedown = false_0;
     }
-    P_MovePsprites(player);
+    P_MovePsprites(unsafe { game_state() }, player);
     if (*player).powers[pw_strength as i32 as usize] != 0 {
         (*player).powers[pw_strength as i32 as usize] += 1;
     }

@@ -1,5 +1,6 @@
 use crate::src::doomdef::NULL;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_floor::T_MovePlane;
@@ -38,9 +39,9 @@ impl PCeilngState {
     }
 }
 
-pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
+pub unsafe fn T_MoveCeiling(state: &mut GameState, mut ceiling: *mut ceiling_t) {
     let mut res: result_e = ok;
-    let sec = unsafe { game_state() }.p_setup.sector_mut((*ceiling).sector);
+    let sec = state.p_setup.sector_mut((*ceiling).sector);
     match (*ceiling).direction {
         1 => {
             res = T_MovePlane(
@@ -51,7 +52,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 1 as i32,
                 (*ceiling).direction,
             );
-            if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
+            if state.p_tick.leveltime & 7 as i32 == 0 {
                 match (*ceiling).type_0 as u32 {
                     5 => {}
                     _ => {
@@ -102,7 +103,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 1 as i32,
                 (*ceiling).direction,
             );
-            if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
+            if state.p_tick.leveltime & 7 as i32 == 0 {
                 match (*ceiling).type_0 as u32 {
                     5 => {}
                     _ => {

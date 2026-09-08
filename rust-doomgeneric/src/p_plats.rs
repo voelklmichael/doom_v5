@@ -1,6 +1,7 @@
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
@@ -48,9 +49,9 @@ impl PPlatsState {
     }
 }
 
-pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
+pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
     let mut res: result_e = ok;
-    let sec = unsafe { game_state() }.p_setup.sector_mut((*plat).sector);
+    let sec = state.p_setup.sector_mut((*plat).sector);
     match (*plat).status as u32 {
         0 => {
             res = T_MovePlane(
@@ -64,7 +65,7 @@ pub unsafe fn T_PlatRaise(mut plat: *mut plat_t) {
             if (*plat).type_0 as u32 == raiseAndChange as i32 as u32
                 || (*plat).type_0 as u32 == raiseToNearestAndChange as i32 as u32
             {
-                if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
+                if state.p_tick.leveltime & 7 as i32 == 0 {
                     S_StartSound(
                         unsafe { &mut game_state().sounds },
                         &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,

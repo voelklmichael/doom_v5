@@ -2,6 +2,7 @@ use crate::src::d_player::player_t;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_system::{fprintf, stderr};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
@@ -45,9 +46,9 @@ pub struct vldoor_t {
     pub topcountdown: i32,
 }
 pub const VDOORWAIT: i32 = 150;
-pub unsafe fn T_VerticalDoor(mut door: *mut vldoor_t) {
+pub unsafe fn T_VerticalDoor(state: &mut GameState, mut door: *mut vldoor_t) {
     let mut res: result_e = ok;
-    let sec = unsafe { game_state() }.p_setup.sector_mut((*door).sector);
+    let sec = state.p_setup.sector_mut((*door).sector);
     match (*door).direction {
         0 => {
             (*door).topcountdown -= 1;
