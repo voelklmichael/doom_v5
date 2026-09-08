@@ -302,8 +302,8 @@ pub unsafe fn A_Punch(mut player: *mut player_t, mut psp: *mut pspdef_t) {
             - P_Random(unsafe { &mut game_state().m_random })
             << 18 as i32) as angle_t,
     );
-    slope = P_AimLineAttack((*player).mo, angle, MELEERANGE) as i32;
-    P_LineAttack((*player).mo, angle, MELEERANGE, slope as fixed_t, damage);
+    slope = P_AimLineAttack(unsafe { game_state() }, (*player).mo, angle, MELEERANGE) as i32;
+    P_LineAttack(unsafe { game_state() }, (*player).mo, angle, MELEERANGE, slope as fixed_t, damage);
     if !unsafe { game_state() }.p_map.linetarget.is_null() {
         S_StartSound(
             unsafe { &mut game_state().sounds },
@@ -330,8 +330,8 @@ pub unsafe fn A_Saw(mut player: *mut player_t, mut psp: *mut pspdef_t) {
             - P_Random(unsafe { &mut game_state().m_random })
             << 18 as i32) as angle_t,
     );
-    slope = P_AimLineAttack((*player).mo, angle, MELEERANGE + 1 as fixed_t) as i32;
-    P_LineAttack(
+    slope = P_AimLineAttack(unsafe { game_state() }, (*player).mo, angle, MELEERANGE + 1 as fixed_t) as i32;
+    P_LineAttack(unsafe { game_state() }, 
         (*player).mo,
         angle,
         MELEERANGE + 1 as fixed_t,
@@ -415,13 +415,13 @@ pub unsafe fn A_FirePlasma(mut player: *mut player_t, mut psp: *mut pspdef_t) {
 pub unsafe fn P_BulletSlope(state: &mut PPsprState, mut mo: *mut mobj_t) {
     let mut an: angle_t = 0;
     an = (*mo).angle;
-    state.bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+    state.bulletslope = P_AimLineAttack(unsafe { game_state() }, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
     if unsafe { game_state() }.p_map.linetarget.is_null() {
         an = an.wrapping_add(((1 as i32) << 26 as i32) as angle_t);
-        state.bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+        state.bulletslope = P_AimLineAttack(unsafe { game_state() }, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         if unsafe { game_state() }.p_map.linetarget.is_null() {
             an = an.wrapping_sub(((2 as i32) << 26 as i32) as angle_t);
-            state.bulletslope = P_AimLineAttack(mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+            state.bulletslope = P_AimLineAttack(unsafe { game_state() }, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         }
     }
 }
@@ -437,7 +437,7 @@ pub unsafe fn P_GunShot(state: &mut PPsprState, mut mo: *mut mobj_t, mut accurat
                 << 18 as i32) as angle_t,
         );
     }
-    P_LineAttack(mo, angle, MISSILERANGE, state.bulletslope, damage);
+    P_LineAttack(unsafe { game_state() }, mo, angle, MISSILERANGE, state.bulletslope, damage);
 }
 pub unsafe fn A_FirePistol(mut player: *mut player_t, mut psp: *mut pspdef_t) {
     S_StartSound(
@@ -518,7 +518,7 @@ pub unsafe fn A_FireShotgun2(mut player: *mut player_t, mut psp: *mut pspdef_t) 
                 - P_Random(unsafe { &mut game_state().m_random })
                 << 19 as i32) as angle_t,
         );
-        P_LineAttack(
+        P_LineAttack(unsafe { game_state() }, 
             (*player).mo,
             angle,
             MISSILERANGE,
@@ -588,7 +588,7 @@ pub unsafe fn A_BFGSpray(id: MobjId) {
             .angle
             .wrapping_sub((ANG90 / 2 as i32) as angle_t)
             .wrapping_add((ANG90 / 40 as i32 * i) as angle_t);
-        P_AimLineAttack(
+        P_AimLineAttack(unsafe { game_state() }, 
             mo_target,
             an,
             16 as fixed_t * 64 as fixed_t * FRACUNIT,

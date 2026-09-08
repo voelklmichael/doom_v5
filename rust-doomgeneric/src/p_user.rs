@@ -232,7 +232,7 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
     }
     if (*cmd).buttons as i32 & BT_USE as i32 != 0 {
         if (*player).usedown == 0 {
-            P_UseLines(player);
+            P_UseLines(unsafe { game_state() }, player);
             (*player).usedown = true_0;
         }
     } else {

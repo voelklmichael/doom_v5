@@ -46,7 +46,7 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
                             oldx = (*thing).x;
                             oldy = (*thing).y;
                             oldz = (*thing).z;
-                            if !P_TeleportMove(thing, (*m).x, (*m).y) {
+                            if !P_TeleportMove(unsafe { game_state() }, thing, (*m).x, (*m).y) {
                                 return 0 as i32;
                             }
                             if unsafe { game_state() }.doomstat.gameversion as u32
