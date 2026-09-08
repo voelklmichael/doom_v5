@@ -927,8 +927,7 @@ pub unsafe fn P_UnArchiveThinkers(state: &mut GameState) {
     while currentthinker != &raw mut state.p_tick.thinkercap {
         next = (*currentthinker).next as *mut thinker_t;
         if matches!((*currentthinker).function, ThinkerFn::Mobj(_)) {
-            P_RemoveMobj(
-                &mut state.p_mobj,
+            P_RemoveMobj(state,
                 currentthinker as *mut mobj_t,
             );
         } else {

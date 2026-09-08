@@ -58,14 +58,14 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
                                 (*(*thing).player).viewz =
                                     (*thing).z + (*(*thing).player).viewheight;
                             }
-                            fog = P_SpawnMobj(oldx, oldy, oldz, MT_TFOG);
+                            fog = P_SpawnMobj(unsafe { game_state() }, oldx, oldy, oldz, MT_TFOG);
                             S_StartSound(
                                 unsafe { &mut game_state().sounds },
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );
                             an = ((*m).angle >> ANGLETOFINESHIFT) as u32;
-                            fog = P_SpawnMobj(
+                            fog = P_SpawnMobj(unsafe { game_state() }, 
                                 (*m).x + 20 as fixed_t * finecosine[an as isize],
                                 (*m).y + 20 as fixed_t * finesine[an as usize],
                                 (*thing).z,

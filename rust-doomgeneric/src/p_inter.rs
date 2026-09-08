@@ -631,7 +631,7 @@ pub unsafe fn P_TouchSpecialThing(mut special: *mut mobj_t, mut toucher: *mut mo
     if (*special).flags & MF_COUNTITEM as i32 != 0 {
         (*player).itemcount += 1;
     }
-    P_RemoveMobj(unsafe { &mut game_state().p_mobj }, special);
+    P_RemoveMobj(unsafe { game_state() }, special);
     (*player).bonuscount += BONUSADD;
     if player
         == (&raw mut unsafe { game_state() }.g_game.players as *mut player_t)
@@ -707,7 +707,7 @@ pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
         }
         _ => return,
     }
-    mo = P_SpawnMobj((*target).x, (*target).y, ONFLOORZ, item);
+    mo = P_SpawnMobj(unsafe { game_state() }, (*target).x, (*target).y, ONFLOORZ, item);
     (*mo).flags |= MF_DROPPED as i32;
 }
 pub unsafe fn P_DamageMobj(
