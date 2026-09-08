@@ -2,7 +2,7 @@ use crate::src::d_event::ev_keydown;
 use crate::src::d_event::event_t;
 use crate::src::d_event::{ga_nothing, ga_worlddone};
 use crate::src::d_event::{gamestate_t, GS_FINALE};
-use crate::src::d_mode::exe_chex;
+use crate::src::d_mode::GameVersion;
 use crate::src::d_mode::{commercial, retail};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx, pack_plut, pack_tnt, GameMission_t};
 use crate::src::doomdef::true_0;
@@ -327,7 +327,7 @@ pub unsafe fn F_StartFinale(state: &mut GameState) {
         let mut screen: *mut textscreen_t = (&raw mut state.f_finale.textscreens
             as *mut textscreen_t)
             .offset(i as isize) as *mut textscreen_t;
-        if state.doomstat.gameversion as u32 == exe_chex as i32 as u32
+        if state.doomstat.gameversion == GameVersion::exe_chex
             && (*screen).mission as u32 == doom as i32 as u32
         {
             (*screen).level = 5 as i32;

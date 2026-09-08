@@ -8,13 +8,10 @@ use crate::src::d_iwad::D_SaveGameIWADName;
 use crate::src::d_loop::D_StartGameLoop;
 use crate::src::d_loop::NetUpdate;
 use crate::src::d_loop::TryRunTics;
+use crate::src::d_mode::GameVersion;
 use crate::src::d_mode::{commercial, registered, retail, shareware};
 use crate::src::d_mode::{
     doom, doom2, none, pack_chex, pack_hacx, pack_plut, pack_tnt, GameMission_t,
-};
-use crate::src::d_mode::{
-    exe_chex, exe_doom_1_2, exe_doom_1_666, exe_doom_1_7, exe_doom_1_8, exe_doom_1_9, exe_final,
-    exe_final2, exe_hacx, exe_ultimate, GameVersion_t,
 };
 use crate::src::d_mode::{sk_baby, sk_medium, skill_t};
 use crate::src::d_net::D_CheckNetGame;
@@ -181,69 +178,69 @@ impl DMainState {
                         as *mut ::core::ffi::c_char,
                     cmdline: b"1.666\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_doom_1_666,
+                    version: GameVersion::exe_doom_1_666,
                 },
                 C2RustUnnamed_4 {
                     description: b"Doom 1.7/1.7a\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                     cmdline: b"1.7\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_doom_1_7,
+                    version: GameVersion::exe_doom_1_7,
                 },
                 C2RustUnnamed_4 {
                     description: b"Doom 1.8\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                     cmdline: b"1.8\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_doom_1_8,
+                    version: GameVersion::exe_doom_1_8,
                 },
                 C2RustUnnamed_4 {
                     description: b"Doom 1.9\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                     cmdline: b"1.9\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_doom_1_9,
+                    version: GameVersion::exe_doom_1_9,
                 },
                 C2RustUnnamed_4 {
                     description: b"Hacx\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                     cmdline: b"hacx\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_hacx,
+                    version: GameVersion::exe_hacx,
                 },
                 C2RustUnnamed_4 {
                     description: b"Ultimate Doom\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                     cmdline: b"ultimate\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_ultimate,
+                    version: GameVersion::exe_ultimate,
                 },
                 C2RustUnnamed_4 {
                     description: b"Final Doom\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                     cmdline: b"final\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_final,
+                    version: GameVersion::exe_final,
                 },
                 C2RustUnnamed_4 {
                     description: b"Final Doom (alt)\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                     cmdline: b"final2\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_final2,
+                    version: GameVersion::exe_final2,
                 },
                 C2RustUnnamed_4 {
                     description: b"Chex Quest\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
                     cmdline: b"chex\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char,
-                    version: exe_chex,
+                    version: GameVersion::exe_chex,
                 },
                 C2RustUnnamed_4 {
                     description: ::core::ptr::null::<::core::ffi::c_char>()
                         as *mut ::core::ffi::c_char,
                     cmdline: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
-                    version: exe_doom_1_2,
+                    version: GameVersion::exe_doom_1_2,
                 },
             ],
         }
@@ -289,7 +286,7 @@ pub struct C2RustUnnamed_3 {
 pub struct C2RustUnnamed_4 {
     pub description: *mut ::core::ffi::c_char,
     pub cmdline: *mut ::core::ffi::c_char,
-    pub version: GameVersion_t,
+    pub version: GameVersion,
 }
 pub const PACKAGE_STRING: [::core::ffi::c_char; 17] = unsafe {
     ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"Doom Generic 0.1\0")
@@ -622,9 +619,7 @@ pub unsafe fn D_DoAdvanceDemo(state: &mut GameState) {
     state.g_game.usergame = false;
     state.g_game.paused = false;
     state.g_game.gameaction = ga_nothing;
-    if state.doomstat.gameversion as u32 == exe_ultimate as i32 as u32
-        || state.doomstat.gameversion as u32 == exe_final as i32 as u32
-    {
+    if [GameVersion::exe_ultimate, GameVersion::exe_final].contains(&state.doomstat.gameversion) {
         state.d_main.demosequence = (state.d_main.demosequence + 1 as i32) % 7 as i32;
     } else {
         state.d_main.demosequence = (state.d_main.demosequence + 1 as i32) % 6 as i32;
@@ -1053,28 +1048,28 @@ unsafe fn InitGameVersion(state: &mut GameState) {
             ));
         }
     } else if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
-        state.doomstat.gameversion = exe_chex;
+        state.doomstat.gameversion = GameVersion::exe_chex;
     } else if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
-        state.doomstat.gameversion = exe_hacx;
+        state.doomstat.gameversion = GameVersion::exe_hacx;
     } else if state.doomstat.gamemode as u32 == shareware as i32 as u32
         || state.doomstat.gamemode as u32 == registered as i32 as u32
     {
-        state.doomstat.gameversion = exe_doom_1_9;
+        state.doomstat.gameversion = GameVersion::exe_doom_1_9;
     } else if state.doomstat.gamemode as u32 == retail as i32 as u32 {
-        state.doomstat.gameversion = exe_ultimate;
+        state.doomstat.gameversion = GameVersion::exe_ultimate;
     } else if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         if state.doomstat.gamemission as u32 == doom2 as i32 as u32 {
-            state.doomstat.gameversion = exe_doom_1_9;
+            state.doomstat.gameversion = GameVersion::exe_doom_1_9;
         } else {
-            state.doomstat.gameversion = exe_final;
+            state.doomstat.gameversion = GameVersion::exe_final;
         }
     }
-    if (state.doomstat.gameversion as u32) < exe_ultimate as i32 as u32
+    if state.doomstat.gameversion == GameVersion::exe_ultimate
         && state.doomstat.gamemode as u32 == retail as i32 as u32
     {
         state.doomstat.gamemode = registered;
     }
-    if (state.doomstat.gameversion as u32) < exe_final as i32 as u32
+    if (state.doomstat.gameversion as u32) < GameVersion::exe_final as u32
         && state.doomstat.gamemode as u32 == commercial as i32 as u32
         && (state.doomstat.gamemission as u32 == pack_tnt as i32 as u32
             || state.doomstat.gamemission as u32 == pack_plut as i32 as u32)
@@ -1086,7 +1081,7 @@ pub unsafe fn PrintGameVersion(state: &mut GameState) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while !state.d_main.gameversions[i as usize].description.is_null() {
-        if state.d_main.gameversions[i as usize].version as u32 == state.doomstat.gameversion as u32
+        if state.d_main.gameversions[i as usize].version  == state.doomstat.gameversion 
         {
             printf(
                 b"Emulating the behavior of the '%s' executable.\n\0" as *const u8

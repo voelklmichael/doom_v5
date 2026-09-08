@@ -1,5 +1,4 @@
 use crate::src::d_mode::commercial;
-use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_easy, sk_nightmare};
 use crate::src::d_player::player_t;
 use crate::src::doomdef::boolean;
@@ -1404,7 +1403,7 @@ pub unsafe fn A_Explode(state: &mut GameState, id: MobjId) {
     P_RadiusAttack(state, thingy, target, 128 as i32);
 }
 unsafe fn CheckBossEnd(state: &mut GameState, mut motype: mobjtype_t) -> bool {
-    if (state.doomstat.gameversion as u32) < exe_ultimate as i32 as u32 {
+    if !state.doomstat.gameversion.is_ultimate_or_higher() {
         if state.g_game.gamemap != 8 as i32 {
             return false;
         }

@@ -1,7 +1,7 @@
 use crate::src::d_event::ev_keydown;
 use crate::src::d_event::event_t;
+use crate::src::d_mode::GameVersion;
 use crate::src::d_mode::commercial;
-use crate::src::d_mode::exe_chex;
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
 use crate::src::d_player::player_t;
 use crate::src::doomdef::boolean;
@@ -433,7 +433,7 @@ pub unsafe fn HU_Start(state: &mut GameState) {
             s = "Unknown level";
         }
     }
-    if state.doomstat.gameversion as u32 == exe_chex as i32 as u32 {
+    if state.doomstat.gameversion  == GameVersion::exe_chex {
         s = mapnames[(state.g_game.gamemap - 1 as i32) as usize];
     }
     for b in s.bytes() {

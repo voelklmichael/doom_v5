@@ -8,10 +8,9 @@ use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 
 use crate::src::d_event::GS_LEVEL;
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse, ev_quit};
-use crate::src::d_mode::skill_t;
+use crate::src::d_mode::{GameVersion, skill_t};
 use crate::src::d_mode::{commercial, registered, retail, shareware};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
-use crate::src::d_mode::{exe_chex, exe_doom_1_9, exe_ultimate};
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
@@ -1270,7 +1269,7 @@ pub unsafe extern "C" fn M_NewGame(state: &mut GameState, mut choice: i32) {
         return;
     }
     if state.doomstat.gamemode as u32 == commercial as i32 as u32
-        || state.doomstat.gameversion as u32 == exe_chex as i32 as u32
+        || state.doomstat.gameversion  == GameVersion::exe_chex
     {
         let menudef = &raw mut state.m_menu.defs.NewDef;
         M_SetupNextMenu(state, menudef);
@@ -1454,7 +1453,7 @@ pub unsafe extern "C" fn M_ReadThis(state: &mut GameState, mut choice: i32) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ReadThis2(state: &mut GameState, mut choice: i32) {
-    if state.doomstat.gameversion as u32 <= exe_doom_1_9 as i32 as u32
+    if state.doomstat.gameversion.below_1_9()
         && state.doomstat.gamemode as u32 != commercial as i32 as u32
     {
         choice = 0 as i32;
@@ -2270,7 +2269,7 @@ pub unsafe fn M_Init(state: &mut GameState) {
         0 => {}
         1 | 3 | _ => {}
     }
-    if (state.doomstat.gameversion as u32) < exe_ultimate as i32 as u32 {
+    if !state.doomstat.gameversion.is_ultimate_or_higher() {
         state.m_menu.defs.EpiDef.numitems -= 1;
     }
 }

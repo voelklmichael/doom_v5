@@ -22,21 +22,63 @@ pub const retail: GameMode_t = 3;
 pub const commercial: GameMode_t = 2;
 pub const registered: GameMode_t = 1;
 pub const shareware: GameMode_t = 0;
-pub type GameVersion_t = u32;
-pub const exe_strife_1_31: GameVersion_t = 13;
-pub const exe_strife_1_2: GameVersion_t = 12;
-pub const exe_hexen_1_1: GameVersion_t = 11;
-pub const exe_heretic_1_3: GameVersion_t = 10;
-pub const exe_chex: GameVersion_t = 9;
-pub const exe_final2: GameVersion_t = 8;
-pub const exe_final: GameVersion_t = 7;
-pub const exe_ultimate: GameVersion_t = 6;
-pub const exe_hacx: GameVersion_t = 5;
-pub const exe_doom_1_9: GameVersion_t = 4;
-pub const exe_doom_1_8: GameVersion_t = 3;
-pub const exe_doom_1_7: GameVersion_t = 2;
-pub const exe_doom_1_666: GameVersion_t = 1;
-pub const exe_doom_1_2: GameVersion_t = 0;
+
+#[derive(Copy, Clone, PartialEq)]
+pub enum GameVersion {
+    exe_doom_1_2 = 0,
+    exe_doom_1_666 = 1,
+    exe_doom_1_7 = 2,
+    exe_doom_1_8 = 3,
+    exe_doom_1_9 = 4,
+    exe_hacx = 5,
+    exe_ultimate = 6,
+    exe_final = 7,
+    exe_final2 = 8,
+    exe_chex = 9,
+    exe_heretic_1_3 = 10,
+    exe_hexen_1_1 = 11,
+    exe_strife_1_2 = 12,
+    exe_strife_1_31 = 13,
+}
+impl GameVersion {
+    pub(crate) fn is_ultimate_or_higher(&self) -> bool {
+        match self {
+            GameVersion::exe_doom_1_2
+            | GameVersion::exe_doom_1_666
+            | GameVersion::exe_doom_1_7
+            | GameVersion::exe_doom_1_8
+            | GameVersion::exe_doom_1_9
+            | GameVersion::exe_hacx => false,
+            GameVersion::exe_ultimate
+            | GameVersion::exe_final
+            | GameVersion::exe_final2
+            | GameVersion::exe_chex
+            | GameVersion::exe_heretic_1_3
+            | GameVersion::exe_hexen_1_1
+            | GameVersion::exe_strife_1_2
+            | GameVersion::exe_strife_1_31 => true,
+        }
+    }
+
+    pub(crate) fn below_1_9(&self) -> bool {
+        match self {
+            GameVersion::exe_doom_1_2
+            | GameVersion::exe_doom_1_666
+            | GameVersion::exe_doom_1_7
+            | GameVersion::exe_doom_1_8
+            | GameVersion::exe_doom_1_9 => true,
+            GameVersion::exe_hacx
+            | GameVersion::exe_ultimate
+            | GameVersion::exe_final
+            | GameVersion::exe_final2
+            | GameVersion::exe_chex
+            | GameVersion::exe_heretic_1_3
+            | GameVersion::exe_hexen_1_1
+            | GameVersion::exe_strife_1_2
+            | GameVersion::exe_strife_1_31 => false,
+        }
+    }
+}
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct C2RustUnnamed {
@@ -49,7 +91,7 @@ pub struct C2RustUnnamed {
 #[repr(C)]
 pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
-    pub version: GameVersion_t,
+    pub version: GameVersion,
 }
 static valid_modes: [C2RustUnnamed; 13] = [
     C2RustUnnamed {
@@ -189,46 +231,46 @@ pub fn D_GetNumEpisodes(mut mission: GameMission_t, mut mode: GameMode_t) -> i32
 static valid_versions: [C2RustUnnamed_0; 10] = [
     C2RustUnnamed_0 {
         mission: doom,
-        version: exe_doom_1_9,
+        version: GameVersion::exe_doom_1_9,
     },
     C2RustUnnamed_0 {
         mission: doom,
-        version: exe_hacx,
+        version: GameVersion::exe_hacx,
     },
     C2RustUnnamed_0 {
         mission: doom,
-        version: exe_ultimate,
+        version: GameVersion::exe_ultimate,
     },
     C2RustUnnamed_0 {
         mission: doom,
-        version: exe_final,
+        version: GameVersion::exe_final,
     },
     C2RustUnnamed_0 {
         mission: doom,
-        version: exe_final2,
+        version: GameVersion::exe_final2,
     },
     C2RustUnnamed_0 {
         mission: doom,
-        version: exe_chex,
+        version: GameVersion::exe_chex,
     },
     C2RustUnnamed_0 {
         mission: heretic,
-        version: exe_heretic_1_3,
+        version: GameVersion::exe_heretic_1_3,
     },
     C2RustUnnamed_0 {
         mission: hexen,
-        version: exe_hexen_1_1,
+        version: GameVersion::exe_hexen_1_1,
     },
     C2RustUnnamed_0 {
         mission: strife,
-        version: exe_strife_1_2,
+        version: GameVersion::exe_strife_1_2,
     },
     C2RustUnnamed_0 {
         mission: strife,
-        version: exe_strife_1_31,
+        version: GameVersion::exe_strife_1_31,
     },
 ];
-pub fn D_ValidGameVersion(mut mission: GameMission_t, mut version: GameVersion_t) -> bool {
+pub fn D_ValidGameVersion(mut mission: GameMission_t, mut version: GameVersion) -> bool {
     let mut i: i32 = 0;
     if mission as u32 == doom2 as i32 as u32
         || mission as u32 == pack_plut as i32 as u32

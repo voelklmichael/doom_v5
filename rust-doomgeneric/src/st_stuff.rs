@@ -2,10 +2,9 @@ use crate::src::am_map::{AM_MSGENTERED, AM_MSGEXITED, AM_MSGHEADER};
 use crate::src::d_event::event_t;
 use crate::src::d_event::{ev_keydown, ev_keyup};
 use crate::src::d_items::{weaponinfo, weaponinfo_t};
-use crate::src::d_mode::sk_nightmare;
 use crate::src::d_mode::{commercial, registered, retail, shareware};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
-use crate::src::d_mode::{exe_chex, exe_ultimate};
+use crate::src::d_mode::{sk_nightmare, GameVersion};
 use crate::src::d_player::player_t;
 use crate::src::d_player::{am_noammo, NUMAMMO};
 use crate::src::d_player::{pw_invulnerability, pw_ironfeet, pw_strength};
@@ -558,7 +557,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                     &raw mut buf as *mut ::core::ffi::c_char,
                 );
                 if state.doomstat.gamemode as u32 == commercial as i32 as u32
-                    || (state.doomstat.gameversion as u32) < exe_ultimate as i32 as u32
+                    || !state.doomstat.gameversion.is_ultimate_or_higher()
                 {
                     musnum = mus_runnin as i32
                         + (buf[0 as i32 as usize] as i32 - '0' as i32) * 10 as i32
@@ -710,7 +709,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                 epsd = buf_1[0 as i32 as usize] as i32 - '0' as i32;
                 map = buf_1[1 as i32 as usize] as i32 - '0' as i32;
             }
-            if state.doomstat.gameversion as u32 == exe_chex as i32 as u32 {
+            if state.doomstat.gameversion == GameVersion::exe_chex {
                 epsd = 1 as i32;
             }
             if epsd < 1 as i32 {
@@ -974,7 +973,7 @@ pub unsafe fn ST_doPaletteStuff(state: &mut GameState) {
     } else {
         palette = 0 as i32;
     }
-    if state.doomstat.gameversion as u32 == exe_chex as i32 as u32
+    if state.doomstat.gameversion == GameVersion::exe_chex
         && palette >= STARTREDPALS
         && palette < STARTREDPALS + NUMREDPALS
     {

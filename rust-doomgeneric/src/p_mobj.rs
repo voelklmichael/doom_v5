@@ -1,4 +1,3 @@
-use crate::src::d_mode::exe_ultimate;
 use crate::src::d_mode::{sk_baby, sk_nightmare};
 use crate::src::d_player::CF_NOMOMENTUM;
 use crate::src::doomdef::MAXPLAYERS;
@@ -746,7 +745,7 @@ pub unsafe fn P_ZMovement(state: &mut GameState, mut mo: *mut mobj_t) {
     }
     if (*mo).z <= (*mo).floorz {
         let mut correct_lost_soul_bounce: i32 =
-            (state.doomstat.gameversion as u32 >= exe_ultimate as i32 as u32) as i32;
+            (state.doomstat.gameversion.is_ultimate_or_higher()) as i32;
         if correct_lost_soul_bounce != 0 && (*mo).flags & MF_SKULLFLY as i32 != 0 {
             (*mo).momz = -(*mo).momz;
         }

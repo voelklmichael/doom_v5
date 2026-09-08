@@ -11,9 +11,9 @@ use crate::src::d_event::{gamestate_t, GS_DEMOSCREEN, GS_FINALE, GS_INTERMISSION
 use crate::src::d_loop::BACKUPTICS;
 use crate::src::d_main::D_AdvanceDemo;
 use crate::src::d_main::D_PageTicker;
+use crate::src::d_mode::GameVersion;
 use crate::src::d_mode::{commercial, shareware};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
-use crate::src::d_mode::{exe_chex, exe_final2, exe_ultimate};
 use crate::src::d_mode::{sk_baby, sk_nightmare, skill_t};
 use crate::src::d_player::pw_strength;
 use crate::src::d_player::{am_clip, NUMAMMO};
@@ -797,8 +797,7 @@ pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
         b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
     );
     if state.doomstat.gamemode as u32 == commercial as u32
-        && (state.doomstat.gameversion as u32 == exe_final2 as u32
-            || state.doomstat.gameversion as u32 == exe_chex as u32)
+        && [GameVersion::exe_final2, GameVersion::exe_chex].contains(&state.doomstat.gameversion)
     {
         let mut skytexturename: *mut ::core::ffi::c_char =
             ::core::ptr::null_mut::<::core::ffi::c_char>();
@@ -1435,7 +1434,7 @@ pub unsafe fn G_DoCompleted(state: &mut GameState) {
         AM_Stop(state);
     }
     if state.doomstat.gamemode as u32 != commercial as u32 {
-        if state.doomstat.gameversion as u32 == exe_chex as u32 {
+        if state.doomstat.gameversion == GameVersion::exe_chex {
             if state.g_game.gamemap == 5 as i32 {
                 state.g_game.gameaction = ga_victory;
                 return;
@@ -1755,7 +1754,7 @@ pub unsafe fn G_InitNew(state: &mut GameState, mut skill: skill_t, mut episode: 
     if skill as i32 > sk_nightmare as i32 {
         skill = sk_nightmare;
     }
-    if state.doomstat.gameversion as u32 >= exe_ultimate as u32 {
+    if state.doomstat.gameversion.is_ultimate_or_higher() {
         if episode == 0 as i32 {
             episode = 4 as i32;
         }
