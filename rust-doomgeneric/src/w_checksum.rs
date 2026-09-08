@@ -1,4 +1,4 @@
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::sha1::{
     sha1_context_s, sha1_context_t, SHA1_Final, SHA1_Init, SHA1_UpdateInt32, SHA1_UpdateString,
@@ -61,7 +61,7 @@ unsafe fn ChecksumAddLump(
     SHA1_UpdateInt32(sha1_context, (*lump).position as u32);
     SHA1_UpdateInt32(sha1_context, (*lump).size as u32);
 }
-pub unsafe fn W_Checksum(state: &mut WChecksumState, mut digest: *mut byte) {
+pub unsafe fn W_Checksum(state: &mut GameState, mut digest: *mut byte) {
     let mut sha1_context: sha1_context_t = sha1_context_s {
         h0: 0,
         h1: 0,
@@ -74,13 +74,14 @@ pub unsafe fn W_Checksum(state: &mut WChecksumState, mut digest: *mut byte) {
     };
     let mut i: u32 = 0;
     SHA1_Init(&raw mut sha1_context);
-    state.num_open_wadfiles = 0 as i32;
+    state.w_checksum.num_open_wadfiles = 0 as i32;
     i = 0 as u32;
-    while i < unsafe { game_state() }.w_wad.numlumps {
+    while i < state.w_wad.numlumps {
+        let lump = state.w_wad.lumpinfo.offset(i as isize) as *mut lumpinfo_t;
         ChecksumAddLump(
-            state,
+            &mut state.w_checksum,
             &raw mut sha1_context,
-            unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize) as *mut lumpinfo_t,
+            lump,
         );
         i = i.wrapping_add(1);
     }

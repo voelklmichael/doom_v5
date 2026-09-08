@@ -1,7 +1,7 @@
 use crate::src::d_event::event_t;
 use crate::src::d_event::D_PostEvent;
 use crate::src::d_event::{ev_keydown, ev_keyup};
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_controls::KEY_RSHIFT;
 
 extern "C" {
@@ -180,7 +180,7 @@ unsafe fn UpdateShiftStatus(state: &mut IInputState, mut pressed: i32, mut key: 
         state.shiftdown += change;
     }
 }
-pub unsafe fn I_GetEvent(state: &mut IInputState) {
+pub unsafe fn I_GetEvent(state: &mut GameState) {
     let mut event: event_t = event_t {
         type_0: ev_keydown,
         data1: 0,
@@ -191,20 +191,20 @@ pub unsafe fn I_GetEvent(state: &mut IInputState) {
     let mut pressed: i32 = 0;
     let mut key: u8 = 0;
     while DG_GetKey(&raw mut pressed, &raw mut key) != 0 {
-        UpdateShiftStatus(state, pressed, key);
+        UpdateShiftStatus(&mut state.i_input, pressed, key);
         if pressed != 0 {
             event.type_0 = ev_keydown;
             event.data1 = TranslateKey(key) as i32;
-            event.data2 = GetTypedChar(state, key) as i32;
+            event.data2 = GetTypedChar(&mut state.i_input, key) as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&mut game_state().d_event, event);
+                D_PostEvent(&mut state.d_event, event);
             }
         } else {
             event.type_0 = ev_keyup;
             event.data1 = TranslateKey(key) as i32;
             event.data2 = 0 as i32;
             if event.data1 != 0 as i32 {
-                D_PostEvent(&mut game_state().d_event, event);
+                D_PostEvent(&mut state.d_event, event);
             }
             break;
         }
