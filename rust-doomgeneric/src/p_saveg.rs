@@ -956,7 +956,7 @@ pub unsafe fn P_UnArchiveThinkers(state: &mut GameState) {
                 (*mobj).id = state.p_mobj.register(mobj);
                 (*mobj).target = None;
                 (*mobj).tracer = None;
-                P_SetThingPosition(mobj);
+                P_SetThingPosition(state, mobj);
                 (*mobj).info = (&raw mut state.info.mobjinfo as *mut mobjinfo_t)
                     .offset((*mobj).type_0 as isize)
                     as *mut mobjinfo_t;

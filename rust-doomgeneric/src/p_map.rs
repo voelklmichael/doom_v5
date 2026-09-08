@@ -229,12 +229,12 @@ pub unsafe fn P_TeleportMove(state: &mut GameState, mut thing: *mut mobj_t, mut 
         }
         bx += 1;
     }
-    P_UnsetThingPosition(thing);
+    P_UnsetThingPosition(state, thing);
     (*thing).floorz = state.p_map.tmfloorz;
     (*thing).ceilingz = state.p_map.tmceilingz;
     (*thing).x = x;
     (*thing).y = y;
-    P_SetThingPosition(thing);
+    P_SetThingPosition(state, thing);
     return true;
 }
 #[no_mangle]
@@ -270,7 +270,7 @@ pub unsafe extern "C" fn PIT_CheckLine(state: &mut GameState, mut ld: *mut line_
             return false_0 as boolean;
         }
     }
-    P_LineOpening(ld);
+    P_LineOpening(state, ld);
     if state.p_maputl.opentop < state.p_map.tmceilingz {
         state.p_map.tmceilingz = state.p_maputl.opentop;
         state.p_map.ceilingline = ld;
@@ -501,14 +501,14 @@ pub unsafe fn P_TryMove(state: &mut GameState, mut thing: *mut mobj_t, mut x: fi
             return false;
         }
     }
-    P_UnsetThingPosition(thing);
+    P_UnsetThingPosition(state, thing);
     oldx = (*thing).x;
     oldy = (*thing).y;
     (*thing).floorz = state.p_map.tmfloorz;
     (*thing).ceilingz = state.p_map.tmceilingz;
     (*thing).x = x;
     (*thing).y = y;
-    P_SetThingPosition(thing);
+    P_SetThingPosition(state, thing);
     if (*thing).flags & (MF_TELEPORT as i32 | MF_NOCLIP as i32) == 0 {
         loop {
             let fresh0 = state.p_map.numspechit;
@@ -607,7 +607,7 @@ pub unsafe extern "C" fn PTR_SlideTraverse(state: &mut GameState, mut in_0: *mut
             return true_0 as boolean;
         }
     } else {
-        P_LineOpening(li);
+        P_LineOpening(state, li);
         if !(state.p_maputl.openrange
             < (*state.p_map.slidemo).height)
         {
@@ -742,7 +742,7 @@ pub unsafe extern "C" fn PTR_AimTraverse(state: &mut GameState, mut in_0: *mut i
         if (*li).flags as i32 & ML_TWOSIDED == 0 {
             return false_0 as boolean;
         }
-        P_LineOpening(li);
+        P_LineOpening(state, li);
         if state.p_maputl.openbottom >= state.p_maputl.opentop {
             return false_0 as boolean;
         }
@@ -823,7 +823,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(state: &mut GameState, mut in_0: *mut
             P_ShootSpecialLine(state.p_map.shootthing, li);
         }
         if !((*li).flags as i32 & ML_TWOSIDED == 0) {
-            P_LineOpening(li);
+            P_LineOpening(state, li);
             dist = FixedMul(state.p_map.attackrange, (*in_0).frac);
             if (*li).backsector.is_none() {
                 slope = FixedDiv(
@@ -1027,7 +1027,7 @@ pub unsafe fn P_LineAttack(
 pub unsafe extern "C" fn PTR_UseTraverse(state: &mut GameState, mut in_0: *mut intercept_t) -> boolean {
     let mut side: i32 = 0;
     if (*(*in_0).d.line).special == 0 {
-        P_LineOpening((*in_0).d.line);
+        P_LineOpening(state, (*in_0).d.line);
         if state.p_maputl.openrange <= 0 as i32 {
             S_StartSound(
                 &mut state.sounds,
