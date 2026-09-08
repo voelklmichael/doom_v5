@@ -1,5 +1,5 @@
 use crate::src::d_mode::exe_final;
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_map::P_TeleportMove;
 use crate::src::p_mobj::mobj_t;
@@ -14,7 +14,7 @@ use crate::src::sounds::sfx_telept;
 use crate::src::tables::finecosine;
 use crate::src::tables::finesine;
 use crate::src::tables::ANGLETOFINESHIFT;
-pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut mobj_t) -> i32 {
+pub unsafe fn EV_Teleport(state: &mut GameState, mut line: *mut line_t, mut side: i32, mut thing: *mut mobj_t) -> i32 {
     let mut i: i32 = 0;
     let mut tag: i32 = 0;
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
@@ -33,11 +33,11 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
     }
     tag = (*line).tag as i32;
     i = 0 as i32;
-    while i < unsafe { game_state() }.p_setup.numsectors {
-        if unsafe { game_state() }.p_setup.sectors[i as usize].tag as i32 == tag {
-            thinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
-            thinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
-            while thinker != &raw mut unsafe { game_state() }.p_tick.thinkercap {
+    while i < state.p_setup.numsectors {
+        if state.p_setup.sectors[i as usize].tag as i32 == tag {
+            thinker = state.p_tick.thinkercap.next as *mut thinker_t;
+            thinker = state.p_tick.thinkercap.next as *mut thinker_t;
+            while thinker != &raw mut state.p_tick.thinkercap {
                 if matches!((*thinker).function, ThinkerFn::Mobj(_)) {
                     m = thinker as *mut mobj_t;
                     if !((*m).type_0 as u32 != MT_TELEPORTMAN as i32 as u32) {
@@ -46,10 +46,10 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
                             oldx = (*thing).x;
                             oldy = (*thing).y;
                             oldz = (*thing).z;
-                            if !P_TeleportMove(unsafe { game_state() }, thing, (*m).x, (*m).y) {
+                            if !P_TeleportMove(state, thing, (*m).x, (*m).y) {
                                 return 0 as i32;
                             }
-                            if unsafe { game_state() }.doomstat.gameversion as u32
+                            if state.doomstat.gameversion as u32
                                 != exe_final as i32 as u32
                             {
                                 (*thing).z = (*thing).floorz;
@@ -58,21 +58,21 @@ pub unsafe fn EV_Teleport(mut line: *mut line_t, mut side: i32, mut thing: *mut 
                                 (*(*thing).player).viewz =
                                     (*thing).z + (*(*thing).player).viewheight;
                             }
-                            fog = P_SpawnMobj(unsafe { game_state() }, oldx, oldy, oldz, MT_TFOG);
+                            fog = P_SpawnMobj(state, oldx, oldy, oldz, MT_TFOG);
                             S_StartSound(
-                                unsafe { &mut game_state().sounds },
+                                &mut state.sounds,
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );
                             an = ((*m).angle >> ANGLETOFINESHIFT) as u32;
-                            fog = P_SpawnMobj(unsafe { game_state() }, 
+                            fog = P_SpawnMobj(state, 
                                 (*m).x + 20 as fixed_t * finecosine[an as isize],
                                 (*m).y + 20 as fixed_t * finesine[an as usize],
                                 (*thing).z,
                                 MT_TFOG,
                             );
                             S_StartSound(
-                                unsafe { &mut game_state().sounds },
+                                &mut state.sounds,
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );
