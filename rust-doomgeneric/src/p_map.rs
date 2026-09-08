@@ -1038,7 +1038,7 @@ pub unsafe extern "C" fn PTR_UseTraverse(mut in_0: *mut intercept_t) -> boolean 
         side = 1 as i32;
     }
     P_UseSpecialLine(
-        unsafe { &mut game_state().p_switch },
+        unsafe { game_state() },
         unsafe { game_state() }.p_map.usething,
         (*in_0).d.line,
         side,

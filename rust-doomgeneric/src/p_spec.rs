@@ -920,11 +920,11 @@ pub unsafe fn P_ShootSpecialLine(mut thing: *mut mobj_t, mut line: *mut line_t) 
     match (*line).special as i32 {
         24 => {
             EV_DoFloor(line, raiseFloor);
-            P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 0 as i32);
+            P_ChangeSwitchTexture(unsafe { game_state() }, line, 0 as i32);
         }
         46 => {
             EV_DoDoor(line, vld_open);
-            P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 1 as i32);
+            P_ChangeSwitchTexture(unsafe { game_state() }, line, 1 as i32);
         }
         47 => {
             EV_DoPlat(
@@ -933,7 +933,7 @@ pub unsafe fn P_ShootSpecialLine(mut thing: *mut mobj_t, mut line: *mut line_t) 
                 raiseToNearestAndChange,
                 0 as i32,
             );
-            P_ChangeSwitchTexture(unsafe { &mut game_state().p_switch }, line, 0 as i32);
+            P_ChangeSwitchTexture(unsafe { game_state() }, line, 0 as i32);
         }
         _ => {}
     };
