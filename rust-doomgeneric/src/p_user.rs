@@ -11,7 +11,7 @@ use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::d_ticcmd::{BT_CHANGE, BT_SPECIAL, BT_USE, BT_WEAPONMASK, BT_WEAPONSHIFT};
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::info::{S_PLAY, S_PLAY_RUN1};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
@@ -51,7 +51,7 @@ pub unsafe fn P_Thrust(mut player: *mut player_t, mut angle: angle_t, mut move_0
     (*(*player).mo).momx += FixedMul(move_0, finecosine[angle as isize]);
     (*(*player).mo).momy += FixedMul(move_0, finesine[angle as usize]);
 }
-pub unsafe fn P_CalcHeight(state: &mut PUserState, mut player: *mut player_t) {
+pub unsafe fn P_CalcHeight(state: &mut GameState, mut player: *mut player_t) {
     let mut angle: i32 = 0;
     let mut bob: fixed_t = 0;
     (*player).bob = FixedMul((*(*player).mo).momx, (*(*player).mo).momx)
@@ -60,7 +60,7 @@ pub unsafe fn P_CalcHeight(state: &mut PUserState, mut player: *mut player_t) {
     if (*player).bob > MAXBOB {
         (*player).bob = MAXBOB as fixed_t;
     }
-    if (*player).cheats & CF_NOMOMENTUM as i32 != 0 || !state.onground {
+    if (*player).cheats & CF_NOMOMENTUM as i32 != 0 || !state.p_user.onground {
         (*player).viewz = ((*(*player).mo).z as i32 + VIEWHEIGHT) as fixed_t;
         if (*player).viewz > (*(*player).mo).ceilingz as i32 - 4 as i32 * FRACUNIT {
             (*player).viewz = ((*(*player).mo).ceilingz as i32 - 4 as i32 * FRACUNIT) as fixed_t;
@@ -68,7 +68,7 @@ pub unsafe fn P_CalcHeight(state: &mut PUserState, mut player: *mut player_t) {
         (*player).viewz = (*(*player).mo).z + (*player).viewheight;
         return;
     }
-    angle = FINEANGLES / 20 as i32 * unsafe { game_state() }.p_tick.leveltime & FINEMASK;
+    angle = FINEANGLES / 20 as i32 * state.p_tick.leveltime & FINEMASK;
     bob = FixedMul((*player).bob / 2 as fixed_t, finesine[angle as usize]);
     if (*player).playerstate as u32 == PST_LIVE as i32 as u32 {
         (*player).viewheight += (*player).deltaviewheight;
@@ -94,21 +94,21 @@ pub unsafe fn P_CalcHeight(state: &mut PUserState, mut player: *mut player_t) {
         (*player).viewz = ((*(*player).mo).ceilingz as i32 - 4 as i32 * FRACUNIT) as fixed_t;
     }
 }
-pub unsafe fn P_MovePlayer(state: &mut PUserState, mut player: *mut player_t) {
+pub unsafe fn P_MovePlayer(state: &mut GameState, mut player: *mut player_t) {
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     cmd = &raw mut (*player).cmd;
     (*(*player).mo).angle = (*(*player).mo)
         .angle
         .wrapping_add((((*cmd).angleturn as i32) << 16 as i32) as angle_t);
-    state.onground = (*(*player).mo).z <= (*(*player).mo).floorz;
-    if (*cmd).forwardmove as i32 != 0 && state.onground {
+    state.p_user.onground = (*(*player).mo).z <= (*(*player).mo).floorz;
+    if (*cmd).forwardmove as i32 != 0 && state.p_user.onground {
         P_Thrust(
             player,
             (*(*player).mo).angle,
             (*cmd).forwardmove as fixed_t * 2048 as fixed_t,
         );
     }
-    if (*cmd).sidemove as i32 != 0 && state.onground {
+    if (*cmd).sidemove as i32 != 0 && state.p_user.onground {
         P_Thrust(
             player,
             (*(*player).mo).angle.wrapping_sub(ANG90 as angle_t),
@@ -117,16 +117,16 @@ pub unsafe fn P_MovePlayer(state: &mut PUserState, mut player: *mut player_t) {
     }
     if ((*cmd).forwardmove as i32 != 0 || (*cmd).sidemove as i32 != 0)
         && (*(*player).mo).state
-            == (&raw mut unsafe { game_state() }.info.states as *mut state_t).offset(S_PLAY as i32 as isize) as *mut state_t
+            == (&raw mut state.info.states as *mut state_t).offset(S_PLAY as i32 as isize) as *mut state_t
     {
-        P_SetMobjState(unsafe { game_state() }, (*player).mo, S_PLAY_RUN1);
+        P_SetMobjState(state, (*player).mo, S_PLAY_RUN1);
     }
 }
 pub const ANG5: i32 = ANG90 / 18 as i32;
-pub unsafe fn P_DeathThink(state: &mut PUserState, mut player: *mut player_t) {
+pub unsafe fn P_DeathThink(state: &mut GameState, mut player: *mut player_t) {
     let mut angle: angle_t = 0;
     let mut delta: angle_t = 0;
-    P_MovePsprites(unsafe { game_state() }, player);
+    P_MovePsprites(state, player);
     if (*player).viewheight > 6 as i32 * FRACUNIT {
         (*player).viewheight -= FRACUNIT;
     }
@@ -134,15 +134,15 @@ pub unsafe fn P_DeathThink(state: &mut PUserState, mut player: *mut player_t) {
         (*player).viewheight = (6 as i32 * FRACUNIT) as fixed_t;
     }
     (*player).deltaviewheight = 0 as i32 as fixed_t;
-    state.onground = (*(*player).mo).z <= (*(*player).mo).floorz;
+    state.p_user.onground = (*(*player).mo).z <= (*(*player).mo).floorz;
     P_CalcHeight(state, player);
     let attacker = (*player)
         .attacker
-        .and_then(|id| unsafe { game_state() }.p_mobj.mobj_get(id));
+        .and_then(|id| state.p_mobj.mobj_get(id));
     if attacker.is_some() && attacker != Some((*player).mo) {
         let attacker = attacker.unwrap();
         angle = R_PointToAngle2(
-            unsafe { game_state() },
+            state,
             (*(*player).mo).x,
             (*(*player).mo).y,
             (*attacker).x,
@@ -166,7 +166,7 @@ pub unsafe fn P_DeathThink(state: &mut PUserState, mut player: *mut player_t) {
         (*player).playerstate = PST_REBORN;
     }
 }
-pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
+pub unsafe fn P_PlayerThink(state: &mut GameState, mut player: *mut player_t) {
     let mut cmd: *mut ticcmd_t = ::core::ptr::null_mut::<ticcmd_t>();
     let mut newweapon: weapontype_t = wp_fist;
     if (*player).cheats & CF_NOCLIP as i32 != 0 {
@@ -191,13 +191,13 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
         P_MovePlayer(state, player);
     }
     P_CalcHeight(state, player);
-    if (*unsafe { game_state() }
+    if (*state
         .p_setup
         .sector_mut((*(*(*player).mo).subsector).sector))
     .special
         != 0
     {
-        P_PlayerInSpecialSector(unsafe { game_state() }, player);
+        P_PlayerInSpecialSector(state, player);
     }
     if (*cmd).buttons as i32 & BT_SPECIAL as i32 != 0 {
         (*cmd).buttons = 0 as byte;
@@ -212,7 +212,7 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
         {
             newweapon = wp_chainsaw;
         }
-        if unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+        if state.doomstat.gamemode as u32 == commercial as i32 as u32
             && newweapon as u32 == wp_shotgun as i32 as u32
             && (*player).weaponowned[wp_supershotgun as i32 as usize]
             && (*player).readyweapon as u32 != wp_supershotgun as i32 as u32
@@ -224,7 +224,7 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
         {
             if newweapon as u32 != wp_plasma as i32 as u32
                 && newweapon as u32 != wp_bfg as i32 as u32
-                || unsafe { game_state() }.doomstat.gamemode as u32 != shareware as i32 as u32
+                || state.doomstat.gamemode as u32 != shareware as i32 as u32
             {
                 (*player).pendingweapon = newweapon;
             }
@@ -232,13 +232,13 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
     }
     if (*cmd).buttons as i32 & BT_USE as i32 != 0 {
         if (*player).usedown == 0 {
-            P_UseLines(unsafe { game_state() }, player);
+            P_UseLines(state, player);
             (*player).usedown = true_0;
         }
     } else {
         (*player).usedown = false_0;
     }
-    P_MovePsprites(unsafe { game_state() }, player);
+    P_MovePsprites(state, player);
     if (*player).powers[pw_strength as i32 as usize] != 0 {
         (*player).powers[pw_strength as i32 as usize] += 1;
     }
