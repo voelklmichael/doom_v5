@@ -1,4 +1,3 @@
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_random::P_Random;
 use crate::src::p_mobj::ThinkerFn;
@@ -69,12 +68,12 @@ pub unsafe fn T_FireFlicker(state: &mut GameState, mut flick: *mut fireflicker_t
     }
     (*flick).count = 4 as i32;
 }
-pub unsafe fn P_SpawnFireFlicker(mut sector: SectorId) {
+pub unsafe fn P_SpawnFireFlicker(state: &mut GameState, mut sector: SectorId) {
     let mut flick: *mut fireflicker_t = ::core::ptr::null_mut::<fireflicker_t>();
-    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
+    let sec = state.p_setup.sector_mut(sector);
     (*sec).special = 0 as i16;
     flick = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+        &mut state.z_zone,
         ::core::mem::size_of::<fireflicker_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -102,12 +101,12 @@ pub unsafe fn T_LightFlash(state: &mut GameState, mut flash: *mut lightflash_t) 
             (P_Random(&mut state.m_random) & (*flash).maxtime) + 1 as i32;
     };
 }
-pub unsafe fn P_SpawnLightFlash(mut sector: SectorId) {
+pub unsafe fn P_SpawnLightFlash(state: &mut GameState, mut sector: SectorId) {
     let mut flash: *mut lightflash_t = ::core::ptr::null_mut::<lightflash_t>();
-    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
+    let sec = state.p_setup.sector_mut(sector);
     (*sec).special = 0 as i16;
     flash = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+        &mut state.z_zone,
         ::core::mem::size_of::<lightflash_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -120,7 +119,7 @@ pub unsafe fn P_SpawnLightFlash(mut sector: SectorId) {
     (*flash).maxtime = 64 as i32;
     (*flash).mintime = 7 as i32;
     (*flash).count =
-        (P_Random(unsafe { &mut game_state().m_random }) & (*flash).maxtime) + 1 as i32;
+        (P_Random(&mut state.m_random) & (*flash).maxtime) + 1 as i32;
 }
 pub unsafe fn T_StrobeFlash(state: &mut GameState, mut flash: *mut strobe_t) {
     (*flash).count -= 1;
@@ -136,11 +135,11 @@ pub unsafe fn T_StrobeFlash(state: &mut GameState, mut flash: *mut strobe_t) {
         (*flash).count = (*flash).darktime;
     };
 }
-pub unsafe fn P_SpawnStrobeFlash(mut sector: SectorId, mut fastOrSlow: i32, mut inSync: i32) {
+pub unsafe fn P_SpawnStrobeFlash(state: &mut GameState, mut sector: SectorId, mut fastOrSlow: i32, mut inSync: i32) {
     let mut flash: *mut strobe_t = ::core::ptr::null_mut::<strobe_t>();
-    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
+    let sec = state.p_setup.sector_mut(sector);
     flash = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+        &mut state.z_zone,
         ::core::mem::size_of::<strobe_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -157,27 +156,27 @@ pub unsafe fn P_SpawnStrobeFlash(mut sector: SectorId, mut fastOrSlow: i32, mut 
     }
     (*sec).special = 0 as i16;
     if inSync == 0 {
-        (*flash).count = (P_Random(unsafe { &mut game_state().m_random }) & 7 as i32) + 1 as i32;
+        (*flash).count = (P_Random(&mut state.m_random) & 7 as i32) + 1 as i32;
     } else {
         (*flash).count = 1 as i32;
     };
 }
-pub unsafe fn EV_StartLightStrobing(mut line: *mut line_t) {
+pub unsafe fn EV_StartLightStrobing(state: &mut GameState, mut line: *mut line_t) {
     let mut secnum: i32 = 0;
     secnum = -(1 as i32);
     loop {
-        secnum = P_FindSectorFromLineTag(line, secnum);
+        secnum = P_FindSectorFromLineTag(state, line, secnum);
         if !(secnum >= 0 as i32) {
             break;
         }
-        let sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
+        let sec = state.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
-        P_SpawnStrobeFlash(SectorId(secnum as u32), SLOWDARK, 0 as i32);
+        P_SpawnStrobeFlash(state, SectorId(secnum as u32), SLOWDARK, 0 as i32);
     }
 }
-pub unsafe fn EV_TurnTagLightsOff(mut line: *mut line_t) {
+pub unsafe fn EV_TurnTagLightsOff(state: &mut GameState, mut line: *mut line_t) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut min: i32 = 0;
@@ -185,14 +184,14 @@ pub unsafe fn EV_TurnTagLightsOff(mut line: *mut line_t) {
     let mut tsec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut templine: *mut line_t = ::core::ptr::null_mut::<line_t>();
     j = 0 as i32;
-    while j < unsafe { game_state() }.p_setup.numsectors {
-        sector = unsafe { game_state() }.p_setup.sector_mut(SectorId(j as u32));
+    while j < state.p_setup.numsectors {
+        sector = state.p_setup.sector_mut(SectorId(j as u32));
         if (*sector).tag as i32 == (*line).tag as i32 {
             min = (*sector).lightlevel as i32;
             i = 0 as i32;
             while i < (*sector).linecount {
                 templine = *(*sector).lines.offset(i as isize) as *mut line_t;
-                tsec = getNextSector(templine, sector);
+                tsec = getNextSector(state, templine, sector);
                 if !tsec.is_null() {
                     if ((*tsec).lightlevel as i32) < min {
                         min = (*tsec).lightlevel as i32;
@@ -205,21 +204,21 @@ pub unsafe fn EV_TurnTagLightsOff(mut line: *mut line_t) {
         j += 1;
     }
 }
-pub unsafe fn EV_LightTurnOn(mut line: *mut line_t, mut bright: i32) {
+pub unsafe fn EV_LightTurnOn(state: &mut GameState, mut line: *mut line_t, mut bright: i32) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut temp: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut templine: *mut line_t = ::core::ptr::null_mut::<line_t>();
     i = 0 as i32;
-    while i < unsafe { game_state() }.p_setup.numsectors {
-        sector = unsafe { game_state() }.p_setup.sector_mut(SectorId(i as u32));
+    while i < state.p_setup.numsectors {
+        sector = state.p_setup.sector_mut(SectorId(i as u32));
         if (*sector).tag as i32 == (*line).tag as i32 {
             if bright == 0 {
                 j = 0 as i32;
                 while j < (*sector).linecount {
                     templine = *(*sector).lines.offset(j as isize) as *mut line_t;
-                    temp = getNextSector(templine, sector);
+                    temp = getNextSector(state, templine, sector);
                     if !temp.is_null() {
                         if (*temp).lightlevel as i32 > bright {
                             bright = (*temp).lightlevel as i32;
@@ -253,11 +252,11 @@ pub unsafe fn T_Glow(state: &mut GameState, mut g: *mut glow_t) {
         _ => {}
     };
 }
-pub unsafe fn P_SpawnGlowingLight(mut sector: SectorId) {
+pub unsafe fn P_SpawnGlowingLight(state: &mut GameState, mut sector: SectorId) {
     let mut g: *mut glow_t = ::core::ptr::null_mut::<glow_t>();
-    let sec = unsafe { game_state() }.p_setup.sector_mut(sector);
+    let sec = state.p_setup.sector_mut(sector);
     g = Z_Malloc(
-        unsafe { &mut game_state().z_zone },
+        &mut state.z_zone,
         ::core::mem::size_of::<glow_t>() as i32,
         PU_LEVSPEC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),

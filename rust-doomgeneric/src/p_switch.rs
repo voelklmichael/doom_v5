@@ -504,13 +504,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 6634390297149606533;
         }
         7 => {
-            if EV_BuildStairs(line, build8) != 0 {
+            if EV_BuildStairs(state, line, build8) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         9 => {
-            if EV_DoDonut(line) != 0 {
+            if EV_DoDonut(state, line) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -521,8 +521,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         14 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 raiseAndChange,
                 32 as i32,
@@ -533,8 +532,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         15 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 raiseAndChange,
                 24 as i32,
@@ -545,14 +543,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         18 => {
-            if EV_DoFloor(line, raiseFloorToNearest) != 0 {
+            if EV_DoFloor(state, line, raiseFloorToNearest) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         20 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 raiseToNearestAndChange,
                 0 as i32,
@@ -563,8 +560,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         21 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 downWaitUpStay,
                 0 as i32,
@@ -575,37 +571,37 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         23 => {
-            if EV_DoFloor(line, lowerFloorToLowest) != 0 {
+            if EV_DoFloor(state, line, lowerFloorToLowest) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         29 => {
-            if EV_DoDoor(line, vld_normal) != 0 {
+            if EV_DoDoor(state, line, vld_normal) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         41 => {
-            if EV_DoCeiling(&mut state.p_ceilng, line, lowerToFloor) != 0 {
+            if EV_DoCeiling(state, line, lowerToFloor) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         71 => {
-            if EV_DoFloor(line, turboLower) != 0 {
+            if EV_DoFloor(state, line, turboLower) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         49 => {
-            if EV_DoCeiling(&mut state.p_ceilng, line, crushAndRaise) != 0 {
+            if EV_DoCeiling(state, line, crushAndRaise) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         50 => {
-            if EV_DoDoor(line, vld_close) != 0 {
+            if EV_DoDoor(state, line, vld_close) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -616,50 +612,49 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         55 => {
-            if EV_DoFloor(line, raiseFloorCrush) != 0 {
+            if EV_DoFloor(state, line, raiseFloorCrush) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         101 => {
-            if EV_DoFloor(line, raiseFloor) != 0 {
+            if EV_DoFloor(state, line, raiseFloor) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         102 => {
-            if EV_DoFloor(line, lowerFloor) != 0 {
+            if EV_DoFloor(state, line, lowerFloor) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         103 => {
-            if EV_DoDoor(line, vld_open) != 0 {
+            if EV_DoDoor(state, line, vld_open) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         111 => {
-            if EV_DoDoor(line, vld_blazeRaise) != 0 {
+            if EV_DoDoor(state, line, vld_blazeRaise) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         112 => {
-            if EV_DoDoor(line, vld_blazeOpen) != 0 {
+            if EV_DoDoor(state, line, vld_blazeOpen) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         113 => {
-            if EV_DoDoor(line, vld_blazeClose) != 0 {
+            if EV_DoDoor(state, line, vld_blazeClose) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         122 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 blazeDWUS,
                 0 as i32,
@@ -670,13 +665,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         127 => {
-            if EV_BuildStairs(line, turbo16) != 0 {
+            if EV_BuildStairs(state, line, turbo16) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         131 => {
-            if EV_DoFloor(line, raiseFloorTurbo) != 0 {
+            if EV_DoFloor(state, line, raiseFloorTurbo) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -688,44 +683,43 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 6707790765423050264;
         }
         140 => {
-            if EV_DoFloor(line, raiseFloor512) != 0 {
+            if EV_DoFloor(state, line, raiseFloor512) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         42 => {
-            if EV_DoDoor(line, vld_close) != 0 {
+            if EV_DoDoor(state, line, vld_close) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         43 => {
-            if EV_DoCeiling(&mut state.p_ceilng, line, lowerToFloor) != 0 {
+            if EV_DoCeiling(state, line, lowerToFloor) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         45 => {
-            if EV_DoFloor(line, lowerFloor) != 0 {
+            if EV_DoFloor(state, line, lowerFloor) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         60 => {
-            if EV_DoFloor(line, lowerFloorToLowest) != 0 {
+            if EV_DoFloor(state, line, lowerFloorToLowest) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         61 => {
-            if EV_DoDoor(line, vld_open) != 0 {
+            if EV_DoDoor(state, line, vld_open) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         62 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 downWaitUpStay,
                 1 as i32,
@@ -736,20 +730,19 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         63 => {
-            if EV_DoDoor(line, vld_normal) != 0 {
+            if EV_DoDoor(state, line, vld_normal) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         64 => {
-            if EV_DoFloor(line, raiseFloor) != 0 {
+            if EV_DoFloor(state, line, raiseFloor) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         66 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 raiseAndChange,
                 24 as i32,
@@ -760,8 +753,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         67 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 raiseAndChange,
                 32 as i32,
@@ -772,14 +764,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         65 => {
-            if EV_DoFloor(line, raiseFloorCrush) != 0 {
+            if EV_DoFloor(state, line, raiseFloorCrush) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         68 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 raiseToNearestAndChange,
                 0 as i32,
@@ -790,38 +781,37 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         69 => {
-            if EV_DoFloor(line, raiseFloorToNearest) != 0 {
+            if EV_DoFloor(state, line, raiseFloorToNearest) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         70 => {
-            if EV_DoFloor(line, turboLower) != 0 {
+            if EV_DoFloor(state, line, turboLower) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         114 => {
-            if EV_DoDoor(line, vld_blazeRaise) != 0 {
+            if EV_DoDoor(state, line, vld_blazeRaise) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         115 => {
-            if EV_DoDoor(line, vld_blazeOpen) != 0 {
+            if EV_DoDoor(state, line, vld_blazeOpen) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         116 => {
-            if EV_DoDoor(line, vld_blazeClose) != 0 {
+            if EV_DoDoor(state, line, vld_blazeClose) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         123 => {
-            if EV_DoPlat(
-                &mut state.p_plats,
+            if EV_DoPlat(state,
                 line,
                 blazeDWUS,
                 0 as i32,
@@ -832,7 +822,7 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16981061190961355901;
         }
         132 => {
-            if EV_DoFloor(line, raiseFloorTurbo) != 0 {
+            if EV_DoFloor(state, line, raiseFloorTurbo) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -844,12 +834,12 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 16848555411549253182;
         }
         138 => {
-            EV_LightTurnOn(line, 255 as i32);
+            EV_LightTurnOn(state, line, 255 as i32);
             P_ChangeSwitchTexture(state, line, 1 as i32);
             current_block_108 = 16981061190961355901;
         }
         139 => {
-            EV_LightTurnOn(line, 35 as i32);
+            EV_LightTurnOn(state, line, 35 as i32);
             P_ChangeSwitchTexture(state, line, 1 as i32);
             current_block_108 = 16981061190961355901;
         }
@@ -862,13 +852,13 @@ pub unsafe fn P_UseSpecialLine(
             current_block_108 = 4020771665460505868;
         }
         6707790765423050264 => {
-            if EV_DoLockedDoor(line, vld_blazeOpen, thing) != 0 {
+            if EV_DoLockedDoor(state, line, vld_blazeOpen, thing) != 0 {
                 P_ChangeSwitchTexture(state, line, 0 as i32);
             }
             current_block_108 = 16981061190961355901;
         }
         16848555411549253182 => {
-            if EV_DoLockedDoor(line, vld_blazeOpen, thing) != 0 {
+            if EV_DoLockedDoor(state, line, vld_blazeOpen, thing) != 0 {
                 P_ChangeSwitchTexture(state, line, 1 as i32);
             }
             current_block_108 = 16981061190961355901;
@@ -919,7 +909,7 @@ pub unsafe fn P_UseSpecialLine(
     }
     match current_block_108 {
         6634390297149606533 => {
-            EV_VerticalDoor(line, thing);
+            EV_VerticalDoor(state, line, thing);
         }
         _ => {}
     }

@@ -197,7 +197,7 @@ pub unsafe fn P_PlayerThink(state: &mut PUserState, mut player: *mut player_t) {
     .special
         != 0
     {
-        P_PlayerInSpecialSector(player);
+        P_PlayerInSpecialSector(unsafe { game_state() }, player);
     }
     if (*cmd).buttons as i32 & BT_SPECIAL as i32 != 0 {
         (*cmd).buttons = 0 as byte;

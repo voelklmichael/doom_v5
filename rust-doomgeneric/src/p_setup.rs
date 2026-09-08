@@ -964,14 +964,14 @@ pub unsafe fn P_SetupLevel(
     let gs = state;
     gs.p_mobj.iquetail = 0 as i32;
     gs.p_mobj.iquehead = gs.p_mobj.iquetail;
-    P_SpawnSpecials(&mut gs.p_switch, &mut gs.p_plats, &mut gs.p_ceilng);
+    P_SpawnSpecials(gs);
     if gs.g_game.precache {
         R_PrecacheLevel(gs);
     }
 }
 pub unsafe fn P_Init(state: &mut GameState) {
     P_InitSwitchList(state);
-    P_InitPicAnims();
+    P_InitPicAnims(state);
     let sprnames = &raw mut state.info.sprnames as *mut *mut ::core::ffi::c_char;
     R_InitSprites(state, sprnames);
 }

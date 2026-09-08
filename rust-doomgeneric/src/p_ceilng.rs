@@ -45,6 +45,7 @@ pub unsafe fn T_MoveCeiling(state: &mut GameState, mut ceiling: *mut ceiling_t) 
     match (*ceiling).direction {
         1 => {
             res = T_MovePlane(
+                state,
                 sec,
                 (*ceiling).speed,
                 (*ceiling).topheight,
@@ -96,6 +97,7 @@ pub unsafe fn T_MoveCeiling(state: &mut GameState, mut ceiling: *mut ceiling_t) 
         }
         -1 => {
             res = T_MovePlane(
+                state,
                 sec,
                 (*ceiling).speed,
                 (*ceiling).bottomheight,
@@ -166,7 +168,7 @@ pub unsafe fn T_MoveCeiling(state: &mut GameState, mut ceiling: *mut ceiling_t) 
     };
 }
 pub unsafe fn EV_DoCeiling(
-    state: &mut PCeilngState,
+    state: &mut GameState,
     mut line: *mut line_t,
     mut type_0: ceiling_e,
 ) -> i32 {
@@ -178,22 +180,22 @@ pub unsafe fn EV_DoCeiling(
     rtn = 0 as i32;
     match type_0 as u32 {
         4 | 5 | 3 => {
-            P_ActivateInStasisCeiling(state, line);
+            P_ActivateInStasisCeiling(&mut state.p_ceilng, line);
         }
         _ => {}
     }
     loop {
-        secnum = P_FindSectorFromLineTag(line, secnum);
+        secnum = P_FindSectorFromLineTag(state, line, secnum);
         if !(secnum >= 0 as i32) {
             break;
         }
-        sec = unsafe { game_state() }.p_setup.sector_mut(SectorId(secnum as u32));
+        sec = state.p_setup.sector_mut(SectorId(secnum as u32));
         if !(*sec).specialdata.is_null() {
             continue;
         }
         rtn = 1 as i32;
         ceiling = Z_Malloc(
-            unsafe { &mut game_state().z_zone },
+            &mut state.z_zone,
             ::core::mem::size_of::<ceiling_t>() as i32,
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
@@ -245,7 +247,7 @@ pub unsafe fn EV_DoCeiling(
         }
         (*ceiling).tag = (*sec).tag as i32;
         (*ceiling).type_0 = type_0;
-        P_AddActiveCeiling(state, ceiling);
+        P_AddActiveCeiling(&mut state.p_ceilng, ceiling);
     }
     return rtn;
 }
