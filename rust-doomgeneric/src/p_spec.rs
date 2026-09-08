@@ -675,7 +675,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             (*line).special = 0 as i16;
         }
         39 => {
-            EV_Teleport(line, side, thing);
+            EV_Teleport(state, line, side, thing);
             (*line).special = 0 as i16;
         }
         40 => {
@@ -755,7 +755,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
         }
         125 => {
             if (*thing).player.is_null() {
-                EV_Teleport(line, side, thing);
+                EV_Teleport(state, line, side, thing);
                 (*line).special = 0 as i16;
             }
         }
@@ -855,7 +855,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             EV_DoFloor(state, line, raiseToTexture);
         }
         97 => {
-            EV_Teleport(line, side, thing);
+            EV_Teleport(state, line, side, thing);
         }
         98 => {
             EV_DoFloor(state, line, turboLower);
@@ -878,7 +878,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
         }
         126 => {
             if (*thing).player.is_null() {
-                EV_Teleport(line, side, thing);
+                EV_Teleport(state, line, side, thing);
             }
         }
         128 => {
