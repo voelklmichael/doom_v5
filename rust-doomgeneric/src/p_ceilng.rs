@@ -1,5 +1,4 @@
 use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
@@ -69,7 +68,7 @@ pub unsafe fn T_MoveCeiling(state: &mut GameState, mut ceiling: *mut ceiling_t) 
                 let mut current_block_7: u64;
                 match (*ceiling).type_0 as u32 {
                     1 => {
-                        P_RemoveActiveCeiling(&mut state.p_ceilng, ceiling);
+                        P_RemoveActiveCeiling(state, ceiling);
                         current_block_7 = 10599921512955367680;
                     }
                     5 => {
@@ -135,7 +134,7 @@ pub unsafe fn T_MoveCeiling(state: &mut GameState, mut ceiling: *mut ceiling_t) 
                         current_block_19 = 14600216857840559743;
                     }
                     2 | 0 => {
-                        P_RemoveActiveCeiling(&mut state.p_ceilng, ceiling);
+                        P_RemoveActiveCeiling(state, ceiling);
                         current_block_19 = 16924917904204750491;
                     }
                     _ => {
@@ -200,7 +199,7 @@ pub unsafe fn EV_DoCeiling(
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut ceiling_t;
-        P_AddThinker(&raw mut (*ceiling).thinker);
+        P_AddThinker(state, &raw mut (*ceiling).thinker);
         (*sec).specialdata = ceiling as *mut ::core::ffi::c_void;
         (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
         (*ceiling).sector = SectorId(secnum as u32);
@@ -262,18 +261,18 @@ pub unsafe fn P_AddActiveCeiling(state: &mut PCeilngState, mut c: *mut ceiling_t
         i += 1;
     }
 }
-pub unsafe fn P_RemoveActiveCeiling(state: &mut PCeilngState, mut c: *mut ceiling_t) {
+pub unsafe fn P_RemoveActiveCeiling(state: &mut GameState, mut c: *mut ceiling_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXCEILINGS {
-        if state.activeceilings[i as usize] == c {
-            (*unsafe { game_state() }.p_setup.sector_mut((*state.activeceilings[i as usize]).sector)).specialdata = NULL;
+        if state.p_ceilng.activeceilings[i as usize] == c {
+            (*state.p_setup.sector_mut((*state.p_ceilng.activeceilings[i as usize]).sector)).specialdata = NULL;
             P_RemoveThinker(
-                &raw mut (**(&raw mut state.activeceilings as *mut *mut ceiling_t)
+                &raw mut (**(&raw mut state.p_ceilng.activeceilings as *mut *mut ceiling_t)
                     .offset(i as isize))
                 .thinker,
             );
-            state.activeceilings[i as usize] = ::core::ptr::null_mut::<ceiling_t>();
+            state.p_ceilng.activeceilings[i as usize] = ::core::ptr::null_mut::<ceiling_t>();
             break;
         } else {
             i += 1;

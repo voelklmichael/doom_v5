@@ -1,6 +1,5 @@
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
@@ -92,10 +91,10 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
                 );
                 match (*plat).type_0 as u32 {
                     4 | 1 => {
-                        P_RemoveActivePlat(&mut state.p_plats, plat);
+                        P_RemoveActivePlat(state, plat);
                     }
                     2 | 3 => {
-                        P_RemoveActivePlat(&mut state.p_plats, plat);
+                        P_RemoveActivePlat(state, plat);
                     }
                     _ => {}
                 }
@@ -173,7 +172,7 @@ pub unsafe fn EV_DoPlat(
             PU_LEVSPEC as i32,
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut plat_t;
-        P_AddThinker(&raw mut (*plat).thinker);
+        P_AddThinker(state, &raw mut (*plat).thinker);
         (*plat).type_0 = type_0;
         (*plat).sector = SectorId(secnum as u32);
         (*sec).specialdata = plat as *mut ::core::ffi::c_void;
@@ -310,17 +309,17 @@ pub unsafe fn P_AddActivePlat(state: &mut PPlatsState, mut plat: *mut plat_t) {
     }
     I_Error("P_AddActivePlat: no more plats!");
 }
-pub unsafe fn P_RemoveActivePlat(state: &mut PPlatsState, mut plat: *mut plat_t) {
+pub unsafe fn P_RemoveActivePlat(state: &mut GameState, mut plat: *mut plat_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < MAXPLATS {
-        if plat == state.activeplats[i as usize] {
-            (*unsafe { game_state() }.p_setup.sector_mut((*state.activeplats[i as usize]).sector)).specialdata = NULL;
+        if plat == state.p_plats.activeplats[i as usize] {
+            (*state.p_setup.sector_mut((*state.p_plats.activeplats[i as usize]).sector)).specialdata = NULL;
             P_RemoveThinker(
-                &raw mut (**(&raw mut state.activeplats as *mut *mut plat_t).offset(i as isize))
+                &raw mut (**(&raw mut state.p_plats.activeplats as *mut *mut plat_t).offset(i as isize))
                     .thinker,
             );
-            state.activeplats[i as usize] = ::core::ptr::null_mut::<plat_t>();
+            state.p_plats.activeplats[i as usize] = ::core::ptr::null_mut::<plat_t>();
             return;
         }
         i += 1;

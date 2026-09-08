@@ -1,6 +1,5 @@
 use crate::src::d_player::player_t;
 use crate::src::doomdef::MAXPLAYERS;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::p_doors::vldoor_t;
 use crate::src::p_lights::{fireflicker_t, glow_t, lightflash_t, strobe_t};
@@ -31,15 +30,15 @@ impl PTickState {
 }
 
 
-pub unsafe fn P_InitThinkers() {
-    unsafe { game_state() }.p_tick.thinkercap.next = &raw mut unsafe { game_state() }.p_tick.thinkercap as *mut thinker_s;
-    unsafe { game_state() }.p_tick.thinkercap.prev = unsafe { game_state() }.p_tick.thinkercap.next;
+pub unsafe fn P_InitThinkers(state: &mut GameState) {
+    state.p_tick.thinkercap.next = &raw mut state.p_tick.thinkercap as *mut thinker_s;
+    state.p_tick.thinkercap.prev = state.p_tick.thinkercap.next;
 }
-pub unsafe fn P_AddThinker(mut thinker: *mut thinker_t) {
-    (*unsafe { game_state() }.p_tick.thinkercap.prev).next = thinker as *mut thinker_s;
-    (*thinker).next = &raw mut unsafe { game_state() }.p_tick.thinkercap as *mut thinker_s;
-    (*thinker).prev = unsafe { game_state() }.p_tick.thinkercap.prev;
-    unsafe { game_state() }.p_tick.thinkercap.prev = thinker as *mut thinker_s;
+pub unsafe fn P_AddThinker(state: &mut GameState, mut thinker: *mut thinker_t) {
+    (*state.p_tick.thinkercap.prev).next = thinker as *mut thinker_s;
+    (*thinker).next = &raw mut state.p_tick.thinkercap as *mut thinker_s;
+    (*thinker).prev = state.p_tick.thinkercap.prev;
+    state.p_tick.thinkercap.prev = thinker as *mut thinker_s;
 }
 pub unsafe fn P_RemoveThinker(mut thinker: *mut thinker_t) {
     (*thinker).function = ThinkerFn::Removed;

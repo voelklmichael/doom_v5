@@ -1178,7 +1178,7 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
                         PU_LEVSPEC as i32,
                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     ) as *mut floormove_t;
-                    P_AddThinker(&raw mut (*floor).thinker);
+                    P_AddThinker(state, &raw mut (*floor).thinker);
                     (*s2).specialdata = floor as *mut ::core::ffi::c_void;
                     (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                     (*floor).type_0 = donutRaise;
@@ -1195,7 +1195,7 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
                         PU_LEVSPEC as i32,
                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     ) as *mut floormove_t;
-                    P_AddThinker(&raw mut (*floor).thinker);
+                    P_AddThinker(state, &raw mut (*floor).thinker);
                     (*s1).specialdata = floor as *mut ::core::ffi::c_void;
                     (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                     (*floor).type_0 = lowerFloor;

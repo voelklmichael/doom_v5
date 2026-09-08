@@ -909,7 +909,7 @@ pub unsafe fn P_SetupLevel(
         PU_LEVEL as i32,
         PU_PURGELEVEL as i32 - 1 as i32,
     );
-    P_InitThinkers();
+    P_InitThinkers(state);
     if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         if map < 10 as i32 {
             snprintf(
