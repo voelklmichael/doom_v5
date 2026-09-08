@@ -1978,7 +1978,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
             state.g_game.players
                 [state.g_game.consoleplayer as usize]
                 .message = gammamsg[state.i_video.usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
-            I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
+            I_SetPalette(state, W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
             return true;
         }
     }
