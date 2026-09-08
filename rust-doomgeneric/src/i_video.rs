@@ -294,7 +294,7 @@ pub unsafe fn I_ShutdownGraphics(state: &mut GameState) {
     );
 }
 pub unsafe fn I_StartTic(state: &mut GameState) {
-    I_GetEvent(&mut state.i_input);
+    I_GetEvent(state);
 }
 pub unsafe fn I_FinishUpdate(state: &mut GameState) {
     let mut y: i32 = 0;

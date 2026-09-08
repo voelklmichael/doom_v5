@@ -493,7 +493,7 @@ pub unsafe fn R_Init(state: &mut GameState) {
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitLightTables(state);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    R_InitSkyMap();
+    R_InitSkyMap(state);
     R_InitTranslationTables(state);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     state.r_main.framecount = 0 as i32;

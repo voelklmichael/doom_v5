@@ -143,7 +143,7 @@ unsafe fn InitConnectData(state: &mut GameState, mut connect_data: *mut net_conn
     (*connect_data).lowres_turn =
         (M_CheckParm("-record") > 0 as i32 && M_CheckParm("-longtics") == 0 as i32) as i32;
     W_Checksum(
-        &mut state.w_checksum,
+        state,
         &raw mut (*connect_data).wad_sha1sum as *mut byte,
     );
     (*connect_data).is_freedoom = (W_CheckNumForName("FREEDOOM") >= 0 as i32) as i32;
