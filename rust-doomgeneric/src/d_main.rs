@@ -1397,7 +1397,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     printf(b"R_Init: Init DOOM refresh daemon - \0" as *const u8 as *const ::core::ffi::c_char);
     R_Init(state);
     printf(b"\nP_Init: Init Playloop state.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    P_Init();
+    P_Init(state);
     printf(b"S_Init: Setting up sound.\n\0" as *const u8 as *const ::core::ffi::c_char);
     S_Init(
         state,
