@@ -147,10 +147,8 @@ pub struct DMainState {
 impl DMainState {
     pub const fn new() -> Self {
         DMainState {
-            savegamedir: 
-        ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
-            iwadfile: 
-        ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            savegamedir: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            iwadfile: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
             devparm: false,
             nomonsters: false,
             respawnparm: false,
@@ -176,74 +174,81 @@ impl DMainState {
             d_display_borderdrawcount: 0,
             demosequence: 0,
             pagetic: 0,
-            pagename: 
-        ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            pagename: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
             gameversions: [
-        C2RustUnnamed_4 {
-            description: b"Doom 1.666\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"1.666\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            version: exe_doom_1_666,
-        },
-        C2RustUnnamed_4 {
-            description: b"Doom 1.7/1.7a\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"1.7\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            version: exe_doom_1_7,
-        },
-        C2RustUnnamed_4 {
-            description: b"Doom 1.8\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"1.8\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            version: exe_doom_1_8,
-        },
-        C2RustUnnamed_4 {
-            description: b"Doom 1.9\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"1.9\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            version: exe_doom_1_9,
-        },
-        C2RustUnnamed_4 {
-            description: b"Hacx\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"hacx\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            version: exe_hacx,
-        },
-        C2RustUnnamed_4 {
-            description: b"Ultimate Doom\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"ultimate\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            version: exe_ultimate,
-        },
-        C2RustUnnamed_4 {
-            description: b"Final Doom\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"final\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            version: exe_final,
-        },
-        C2RustUnnamed_4 {
-            description: b"Final Doom (alt)\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"final2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            version: exe_final2,
-        },
-        C2RustUnnamed_4 {
-            description: b"Chex Quest\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-            cmdline: b"chex\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            version: exe_chex,
-        },
-        C2RustUnnamed_4 {
-            description: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
-            cmdline: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
-            version: exe_doom_1_2,
-        },
-    ],
+                C2RustUnnamed_4 {
+                    description: b"Doom 1.666\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"1.666\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_doom_1_666,
+                },
+                C2RustUnnamed_4 {
+                    description: b"Doom 1.7/1.7a\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"1.7\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_doom_1_7,
+                },
+                C2RustUnnamed_4 {
+                    description: b"Doom 1.8\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"1.8\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_doom_1_8,
+                },
+                C2RustUnnamed_4 {
+                    description: b"Doom 1.9\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"1.9\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_doom_1_9,
+                },
+                C2RustUnnamed_4 {
+                    description: b"Hacx\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"hacx\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_hacx,
+                },
+                C2RustUnnamed_4 {
+                    description: b"Ultimate Doom\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"ultimate\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_ultimate,
+                },
+                C2RustUnnamed_4 {
+                    description: b"Final Doom\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"final\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_final,
+                },
+                C2RustUnnamed_4 {
+                    description: b"Final Doom (alt)\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"final2\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_final2,
+                },
+                C2RustUnnamed_4 {
+                    description: b"Chex Quest\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    cmdline: b"chex\0" as *const u8 as *const ::core::ffi::c_char
+                        as *mut ::core::ffi::c_char,
+                    version: exe_chex,
+                },
+                C2RustUnnamed_4 {
+                    description: ::core::ptr::null::<::core::ffi::c_char>()
+                        as *mut ::core::ffi::c_char,
+                    cmdline: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+                    version: exe_doom_1_2,
+                },
+            ],
         }
     }
 }
-
 
 extern "C" {
     fn __ctype_b_loc() -> *mut *const u16;
@@ -332,9 +337,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
     } else {
         wipe = false;
     }
-    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && state.d_loop.gametic != 0
-    {
+    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32 && state.d_loop.gametic != 0 {
         HU_Erase(state);
     }
     match state.g_game.gamestate as u32 {
@@ -343,7 +346,9 @@ pub unsafe fn D_Display(state: &mut GameState) {
                 if state.am_map.automapactive {
                     AM_Drawer(state);
                 }
-                if wipe || state.r_draw.viewheight != 200 as i32 && state.d_main.d_display_fullscreen {
+                if wipe
+                    || state.r_draw.viewheight != 200 as i32 && state.d_main.d_display_fullscreen
+                {
                     redrawsbar = true;
                 }
                 if state.d_main.d_display_inhelpscreensstate && !state.m_menu.inhelpscreens {
@@ -370,18 +375,20 @@ pub unsafe fn D_Display(state: &mut GameState) {
         && state.d_loop.gametic != 0
     {
         let displayplayer_mo = (&raw mut state.g_game.players as *mut player_t)
-            .offset(state.g_game.displayplayer as isize) as *mut player_t;
+            .offset(state.g_game.displayplayer as isize)
+            as *mut player_t;
         R_RenderPlayerView(state, displayplayer_mo);
     }
-    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && state.d_loop.gametic != 0
-    {
+    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32 && state.d_loop.gametic != 0 {
         HU_Drawer(state);
     }
     if state.g_game.gamestate as u32 != state.d_main.d_display_oldgamestate as u32
         && state.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
     {
-        I_SetPalette(state, W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
+        I_SetPalette(
+            state,
+            W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte,
+        );
     }
     if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
         && state.d_main.d_display_oldgamestate as u32 != GS_LEVEL as i32 as u32
@@ -393,7 +400,10 @@ pub unsafe fn D_Display(state: &mut GameState) {
         && !state.am_map.automapactive
         && state.r_draw.scaledviewwidth != 320 as i32
     {
-        if state.m_menu.menuactive || state.d_main.d_display_menuactivestate || !state.d_main.d_display_viewactivestate {
+        if state.m_menu.menuactive
+            || state.d_main.d_display_menuactivestate
+            || !state.d_main.d_display_viewactivestate
+        {
             state.d_main.d_display_borderdrawcount = 3 as i32;
         }
         if state.d_main.d_display_borderdrawcount != 0 {
@@ -599,15 +609,15 @@ pub unsafe fn D_PageDrawer(state: &mut GameState) {
         &mut state.v_video,
         0 as i32,
         0 as i32,
-        W_CacheLumpName(&wad_name8_to_string(state.d_main.pagename), PU_CACHE as i32) as *mut patch_t,
+        W_CacheLumpName(&wad_name8_to_string(state.d_main.pagename), PU_CACHE as i32)
+            as *mut patch_t,
     );
 }
 pub unsafe fn D_AdvanceDemo(state: &mut GameState) {
     state.d_main.advancedemo = true;
 }
 pub unsafe fn D_DoAdvanceDemo(state: &mut GameState) {
-    state.g_game.players[state.g_game.consoleplayer as usize]
-        .playerstate = PST_LIVE;
+    state.g_game.players[state.g_game.consoleplayer as usize].playerstate = PST_LIVE;
     state.d_main.advancedemo = false;
     state.g_game.usergame = false;
     state.g_game.paused = false;
@@ -710,7 +720,10 @@ static banners: [&str; 7] = [
     "                     DOOM 2: TNT - Evilution v%i.%i                           ",
     "                   DOOM 2: Plutonia Experiment v%i.%i                           ",
 ];
-unsafe fn GetGameName(state: &mut GameState, mut gamename: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char {
+unsafe fn GetGameName(
+    state: &mut GameState,
+    mut gamename: *mut ::core::ffi::c_char,
+) -> *mut ::core::ffi::c_char {
     let mut i: size_t = 0;
     i = 0 as size_t;
     while i < banners.len() as size_t {
@@ -788,8 +801,7 @@ unsafe fn SetMissionForPackName(state: &mut GameState, mut pack_name: *mut ::cor
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_3>() as usize)
     {
         if strcasecmp(pack_name, packs[i as usize].name) == 0 {
-            state.doomstat.gamemission =
-                packs[i as usize].mission as GameMission_t;
+            state.doomstat.gamemission = packs[i as usize].mission as GameMission_t;
             return;
         }
         i += 1;
@@ -864,8 +876,8 @@ pub unsafe fn D_IdentifyVersion(state: &mut GameState) {
         state.doomstat.gamemode = commercial;
         p = M_CheckParmWithArgs(state, "-pack", 1 as i32);
         if p > 0 as i32 {
-            let pack_name = state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                as *mut ::core::ffi::c_char;
+            let pack_name =
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
             SetMissionForPackName(state, pack_name);
         }
     };
@@ -886,33 +898,39 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
     }) == doom as i32 as u32
     {
         if is_freedoom {
-            state.doomstat.gamedescription = GetGameName(state,
+            state.doomstat.gamedescription = GetGameName(
+                state,
                 b"Freedoom: Phase 1\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
         } else if state.doomstat.gamemode as u32 == retail as i32 as u32 {
-            state.doomstat.gamedescription = GetGameName(state,
+            state.doomstat.gamedescription = GetGameName(
+                state,
                 b"The Ultimate DOOM\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
         } else if state.doomstat.gamemode as u32 == registered as i32 as u32 {
-            state.doomstat.gamedescription = GetGameName(state,
+            state.doomstat.gamedescription = GetGameName(
+                state,
                 b"DOOM Registered\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
         } else if state.doomstat.gamemode as u32 == shareware as i32 as u32 {
-            state.doomstat.gamedescription = GetGameName(state,
+            state.doomstat.gamedescription = GetGameName(
+                state,
                 b"DOOM Shareware\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
         }
     } else if is_freedoom {
         if is_freedm {
-            state.doomstat.gamedescription = GetGameName(state,
+            state.doomstat.gamedescription = GetGameName(
+                state,
                 b"FreeDM\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
             );
         } else {
-            state.doomstat.gamedescription = GetGameName(state,
+            state.doomstat.gamedescription = GetGameName(
+                state,
                 b"Freedoom: Phase 2\0" as *const u8 as *const ::core::ffi::c_char
                     as *mut ::core::ffi::c_char,
             );
@@ -927,7 +945,8 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
         })
     }) == doom2 as i32 as u32
     {
-        state.doomstat.gamedescription = GetGameName(state,
+        state.doomstat.gamedescription = GetGameName(
+            state,
             b"DOOM 2: Hell on Earth\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
@@ -941,7 +960,8 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
         })
     }) == pack_plut as i32 as u32
     {
-        state.doomstat.gamedescription = GetGameName(state,
+        state.doomstat.gamedescription = GetGameName(
+            state,
             b"DOOM 2: Plutonia Experiment\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
@@ -955,7 +975,8 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
         })
     }) == pack_tnt as i32 as u32
     {
-        state.doomstat.gamedescription = GetGameName(state,
+        state.doomstat.gamedescription = GetGameName(
+            state,
             b"DOOM 2: TNT - Evilution\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char,
         );
@@ -1065,8 +1086,7 @@ pub unsafe fn PrintGameVersion(state: &mut GameState) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while !state.d_main.gameversions[i as usize].description.is_null() {
-        if state.d_main.gameversions[i as usize].version as u32
-            == state.doomstat.gameversion as u32
+        if state.d_main.gameversions[i as usize].version as u32 == state.doomstat.gameversion as u32
         {
             printf(
                 b"Emulating the behavior of the '%s' executable.\n\0" as *const u8
@@ -1121,10 +1141,9 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     if p != 0 {
         let mut scale: i32 = 200 as i32;
         if p < state.m_argv.myargv.len() as i32 - 1 as i32 {
-            scale = atoi(
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
-            );
+            scale =
+                atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char);
         }
         if scale < 10 as i32 {
             scale = 10 as i32;
@@ -1200,8 +1219,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         ) {
             M_StringCopy(
                 &raw mut file as *mut ::core::ffi::c_char,
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
             );
         } else {
@@ -1209,27 +1227,23 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
                 &raw mut file as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
                 b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
             );
         }
         if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
-                &raw mut (*state.w_wad.lumpinfo.offset(
-                    state
-                        .w_wad
-                        .numlumps
-                        .wrapping_sub(1 as u32) as isize,
-                ))
+                &raw mut (*state
+                    .w_wad
+                    .lumpinfo
+                    .offset(state.w_wad.numlumps.wrapping_sub(1 as u32) as isize))
                 .name as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         } else {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         }
@@ -1342,10 +1356,8 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     state.g_game.timelimit = 0 as i32;
     p = M_CheckParmWithArgs(state, "-timer", 1 as i32);
     if p != 0 {
-        state.g_game.timelimit = atoi(
-            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                as *mut ::core::ffi::c_char,
-        );
+        state.g_game.timelimit =
+            atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
     }
     p = M_CheckParm(state, "-avg");
     if p != 0 {
@@ -1354,10 +1366,9 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     p = M_CheckParmWithArgs(state, "-warp", 1 as i32);
     if p != 0 {
         if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
-            state.d_main.startmap = atoi(
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
-            );
+            state.d_main.startmap =
+                atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
+                    as *mut ::core::ffi::c_char);
         } else {
             state.d_main.startepisode = state.m_argv.myargv[(p + 1 as i32) as usize]
                 .as_bytes()
@@ -1387,10 +1398,8 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     p = M_CheckParmWithArgs(state, "-loadgame", 1 as i32);
     if p != 0 {
-        state.d_main.startloadgame = atoi(
-            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                as *mut ::core::ffi::c_char,
-        );
+        state.d_main.startloadgame =
+            atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
     } else {
         state.d_main.startloadgame = -(1 as i32);
     }
@@ -1427,7 +1436,8 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     p = M_CheckParmWithArgs(state, "-record", 1 as i32);
     if p != 0 {
-        let record_name = state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
+        let record_name =
+            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
         G_RecordDemo(state, record_name);
         state.d_main.autostart = true;
     }
@@ -1454,7 +1464,11 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     if state.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
         if state.d_main.autostart || state.g_game.netgame {
-            let (startskill, startepisode, startmap) = (state.d_main.startskill, state.d_main.startepisode, state.d_main.startmap);
+            let (startskill, startepisode, startmap) = (
+                state.d_main.startskill,
+                state.d_main.startepisode,
+                state.d_main.startmap,
+            );
             G_InitNew(state, startskill, startepisode, startmap);
         } else {
             D_StartTitle(state);

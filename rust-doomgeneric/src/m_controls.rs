@@ -902,8 +902,8 @@ pub unsafe fn M_BindChatControls(state: &mut GameState, mut num_players: u32) {
             ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
                 .to_str()
                 .unwrap(),
-            (&raw mut state.m_controls.key_multi_msgplayer as *mut i32)
-                .offset(i as isize) as *mut i32 as *mut ::core::ffi::c_void,
+            (&raw mut state.m_controls.key_multi_msgplayer as *mut i32).offset(i as isize)
+                as *mut i32 as *mut ::core::ffi::c_void,
         );
         i = i.wrapping_add(1);
     }

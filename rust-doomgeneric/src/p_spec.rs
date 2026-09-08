@@ -11,8 +11,6 @@ use crate::src::m_misc::M_StrToInt;
 use crate::src::m_random::P_Random;
 use crate::src::p_ceilng::EV_CeilingCrushStop;
 use crate::src::p_ceilng::EV_DoCeiling;
-use crate::src::p_setup::SectorId;
-use crate::src::p_setup::SideId;
 use crate::src::p_ceilng::{
     ceiling_e, crushAndRaise, fastCrushAndRaise, lowerAndCrush, raiseToHighest, silentCrushAndRaise,
 };
@@ -48,6 +46,8 @@ use crate::src::p_plats::EV_StopPlat;
 use crate::src::p_plats::{
     blazeDWUS, downWaitUpStay, perpetualRaise, plattype_e, raiseToNearestAndChange,
 };
+use crate::src::p_setup::SectorId;
+use crate::src::p_setup::SideId;
 use crate::src::p_switch::bwhere_e;
 use crate::src::p_switch::P_ChangeSwitchTexture;
 use crate::src::p_telept::EV_Teleport;
@@ -343,8 +343,7 @@ pub static animdefs: [animdef_t; 23] = unsafe {
 pub const MAXLINEANIMS: i32 = 64;
 pub unsafe fn P_InitPicAnims(state: &mut GameState) {
     let mut i: i32 = 0;
-    state.p_spec.lastanim =
-        &raw mut state.p_spec.anims as *mut anim_t;
+    state.p_spec.lastanim = &raw mut state.p_spec.anims as *mut anim_t;
     let mut current_block_13: u64;
     i = 0 as i32;
     while animdefs[i as usize].istexture != -(1 as i32) {
@@ -360,7 +359,8 @@ pub unsafe fn P_InitPicAnims(state: &mut GameState) {
                 current_block_13 = 12237857397564741460;
             } else {
                 (*state.p_spec.lastanim).picnum = R_TextureNumForName(&mut state.r_data, endname);
-                (*state.p_spec.lastanim).basepic = R_TextureNumForName(&mut state.r_data, startname);
+                (*state.p_spec.lastanim).basepic =
+                    R_TextureNumForName(&mut state.r_data, startname);
                 current_block_13 = 11650488183268122163;
             }
         } else if W_CheckNumForName(&wad_name8_to_string(startname)) == -(1 as i32) {
@@ -372,12 +372,9 @@ pub unsafe fn P_InitPicAnims(state: &mut GameState) {
         }
         match current_block_13 {
             11650488183268122163 => {
-                (*state.p_spec.lastanim).istexture =
-                    animdefs[i as usize].istexture != 0;
+                (*state.p_spec.lastanim).istexture = animdefs[i as usize].istexture != 0;
                 (*state.p_spec.lastanim).numpics =
-                    (*state.p_spec.lastanim).picnum
-                        - (*state.p_spec.lastanim).basepic
-                        + 1 as i32;
+                    (*state.p_spec.lastanim).picnum - (*state.p_spec.lastanim).basepic + 1 as i32;
                 if (*state.p_spec.lastanim).numpics < 2 as i32 {
                     I_Error(&format!(
                         "P_InitPicAnims: bad cycle from {} to {}",
@@ -386,21 +383,30 @@ pub unsafe fn P_InitPicAnims(state: &mut GameState) {
                     ));
                 }
                 (*state.p_spec.lastanim).speed = animdefs[i as usize].speed;
-                state.p_spec.lastanim =
-                    state.p_spec.lastanim.offset(1);
+                state.p_spec.lastanim = state.p_spec.lastanim.offset(1);
             }
             _ => {}
         }
         i += 1;
     }
 }
-pub unsafe fn getSide(state: &mut GameState, mut currentSector: i32, mut line: i32, mut side: i32) -> *mut side_t {
+pub unsafe fn getSide(
+    state: &mut GameState,
+    mut currentSector: i32,
+    mut line: i32,
+    mut side: i32,
+) -> *mut side_t {
     let sec = state.p_setup.sector_mut(SectorId(currentSector as u32));
-    let sidenum =
-        *(&raw mut (**(*sec).lines.offset(line as isize)).sidenum as *mut i16).offset(side as isize);
+    let sidenum = *(&raw mut (**(*sec).lines.offset(line as isize)).sidenum as *mut i16)
+        .offset(side as isize);
     return state.p_setup.side_mut(SideId(sidenum as u32));
 }
-pub unsafe fn getSector(state: &mut GameState, mut currentSector: i32, mut line: i32, mut side: i32) -> *mut sector_t {
+pub unsafe fn getSector(
+    state: &mut GameState,
+    mut currentSector: i32,
+    mut line: i32,
+    mut side: i32,
+) -> *mut sector_t {
     let sec = state.p_setup.sector_mut(SectorId(currentSector as u32));
     let sidenum = (**(*sec).lines.offset(line as isize)).sidenum[side as usize];
     let sector_id = state.p_setup.sides[sidenum as usize].sector;
@@ -410,7 +416,11 @@ pub unsafe fn twoSided(state: &mut GameState, mut sector: i32, mut line: i32) ->
     let sec = state.p_setup.sector_mut(SectorId(sector as u32));
     return (**(*sec).lines.offset(line as isize)).flags as i32 & ML_TWOSIDED;
 }
-pub unsafe fn getNextSector(state: &mut GameState, mut line: *mut line_t, mut sec: *mut sector_t) -> *mut sector_t {
+pub unsafe fn getNextSector(
+    state: &mut GameState,
+    mut line: *mut line_t,
+    mut sec: *mut sector_t,
+) -> *mut sector_t {
     if (*line).flags as i32 & ML_TWOSIDED == 0 {
         return ::core::ptr::null_mut::<sector_t>();
     }
@@ -536,7 +546,11 @@ pub unsafe fn P_FindHighestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t
     }
     return height;
 }
-pub unsafe fn P_FindSectorFromLineTag(state: &mut GameState, mut line: *mut line_t, mut start: i32) -> i32 {
+pub unsafe fn P_FindSectorFromLineTag(
+    state: &mut GameState,
+    mut line: *mut line_t,
+    mut start: i32,
+) -> i32 {
     let mut i: i32 = 0;
     i = start + 1 as i32;
     while i < state.p_setup.numsectors {
@@ -566,7 +580,12 @@ pub unsafe fn P_FindMinSurroundingLight(mut sector: *mut sector_t, mut max: i32)
     }
     return min;
 }
-pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut side: i32, mut thing: *mut mobj_t) {
+pub unsafe fn P_CrossSpecialLine(
+    state: &mut GameState,
+    mut linenum: i32,
+    mut side: i32,
+    mut thing: *mut mobj_t,
+) {
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut ok: i32 = 0;
     line = state.p_setup.lines.offset(linenum as isize) as *mut line_t;
@@ -604,10 +623,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             (*line).special = 0 as i16;
         }
         6 => {
-            EV_DoCeiling(state,
-                line,
-                fastCrushAndRaise,
-            );
+            EV_DoCeiling(state, line, fastCrushAndRaise);
             (*line).special = 0 as i16;
         }
         8 => {
@@ -615,11 +631,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             (*line).special = 0 as i16;
         }
         10 => {
-            EV_DoPlat(state,
-                line,
-                downWaitUpStay,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, downWaitUpStay, 0 as i32);
             (*line).special = 0 as i16;
         }
         12 => {
@@ -643,11 +655,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             (*line).special = 0 as i16;
         }
         22 => {
-            EV_DoPlat(state,
-                line,
-                raiseToNearestAndChange,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, raiseToNearestAndChange, 0 as i32);
             (*line).special = 0 as i16;
         }
         25 => {
@@ -691,11 +699,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             G_ExitLevel(state);
         }
         53 => {
-            EV_DoPlat(state,
-                line,
-                perpetualRaise,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, perpetualRaise, 0 as i32);
             (*line).special = 0 as i16;
         }
         54 => {
@@ -743,11 +747,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             (*line).special = 0 as i16;
         }
         121 => {
-            EV_DoPlat(state,
-                line,
-                blazeDWUS,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, blazeDWUS, 0 as i32);
             (*line).special = 0 as i16;
         }
         124 => {
@@ -764,10 +764,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             (*line).special = 0 as i16;
         }
         141 => {
-            EV_DoCeiling(state,
-                line,
-                silentCrushAndRaise,
-            );
+            EV_DoCeiling(state, line, silentCrushAndRaise);
             (*line).special = 0 as i16;
         }
         72 => {
@@ -786,10 +783,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             EV_DoDoor(state, line, vld_close30ThenOpen);
         }
         77 => {
-            EV_DoCeiling(state,
-                line,
-                fastCrushAndRaise,
-            );
+            EV_DoCeiling(state, line, fastCrushAndRaise);
         }
         79 => {
             EV_LightTurnOn(state, line, 35 as i32);
@@ -813,18 +807,10 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             EV_DoDoor(state, line, vld_open);
         }
         87 => {
-            EV_DoPlat(state,
-                line,
-                perpetualRaise,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, perpetualRaise, 0 as i32);
         }
         88 => {
-            EV_DoPlat(state,
-                line,
-                downWaitUpStay,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, downWaitUpStay, 0 as i32);
         }
         89 => {
             EV_StopPlat(&mut state.p_plats, line);
@@ -845,11 +831,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             EV_DoFloor(state, line, raiseFloorCrush);
         }
         95 => {
-            EV_DoPlat(state,
-                line,
-                raiseToNearestAndChange,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, raiseToNearestAndChange, 0 as i32);
         }
         96 => {
             EV_DoFloor(state, line, raiseToTexture);
@@ -870,11 +852,7 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
             EV_DoDoor(state, line, vld_blazeClose);
         }
         120 => {
-            EV_DoPlat(state,
-                line,
-                blazeDWUS,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, blazeDWUS, 0 as i32);
         }
         126 => {
             if (*thing).player.is_null() {
@@ -890,7 +868,11 @@ pub unsafe fn P_CrossSpecialLine(state: &mut GameState, mut linenum: i32, mut si
         _ => {}
     };
 }
-pub unsafe fn P_ShootSpecialLine(state: &mut GameState, mut thing: *mut mobj_t, mut line: *mut line_t) {
+pub unsafe fn P_ShootSpecialLine(
+    state: &mut GameState,
+    mut thing: *mut mobj_t,
+    mut line: *mut line_t,
+) {
     let mut ok: i32 = 0;
     if (*thing).player.is_null() {
         ok = 0 as i32;
@@ -914,11 +896,7 @@ pub unsafe fn P_ShootSpecialLine(state: &mut GameState, mut thing: *mut mobj_t, 
             P_ChangeSwitchTexture(state, line, 1 as i32);
         }
         47 => {
-            EV_DoPlat(state,
-                line,
-                raiseToNearestAndChange,
-                0 as i32,
-            );
+            EV_DoPlat(state, line, raiseToNearestAndChange, 0 as i32);
             P_ChangeSwitchTexture(state, line, 0 as i32);
         }
         _ => {}
@@ -936,7 +914,8 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
         5 => {
             if (*player).powers[pw_ironfeet as i32 as usize] == 0 {
                 if state.p_tick.leveltime & 0x1f as i32 == 0 {
-                    P_DamageMobj(state, 
+                    P_DamageMobj(
+                        state,
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -948,7 +927,8 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
         7 => {
             if (*player).powers[pw_ironfeet as i32 as usize] == 0 {
                 if state.p_tick.leveltime & 0x1f as i32 == 0 {
-                    P_DamageMobj(state, 
+                    P_DamageMobj(
+                        state,
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -962,7 +942,8 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
                 || P_Random(&mut state.m_random) < 5 as i32
             {
                 if state.p_tick.leveltime & 0x1f as i32 == 0 {
-                    P_DamageMobj(state, 
+                    P_DamageMobj(
+                        state,
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -978,7 +959,8 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
         11 => {
             (*player).cheats &= !(CF_GODMODE as i32);
             if state.p_tick.leveltime & 0x1f as i32 == 0 {
-                P_DamageMobj(state, 
+                P_DamageMobj(
+                    state,
                     (*player).mo,
                     ::core::ptr::null_mut::<mobj_t>(),
                     ::core::ptr::null_mut::<mobj_t>(),
@@ -1027,9 +1009,8 @@ pub unsafe fn P_UpdateSpecials(state: &mut GameState) {
         line = state.p_spec.linespeciallist[i as usize];
         match (*line).special as i32 {
             48 => {
-                let ref mut fresh0 = state.p_setup.sides
-                    [(*line).sidenum[0 as i32 as usize] as usize]
-                    .textureoffset;
+                let ref mut fresh0 =
+                    state.p_setup.sides[(*line).sidenum[0 as i32 as usize] as usize].textureoffset;
                 *fresh0 += FRACUNIT;
             }
             _ => {}
@@ -1043,31 +1024,35 @@ pub unsafe fn P_UpdateSpecials(state: &mut GameState) {
             if state.p_switch.buttonlist[i as usize].btimer == 0 {
                 match state.p_switch.buttonlist[i as usize].where_0 as u32 {
                     0 => {
-                        state.p_setup.sides
-                            [(*state.p_switch.buttonlist[i as usize].line).sidenum[0 as i32 as usize] as usize]
+                        state.p_setup.sides[(*state.p_switch.buttonlist[i as usize].line).sidenum
+                            [0 as i32 as usize]
+                            as usize]
                             .toptexture = state.p_switch.buttonlist[i as usize].btexture as i16;
                     }
                     1 => {
-                        state.p_setup.sides
-                            [(*state.p_switch.buttonlist[i as usize].line).sidenum[0 as i32 as usize] as usize]
+                        state.p_setup.sides[(*state.p_switch.buttonlist[i as usize].line).sidenum
+                            [0 as i32 as usize]
+                            as usize]
                             .midtexture = state.p_switch.buttonlist[i as usize].btexture as i16;
                     }
                     2 => {
-                        state.p_setup.sides
-                            [(*state.p_switch.buttonlist[i as usize].line).sidenum[0 as i32 as usize] as usize]
+                        state.p_setup.sides[(*state.p_switch.buttonlist[i as usize].line).sidenum
+                            [0 as i32 as usize]
+                            as usize]
                             .bottomtexture = state.p_switch.buttonlist[i as usize].btexture as i16;
                     }
                     _ => {}
                 }
                 S_StartSound(
                     &mut state.sounds,
-                    &raw mut (*(&raw mut state.p_switch.buttonlist as *mut button_t).offset(i as isize))
-                        .soundorg as *mut ::core::ffi::c_void,
+                    &raw mut (*(&raw mut state.p_switch.buttonlist as *mut button_t)
+                        .offset(i as isize))
+                    .soundorg as *mut ::core::ffi::c_void,
                     sfx_swtchn as i32,
                 );
                 memset(
-                    (&raw mut state.p_switch.buttonlist as *mut button_t).offset(i as isize) as *mut button_t
-                        as *mut ::core::ffi::c_void,
+                    (&raw mut state.p_switch.buttonlist as *mut button_t).offset(i as isize)
+                        as *mut button_t as *mut ::core::ffi::c_void,
                     0 as i32,
                     ::core::mem::size_of::<button_t>() as size_t,
                 );
@@ -1094,13 +1079,11 @@ unsafe fn DonutOverrun(
         p = M_CheckParmWithArgs(state, "-donut", 2 as i32);
         if p > 0 as i32 {
             M_StrToInt(
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
+                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
                 &raw mut state.p_spec.donut_overrun_tmp_s3_floorheight,
             );
             M_StrToInt(
-                state.m_argv.myargv[(p + 2 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char,
+                state.m_argv.myargv[(p + 2 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
                 &raw mut state.p_spec.donut_overrun_tmp_s3_floorpic,
             );
             if state.p_spec.donut_overrun_tmp_s3_floorpic >= state.r_data.numflats {
@@ -1140,7 +1123,11 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
             continue;
         }
         rtn = 1 as i32;
-        s2 = getNextSector(state, *(*s1).lines.offset(0 as i32 as isize) as *mut line_t, s1);
+        s2 = getNextSector(
+            state,
+            *(*s1).lines.offset(0 as i32 as isize) as *mut line_t,
+            s1,
+        );
         if s2.is_null() {
             fprintf(
                 stderr,
@@ -1149,9 +1136,7 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
             );
             break;
         } else {
-            let s2_id = SectorId(
-                s2.offset_from(state.p_setup.sectors.as_mut_ptr()) as i64 as u32,
-            );
+            let s2_id = SectorId(s2.offset_from(state.p_setup.sectors.as_mut_ptr()) as i64 as u32);
             i = 0 as i32;
             while i < (*s2).linecount {
                 s3 = match (**(*s2).lines.offset(i as isize)).backsector {
@@ -1167,7 +1152,13 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
                             b"EV_DoDonut: WARNING: emulating buffer overrun due to NULL back sector. Unexpected behavior may occur in Vanilla Doom.\n\0"
                                 as *const u8 as *const ::core::ffi::c_char,
                         );
-                        DonutOverrun(state, &raw mut s3_floorheight, &raw mut s3_floorpic, line, s1);
+                        DonutOverrun(
+                            state,
+                            &raw mut s3_floorheight,
+                            &raw mut s3_floorpic,
+                            line,
+                            s1,
+                        );
                     } else {
                         s3_floorheight = (*s3).floorheight;
                         s3_floorpic = (*s3).floorpic;
@@ -1214,12 +1205,9 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
 pub unsafe fn P_SpawnSpecials(state: &mut GameState) {
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut i: i32 = 0;
-    if state.g_game.timelimit > 0 as i32
-        && state.g_game.deathmatch != 0
-    {
+    if state.g_game.timelimit > 0 as i32 && state.g_game.deathmatch != 0 {
         state.p_spec.levelTimer = true;
-        state.p_spec.levelTimeCount =
-            state.g_game.timelimit * 60 as i32 * TICRATE;
+        state.p_spec.levelTimeCount = state.g_game.timelimit * 60 as i32 * TICRATE;
     } else {
         state.p_spec.levelTimer = false;
     }
@@ -1276,8 +1264,7 @@ pub unsafe fn P_SpawnSpecials(state: &mut GameState) {
                 if state.p_spec.numlinespecials as i32 >= MAXLINEANIMS {
                     I_Error("Too many scrolling wall linedefs! (Vanilla limit is 64)");
                 }
-                state.p_spec.linespeciallist
-                    [state.p_spec.numlinespecials as usize] =
+                state.p_spec.linespeciallist[state.p_spec.numlinespecials as usize] =
                     state.p_setup.lines.offset(i as isize) as *mut line_t;
                 state.p_spec.numlinespecials += 1;
             }
@@ -1298,8 +1285,8 @@ pub unsafe fn P_SpawnSpecials(state: &mut GameState) {
     i = 0 as i32;
     while i < MAXBUTTONS {
         memset(
-            (&raw mut state.p_switch.buttonlist as *mut button_t).offset(i as isize) as *mut button_t
-                as *mut ::core::ffi::c_void,
+            (&raw mut state.p_switch.buttonlist as *mut button_t).offset(i as isize)
+                as *mut button_t as *mut ::core::ffi::c_void,
             0 as i32,
             ::core::mem::size_of::<button_t>() as size_t,
         );

@@ -633,52 +633,96 @@ impl MMenuState {
     // returns, same pattern as `sounds::fixup_self_links`/
     // `p_maputl::fixup_intercepts_overrun`/`m_controls::fixup_weapon_keys`.
     pub fn fixup_menu_routines(&mut self) {
-        self.defs.MainDef.routine = Some(M_DrawMainMenu as unsafe extern "C" fn(&mut GameState) -> ());
-        self.defs.EpiDef.routine = Some(M_DrawEpisode as unsafe extern "C" fn(&mut GameState) -> ());
-        self.defs.NewDef.routine = Some(M_DrawNewGame as unsafe extern "C" fn(&mut GameState) -> ());
-        self.defs.OptionsDef.routine = Some(M_DrawOptions as unsafe extern "C" fn(&mut GameState) -> ());
-        self.defs.ReadDef1.routine = Some(M_DrawReadThis1 as unsafe extern "C" fn(&mut GameState) -> ());
-        self.defs.ReadDef2.routine = Some(M_DrawReadThis2 as unsafe extern "C" fn(&mut GameState) -> ());
-        self.defs.SoundDef.routine = Some(M_DrawSound as unsafe extern "C" fn(&mut GameState) -> ());
+        self.defs.MainDef.routine =
+            Some(M_DrawMainMenu as unsafe extern "C" fn(&mut GameState) -> ());
+        self.defs.EpiDef.routine =
+            Some(M_DrawEpisode as unsafe extern "C" fn(&mut GameState) -> ());
+        self.defs.NewDef.routine =
+            Some(M_DrawNewGame as unsafe extern "C" fn(&mut GameState) -> ());
+        self.defs.OptionsDef.routine =
+            Some(M_DrawOptions as unsafe extern "C" fn(&mut GameState) -> ());
+        self.defs.ReadDef1.routine =
+            Some(M_DrawReadThis1 as unsafe extern "C" fn(&mut GameState) -> ());
+        self.defs.ReadDef2.routine =
+            Some(M_DrawReadThis2 as unsafe extern "C" fn(&mut GameState) -> ());
+        self.defs.SoundDef.routine =
+            Some(M_DrawSound as unsafe extern "C" fn(&mut GameState) -> ());
         self.defs.LoadDef.routine = Some(M_DrawLoad as unsafe extern "C" fn(&mut GameState) -> ());
         self.defs.SaveDef.routine = Some(M_DrawSave as unsafe extern "C" fn(&mut GameState) -> ());
-        self.menus.MainMenu[0].routine = Some(M_NewGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.MainMenu[1].routine = Some(M_Options as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.MainMenu[2].routine = Some(M_LoadGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.MainMenu[3].routine = Some(M_SaveGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.MainMenu[4].routine = Some(M_ReadThis as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.MainMenu[5].routine = Some(M_QuitDOOM as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.EpisodeMenu[0].routine = Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.EpisodeMenu[1].routine = Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.EpisodeMenu[2].routine = Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.EpisodeMenu[3].routine = Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.NewGameMenu[0].routine = Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.NewGameMenu[1].routine = Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.NewGameMenu[2].routine = Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.NewGameMenu[3].routine = Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.NewGameMenu[4].routine = Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.OptionsMenu[0].routine = Some(M_EndGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.OptionsMenu[1].routine = Some(M_ChangeMessages as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.OptionsMenu[2].routine = Some(M_ChangeDetail as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.OptionsMenu[3].routine = Some(M_SizeDisplay as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.OptionsMenu[5].routine = Some(M_ChangeSensitivity as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.OptionsMenu[7].routine = Some(M_Sound as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.ReadMenu1[0].routine = Some(M_ReadThis2 as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.ReadMenu2[0].routine = Some(M_FinishReadThis as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.SoundMenu[0].routine = Some(M_SfxVol as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.SoundMenu[2].routine = Some(M_MusicVol as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.LoadMenu[0].routine = Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.LoadMenu[1].routine = Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.LoadMenu[2].routine = Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.LoadMenu[3].routine = Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.LoadMenu[4].routine = Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.LoadMenu[5].routine = Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.SaveMenu[0].routine = Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.SaveMenu[1].routine = Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.SaveMenu[2].routine = Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.SaveMenu[3].routine = Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.SaveMenu[4].routine = Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
-        self.menus.SaveMenu[5].routine = Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.MainMenu[0].routine =
+            Some(M_NewGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.MainMenu[1].routine =
+            Some(M_Options as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.MainMenu[2].routine =
+            Some(M_LoadGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.MainMenu[3].routine =
+            Some(M_SaveGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.MainMenu[4].routine =
+            Some(M_ReadThis as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.MainMenu[5].routine =
+            Some(M_QuitDOOM as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.EpisodeMenu[0].routine =
+            Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.EpisodeMenu[1].routine =
+            Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.EpisodeMenu[2].routine =
+            Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.EpisodeMenu[3].routine =
+            Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.NewGameMenu[0].routine =
+            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.NewGameMenu[1].routine =
+            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.NewGameMenu[2].routine =
+            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.NewGameMenu[3].routine =
+            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.NewGameMenu[4].routine =
+            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.OptionsMenu[0].routine =
+            Some(M_EndGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.OptionsMenu[1].routine =
+            Some(M_ChangeMessages as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.OptionsMenu[2].routine =
+            Some(M_ChangeDetail as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.OptionsMenu[3].routine =
+            Some(M_SizeDisplay as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.OptionsMenu[5].routine =
+            Some(M_ChangeSensitivity as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.OptionsMenu[7].routine =
+            Some(M_Sound as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.ReadMenu1[0].routine =
+            Some(M_ReadThis2 as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.ReadMenu2[0].routine =
+            Some(M_FinishReadThis as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.SoundMenu[0].routine =
+            Some(M_SfxVol as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.SoundMenu[2].routine =
+            Some(M_MusicVol as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.LoadMenu[0].routine =
+            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.LoadMenu[1].routine =
+            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.LoadMenu[2].routine =
+            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.LoadMenu[3].routine =
+            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.LoadMenu[4].routine =
+            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.LoadMenu[5].routine =
+            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.SaveMenu[0].routine =
+            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.SaveMenu[1].routine =
+            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.SaveMenu[2].routine =
+            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.SaveMenu[3].routine =
+            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.SaveMenu[4].routine =
+            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+        self.menus.SaveMenu[5].routine =
+            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
     }
     pub fn fixup_menu_links(&mut self) {
         self.defs.MainDef.menuitems = &raw mut self.menus.MainMenu as *mut menuitem_t;
@@ -897,7 +941,8 @@ pub unsafe extern "C" fn M_LoadSelect(state: &mut GameState, mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_LoadGame(state: &mut GameState, mut choice: i32) {
     if state.g_game.netgame {
-        M_StartMessage(state, 
+        M_StartMessage(
+            state,
             "you can't do load while in a net game!\n\npress a key.",
             NULL,
             false,
@@ -935,11 +980,13 @@ pub unsafe extern "C" fn M_DrawSave(state: &mut GameState) {
     }
 }
 pub unsafe fn M_DoSave(state: &mut GameState, mut slot: i32) {
-    let name_cstring = ::std::ffi::CString::new(
-        state.m_menu.savegamestrings[slot as usize].as_str(),
-    )
-    .unwrap();
-    G_SaveGame(state, slot, name_cstring.as_ptr() as *mut ::core::ffi::c_char);
+    let name_cstring =
+        ::std::ffi::CString::new(state.m_menu.savegamestrings[slot as usize].as_str()).unwrap();
+    G_SaveGame(
+        state,
+        slot,
+        name_cstring.as_ptr() as *mut ::core::ffi::c_char,
+    );
     M_ClearMenus(state);
     if state.m_menu.quickSaveSlot == -(2 as i32) {
         state.m_menu.quickSaveSlot = slot;
@@ -949,20 +996,17 @@ pub unsafe fn M_DoSave(state: &mut GameState, mut slot: i32) {
 pub unsafe extern "C" fn M_SaveSelect(state: &mut GameState, mut choice: i32) {
     state.m_menu.saveStringEnter = 1 as i32;
     state.m_menu.saveSlot = choice;
-    state.m_menu.saveOldString =
-        state.m_menu.savegamestrings[choice as usize].clone();
-    if state.m_menu.savegamestrings[choice as usize]
-        == EMPTYSTRING.trim_end_matches('\0')
-    {
+    state.m_menu.saveOldString = state.m_menu.savegamestrings[choice as usize].clone();
+    if state.m_menu.savegamestrings[choice as usize] == EMPTYSTRING.trim_end_matches('\0') {
         state.m_menu.savegamestrings[choice as usize].clear();
     }
-    state.m_menu.saveCharIndex =
-        state.m_menu.savegamestrings[choice as usize].len() as i32;
+    state.m_menu.saveCharIndex = state.m_menu.savegamestrings[choice as usize].len() as i32;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveGame(state: &mut GameState, mut choice: i32) {
     if !state.g_game.usergame {
-        M_StartMessage(state, 
+        M_StartMessage(
+            state,
             "you can't save if you aren't playing!\n\npress a key.",
             NULL,
             false,
@@ -1001,9 +1045,7 @@ pub unsafe fn M_QuickSave(state: &mut GameState) {
         return;
     }
     let quicksave_name_cstring = ::std::ffi::CString::new(
-        state.m_menu.savegamestrings
-            [state.m_menu.quickSaveSlot as usize]
-            .as_str(),
+        state.m_menu.savegamestrings[state.m_menu.quickSaveSlot as usize].as_str(),
     )
     .unwrap();
     snprintf(
@@ -1013,13 +1055,17 @@ pub unsafe fn M_QuickSave(state: &mut GameState) {
             as *const ::core::ffi::c_char,
         quicksave_name_cstring.as_ptr(),
     );
-    let msg = ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.tempstring as *mut ::core::ffi::c_char)
-        .to_str()
-        .unwrap()
-        .to_string();
-    let routine = ::core::mem::transmute::<Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>, *mut ::core::ffi::c_void>(
-        Some(M_QuickSaveResponse as unsafe extern "C" fn(&mut GameState, i32) -> ()),
-    );
+    let msg =
+        ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.tempstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap()
+            .to_string();
+    let routine = ::core::mem::transmute::<
+        Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
+        *mut ::core::ffi::c_void,
+    >(Some(
+        M_QuickSaveResponse as unsafe extern "C" fn(&mut GameState, i32) -> (),
+    ));
     M_StartMessage(state, &msg, routine, true);
 }
 #[no_mangle]
@@ -1032,7 +1078,8 @@ pub unsafe extern "C" fn M_QuickLoadResponse(state: &mut GameState, mut key: i32
 }
 pub unsafe fn M_QuickLoad(state: &mut GameState) {
     if state.g_game.netgame {
-        M_StartMessage(state, 
+        M_StartMessage(
+            state,
             "you can't quickload during a netgame!\n\npress a key.",
             NULL,
             false,
@@ -1040,7 +1087,8 @@ pub unsafe fn M_QuickLoad(state: &mut GameState) {
         return;
     }
     if state.m_menu.quickSaveSlot < 0 as i32 {
-        M_StartMessage(state, 
+        M_StartMessage(
+            state,
             "you haven't picked a quicksave slot yet!\n\npress a key.",
             NULL,
             false,
@@ -1048,9 +1096,7 @@ pub unsafe fn M_QuickLoad(state: &mut GameState) {
         return;
     }
     let quickload_name_cstring = ::std::ffi::CString::new(
-        state.m_menu.savegamestrings
-            [state.m_menu.quickSaveSlot as usize]
-            .as_str(),
+        state.m_menu.savegamestrings[state.m_menu.quickSaveSlot as usize].as_str(),
     )
     .unwrap();
     snprintf(
@@ -1060,16 +1106,18 @@ pub unsafe fn M_QuickLoad(state: &mut GameState) {
             as *const ::core::ffi::c_char,
         quickload_name_cstring.as_ptr(),
     );
-    let msg = ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.tempstring as *mut ::core::ffi::c_char)
-        .to_str()
-        .unwrap()
-        .to_string();
-    let routine = ::core::mem::transmute::<Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>, *mut ::core::ffi::c_void>(
-        Some(M_QuickLoadResponse as unsafe extern "C" fn(&mut GameState, i32) -> ()),
-    );
-    M_StartMessage(state, &msg, routine,
-        true,
-    );
+    let msg =
+        ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.tempstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap()
+            .to_string();
+    let routine = ::core::mem::transmute::<
+        Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
+        *mut ::core::ffi::c_void,
+    >(Some(
+        M_QuickLoadResponse as unsafe extern "C" fn(&mut GameState, i32) -> (),
+    ));
+    M_StartMessage(state, &msg, routine, true);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawReadThis1(state: &mut GameState) {
@@ -1213,7 +1261,8 @@ pub unsafe extern "C" fn M_DrawNewGame(state: &mut GameState) {
 #[no_mangle]
 pub unsafe extern "C" fn M_NewGame(state: &mut GameState, mut choice: i32) {
     if state.g_game.netgame && !state.g_game.demoplayback {
-        M_StartMessage(state, 
+        M_StartMessage(
+            state,
             "you can't start a new game\nwhile in a network game.\n\npress a key.",
             NULL,
             false,
@@ -1255,12 +1304,15 @@ pub unsafe extern "C" fn M_VerifyNightmare(state: &mut GameState, mut key: i32) 
 #[no_mangle]
 pub unsafe extern "C" fn M_ChooseSkill(state: &mut GameState, mut choice: i32) {
     if choice == nightmare as i32 {
-        M_StartMessage(state, 
+        M_StartMessage(
+            state,
             "are you sure? this skill level\nisn't even remotely fair.\n\npress y or n.",
             ::core::mem::transmute::<
                 Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
                 *mut ::core::ffi::c_void,
-            >(Some(M_VerifyNightmare as unsafe extern "C" fn(&mut GameState, i32) -> ())),
+            >(Some(
+                M_VerifyNightmare as unsafe extern "C" fn(&mut GameState, i32) -> (),
+            )),
             true,
         );
         return;
@@ -1285,9 +1337,7 @@ pub unsafe extern "C" fn M_Episode(state: &mut GameState, mut choice: i32) {
         M_SetupNextMenu(state, menudef);
         return;
     }
-    if state.doomstat.gamemode as u32 == registered as i32 as u32
-        && choice > 2 as i32
-    {
+    if state.doomstat.gamemode as u32 == registered as i32 as u32 && choice > 2 as i32 {
         fprintf(
             stderr,
             b"M_Episode: 4th episode requires UltimateDOOM\n\0" as *const u8
@@ -1348,17 +1398,13 @@ pub unsafe extern "C" fn M_Options(state: &mut GameState, mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_ChangeMessages(state: &mut GameState, mut choice: i32) {
     choice = 0 as i32;
-    state.m_menu.showMessages =
-        1 as i32 - state.m_menu.showMessages;
+    state.m_menu.showMessages = 1 as i32 - state.m_menu.showMessages;
     if state.m_menu.showMessages == 0 {
-        state.g_game.players
-            [state.g_game.consoleplayer as usize]
-            .message = b"Messages OFF\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char;
+        state.g_game.players[state.g_game.consoleplayer as usize].message =
+            b"Messages OFF\0" as *const u8 as *const ::core::ffi::c_char
+                as *mut ::core::ffi::c_char;
     } else {
-        state.g_game.players
-            [state.g_game.consoleplayer as usize]
-            .message =
+        state.g_game.players[state.g_game.consoleplayer as usize].message =
             b"Messages ON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
     state.hu_stuff.message_dontfuckwithme = true;
@@ -1380,14 +1426,23 @@ pub unsafe extern "C" fn M_EndGame(state: &mut GameState, mut choice: i32) {
         return;
     }
     if state.g_game.netgame {
-        M_StartMessage(state, "you can't end a netgame!\n\npress a key.", NULL, false);
+        M_StartMessage(
+            state,
+            "you can't end a netgame!\n\npress a key.",
+            NULL,
+            false,
+        );
         return;
     }
-    M_StartMessage(state, 
+    M_StartMessage(
+        state,
         "are you sure you want to end the game?\n\npress y or n.",
-        ::core::mem::transmute::<Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>, *mut ::core::ffi::c_void>(
-            Some(M_EndGameResponse as unsafe extern "C" fn(&mut GameState, i32) -> ()),
-        ),
+        ::core::mem::transmute::<
+            Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
+            *mut ::core::ffi::c_void,
+        >(Some(
+            M_EndGameResponse as unsafe extern "C" fn(&mut GameState, i32) -> (),
+        )),
         true,
     );
 }
@@ -1447,15 +1502,13 @@ pub unsafe extern "C" fn M_QuitResponse(state: &mut GameState, mut key: i32) {
             S_StartSound(
                 &mut state.sounds,
                 NULL,
-                quitsounds2
-                    [(state.d_loop.gametic >> 2 as i32 & 7 as i32) as usize],
+                quitsounds2[(state.d_loop.gametic >> 2 as i32 & 7 as i32) as usize],
             );
         } else {
             S_StartSound(
                 &mut state.sounds,
                 NULL,
-                quitsounds
-                    [(state.d_loop.gametic >> 2 as i32 & 7 as i32) as usize],
+                quitsounds[(state.d_loop.gametic >> 2 as i32 & 7 as i32) as usize],
             );
         }
     }
@@ -1488,15 +1541,18 @@ pub unsafe extern "C" fn M_QuitDOOM(state: &mut GameState, mut choice: i32) {
         b"%s\n\n(press y to quit to dos.)\0" as *const u8 as *const ::core::ffi::c_char,
         endmsg_cstring.as_ptr(),
     );
-    let msg = ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.endstring as *mut ::core::ffi::c_char)
-        .to_str()
-        .unwrap()
-        .to_string();
-    let routine = ::core::mem::transmute::<Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>, *mut ::core::ffi::c_void>(
-        Some(M_QuitResponse as unsafe extern "C" fn(&mut GameState, i32) -> ()),
-    );
-    M_StartMessage(state, &msg, routine, true,
-    );
+    let msg =
+        ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.endstring as *mut ::core::ffi::c_char)
+            .to_str()
+            .unwrap()
+            .to_string();
+    let routine = ::core::mem::transmute::<
+        Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
+        *mut ::core::ffi::c_void,
+    >(Some(
+        M_QuitResponse as unsafe extern "C" fn(&mut GameState, i32) -> (),
+    ));
+    M_StartMessage(state, &msg, routine, true);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_ChangeSensitivity(state: &mut GameState, mut choice: i32) {
@@ -1517,19 +1573,14 @@ pub unsafe extern "C" fn M_ChangeSensitivity(state: &mut GameState, mut choice: 
 #[no_mangle]
 pub unsafe extern "C" fn M_ChangeDetail(state: &mut GameState, mut choice: i32) {
     choice = 0 as i32;
-    state.m_menu.detailLevel =
-        1 as i32 - state.m_menu.detailLevel;
+    state.m_menu.detailLevel = 1 as i32 - state.m_menu.detailLevel;
     let (screenblocks, detail_level) = (state.m_menu.screenblocks, state.m_menu.detailLevel);
     R_SetViewSize(state, screenblocks, detail_level);
     if state.m_menu.detailLevel == 0 {
-        state.g_game.players
-            [state.g_game.consoleplayer as usize]
-            .message =
+        state.g_game.players[state.g_game.consoleplayer as usize].message =
             b"High detail\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     } else {
-        state.g_game.players
-            [state.g_game.consoleplayer as usize]
-            .message =
+        state.g_game.players[state.g_game.consoleplayer as usize].message =
             b"Low detail\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     };
 }
@@ -1553,7 +1604,13 @@ pub unsafe extern "C" fn M_SizeDisplay(state: &mut GameState, mut choice: i32) {
     let (screenblocks, detail_level) = (state.m_menu.screenblocks, state.m_menu.detailLevel);
     R_SetViewSize(state, screenblocks, detail_level);
 }
-pub unsafe fn M_DrawThermo(state: &mut GameState, mut x: i32, mut y: i32, mut thermWidth: i32, mut thermDot: i32) {
+pub unsafe fn M_DrawThermo(
+    state: &mut GameState,
+    mut x: i32,
+    mut y: i32,
+    mut thermWidth: i32,
+    mut thermDot: i32,
+) {
     let mut xx: i32 = 0;
     let mut i: i32 = 0;
     xx = x;
@@ -1604,9 +1661,13 @@ pub unsafe fn M_DrawSelCell(state: &mut GameState, mut menu: *mut menu_t, mut it
         W_CacheLumpName("M_CELL2", PU_CACHE as i32) as *mut patch_t,
     );
 }
-pub unsafe fn M_StartMessage(state: &mut GameState, string: &str, mut routine: *mut ::core::ffi::c_void, mut input: bool) {
-    state.m_menu.messageLastMenuActive =
-        state.m_menu.menuactive as i32;
+pub unsafe fn M_StartMessage(
+    state: &mut GameState,
+    string: &str,
+    mut routine: *mut ::core::ffi::c_void,
+    mut input: bool,
+) {
+    state.m_menu.messageLastMenuActive = state.m_menu.menuactive as i32;
     state.m_menu.messageToPrint = 1 as i32;
     state.m_menu.messageString = string.to_string();
     state.m_menu.messageRoutine = ::core::mem::transmute::<
@@ -1617,8 +1678,7 @@ pub unsafe fn M_StartMessage(state: &mut GameState, string: &str, mut routine: *
     state.m_menu.menuactive = true;
 }
 pub unsafe fn M_StopMessage(state: &mut GameState) {
-    state.m_menu.menuactive =
-        state.m_menu.messageLastMenuActive != 0;
+    state.m_menu.menuactive = state.m_menu.messageLastMenuActive != 0;
     state.m_menu.messageToPrint = 0 as i32;
 }
 pub unsafe fn M_StringWidth(state: &mut GameState, string: &str) -> i32 {
@@ -1666,7 +1726,12 @@ pub unsafe fn M_WriteText(state: &mut GameState, x: i32, y: i32, string: &str) {
                 if cx + w > SCREENWIDTH {
                     break 'outer;
                 }
-                V_DrawPatchDirect(&mut state.v_video, cx, cy, state.hu_stuff.hu_font[c as usize]);
+                V_DrawPatchDirect(
+                    &mut state.v_video,
+                    cx,
+                    cy,
+                    state.hu_stuff.hu_font[c as usize],
+                );
                 cx += w;
             }
         }
@@ -1707,97 +1772,70 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
     ch = 0 as i32;
     key = -(1 as i32);
     if (*ev).type_0 as u32 == ev_joystick as i32 as u32
-        && state.m_menu.responder_joywait
-            < I_GetTime(&mut state.i_timer)
+        && state.m_menu.responder_joywait < I_GetTime(&mut state.i_timer)
     {
         if (*ev).data3 < 0 as i32 {
             key = state.m_controls.key_menu_up;
-            state.m_menu.responder_joywait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
         } else if (*ev).data3 > 0 as i32 {
             key = state.m_controls.key_menu_down;
-            state.m_menu.responder_joywait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
         }
         if (*ev).data2 < 0 as i32 {
             key = state.m_controls.key_menu_left;
-            state.m_menu.responder_joywait =
-                I_GetTime(&mut state.i_timer) + 2 as i32;
+            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 2 as i32;
         } else if (*ev).data2 > 0 as i32 {
             key = state.m_controls.key_menu_right;
-            state.m_menu.responder_joywait =
-                I_GetTime(&mut state.i_timer) + 2 as i32;
+            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 2 as i32;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = state.m_controls.key_menu_forward;
-            state.m_menu.responder_joywait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
             key = state.m_controls.key_menu_back;
-            state.m_menu.responder_joywait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
         }
         if state.m_controls.joybmenu >= 0 as i32
             && (*ev).data1 & (1 as i32) << state.m_controls.joybmenu != 0 as i32
         {
             key = state.m_controls.key_menu_activate;
-            state.m_menu.responder_joywait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_mouse as i32 as u32
-        && state.m_menu.responder_mousewait
-            < I_GetTime(&mut state.i_timer)
+        && state.m_menu.responder_mousewait < I_GetTime(&mut state.i_timer)
     {
         state.m_menu.responder_mousey += (*ev).data3;
-        if state.m_menu.responder_mousey
-            < state.m_menu.responder_lasty - 30 as i32
-        {
+        if state.m_menu.responder_mousey < state.m_menu.responder_lasty - 30 as i32 {
             key = state.m_controls.key_menu_down;
-            state.m_menu.responder_mousewait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 5 as i32;
             state.m_menu.responder_lasty -= 30 as i32;
-            state.m_menu.responder_mousey =
-                state.m_menu.responder_lasty;
-        } else if state.m_menu.responder_mousey
-            > state.m_menu.responder_lasty + 30 as i32
-        {
+            state.m_menu.responder_mousey = state.m_menu.responder_lasty;
+        } else if state.m_menu.responder_mousey > state.m_menu.responder_lasty + 30 as i32 {
             key = state.m_controls.key_menu_up;
-            state.m_menu.responder_mousewait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 5 as i32;
             state.m_menu.responder_lasty += 30 as i32;
-            state.m_menu.responder_mousey =
-                state.m_menu.responder_lasty;
+            state.m_menu.responder_mousey = state.m_menu.responder_lasty;
         }
         state.m_menu.responder_mousex += (*ev).data2;
-        if state.m_menu.responder_mousex
-            < state.m_menu.responder_lastx - 30 as i32
-        {
+        if state.m_menu.responder_mousex < state.m_menu.responder_lastx - 30 as i32 {
             key = state.m_controls.key_menu_left;
-            state.m_menu.responder_mousewait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 5 as i32;
             state.m_menu.responder_lastx -= 30 as i32;
-            state.m_menu.responder_mousex =
-                state.m_menu.responder_lastx;
-        } else if state.m_menu.responder_mousex
-            > state.m_menu.responder_lastx + 30 as i32
-        {
+            state.m_menu.responder_mousex = state.m_menu.responder_lastx;
+        } else if state.m_menu.responder_mousex > state.m_menu.responder_lastx + 30 as i32 {
             key = state.m_controls.key_menu_right;
-            state.m_menu.responder_mousewait =
-                I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 5 as i32;
             state.m_menu.responder_lastx += 30 as i32;
-            state.m_menu.responder_mousex =
-                state.m_menu.responder_lastx;
+            state.m_menu.responder_mousex = state.m_menu.responder_lastx;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = state.m_controls.key_menu_forward;
-            state.m_menu.responder_mousewait =
-                I_GetTime(&mut state.i_timer) + 15 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 15 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
             key = state.m_controls.key_menu_back;
-            state.m_menu.responder_mousewait =
-                I_GetTime(&mut state.i_timer) + 15 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 15 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
         key = (*ev).data1;
@@ -1811,23 +1849,18 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
             KEY_BACKSPACE => {
                 if state.m_menu.saveCharIndex > 0 as i32 {
                     state.m_menu.saveCharIndex -= 1;
-                    state.m_menu.savegamestrings
-                        [state.m_menu.saveSlot as usize]
+                    state.m_menu.savegamestrings[state.m_menu.saveSlot as usize]
                         .truncate(state.m_menu.saveCharIndex as usize);
                 }
             }
             KEY_ESCAPE => {
                 state.m_menu.saveStringEnter = 0 as i32;
-                state.m_menu.savegamestrings
-                    [state.m_menu.saveSlot as usize] =
+                state.m_menu.savegamestrings[state.m_menu.saveSlot as usize] =
                     state.m_menu.saveOldString.clone();
             }
             KEY_ENTER => {
                 state.m_menu.saveStringEnter = 0 as i32;
-                if !state.m_menu.savegamestrings
-                    [state.m_menu.saveSlot as usize]
-                    .is_empty()
-                {
+                if !state.m_menu.savegamestrings[state.m_menu.saveSlot as usize].is_empty() {
                     let save_slot = state.m_menu.saveSlot;
                     M_DoSave(state, save_slot);
                 }
@@ -1857,15 +1890,15 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
                 if !(ch != ' ' as i32
                     && (ch - HU_FONTSTART < 0 as i32 || ch - HU_FONTSTART >= HU_FONTSIZE))
                 {
-                    let savestr = state.m_menu.savegamestrings[state.m_menu.saveSlot as usize].clone();
+                    let savestr =
+                        state.m_menu.savegamestrings[state.m_menu.saveSlot as usize].clone();
                     if ch >= 32 as i32
                         && ch <= 127 as i32
                         && state.m_menu.saveCharIndex < SAVESTRINGSIZE - 1 as i32
                         && M_StringWidth(state, &savestr) < (SAVESTRINGSIZE - 2 as i32) * 8 as i32
                     {
                         state.m_menu.saveCharIndex += 1;
-                        state.m_menu.savegamestrings
-                            [state.m_menu.saveSlot as usize]
+                        state.m_menu.savegamestrings[state.m_menu.saveSlot as usize]
                             .push(ch as u8 as char);
                     }
                 }
@@ -1883,8 +1916,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
                 return false;
             }
         }
-        state.m_menu.menuactive =
-            state.m_menu.messageLastMenuActive != 0;
+        state.m_menu.menuactive = state.m_menu.messageLastMenuActive != 0;
         state.m_menu.messageToPrint = 0 as i32;
         if state.m_menu.messageRoutine.is_some() {
             state
@@ -1920,11 +1952,9 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
         } else if key == state.m_controls.key_menu_help {
             M_StartControlPanel(state);
             if state.doomstat.gamemode as u32 == retail as i32 as u32 {
-                state.m_menu.currentMenu =
-                    &raw mut state.m_menu.defs.ReadDef2;
+                state.m_menu.currentMenu = &raw mut state.m_menu.defs.ReadDef2;
             } else {
-                state.m_menu.currentMenu =
-                    &raw mut state.m_menu.defs.ReadDef1;
+                state.m_menu.currentMenu = &raw mut state.m_menu.defs.ReadDef1;
             }
             state.m_menu.itemOn = 0 as i16;
             S_StartSound(&mut state.sounds, NULL, sfx_swtchn as i32);
@@ -1941,8 +1971,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
             return true;
         } else if key == state.m_controls.key_menu_volume {
             M_StartControlPanel(state);
-            state.m_menu.currentMenu =
-                &raw mut state.m_menu.defs.SoundDef;
+            state.m_menu.currentMenu = &raw mut state.m_menu.defs.SoundDef;
             state.m_menu.itemOn = sfx_vol as i32 as i16;
             S_StartSound(&mut state.sounds, NULL, sfx_swtchn as i32);
             return true;
@@ -1975,10 +2004,12 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
             if state.i_video.usegamma > 4 as i32 {
                 state.i_video.usegamma = 0 as i32;
             }
-            state.g_game.players
-                [state.g_game.consoleplayer as usize]
-                .message = gammamsg[state.i_video.usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
-            I_SetPalette(state, W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte);
+            state.g_game.players[state.g_game.consoleplayer as usize].message =
+                gammamsg[state.i_video.usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
+            I_SetPalette(
+                state,
+                W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte,
+            );
             return true;
         }
     }
@@ -2014,8 +2045,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
         loop {
             if state.m_menu.itemOn == 0 {
                 state.m_menu.itemOn =
-                    ((*state.m_menu.currentMenu).numitems as i32 - 1 as i32)
-                        as i16;
+                    ((*state.m_menu.currentMenu).numitems as i32 - 1 as i32) as i16;
             } else {
                 state.m_menu.itemOn -= 1;
             }
@@ -2080,8 +2110,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
             .status as i32
                 != 0
         {
-            (*state.m_menu.currentMenu).lastOn =
-                state.m_menu.itemOn;
+            (*state.m_menu.currentMenu).lastOn = state.m_menu.itemOn;
             if (*(*state.m_menu.currentMenu)
                 .menuitems
                 .offset(state.m_menu.itemOn as isize))
@@ -2104,34 +2133,22 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
         }
         return true;
     } else if key == state.m_controls.key_menu_activate {
-        (*state.m_menu.currentMenu).lastOn =
-            state.m_menu.itemOn;
+        (*state.m_menu.currentMenu).lastOn = state.m_menu.itemOn;
         M_ClearMenus(state);
         S_StartSound(&mut state.sounds, NULL, sfx_swtchx as i32);
         return true;
     } else if key == state.m_controls.key_menu_back {
-        (*state.m_menu.currentMenu).lastOn =
-            state.m_menu.itemOn;
-        if !(*state.m_menu.currentMenu)
-            .prevMenu
-            .is_null()
-        {
-            state.m_menu.currentMenu =
-                (*state.m_menu.currentMenu).prevMenu as *mut menu_t;
-            state.m_menu.itemOn =
-                (*state.m_menu.currentMenu).lastOn;
+        (*state.m_menu.currentMenu).lastOn = state.m_menu.itemOn;
+        if !(*state.m_menu.currentMenu).prevMenu.is_null() {
+            state.m_menu.currentMenu = (*state.m_menu.currentMenu).prevMenu as *mut menu_t;
+            state.m_menu.itemOn = (*state.m_menu.currentMenu).lastOn;
             S_StartSound(&mut state.sounds, NULL, sfx_swtchn as i32);
         }
         return true;
     } else if ch != 0 as i32 || IsNullKey(key) {
         i = state.m_menu.itemOn as i32 + 1 as i32;
         while i < (*state.m_menu.currentMenu).numitems as i32 {
-            if (*(*state.m_menu.currentMenu)
-                .menuitems
-                .offset(i as isize))
-            .alphaKey as i32
-                == ch
-            {
+            if (*(*state.m_menu.currentMenu).menuitems.offset(i as isize)).alphaKey as i32 == ch {
                 state.m_menu.itemOn = i as i16;
                 S_StartSound(&mut state.sounds, NULL, sfx_pstop as i32);
                 return true;
@@ -2140,12 +2157,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
         }
         i = 0 as i32;
         while i <= state.m_menu.itemOn as i32 {
-            if (*(*state.m_menu.currentMenu)
-                .menuitems
-                .offset(i as isize))
-            .alphaKey as i32
-                == ch
-            {
+            if (*(*state.m_menu.currentMenu).menuitems.offset(i as isize)).alphaKey as i32 == ch {
                 state.m_menu.itemOn = i as i16;
                 S_StartSound(&mut state.sounds, NULL, sfx_pstop as i32);
                 return true;
@@ -2160,8 +2172,7 @@ pub unsafe fn M_StartControlPanel(state: &mut GameState) {
         return;
     }
     state.m_menu.menuactive = true;
-    state.m_menu.currentMenu =
-        &raw mut state.m_menu.defs.MainDef;
+    state.m_menu.currentMenu = &raw mut state.m_menu.defs.MainDef;
     state.m_menu.itemOn = (*state.m_menu.currentMenu).lastOn;
 }
 pub unsafe fn M_Drawer(state: &mut GameState) {
@@ -2171,12 +2182,12 @@ pub unsafe fn M_Drawer(state: &mut GameState) {
     state.m_menu.inhelpscreens = false;
     if state.m_menu.messageToPrint != 0 {
         let message_string = state.m_menu.messageString.clone();
-        state.m_menu.drawer_y = (SCREENHEIGHT / 2 as i32
-            - M_StringHeight(state, &message_string) / 2 as i32)
-            as i16;
+        state.m_menu.drawer_y =
+            (SCREENHEIGHT / 2 as i32 - M_StringHeight(state, &message_string) / 2 as i32) as i16;
         for line in message_string.split('\n') {
             let line = if line.len() > 79 { &line[..79] } else { line };
-            state.m_menu.drawer_x = (SCREENWIDTH / 2 as i32 - M_StringWidth(state, line) / 2 as i32) as i16;
+            state.m_menu.drawer_x =
+                (SCREENWIDTH / 2 as i32 - M_StringWidth(state, line) / 2 as i32) as i16;
             M_WriteText(
                 state,
                 state.m_menu.drawer_x as i32,
@@ -2193,7 +2204,9 @@ pub unsafe fn M_Drawer(state: &mut GameState) {
         return;
     }
     if (*state.m_menu.currentMenu).routine.is_some() {
-        (*state.m_menu.currentMenu).routine.expect("non-null function pointer")(state);
+        (*state.m_menu.currentMenu)
+            .routine
+            .expect("non-null function pointer")(state);
     }
     state.m_menu.drawer_x = (*state.m_menu.currentMenu).x;
     state.m_menu.drawer_y = (*state.m_menu.currentMenu).y;
@@ -2236,28 +2249,23 @@ pub unsafe fn M_Ticker(state: &mut GameState) {
     }
 }
 pub unsafe fn M_Init(state: &mut GameState) {
-    state.m_menu.currentMenu =
-        &raw mut state.m_menu.defs.MainDef;
+    state.m_menu.currentMenu = &raw mut state.m_menu.defs.MainDef;
     state.m_menu.menuactive = false;
     state.m_menu.itemOn = (*state.m_menu.currentMenu).lastOn;
     state.m_menu.whichSkull = 0 as i16;
     state.m_menu.skullAnimCounter = 10 as i16;
-    state.m_menu.screenSize =
-        state.m_menu.screenblocks - 3 as i32;
+    state.m_menu.screenSize = state.m_menu.screenblocks - 3 as i32;
     state.m_menu.messageToPrint = 0 as i32;
     state.m_menu.messageString = String::new();
-    state.m_menu.messageLastMenuActive =
-        state.m_menu.menuactive as i32;
+    state.m_menu.messageLastMenuActive = state.m_menu.menuactive as i32;
     state.m_menu.quickSaveSlot = -(1 as i32);
     match state.doomstat.gamemode as u32 {
         2 => {
             state.m_menu.menus.MainMenu[readthis as i32 as usize] =
                 state.m_menu.menus.MainMenu[quitdoom as i32 as usize];
             state.m_menu.defs.MainDef.numitems -= 1;
-            state.m_menu.defs.MainDef.y =
-                (state.m_menu.defs.MainDef.y as i32 + 8 as i32) as i16;
-            state.m_menu.defs.NewDef.prevMenu =
-                &raw mut state.m_menu.defs.MainDef as *mut menu_s;
+            state.m_menu.defs.MainDef.y = (state.m_menu.defs.MainDef.y as i32 + 8 as i32) as i16;
+            state.m_menu.defs.NewDef.prevMenu = &raw mut state.m_menu.defs.MainDef as *mut menu_s;
         }
         0 => {}
         1 | 3 | _ => {}

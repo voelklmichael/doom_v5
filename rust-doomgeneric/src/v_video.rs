@@ -6,8 +6,8 @@ use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
-use crate::src::i_video::I_GetPaletteIndex;
 use crate::src::i_video::IVideoState;
+use crate::src::i_video::I_GetPaletteIndex;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_misc::M_FileExists;
@@ -17,8 +17,8 @@ use crate::src::r_data::column_t;
 use crate::src::stdint_types::size_t;
 use crate::src::stdint_types::{byte, uint8_t};
 use crate::src::w_wad::W_CacheLumpName;
-use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::ZZoneState;
+use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{memcpy, memset};
@@ -579,7 +579,13 @@ pub unsafe fn V_DrawFilledBox(
         y1 += 1;
     }
 }
-pub unsafe fn V_DrawHorizLine(state: &mut IVideoState, mut x: i32, mut y: i32, mut w: i32, mut c: i32) {
+pub unsafe fn V_DrawHorizLine(
+    state: &mut IVideoState,
+    mut x: i32,
+    mut y: i32,
+    mut w: i32,
+    mut c: i32,
+) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut x1: i32 = 0;
     buf = state
@@ -594,7 +600,13 @@ pub unsafe fn V_DrawHorizLine(state: &mut IVideoState, mut x: i32, mut y: i32, m
         x1 += 1;
     }
 }
-pub unsafe fn V_DrawVertLine(state: &mut IVideoState, mut x: i32, mut y: i32, mut h: i32, mut c: i32) {
+pub unsafe fn V_DrawVertLine(
+    state: &mut IVideoState,
+    mut x: i32,
+    mut y: i32,
+    mut h: i32,
+    mut c: i32,
+) {
     let mut buf: *mut uint8_t = ::core::ptr::null_mut::<uint8_t>();
     let mut y1: i32 = 0;
     buf = state
@@ -608,7 +620,14 @@ pub unsafe fn V_DrawVertLine(state: &mut IVideoState, mut x: i32, mut y: i32, mu
         y1 += 1;
     }
 }
-pub unsafe fn V_DrawBox(state: &mut IVideoState, mut x: i32, mut y: i32, mut w: i32, mut h: i32, mut c: i32) {
+pub unsafe fn V_DrawBox(
+    state: &mut IVideoState,
+    mut x: i32,
+    mut y: i32,
+    mut w: i32,
+    mut h: i32,
+    mut c: i32,
+) {
     V_DrawHorizLine(state, x, y, w, c);
     V_DrawHorizLine(state, x, y + h - 1 as i32, w, c);
     V_DrawVertLine(state, x, y, h, c);

@@ -93,12 +93,10 @@ pub unsafe fn T_LightFlash(state: &mut GameState, mut flash: *mut lightflash_t) 
     let sec = state.p_setup.sector_mut((*flash).sector);
     if (*sec).lightlevel as i32 == (*flash).maxlight {
         (*sec).lightlevel = (*flash).minlight as i16;
-        (*flash).count =
-            (P_Random(&mut state.m_random) & (*flash).mintime) + 1 as i32;
+        (*flash).count = (P_Random(&mut state.m_random) & (*flash).mintime) + 1 as i32;
     } else {
         (*sec).lightlevel = (*flash).maxlight as i16;
-        (*flash).count =
-            (P_Random(&mut state.m_random) & (*flash).maxtime) + 1 as i32;
+        (*flash).count = (P_Random(&mut state.m_random) & (*flash).maxtime) + 1 as i32;
     };
 }
 pub unsafe fn P_SpawnLightFlash(state: &mut GameState, mut sector: SectorId) {
@@ -118,8 +116,7 @@ pub unsafe fn P_SpawnLightFlash(state: &mut GameState, mut sector: SectorId) {
     (*flash).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32);
     (*flash).maxtime = 64 as i32;
     (*flash).mintime = 7 as i32;
-    (*flash).count =
-        (P_Random(&mut state.m_random) & (*flash).maxtime) + 1 as i32;
+    (*flash).count = (P_Random(&mut state.m_random) & (*flash).maxtime) + 1 as i32;
 }
 pub unsafe fn T_StrobeFlash(state: &mut GameState, mut flash: *mut strobe_t) {
     (*flash).count -= 1;
@@ -135,7 +132,12 @@ pub unsafe fn T_StrobeFlash(state: &mut GameState, mut flash: *mut strobe_t) {
         (*flash).count = (*flash).darktime;
     };
 }
-pub unsafe fn P_SpawnStrobeFlash(state: &mut GameState, mut sector: SectorId, mut fastOrSlow: i32, mut inSync: i32) {
+pub unsafe fn P_SpawnStrobeFlash(
+    state: &mut GameState,
+    mut sector: SectorId,
+    mut fastOrSlow: i32,
+    mut inSync: i32,
+) {
     let mut flash: *mut strobe_t = ::core::ptr::null_mut::<strobe_t>();
     let sec = state.p_setup.sector_mut(sector);
     flash = Z_Malloc(

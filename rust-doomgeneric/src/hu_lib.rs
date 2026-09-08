@@ -100,7 +100,12 @@ pub unsafe fn HUlib_drawTextLine(
             if x + w > SCREENWIDTH {
                 break;
             }
-            V_DrawPatchDirect(state, x, (*l).y, *(*l).f.offset((c as i32 - (*l).sc) as isize));
+            V_DrawPatchDirect(
+                state,
+                x,
+                (*l).y,
+                *(*l).f.offset((c as i32 - (*l).sc) as isize),
+            );
             x += w;
         } else {
             x += 4 as i32;
@@ -113,7 +118,12 @@ pub unsafe fn HUlib_drawTextLine(
     if drawcursor != 0
         && x + (**(*l).f.offset(('_' as i32 - (*l).sc) as isize)).width as i32 <= SCREENWIDTH
     {
-        V_DrawPatchDirect(state, x, (*l).y, *(*l).f.offset(('_' as i32 - (*l).sc) as isize));
+        V_DrawPatchDirect(
+            state,
+            x,
+            (*l).y,
+            *(*l).f.offset(('_' as i32 - (*l).sc) as isize),
+        );
     }
 }
 pub unsafe fn HUlib_eraseTextLine(state: &mut GameState, mut l: *mut hu_textline_t) {
@@ -125,11 +135,14 @@ pub unsafe fn HUlib_eraseTextLine(state: &mut GameState, mut l: *mut hu_textline
         y = (*l).y;
         yoffset = y * SCREENWIDTH;
         while y < (*l).y + lh {
-            if y < state.r_draw.viewwindowy || y >= state.r_draw.viewwindowy + state.r_draw.viewheight {
+            if y < state.r_draw.viewwindowy
+                || y >= state.r_draw.viewwindowy + state.r_draw.viewheight
+            {
                 R_VideoErase(state, yoffset as u32, SCREENWIDTH);
             } else {
                 let viewwindowx = state.r_draw.viewwindowx;
-                let second_ofs = (yoffset + state.r_draw.viewwindowx + state.r_draw.viewwidth) as u32;
+                let second_ofs =
+                    (yoffset + state.r_draw.viewwindowx + state.r_draw.viewwidth) as u32;
                 R_VideoErase(state, yoffset as u32, viewwindowx);
                 R_VideoErase(state, second_ofs, viewwindowx);
             }
@@ -236,7 +249,7 @@ pub unsafe fn HUlib_eraseSText(state: &mut GameState, mut s: *mut hu_stext_t) {
         }
         HUlib_eraseTextLine(
             state,
-            (&raw mut (*s).l as *mut hu_textline_t).offset(i as isize) as *mut hu_textline_t
+            (&raw mut (*s).l as *mut hu_textline_t).offset(i as isize) as *mut hu_textline_t,
         );
         i += 1;
     }

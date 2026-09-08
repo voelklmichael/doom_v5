@@ -117,7 +117,8 @@ pub unsafe fn P_MovePlayer(state: &mut GameState, mut player: *mut player_t) {
     }
     if ((*cmd).forwardmove as i32 != 0 || (*cmd).sidemove as i32 != 0)
         && (*(*player).mo).state
-            == (&raw mut state.info.states as *mut state_t).offset(S_PLAY as i32 as isize) as *mut state_t
+            == (&raw mut state.info.states as *mut state_t).offset(S_PLAY as i32 as isize)
+                as *mut state_t
     {
         P_SetMobjState(state, (*player).mo, S_PLAY_RUN1);
     }
@@ -136,9 +137,7 @@ pub unsafe fn P_DeathThink(state: &mut GameState, mut player: *mut player_t) {
     (*player).deltaviewheight = 0 as i32 as fixed_t;
     state.p_user.onground = (*(*player).mo).z <= (*(*player).mo).floorz;
     P_CalcHeight(state, player);
-    let attacker = (*player)
-        .attacker
-        .and_then(|id| state.p_mobj.mobj_get(id));
+    let attacker = (*player).attacker.and_then(|id| state.p_mobj.mobj_get(id));
     if attacker.is_some() && attacker != Some((*player).mo) {
         let attacker = attacker.unwrap();
         angle = R_PointToAngle2(

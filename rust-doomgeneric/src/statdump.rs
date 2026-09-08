@@ -40,7 +40,8 @@ impl StatDumpState {
 }
 
 pub unsafe fn StatCopy(state: &mut StatDumpState, mut stats: *mut wbstartstruct_t) {
-    if M_ParmExists(unsafe { game_state() }, "-statdump") && state.num_captured_stats < MAX_CAPTURES {
+    if M_ParmExists(unsafe { game_state() }, "-statdump") && state.num_captured_stats < MAX_CAPTURES
+    {
         memcpy(
             (&raw mut state.captured_stats as *mut wbstartstruct_t)
                 .offset(state.num_captured_stats as isize) as *mut wbstartstruct_t

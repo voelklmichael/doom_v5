@@ -1,3 +1,4 @@
+use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedDiv;
@@ -10,7 +11,6 @@ use crate::src::p_setup::SubsectorId;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::r_bsp::NF_SUBSECTOR;
 use crate::src::r_defs::{node_t, seg_t};
-use crate::src::game_state::GameState;
 
 pub struct PSightState {
     sightzstart: fixed_t,
@@ -115,9 +115,7 @@ pub unsafe fn P_CrossSubsector(state: &mut GameState, mut num: i32) -> bool {
             num, state.p_setup.numsubsectors
         ));
     }
-    sub = state
-        .p_setup
-        .subsector_mut(SubsectorId(num as u32));
+    sub = state.p_setup.subsector_mut(SubsectorId(num as u32));
     count = (*sub).numlines as i32;
     seg = state.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
     while count != 0 {
@@ -133,7 +131,11 @@ pub unsafe fn P_CrossSubsector(state: &mut GameState, mut num: i32) -> bool {
                 divl.y = (*v1).y;
                 divl.dx = (*v2).x - (*v1).x;
                 divl.dy = (*v2).y - (*v1).y;
-                s1 = P_DivlineSide(state.p_sight.strace.x, state.p_sight.strace.y, &raw mut divl);
+                s1 = P_DivlineSide(
+                    state.p_sight.strace.x,
+                    state.p_sight.strace.y,
+                    &raw mut divl,
+                );
                 s2 = P_DivlineSide(state.p_sight.t2x, state.p_sight.t2y, &raw mut divl);
                 if !(s1 == s2) {
                     if (*line).backsector.is_none() {
@@ -196,7 +198,11 @@ pub unsafe fn P_CrossBSPNode(state: &mut GameState, mut bspnum: i32) -> bool {
         }
     }
     bsp = state.p_setup.nodes.offset(bspnum as isize) as *mut node_t;
-    side = P_DivlineSide(state.p_sight.strace.x, state.p_sight.strace.y, bsp as *mut divline_t);
+    side = P_DivlineSide(
+        state.p_sight.strace.x,
+        state.p_sight.strace.y,
+        bsp as *mut divline_t,
+    );
     if side == 2 as i32 {
         side = 0 as i32;
     }

@@ -39,28 +39,28 @@ impl IVideoState {
     pub const fn new() -> Self {
         IVideoState {
             s_Fb: FB_ScreenInfo {
-        xres: 0,
-        yres: 0,
-        xres_virtual: 0,
-        yres_virtual: 0,
-        bits_per_pixel: 0,
-        red: FB_BitField {
-            offset: 0,
-            length: 0,
-        },
-        green: FB_BitField {
-            offset: 0,
-            length: 0,
-        },
-        blue: FB_BitField {
-            offset: 0,
-            length: 0,
-        },
-        transp: FB_BitField {
-            offset: 0,
-            length: 0,
-        },
-    },
+                xres: 0,
+                yres: 0,
+                xres_virtual: 0,
+                yres_virtual: 0,
+                bits_per_pixel: 0,
+                red: FB_BitField {
+                    offset: 0,
+                    length: 0,
+                },
+                green: FB_BitField {
+                    offset: 0,
+                    length: 0,
+                },
+                blue: FB_BitField {
+                    offset: 0,
+                    length: 0,
+                },
+                transp: FB_BitField {
+                    offset: 0,
+                    length: 0,
+                },
+            },
             fb_scaling: 1,
             usemouse: 0,
             colors: [color { b_g_r_a: [0; 4] }; 256],
@@ -73,7 +73,6 @@ impl IVideoState {
         }
     }
 }
-
 
 extern "C" {
     static mut DG_ScreenBuffer: *mut pixel_t;
@@ -119,7 +118,12 @@ pub struct col_t {
     pub b: byte,
 }
 static rgb565_palette: [uint16_t; 256] = [0; 256];
-pub unsafe fn cmap_to_rgb565(state: &mut GameState, mut out: *mut uint16_t, mut in_0: *mut uint8_t, mut in_pixels: i32) {
+pub unsafe fn cmap_to_rgb565(
+    state: &mut GameState,
+    mut out: *mut uint16_t,
+    mut in_0: *mut uint8_t,
+    mut in_pixels: i32,
+) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut c: color = color { b_g_r_a: [0; 4] };
@@ -142,7 +146,12 @@ pub unsafe fn cmap_to_rgb565(state: &mut GameState, mut out: *mut uint16_t, mut 
         i += 1;
     }
 }
-pub unsafe fn cmap_to_fb(state: &mut GameState, mut out: *mut uint8_t, mut in_0: *mut uint8_t, mut in_pixels: i32) {
+pub unsafe fn cmap_to_fb(
+    state: &mut GameState,
+    mut out: *mut uint8_t,
+    mut in_0: *mut uint8_t,
+    mut in_pixels: i32,
+) {
     let mut i: i32 = 0;
     let mut k: i32 = 0;
     let mut c: color = color { b_g_r_a: [0; 4] };
@@ -259,19 +268,31 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
     );
     i = M_CheckParmWithArgs(state, "-scaling", 1 as i32);
     if i > 0 as i32 {
-        i = atoi(
-            state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr()
-                as *mut ::core::ffi::c_char,
-        );
+        i = atoi(state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
         state.i_video.fb_scaling = i;
         printf(
             b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8 as *const ::core::ffi::c_char,
             state.i_video.fb_scaling,
         );
     } else {
-        state.i_video.fb_scaling = state.i_video.s_Fb.xres.wrapping_div(SCREENWIDTH as uint32_t) as i32;
-        if state.i_video.s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) < state.i_video.fb_scaling as uint32_t {
-            state.i_video.fb_scaling = state.i_video.s_Fb.yres.wrapping_div(SCREENHEIGHT as uint32_t) as i32;
+        state.i_video.fb_scaling = state
+            .i_video
+            .s_Fb
+            .xres
+            .wrapping_div(SCREENWIDTH as uint32_t) as i32;
+        if state
+            .i_video
+            .s_Fb
+            .yres
+            .wrapping_div(SCREENHEIGHT as uint32_t)
+            < state.i_video.fb_scaling as uint32_t
+        {
+            state.i_video.fb_scaling = state
+                .i_video
+                .s_Fb
+                .yres
+                .wrapping_div(SCREENHEIGHT as uint32_t)
+                as i32;
         }
         printf(
             b"I_InitGraphics: Auto-scaling factor: %d\n\0" as *const u8
@@ -303,19 +324,25 @@ pub unsafe fn I_FinishUpdate(state: &mut GameState) {
     let mut x_offset_end: i32 = 0;
     let mut line_in: *mut u8 = ::core::ptr::null_mut::<u8>();
     let mut line_out: *mut u8 = ::core::ptr::null_mut::<u8>();
-    y_offset = state.i_video.s_Fb
+    y_offset = state
+        .i_video
+        .s_Fb
         .yres
         .wrapping_sub((SCREENHEIGHT * state.i_video.fb_scaling) as uint32_t)
         .wrapping_mul(state.i_video.s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
         .wrapping_div(2 as uint32_t) as i32;
-    x_offset = state.i_video.s_Fb
+    x_offset = state
+        .i_video
+        .s_Fb
         .xres
         .wrapping_sub((SCREENWIDTH * state.i_video.fb_scaling) as uint32_t)
         .wrapping_mul(state.i_video.s_Fb.bits_per_pixel)
         .wrapping_div(8 as uint32_t)
         .wrapping_div(2 as uint32_t) as i32;
-    x_offset_end = state.i_video.s_Fb
+    x_offset_end = state
+        .i_video
+        .s_Fb
         .xres
         .wrapping_sub((SCREENWIDTH * state.i_video.fb_scaling) as uint32_t)
         .wrapping_mul(state.i_video.s_Fb.bits_per_pixel)
@@ -334,14 +361,21 @@ pub unsafe fn I_FinishUpdate(state: &mut GameState) {
         i = 0 as i32;
         while i < state.i_video.fb_scaling {
             line_out = line_out.offset(x_offset as isize);
-            cmap_to_fb(state, 
+            cmap_to_fb(
+                state,
                 line_out as *mut ::core::ffi::c_void as *mut uint8_t,
                 line_in as *mut ::core::ffi::c_void as *mut uint8_t,
                 SCREENWIDTH,
             );
             line_out = line_out.offset(
                 ((SCREENWIDTH * state.i_video.fb_scaling) as uint32_t)
-                    .wrapping_mul(state.i_video.s_Fb.bits_per_pixel.wrapping_div(8 as uint32_t))
+                    .wrapping_mul(
+                        state
+                            .i_video
+                            .s_Fb
+                            .bits_per_pixel
+                            .wrapping_div(8 as uint32_t),
+                    )
                     .wrapping_add(x_offset_end as uint32_t) as isize,
             );
             i += 1;

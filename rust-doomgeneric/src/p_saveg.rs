@@ -26,11 +26,11 @@ use crate::src::p_mobj::{
     line_t, mapthing_t, mobjinfo_t, sector_t, state_t, subsector_s, thinker_s, thinker_t, ThinkerFn,
 };
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
-use crate::src::p_setup::SectorId;
-use crate::src::p_setup::SideId;
 use crate::src::p_plats::plat_e;
 use crate::src::p_plats::plattype_e;
 use crate::src::p_plats::P_AddActivePlat;
+use crate::src::p_setup::SectorId;
+use crate::src::p_setup::SideId;
 use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_InitThinkers;
@@ -112,7 +112,8 @@ pub unsafe fn P_TempSaveGameFile(state: &mut GameState) -> *mut ::core::ffi::c_c
 pub unsafe fn P_SaveGameFile(state: &mut GameState, mut slot: i32) -> *mut ::core::ffi::c_char {
     let mut basename: [::core::ffi::c_char; 32] = [0; 32];
     if state.p_saveg.savegame_file_filename.is_null() {
-        state.p_saveg.savegame_file_filename_size = strlen(state.d_main.savegamedir).wrapping_add(32 as size_t);
+        state.p_saveg.savegame_file_filename_size =
+            strlen(state.d_main.savegamedir).wrapping_add(32 as size_t);
         state.p_saveg.savegame_file_filename =
             malloc(state.p_saveg.savegame_file_filename_size) as *mut ::core::ffi::c_char;
     }
@@ -288,8 +289,7 @@ unsafe fn saveg_read_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     (*str).type_0 = saveg_read32(state) as mobjtype_t;
     (*str).info = saveg_readp(state) as *mut mobjinfo_t;
     (*str).tics = saveg_read32(state);
-    (*str).state = (&raw mut state.info.states as *mut state_t)
-        .offset(saveg_read32(state) as isize)
+    (*str).state = (&raw mut state.info.states as *mut state_t).offset(saveg_read32(state) as isize)
         as *mut state_t;
     (*str).flags = saveg_read32(state);
     (*str).health = saveg_read32(state);
@@ -377,7 +377,8 @@ unsafe fn saveg_read_pspdef_t(state: &mut GameState, mut str: *mut pspdef_t) {
     let mut state_num: i32 = 0;
     state_num = saveg_read32(state);
     if state_num > 0 as i32 {
-        (*str).state = (&raw mut state.info.states as *mut state_t).offset(state_num as isize) as *mut state_t;
+        (*str).state =
+            (&raw mut state.info.states as *mut state_t).offset(state_num as isize) as *mut state_t;
     } else {
         (*str).state = ::core::ptr::null_mut::<state_t>();
     }
@@ -458,7 +459,8 @@ unsafe fn saveg_read_player_t(state: &mut GameState, mut str: *mut player_t) {
     (*str).colormap = saveg_read32(state);
     i = 0 as i32;
     while i < NUMPSPRITES as i32 {
-        saveg_read_pspdef_t(state, 
+        saveg_read_pspdef_t(
+            state,
             (&raw mut (*str).psprites as *mut pspdef_t).offset(i as isize) as *mut pspdef_t,
         );
         i += 1;
@@ -526,7 +528,8 @@ unsafe fn saveg_write_player_t(state: &mut GameState, mut str: *mut player_t) {
     saveg_write32(state, (*str).colormap);
     i = 0 as i32;
     while i < NUMPSPRITES as i32 {
-        saveg_write_pspdef_t(state, 
+        saveg_write_pspdef_t(
+            state,
             (&raw mut (*str).psprites as *mut pspdef_t).offset(i as isize) as *mut pspdef_t,
         );
         i += 1;
@@ -691,7 +694,10 @@ unsafe fn saveg_write_glow_t(state: &mut GameState, mut str: *mut glow_t) {
     saveg_write32(state, (*str).maxlight);
     saveg_write32(state, (*str).direction);
 }
-pub unsafe fn P_WriteSaveGameHeader(state: &mut GameState, mut description: *mut ::core::ffi::c_char) {
+pub unsafe fn P_WriteSaveGameHeader(
+    state: &mut GameState,
+    mut description: *mut ::core::ffi::c_char,
+) {
     let mut name: [::core::ffi::c_char; 16] = [0; 16];
     let mut i: i32 = 0;
     i = 0 as i32;
@@ -727,8 +733,14 @@ pub unsafe fn P_WriteSaveGameHeader(state: &mut GameState, mut description: *mut
         saveg_write8(state, state.g_game.playeringame[i as usize] as byte);
         i += 1;
     }
-    saveg_write8(state, (state.p_tick.leveltime >> 16 as i32 & 0xff as i32) as byte);
-    saveg_write8(state, (state.p_tick.leveltime >> 8 as i32 & 0xff as i32) as byte);
+    saveg_write8(
+        state,
+        (state.p_tick.leveltime >> 16 as i32 & 0xff as i32) as byte,
+    );
+    saveg_write8(
+        state,
+        (state.p_tick.leveltime >> 8 as i32 & 0xff as i32) as byte,
+    );
     saveg_write8(state, (state.p_tick.leveltime & 0xff as i32) as byte);
 }
 pub unsafe fn P_ReadSaveGameHeader(state: &mut GameState) -> bool {
@@ -794,8 +806,8 @@ pub unsafe fn P_ArchivePlayers(state: &mut GameState) {
     while i < MAXPLAYERS {
         if !(state.g_game.playeringame[i as usize] == 0) {
             saveg_write_pad(state);
-            let player = (&raw mut state.g_game.players as *mut player_t)
-                .offset(i as isize) as *mut player_t;
+            let player = (&raw mut state.g_game.players as *mut player_t).offset(i as isize)
+                as *mut player_t;
             saveg_write_player_t(state, player);
         }
         i += 1;
@@ -807,11 +819,10 @@ pub unsafe fn P_UnArchivePlayers(state: &mut GameState) {
     while i < MAXPLAYERS {
         if !(state.g_game.playeringame[i as usize] == 0) {
             saveg_read_pad(state);
-            let player = (&raw mut state.g_game.players as *mut player_t)
-                .offset(i as isize) as *mut player_t;
+            let player = (&raw mut state.g_game.players as *mut player_t).offset(i as isize)
+                as *mut player_t;
             saveg_read_player_t(state, player);
-            state.g_game.players[i as usize].mo =
-                ::core::ptr::null_mut::<mobj_t>();
+            state.g_game.players[i as usize].mo = ::core::ptr::null_mut::<mobj_t>();
             state.g_game.players[i as usize].message =
                 ::core::ptr::null_mut::<::core::ffi::c_char>();
             state.g_game.players[i as usize].attacker = None;
@@ -927,9 +938,7 @@ pub unsafe fn P_UnArchiveThinkers(state: &mut GameState) {
     while currentthinker != &raw mut state.p_tick.thinkercap {
         next = (*currentthinker).next as *mut thinker_t;
         if matches!((*currentthinker).function, ThinkerFn::Mobj(_)) {
-            P_RemoveMobj(state,
-                currentthinker as *mut mobj_t,
-            );
+            P_RemoveMobj(state, currentthinker as *mut mobj_t);
         } else {
             Z_Free(
                 &mut state.z_zone,
@@ -959,8 +968,10 @@ pub unsafe fn P_UnArchiveThinkers(state: &mut GameState) {
                 (*mobj).info = (&raw mut state.info.mobjinfo as *mut mobjinfo_t)
                     .offset((*mobj).type_0 as isize)
                     as *mut mobjinfo_t;
-                (*mobj).floorz = (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
-                (*mobj).ceilingz = (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).ceilingheight;
+                (*mobj).floorz =
+                    (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
+                (*mobj).ceilingz =
+                    (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).ceilingheight;
                 (*mobj).thinker.function = ThinkerFn::Mobj(P_MobjThinker);
                 P_AddThinker(state, &raw mut (*mobj).thinker);
             }
@@ -1055,7 +1066,8 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut GameState) {
                     NULL,
                 ) as *mut ceiling_t;
                 saveg_read_ceiling_t(state, ceiling);
-                (*state.p_setup.sector_mut((*ceiling).sector)).specialdata = ceiling as *mut ::core::ffi::c_void;
+                (*state.p_setup.sector_mut((*ceiling).sector)).specialdata =
+                    ceiling as *mut ::core::ffi::c_void;
                 if matches!((*ceiling).thinker.function, ThinkerFn::Unresolved) {
                     (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
                 }
@@ -1071,7 +1083,8 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut GameState) {
                     NULL,
                 ) as *mut vldoor_t;
                 saveg_read_vldoor_t(state, door);
-                (*state.p_setup.sector_mut((*door).sector)).specialdata = door as *mut ::core::ffi::c_void;
+                (*state.p_setup.sector_mut((*door).sector)).specialdata =
+                    door as *mut ::core::ffi::c_void;
                 (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
                 P_AddThinker(state, &raw mut (*door).thinker);
             }
@@ -1084,7 +1097,8 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut GameState) {
                     NULL,
                 ) as *mut floormove_t;
                 saveg_read_floormove_t(state, floor);
-                (*state.p_setup.sector_mut((*floor).sector)).specialdata = floor as *mut ::core::ffi::c_void;
+                (*state.p_setup.sector_mut((*floor).sector)).specialdata =
+                    floor as *mut ::core::ffi::c_void;
                 (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                 P_AddThinker(state, &raw mut (*floor).thinker);
             }
@@ -1097,7 +1111,8 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut GameState) {
                     NULL,
                 ) as *mut plat_t;
                 saveg_read_plat_t(state, plat);
-                (*state.p_setup.sector_mut((*plat).sector)).specialdata = plat as *mut ::core::ffi::c_void;
+                (*state.p_setup.sector_mut((*plat).sector)).specialdata =
+                    plat as *mut ::core::ffi::c_void;
                 if matches!((*plat).thinker.function, ThinkerFn::Unresolved) {
                     (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
                 }

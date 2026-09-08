@@ -20,7 +20,10 @@ use crate::src::r_defs::lighttable_t;
 use crate::src::r_defs::{node_t, seg_t};
 use crate::src::r_draw::R_InitBuffer;
 use crate::src::r_draw::R_InitTranslationTables;
-use crate::src::r_draw::{R_DrawColumn, R_DrawColumnLow, R_DrawFuzzColumn, R_DrawFuzzColumnLow, R_DrawSpan, R_DrawSpanLow, R_DrawTranslatedColumn, R_DrawTranslatedColumnLow};
+use crate::src::r_draw::{
+    R_DrawColumn, R_DrawColumnLow, R_DrawFuzzColumn, R_DrawFuzzColumnLow, R_DrawSpan,
+    R_DrawSpanLow, R_DrawTranslatedColumn, R_DrawTranslatedColumnLow,
+};
 use crate::src::r_plane::R_ClearPlanes;
 use crate::src::r_plane::R_DrawPlanes;
 use crate::src::r_sky::R_InitSkyMap;
@@ -82,8 +85,7 @@ impl RMainState {
         RMainState {
             viewangleoffset: 0,
             validcount: 1,
-            fixedcolormap: 
-        ::core::ptr::null::<lighttable_t>() as *mut lighttable_t,
+            fixedcolormap: ::core::ptr::null::<lighttable_t>() as *mut lighttable_t,
             centerx: 0,
             centery: 0,
             centerxfrac: 0,
@@ -388,7 +390,8 @@ pub unsafe fn R_InitLightTables(state: &mut GameState) {
             if level >= NUMCOLORMAPS {
                 level = NUMCOLORMAPS - 1 as i32;
             }
-            state.r_main.zlight[i as usize][j as usize] = state.r_data.colormaps.offset((level * 256 as i32) as isize);
+            state.r_main.zlight[i as usize][j as usize] =
+                state.r_data.colormaps.offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;
@@ -431,7 +434,8 @@ pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
         state.r_main.basecolfunc = Some(R_DrawColumnLow as unsafe fn(&mut GameState) -> ());
         state.r_main.colfunc = state.r_main.basecolfunc;
         state.r_main.fuzzcolfunc = Some(R_DrawFuzzColumnLow as unsafe fn(&mut GameState) -> ());
-        state.r_main.transcolfunc = Some(R_DrawTranslatedColumnLow as unsafe fn(&mut GameState) -> ());
+        state.r_main.transcolfunc =
+            Some(R_DrawTranslatedColumnLow as unsafe fn(&mut GameState) -> ());
         state.r_main.spanfunc = Some(R_DrawSpanLow as unsafe fn(&mut GameState) -> ());
     }
     let scaledviewwidth = state.r_draw.scaledviewwidth;
@@ -439,8 +443,7 @@ pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
     R_InitBuffer(state, scaledviewwidth, viewheight);
     R_InitTextureMapping(state);
     state.r_things.pspritescale = (FRACUNIT * state.r_draw.viewwidth / SCREENWIDTH) as fixed_t;
-    state.r_things.pspriteiscale =
-        (FRACUNIT * SCREENWIDTH / state.r_draw.viewwidth) as fixed_t;
+    state.r_things.pspriteiscale = (FRACUNIT * SCREENWIDTH / state.r_draw.viewwidth) as fixed_t;
     i = 0 as i32;
     while i < state.r_draw.viewwidth {
         state.r_things.screenheightarray[i as usize] = state.r_draw.viewheight as i16;
@@ -448,18 +451,21 @@ pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
     }
     i = 0 as i32;
     while i < state.r_draw.viewheight {
-        dy = (((i - state.r_draw.viewheight / 2 as i32) << FRACBITS) + FRACUNIT / 2 as i32) as fixed_t;
+        dy = (((i - state.r_draw.viewheight / 2 as i32) << FRACBITS) + FRACUNIT / 2 as i32)
+            as fixed_t;
         dy = (dy as i32).abs() as fixed_t;
         state.r_plane.yslope[i as usize] = FixedDiv(
-            ((state.r_draw.viewwidth as fixed_t) << state.r_main.detailshift) / 2 as fixed_t * FRACUNIT,
+            ((state.r_draw.viewwidth as fixed_t) << state.r_main.detailshift) / 2 as fixed_t
+                * FRACUNIT,
             dy,
         );
         i += 1;
     }
     i = 0 as i32;
     while i < state.r_draw.viewwidth {
-        cosadj = (finecosine[(state.r_main.xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize] as i32).abs()
-            as fixed_t;
+        cosadj = (finecosine[(state.r_main.xtoviewangle[i as usize] >> ANGLETOFINESHIFT) as isize]
+            as i32)
+            .abs() as fixed_t;
         state.r_plane.distscale[i as usize] = FixedDiv(FRACUNIT, cosadj);
         i += 1;
     }
@@ -468,14 +474,16 @@ pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
         startmap = (LIGHTLEVELS - 1 as i32 - i) * 2 as i32 * NUMCOLORMAPS / LIGHTLEVELS;
         j = 0 as i32;
         while j < MAXLIGHTSCALE {
-            level = startmap - j * SCREENWIDTH / (state.r_draw.viewwidth << state.r_main.detailshift) / DISTMAP;
+            level = startmap
+                - j * SCREENWIDTH / (state.r_draw.viewwidth << state.r_main.detailshift) / DISTMAP;
             if level < 0 as i32 {
                 level = 0 as i32;
             }
             if level >= NUMCOLORMAPS {
                 level = NUMCOLORMAPS - 1 as i32;
             }
-            state.r_main.scalelight[i as usize][j as usize] = state.r_data.colormaps.offset((level * 256 as i32) as isize);
+            state.r_main.scalelight[i as usize][j as usize] =
+                state.r_data.colormaps.offset((level * 256 as i32) as isize);
             j += 1;
         }
         i += 1;
@@ -485,10 +493,7 @@ pub unsafe fn R_Init(state: &mut GameState) {
     R_InitData(state);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    let (screenblocks, detail_level) = (
-        state.m_menu.screenblocks,
-        state.m_menu.detailLevel,
-    );
+    let (screenblocks, detail_level) = (state.m_menu.screenblocks, state.m_menu.detailLevel);
     R_SetViewSize(state, screenblocks, detail_level);
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     R_InitLightTables(state);
@@ -498,7 +503,11 @@ pub unsafe fn R_Init(state: &mut GameState) {
     printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
     state.r_main.framecount = 0 as i32;
 }
-pub unsafe fn R_PointInSubsector(state: &mut GameState, mut x: fixed_t, mut y: fixed_t) -> *mut subsector_t {
+pub unsafe fn R_PointInSubsector(
+    state: &mut GameState,
+    mut x: fixed_t,
+    mut y: fixed_t,
+) -> *mut subsector_t {
     let mut node: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     let mut nodenum: i32 = 0;

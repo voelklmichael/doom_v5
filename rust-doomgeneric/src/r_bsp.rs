@@ -38,26 +38,25 @@ impl RBspState {
             frontsector: None,
             backsector: None,
             drawsegs: [drawseg_s {
-        curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
-        x1: 0,
-        x2: 0,
-        scale1: 0,
-        scale2: 0,
-        scalestep: 0,
-        silhouette: 0,
-        bsilheight: 0,
-        tsilheight: 0,
-        sprtopclip: ::core::ptr::null::<i16>() as *mut i16,
-        sprbottomclip: ::core::ptr::null::<i16>() as *mut i16,
-        maskedtexturecol: ::core::ptr::null::<i16>() as *mut i16,
-    }; 256],
+                curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
+                x1: 0,
+                x2: 0,
+                scale1: 0,
+                scale2: 0,
+                scalestep: 0,
+                silhouette: 0,
+                bsilheight: 0,
+                tsilheight: 0,
+                sprtopclip: ::core::ptr::null::<i16>() as *mut i16,
+                sprbottomclip: ::core::ptr::null::<i16>() as *mut i16,
+                maskedtexturecol: ::core::ptr::null::<i16>() as *mut i16,
+            }; 256],
             ds_p: ::core::ptr::null::<drawseg_t>() as *mut drawseg_t,
             newend: ::core::ptr::null::<cliprange_t>() as *mut cliprange_t,
             solidsegs: [cliprange_t { first: 0, last: 0 }; 32],
         }
     }
 }
-
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -170,7 +169,8 @@ pub unsafe fn R_ClearClipSegs(state: &mut GameState) {
     state.r_bsp.solidsegs[0 as i32 as usize].last = -(1 as i32);
     state.r_bsp.solidsegs[1 as i32 as usize].first = state.r_draw.viewwidth;
     state.r_bsp.solidsegs[1 as i32 as usize].last = 0x7fffffff as i32;
-    state.r_bsp.newend = (&raw mut state.r_bsp.solidsegs as *mut cliprange_t).offset(2 as i32 as isize);
+    state.r_bsp.newend =
+        (&raw mut state.r_bsp.solidsegs as *mut cliprange_t).offset(2 as i32 as isize);
 }
 pub unsafe fn R_AddLine(state: &mut GameState, mut line: *mut seg_t) {
     let mut x1: i32 = 0;
@@ -214,16 +214,28 @@ pub unsafe fn R_AddLine(state: &mut GameState, mut line: *mut seg_t) {
     }
     state.r_bsp.backsector = (*line).backsector;
     if !state.r_bsp.backsector.is_none() {
-        if !((*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingheight <= (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight
-            || (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorheight >= (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingheight)
+        if !((*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingheight
+            <= (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight
+            || (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorheight
+                >= (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingheight)
         {
-            if !((*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingheight != (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingheight
-                || (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorheight != (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight)
+            if !((*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingheight
+                != (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingheight
+                || (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorheight
+                    != (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight)
             {
-                if (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingpic as i32 == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingpic as i32
-                    && (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorpic as i32 == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorpic as i32
-                    && (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).lightlevel as i32 == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).lightlevel as i32
-                    && (*state.p_setup.side_mut((*state.r_bsp.curline).sidedef)).midtexture as i32 == 0 as i32
+                if (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingpic as i32
+                    == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).ceilingpic
+                        as i32
+                    && (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorpic as i32
+                        == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorpic
+                            as i32
+                    && (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).lightlevel
+                        as i32
+                        == (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).lightlevel
+                            as i32
+                    && (*state.p_setup.side_mut((*state.r_bsp.curline).sidedef)).midtexture as i32
+                        == 0 as i32
                 {
                     return;
                 }
@@ -336,9 +348,7 @@ pub unsafe fn R_Subsector(state: &mut GameState, mut num: i32) {
         ));
     }
     state.r_main.sscount += 1;
-    sub = state
-        .p_setup
-        .subsector_mut(SubsectorId(num as u32));
+    sub = state.p_setup.subsector_mut(SubsectorId(num as u32));
     state.r_bsp.frontsector = Some((*sub).sector);
     count = (*sub).numlines as i32;
     line = state.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;

@@ -316,7 +316,11 @@ pub unsafe fn EV_DoDoor(state: &mut GameState, mut line: *mut line_t, mut type_0
     }
     return rtn;
 }
-pub unsafe fn EV_VerticalDoor(state: &mut GameState, mut line: *mut line_t, mut thing: *mut mobj_t) {
+pub unsafe fn EV_VerticalDoor(
+    state: &mut GameState,
+    mut line: *mut line_t,
+    mut thing: *mut mobj_t,
+) {
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
@@ -368,9 +372,8 @@ pub unsafe fn EV_VerticalDoor(state: &mut GameState, mut line: *mut line_t, mut 
         }
         _ => {}
     }
-    let door_sector_id = state.p_setup.sides
-        [(*line).sidenum[(side ^ 1 as i32) as usize] as usize]
-        .sector;
+    let door_sector_id =
+        state.p_setup.sides[(*line).sidenum[(side ^ 1 as i32) as usize] as usize].sector;
     sec = state.p_setup.sector_mut(door_sector_id);
     if !(*sec).specialdata.is_null() {
         door = (*sec).specialdata as *mut vldoor_t;
@@ -480,7 +483,11 @@ pub unsafe fn P_SpawnDoorCloseIn30(state: &mut GameState, mut sector: SectorId) 
     (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
     (*door).topcountdown = 30 as i32 * TICRATE;
 }
-pub unsafe fn P_SpawnDoorRaiseIn5Mins(state: &mut GameState, mut sector: SectorId, mut secnum: i32) {
+pub unsafe fn P_SpawnDoorRaiseIn5Mins(
+    state: &mut GameState,
+    mut sector: SectorId,
+    mut secnum: i32,
+) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
     let sec = state.p_setup.sector_mut(sector);
     door = Z_Malloc(

@@ -225,8 +225,8 @@ pub unsafe fn D_FindIWAD(
 ) -> *mut ::core::ffi::c_char {
     let iwadparm = M_CheckParmWithArgs(state, "-iwad", 1 as i32);
     if iwadparm != 0 {
-        let iwadfile = state.m_argv.myargv[(iwadparm + 1 as i32) as usize]
-            .as_ptr() as *mut ::core::ffi::c_char;
+        let iwadfile = state.m_argv.myargv[(iwadparm + 1 as i32) as usize].as_ptr()
+            as *mut ::core::ffi::c_char;
         let result = D_FindWADByName(&mut state.d_iwad, iwadfile);
         if result.is_null() {
             I_Error(&format!(
