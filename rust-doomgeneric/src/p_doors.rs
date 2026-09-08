@@ -57,7 +57,7 @@ pub unsafe fn T_VerticalDoor(state: &mut GameState, mut door: *mut vldoor_t) {
                     5 => {
                         (*door).direction = -(1 as i32);
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_bdcls as i32,
                         );
@@ -65,7 +65,7 @@ pub unsafe fn T_VerticalDoor(state: &mut GameState, mut door: *mut vldoor_t) {
                     0 => {
                         (*door).direction = -(1 as i32);
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_dorcls as i32,
                         );
@@ -73,7 +73,7 @@ pub unsafe fn T_VerticalDoor(state: &mut GameState, mut door: *mut vldoor_t) {
                     1 => {
                         (*door).direction = 1 as i32;
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
                         );
@@ -90,7 +90,7 @@ pub unsafe fn T_VerticalDoor(state: &mut GameState, mut door: *mut vldoor_t) {
                         (*door).direction = 1 as i32;
                         (*door).type_0 = vld_normal;
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
                         );
@@ -114,7 +114,7 @@ pub unsafe fn T_VerticalDoor(state: &mut GameState, mut door: *mut vldoor_t) {
                         (*sec).specialdata = NULL;
                         P_RemoveThinker(&raw mut (*door).thinker);
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_bdcls as i32,
                         );
@@ -135,7 +135,7 @@ pub unsafe fn T_VerticalDoor(state: &mut GameState, mut door: *mut vldoor_t) {
                     _ => {
                         (*door).direction = 1 as i32;
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_doropn as i32,
                         );

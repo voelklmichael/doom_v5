@@ -60,7 +60,7 @@ pub unsafe fn T_FireFlicker(state: &mut GameState, mut flick: *mut fireflicker_t
     if (*flick).count != 0 {
         return;
     }
-    amount = (P_Random(unsafe { &mut game_state().m_random }) & 3 as i32) * 16 as i32;
+    amount = (P_Random(&mut state.m_random) & 3 as i32) * 16 as i32;
     let sec = state.p_setup.sector_mut((*flick).sector);
     if (*sec).lightlevel as i32 - amount < (*flick).minlight {
         (*sec).lightlevel = (*flick).minlight as i16;
@@ -95,11 +95,11 @@ pub unsafe fn T_LightFlash(state: &mut GameState, mut flash: *mut lightflash_t) 
     if (*sec).lightlevel as i32 == (*flash).maxlight {
         (*sec).lightlevel = (*flash).minlight as i16;
         (*flash).count =
-            (P_Random(unsafe { &mut game_state().m_random }) & (*flash).mintime) + 1 as i32;
+            (P_Random(&mut state.m_random) & (*flash).mintime) + 1 as i32;
     } else {
         (*sec).lightlevel = (*flash).maxlight as i16;
         (*flash).count =
-            (P_Random(unsafe { &mut game_state().m_random }) & (*flash).maxtime) + 1 as i32;
+            (P_Random(&mut state.m_random) & (*flash).maxtime) + 1 as i32;
     };
 }
 pub unsafe fn P_SpawnLightFlash(mut sector: SectorId) {

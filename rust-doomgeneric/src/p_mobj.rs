@@ -834,7 +834,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut PMobjState, mut mobj: *mut mobj_t) 
 pub unsafe fn P_MobjThinker(state: &mut GameState, id: MobjId) {
     let mobj = state.p_mobj.mobj_get(id).unwrap();
     if (*mobj).momx != 0 || (*mobj).momy != 0 || (*mobj).flags & MF_SKULLFLY as i32 != 0 {
-        P_XYMovement(unsafe { &mut game_state().p_mobj }, mobj);
+        P_XYMovement(&mut state.p_mobj, mobj);
         if matches!((*mobj).thinker.function, ThinkerFn::Removed) {
             return;
         }
@@ -866,10 +866,10 @@ pub unsafe fn P_MobjThinker(state: &mut GameState, id: MobjId) {
         if state.p_tick.leveltime & 31 as i32 != 0 {
             return;
         }
-        if P_Random(unsafe { &mut game_state().m_random }) > 4 as i32 {
+        if P_Random(&mut state.m_random) > 4 as i32 {
             return;
         }
-        P_NightmareRespawn(unsafe { &mut game_state().p_mobj }, mobj);
+        P_NightmareRespawn(&mut state.p_mobj, mobj);
     };
 }
 pub unsafe fn P_SpawnMobj(
