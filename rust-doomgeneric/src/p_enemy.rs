@@ -320,7 +320,7 @@ pub unsafe fn P_Move(mut actor: *mut mobj_t) -> bool {
             }
             ld = unsafe { game_state() }.p_map.spechit
                 [unsafe { game_state() }.p_map.numspechit as usize];
-            if P_UseSpecialLine(unsafe { &mut game_state().p_switch }, actor, ld, 0 as i32) {
+            if P_UseSpecialLine(unsafe { game_state() }, actor, ld, 0 as i32) {
                 good = true;
             }
         }
