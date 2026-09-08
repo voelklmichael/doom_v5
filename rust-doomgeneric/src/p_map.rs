@@ -162,7 +162,7 @@ pub unsafe extern "C" fn PIT_StompThing(state: &mut GameState, mut thing_id: Mob
     {
         return false_0 as boolean;
     }
-    P_DamageMobj(
+    P_DamageMobj(state, 
         thing,
         state.p_map.tmthing,
         state.p_map.tmthing,
@@ -312,7 +312,7 @@ pub unsafe extern "C" fn PIT_CheckThing(state: &mut GameState, mut thing_id: Mob
     if (*state.p_map.tmthing).flags & MF_SKULLFLY as i32 != 0 {
         damage = (P_Random(&mut state.m_random) % 8 as i32 + 1 as i32)
             * (*(*state.p_map.tmthing).info).damage;
-        P_DamageMobj(
+        P_DamageMobj(state, 
             thing,
             state.p_map.tmthing,
             state.p_map.tmthing,
@@ -362,7 +362,7 @@ pub unsafe extern "C" fn PIT_CheckThing(state: &mut GameState, mut thing_id: Mob
         }
         damage = (P_Random(&mut state.m_random) % 8 as i32 + 1 as i32)
             * (*(*state.p_map.tmthing).info).damage;
-        P_DamageMobj(
+        P_DamageMobj(state, 
             thing,
             state.p_map.tmthing,
             tm_target.unwrap_or(::core::ptr::null_mut()),
@@ -373,7 +373,7 @@ pub unsafe extern "C" fn PIT_CheckThing(state: &mut GameState, mut thing_id: Mob
     if (*thing).flags & MF_SPECIAL as i32 != 0 {
         solid = (*thing).flags & MF_SOLID as i32 != 0;
         if state.p_map.tmflags & MF_PICKUP as i32 != 0 {
-            P_TouchSpecialThing(thing, state.p_map.tmthing);
+            P_TouchSpecialThing(state, thing, state.p_map.tmthing);
         }
         return (!solid) as i32 as boolean;
     }
@@ -951,7 +951,7 @@ pub unsafe extern "C" fn PTR_ShootTraverse(state: &mut GameState, mut in_0: *mut
             P_SpawnBlood(state, x, y, z, state.p_map.la_damage);
         }
         if state.p_map.la_damage != 0 {
-            P_DamageMobj(
+            P_DamageMobj(state, 
                 th,
                 state.p_map.shootthing,
                 state.p_map.shootthing,
@@ -1106,7 +1106,7 @@ pub unsafe extern "C" fn PIT_RadiusAttack(state: &mut GameState, mut thing_id: M
         thing,
         state.p_map.bombspot,
     ) {
-        P_DamageMobj(
+        P_DamageMobj(state, 
             thing,
             state.p_map.bombspot,
             state.p_map.bombsource,
@@ -1169,7 +1169,7 @@ pub unsafe extern "C" fn PIT_ChangeSector(state: &mut GameState, mut thing_id: M
     }
     state.p_map.nofit = true_0 as boolean;
     if state.p_map.crushchange != 0 && state.p_tick.leveltime & 3 as i32 == 0 {
-        P_DamageMobj(
+        P_DamageMobj(state, 
             thing,
             ::core::ptr::null_mut::<mobj_t>(),
             ::core::ptr::null_mut::<mobj_t>(),

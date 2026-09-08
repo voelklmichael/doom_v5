@@ -936,7 +936,7 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
         5 => {
             if (*player).powers[pw_ironfeet as i32 as usize] == 0 {
                 if state.p_tick.leveltime & 0x1f as i32 == 0 {
-                    P_DamageMobj(
+                    P_DamageMobj(state, 
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -948,7 +948,7 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
         7 => {
             if (*player).powers[pw_ironfeet as i32 as usize] == 0 {
                 if state.p_tick.leveltime & 0x1f as i32 == 0 {
-                    P_DamageMobj(
+                    P_DamageMobj(state, 
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -962,7 +962,7 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
                 || P_Random(&mut state.m_random) < 5 as i32
             {
                 if state.p_tick.leveltime & 0x1f as i32 == 0 {
-                    P_DamageMobj(
+                    P_DamageMobj(state, 
                         (*player).mo,
                         ::core::ptr::null_mut::<mobj_t>(),
                         ::core::ptr::null_mut::<mobj_t>(),
@@ -978,7 +978,7 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
         11 => {
             (*player).cheats &= !(CF_GODMODE as i32);
             if state.p_tick.leveltime & 0x1f as i32 == 0 {
-                P_DamageMobj(
+                P_DamageMobj(state, 
                     (*player).mo,
                     ::core::ptr::null_mut::<mobj_t>(),
                     ::core::ptr::null_mut::<mobj_t>(),
