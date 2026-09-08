@@ -104,14 +104,14 @@ pub unsafe fn P_CalcSwing(state: &mut PPsprState, mut player: *mut player_t) {
     angle = FINEANGLES / 70 as i32 * unsafe { game_state() }.p_tick.leveltime + FINEANGLES / 2 as i32 & FINEMASK;
     state.swingy = -FixedMul(state.swingx, finesine[angle as usize]);
 }
-pub unsafe fn P_BringUpWeapon(mut player: *mut player_t) {
+pub unsafe fn P_BringUpWeapon(state: &mut GameState, mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;
     if (*player).pendingweapon as u32 == wp_nochange as i32 as u32 {
         (*player).pendingweapon = (*player).readyweapon;
     }
     if (*player).pendingweapon as u32 == wp_chainsaw as i32 as u32 {
         S_StartSound(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             (*player).mo as *mut ::core::ffi::c_void,
             sfx_sawup as i32,
         );
@@ -119,9 +119,9 @@ pub unsafe fn P_BringUpWeapon(mut player: *mut player_t) {
     newstate = weaponinfo[(*player).pendingweapon as usize].upstate as statenum_t;
     (*player).pendingweapon = wp_nochange;
     (*player).psprites[ps_weapon as i32 as usize].sy = (128 as i32 * FRACUNIT) as fixed_t;
-    P_SetPsprite(unsafe { game_state() }, player, ps_weapon as i32, newstate);
+    P_SetPsprite(state, player, ps_weapon as i32, newstate);
 }
-pub unsafe fn P_CheckAmmo(mut player: *mut player_t) -> bool {
+pub unsafe fn P_CheckAmmo(state: &mut GameState, mut player: *mut player_t) -> bool {
     let mut ammo: ammotype_t = am_clip;
     let mut count: i32 = 0;
     ammo = weaponinfo[(*player).readyweapon as usize].ammo;
@@ -138,12 +138,12 @@ pub unsafe fn P_CheckAmmo(mut player: *mut player_t) -> bool {
     loop {
         if (*player).weaponowned[wp_plasma as i32 as usize]
             && (*player).ammo[am_cell as i32 as usize] != 0
-            && unsafe { game_state() }.doomstat.gamemode as u32 != shareware as i32 as u32
+            && state.doomstat.gamemode as u32 != shareware as i32 as u32
         {
             (*player).pendingweapon = wp_plasma;
         } else if (*player).weaponowned[wp_supershotgun as i32 as usize]
             && (*player).ammo[am_shell as i32 as usize] > 2 as i32
-            && unsafe { game_state() }.doomstat.gamemode as u32 == commercial as i32 as u32
+            && state.doomstat.gamemode as u32 == commercial as i32 as u32
         {
             (*player).pendingweapon = wp_supershotgun;
         } else if (*player).weaponowned[wp_chaingun as i32 as usize]
@@ -164,7 +164,7 @@ pub unsafe fn P_CheckAmmo(mut player: *mut player_t) -> bool {
             (*player).pendingweapon = wp_missile;
         } else if (*player).weaponowned[wp_bfg as i32 as usize]
             && (*player).ammo[am_cell as i32 as usize] > 40 as i32
-            && unsafe { game_state() }.doomstat.gamemode as u32 != shareware as i32 as u32
+            && state.doomstat.gamemode as u32 != shareware as i32 as u32
         {
             (*player).pendingweapon = wp_bfg;
         } else {
@@ -174,25 +174,25 @@ pub unsafe fn P_CheckAmmo(mut player: *mut player_t) -> bool {
             break;
         }
     }
-    P_SetPsprite(unsafe { game_state() }, 
+    P_SetPsprite(state, 
         player,
         ps_weapon as i32,
         weaponinfo[(*player).readyweapon as usize].downstate as statenum_t,
     );
     return false;
 }
-pub unsafe fn P_FireWeapon(mut player: *mut player_t) {
+pub unsafe fn P_FireWeapon(state: &mut GameState, mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;
-    if !P_CheckAmmo(player) {
+    if !P_CheckAmmo(state, player) {
         return;
     }
-    P_SetMobjState(unsafe { game_state() }, (*player).mo, S_PLAY_ATK1);
+    P_SetMobjState(state, (*player).mo, S_PLAY_ATK1);
     newstate = weaponinfo[(*player).readyweapon as usize].atkstate as statenum_t;
-    P_SetPsprite(unsafe { game_state() }, player, ps_weapon as i32, newstate);
-    P_NoiseAlert(unsafe { game_state() }, (*player).mo, (*player).mo);
+    P_SetPsprite(state, player, ps_weapon as i32, newstate);
+    P_NoiseAlert(state, (*player).mo, (*player).mo);
 }
-pub unsafe fn P_DropWeapon(mut player: *mut player_t) {
-    P_SetPsprite(unsafe { game_state() }, 
+pub unsafe fn P_DropWeapon(state: &mut GameState, mut player: *mut player_t) {
+    P_SetPsprite(state, 
         player,
         ps_weapon as i32,
         weaponinfo[(*player).readyweapon as usize].downstate as statenum_t,
@@ -229,7 +229,7 @@ pub unsafe fn A_WeaponReady(state: &mut GameState, mut player: *mut player_t, mu
                 && (*player).readyweapon as u32 != wp_bfg as i32 as u32
         {
             (*player).attackdown = true_0;
-            P_FireWeapon(player);
+            P_FireWeapon(state, player);
             return;
         }
     } else {
@@ -246,14 +246,14 @@ pub unsafe fn A_ReFire(state: &mut GameState, mut player: *mut player_t, mut psp
         && (*player).health != 0
     {
         (*player).refire += 1;
-        P_FireWeapon(player);
+        P_FireWeapon(state, player);
     } else {
         (*player).refire = 0 as i32;
-        P_CheckAmmo(player);
+        P_CheckAmmo(state, player);
     };
 }
 pub unsafe fn A_CheckReload(state: &mut GameState, mut player: *mut player_t, mut psp: *mut pspdef_t) {
-    P_CheckAmmo(player);
+    P_CheckAmmo(state, player);
 }
 pub unsafe fn A_Lower(state: &mut GameState, mut player: *mut player_t, mut psp: *mut pspdef_t) {
     (*psp).sy += FRACUNIT * 6 as i32;
@@ -269,7 +269,7 @@ pub unsafe fn A_Lower(state: &mut GameState, mut player: *mut player_t, mut psp:
         return;
     }
     (*player).readyweapon = (*player).pendingweapon;
-    P_BringUpWeapon(player);
+    P_BringUpWeapon(state, player);
 }
 pub unsafe fn A_Raise(state: &mut GameState, mut player: *mut player_t, mut psp: *mut pspdef_t) {
     let mut newstate: statenum_t = S_NULL;
@@ -414,32 +414,33 @@ pub unsafe fn A_FirePlasma(state: &mut GameState, mut player: *mut player_t, mut
     );
     P_SpawnPlayerMissile(state, (*player).mo, MT_PLASMA);
 }
-pub unsafe fn P_BulletSlope(state: &mut PPsprState, mut mo: *mut mobj_t) {
+pub unsafe fn P_BulletSlope(state: &mut GameState, mut mo: *mut mobj_t) {
     let mut an: angle_t = 0;
     an = (*mo).angle;
-    state.bulletslope = P_AimLineAttack(unsafe { game_state() }, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
-    if unsafe { game_state() }.p_map.linetarget.is_null() {
+    state.p_pspr.bulletslope = P_AimLineAttack(state, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+    if state.p_map.linetarget.is_null() {
         an = an.wrapping_add(((1 as i32) << 26 as i32) as angle_t);
-        state.bulletslope = P_AimLineAttack(unsafe { game_state() }, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
-        if unsafe { game_state() }.p_map.linetarget.is_null() {
+        state.p_pspr.bulletslope = P_AimLineAttack(state, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+        if state.p_map.linetarget.is_null() {
             an = an.wrapping_sub(((2 as i32) << 26 as i32) as angle_t);
-            state.bulletslope = P_AimLineAttack(unsafe { game_state() }, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
+            state.p_pspr.bulletslope = P_AimLineAttack(state, mo, an, 16 as fixed_t * 64 as fixed_t * FRACUNIT);
         }
     }
 }
-pub unsafe fn P_GunShot(state: &mut PPsprState, mut mo: *mut mobj_t, mut accurate: bool) {
+pub unsafe fn P_GunShot(state: &mut GameState, mut mo: *mut mobj_t, mut accurate: bool) {
     let mut angle: angle_t = 0;
     let mut damage: i32 = 0;
-    damage = 5 as i32 * (P_Random(unsafe { &mut game_state().m_random }) % 3 as i32 + 1 as i32);
+    damage = 5 as i32 * (P_Random(&mut state.m_random) % 3 as i32 + 1 as i32);
     angle = (*mo).angle;
     if !accurate {
         angle = angle.wrapping_add(
-            (P_Random(unsafe { &mut game_state().m_random })
-                - P_Random(unsafe { &mut game_state().m_random })
+            (P_Random(&mut state.m_random)
+                - P_Random(&mut state.m_random)
                 << 18 as i32) as angle_t,
         );
     }
-    P_LineAttack(unsafe { game_state() }, mo, angle, MISSILERANGE, state.bulletslope, damage);
+    let bulletslope = state.p_pspr.bulletslope;
+    P_LineAttack(state, mo, angle, MISSILERANGE, bulletslope, damage);
 }
 pub unsafe fn A_FirePistol(state: &mut GameState, mut player: *mut player_t, mut psp: *mut pspdef_t) {
     S_StartSound(
@@ -458,9 +459,8 @@ pub unsafe fn A_FirePistol(state: &mut GameState, mut player: *mut player_t, mut
         ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
-    P_BulletSlope(&mut state.p_pspr, (*player).mo);
-    P_GunShot(
-        &mut state.p_pspr,
+    P_BulletSlope(state, (*player).mo);
+    P_GunShot(state,
         (*player).mo,
         (*player).refire == 0,
     );
@@ -483,10 +483,10 @@ pub unsafe fn A_FireShotgun(state: &mut GameState, mut player: *mut player_t, mu
         ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
-    P_BulletSlope(&mut state.p_pspr, (*player).mo);
+    P_BulletSlope(state, (*player).mo);
     i = 0 as i32;
     while i < 7 as i32 {
-        P_GunShot(&mut state.p_pspr, (*player).mo, false);
+        P_GunShot(state, (*player).mo, false);
         i += 1;
     }
 }
@@ -510,7 +510,7 @@ pub unsafe fn A_FireShotgun2(state: &mut GameState, mut player: *mut player_t, m
         ps_flash as i32,
         weaponinfo[(*player).readyweapon as usize].flashstate as statenum_t,
     );
-    P_BulletSlope(&mut state.p_pspr, (*player).mo);
+    P_BulletSlope(state, (*player).mo);
     i = 0 as i32;
     while i < 20 as i32 {
         damage = 5 as i32 * (P_Random(&mut state.m_random) % 3 as i32 + 1 as i32);
@@ -558,9 +558,8 @@ pub unsafe fn A_FireCGun(state: &mut GameState, mut player: *mut player_t, mut p
             .offset(weaponinfo[(*player).readyweapon as usize].flashstate as isize)
             .offset_from(chain1_base) as i64 as statenum_t,
     );
-    P_BulletSlope(&mut state.p_pspr, (*player).mo);
-    P_GunShot(
-        &mut state.p_pspr,
+    P_BulletSlope(state, (*player).mo);
+    P_GunShot(state,
         (*player).mo,
         (*player).refire == 0,
     );
@@ -626,7 +625,7 @@ pub unsafe fn A_BFGsound(state: &mut GameState, mut player: *mut player_t, mut p
         sfx_bfg as i32,
     );
 }
-pub unsafe fn P_SetupPsprites(mut player: *mut player_t) {
+pub unsafe fn P_SetupPsprites(state: &mut GameState, mut player: *mut player_t) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < NUMPSPRITES as i32 {
@@ -634,7 +633,7 @@ pub unsafe fn P_SetupPsprites(mut player: *mut player_t) {
         i += 1;
     }
     (*player).pendingweapon = (*player).readyweapon;
-    P_BringUpWeapon(player);
+    P_BringUpWeapon(state, player);
 }
 pub unsafe fn P_MovePsprites(state: &mut GameState, mut player: *mut player_t) {
     let mut i: i32 = 0;

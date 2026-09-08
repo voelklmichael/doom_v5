@@ -674,7 +674,7 @@ pub unsafe fn P_KillMobj(state: &mut GameState, mut source: *mut mobj_t, mut tar
         }
         (*target).flags &= !(MF_SOLID as i32);
         (*(*target).player).playerstate = PST_DEAD;
-        P_DropWeapon((*target).player as *mut player_t);
+        P_DropWeapon(state, (*target).player as *mut player_t);
         if (*target).player
             == (&raw mut state.g_game.players as *mut player_t)
                 .offset(state.g_game.consoleplayer as isize)
