@@ -1,7 +1,7 @@
 use crate::src::d_event::ev_keydown;
 use crate::src::d_event::event_t;
+use crate::src::d_event::GameScreenState;
 use crate::src::d_event::{ga_nothing, ga_worlddone};
-use crate::src::d_event::{gamestate_t, GS_FINALE};
 use crate::src::d_mode::GameVersion;
 use crate::src::d_mode::{commercial, retail};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx, pack_plut, pack_tnt, GameMission_t};
@@ -302,7 +302,7 @@ impl FFinaleState {
 pub unsafe fn F_StartFinale(state: &mut GameState) {
     let mut i: size_t = 0;
     state.g_game.gameaction = ga_nothing;
-    state.g_game.gamestate = GS_FINALE;
+    state.g_game.gamestate = GameScreenState::GS_FINALE;
     state.g_game.viewactive = false;
     state.am_map.automapactive = false;
     if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
@@ -405,7 +405,7 @@ pub unsafe fn F_Ticker(state: &mut GameState) {
     {
         state.f_finale.finalecount = 0 as u32;
         state.f_finale.finalestage = F_STAGE_ARTSCREEN;
-        state.d_main.wipegamestate = 4294967295 as gamestate_t;
+        state.d_main.wipegamestate = GameScreenState::GS_WIPPED;
         if state.g_game.gameepisode == 3 as i32 {
             S_StartMusic(state, mus_bunny as i32);
         }
@@ -563,7 +563,7 @@ const INITIAL_CASTORDER: [castinfo_t; 18] = [
     },
 ];
 pub unsafe fn F_StartCast(state: &mut GameState) {
-    state.d_main.wipegamestate = 4294967295 as gamestate_t;
+    state.d_main.wipegamestate = GameScreenState::GS_WIPPED;
     state.f_finale.castnum = 0 as i32;
     state.f_finale.caststate = (&raw mut state.info.states as *mut state_t).offset(
         (*(&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(

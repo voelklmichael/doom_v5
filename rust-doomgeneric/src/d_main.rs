@@ -1,8 +1,8 @@
 use crate::src::am_map::AM_Drawer;
 use crate::src::d_event::event_t;
 use crate::src::d_event::D_PopEvent;
+use crate::src::d_event::GameScreenState;
 use crate::src::d_event::{ga_loadgame, ga_nothing, ga_playdemo};
-use crate::src::d_event::{gamestate_t, GS_DEMOSCREEN, GS_LEVEL};
 use crate::src::d_iwad::D_FindIWAD;
 use crate::src::d_iwad::D_SaveGameIWADName;
 use crate::src::d_loop::D_StartGameLoop;
@@ -128,12 +128,12 @@ pub struct DMainState {
     pub wadfile: [::core::ffi::c_char; 1024],
     pub mapdir: [::core::ffi::c_char; 1024],
     pub show_endoom: i32,
-    pub wipegamestate: gamestate_t,
+    pub wipegamestate: GameScreenState,
     pub d_display_viewactivestate: bool,
     pub d_display_menuactivestate: bool,
     pub d_display_inhelpscreensstate: bool,
     pub d_display_fullscreen: bool,
-    pub d_display_oldgamestate: gamestate_t,
+    pub d_display_oldgamestate: GameScreenState,
     pub d_display_borderdrawcount: i32,
     pub demosequence: i32,
     pub pagetic: i32,
@@ -162,12 +162,12 @@ impl DMainState {
             wadfile: [0; 1024],
             mapdir: [0; 1024],
             show_endoom: 1,
-            wipegamestate: GS_DEMOSCREEN,
+            wipegamestate: GameScreenState::GS_DEMOSCREEN,
             d_display_viewactivestate: false,
             d_display_menuactivestate: false,
             d_display_inhelpscreensstate: false,
             d_display_fullscreen: false,
-            d_display_oldgamestate: 4294967295,
+            d_display_oldgamestate: GameScreenState::GS_WIPPED,
             d_display_borderdrawcount: 0,
             demosequence: 0,
             pagetic: 0,
@@ -325,16 +325,16 @@ pub unsafe fn D_Display(state: &mut GameState) {
     redrawsbar = false;
     if state.r_main.setsizeneeded {
         R_ExecuteSetViewSize(state);
-        state.d_main.d_display_oldgamestate = 4294967295 as gamestate_t;
+        state.d_main.d_display_oldgamestate = GameScreenState::GS_WIPPED;
         state.d_main.d_display_borderdrawcount = 3 as i32;
     }
-    if state.g_game.gamestate as u32 != state.d_main.wipegamestate as u32 {
+    if state.g_game.gamestate != state.d_main.wipegamestate {
         wipe = true;
         wipe_StartScreen(state, 0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
     } else {
         wipe = false;
     }
-    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32 && state.d_loop.gametic != 0 {
+    if state.g_game.gamestate == GameScreenState::GS_LEVEL && state.d_loop.gametic != 0 {
         HU_Erase(state);
     }
     match state.g_game.gamestate as u32 {
@@ -367,7 +367,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         }
         _ => {}
     }
-    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+    if state.g_game.gamestate == GameScreenState::GS_LEVEL
         && !state.am_map.automapactive
         && state.d_loop.gametic != 0
     {
@@ -376,24 +376,24 @@ pub unsafe fn D_Display(state: &mut GameState) {
             as *mut player_t;
         R_RenderPlayerView(state, displayplayer_mo);
     }
-    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32 && state.d_loop.gametic != 0 {
+    if state.g_game.gamestate == GameScreenState::GS_LEVEL && state.d_loop.gametic != 0 {
         HU_Drawer(state);
     }
     if state.g_game.gamestate as u32 != state.d_main.d_display_oldgamestate as u32
-        && state.g_game.gamestate as u32 != GS_LEVEL as i32 as u32
+        && state.g_game.gamestate != GameScreenState::GS_LEVEL
     {
         I_SetPalette(
             state,
             W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte,
         );
     }
-    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
-        && state.d_main.d_display_oldgamestate as u32 != GS_LEVEL as i32 as u32
+    if state.g_game.gamestate == GameScreenState::GS_LEVEL
+        && state.d_main.d_display_oldgamestate != GameScreenState::GS_LEVEL
     {
         state.d_main.d_display_viewactivestate = false;
         R_FillBackScreen(state);
     }
-    if state.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+    if state.g_game.gamestate == GameScreenState::GS_LEVEL
         && !state.am_map.automapactive
         && state.r_draw.scaledviewwidth != 320 as i32
     {
@@ -554,7 +554,7 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
     if unsafe { game_state() }.m_menu.menuactive || unsafe { game_state() }.g_game.paused {
         return false_0 as boolean;
     }
-    return (unsafe { game_state() }.g_game.gamestate as u32 == GS_LEVEL as i32 as u32
+    return (unsafe { game_state() }.g_game.gamestate == GameScreenState::GS_LEVEL
         && !unsafe { game_state() }.g_game.demoplayback
         && !unsafe { game_state() }.d_main.advancedemo) as i32 as boolean;
 }
@@ -631,7 +631,7 @@ pub unsafe fn D_DoAdvanceDemo(state: &mut GameState) {
             } else {
                 state.d_main.pagetic = 170 as i32;
             }
-            state.g_game.gamestate = GS_DEMOSCREEN;
+            state.g_game.gamestate = GameScreenState::GS_DEMOSCREEN;
             state.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
                 as *mut ::core::ffi::c_char;
             if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
@@ -648,7 +648,7 @@ pub unsafe fn D_DoAdvanceDemo(state: &mut GameState) {
         }
         2 => {
             state.d_main.pagetic = 200 as i32;
-            state.g_game.gamestate = GS_DEMOSCREEN;
+            state.g_game.gamestate = GameScreenState::GS_DEMOSCREEN;
             state.d_main.pagename =
                 b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
         }
@@ -659,7 +659,7 @@ pub unsafe fn D_DoAdvanceDemo(state: &mut GameState) {
             );
         }
         4 => {
-            state.g_game.gamestate = GS_DEMOSCREEN;
+            state.g_game.gamestate = GameScreenState::GS_DEMOSCREEN;
             if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
                 state.d_main.pagetic = TICRATE * 11 as i32;
                 state.d_main.pagename = b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char
@@ -1081,8 +1081,7 @@ pub unsafe fn PrintGameVersion(state: &mut GameState) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while !state.d_main.gameversions[i as usize].description.is_null() {
-        if state.d_main.gameversions[i as usize].version  == state.doomstat.gameversion 
-        {
+        if state.d_main.gameversions[i as usize].version == state.doomstat.gameversion {
             printf(
                 b"Emulating the behavior of the '%s' executable.\n\0" as *const u8
                     as *const ::core::ffi::c_char,

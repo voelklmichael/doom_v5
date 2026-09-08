@@ -1,4 +1,4 @@
-use crate::src::d_event::event_t;
+use crate::src::d_event::{GameScreenState, event_t};
 use crate::src::d_main::D_StartTitle;
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 use crate::src::hu_lib::patch_t;
@@ -6,7 +6,6 @@ use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 
-use crate::src::d_event::GS_LEVEL;
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse, ev_quit};
 use crate::src::d_mode::{GameVersion, skill_t};
 use crate::src::d_mode::{commercial, registered, retail, shareware};
@@ -1012,7 +1011,7 @@ pub unsafe extern "C" fn M_SaveGame(state: &mut GameState, mut choice: i32) {
         );
         return;
     }
-    if state.g_game.gamestate as u32 != GS_LEVEL as i32 as u32 {
+    if state.g_game.gamestate != GameScreenState::GS_LEVEL {
         return;
     }
     let menudef = &raw mut state.m_menu.defs.SaveDef;
@@ -1032,7 +1031,7 @@ pub unsafe fn M_QuickSave(state: &mut GameState) {
         S_StartSound(&mut state.sounds, NULL, sfx_oof as i32);
         return;
     }
-    if state.g_game.gamestate as u32 != GS_LEVEL as i32 as u32 {
+    if state.g_game.gamestate != GameScreenState::GS_LEVEL {
         return;
     }
     if state.m_menu.quickSaveSlot < 0 as i32 {

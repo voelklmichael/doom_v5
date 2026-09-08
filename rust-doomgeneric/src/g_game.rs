@@ -2,12 +2,12 @@ use crate::src::am_map::AM_Responder;
 use crate::src::am_map::AM_Stop;
 use crate::src::am_map::AM_Ticker;
 use crate::src::d_event::event_t;
+use crate::src::d_event::GameScreenState;
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse};
 use crate::src::d_event::{
     ga_completed, ga_loadgame, ga_loadlevel, ga_newgame, ga_nothing, ga_playdemo, ga_savegame,
     ga_screenshot, ga_victory, ga_worlddone, gameaction_t,
 };
-use crate::src::d_event::{gamestate_t, GS_DEMOSCREEN, GS_FINALE, GS_INTERMISSION, GS_LEVEL};
 use crate::src::d_loop::BACKUPTICS;
 use crate::src::d_main::D_AdvanceDemo;
 use crate::src::d_main::D_PageTicker;
@@ -121,9 +121,9 @@ use libc::{atoi, strlen};
 use libc::{memcpy, memset};
 
 pub struct GGameState {
-    pub oldgamestate: gamestate_t,
+    pub oldgamestate: GameScreenState,
     pub gameaction: gameaction_t,
-    pub gamestate: gamestate_t,
+    pub gamestate: GameScreenState,
     pub gameskill: skill_t,
     pub respawnmonsters: bool,
     pub gameepisode: i32,
@@ -203,9 +203,9 @@ pub struct GGameState {
 impl GGameState {
     pub const fn new() -> Self {
         GGameState {
-            oldgamestate: GS_LEVEL,
+            oldgamestate: GameScreenState::GS_LEVEL,
             gameaction: ga_nothing,
-            gamestate: GS_LEVEL,
+            gamestate: GameScreenState::GS_LEVEL,
             gameskill: sk_baby,
             respawnmonsters: false,
             gameepisode: 0,
@@ -653,7 +653,7 @@ pub unsafe fn G_BuildTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t, mut m
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_USE as i32) as byte;
         state.g_game.dclicks = 0 as i32;
     }
-    if state.g_game.gamestate as u32 == GS_LEVEL as u32 && state.g_game.next_weapon != 0 as i32 {
+    if state.g_game.gamestate == GameScreenState::GS_LEVEL && state.g_game.next_weapon != 0 as i32 {
         let next_weapon = state.g_game.next_weapon;
         i = G_NextWeapon(state, next_weapon);
         (*cmd).buttons = ((*cmd).buttons as i32 | BT_CHANGE as i32) as byte;
@@ -815,10 +815,10 @@ pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
         state.r_sky.skytexture = R_TextureNumForName(&mut state.r_data, skytexturename);
     }
     state.g_game.levelstarttic = state.d_loop.gametic;
-    if state.d_main.wipegamestate as u32 == GS_LEVEL as u32 {
-        state.d_main.wipegamestate = 4294967295 as gamestate_t;
+    if state.d_main.wipegamestate == GameScreenState::GS_LEVEL {
+        state.d_main.wipegamestate = GameScreenState::GS_WIPPED;
     }
-    state.g_game.gamestate = GS_LEVEL;
+    state.g_game.gamestate = GameScreenState::GS_LEVEL;
     i = 0 as i32;
     while i < MAXPLAYERS {
         state.g_game.turbodetected[i as usize] = false_0 as boolean;
@@ -907,7 +907,7 @@ unsafe fn SetMouseButtons(state: &mut GameState, mut buttons_mask: u32) {
     }
 }
 pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
-    if state.g_game.gamestate == GS_LEVEL
+    if state.g_game.gamestate == GameScreenState::GS_LEVEL
         && ev.type_0 as u32 == ev_keydown as u32
         && ev.data1 == state.m_controls.key_spy
         && (state.g_game.singledemo || state.g_game.deathmatch == 0)
@@ -927,7 +927,7 @@ pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
     }
     if state.g_game.gameaction == ga_nothing
         && !state.g_game.singledemo
-        && (state.g_game.demoplayback || state.g_game.gamestate == GS_DEMOSCREEN)
+        && (state.g_game.demoplayback || state.g_game.gamestate == GameScreenState::GS_DEMOSCREEN)
     {
         if ev.type_0 == ev_keydown
             || ev.type_0 == ev_mouse && ev.data1 != 0
@@ -938,7 +938,7 @@ pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
         }
         return false;
     }
-    if state.g_game.gamestate == GS_LEVEL {
+    if state.g_game.gamestate == GameScreenState::GS_LEVEL {
         if HU_Responder(state, &ev) {
             return true;
         }
@@ -949,7 +949,7 @@ pub unsafe fn G_Responder(state: &mut GameState, mut ev: event_t) -> bool {
             return true;
         }
     }
-    if state.g_game.gamestate == GS_FINALE {
+    if state.g_game.gamestate == GameScreenState::GS_FINALE {
         if F_Responder(state, &ev) {
             return true;
         }
@@ -1136,8 +1136,8 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
         }
         i += 1;
     }
-    if state.g_game.oldgamestate as u32 == GS_INTERMISSION as u32
-        && state.g_game.gamestate as u32 != GS_INTERMISSION as u32
+    if state.g_game.oldgamestate as u32 == GameScreenState::GS_INTERMISSION as u32
+        && state.g_game.gamestate as u32 != GameScreenState::GS_INTERMISSION as u32
     {
         WI_End(state);
     }
@@ -1543,7 +1543,7 @@ pub unsafe fn G_DoCompleted(state: &mut GameState) {
         );
         i += 1;
     }
-    state.g_game.gamestate = GS_INTERMISSION;
+    state.g_game.gamestate = GameScreenState::GS_INTERMISSION;
     state.g_game.viewactive = false;
     state.am_map.automapactive = false;
     StatCopy(&mut state.statdump, &raw mut state.g_game.wminfo);
@@ -1581,7 +1581,7 @@ pub unsafe fn G_WorldDone(state: &mut GameState) {
     }
 }
 pub unsafe fn G_DoWorldDone(state: &mut GameState) {
-    state.g_game.gamestate = GS_LEVEL;
+    state.g_game.gamestate = GameScreenState::GS_LEVEL;
     state.g_game.gamemap = state.g_game.wminfo.next + 1 as i32;
     G_DoLoadLevel(state);
     state.g_game.gameaction = ga_nothing;
