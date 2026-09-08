@@ -12,7 +12,6 @@ use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_misc::M_FileExists;
 use crate::src::m_misc::M_WriteFile;
-use crate::src::m_misc::M_snprintf;
 use crate::src::r_data::column_t;
 use crate::src::stdint_types::size_t;
 use crate::src::stdint_types::{byte, uint8_t};
@@ -724,21 +723,13 @@ pub unsafe fn WritePCXfile(
     M_WriteFile(filename, pcx as *mut ::core::ffi::c_void, length);
     Z_Free(state, pcx as *mut ::core::ffi::c_void);
 }
-pub unsafe fn V_ScreenShot(state: &mut GameState, mut format: *mut ::core::ffi::c_char) {
-    let mut i: i32 = 0;
-    let mut lbmname: [::core::ffi::c_char; 16] = [0; 16];
-    let mut ext: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    ext = b"pcx\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    i = 0 as i32;
-    while i <= 99 as i32 {
-        M_snprintf(
-            &raw mut lbmname as *mut ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
-            format,
-            i,
-            ext,
-        );
-        if !M_FileExists(&raw mut lbmname as *mut ::core::ffi::c_char) {
+pub unsafe fn V_ScreenShot(state: &mut GameState) {
+    let mut i = 0i32;
+    let mut lbmname = String::new();
+    while i <= 99 {
+        lbmname = format!("DOOM{i:02}.pcx\0");
+        let lbmname = lbmname.as_ptr() as *mut ::core::ffi::c_char;
+        if !M_FileExists(lbmname) {
             break;
         }
         i += 1;
@@ -746,9 +737,10 @@ pub unsafe fn V_ScreenShot(state: &mut GameState, mut format: *mut ::core::ffi::
     if i == 100 as i32 {
         I_Error("V_ScreenShot: Couldn't create a PCX");
     }
+    let lbmname = lbmname.as_ptr() as *mut ::core::ffi::c_char;
     WritePCXfile(
         &mut state.z_zone,
-        &raw mut lbmname as *mut ::core::ffi::c_char,
+        lbmname,
         state.i_video.I_VideoBuffer,
         SCREENWIDTH,
         SCREENHEIGHT,

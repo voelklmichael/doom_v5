@@ -1035,11 +1035,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
                 G_DoWorldDone(state);
             }
             9 => {
-                V_ScreenShot(
-                    state,
-                    b"DOOM%02i.%s\0" as *const u8 as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char,
-                );
+                V_ScreenShot(state);
                 state.g_game.players[state.g_game.consoleplayer as usize].message =
                     b"screen shot\0" as *const u8 as *const ::core::ffi::c_char
                         as *mut ::core::ffi::c_char;
