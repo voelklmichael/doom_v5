@@ -1101,10 +1101,11 @@ pub unsafe extern "C" fn PIT_RadiusAttack(state: &mut GameState, mut thing_id: M
     if dist >= state.p_map.bombdamage {
         return true_0 as boolean;
     }
+    let bombspot = state.p_map.bombspot;
     if P_CheckSight(
-        &mut state.p_sight,
+        state,
         thing,
-        state.p_map.bombspot,
+        bombspot,
     ) {
         P_DamageMobj(state, 
             thing,
