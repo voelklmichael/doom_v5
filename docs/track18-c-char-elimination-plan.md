@@ -90,6 +90,23 @@ matching every prior track's experience):
 
 ## Status
 
+As of phase 7 (2026-09-11): `c_char` references down from 2262 to 1882 (17%
+reduction). Every libc string/char function is now gone except 2 `strncasecmp` and 2
+`strdup` sites, both deliberately deferred (see phase 2/3 notes below) — the ~100
+`printf`/`fprintf`/`vfprintf`/`puts` calls are the next major chunk, untouched so far.
+`FixedCStr<N>` (phase 4) is now the established, working pattern for every
+WAD-lumpname-family field found across `w_wad.rs`/`r_data.rs`/`sounds.rs`/
+`p_switch.rs`/`p_spec.rs`/`d_main.rs`/`hu_stuff.rs`/`m_menu.rs`/`p_setup.rs`. Remaining
+known work: `printf`-family conversion (phase 8+, the big remaining chunk), the local
+`[c_char; N]` scratch/formatting buffers this track deliberately skipped throughout
+(lower value than struct fields — revisit only if they start blocking something),
+`memcpy`/`memset`/`memmove` (74 sites, not yet assessed — likely mostly legitimate
+raw-buffer operations rather than string-shaped, needs per-site triage before deciding
+scope), and the general `*mut`/`*const c_char` pointer sweep the plan's phase 5
+describes (much of it may already be resolved as a side effect of phases 4/6/7's
+struct-field conversions — re-survey before scoping that phase rather than trusting
+the original 1369-count estimate).
+
 **Phase 1 done** (`c-char-phase1-toupper-tolower`, PR #275): `toupper`/`tolower`
 eliminated everywhere, including collapsing several c2rust glibc-macro-expansion
 blocks it turned out most call sites were hiding inside (see commit message for the
@@ -102,4 +119,46 @@ a WAD lump name's fixed 8-byte (possibly non-null-terminated) field — delibera
 deferred to the lump-name newtype phase rather than risk the truncation edge case.
 Confirmed via full-codebase audit that every comparison-function usage in this
 codebase only checks equality (`== 0`/`!= 0`), never true C-style ordering, which
-simplified every conversion. Next: phase 3, `atoi`/`sscanf`/`strdup`/`strncpy`.
+simplified every conversion.
+
+**Phase 3 done** (`c-char-phase3-atoi-sscanf-strncpy`, PR #277): `atoi` (all 7 sites
+were reaching into an already-`Vec<CString>` `myargv`, replaced with a hand-written
+`M_ArgvAtoi` matching `atoi`'s actual lenient-prefix semantics), `sscanf` (both
+`M_StrToInt`/`ParseIntParameter` were independently reimplementing the same hex/
+octal/decimal auto-detect logic — consolidated), `strncpy` (`M_StringCopy` rewritten
+natively, exact zero-pad-the-rest semantics preserved). `strdup` (2 sites) and
+`w_wad.rs`'s lumpname `strncpy` deliberately left — see their commit messages for why.
+
+**Phase 4 done** (`c-char-phase4-wadname-newtype`, PR #278): added `FixedCStr<const N:
+usize>` (`src/fixed_cstr.rs`) — the newtype design decision 1 called for. Converted
+`lumpinfo_t`/`filelump_t`/`wadinfo_t.identification` (`w_wad.rs`) and `texture_t`/
+`maptexture_t` (`r_data.rs`), resolving the strncasecmp/strncpy sites deferred since
+phases 2-3. `#[repr(transparent)]` meant most surrounding raw-pointer C code needed
+zero changes.
+
+**Phase 5 done** (`c-char-phase5-const-tables`, PR #279): converted the largest
+const-data-table files — `sounds.rs`'s `sfxinfo_t.name` (109 entries, confirmed never
+read/compared at runtime), `p_switch.rs`'s `switchlist_t.name1/name2` (82 sites),
+`p_spec.rs`'s `animdef_t.endname/startname` (46 sites, the animated flat/texture
+table), `d_main.rs`'s registered-version demo-name table, `hu_stuff.rs`'s chat-macro/
+player-color constants. 265 literal-construction sites total.
+
+**Phase 6 done** (`c-char-phase6-remaining-literals`, PR #280): mopped up remaining
+individual constants (`PACKAGE_STRING`/`D_DEVSTR`/`PROGRAM_PREFIX`/`DIR_SEPARATOR_S`)
+and `m_menu.rs`'s `menuitem_t.name` (41 sites across 9 menu tables — same
+WAD-lumpname family as phase 4, just in a file that phase's sweep didn't reach). Hit
+and fixed a real landmine removing 9 now-unnecessary `unsafe {}` wrappers: a
+regex-based first attempt matched the wrong closing brace for one field (indentation
+coincidence), corrupting a struct literal — caught by `cargo build`, fixed with an
+actual brace-depth-counting scan instead of pattern-matching on indentation. Left
+`am_map.rs`/`st_stuff.rs`'s 34 `cheatseq_t` sites alone (that struct's fields were
+deliberately kept as plain arrays back in phase 2/3).
+
+**Phase 7 done** (`c-char-phase7-level-data-names`, PR #281): `p_setup.rs`'s
+`mapsidedef_t`/`mapsector_t` on-disk level-data texture/flat name fields — the same
+WAD-lumpname family found in a file outside phase 4's original sweep. Confirmed via
+the runtime `side_t` struct that these names are purely transient (resolved to `i16`
+indices during level load, never kept as strings).
+
+Next candidate: phase 8, the `printf`/`fprintf`/`vfprintf`/`puts` family (~104 sites)
+— per decision 2, in scope for this track, not deferred separately.
