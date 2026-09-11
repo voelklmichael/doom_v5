@@ -30,6 +30,7 @@ use crate::src::f_wipe::wipe_EndScreen;
 use crate::src::f_wipe::wipe_ScreenWipe;
 use crate::src::f_wipe::wipe_StartScreen;
 use crate::src::g_game::G_BeginRecording;
+use crate::src::g_game::G_CheckDemoStatus;
 use crate::src::g_game::G_DeferedPlayDemo;
 use crate::src::g_game::G_InitNew;
 use crate::src::g_game::G_LoadGame;
@@ -64,8 +65,10 @@ use crate::src::m_argv::{M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_config::M_GetSaveGameDir;
 use crate::src::m_config::M_LoadDefaults;
+use crate::src::m_config::M_SaveDefaults;
 use crate::src::m_config::M_SetConfigDir;
 use crate::src::m_config::M_SetConfigFilenames;
+use crate::src::statdump::StatDump;
 use crate::src::m_controls::M_BindBaseControls;
 use crate::src::m_controls::M_BindChatControls;
 use crate::src::m_controls::M_BindMapControls;
@@ -254,9 +257,6 @@ extern "C" {
         __src: *const ::core::ffi::c_void,
         __n: size_t,
     ) -> *mut ::core::ffi::c_void;
-    fn M_SaveDefaults();
-    fn G_CheckDemoStatus() -> boolean;
-    fn StatDump();
 }
 pub type C2RustUnnamed = u32;
 pub const _ISalnum: C2RustUnnamed = 8;
@@ -1094,11 +1094,11 @@ pub unsafe fn PrintGameVersion(state: &mut GameState) {
         }
     }
 }
-unsafe extern "C" fn D_Endoom() {
-    if unsafe { game_state() }.d_main.show_endoom == 0
-        || !unsafe { game_state() }.d_main.main_loop_started
-        || unsafe { game_state() }.i_video.screensaver_mode
-        || M_CheckParm(unsafe { game_state() }, "-testcontrols") > 0 as i32
+unsafe extern "C" fn D_Endoom(state: &mut GameState) {
+    if state.d_main.show_endoom == 0
+        || !state.d_main.main_loop_started
+        || state.i_video.screensaver_mode
+        || M_CheckParm(state, "-testcontrols") > 0 as i32
     {
         return;
     }
@@ -1108,7 +1108,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     let mut p: i32 = 0;
     let mut file: [::core::ffi::c_char; 256] = [0; 256];
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
-    I_AtExit(&mut state.i_system, Some(D_Endoom as unsafe extern "C" fn() -> ()), false);
+    I_AtExit(&mut state.i_system, Some(D_Endoom as unsafe extern "C" fn(&mut GameState) -> ()), false);
     I_PrintBanner(PACKAGE_STRING.as_ptr() as *mut ::core::ffi::c_char);
     printf(
         b"Z_Init: Init zone memory allocation daemon. \n\0" as *const u8
@@ -1169,7 +1169,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     );
     D_BindVariables(state);
     M_LoadDefaults(state);
-    I_AtExit(&mut state.i_system, Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
+    I_AtExit(&mut state.i_system, Some(M_SaveDefaults as unsafe extern "C" fn(&mut GameState) -> ()), false);
     let mut gamemission_out = state.doomstat.gamemission;
     state.d_main.iwadfile = D_FindIWAD(
         state,
@@ -1250,8 +1250,11 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     I_AtExit(
         &mut state.i_system,
-        ::core::mem::transmute::<Option<unsafe extern "C" fn() -> boolean>, atexit_func_t>(Some(
-            G_CheckDemoStatus as unsafe extern "C" fn() -> boolean,
+        ::core::mem::transmute::<
+            Option<unsafe extern "C" fn(&mut GameState) -> boolean>,
+            atexit_func_t,
+        >(Some(
+            G_CheckDemoStatus as unsafe extern "C" fn(&mut GameState) -> boolean,
         )),
         true,
     );
@@ -1428,7 +1431,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.d_main.storedemo = true;
     }
     if M_CheckParmWithArgs(state, "-statdump", 1 as i32) != 0 {
-        I_AtExit(&mut state.i_system, Some(StatDump as unsafe extern "C" fn() -> ()), true);
+        I_AtExit(&mut state.i_system, Some(StatDump as unsafe extern "C" fn(&mut GameState) -> ()), true);
         printf(b"External statistics registered.\n\0" as *const u8 as *const ::core::ffi::c_char);
     }
     p = M_CheckParmWithArgs(state, "-record", 1 as i32);

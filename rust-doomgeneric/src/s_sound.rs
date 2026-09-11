@@ -31,7 +31,6 @@ use crate::src::d_mode::commercial;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_sound::{SNDDEVICE_ADLIB, SNDDEVICE_SB};
 use crate::src::m_fixed::fixed_t;
@@ -115,11 +114,11 @@ pub unsafe fn S_Init(state: &mut GameState, mut sfxVolume_0: i32, mut musicVolum
         (*(&raw mut state.sounds.S_sfx as *mut sfxinfo_t).offset(i as isize)).lumpnum = *fresh1;
         i += 1;
     }
-    I_AtExit(&mut state.i_system, Some(S_Shutdown as unsafe extern "C" fn() -> ()), true);
+    I_AtExit(&mut state.i_system, Some(S_Shutdown as unsafe extern "C" fn(&mut GameState) -> ()), true);
 }
 #[no_mangle]
-pub unsafe extern "C" fn S_Shutdown() {
-    I_ShutdownSound(unsafe { &mut game_state().i_sound });
+pub unsafe extern "C" fn S_Shutdown(state: &mut GameState) {
+    I_ShutdownSound(&mut state.i_sound);
 }
 unsafe fn S_StopChannel(state: &mut GameState, mut cnum: i32) {
     let mut i: i32 = 0;

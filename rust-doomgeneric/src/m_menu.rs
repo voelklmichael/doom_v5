@@ -1512,7 +1512,7 @@ pub unsafe extern "C" fn M_QuitResponse(state: &mut GameState, mut key: i32) {
             );
         }
     }
-    I_Quit(&mut state.i_system);
+    I_Quit(state);
 }
 unsafe fn M_SelectEndMessage(state: &mut GameState) -> &'static str {
     let endmsg: &'static [&'static str; 8] =
@@ -1749,7 +1749,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
                 && ((*ev).data1 == state.m_controls.key_menu_activate
                     || (*ev).data1 == state.m_controls.key_menu_quit)
         {
-            I_Quit(&mut state.i_system);
+            I_Quit(state);
             return true;
         }
         return false;

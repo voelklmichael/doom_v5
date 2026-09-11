@@ -1,4 +1,5 @@
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_argv::M_ParmExists;
 use crate::src::stdint_types::size_t;
 use crate::src::wi_stuff::{wbplayerstruct_t, wbstartstruct_t};
@@ -53,4 +54,4 @@ pub unsafe fn StatCopy(state: &mut StatDumpState, mut stats: *mut wbstartstruct_
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn StatDump() {}
+pub unsafe extern "C" fn StatDump(_state: &mut GameState) {}

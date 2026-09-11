@@ -1855,7 +1855,7 @@ pub unsafe fn G_InitNew(state: &mut GameState, mut skill: skill_t, mut episode: 
 pub const DEMOMARKER: i32 = 0x80;
 pub unsafe fn G_ReadDemoTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t) {
     if *state.g_game.demo_p as i32 == DEMOMARKER {
-        G_CheckDemoStatus();
+        G_CheckDemoStatus(state);
         return;
     }
     let fresh18 = state.g_game.demo_p;
@@ -1911,7 +1911,7 @@ unsafe fn IncreaseDemoBuffer(state: &mut GameState) {
 pub unsafe fn G_WriteDemoTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t) {
     let mut demo_start: *mut byte = ::core::ptr::null_mut::<byte>();
     if state.g_game.gamekeydown[state.m_controls.key_demo_quit as usize] != 0 {
-        G_CheckDemoStatus();
+        G_CheckDemoStatus(state);
     }
     demo_start = state.g_game.demo_p;
     let fresh12 = state.g_game.demo_p;
@@ -1938,7 +1938,7 @@ pub unsafe fn G_WriteDemoTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t) {
     state.g_game.demo_p = demo_start;
     if state.g_game.demo_p > state.g_game.demoend.offset(-(16 as i32 as isize)) {
         if state.g_game.vanilla_demo_limit != 0 {
-            G_CheckDemoStatus();
+            G_CheckDemoStatus(state);
             return;
         } else {
             IncreaseDemoBuffer(state);
@@ -2166,67 +2166,67 @@ pub unsafe fn G_TimeDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_ch
     state.g_game.gameaction = ga_playdemo;
 }
 #[no_mangle]
-pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
+pub unsafe extern "C" fn G_CheckDemoStatus(state: &mut GameState) -> boolean {
     let mut endtime: i32 = 0;
-    if unsafe { game_state() }.g_game.timingdemo {
+    if state.g_game.timingdemo {
         let mut fps: f32 = 0.;
         let mut realtics: i32 = 0;
-        endtime = I_GetTime(unsafe { &mut game_state().i_timer });
-        realtics = endtime - unsafe { game_state() }.g_game.starttime;
-        fps = unsafe { game_state() }.d_loop.gametic as f32 * TICRATE as f32 / realtics as f32;
-        unsafe { game_state() }.g_game.timingdemo = false;
-        unsafe { game_state() }.g_game.demoplayback = false;
+        endtime = I_GetTime(&mut state.i_timer);
+        realtics = endtime - state.g_game.starttime;
+        fps = state.d_loop.gametic as f32 * TICRATE as f32 / realtics as f32;
+        state.g_game.timingdemo = false;
+        state.g_game.demoplayback = false;
         I_Error(&format!(
             "timed {} gametics in {} realtics ({:.6} fps)",
-            unsafe { game_state() }.d_loop.gametic,
+            state.d_loop.gametic,
             realtics,
             fps as f64,
         ));
     }
-    if unsafe { game_state() }.g_game.demoplayback {
+    if state.g_game.demoplayback {
         W_ReleaseLumpName(&wad_name8_to_string(
-            unsafe { game_state() }.g_game.defdemoname,
+            state.g_game.defdemoname,
         ));
-        unsafe { game_state() }.g_game.demoplayback = false;
-        unsafe { game_state() }.g_game.netdemo = false;
-        unsafe { game_state() }.g_game.netgame = false;
-        unsafe { game_state() }.g_game.deathmatch = false_0;
-        unsafe { game_state() }.g_game.playeringame[3 as i32 as usize] = 0 as boolean;
-        unsafe { game_state() }.g_game.playeringame[2 as i32 as usize] =
-            unsafe { game_state() }.g_game.playeringame[3 as i32 as usize];
-        unsafe { game_state() }.g_game.playeringame[1 as i32 as usize] =
-            unsafe { game_state() }.g_game.playeringame[2 as i32 as usize];
-        unsafe { game_state() }.d_main.respawnparm = false;
-        unsafe { game_state() }.d_main.fastparm = false;
-        unsafe { game_state() }.d_main.nomonsters = false;
-        unsafe { game_state() }.g_game.consoleplayer = 0 as i32;
-        if unsafe { game_state() }.g_game.singledemo {
-            I_Quit(unsafe { &mut game_state().i_system });
+        state.g_game.demoplayback = false;
+        state.g_game.netdemo = false;
+        state.g_game.netgame = false;
+        state.g_game.deathmatch = false_0;
+        state.g_game.playeringame[3 as i32 as usize] = 0 as boolean;
+        state.g_game.playeringame[2 as i32 as usize] =
+            state.g_game.playeringame[3 as i32 as usize];
+        state.g_game.playeringame[1 as i32 as usize] =
+            state.g_game.playeringame[2 as i32 as usize];
+        state.d_main.respawnparm = false;
+        state.d_main.fastparm = false;
+        state.d_main.nomonsters = false;
+        state.g_game.consoleplayer = 0 as i32;
+        if state.g_game.singledemo {
+            I_Quit(state);
         } else {
-            D_AdvanceDemo(unsafe { game_state() });
+            D_AdvanceDemo(state);
         }
         return true_0 as boolean;
     }
-    if unsafe { game_state() }.g_game.demorecording {
-        let fresh11 = unsafe { game_state() }.g_game.demo_p;
-        unsafe { game_state() }.g_game.demo_p = unsafe { game_state() }.g_game.demo_p.offset(1);
+    if state.g_game.demorecording {
+        let fresh11 = state.g_game.demo_p;
+        state.g_game.demo_p = state.g_game.demo_p.offset(1);
         *fresh11 = DEMOMARKER as byte;
         M_WriteFile(
-            unsafe { game_state() }.g_game.demoname,
-            unsafe { game_state() }.g_game.demobuffer as *mut ::core::ffi::c_void,
-            unsafe { game_state() }
+            state.g_game.demoname,
+            state.g_game.demobuffer as *mut ::core::ffi::c_void,
+            state
                 .g_game
                 .demo_p
-                .offset_from(unsafe { game_state() }.g_game.demobuffer) as i64 as i32,
+                .offset_from(state.g_game.demobuffer) as i64 as i32,
         );
         Z_Free(
-            unsafe { &mut game_state().z_zone },
-            unsafe { game_state() }.g_game.demobuffer as *mut ::core::ffi::c_void,
+            &mut state.z_zone,
+            state.g_game.demobuffer as *mut ::core::ffi::c_void,
         );
-        unsafe { game_state() }.g_game.demorecording = false;
+        state.g_game.demorecording = false;
         I_Error(&format!(
             "Demo {} recorded",
-            ::std::ffi::CStr::from_ptr(unsafe { game_state() }.g_game.demoname)
+            ::std::ffi::CStr::from_ptr(state.g_game.demoname)
                 .to_str()
                 .unwrap(),
         ));

@@ -7,6 +7,7 @@ use crate::src::d_mode::skill_t;
 use crate::src::d_player::player_t;
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::doomdef::boolean;
+use crate::src::g_game::G_CheckDemoStatus;
 use crate::src::g_game::G_Ticker;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_misc::M_StringCopy;
@@ -16,9 +17,6 @@ use crate::src::w_checksum::W_Checksum;
 use crate::src::w_wad::W_CheckNumForName;
 use libc::printf;
 
-extern "C" {
-    fn G_CheckDemoStatus() -> boolean;
-}
 use crate::src::d_main::D_ProcessEvents;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
@@ -55,7 +53,7 @@ unsafe fn PlayerQuitGame(state: &mut GameState, mut player: *mut player_t) {
     state.g_game.players[state.g_game.consoleplayer as usize].message =
         &raw mut exitmsg as *mut ::core::ffi::c_char;
     if state.g_game.demorecording {
-        G_CheckDemoStatus();
+        G_CheckDemoStatus(state);
     }
 }
 unsafe fn RunTic(state: &mut GameState, mut cmds: *mut ticcmd_t, mut ingame: *mut boolean) {

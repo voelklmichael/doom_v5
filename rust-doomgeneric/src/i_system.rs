@@ -55,7 +55,7 @@ extern "C" {
     pub fn ftell(__stream: *mut FILE) -> i64;
     fn putchar(__c: i32) -> i32;
 }
-pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
+pub type atexit_func_t = Option<unsafe extern "C" fn(&mut GameState) -> ()>;
 pub type atexit_listentry_t = atexit_listentry_s;
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -148,11 +148,11 @@ pub unsafe fn I_PrintStartupBanner(mut gamedescription: *mut ::core::ffi::c_char
 pub unsafe fn I_ConsoleStdout() -> bool {
     return false;
 }
-pub unsafe fn I_Quit(state: &mut ISystemState) {
+pub unsafe fn I_Quit(state: &mut GameState) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
-    entry = state.exit_funcs;
+    entry = state.i_system.exit_funcs;
     while !entry.is_null() {
-        (*entry).func.expect("non-null function pointer")();
+        (*entry).func.expect("non-null function pointer")(state);
         entry = (*entry).next;
     }
 }

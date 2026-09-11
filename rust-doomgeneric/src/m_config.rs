@@ -1,4 +1,5 @@
 use crate::src::doomdef::NULL;
+use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::M_CheckParmWithArgs;
@@ -1880,7 +1881,7 @@ pub unsafe fn M_SetConfigFilenames(
     state.default_extra_config = extra_config;
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SaveDefaults() {}
+pub unsafe extern "C" fn M_SaveDefaults(_state: &mut GameState) {}
 pub unsafe fn M_SaveDefaultsAlternate(
     state: &mut MConfigState,
     mut main_0: *mut ::core::ffi::c_char,
@@ -1892,7 +1893,7 @@ pub unsafe fn M_SaveDefaultsAlternate(
     orig_extra = state.extra_defaults.filename;
     state.doom_defaults.filename = main_0;
     state.extra_defaults.filename = extra;
-    M_SaveDefaults();
+    M_SaveDefaults(unsafe { game_state() });
     state.doom_defaults.filename = orig_main;
     state.extra_defaults.filename = orig_extra;
 }
