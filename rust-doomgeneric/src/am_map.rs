@@ -10,7 +10,6 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
-use crate::src::i_system::{fprintf, stderr};
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::m_cheat::cht_CheckCheat;
 use crate::src::m_fixed::fixed_t;
@@ -1197,11 +1196,7 @@ pub unsafe fn AM_drawFline(state: &mut GameState, mut fl: *mut fline_t, mut colo
     {
         let fresh0 = state.am_map.am_drawfline_fuck;
         state.am_map.am_drawfline_fuck = state.am_map.am_drawfline_fuck + 1;
-        fprintf(
-            stderr,
-            b"fuck %d \r\0" as *const u8 as *const ::core::ffi::c_char,
-            fresh0,
-        );
+        eprint!("fuck {} \r", fresh0);
         return;
     }
     dx = (*fl).b.x - (*fl).a.x;

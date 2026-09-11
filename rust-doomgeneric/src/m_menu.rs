@@ -22,7 +22,7 @@ use crate::src::game_state::GameState;
 use crate::src::hu_stuff::HU_FONTSIZE;
 use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::i_system::I_Quit;
-use crate::src::i_system::{fclose, fopen, fprintf, fread, stderr};
+use crate::src::i_system::{fclose, fopen, fread};
 use crate::src::i_timer::I_GetTime;
 use crate::src::i_video::I_SetPalette;
 use crate::src::m_controls::KEY_BACKSPACE;
@@ -1187,11 +1187,7 @@ pub unsafe extern "C" fn M_Episode(state: &mut GameState, mut choice: i32) {
         return;
     }
     if state.doomstat.gamemode as u32 == registered as i32 as u32 && choice > 2 as i32 {
-        fprintf(
-            stderr,
-            b"M_Episode: 4th episode requires UltimateDOOM\n\0" as *const u8
-                as *const ::core::ffi::c_char,
-        );
+        eprintln!("M_Episode: 4th episode requires UltimateDOOM");
         choice = 0 as i32;
     }
     state.m_menu.epi = choice;

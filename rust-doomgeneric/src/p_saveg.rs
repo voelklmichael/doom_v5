@@ -8,7 +8,7 @@ use crate::src::doomdef::boolean;
 use crate::src::g_game::G_VanillaVersionCode;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
-use crate::src::i_system::{fprintf, fread, ftell, fwrite, stderr};
+use crate::src::i_system::{fread, ftell, fwrite};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_misc::M_StringJoin;
 use crate::src::m_misc::M_snprintf;
@@ -141,11 +141,7 @@ unsafe fn saveg_read8(state: &mut GameState) -> byte {
     ) < 1 as u64
     {
         if !state.p_saveg.savegame_error {
-            fprintf(
-                stderr,
-                b"saveg_read8: Unexpected end of file while reading save game\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            eprintln!("saveg_read8: Unexpected end of file while reading save game");
             state.p_saveg.savegame_error = true;
         }
     }
@@ -160,11 +156,7 @@ unsafe fn saveg_write8(state: &mut GameState, mut value: byte) {
     ) < 1 as u64
     {
         if !state.p_saveg.savegame_error {
-            fprintf(
-                stderr,
-                b"saveg_write8: Error while writing save game\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            eprintln!("saveg_write8: Error while writing save game");
             state.p_saveg.savegame_error = true;
         }
     }

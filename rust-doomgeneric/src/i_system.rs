@@ -3,7 +3,7 @@ use crate::src::m_argv::{M_ArgvAtoi, M_CheckParmWithArgs};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use libc::{malloc, printf, puts};
+use libc::malloc;
 
 pub struct ISystemState {
     pub exit_funcs: *mut atexit_listentry_t,
@@ -28,11 +28,6 @@ extern "C" {
     pub static mut stderr: *mut FILE;
     pub fn fflush(__stream: *mut FILE) -> i32;
     pub fn fprintf(__stream: *mut FILE, __format: *const ::core::ffi::c_char, ...) -> i32;
-    pub fn vfprintf(
-        __s: *mut FILE,
-        __format: *const ::core::ffi::c_char,
-        __arg: ::core::ffi::VaList,
-    ) -> i32;
     pub fn fopen(
         __filename: *const ::core::ffi::c_char,
         __modes: *const ::core::ffi::c_char,
@@ -52,7 +47,6 @@ extern "C" {
     ) -> u64;
     pub fn fseek(__stream: *mut FILE, __off: i64, __whence: i32) -> i32;
     pub fn ftell(__stream: *mut FILE) -> i64;
-    fn putchar(__c: i32) -> i32;
 }
 pub type atexit_func_t = Option<unsafe extern "C" fn(&mut GameState) -> ()>;
 pub type atexit_listentry_t = atexit_listentry_s;
@@ -108,39 +102,24 @@ pub unsafe fn I_ZoneBase(state: &mut GameState, mut size: *mut i32) -> *mut byte
         min_ram = MIN_RAM;
     }
     zonemem = AutoAllocMemory(size, default_ram, min_ram);
-    printf(
-        b"zone memory: %p, %x allocated for zone\n\0" as *const u8 as *const ::core::ffi::c_char,
-        zonemem,
-        *size,
-    );
+    println!("zone memory: {:p}, {:x} allocated for zone", zonemem, *size);
     return zonemem;
 }
 pub unsafe fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
-    let mut i: i32 = 0;
-    let mut spaces: i32 = (35 as size_t).wrapping_sub(::std::ffi::CStr::from_ptr(msg as *const ::core::ffi::c_char).to_bytes().len().wrapping_div(2 as size_t)) as i32;
-    i = 0 as i32;
-    while i < spaces {
-        putchar(' ' as i32);
-        i += 1;
-    }
-    puts(msg);
+    let msg_str = ::std::ffi::CStr::from_ptr(msg).to_string_lossy();
+    let spaces = 35usize.saturating_sub(msg_str.len() / 2);
+    print!("{}", " ".repeat(spaces));
+    println!("{}", msg_str);
 }
 pub unsafe fn I_PrintDivider() {
-    let mut i: i32 = 0;
-    i = 0 as i32;
-    while i < 75 as i32 {
-        putchar('=' as i32);
-        i += 1;
-    }
-    putchar('\n' as i32);
+    println!("{}", "=".repeat(75));
 }
 pub unsafe fn I_PrintStartupBanner(mut gamedescription: *mut ::core::ffi::c_char) {
     I_PrintDivider();
     I_PrintBanner(gamedescription);
     I_PrintDivider();
-    printf(
-        b" Doom Generic is free software, covered by the GNU General Public\n License.  There is NO warranty; not even for MERCHANTABILITY or FITNESS\n FOR A PARTICULAR PURPOSE. You are welcome to change and distribute\n copies under certain conditions. See the source for more information.\n\0"
-            as *const u8 as *const ::core::ffi::c_char,
+    print!(
+        " Doom Generic is free software, covered by the GNU General Public\n License.  There is NO warranty; not even for MERCHANTABILITY or FITNESS\n FOR A PARTICULAR PURPOSE. You are welcome to change and distribute\n copies under certain conditions. See the source for more information.\n"
     );
     I_PrintDivider();
 }

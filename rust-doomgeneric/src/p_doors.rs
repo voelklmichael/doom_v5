@@ -2,7 +2,6 @@ use crate::src::d_player::player_t;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
 use crate::src::game_state::GameState;
-use crate::src::i_system::{fprintf, stderr};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_floor::T_MovePlane;
@@ -392,12 +391,7 @@ pub unsafe fn EV_VerticalDoor(
                         plat = door as *mut plat_t;
                         (*plat).wait = -(1 as i32);
                     } else {
-                        fprintf(
-                            stderr,
-                            b"EV_VerticalDoor: Tried to close something that wasn't a door.\n\0"
-                                as *const u8
-                                as *const ::core::ffi::c_char,
-                        );
+                        eprintln!("EV_VerticalDoor: Tried to close something that wasn't a door.");
                         (*door).direction = -(1 as i32);
                     }
                 }

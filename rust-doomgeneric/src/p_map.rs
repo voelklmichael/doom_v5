@@ -4,7 +4,6 @@ use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
-use crate::src::i_system::{fprintf, stderr};
 use crate::src::info::S_GIBS;
 use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
@@ -1201,10 +1200,8 @@ unsafe fn SpechitOverrun(state: &mut GameState, mut ld: *mut line_t) {
             state.p_map.nofit = addr as boolean;
         }
         _ => {
-            fprintf(
-                stderr,
-                b"SpechitOverrun: Warning: unable to emulatean overrun where numspechit=%i\n\0"
-                    as *const u8 as *const ::core::ffi::c_char,
+            eprintln!(
+                "SpechitOverrun: Warning: unable to emulatean overrun where numspechit={}",
                 state.p_map.numspechit,
             );
         }

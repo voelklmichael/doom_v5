@@ -5,7 +5,6 @@ use crate::src::fixed_cstr::FixedCStr;
 use crate::src::g_game::G_ExitLevel;
 use crate::src::g_game::G_SecretExitLevel;
 use crate::src::i_system::I_Error;
-use crate::src::i_system::{fprintf, stderr};
 use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_misc::M_StrToInt;
@@ -1088,10 +1087,8 @@ unsafe fn DonutOverrun(
                 &raw mut state.p_spec.donut_overrun_tmp_s3_floorpic,
             );
             if state.p_spec.donut_overrun_tmp_s3_floorpic >= state.r_data.numflats {
-                fprintf(
-                    stderr,
-                    b"DonutOverrun: The second parameter for \"-donut\" switch should be greater than 0 and less than number of flats (%d). Using default value (%d) instead. \n\0"
-                        as *const u8 as *const ::core::ffi::c_char,
+                eprintln!(
+                    "DonutOverrun: The second parameter for \"-donut\" switch should be greater than 0 and less than number of flats ({}). Using default value ({}) instead. ",
                     state.r_data.numflats,
                     DONUT_FLOORPIC_DEFAULT,
                 );
@@ -1130,10 +1127,8 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
             s1,
         );
         if s2.is_null() {
-            fprintf(
-                stderr,
-                b"EV_DoDonut: linedef had no second sidedef! Unexpected behavior may occur in Vanilla Doom. \n\0"
-                    as *const u8 as *const ::core::ffi::c_char,
+            eprintln!(
+                "EV_DoDonut: linedef had no second sidedef! Unexpected behavior may occur in Vanilla Doom. "
             );
             break;
         } else {
@@ -1148,10 +1143,8 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
                     i += 1;
                 } else {
                     if s3.is_null() {
-                        fprintf(
-                            stderr,
-                            b"EV_DoDonut: WARNING: emulating buffer overrun due to NULL back sector. Unexpected behavior may occur in Vanilla Doom.\n\0"
-                                as *const u8 as *const ::core::ffi::c_char,
+                        eprintln!(
+                            "EV_DoDonut: WARNING: emulating buffer overrun due to NULL back sector. Unexpected behavior may occur in Vanilla Doom."
                         );
                         DonutOverrun(
                             state,

@@ -6,7 +6,6 @@ use crate::src::doomdef::NULL;
 use crate::src::g_game::G_DeathMatchSpawnPlayer;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_GetMemoryValue;
-use crate::src::i_system::{fprintf, stderr};
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_bbox::M_AddToBox;
 use crate::src::m_bbox::M_ClearBox;
@@ -850,10 +849,8 @@ unsafe fn PadRejectArray(state: &mut GameState, mut array: *mut byte, mut len: u
         i = i.wrapping_add(1);
     }
     if len as usize > ::core::mem::size_of::<[u32; 4]>() as usize {
-        fprintf(
-            stderr,
-            b"PadRejectArray: REJECT lump too short to pad! (%i > %i)\n\0" as *const u8
-                as *const ::core::ffi::c_char,
+        eprintln!(
+            "PadRejectArray: REJECT lump too short to pad! ({} > {})",
             len,
             ::core::mem::size_of::<[u32; 4]>() as i32,
         );
