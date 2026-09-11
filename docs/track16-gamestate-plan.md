@@ -192,16 +192,45 @@ actually gets there.
   as bare values (same check Track 5/9/13 already established) to catch a fifth hub
   early rather than discovering it mid-phase.
 
-## Final status (2026-09-11) — the bridge is permanent, not temporary
+## Final status (2026-09-11)
 
-The bridge-collapse sub-track (BC1–BC93, run as a distinct effort after this plan's
+The bridge-collapse sub-track (BC1–BC94, run as a distinct effort after this plan's
 original phase list finished — see git log for `Bridge-collapse BC*` commits) threaded
-real `&mut GameState` parameters through essentially the entire codebase, including all
-three of the last whole-codebase-fanout utility hubs (`S_StartSound`, `W_CacheLumpNum`/
-`W_CacheLumpName`, the `V_DrawPatch` family) and `I_Error` (replaced with a bare
-`panic!` instead of being threaded — see `known-deviations.md`). A final full-codebase
-audit (BC93) individually verified every one of the ~230 remaining `game_state()` call
-sites and confirmed each falls into one of a small number of permanent categories:
+real `&mut GameState` parameters through essentially the entire codebase, including
+every function-pointer-hub family this codebase has (`loop_interface_t`,
+`menu_s.routine`/`menuitem_t.routine`, `f_wipe`'s wipe table, `StateAction`/
+`ThinkerFn`, and — initially thought permanently blocked, until BC94 — `atexit_func_t`)
+and all three whole-codebase-fanout utility hubs (`S_StartSound`, `W_CacheLumpNum`/
+`W_CacheLumpName`, the `V_DrawPatch` family). `I_Error` was replaced with a bare
+`panic!` instead of being threaded (see `known-deviations.md`).
+
+**The `atexit_func_t` hub initially looked like a genuine C-ABI wall** (BC87/BC93 both
+documented it as permanent): the 6 registered callbacks (`G_CheckDemoStatus`,
+`D_QuitNetGame`, `D_Endoom`, `M_SaveDefaults`, `StatDump`, `S_Shutdown`) are stored as
+`unsafe extern "C" fn() -> ()` in `atexit_listentry_t`. But BC94 revisited this and
+found the `extern "C"` was never a real FFI boundary here — same reasoning already
+established for `doomgeneric_Tick` back in BC-1 (this crate has zero `.c`/`.h` files).
+Widened `atexit_func_t` to `Option<unsafe extern "C" fn(&mut GameState) -> ()>` and all
+6 registrants along with it (3 were empty no-op stubs, trivial; `G_CheckDemoStatus` was
+the real work, 40 internal `game_state()` calls). Along the way, found and fixed a real
+landmine: `d_main.rs`/`d_net.rs` resolved `G_CheckDemoStatus`/`M_SaveDefaults`/
+`StatDump` via stale c2rust `extern "C" { fn ... }` forward-declarations instead of real
+`use` imports — exactly the "extern C fn-pointer trap" pattern this project's gotchas
+memory already warns about. Left alone, widening the real definitions would have made
+these declarations silently mismatched (UB, not a caught compile error). Replaced with
+proper imports.
+
+**Lesson**: don't trust an earlier phase's "permanently blocked" verdict without
+re-checking the actual constraint. BC87/BC93 were right that these were `extern "C"`
+zero-arg callbacks, but wrong that this crate has any real reason to keep them
+C-ABI-shaped — the same "zero `.c`/`.h` files" fact that unblocked `doomgeneric_Tick`
+in BC-1 unblocks any `extern "C"` boundary in this codebase, hub or not. Before
+accepting a "permanent exception" claim (in this doc or in memory), ask why the
+constraint is real, not just that it's labeled `extern "C"`.
+
+A final full-codebase audit (BC93, revised by BC94) individually verified every
+remaining `game_state()` call site and confirmed each falls into one of a small number
+of genuinely permanent categories:
 
 - **Confirmed dead code**, left in place untouched (this track's consistent precedent
   throughout, e.g. BC22's Heretic/Hexen/Strife binds): `m_controls.rs`'s Heretic/Hexen/
@@ -210,27 +239,22 @@ sites and confirmed each falls into one of a small number of permanent categorie
   `p_pspr.rs`'s `P_CalcSwing`, `m_misc.rs`'s `M_ReadFile`, `m_argv.rs`'s
   `M_GetExecutableName`, `am_map.rs`'s `AM_updateLightLev`, `g_game.rs`'s
   `G_InitPlayer`.
-- **`atexit_func_t` registrants** — `G_CheckDemoStatus`, `D_QuitNetGame`, `D_Endoom`,
-  `M_SaveDefaults`, `StatDump`, `S_Shutdown` — each a raw C-ABI `unsafe extern "C" fn()
-  -> ()` stored in `atexit_listentry_t`, genuinely unable to carry a `&mut GameState`
-  argument without breaking that callback contract. (`I_AtExit`/`I_Quit` themselves,
-  the infrastructure that manages this list, are NOT similarly constrained and were
-  converted in BC93 — only the registered callback bodies stay permanently zero-arg.)
-- **Other C-ABI-bound hub payloads**: `w_file_stdc.rs`'s `W_StdC_OpenFile`/
-  `CloseFile`/`Read` (`wad_file_class_t`'s fields), `st_lib.rs`'s `ST_loadCallback` /
-  `wi_stuff.rs`'s `WI_loadCallback` (`load_callback_t`), `d_main.rs`'s
-  `D_GrabMouseCallback` (`grabmouse_callback_t`, whose setter is a no-op stub, so this
-  one is also dead-in-practice).
+- **Other C-ABI-bound hub payloads NOT revisited** (each would need its own check like
+  `atexit_func_t` got, but the ripple is bigger and nobody's done that check yet):
+  `w_file_stdc.rs`'s `W_StdC_OpenFile`/`CloseFile`/`Read` (`wad_file_class_t`'s
+  fields), `st_lib.rs`'s `ST_loadCallback` / `wi_stuff.rs`'s `WI_loadCallback`
+  (`load_callback_t`), `d_main.rs`'s `D_GrabMouseCallback` (`grabmouse_callback_t`,
+  whose setter is a no-op stub, so this one is also dead-in-practice regardless).
 - **Per-file `run_static_initializers`-style constructor blocks**: `am_map.rs`'s
   `cheat_amap`, `st_stuff.rs`'s `cheat_clev`/`cheat_mypos`/etc. — a long-standing
-  const-fn-construction exception (see the [[doom_v5_known_gotchas]] memory / BC10's
+  const-fn-construction exception (see the doom_v5_known_gotchas memory / BC10's
   landmine note), not related to threading at all.
 - **One deliberately deferred large-fanout cluster**: `w_wad.rs`'s
   `W_CheckNumForName`/`W_GetNumForName` (19 and 15 external call sites across 5-6
   files respectively) and the leaf functions tightly coupled to them
   (`W_AddFile`/`ExtendLumpInfo`/`W_LumpLength`/`W_ReleaseLumpNum`/etc.) — same
   S_StartSound-scale class the other three hubs were, deliberately left for a future
-  dedicated phase if ever revisited, not attempted as part of the final sweep.
+  dedicated phase if ever revisited.
 - **Two deliberate low-value shims** (poor effort/benefit — widening would ripple a
   whole dispatch table or narrow-substate call chain for one field read):
   `i_scale.rs`'s `I_Stretch5x` `-scanline` check (the `screen_mode_t.DrawScreen` hub),
@@ -239,9 +263,11 @@ sites and confirmed each falls into one of a small number of permanent categorie
   constructs the initial state before the tick loop begins — this is what `game_state()`
   exists to bootstrap, not a leftover.
 
-**Conclusion**: `GAME_STATE`/`OnceLock`/`game_state()` cannot be deleted, and this is
-not a temporary shortfall to fix later — it is the permanent, correct shape for this
-codebase given the `atexit_func_t` C-ABI constraint alone. The bridge (`game_state.rs`)
-stays as permanent infrastructure, not a transitional scaffold. Calling this track
-"done" means accepting that, not treating the OnceLock's continued existence as
-unfinished work.
+**Conclusion**: `GAME_STATE`/`OnceLock`/`game_state()` still cannot be deleted today —
+`w_file_stdc.rs`'s `wad_file_class_t` payload alone guarantees that, since nothing has
+checked whether IT is also a false C-ABI constraint the way `atexit_func_t` turned out
+to be. But given BC94's finding, don't assume any of the remaining "C-ABI-bound hub
+payload" entries above are actually permanent without applying the same check first.
+The bridge (`game_state.rs`) stays as infrastructure for now; whether it's truly
+permanent or just not-yet-revisited is an open question this doc should be updated
+with an answer to, not assumed.
