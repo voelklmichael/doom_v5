@@ -1,6 +1,7 @@
 use crate::src::d_mode::commercial;
 use crate::src::d_mode::skill_t;
 use crate::src::doomdef::MAXPLAYERS;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::doomdef::NULL;
 use crate::src::g_game::G_DeathMatchSpawnPlayer;
 use crate::src::game_state::GameState;
@@ -190,9 +191,9 @@ pub struct mapvertex_t {
 pub struct mapsidedef_t {
     pub textureoffset: i16,
     pub rowoffset: i16,
-    pub toptexture: [::core::ffi::c_char; 8],
-    pub bottomtexture: [::core::ffi::c_char; 8],
-    pub midtexture: [::core::ffi::c_char; 8],
+    pub toptexture: FixedCStr<8>,
+    pub bottomtexture: FixedCStr<8>,
+    pub midtexture: FixedCStr<8>,
     pub sector: i16,
 }
 #[derive(Copy, Clone)]
@@ -210,8 +211,8 @@ pub struct maplinedef_t {
 pub struct mapsector_t {
     pub floorheight: i16,
     pub ceilingheight: i16,
-    pub floorpic: [::core::ffi::c_char; 8],
-    pub ceilingpic: [::core::ffi::c_char; 8],
+    pub floorpic: FixedCStr<8>,
+    pub ceilingpic: FixedCStr<8>,
     pub lightlevel: i16,
     pub special: i16,
     pub tag: i16,
