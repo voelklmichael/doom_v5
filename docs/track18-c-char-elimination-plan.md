@@ -868,6 +868,50 @@ system, still structural/deferred.
 
 `c_char` references: 230 → 224.
 
+**Phase 28 done** (`c-char-phase28-chatmacro-and-recorddemo`, PR pending):
+two small clusters, plus a significant discovery.
+- `D_BindVariables`'s (`d_main.rs`) `"chatmacroN"` config-key-name builder —
+  the standard `M_snprintf`-into-buffer-then-lookup pattern, collapsed to
+  `format!`. Along the way, noticed (but deliberately did NOT fix, since
+  it's unreachable) that this call's `M_BindVariable` target —
+  `&raw mut state.hu_stuff.chat_macros as *mut *mut c_char` — has been a
+  type-confused cast ever since phase 18 converted `chat_macros` to
+  `[&'static str; 10]` (a 16-byte fat pointer, not an 8-byte thin
+  `*mut c_char`). Confirmed harmless: `SetVariable`/`M_SetVariable` (the
+  only code that would ever write through a bound location) has zero
+  callers anywhere — this port's `M_LoadDefaults`/`M_SaveDefaults` never
+  actually parse or write a config file, so no bound variable is ever
+  written to. Left as-is (a `c_char`-shaped landmine in genuinely dead
+  code), not in scope for this track.
+- `G_RecordDemo` (`g_game.rs`, the `-record` demo-recording entry point) →
+  `name: &str`; its `Z_Malloc`'d `demoname` buffer (must stay a raw
+  zone-allocated `*mut c_char` — read elsewhere via `CStr::from_ptr`, not a
+  candidate for a `String`) is now built with `format!("{}.lmp", name)` and
+  an explicit `copy_nonoverlapping` + manual NUL write, byte-for-byte
+  matching the original `M_snprintf`'s output.
+- **Discovery**: after fixing both call sites, `M_snprintf`/`M_vsnprintf`
+  (`m_misc.rs`) — the variadic C-ABI printf reimplementation the plan doc
+  had repeatedly flagged as a large structural undertaking "not a bounded
+  phase" — now have **zero remaining external callers** (only call
+  themselves internally). Prior phases' individual buffer-by-buffer
+  conversions had already eliminated every other call site one at a time
+  without anyone tracking the total; this phase's two sites were the last
+  ones. Left the functions themselves in place (dead code, not deleted,
+  per this track's "leave dead code alone" convention — deleting a
+  variadic C-ABI function is a bigger, more consequential change than a
+  bounded c_char phase should make on its own), but this removes printf
+  reimplementation from the "remaining big structural pieces" list entirely.
+- Verified beyond the standard bar: an additional boot with `-record mytest`
+  confirmed no panic/crash through the new `Z_Malloc`+byte-copy path over
+  multiple frames; getting the `.lmp` file to actually flush to disk via a
+  clean in-game quit wasn't achieved in this Xvfb session (the process exited
+  via `kill` both times rather than the game's own exit path), so the
+  written-file-on-disk step of this specific verification is a documented
+  gap, consistent with this project's practice of noting what wasn't
+  confirmed rather than the code review.
+
+`c_char` references: 224 → 215.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (63 occurrences, mostly the `cheatseq_t`
 byte-sequence family, deliberately kept as plain `c_char` arrays since Track 18
@@ -878,20 +922,16 @@ file besides `cheatseq_t`), `d_main.rs`'s remaining occurrences (the
 (`#[no_mangle]`, always-empty, likely a cross-crate FFI symbol — check before
 touching), `g_game.rs` (`defdemoname`/`G_DeferedPlayDemo`/`G_TimeDemo`,
 deliberately deferred phase 24 — see above, this is `demolumpname`'s other
-half), `m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselves — genuine
-variadic C-ABI printf reimplementations still used by many buffer-building
-call sites across the codebase, a structural piece rather than a simple field
-conversion — replacing these would mean auditing and converting every one of
-their callers, a much larger undertaking than a bounded field-conversion
-phase; `M_ReadFile`/`M_StringReplace`/`M_StringConcat` confirmed zero-caller,
-left alone), `m_config.rs`'s remaining occurrences (the generic type-erased
+half), `m_config.rs`'s remaining occurrences (the generic type-erased
 config-variable storage system — `default_t.location: *mut c_void` cast
 per-type, with `DEFAULT_STRING` variables `strdup`'d into a raw `*mut
-c_char` — a real redesign, not a field conversion), `doomgeneric_xlib.rs`
+c_char` — a real redesign, not a field conversion; also now confirmed the
+whole `SetVariable`/`M_SetVariable` write path is dead code, same category
+as `z_zone.rs`'s dump functions), `doomgeneric_xlib.rs`
 (confirmed genuine X11/cross-crate FFI struct layouts, out of scope),
 `z_zone.rs` (confirmed entirely inside 2 zero-caller debug-dump functions,
 left alone per "leave dead code alone"). Each needs the
-same per-cluster triage phases 10-27 used (is it a lumpname-shaped const
+same per-cluster triage phases 10-28 used (is it a lumpname-shaped const
 table, an always-null/always-dead field or function, a local scratch buffer,
 a cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a
 shared callback-type hub, a small widely-called name-resolution function
@@ -899,8 +939,10 @@ trio, an already-native-String-round-tripping-through-a-raw-buffer, a genuine
 module-level `static mut` deferred since Track 16, a whole function that's
 provably dead code behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom
 debug parameter, a checksummed/version-checked-data-buffer needing
-byte-exact-not-shape-exact translation, a whole dead debug-dump function, a
-genuine cross-crate FFI struct layout, a generic type-erased storage system,
-or a structural printf/path-building engine piece) before deciding scope —
+byte-exact-not-shape-exact translation, a whole dead debug-dump function or
+write-path, a genuine cross-crate FFI struct layout, a generic type-erased
+storage system, a raw zone-allocated buffer that must stay a raw pointer, or
+a structural printf/path-building engine piece — though the printf piece
+itself is now fully dead, see phase 28) before deciding scope —
 the original blanket 1369-count estimate has already proven an
 unreliable guide to where the real work is.

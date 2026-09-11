@@ -79,7 +79,6 @@ use crate::src::m_menu::M_Init;
 use crate::src::m_menu::M_Responder;
 use crate::src::m_misc::M_StringCopy;
 use crate::src::m_misc::M_StringEndsWith;
-use crate::src::m_misc::M_snprintf;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::p_setup::P_Init;
 use crate::src::r_draw::R_DrawViewBorder;
@@ -499,18 +498,10 @@ pub unsafe fn D_BindVariables(state: &mut GameState) {
     );
     i = 0 as i32;
     while i < 10 as i32 {
-        let mut buf: [::core::ffi::c_char; 12] = [0; 12];
-        M_snprintf(
-            &raw mut buf as *mut ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 12]>() as size_t,
-            b"chatmacro%i\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
+        let name = format!("chatmacro{}", i);
         M_BindVariable(
             &mut state.m_config,
-            ::std::ffi::CStr::from_ptr(&raw mut buf as *mut ::core::ffi::c_char)
-                .to_str()
-                .unwrap(),
+            &name,
             (&raw mut state.hu_stuff.chat_macros as *mut *mut ::core::ffi::c_char)
                 .offset(i as isize) as *mut *mut ::core::ffi::c_char
                 as *mut ::core::ffi::c_void,
@@ -1208,9 +1199,11 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     p = M_CheckParmWithArgs(state, "-record", 1 as i32);
     if p != 0 {
-        let record_name =
-            state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
-        G_RecordDemo(state, record_name);
+        let record_name = state.m_argv.myargv[(p + 1 as i32) as usize]
+            .to_str()
+            .unwrap()
+            .to_string();
+        G_RecordDemo(state, &record_name);
         state.d_main.autostart = true;
     }
     p = M_CheckParmWithArgs(state, "-playdemo", 1 as i32);

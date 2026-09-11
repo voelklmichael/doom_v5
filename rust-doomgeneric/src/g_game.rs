@@ -56,7 +56,6 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_menu::M_StartControlPanel;
 use crate::src::m_misc::M_TempFile;
 use crate::src::m_misc::M_WriteFile;
-use crate::src::m_misc::M_snprintf;
 use crate::src::m_random::M_ClearRandom;
 use crate::src::m_random::P_Random;
 use crate::src::p_inter::maxammo;
@@ -1897,24 +1896,25 @@ pub unsafe fn G_WriteDemoTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t) {
     }
     G_ReadDemoTiccmd(state, cmd);
 }
-pub unsafe fn G_RecordDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_char) {
-    let mut demoname_size: size_t = 0;
+pub unsafe fn G_RecordDemo(state: &mut GameState, name: &str) {
     let mut i: i32 = 0;
     let mut maxsize: i32 = 0;
     state.g_game.usergame = false;
-    demoname_size = ::std::ffi::CStr::from_ptr(name as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(5 as size_t);
+    let demoname_full = format!("{}.lmp", name);
+    let demoname_bytes = demoname_full.as_bytes();
+    let demoname_size = (demoname_bytes.len() + 1) as size_t;
     state.g_game.demoname = Z_Malloc(
         &mut state.z_zone,
         demoname_size as i32,
         PU_STATIC as i32,
         NULL,
     ) as *mut ::core::ffi::c_char;
-    M_snprintf(
-        state.g_game.demoname,
-        demoname_size,
-        b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
-        name,
+    ::core::ptr::copy_nonoverlapping(
+        demoname_bytes.as_ptr(),
+        state.g_game.demoname as *mut u8,
+        demoname_bytes.len(),
     );
+    *(state.g_game.demoname as *mut u8).add(demoname_bytes.len()) = 0;
     maxsize = 0x20000 as i32;
     i = M_CheckParmWithArgs(state, "-maxdemo", 1 as i32);
     if i != 0 {
