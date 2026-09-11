@@ -1,4 +1,5 @@
 use crate::src::doomdef::NULL;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
@@ -28,8 +29,7 @@ pub type __mode_t = u32;
 pub const SEEK_END: i32 = 2;
 pub const EISDIR: i32 = 21;
 pub const DIR_SEPARATOR: i32 = '/' as i32;
-pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] =
-    unsafe { ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0") };
+pub const DIR_SEPARATOR_S: FixedCStr<2> = FixedCStr(*b"/\0");
 pub unsafe fn M_MakeDirectory(mut path: *mut ::core::ffi::c_char) {
     mkdir(path, 0o755 as __mode_t);
 }

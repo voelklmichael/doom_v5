@@ -1,4 +1,4 @@
-use crate::src::d_event::{GameScreenState, event_t};
+use crate::src::d_event::{event_t, GameScreenState};
 use crate::src::d_main::D_StartTitle;
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 use crate::src::hu_lib::patch_t;
@@ -7,12 +7,13 @@ use crate::src::i_system::FILE;
 use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse, ev_quit};
-use crate::src::d_mode::{GameVersion, skill_t};
 use crate::src::d_mode::{commercial, registered, retail, shareware};
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
+use crate::src::d_mode::{skill_t, GameVersion};
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::g_game::G_DeferedInitNew;
 use crate::src::g_game::G_LoadGame;
 use crate::src::g_game::G_SaveGame;
@@ -162,366 +163,266 @@ pub struct MMenuMenusHolder {
 impl MMenuMenusHolder {
     pub fn new() -> Self {
         MMenuMenusHolder {
-            MainMenu: unsafe {
-                [
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_NGAME\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'n' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_OPTION\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'o' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_LOADG\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'l' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_SAVEG\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 's' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_RDTHIS\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'r' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_QUITG\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'q' as i32 as ::core::ffi::c_char,
-                    },
-                ]
-            },
-            EpisodeMenu: unsafe {
-                [
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_EPI1\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'k' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_EPI2\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 't' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_EPI3\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'i' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_EPI4\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 't' as i32 as ::core::ffi::c_char,
-                    },
-                ]
-            },
-            NewGameMenu: unsafe {
-                [
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_JKILL\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'i' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_ROUGH\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'h' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_HURT\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'h' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_ULTRA\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'u' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_NMARE\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'n' as i32 as ::core::ffi::c_char,
-                    },
-                ]
-            },
-            OptionsMenu: unsafe {
-                [
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_ENDGAM\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'e' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_MESSG\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'm' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_DETAIL\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'g' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 2 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_SCRNSZ\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 's' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: -(1 as i32) as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '\0' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 2 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_MSENS\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'm' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: -(1 as i32) as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '\0' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_SVOL\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 's' as i32 as ::core::ffi::c_char,
-                    },
-                ]
-            },
-            ReadMenu1: unsafe {
-                [menuitem_t {
+            MainMenu: [
+                menuitem_t {
                     status: 1 as i16,
-                    name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                        *b"\0\0\0\0\0\0\0\0\0\0",
-                    ),
+                    name: FixedCStr(*b"M_NGAME\0\0\0"),
                     routine: None,
-                    alphaKey: 0 as ::core::ffi::c_char,
-                }]
-            },
-            ReadMenu2: unsafe {
-                [menuitem_t {
+                    alphaKey: 'n' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
                     status: 1 as i16,
-                    name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                        *b"\0\0\0\0\0\0\0\0\0\0",
-                    ),
+                    name: FixedCStr(*b"M_OPTION\0\0"),
                     routine: None,
-                    alphaKey: 0 as ::core::ffi::c_char,
-                }]
-            },
-            SoundMenu: unsafe {
-                [
-                    menuitem_t {
-                        status: 2 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_SFXVOL\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 's' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: -(1 as i32) as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '\0' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 2 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"M_MUSVOL\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: 'm' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: -(1 as i32) as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '\0' as i32 as ::core::ffi::c_char,
-                    },
-                ]
-            },
-            LoadMenu: unsafe {
-                [
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '1' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '2' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '3' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '4' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '5' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '6' as i32 as ::core::ffi::c_char,
-                    },
-                ]
-            },
-            SaveMenu: unsafe {
-                [
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '1' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '2' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '3' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '4' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '5' as i32 as ::core::ffi::c_char,
-                    },
-                    menuitem_t {
-                        status: 1 as i16,
-                        name: ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(
-                            *b"\0\0\0\0\0\0\0\0\0\0",
-                        ),
-                        routine: None,
-                        alphaKey: '6' as i32 as ::core::ffi::c_char,
-                    },
-                ]
-            },
+                    alphaKey: 'o' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_LOADG\0\0\0"),
+                    routine: None,
+                    alphaKey: 'l' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_SAVEG\0\0\0"),
+                    routine: None,
+                    alphaKey: 's' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_RDTHIS\0\0"),
+                    routine: None,
+                    alphaKey: 'r' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_QUITG\0\0\0"),
+                    routine: None,
+                    alphaKey: 'q' as i32 as ::core::ffi::c_char,
+                },
+            ],
+            EpisodeMenu: [
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_EPI1\0\0\0\0"),
+                    routine: None,
+                    alphaKey: 'k' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_EPI2\0\0\0\0"),
+                    routine: None,
+                    alphaKey: 't' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_EPI3\0\0\0\0"),
+                    routine: None,
+                    alphaKey: 'i' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_EPI4\0\0\0\0"),
+                    routine: None,
+                    alphaKey: 't' as i32 as ::core::ffi::c_char,
+                },
+            ],
+            NewGameMenu: [
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_JKILL\0\0\0"),
+                    routine: None,
+                    alphaKey: 'i' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_ROUGH\0\0\0"),
+                    routine: None,
+                    alphaKey: 'h' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_HURT\0\0\0\0"),
+                    routine: None,
+                    alphaKey: 'h' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_ULTRA\0\0\0"),
+                    routine: None,
+                    alphaKey: 'u' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_NMARE\0\0\0"),
+                    routine: None,
+                    alphaKey: 'n' as i32 as ::core::ffi::c_char,
+                },
+            ],
+            OptionsMenu: [
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_ENDGAM\0\0"),
+                    routine: None,
+                    alphaKey: 'e' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_MESSG\0\0\0"),
+                    routine: None,
+                    alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_DETAIL\0\0"),
+                    routine: None,
+                    alphaKey: 'g' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 2 as i16,
+                    name: FixedCStr(*b"M_SCRNSZ\0\0"),
+                    routine: None,
+                    alphaKey: 's' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: -(1 as i32) as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 2 as i16,
+                    name: FixedCStr(*b"M_MSENS\0\0\0"),
+                    routine: None,
+                    alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: -(1 as i32) as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"M_SVOL\0\0\0\0"),
+                    routine: None,
+                    alphaKey: 's' as i32 as ::core::ffi::c_char,
+                },
+            ],
+            ReadMenu1: [menuitem_t {
+                status: 1 as i16,
+                name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                routine: None,
+                alphaKey: 0 as ::core::ffi::c_char,
+            }],
+            ReadMenu2: [menuitem_t {
+                status: 1 as i16,
+                name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                routine: None,
+                alphaKey: 0 as ::core::ffi::c_char,
+            }],
+            SoundMenu: [
+                menuitem_t {
+                    status: 2 as i16,
+                    name: FixedCStr(*b"M_SFXVOL\0\0"),
+                    routine: None,
+                    alphaKey: 's' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: -(1 as i32) as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 2 as i16,
+                    name: FixedCStr(*b"M_MUSVOL\0\0"),
+                    routine: None,
+                    alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: -(1 as i32) as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                },
+            ],
+            LoadMenu: [
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '1' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '2' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '3' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '4' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '5' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '6' as i32 as ::core::ffi::c_char,
+                },
+            ],
+            SaveMenu: [
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '1' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '2' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '3' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '4' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '5' as i32 as ::core::ffi::c_char,
+                },
+                menuitem_t {
+                    status: 1 as i16,
+                    name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
+                    routine: None,
+                    alphaKey: '6' as i32 as ::core::ffi::c_char,
+                },
+            ],
         }
     }
 }
@@ -744,7 +645,7 @@ impl MMenuState {
 #[repr(C)]
 pub struct menuitem_t {
     pub status: i16,
-    pub name: [::core::ffi::c_char; 10],
+    pub name: FixedCStr<10>,
     pub routine: Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
     pub alphaKey: ::core::ffi::c_char,
 }
@@ -881,11 +782,7 @@ pub unsafe fn M_ReadSaveStrings(state: &mut GameState) {
 pub unsafe extern "C" fn M_DrawLoad(state: &mut GameState) {
     let mut i: i32 = 0;
     let __wcache890_24 = W_CacheLumpName(state, "M_LOADG", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        72 as i32,
-        28 as i32,
-        __wcache890_24,
-    );
+    V_DrawPatchDirect(state, 72 as i32, 28 as i32, __wcache890_24);
     i = 0 as i32;
     while i < load_end as i32 {
         let loaddef_x = state.m_menu.defs.LoadDef.x as i32;
@@ -899,28 +796,16 @@ pub unsafe extern "C" fn M_DrawLoad(state: &mut GameState) {
 pub unsafe fn M_DrawSaveLoadBorder(state: &mut GameState, mut x: i32, mut y: i32) {
     let mut i: i32 = 0;
     let __wcache908_23 = W_CacheLumpName(state, "M_LSLEFT", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        x - 8 as i32,
-        y + 7 as i32,
-        __wcache908_23,
-    );
+    V_DrawPatchDirect(state, x - 8 as i32, y + 7 as i32, __wcache908_23);
     i = 0 as i32;
     while i < 24 as i32 {
         let __wcache916_22 = W_CacheLumpName(state, "M_LSCNTR", PU_CACHE as i32) as *mut patch_t;
-        V_DrawPatchDirect(state,
-            x,
-            y + 7 as i32,
-            __wcache916_22,
-        );
+        V_DrawPatchDirect(state, x, y + 7 as i32, __wcache916_22);
         x += 8 as i32;
         i += 1;
     }
     let __wcache925_21 = W_CacheLumpName(state, "M_LSRGHT", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        x,
-        y + 7 as i32,
-        __wcache925_21,
-    );
+    V_DrawPatchDirect(state, x, y + 7 as i32, __wcache925_21);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_LoadSelect(state: &mut GameState, mut choice: i32) {
@@ -952,11 +837,7 @@ pub unsafe extern "C" fn M_LoadGame(state: &mut GameState, mut choice: i32) {
 pub unsafe extern "C" fn M_DrawSave(state: &mut GameState) {
     let mut i: i32 = 0;
     let __wcache961_20 = W_CacheLumpName(state, "M_SAVEG", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        72 as i32,
-        28 as i32,
-        __wcache961_20,
-    );
+    V_DrawPatchDirect(state, 72 as i32, 28 as i32, __wcache961_20);
     i = 0 as i32;
     while i < load_end as i32 {
         let loaddef_x = state.m_menu.defs.LoadDef.x as i32;
@@ -1148,12 +1029,9 @@ pub unsafe extern "C" fn M_DrawReadThis1(state: &mut GameState) {
         }
     }
     lumpname = lumpname;
-    let __wcache1158_19 = W_CacheLumpName(state, &wad_name8_to_string(lumpname), PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        0 as i32,
-        0 as i32,
-        __wcache1158_19,
-    );
+    let __wcache1158_19 =
+        W_CacheLumpName(state, &wad_name8_to_string(lumpname), PU_CACHE as i32) as *mut patch_t;
+    V_DrawPatchDirect(state, 0 as i32, 0 as i32, __wcache1158_19);
     state.m_menu.defs.ReadDef1.x = skullx as i16;
     state.m_menu.defs.ReadDef1.y = skully as i16;
 }
@@ -1161,20 +1039,12 @@ pub unsafe extern "C" fn M_DrawReadThis1(state: &mut GameState) {
 pub unsafe extern "C" fn M_DrawReadThis2(state: &mut GameState) {
     state.m_menu.inhelpscreens = true;
     let __wcache1170_18 = W_CacheLumpName(state, "HELP1", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        0 as i32,
-        0 as i32,
-        __wcache1170_18,
-    );
+    V_DrawPatchDirect(state, 0 as i32, 0 as i32, __wcache1170_18);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawSound(state: &mut GameState) {
     let __wcache1179_17 = W_CacheLumpName(state, "M_SVOL", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        60 as i32,
-        38 as i32,
-        __wcache1179_17,
-    );
+    V_DrawPatchDirect(state, 60 as i32, 38 as i32, __wcache1179_17);
     let (x, y, vol) = (
         state.m_menu.defs.SoundDef.x as i32,
         state.m_menu.defs.SoundDef.y as i32 + LINEHEIGHT * (sfx_vol as i32 + 1 as i32),
@@ -1232,26 +1102,14 @@ pub unsafe extern "C" fn M_MusicVol(state: &mut GameState, mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawMainMenu(state: &mut GameState) {
     let __wcache1241_16 = W_CacheLumpName(state, "M_DOOM", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        94 as i32,
-        2 as i32,
-        __wcache1241_16,
-    );
+    V_DrawPatchDirect(state, 94 as i32, 2 as i32, __wcache1241_16);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawNewGame(state: &mut GameState) {
     let __wcache1250_15 = W_CacheLumpName(state, "M_NEWG", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        96 as i32,
-        14 as i32,
-        __wcache1250_15,
-    );
+    V_DrawPatchDirect(state, 96 as i32, 14 as i32, __wcache1250_15);
     let __wcache1256_14 = W_CacheLumpName(state, "M_SKILL", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        54 as i32,
-        38 as i32,
-        __wcache1256_14,
-    );
+    V_DrawPatchDirect(state, 54 as i32, 38 as i32, __wcache1256_14);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_NewGame(state: &mut GameState, mut choice: i32) {
@@ -1265,7 +1123,7 @@ pub unsafe extern "C" fn M_NewGame(state: &mut GameState, mut choice: i32) {
         return;
     }
     if state.doomstat.gamemode as u32 == commercial as i32 as u32
-        || state.doomstat.gameversion  == GameVersion::chex
+        || state.doomstat.gameversion == GameVersion::chex
     {
         let menudef = &raw mut state.m_menu.defs.NewDef;
         M_SetupNextMenu(state, menudef);
@@ -1277,11 +1135,7 @@ pub unsafe extern "C" fn M_NewGame(state: &mut GameState, mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawEpisode(state: &mut GameState) {
     let __wcache1286_13 = W_CacheLumpName(state, "M_EPISOD", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        54 as i32,
-        38 as i32,
-        __wcache1286_13,
-    );
+    V_DrawPatchDirect(state, 54 as i32, 38 as i32, __wcache1286_13);
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_VerifyNightmare(state: &mut GameState, mut key: i32) {
@@ -1349,17 +1203,14 @@ static msgNames: [&str; 2] = ["M_MSGOFF", "M_MSGON"];
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawOptions(state: &mut GameState) {
     let __wcache1358_12 = W_CacheLumpName(state, "M_OPTTTL", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        108 as i32,
-        15 as i32,
-        __wcache1358_12,
-    );
+    V_DrawPatchDirect(state, 108 as i32, 15 as i32, __wcache1358_12);
     let __wcache1364_11 = W_CacheLumpName(
         state,
         detailNames[state.m_menu.detailLevel as usize],
         PU_CACHE as i32,
     ) as *mut patch_t;
-    V_DrawPatchDirect(state,
+    V_DrawPatchDirect(
+        state,
         state.m_menu.defs.OptionsDef.x as i32 + 175 as i32,
         state.m_menu.defs.OptionsDef.y as i32 + LINEHEIGHT * detail as i32,
         __wcache1364_11,
@@ -1369,7 +1220,8 @@ pub unsafe extern "C" fn M_DrawOptions(state: &mut GameState) {
         msgNames[state.m_menu.showMessages as usize],
         PU_CACHE as i32,
     ) as *mut patch_t;
-    V_DrawPatchDirect(state,
+    V_DrawPatchDirect(
+        state,
         state.m_menu.defs.OptionsDef.x as i32 + 120 as i32,
         state.m_menu.defs.OptionsDef.y as i32 + LINEHEIGHT * messages as i32,
         __wcache1373_10,
@@ -1612,39 +1464,24 @@ pub unsafe fn M_DrawThermo(
     let mut i: i32 = 0;
     xx = x;
     let __wcache1619_9 = W_CacheLumpName(state, "M_THERML", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        xx,
-        y,
-        __wcache1619_9,
-    );
+    V_DrawPatchDirect(state, xx, y, __wcache1619_9);
     xx += 8 as i32;
     i = 0 as i32;
     while i < thermWidth {
         let __wcache1628_8 = W_CacheLumpName(state, "M_THERMM", PU_CACHE as i32) as *mut patch_t;
-        V_DrawPatchDirect(state,
-            xx,
-            y,
-            __wcache1628_8,
-        );
+        V_DrawPatchDirect(state, xx, y, __wcache1628_8);
         xx += 8 as i32;
         i += 1;
     }
     let __wcache1637_7 = W_CacheLumpName(state, "M_THERMR", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        xx,
-        y,
-        __wcache1637_7,
-    );
+    V_DrawPatchDirect(state, xx, y, __wcache1637_7);
     let __wcache1643_6 = W_CacheLumpName(state, "M_THERMO", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
-        x + 8 as i32 + thermDot * 8 as i32,
-        y,
-        __wcache1643_6,
-    );
+    V_DrawPatchDirect(state, x + 8 as i32 + thermDot * 8 as i32, y, __wcache1643_6);
 }
 pub unsafe fn M_DrawEmptyCell(state: &mut GameState, mut menu: *mut menu_t, mut item: i32) {
     let __wcache1651_5 = W_CacheLumpName(state, "M_CELL1", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
+    V_DrawPatchDirect(
+        state,
         (*menu).x as i32 - 10 as i32,
         (*menu).y as i32 + item * LINEHEIGHT - 1 as i32,
         __wcache1651_5,
@@ -1652,7 +1489,8 @@ pub unsafe fn M_DrawEmptyCell(state: &mut GameState, mut menu: *mut menu_t, mut 
 }
 pub unsafe fn M_DrawSelCell(state: &mut GameState, mut menu: *mut menu_t, mut item: i32) {
     let __wcache1659_4 = W_CacheLumpName(state, "M_CELL2", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(state,
+    V_DrawPatchDirect(
+        state,
         (*menu).x as i32 - 10 as i32,
         (*menu).y as i32 + item * LINEHEIGHT - 1 as i32,
         __wcache1659_4,
@@ -1723,11 +1561,7 @@ pub unsafe fn M_WriteText(state: &mut GameState, x: i32, y: i32, string: &str) {
                 if cx + w > SCREENWIDTH {
                     break 'outer;
                 }
-                V_DrawPatchDirect(state,
-                    cx,
-                    cy,
-                    state.hu_stuff.hu_font[c as usize],
-                );
+                V_DrawPatchDirect(state, cx, cy, state.hu_stuff.hu_font[c as usize]);
                 cx += w;
             }
         }
@@ -1986,10 +1820,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
             state.g_game.players[state.g_game.consoleplayer as usize].message =
                 gammamsg[state.i_video.usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
             let __wcache2009_3 = W_CacheLumpName(state, "PLAYPAL", PU_CACHE as i32) as *mut byte;
-            I_SetPalette(
-                state,
-                __wcache2009_3,
-            );
+            I_SetPalette(state, __wcache2009_3);
             return true;
         }
     }
@@ -2196,8 +2027,10 @@ pub unsafe fn M_Drawer(state: &mut GameState) {
         name = &raw mut (*(*state.m_menu.currentMenu).menuitems.offset(i as isize)).name
             as *mut ::core::ffi::c_char;
         if *name.offset(0 as i32 as isize) != 0 {
-            let __wcache2221_2 = W_CacheLumpName(state, &wad_name8_to_string(name), PU_CACHE as i32) as *mut patch_t;
-            V_DrawPatchDirect(state,
+            let __wcache2221_2 =
+                W_CacheLumpName(state, &wad_name8_to_string(name), PU_CACHE as i32) as *mut patch_t;
+            V_DrawPatchDirect(
+                state,
                 state.m_menu.drawer_x as i32,
                 state.m_menu.drawer_y as i32,
                 __wcache2221_2,
@@ -2206,9 +2039,13 @@ pub unsafe fn M_Drawer(state: &mut GameState) {
         state.m_menu.drawer_y = (state.m_menu.drawer_y as i32 + LINEHEIGHT) as i16;
         i = i.wrapping_add(1);
     }
-    let __wcache2231_1 = W_CacheLumpName(state, skullName[state.m_menu.whichSkull as usize], PU_CACHE as i32)
-            as *mut patch_t;
-    V_DrawPatchDirect(state,
+    let __wcache2231_1 = W_CacheLumpName(
+        state,
+        skullName[state.m_menu.whichSkull as usize],
+        PU_CACHE as i32,
+    ) as *mut patch_t;
+    V_DrawPatchDirect(
+        state,
         state.m_menu.drawer_x as i32 + SKULLXOFF,
         (*state.m_menu.currentMenu).y as i32 - 5 as i32 + state.m_menu.itemOn as i32 * LINEHEIGHT,
         __wcache2231_1,

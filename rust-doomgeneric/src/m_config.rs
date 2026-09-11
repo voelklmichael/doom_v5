@@ -1,4 +1,5 @@
 use crate::src::doomdef::NULL;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
@@ -65,8 +66,7 @@ pub struct default_collection_t {
     pub numdefaults: i32,
     pub filename: *mut ::core::ffi::c_char,
 }
-pub const DIR_SEPARATOR_S: [::core::ffi::c_char; 2] =
-    unsafe { ::core::mem::transmute::<[u8; 2], [::core::ffi::c_char; 2]>(*b"/\0") };
+pub const DIR_SEPARATOR_S: FixedCStr<2> = FixedCStr(*b"/\0");
 pub const KEY_RCTRL: i32 = 0x80 + 0x1d as i32;
 pub const KEY_PRTSCR: i32 = 0x80 + 0x59 as i32;
 pub const KEYP_5: i32 = '5' as i32;

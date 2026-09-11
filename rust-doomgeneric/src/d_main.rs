@@ -288,12 +288,8 @@ pub struct C2RustUnnamed_4 {
     pub cmdline: *mut ::core::ffi::c_char,
     pub version: GameVersion,
 }
-pub const PACKAGE_STRING: [::core::ffi::c_char; 17] = unsafe {
-    ::core::mem::transmute::<[u8; 17], [::core::ffi::c_char; 17]>(*b"Doom Generic 0.1\0")
-};
-pub const D_DEVSTR: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<[u8; 22], [::core::ffi::c_char; 22]>(*b"Development mode ON.\n\0")
-};
+pub const PACKAGE_STRING: FixedCStr<17> = FixedCStr(*b"Doom Generic 0.1\0");
+pub const D_DEVSTR: FixedCStr<22> = FixedCStr(*b"Development mode ON.\n\0");
 pub const HUSTR_KEYGREEN: i32 = 'g' as i32;
 pub const HUSTR_KEYINDIGO: i32 = 'i' as i32;
 pub const HUSTR_KEYBROWN: i32 = 'b' as i32;
@@ -1121,7 +1117,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.g_game.deathmatch = 2 as i32;
     }
     if state.d_main.devparm {
-        printf(D_DEVSTR.as_ptr());
+        printf(D_DEVSTR.as_ptr() as *const ::core::ffi::c_char);
     }
     M_SetConfigDir(
         &mut state.m_config,

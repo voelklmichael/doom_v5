@@ -70,8 +70,7 @@ pub struct C2RustUnnamed_0 {
     pub mission: GameMission_t,
     pub lumpname: &'static str,
 }
-pub const PROGRAM_PREFIX: [::core::ffi::c_char; 12] =
-    unsafe { ::core::mem::transmute::<[u8; 12], [::core::ffi::c_char; 12]>(*b"doomgeneric\0") };
+pub const PROGRAM_PREFIX: FixedCStr<12> = FixedCStr(*b"doomgeneric\0");
 pub unsafe fn W_LumpNameHash(mut s: *const ::core::ffi::c_char) -> u32 {
     let mut result: u32 = 5381 as u32;
     let mut i: u32 = 0;
@@ -448,9 +447,9 @@ pub unsafe fn W_CheckCorrectIWAD(mut mission: GameMission_t) {
                     ::std::ffi::CStr::from_ptr(
                         D_SuggestGameName(unique_lumps[i as usize].mission, indetermined),
                     ).to_str().unwrap(),
-                    ::std::ffi::CStr::from_ptr(PROGRAM_PREFIX.as_ptr()).to_str().unwrap(),
+                    PROGRAM_PREFIX.as_str(),
                     ::std::ffi::CStr::from_ptr(D_GameMissionString(mission)).to_str().unwrap(),
-                    ::std::ffi::CStr::from_ptr(PROGRAM_PREFIX.as_ptr()).to_str().unwrap(),
+                    PROGRAM_PREFIX.as_str(),
                     ::std::ffi::CStr::from_ptr(
                         D_GameMissionString(unique_lumps[i as usize].mission),
                     ).to_str().unwrap(),
