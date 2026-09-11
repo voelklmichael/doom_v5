@@ -11,7 +11,6 @@
 use ::rust_doomgeneric;
 use ::rust_doomgeneric::src::game_state::{game_state, GameState};
 use libc::memset;
-use libc::strlen;
 extern "C" {
     pub type _XDisplay;
     pub type _XGC;
@@ -1044,7 +1043,7 @@ pub unsafe extern "C" fn DG_SetWindowTitle(mut title: *const ::core::ffi::c_char
             8_i32,
             PropModeReplace,
             title as *const u8,
-            strlen(title) as i32,
+            ::std::ffi::CStr::from_ptr(title as *const ::core::ffi::c_char).to_bytes().len() as i32,
         );
     }
 }

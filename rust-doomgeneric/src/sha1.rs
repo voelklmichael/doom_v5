@@ -1,7 +1,6 @@
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::stdint_types::uint32_t;
-use libc::strlen;
 use libc::{memcpy, memset};
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -958,6 +957,6 @@ pub unsafe fn SHA1_UpdateString(
     SHA1_Update(
         context,
         str as *mut byte,
-        strlen(str).wrapping_add(1 as size_t),
+        ::std::ffi::CStr::from_ptr(str as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(1 as size_t),
     );
 }

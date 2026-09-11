@@ -117,7 +117,7 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::printf;
-use libc::{atoi, strlen};
+use libc::atoi;
 use libc::{memcpy, memset};
 
 pub struct GGameState {
@@ -1951,7 +1951,7 @@ pub unsafe fn G_RecordDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_
     let mut i: i32 = 0;
     let mut maxsize: i32 = 0;
     state.g_game.usergame = false;
-    demoname_size = strlen(name).wrapping_add(5 as size_t);
+    demoname_size = ::std::ffi::CStr::from_ptr(name as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(5 as size_t);
     state.g_game.demoname = Z_Malloc(
         &mut state.z_zone,
         demoname_size as i32,

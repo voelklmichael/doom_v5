@@ -2,7 +2,6 @@ use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::stdint_types::size_t;
 use libc::memcpy;
-use libc::strlen;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cheatseq_t {
@@ -13,13 +12,15 @@ pub struct cheatseq_t {
     pub param_chars_read: i32,
     pub parameter_buf: [::core::ffi::c_char; 5],
 }
+fn cheat_sequence_len(sequence: &[::core::ffi::c_char; 25]) -> size_t {
+    sequence.iter().position(|&c| c == 0).unwrap_or(sequence.len())
+}
 pub unsafe fn cht_CheckCheat(mut cht: *mut cheatseq_t, mut key: ::core::ffi::c_char) -> i32 {
-    if (*cht).parameter_chars > 0 as i32
-        && strlen(&raw mut (*cht).sequence as *mut ::core::ffi::c_char) < (*cht).sequence_len
+    if (*cht).parameter_chars > 0 as i32 && cheat_sequence_len(&(*cht).sequence) < (*cht).sequence_len
     {
         return false_0;
     }
-    if (*cht).chars_read < strlen(&raw mut (*cht).sequence as *mut ::core::ffi::c_char) {
+    if (*cht).chars_read < cheat_sequence_len(&(*cht).sequence) {
         if key as i32 == (*cht).sequence[(*cht).chars_read as usize] as i32 {
             (*cht).chars_read = (*cht).chars_read.wrapping_add(1);
         } else {
@@ -30,7 +31,7 @@ pub unsafe fn cht_CheckCheat(mut cht: *mut cheatseq_t, mut key: ::core::ffi::c_c
         (*cht).parameter_buf[(*cht).param_chars_read as usize] = key;
         (*cht).param_chars_read += 1;
     }
-    if (*cht).chars_read >= strlen(&raw mut (*cht).sequence as *mut ::core::ffi::c_char)
+    if (*cht).chars_read >= cheat_sequence_len(&(*cht).sequence)
         && (*cht).param_chars_read >= (*cht).parameter_chars
     {
         (*cht).param_chars_read = 0 as i32;

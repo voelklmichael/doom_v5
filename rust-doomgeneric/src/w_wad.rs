@@ -19,7 +19,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{free, printf};
 use libc::{memcpy, memset};
-use libc::{strcasecmp, strlen, strncasecmp, strncmp, strncpy};
+use libc::{strncasecmp, strncpy};
 
 pub struct WWadState {
     pub lumpinfo: *mut lumpinfo_t,
@@ -148,12 +148,12 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
         return ::core::ptr::null_mut::<wad_file_t>();
     }
     newnumlumps = unsafe { game_state() }.w_wad.numlumps as i32;
-    if strcasecmp(
-        filename
-            .offset(strlen(filename) as isize)
-            .offset(-(3 as i32 as isize)),
-        b"wad\0" as *const u8 as *const ::core::ffi::c_char,
-    ) != 0
+    let filename_suffix = filename
+        .offset(::std::ffi::CStr::from_ptr(filename as *const ::core::ffi::c_char).to_bytes().len() as isize)
+        .offset(-(3 as i32 as isize));
+    if !::std::ffi::CStr::from_ptr(filename_suffix)
+        .to_bytes()
+        .eq_ignore_ascii_case(b"wad")
     {
         fileinfo = Z_Malloc(
             unsafe { &mut game_state().z_zone },
@@ -175,18 +175,8 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
             &raw mut header as *mut ::core::ffi::c_void,
             ::core::mem::size_of::<wadinfo_t>() as size_t,
         );
-        if strncmp(
-            &raw mut header.identification as *mut ::core::ffi::c_char,
-            b"IWAD\0" as *const u8 as *const ::core::ffi::c_char,
-            4 as size_t,
-        ) != 0
-        {
-            if strncmp(
-                &raw mut header.identification as *mut ::core::ffi::c_char,
-                b"PWAD\0" as *const u8 as *const ::core::ffi::c_char,
-                4 as size_t,
-            ) != 0
-            {
+        if header.identification.map(|c| c as u8) != *b"IWAD" {
+            if header.identification.map(|c| c as u8) != *b"PWAD" {
                 I_Error(&format!(
                     "Wad file {} doesn't have IWAD or PWAD id\n",
                     ::std::ffi::CStr::from_ptr(filename).to_str().unwrap(),

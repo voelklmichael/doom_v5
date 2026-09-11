@@ -3,7 +3,7 @@ use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_misc::M_StrToInt;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use libc::{atoi, strcasecmp, strlen};
+use libc::atoi;
 use libc::{malloc, printf, puts};
 
 pub struct ISystemState {
@@ -118,7 +118,7 @@ pub unsafe fn I_ZoneBase(state: &mut GameState, mut size: *mut i32) -> *mut byte
 }
 pub unsafe fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
     let mut i: i32 = 0;
-    let mut spaces: i32 = (35 as size_t).wrapping_sub(strlen(msg).wrapping_div(2 as size_t)) as i32;
+    let mut spaces: i32 = (35 as size_t).wrapping_sub(::std::ffi::CStr::from_ptr(msg as *const ::core::ffi::c_char).to_bytes().len().wrapping_div(2 as size_t)) as i32;
     i = 0 as i32;
     while i < spaces {
         putchar(' ' as i32);
@@ -210,23 +210,20 @@ pub unsafe fn I_GetMemoryValue(
         i = 0 as i32;
         p = M_CheckParmWithArgs(state, "-setmem", 1 as i32);
         if p > 0 as i32 {
-            if strcasecmp(
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
-                b"dos622\0" as *const u8 as *const ::core::ffi::c_char,
-            ) == 0
+            if state.m_argv.myargv[(p + 1 as i32) as usize]
+                .as_bytes()
+                .eq_ignore_ascii_case(b"dos622")
             {
                 state.i_system.dos_mem_dump = &raw const mem_dump_dos622 as *const u8;
             }
-            if strcasecmp(
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
-                b"dos71\0" as *const u8 as *const ::core::ffi::c_char,
-            ) == 0
+            if state.m_argv.myargv[(p + 1 as i32) as usize]
+                .as_bytes()
+                .eq_ignore_ascii_case(b"dos71")
             {
                 state.i_system.dos_mem_dump = &raw const mem_dump_win98 as *const u8;
-            } else if strcasecmp(
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
-                b"dosbox\0" as *const u8 as *const ::core::ffi::c_char,
-            ) == 0
+            } else if state.m_argv.myargv[(p + 1 as i32) as usize]
+                .as_bytes()
+                .eq_ignore_ascii_case(b"dosbox")
             {
                 state.i_system.dos_mem_dump = &raw const mem_dump_dosbox as *const u8;
             } else {

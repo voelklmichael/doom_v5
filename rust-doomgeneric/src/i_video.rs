@@ -19,7 +19,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use ::c2rust_bitfields;
 use libc::printf;
-use libc::{atoi, strcmp};
+use libc::atoi;
 use libc::{memcpy, memset};
 
 pub struct IVideoState {
@@ -209,11 +209,7 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
     } else {
         mode = b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     }
-    if strcmp(
-        mode,
-        b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char,
-    ) == 0 as i32
-    {
+    if ::std::ffi::CStr::from_ptr(mode).to_bytes() == b"rgba8888" {
         state.i_video.s_Fb.bits_per_pixel = 32 as uint32_t;
         state.i_video.s_Fb.blue.length = 8 as uint32_t;
         state.i_video.s_Fb.green.length = 8 as uint32_t;
@@ -223,7 +219,7 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
         state.i_video.s_Fb.green.offset = 8 as uint32_t;
         state.i_video.s_Fb.red.offset = 16 as uint32_t;
         state.i_video.s_Fb.transp.offset = 24 as uint32_t;
-    } else if strcmp(mode, b"rgb565\0" as *const u8 as *const ::core::ffi::c_char) == 0 as i32 {
+    } else if ::std::ffi::CStr::from_ptr(mode).to_bytes() == b"rgb565" {
         state.i_video.s_Fb.bits_per_pixel = 16 as uint32_t;
         state.i_video.s_Fb.blue.length = 5 as uint32_t;
         state.i_video.s_Fb.green.length = 6 as uint32_t;

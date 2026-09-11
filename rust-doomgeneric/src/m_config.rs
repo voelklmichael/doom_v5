@@ -36,7 +36,7 @@ use crate::src::m_misc::M_MakeDirectory;
 use crate::src::m_misc::M_StringJoin;
 use crate::src::stdint_types::size_t;
 use libc::{malloc, printf, sscanf};
-use libc::{strcmp, strdup};
+use libc::strdup;
 
 extern "C" {
     fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
@@ -2014,10 +2014,7 @@ pub unsafe fn M_SetConfigDir(state: &mut MConfigState, mut dir: *mut ::core::ffi
     } else {
         state.configdir = GetDefaultConfigDir();
     }
-    if strcmp(
-        state.configdir,
-        b"\0" as *const u8 as *const ::core::ffi::c_char,
-    ) != 0 as i32
+    if !::std::ffi::CStr::from_ptr(state.configdir).to_bytes().is_empty()
     {
         printf(
             b"Using %s for configuration and saves\n\0" as *const u8 as *const ::core::ffi::c_char,
@@ -2031,11 +2028,7 @@ pub unsafe fn M_GetSaveGameDir(
     mut iwadname: *mut ::core::ffi::c_char,
 ) -> *mut ::core::ffi::c_char {
     let mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    if strcmp(
-        state.configdir,
-        b"\0" as *const u8 as *const ::core::ffi::c_char,
-    ) == 0
-    {
+    if ::std::ffi::CStr::from_ptr(state.configdir).to_bytes().is_empty() {
         savegamedir = strdup(b"\0" as *const u8 as *const ::core::ffi::c_char);
     } else {
         savegamedir = M_StringJoin(

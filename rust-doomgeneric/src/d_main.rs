@@ -109,7 +109,7 @@ use crate::src::wi_stuff::WI_Drawer;
 use crate::src::z_zone::Z_Init;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::{atoi, strcasecmp, strcmp, strlen, strncasecmp};
+use libc::{atoi, strncasecmp};
 use libc::{exit, printf, snprintf};
 
 pub struct DMainState {
@@ -692,10 +692,9 @@ pub unsafe fn D_DoAdvanceDemo(state: &mut GameState) {
         _ => {}
     }
     if state.d_main.bfgedition
-        && strcasecmp(
-            state.d_main.pagename,
-            b"TITLEPIC\0" as *const u8 as *const ::core::ffi::c_char,
-        ) == 0
+        && ::std::ffi::CStr::from_ptr(state.d_main.pagename)
+            .to_bytes()
+            .eq_ignore_ascii_case(b"TITLEPIC")
         && W_CheckNumForName("titlepic") < 0 as i32
     {
         state.d_main.pagename =
@@ -730,7 +729,7 @@ unsafe fn GetGameName(
                 deh_sub_cstring.as_ptr() as *mut ::core::ffi::c_char;
             let mut gamename_size: size_t = 0;
             let mut version: i32 = 0;
-            gamename_size = strlen(deh_sub).wrapping_add(10 as size_t);
+            gamename_size = ::std::ffi::CStr::from_ptr(deh_sub as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(10 as size_t);
             gamename = Z_Malloc(
                 &mut state.z_zone,
                 gamename_size as i32,
@@ -759,13 +758,13 @@ unsafe fn GetGameName(
             }
             while *gamename.offset(0 as i32 as isize) as i32 != '\0' as i32
                 && *(*__ctype_b_loc()).offset(
-                    *gamename.offset(strlen(gamename).wrapping_sub(1 as size_t) as isize) as i32
+                    *gamename.offset(::std::ffi::CStr::from_ptr(gamename as *const ::core::ffi::c_char).to_bytes().len().wrapping_sub(1 as size_t) as isize) as i32
                         as isize,
                 ) as i32
                     & _ISspace as i32 as u16 as i32
                     != 0
             {
-                *gamename.offset(strlen(gamename).wrapping_sub(1 as size_t) as isize) =
+                *gamename.offset(::std::ffi::CStr::from_ptr(gamename as *const ::core::ffi::c_char).to_bytes().len().wrapping_sub(1 as size_t) as isize) =
                     '\0' as i32 as ::core::ffi::c_char;
             }
             return gamename;
@@ -796,7 +795,10 @@ unsafe fn SetMissionForPackName(state: &mut GameState, mut pack_name: *mut ::cor
         < (::core::mem::size_of::<[C2RustUnnamed_3; 3]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_3>() as usize)
     {
-        if strcasecmp(pack_name, packs[i as usize].name) == 0 {
+        if ::std::ffi::CStr::from_ptr(pack_name)
+            .to_bytes()
+            .eq_ignore_ascii_case(::std::ffi::CStr::from_ptr(packs[i as usize].name).to_bytes())
+        {
             state.doomstat.gamemission = packs[i as usize].mission as GameMission_t;
             return;
         }
@@ -1004,7 +1006,7 @@ pub unsafe fn PrintDehackedBanners() {
             let deh_s: *mut ::core::ffi::c_char =
                 deh_s_cstring.as_ptr() as *mut ::core::ffi::c_char;
             printf(b"%s\0" as *const u8 as *const ::core::ffi::c_char, deh_s);
-            if *deh_s.offset(strlen(deh_s).wrapping_sub(1 as size_t) as isize) as i32 != '\n' as i32
+            if *deh_s.offset(::std::ffi::CStr::from_ptr(deh_s as *const ::core::ffi::c_char).to_bytes().len().wrapping_sub(1 as size_t) as isize) as i32 != '\n' as i32
             {
                 printf(b"\n\0" as *const u8 as *const ::core::ffi::c_char);
             }
@@ -1019,10 +1021,9 @@ unsafe fn InitGameVersion(state: &mut GameState) {
     if p != 0 {
         i = 0 as i32;
         while !state.d_main.gameversions[i as usize].description.is_null() {
-            if strcmp(
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr(),
-                state.d_main.gameversions[i as usize].cmdline,
-            ) == 0
+            if state.m_argv.myargv[(p + 1 as i32) as usize].as_bytes()
+                == ::std::ffi::CStr::from_ptr(state.d_main.gameversions[i as usize].cmdline)
+                    .to_bytes()
             {
                 state.doomstat.gameversion = state.d_main.gameversions[i as usize].version;
                 break;

@@ -10,7 +10,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memset;
 use libc::{malloc, printf, sscanf};
-use libc::{strlen, strncmp, strncpy};
+use libc::strncpy;
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -141,7 +141,7 @@ pub unsafe fn M_ExtractFileBase(
     let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut length: i32 = 0;
     src = path
-        .offset(strlen(path) as isize)
+        .offset(::std::ffi::CStr::from_ptr(path as *const ::core::ffi::c_char).to_bytes().len() as isize)
         .offset(-(1 as i32 as isize));
     while src != path && *src.offset(-(1 as i32 as isize)) as i32 != DIR_SEPARATOR {
         src = src.offset(-1);
@@ -187,10 +187,10 @@ pub unsafe fn M_StringReplace(
     let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut dst: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut p: *const ::core::ffi::c_char = ::core::ptr::null::<::core::ffi::c_char>();
-    let mut needle_len: size_t = strlen(needle);
+    let mut needle_len: size_t = ::std::ffi::CStr::from_ptr(needle as *const ::core::ffi::c_char).to_bytes().len();
     let mut result_len: size_t = 0;
     let mut dst_len: size_t = 0;
-    result_len = strlen(haystack).wrapping_add(1 as size_t);
+    result_len = ::std::ffi::CStr::from_ptr(haystack as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(1 as size_t);
     p = haystack;
     loop {
         p = strstr(p, needle);
@@ -198,7 +198,7 @@ pub unsafe fn M_StringReplace(
             break;
         }
         p = p.offset(needle_len as isize);
-        result_len = result_len.wrapping_add(strlen(replacement).wrapping_sub(needle_len));
+        result_len = result_len.wrapping_add(::std::ffi::CStr::from_ptr(replacement as *const ::core::ffi::c_char).to_bytes().len().wrapping_sub(needle_len));
     }
     result = malloc(result_len) as *mut ::core::ffi::c_char;
     if result.is_null() {
@@ -208,11 +208,13 @@ pub unsafe fn M_StringReplace(
     dst_len = result_len;
     p = haystack;
     while *p as i32 != '\0' as i32 {
-        if strncmp(p, needle, needle_len) == 0 {
+        if ::std::ffi::CStr::from_ptr(p).to_bytes().get(..needle_len)
+            == Some(::std::ffi::CStr::from_ptr(needle).to_bytes())
+        {
             M_StringCopy(dst, replacement, dst_len);
             p = p.offset(needle_len as isize);
-            dst = dst.offset(strlen(replacement) as isize);
-            dst_len = dst_len.wrapping_sub(strlen(replacement));
+            dst = dst.offset(::std::ffi::CStr::from_ptr(replacement as *const ::core::ffi::c_char).to_bytes().len() as isize);
+            dst_len = dst_len.wrapping_sub(::std::ffi::CStr::from_ptr(replacement as *const ::core::ffi::c_char).to_bytes().len());
         } else {
             *dst = *p;
             dst = dst.offset(1);
@@ -236,7 +238,7 @@ pub unsafe fn M_StringCopy(
     } else {
         return false;
     }
-    len = strlen(dest);
+    len = ::std::ffi::CStr::from_ptr(dest as *const ::core::ffi::c_char).to_bytes().len();
     return *src.offset(len as isize) as i32 == '\0' as i32;
 }
 pub unsafe fn M_StringConcat(
@@ -245,7 +247,7 @@ pub unsafe fn M_StringConcat(
     mut dest_size: size_t,
 ) -> bool {
     let mut offset: size_t = 0;
-    offset = strlen(dest);
+    offset = ::std::ffi::CStr::from_ptr(dest as *const ::core::ffi::c_char).to_bytes().len();
     if offset > dest_size {
         offset = dest_size;
     }
@@ -269,14 +271,14 @@ pub unsafe extern "C" fn M_StringJoin(
     let mut v: *const ::core::ffi::c_char = ::core::ptr::null::<::core::ffi::c_char>();
     let mut args_0: ::core::ffi::VaListImpl;
     let mut result_len: size_t = 0;
-    result_len = strlen(s).wrapping_add(1 as size_t);
+    result_len = ::std::ffi::CStr::from_ptr(s as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(1 as size_t);
     args_0 = args.clone();
     loop {
         v = args_0.arg::<*const ::core::ffi::c_char>();
         if v.is_null() {
             break;
         }
-        result_len = result_len.wrapping_add(strlen(v));
+        result_len = result_len.wrapping_add(::std::ffi::CStr::from_ptr(v as *const ::core::ffi::c_char).to_bytes().len());
     }
     result = malloc(result_len) as *mut ::core::ffi::c_char;
     if result.is_null() {

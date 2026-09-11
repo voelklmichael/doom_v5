@@ -43,7 +43,6 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVEL;
 use libc::memset;
 use libc::{malloc, snprintf};
-use libc::{strcmp, strlen};
 
 use crate::src::d_player::NUMAMMO;
 use crate::src::doomdef::MAXPLAYERS;
@@ -113,7 +112,7 @@ pub unsafe fn P_SaveGameFile(state: &mut GameState, mut slot: i32) -> *mut ::cor
     let mut basename: [::core::ffi::c_char; 32] = [0; 32];
     if state.p_saveg.savegame_file_filename.is_null() {
         state.p_saveg.savegame_file_filename_size =
-            strlen(state.d_main.savegamedir).wrapping_add(32 as size_t);
+            ::std::ffi::CStr::from_ptr(state.d_main.savegamedir as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(32 as size_t);
         state.p_saveg.savegame_file_filename =
             malloc(state.p_saveg.savegame_file_filename_size) as *mut ::core::ffi::c_char;
     }
@@ -771,10 +770,8 @@ pub unsafe fn P_ReadSaveGameHeader(state: &mut GameState) -> bool {
         b"version %i\0" as *const u8 as *const ::core::ffi::c_char,
         G_VanillaVersionCode(&mut state.doomstat),
     );
-    if strcmp(
-        &raw mut read_vcheck as *mut ::core::ffi::c_char,
-        &raw mut vcheck as *mut ::core::ffi::c_char,
-    ) != 0 as i32
+    if ::std::ffi::CStr::from_ptr(&raw const read_vcheck as *const ::core::ffi::c_char).to_bytes()
+        != ::std::ffi::CStr::from_ptr(&raw const vcheck as *const ::core::ffi::c_char).to_bytes()
     {
         return false;
     }
