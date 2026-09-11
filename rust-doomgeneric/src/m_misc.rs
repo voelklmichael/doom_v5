@@ -4,14 +4,13 @@ use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
 use crate::src::i_system::SEEK_SET;
 use crate::src::i_system::{fclose, fopen, fread, fseek, ftell, fwrite};
-use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memset;
 use libc::{malloc, printf, sscanf};
-use libc::{strlen, strncmp, strncpy, toupper};
+use libc::{strlen, strncmp, strncpy};
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -23,7 +22,6 @@ extern "C" {
         __haystack: *const ::core::ffi::c_char,
         __needle: *const ::core::ffi::c_char,
     ) -> *mut ::core::ffi::c_char;
-    pub fn __ctype_toupper_loc() -> *mut *const __int32_t;
     fn __errno_location() -> *mut i32;
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
 }
@@ -163,30 +161,10 @@ pub unsafe fn M_ExtractFileBase(
         } else {
             let fresh3 = length;
             length = length + 1;
-            *dest.offset(fresh3 as isize) = ({
-                let mut __res: i32 = 0;
-                if ::core::mem::size_of::<i32>() as usize > 1 as usize {
-                    if 0 != 0 {
-                        let fresh0 = src;
-                        src = src.offset(1);
-                        let mut __c: i32 = *fresh0 as i32;
-                        __res = (if __c < -(128 as i32) || __c > 255 as i32 {
-                            __c as __int32_t
-                        } else {
-                            *(*__ctype_toupper_loc()).offset(__c as isize)
-                        }) as i32;
-                    } else {
-                        let fresh1 = src;
-                        src = src.offset(1);
-                        __res = toupper(*fresh1 as i32);
-                    }
-                } else {
-                    let fresh2 = src;
-                    src = src.offset(1);
-                    __res = *(*__ctype_toupper_loc()).offset(*fresh2 as i32 as isize) as i32;
-                }
-                __res
-            }) as ::core::ffi::c_char;
+            let fresh1 = src;
+            src = src.offset(1);
+            *dest.offset(fresh3 as isize) =
+                (*fresh1 as u8).to_ascii_uppercase() as ::core::ffi::c_char;
         }
     }
 }

@@ -7,8 +7,6 @@ use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_misc::M_ExtractFileBase;
-use crate::src::m_misc::__ctype_toupper_loc;
-use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::w_file::wad_file_t;
@@ -21,7 +19,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{free, printf};
 use libc::{memcpy, memset};
-use libc::{strcasecmp, strlen, strncasecmp, strncmp, strncpy, toupper};
+use libc::{strcasecmp, strlen, strncasecmp, strncmp, strncpy};
 
 pub struct WWadState {
     pub lumpinfo: *mut lumpinfo_t,
@@ -81,25 +79,7 @@ pub unsafe fn W_LumpNameHash(mut s: *const ::core::ffi::c_char) -> u32 {
     while i < 8 as u32 && *s.offset(i as isize) as i32 != '\0' as i32 {
         result = result << 5 as i32
             ^ result
-            ^ ({
-                let mut __res: i32 = 0;
-                if ::core::mem::size_of::<i32>() as usize > 1 as usize {
-                    if 0 != 0 {
-                        let mut __c: i32 = *s.offset(i as isize) as i32;
-                        __res = (if __c < -(128 as i32) || __c > 255 as i32 {
-                            __c as __int32_t
-                        } else {
-                            *(*__ctype_toupper_loc()).offset(__c as isize)
-                        }) as i32;
-                    } else {
-                        __res = toupper(*s.offset(i as isize) as i32);
-                    }
-                } else {
-                    __res = *(*__ctype_toupper_loc()).offset(*s.offset(i as isize) as i32 as isize)
-                        as i32;
-                }
-                __res
-            }) as u32;
+            ^ (*s.offset(i as isize) as u8).to_ascii_uppercase() as u32;
         i = i.wrapping_add(1);
     }
     return result;

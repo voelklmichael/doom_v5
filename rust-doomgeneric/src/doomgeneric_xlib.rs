@@ -19,8 +19,6 @@ extern "C" {
     pub type _XPrivate;
     static mut DG_ScreenBuffer: *mut pixel_t;
     fn doomgeneric_Tick(state: *mut ::core::ffi::c_void);
-    fn __ctype_tolower_loc() -> *mut *const __int32_t;
-    fn tolower(__c: i32) -> i32;
     fn usleep(__useconds: __useconds_t) -> i32;
     fn gettimeofday(__tv: *mut timeval, __tz: *mut ::core::ffi::c_void) -> i32;
     fn XCreateImage(
@@ -863,24 +861,7 @@ unsafe extern "C" fn convertToDoomKey(mut key: u32) -> u8 {
             key = KEY_RSHIFT as u32;
         }
         _ => {
-            key = ({
-                let mut __res: i32 = 0;
-                if ::core::mem::size_of::<u32>() > 1_usize {
-                    if 0 != 0 {
-                        let mut __c: i32 = key as i32;
-                        __res = if !(-128_i32..=255_i32).contains(&__c) {
-                            __c as __int32_t
-                        } else {
-                            *(*__ctype_tolower_loc()).offset(__c as isize)
-                        };
-                    } else {
-                        __res = tolower(key as i32);
-                    }
-                } else {
-                    __res = *(*__ctype_tolower_loc()).offset(key as i32 as isize);
-                }
-                __res
-            }) as u32;
+            key = (key as u8).to_ascii_lowercase() as u32;
         }
     }
     key as u8

@@ -31,7 +31,6 @@ use crate::src::m_controls::KEY_ESCAPE;
 use crate::src::m_controls::KEY_PAUSE;
 use crate::src::m_controls::KEY_SCRLCK;
 use crate::src::m_misc::M_StringCopy;
-use crate::src::m_misc::__ctype_toupper_loc;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::r_main::R_SetViewSize;
 use crate::src::s_sound::S_SetMusicVolume;
@@ -42,13 +41,11 @@ use crate::src::sounds::{
     sfx_popain, sfx_posit1, sfx_posit3, sfx_pstop, sfx_sgtatk, sfx_skeswg, sfx_slop, sfx_stnmov,
     sfx_swtchn, sfx_swtchx, sfx_telept, sfx_vilact,
 };
-use crate::src::stdint_types::__int32_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::z_zone::PU_CACHE;
 use libc::snprintf;
-use libc::toupper;
 
 pub struct MMenuDefsHolder {
     pub MainDef: menu_t,
@@ -1685,7 +1682,7 @@ pub unsafe fn M_StringWidth(state: &mut GameState, string: &str) -> i32 {
     let mut w: i32 = 0 as i32;
     let mut c: i32 = 0;
     for b in string.bytes() {
-        c = toupper(b as i32) - HU_FONTSTART;
+        c = b.to_ascii_uppercase() as i32 - HU_FONTSTART;
         if c < 0 as i32 || c >= HU_FONTSIZE {
             w += 4 as i32;
         } else {
@@ -1718,7 +1715,7 @@ pub unsafe fn M_WriteText(state: &mut GameState, x: i32, y: i32, string: &str) {
             cx = x;
             cy += 12 as i32;
         } else {
-            c = toupper(c) - HU_FONTSTART;
+            c = (c as u8).to_ascii_uppercase() as i32 - HU_FONTSTART;
             if c < 0 as i32 || c >= HU_FONTSIZE {
                 cx += 4 as i32;
             } else {
@@ -1868,24 +1865,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
                 if state.i_input.vanilla_keyboard_mapping != 0 {
                     ch = key;
                 }
-                ch = ({
-                    let mut __res: i32 = 0;
-                    if ::core::mem::size_of::<i32>() as usize > 1 as usize {
-                        if 0 != 0 {
-                            let mut __c: i32 = ch;
-                            __res = (if __c < -(128 as i32) || __c > 255 as i32 {
-                                __c as __int32_t
-                            } else {
-                                *(*__ctype_toupper_loc()).offset(__c as isize)
-                            }) as i32;
-                        } else {
-                            __res = toupper(ch);
-                        }
-                    } else {
-                        __res = *(*__ctype_toupper_loc()).offset(ch as isize) as i32;
-                    }
-                    __res
-                });
+                ch = (ch as u8).to_ascii_uppercase() as i32;
                 if !(ch != ' ' as i32
                     && (ch - HU_FONTSTART < 0 as i32 || ch - HU_FONTSTART >= HU_FONTSIZE))
                 {

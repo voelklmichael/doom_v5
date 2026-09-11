@@ -43,7 +43,6 @@ use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
 use crate::src::z_zone::{PU_CACHE, PU_LEVEL};
 use libc::memcpy;
 use libc::snprintf;
-use libc::toupper;
 pub type finalestage_t = u32;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;
@@ -467,7 +466,7 @@ pub unsafe fn F_TextWrite(state: &mut GameState) {
             cx = 10 as i32;
             cy += 11 as i32;
         } else {
-            c = toupper(c) - HU_FONTSTART;
+            c = (c as u8).to_ascii_uppercase() as i32 - HU_FONTSTART;
             if c < 0 as i32 || c > HU_FONTSIZE {
                 cx += 4 as i32;
             } else {
@@ -825,7 +824,7 @@ pub unsafe fn F_CastPrint(state: &mut GameState, text: &str) {
     let mut w: i32 = 0;
     let mut width: i32 = 0;
     for b in text.bytes() {
-        c = toupper(b as i32) - HU_FONTSTART;
+        c = b.to_ascii_uppercase() as i32 - HU_FONTSTART;
         if c < 0 as i32 || c > HU_FONTSIZE {
             width += 4 as i32;
         } else {
@@ -835,7 +834,7 @@ pub unsafe fn F_CastPrint(state: &mut GameState, text: &str) {
     }
     cx = 160 as i32 - width / 2 as i32;
     for b in text.bytes() {
-        c = toupper(b as i32) - HU_FONTSTART;
+        c = b.to_ascii_uppercase() as i32 - HU_FONTSTART;
         if c < 0 as i32 || c > HU_FONTSIZE {
             cx += 4 as i32;
         } else {

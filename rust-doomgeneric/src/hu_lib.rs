@@ -5,11 +5,8 @@ use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::GameState;
 use crate::src::m_controls::KEY_BACKSPACE;
 use crate::src::m_controls::KEY_ENTER;
-use crate::src::m_misc::__ctype_toupper_loc;
 use crate::src::r_draw::R_VideoErase;
-use crate::src::stdint_types::__int32_t;
 use crate::src::v_video::V_DrawPatchDirect;
-use libc::toupper;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct patch_t {
@@ -94,7 +91,7 @@ pub unsafe fn HUlib_drawTextLine(
     x = (*l).x;
     i = 0 as i32;
     while i < (*l).l.len() as i32 {
-        c = toupper((*l).l.as_bytes()[i as usize] as i32) as u8;
+        c = (*l).l.as_bytes()[i as usize].to_ascii_uppercase();
         if c as i32 != ' ' as i32 && c as i32 >= (*l).sc && c as i32 <= '_' as i32 {
             w = (**(*l).f.offset((c as i32 - (*l).sc) as isize)).width as i32;
             if x + w > SCREENWIDTH {
@@ -289,24 +286,7 @@ pub unsafe fn HUlib_addPrefixToIText(it: *mut hu_itext_t, s: &str) {
     (*it).lm = (*it).l.l.len() as i32;
 }
 pub unsafe fn HUlib_keyInIText(mut it: *mut hu_itext_t, mut ch: u8) -> boolean {
-    ch = ({
-        let mut __res: i32 = 0;
-        if ::core::mem::size_of::<u8>() as usize > 1 as usize {
-            if 0 != 0 {
-                let mut __c: i32 = ch as i32;
-                __res = (if __c < -(128 as i32) || __c > 255 as i32 {
-                    __c as __int32_t
-                } else {
-                    *(*__ctype_toupper_loc()).offset(__c as isize)
-                }) as i32;
-            } else {
-                __res = toupper(ch as i32);
-            }
-        } else {
-            __res = *(*__ctype_toupper_loc()).offset(ch as i32 as isize) as i32;
-        }
-        __res
-    }) as u8;
+    ch = ch.to_ascii_uppercase();
     if ch as i32 >= ' ' as i32 && ch as i32 <= '_' as i32 {
         HUlib_addCharToTextLine(&raw mut (*it).l, ch as ::core::ffi::c_char);
     } else if ch as i32 == KEY_BACKSPACE {
