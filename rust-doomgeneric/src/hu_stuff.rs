@@ -4,6 +4,7 @@ use crate::src::d_mode::GameVersion;
 use crate::src::d_mode::commercial;
 use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
 use crate::src::d_player::player_t;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::MAXPLAYERS;
@@ -267,38 +268,20 @@ pub const THUSTR_29: &str = "level 29: river styx";
 pub const THUSTR_30: &str = "level 30: last call";
 pub const THUSTR_31: &str = "level 31: pharaoh";
 pub const THUSTR_32: &str = "level 32: caribbean";
-pub const HUSTR_CHATMACRO1: [::core::ffi::c_char; 24] = unsafe {
-    ::core::mem::transmute::<[u8; 24], [::core::ffi::c_char; 24]>(*b"I'm ready to kick butt!\0")
-};
-pub const HUSTR_CHATMACRO2: [::core::ffi::c_char; 8] =
-    unsafe { ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"I'm OK.\0") };
-pub const HUSTR_CHATMACRO3: [::core::ffi::c_char; 26] = unsafe {
-    ::core::mem::transmute::<[u8; 26], [::core::ffi::c_char; 26]>(*b"I'm not looking too good!\0")
-};
-pub const HUSTR_CHATMACRO4: [::core::ffi::c_char; 6] =
-    unsafe { ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Help!\0") };
-pub const HUSTR_CHATMACRO5: [::core::ffi::c_char; 10] =
-    unsafe { ::core::mem::transmute::<[u8; 10], [::core::ffi::c_char; 10]>(*b"You suck!\0") };
-pub const HUSTR_CHATMACRO6: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<[u8; 22], [::core::ffi::c_char; 22]>(*b"Next time, scumbag...\0")
-};
-pub const HUSTR_CHATMACRO7: [::core::ffi::c_char; 11] =
-    unsafe { ::core::mem::transmute::<[u8; 11], [::core::ffi::c_char; 11]>(*b"Come here!\0") };
-pub const HUSTR_CHATMACRO8: [::core::ffi::c_char; 22] = unsafe {
-    ::core::mem::transmute::<[u8; 22], [::core::ffi::c_char; 22]>(*b"I'll take care of it.\0")
-};
-pub const HUSTR_CHATMACRO9: [::core::ffi::c_char; 4] =
-    unsafe { ::core::mem::transmute::<[u8; 4], [::core::ffi::c_char; 4]>(*b"Yes\0") };
-pub const HUSTR_CHATMACRO0: [::core::ffi::c_char; 3] =
-    unsafe { ::core::mem::transmute::<[u8; 3], [::core::ffi::c_char; 3]>(*b"No\0") };
-pub const HUSTR_PLRGREEN: [::core::ffi::c_char; 8] =
-    unsafe { ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"Green: \0") };
-pub const HUSTR_PLRINDIGO: [::core::ffi::c_char; 9] =
-    unsafe { ::core::mem::transmute::<[u8; 9], [::core::ffi::c_char; 9]>(*b"Indigo: \0") };
-pub const HUSTR_PLRBROWN: [::core::ffi::c_char; 8] =
-    unsafe { ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"Brown: \0") };
-pub const HUSTR_PLRRED: [::core::ffi::c_char; 6] =
-    unsafe { ::core::mem::transmute::<[u8; 6], [::core::ffi::c_char; 6]>(*b"Red: \0") };
+pub const HUSTR_CHATMACRO1: FixedCStr<24> = FixedCStr(*b"I'm ready to kick butt!\0");
+pub const HUSTR_CHATMACRO2: FixedCStr<8> = FixedCStr(*b"I'm OK.\0");
+pub const HUSTR_CHATMACRO3: FixedCStr<26> = FixedCStr(*b"I'm not looking too good!\0");
+pub const HUSTR_CHATMACRO4: FixedCStr<6> = FixedCStr(*b"Help!\0");
+pub const HUSTR_CHATMACRO5: FixedCStr<10> = FixedCStr(*b"You suck!\0");
+pub const HUSTR_CHATMACRO6: FixedCStr<22> = FixedCStr(*b"Next time, scumbag...\0");
+pub const HUSTR_CHATMACRO7: FixedCStr<11> = FixedCStr(*b"Come here!\0");
+pub const HUSTR_CHATMACRO8: FixedCStr<22> = FixedCStr(*b"I'll take care of it.\0");
+pub const HUSTR_CHATMACRO9: FixedCStr<4> = FixedCStr(*b"Yes\0");
+pub const HUSTR_CHATMACRO0: FixedCStr<3> = FixedCStr(*b"No\0");
+pub const HUSTR_PLRGREEN: FixedCStr<8> = FixedCStr(*b"Green: \0");
+pub const HUSTR_PLRINDIGO: FixedCStr<9> = FixedCStr(*b"Indigo: \0");
+pub const HUSTR_PLRBROWN: FixedCStr<8> = FixedCStr(*b"Brown: \0");
+pub const HUSTR_PLRRED: FixedCStr<6> = FixedCStr(*b"Red: \0");
 pub const HU_TITLEX: i32 = 0;
 pub const HU_INPUTX: i32 = HU_MSGX;
 pub static mut player_names: [*mut ::core::ffi::c_char; 4] = [

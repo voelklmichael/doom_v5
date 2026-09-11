@@ -21,6 +21,7 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
@@ -1258,30 +1259,30 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         D_SaveGameIWADName(state.doomstat.gamemission),
     );
     if state.doomstat.modifiedgame {
-        let mut name: [[::core::ffi::c_char; 8]; 23] = [
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m1\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m2\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m3\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m4\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m5\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m6\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m7\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m8\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e2m9\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m1\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m3\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m3\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m4\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m5\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m6\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m7\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m8\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"e3m9\0\0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"dphoof\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"bfgga0\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"heada1\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"cybra1\0\0"),
-            ::core::mem::transmute::<[u8; 8], [::core::ffi::c_char; 8]>(*b"spida1d1"),
+        let name: [FixedCStr<8>; 23] = [
+            FixedCStr(*b"e2m1\0\0\0\0"),
+            FixedCStr(*b"e2m2\0\0\0\0"),
+            FixedCStr(*b"e2m3\0\0\0\0"),
+            FixedCStr(*b"e2m4\0\0\0\0"),
+            FixedCStr(*b"e2m5\0\0\0\0"),
+            FixedCStr(*b"e2m6\0\0\0\0"),
+            FixedCStr(*b"e2m7\0\0\0\0"),
+            FixedCStr(*b"e2m8\0\0\0\0"),
+            FixedCStr(*b"e2m9\0\0\0\0"),
+            FixedCStr(*b"e3m1\0\0\0\0"),
+            FixedCStr(*b"e3m3\0\0\0\0"),
+            FixedCStr(*b"e3m3\0\0\0\0"),
+            FixedCStr(*b"e3m4\0\0\0\0"),
+            FixedCStr(*b"e3m5\0\0\0\0"),
+            FixedCStr(*b"e3m6\0\0\0\0"),
+            FixedCStr(*b"e3m7\0\0\0\0"),
+            FixedCStr(*b"e3m8\0\0\0\0"),
+            FixedCStr(*b"e3m9\0\0\0\0"),
+            FixedCStr(*b"dphoof\0\0"),
+            FixedCStr(*b"bfgga0\0\0"),
+            FixedCStr(*b"heada1\0\0"),
+            FixedCStr(*b"cybra1\0\0"),
+            FixedCStr(*b"spida1d1"),
         ];
         let mut i: i32 = 0;
         if state.doomstat.gamemode as u32 == shareware as i32 as u32 {
@@ -1290,11 +1291,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         if state.doomstat.gamemode as u32 == registered as i32 as u32 {
             i = 0 as i32;
             while i < 23 as i32 {
-                if W_CheckNumForName(&wad_name8_to_string(
-                    &raw mut *(&raw mut name as *mut [::core::ffi::c_char; 8]).offset(i as isize)
-                        as *mut ::core::ffi::c_char,
-                )) < 0 as i32
-                {
+                if W_CheckNumForName(&name[i as usize].as_str()) < 0 as i32 {
                     I_Error("\nThis is not the registered version.");
                 }
                 i += 1;

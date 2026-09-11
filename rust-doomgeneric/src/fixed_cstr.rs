@@ -40,6 +40,10 @@ impl<const N: usize> FixedCStr<N> {
         &self.0
     }
 
+    pub const fn as_ptr(&self) -> *const u8 {
+        self.0.as_ptr()
+    }
+
     /// The logical length: up to the first NUL byte, or N if there is none
     /// (matches how the C code treated an exactly-N-byte name with no room
     /// left for a terminator).
