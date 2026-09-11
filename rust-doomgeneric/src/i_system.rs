@@ -213,7 +213,7 @@ pub unsafe fn I_GetMemoryValue(
                         break;
                     }
                     M_StrToInt(
-                        state.m_argv.myargv[p as usize].as_ptr() as *mut ::core::ffi::c_char,
+                        state.m_argv.myargv[p as usize].to_str().unwrap(),
                         &raw mut val,
                     );
                     let fresh0 = i;

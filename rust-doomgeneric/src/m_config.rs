@@ -1821,7 +1821,7 @@ static scantokey: [i32; 128] = [
     KEY_PRTSCR,
     0 as i32,
 ];
-unsafe fn ParseIntParameter(mut strparm: *mut ::core::ffi::c_char) -> i32 {
+unsafe fn ParseIntParameter(strparm: &str) -> i32 {
     let mut parm: i32 = 0;
     M_StrToInt(strparm, &raw mut parm);
     return parm;
@@ -1834,10 +1834,11 @@ unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_ch
             *fresh0 = strdup(value);
         }
         0 | 1 => {
-            *((*def).location as *mut i32) = ParseIntParameter(value);
+            *((*def).location as *mut i32) =
+                ParseIntParameter(::std::ffi::CStr::from_ptr(value).to_str().unwrap());
         }
         4 => {
-            intparm = ParseIntParameter(value);
+            intparm = ParseIntParameter(::std::ffi::CStr::from_ptr(value).to_str().unwrap());
             (*def).untranslated = intparm;
             if intparm >= 0 as i32 && intparm < 128 as i32 {
                 intparm = scantokey[intparm as usize];

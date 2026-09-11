@@ -1180,7 +1180,7 @@ unsafe fn SpechitOverrun(state: &mut GameState, mut ld: *mut line_t) {
         p = M_CheckParmWithArgs(state, "-spechit", 1 as i32);
         if p > 0 as i32 {
             M_StrToInt(
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
+                state.m_argv.myargv[(p + 1 as i32) as usize].to_str().unwrap(),
                 &raw mut state.p_map.baseaddr as *mut i32,
             );
         } else {

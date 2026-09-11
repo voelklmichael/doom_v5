@@ -122,9 +122,8 @@ fn m_strtoint_digit_prefix(s: &str, radix: u32) -> Option<i32> {
         i32::from_str_radix(&s[..end], radix).ok()
     }
 }
-pub unsafe fn M_StrToInt(mut str: *const ::core::ffi::c_char, mut result: *mut i32) -> bool {
-    let s = ::std::ffi::CStr::from_ptr(str).to_string_lossy();
-    let trimmed = s.trim_start();
+pub unsafe fn M_StrToInt(str: &str, result: *mut i32) -> bool {
+    let trimmed = str.trim_start();
     let (sign, unsigned) = match trimmed.strip_prefix('-') {
         Some(rest) => (-1, rest),
         None => (1, trimmed.strip_prefix('+').unwrap_or(trimmed)),

@@ -852,6 +852,22 @@ phases — only the boundary functions still spoke `*mut c_char`.
 
 `c_char` references: 275 → 230.
 
+**Phase 27 done** (`c-char-phase27-strtoint`, PR pending): `M_StrToInt`
+(`m_misc.rs`) — a small, widely-called number-parsing helper (decimal/hex/
+octal via a `0x`/`0` prefix sniff, already implemented in terms of
+`str`-level logic internally) — converted its `str: *const c_char` param to
+`&str`. Fixed all 4 real call sites: `i_system.rs`'s `-dosmem` custom-dump
+parser, `p_spec.rs`'s `DonutOverrun` (`-donut` switch, 2 sites), `p_map.rs`'s
+`SpechitOverrun` (`-spechit` switch). Also converted `m_config.rs`'s
+`ParseIntParameter` (the config-file int/hex-key-value parser, itself just a
+thin wrapper around `M_StrToInt`) to `&str`, bridging via `CStr::from_ptr`
+at its 2 call sites inside `SetVariable` — `SetVariable` itself stays
+`*mut c_char`-typed since its other branch (`strdup` for `DEFAULT_STRING`
+variables) is part of the generic type-erased config-variable storage
+system, still structural/deferred.
+
+`c_char` references: 230 → 224.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (63 occurrences, mostly the `cheatseq_t`
 byte-sequence family, deliberately kept as plain `c_char` arrays since Track 18
@@ -867,10 +883,15 @@ variadic C-ABI printf reimplementations still used by many buffer-building
 call sites across the codebase, a structural piece rather than a simple field
 conversion — replacing these would mean auditing and converting every one of
 their callers, a much larger undertaking than a bounded field-conversion
-phase), `doomgeneric_xlib.rs` (confirmed genuine X11/cross-crate FFI struct
-layouts, out of scope), `z_zone.rs` (confirmed entirely inside 2 zero-caller
-debug-dump functions, left alone per "leave dead code alone"). Each needs the
-same per-cluster triage phases 10-26 used (is it a lumpname-shaped const
+phase; `M_ReadFile`/`M_StringReplace`/`M_StringConcat` confirmed zero-caller,
+left alone), `m_config.rs`'s remaining occurrences (the generic type-erased
+config-variable storage system — `default_t.location: *mut c_void` cast
+per-type, with `DEFAULT_STRING` variables `strdup`'d into a raw `*mut
+c_char` — a real redesign, not a field conversion), `doomgeneric_xlib.rs`
+(confirmed genuine X11/cross-crate FFI struct layouts, out of scope),
+`z_zone.rs` (confirmed entirely inside 2 zero-caller debug-dump functions,
+left alone per "leave dead code alone"). Each needs the
+same per-cluster triage phases 10-27 used (is it a lumpname-shaped const
 table, an always-null/always-dead field or function, a local scratch buffer,
 a cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a
 shared callback-type hub, a small widely-called name-resolution function
@@ -879,7 +900,7 @@ module-level `static mut` deferred since Track 16, a whole function that's
 provably dead code behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom
 debug parameter, a checksummed/version-checked-data-buffer needing
 byte-exact-not-shape-exact translation, a whole dead debug-dump function, a
-genuine cross-crate FFI struct layout, or a structural printf/path-building
-engine piece) before deciding scope — the original blanket 1369-count
-estimate has already proven an
+genuine cross-crate FFI struct layout, a generic type-erased storage system,
+or a structural printf/path-building engine piece) before deciding scope —
+the original blanket 1369-count estimate has already proven an
 unreliable guide to where the real work is.
