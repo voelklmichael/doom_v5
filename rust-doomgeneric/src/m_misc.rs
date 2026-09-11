@@ -33,9 +33,13 @@ pub unsafe fn M_MakeDirectory(path: &str) {
     let path_cstring = ::std::ffi::CString::new(path).unwrap();
     mkdir(path_cstring.as_ptr(), 0o755 as __mode_t);
 }
-pub unsafe fn M_FileExists(mut filename: *mut ::core::ffi::c_char) -> bool {
+pub unsafe fn M_FileExists(filename: &str) -> bool {
     let mut fstream: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    fstream = fopen(filename, b"r\0" as *const u8 as *const ::core::ffi::c_char) as *mut FILE;
+    let filename_cstring = ::std::ffi::CString::new(filename).unwrap();
+    fstream = fopen(
+        filename_cstring.as_ptr(),
+        b"r\0" as *const u8 as *const ::core::ffi::c_char,
+    ) as *mut FILE;
     if !fstream.is_null() {
         fclose(fstream);
         return true;
@@ -52,14 +56,14 @@ pub unsafe fn M_FileLength(mut handle: *mut FILE) -> i64 {
     fseek(handle, savedpos, SEEK_SET);
     return length;
 }
-pub unsafe fn M_WriteFile(
-    mut name: *mut ::core::ffi::c_char,
-    mut source: *mut ::core::ffi::c_void,
-    mut length: i32,
-) -> bool {
+pub unsafe fn M_WriteFile(name: &str, mut source: *mut ::core::ffi::c_void, mut length: i32) -> bool {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
     let mut count: i32 = 0;
-    handle = fopen(name, b"wb\0" as *const u8 as *const ::core::ffi::c_char) as *mut FILE;
+    let name_cstring = ::std::ffi::CString::new(name).unwrap();
+    handle = fopen(
+        name_cstring.as_ptr(),
+        b"wb\0" as *const u8 as *const ::core::ffi::c_char,
+    ) as *mut FILE;
     if handle.is_null() {
         return false;
     }

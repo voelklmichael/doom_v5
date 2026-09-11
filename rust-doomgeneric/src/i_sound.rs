@@ -57,7 +57,7 @@ pub struct ISoundState {
     pub snd_samplerate: i32,
     pub snd_cachesize: i32,
     pub snd_maxslicetime_ms: i32,
-    pub snd_musiccmd: *mut ::core::ffi::c_char,
+    pub snd_musiccmd: Option<&'static str>,
     sound_module: *mut sound_module_t,
     music_module: *mut music_module_t,
     pub snd_musicdevice: i32,
@@ -74,8 +74,7 @@ impl ISoundState {
             snd_samplerate: 44100,
             snd_cachesize: 64 * 1024 * 1024,
             snd_maxslicetime_ms: 28,
-            snd_musiccmd: b"\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
+            snd_musiccmd: None,
             sound_module: ::core::ptr::null::<sound_module_t>() as *mut sound_module_t,
             music_module: ::core::ptr::null::<music_module_t>() as *mut music_module_t,
             snd_musicdevice: SNDDEVICE_SB as i32,

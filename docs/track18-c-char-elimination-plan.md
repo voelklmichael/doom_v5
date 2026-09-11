@@ -466,6 +466,49 @@ used across level setup, animated-texture init, switch init, and sky selection.
 
 `c_char` references: 700 → 649.
 
+**Phase 16 done** (`c-char-phase16-snd-musiccmd-and-pcx`, PR pending): two more
+small, independent wins found while responding to the user opening `i_sound.rs` in
+their editor.
+- `i_sound.rs`'s `snd_musiccmd` (the external-MIDI-player-command config
+  variable) — confirmed via full-codebase grep it's never read anywhere, only
+  ever written (its always-empty default). Same category as phase 10's
+  `sfxinfo_struct.tagname` and phase 11's dead-`.cfg`-parsing-path finding: it's
+  bound via `M_BindVariable` into the config table, but the runtime path that
+  would ever populate a `DEFAULT_STRING` variable from an actual config file is
+  confirmed dead (see phase 11). Converted `*mut c_char` → `Option<&'static
+  str>`, default `None`. In the same survey, confirmed `savedir`/`back_flat`/
+  `nickname`/`video_driver`/`window_position` (the other unbound `DEFAULT_STRING`
+  table entries) have no backing field at all to convert — they're declared in
+  the config table but never `M_BindVariable`'d anywhere, so there's nothing
+  `c_char`-shaped to touch for those.
+- `v_video.rs`'s `pcx_t` (the PCX screenshot file-format header struct) —
+  `manufacturer`/`version`/`encoding`/`bits_per_pixel`/`reserved`/
+  `color_planes`/`filler` were never string data, `c_char` was used purely as a
+  numeric byte type for this `#[repr(C, packed)]` binary-format struct (matching
+  phase 14's `shiftxform` finding). Converted to `u8`, matching the struct's own
+  other byte fields (`palette: [u8; 48]`, `data: u8`). While in the file, also
+  converted `M_FileExists`/`M_WriteFile` (`m_misc.rs`) and `WritePCXfile`
+  (`v_video.rs`) from `*mut c_char` to `&str`, using this codebase's established
+  `CString::new(...).unwrap()`-bound-to-a-local boundary pattern for their real
+  `fopen` calls. `V_ScreenShot`'s filename-building `format!` lost a
+  now-unnecessary manually-embedded `\0` (was needed only for the old raw-pointer
+  path). Fixed up all 3 external callers, including `d_iwad.rs`'s `file_exists`
+  wrapper, which collapsed from a 3-line `CString` bridge to a direct call now
+  that `M_FileExists` does its own bridging internally.
+- **Verification note**: `M_FileExists`'s new `CString` bridge is exercised on
+  every single boot (it backs `d_iwad.rs`'s IWAD-file search, run unconditionally
+  at startup) — all 3 Xvfb boots finding and loading `doom1.wad` is a real,
+  repeated end-to-end confirmation of that half. `WritePCXfile`/`M_WriteFile`'s
+  screenshot-writing path itself could not be exercised via automated Xvfb
+  testing: it requires `-devparm` plus the `key_menu_help` (F1) binding, and this
+  sandbox's Xvfb F-key +3 offset bug (see phase 12) has no way to synthesize an
+  "effective F1" press (would need to request `F(1-3)`, not a valid key).
+  Confidence here rests on: the identical, already-proven `CString` pattern: pure
+  type-label swaps for the PCX header (no logic change, 1-byte-either-way); and
+  the RLE-packing/file-writing logic itself untouched.
+
+`c_char` references: 649 → 626.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
@@ -478,7 +521,7 @@ genuine variadic C-ABI printf reimplementations still used by many buffer-buildi
 call sites across the codebase, a structural piece rather than a simple field
 conversion — replacing these would mean auditing and converting every one of their
 callers, a much larger undertaking than a bounded field-conversion phase), `m_menu.rs`,
-`hu_stuff.rs`. Each needs the same per-cluster triage phases 10-15 used (is it a
+`hu_stuff.rs`. Each needs the same per-cluster triage phases 10-16 used (is it a
 lumpname-shaped const table, an always-null/always-dead field or function, a local
 scratch buffer, a cheat-sequence byte array, a numeric-lookup-table mislabeled as
 c_char, a shared callback-type hub, a small widely-called name-resolution function

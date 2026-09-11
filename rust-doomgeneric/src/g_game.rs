@@ -2179,7 +2179,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus(state: &mut GameState) -> boolean {
         state.g_game.demo_p = state.g_game.demo_p.offset(1);
         *fresh11 = DEMOMARKER as byte;
         M_WriteFile(
-            state.g_game.demoname,
+            &::std::ffi::CStr::from_ptr(state.g_game.demoname).to_string_lossy(),
             state.g_game.demobuffer as *mut ::core::ffi::c_void,
             state
                 .g_game

@@ -29,10 +29,10 @@ pub type vpatchclipfunc_t = Option<unsafe extern "C" fn(*mut patch_t, i32, i32) 
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct pcx_t {
-    pub manufacturer: ::core::ffi::c_char,
-    pub version: ::core::ffi::c_char,
-    pub encoding: ::core::ffi::c_char,
-    pub bits_per_pixel: ::core::ffi::c_char,
+    pub manufacturer: u8,
+    pub version: u8,
+    pub encoding: u8,
+    pub bits_per_pixel: u8,
     pub xmin: u16,
     pub ymin: u16,
     pub xmax: u16,
@@ -40,11 +40,11 @@ pub struct pcx_t {
     pub hres: u16,
     pub vres: u16,
     pub palette: [u8; 48],
-    pub reserved: ::core::ffi::c_char,
-    pub color_planes: ::core::ffi::c_char,
+    pub reserved: u8,
+    pub color_planes: u8,
     pub bytes_per_line: u16,
     pub palette_type: u16,
-    pub filler: [::core::ffi::c_char; 58],
+    pub filler: [u8; 58],
     pub data: u8,
 }
 static mut patchclip_callback: vpatchclipfunc_t = None;
@@ -640,7 +640,7 @@ pub unsafe fn V_RestoreBuffer(state: &mut GameState) {
 }
 pub unsafe fn WritePCXfile(
     state: &mut ZZoneState,
-    mut filename: *mut ::core::ffi::c_char,
+    filename: &str,
     mut data: *mut byte,
     mut width: i32,
     mut height: i32,
@@ -656,10 +656,10 @@ pub unsafe fn WritePCXfile(
         PU_STATIC as i32,
         NULL,
     ) as *mut pcx_t;
-    (*pcx).manufacturer = 0xa as ::core::ffi::c_char;
-    (*pcx).version = 5 as ::core::ffi::c_char;
-    (*pcx).encoding = 1 as ::core::ffi::c_char;
-    (*pcx).bits_per_pixel = 8 as ::core::ffi::c_char;
+    (*pcx).manufacturer = 0xa as u8;
+    (*pcx).version = 5 as u8;
+    (*pcx).encoding = 1 as u8;
+    (*pcx).bits_per_pixel = 8 as u8;
     (*pcx).xmin = 0 as u16;
     (*pcx).ymin = 0 as u16;
     (*pcx).xmax = (width - 1 as i32) as i16 as u16;
@@ -671,13 +671,13 @@ pub unsafe fn WritePCXfile(
         0 as i32,
         ::core::mem::size_of::<[u8; 48]>() as size_t,
     );
-    (*pcx).color_planes = 1 as ::core::ffi::c_char;
+    (*pcx).color_planes = 1 as u8;
     (*pcx).bytes_per_line = width as i16 as u16;
     (*pcx).palette_type = 2 as i32 as i16 as u16;
     memset(
-        &raw mut (*pcx).filler as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
+        &raw mut (*pcx).filler as *mut u8 as *mut ::core::ffi::c_void,
         0 as i32,
-        ::core::mem::size_of::<[::core::ffi::c_char; 58]>() as size_t,
+        ::core::mem::size_of::<[u8; 58]>() as size_t,
     );
     pack = &raw mut (*pcx).data as *mut byte;
     i = 0 as i32;
@@ -720,9 +720,8 @@ pub unsafe fn V_ScreenShot(state: &mut GameState) {
     let mut i = 0i32;
     let mut lbmname = String::new();
     while i <= 99 {
-        lbmname = format!("DOOM{i:02}.pcx\0");
-        let lbmname = lbmname.as_ptr() as *mut ::core::ffi::c_char;
-        if !M_FileExists(lbmname) {
+        lbmname = format!("DOOM{i:02}.pcx");
+        if !M_FileExists(&lbmname) {
             break;
         }
         i += 1;
@@ -730,11 +729,10 @@ pub unsafe fn V_ScreenShot(state: &mut GameState) {
     if i == 100 as i32 {
         I_Error("V_ScreenShot: Couldn't create a PCX");
     }
-    let lbmname = lbmname.as_ptr() as *mut ::core::ffi::c_char;
     let __wcache747_1 = W_CacheLumpName(state, "PLAYPAL", PU_CACHE as i32) as *mut byte;
     WritePCXfile(
         &mut state.z_zone,
-        lbmname,
+        &lbmname,
         state.i_video.I_VideoBuffer,
         SCREENWIDTH,
         SCREENHEIGHT,

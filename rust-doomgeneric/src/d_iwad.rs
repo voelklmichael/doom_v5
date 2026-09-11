@@ -120,8 +120,7 @@ impl DIwadState {
 }
 
 unsafe fn file_exists(path: &str) -> bool {
-    let path_cstring = ::std::ffi::CString::new(path).unwrap();
-    M_FileExists(path_cstring.as_ptr() as *mut ::core::ffi::c_char)
+    M_FileExists(path)
 }
 unsafe fn add_iwad_dir(state: &mut DIwadState, dir: &str) {
     state.iwad_dirs.push(dir.to_string());
