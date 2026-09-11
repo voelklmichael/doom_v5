@@ -113,7 +113,7 @@ use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{exit, snprintf};
 
 pub struct DMainState {
-    pub savegamedir: *mut ::core::ffi::c_char,
+    pub savegamedir: String,
     pub iwadfile: *mut ::core::ffi::c_char,
     pub devparm: bool,
     pub nomonsters: bool,
@@ -147,7 +147,7 @@ pub struct DMainState {
 impl DMainState {
     pub const fn new() -> Self {
         DMainState {
-            savegamedir: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            savegamedir: String::new(),
             iwadfile: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
             devparm: false,
             nomonsters: false,
@@ -1113,10 +1113,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     if state.d_main.devparm {
         print!("{}", D_DEVSTR.as_str());
     }
-    M_SetConfigDir(
-        &mut state.m_config,
-        ::core::ptr::null_mut::<::core::ffi::c_char>(),
-    );
+    M_SetConfigDir(&mut state.m_config, None);
     p = M_CheckParm(state, "-turbo");
     if p != 0 {
         let mut scale: i32 = 200 as i32;
@@ -1142,12 +1139,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     println!("V_Init: allocate screens.");
     println!("M_LoadDefaults: Load system defaults.");
-    M_SetConfigFilenames(
-        &mut state.m_config,
-        b"default.cfg\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        b"doomgenericdoom.cfg\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char,
-    );
+    M_SetConfigFilenames(&mut state.m_config, "default.cfg", "doomgenericdoom.cfg");
     D_BindVariables(state);
     M_LoadDefaults(state);
     I_AtExit(&mut state.i_system, Some(M_SaveDefaults as unsafe extern "C" fn(&mut GameState) -> ()), false);
@@ -1425,12 +1417,12 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         return;
     }
     if state.d_main.startloadgame >= 0 as i32 {
-        M_StringCopy(
-            &raw mut file as *mut ::core::ffi::c_char,
-            P_SaveGameFile(state, state.d_main.startloadgame),
-            ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
+        let savegame_file = P_SaveGameFile(state, state.d_main.startloadgame);
+        let savegame_file_cstring = ::std::ffi::CString::new(savegame_file.as_str()).unwrap();
+        G_LoadGame(
+            state,
+            savegame_file_cstring.as_ptr() as *mut ::core::ffi::c_char,
         );
-        G_LoadGame(state, &raw mut file as *mut ::core::ffi::c_char);
     }
     if state.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
         if state.d_main.autostart || state.g_game.netgame {

@@ -31,7 +31,6 @@ use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_controls::KEY_ESCAPE;
 use crate::src::m_controls::KEY_PAUSE;
 use crate::src::m_controls::KEY_SCRLCK;
-use crate::src::m_misc::M_StringCopy;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::r_main::R_SetViewSize;
 use crate::src::s_sound::S_SetMusicVolume;
@@ -745,16 +744,12 @@ pub static load_e: C2RustUnnamed_8 = load1;
 pub unsafe fn M_ReadSaveStrings(state: &mut GameState) {
     let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
     let mut i: i32 = 0;
-    let mut name: [::core::ffi::c_char; 256] = [0; 256];
     i = 0 as i32;
     while i < load_end as i32 {
-        M_StringCopy(
-            &raw mut name as *mut ::core::ffi::c_char,
-            P_SaveGameFile(state, i),
-            ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
-        );
+        let savegame_file = P_SaveGameFile(state, i);
+        let savegame_file_cstring = ::std::ffi::CString::new(savegame_file.as_str()).unwrap();
         handle = fopen(
-            &raw mut name as *mut ::core::ffi::c_char,
+            savegame_file_cstring.as_ptr(),
             b"rb\0" as *const u8 as *const ::core::ffi::c_char,
         ) as *mut FILE;
         if handle.is_null() {
@@ -808,14 +803,13 @@ pub unsafe fn M_DrawSaveLoadBorder(state: &mut GameState, mut x: i32, mut y: i32
     V_DrawPatchDirect(state, x, y + 7 as i32, __wcache925_21);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_LoadSelect(state: &mut GameState, mut choice: i32) {
-    let mut name: [::core::ffi::c_char; 256] = [0; 256];
-    M_StringCopy(
-        &raw mut name as *mut ::core::ffi::c_char,
-        P_SaveGameFile(state, choice),
-        ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
+pub unsafe extern "C" fn M_LoadSelect(state: &mut GameState, choice: i32) {
+    let savegame_file = P_SaveGameFile(state, choice);
+    let savegame_file_cstring = ::std::ffi::CString::new(savegame_file.as_str()).unwrap();
+    G_LoadGame(
+        state,
+        savegame_file_cstring.as_ptr() as *mut ::core::ffi::c_char,
     );
-    G_LoadGame(state, &raw mut name as *mut ::core::ffi::c_char);
     M_ClearMenus(state);
 }
 #[no_mangle]

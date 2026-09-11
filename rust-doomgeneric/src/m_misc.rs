@@ -1,5 +1,4 @@
 use crate::src::doomdef::NULL;
-use crate::src::fixed_cstr::FixedCStr;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
@@ -29,9 +28,10 @@ pub type __mode_t = u32;
 pub const SEEK_END: i32 = 2;
 pub const EISDIR: i32 = 21;
 pub const DIR_SEPARATOR: i32 = '/' as i32;
-pub const DIR_SEPARATOR_S: FixedCStr<2> = FixedCStr(*b"/\0");
-pub unsafe fn M_MakeDirectory(mut path: *mut ::core::ffi::c_char) {
-    mkdir(path, 0o755 as __mode_t);
+pub const DIR_SEPARATOR_S: &str = "/";
+pub unsafe fn M_MakeDirectory(path: &str) {
+    let path_cstring = ::std::ffi::CString::new(path).unwrap();
+    mkdir(path_cstring.as_ptr(), 0o755 as __mode_t);
 }
 pub unsafe fn M_FileExists(mut filename: *mut ::core::ffi::c_char) -> bool {
     let mut fstream: *mut FILE = ::core::ptr::null_mut::<FILE>();
@@ -105,10 +105,8 @@ pub unsafe fn M_ReadFile(mut name: *mut ::core::ffi::c_char, mut buffer: *mut *m
     *buffer = buf;
     return length;
 }
-pub unsafe fn M_TempFile(mut s: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char {
-    let mut tempdir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    tempdir = b"/tmp\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    return M_StringJoin(tempdir, DIR_SEPARATOR_S.as_ptr(), s, NULL);
+pub fn M_TempFile(s: &str) -> String {
+    format!("/tmp{}{}", DIR_SEPARATOR_S, s)
 }
 fn m_strtoint_digit_prefix(s: &str, radix: u32) -> Option<i32> {
     let end = s
@@ -276,38 +274,6 @@ pub fn M_StringStartsWith(s: &str, prefix: &str) -> bool {
 }
 pub fn M_StringEndsWith(s: &str, suffix: &str) -> bool {
     s.ends_with(suffix)
-}
-pub unsafe extern "C" fn M_StringJoin(
-    mut s: *const ::core::ffi::c_char,
-    mut args: ...
-) -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut v: *const ::core::ffi::c_char = ::core::ptr::null::<::core::ffi::c_char>();
-    let mut args_0: ::core::ffi::VaListImpl;
-    let mut result_len: size_t = 0;
-    result_len = ::std::ffi::CStr::from_ptr(s as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(1 as size_t);
-    args_0 = args.clone();
-    loop {
-        v = args_0.arg::<*const ::core::ffi::c_char>();
-        if v.is_null() {
-            break;
-        }
-        result_len = result_len.wrapping_add(::std::ffi::CStr::from_ptr(v as *const ::core::ffi::c_char).to_bytes().len());
-    }
-    result = malloc(result_len) as *mut ::core::ffi::c_char;
-    if result.is_null() {
-        I_Error("M_StringJoin: Failed to allocate new string.");
-    }
-    M_StringCopy(result, s, result_len);
-    args_0 = args.clone();
-    loop {
-        v = args_0.arg::<*const ::core::ffi::c_char>();
-        if v.is_null() {
-            break;
-        }
-        M_StringConcat(result, v, result_len);
-    }
-    return result;
 }
 pub unsafe fn M_vsnprintf(
     mut buf: *mut ::core::ffi::c_char,

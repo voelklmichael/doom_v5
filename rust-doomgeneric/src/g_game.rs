@@ -1641,39 +1641,28 @@ pub unsafe fn G_SaveGame(
     state.g_game.sendsave = true;
 }
 pub unsafe fn G_DoSaveGame(state: &mut GameState) {
-    let mut savegame_file: *mut ::core::ffi::c_char =
-        ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut temp_savegame_file: *mut ::core::ffi::c_char =
-        ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut recovery_savegame_file: *mut ::core::ffi::c_char =
-        ::core::ptr::null_mut::<::core::ffi::c_char>();
-    recovery_savegame_file = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    temp_savegame_file = P_TempSaveGameFile(state);
-    savegame_file = P_SaveGameFile(state, state.g_game.savegameslot);
+    let mut recovery_savegame_file: Option<String> = None;
+    let temp_savegame_file = P_TempSaveGameFile(state);
+    let savegame_file = P_SaveGameFile(state, state.g_game.savegameslot);
+    let temp_savegame_file_cstring = ::std::ffi::CString::new(temp_savegame_file.as_str()).unwrap();
     state.p_saveg.save_stream = fopen(
-        temp_savegame_file,
+        temp_savegame_file_cstring.as_ptr(),
         b"wb\0" as *const u8 as *const ::core::ffi::c_char,
     ) as *mut FILE;
     if state.p_saveg.save_stream.is_null() {
-        recovery_savegame_file = M_TempFile(
-            b"recovery.dsg\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char,
-        );
+        let recovery_file = M_TempFile("recovery.dsg");
+        let recovery_file_cstring = ::std::ffi::CString::new(recovery_file.as_str()).unwrap();
         state.p_saveg.save_stream = fopen(
-            recovery_savegame_file,
+            recovery_file_cstring.as_ptr(),
             b"wb\0" as *const u8 as *const ::core::ffi::c_char,
         ) as *mut FILE;
         if state.p_saveg.save_stream.is_null() {
             I_Error(&format!(
                 "Failed to open either '{}' or '{}' to write savegame.",
-                ::std::ffi::CStr::from_ptr(temp_savegame_file)
-                    .to_str()
-                    .unwrap(),
-                ::std::ffi::CStr::from_ptr(recovery_savegame_file)
-                    .to_str()
-                    .unwrap(),
+                temp_savegame_file, recovery_file,
             ));
         }
+        recovery_savegame_file = Some(recovery_file);
     }
     state.p_saveg.savegame_error = false;
     let savedescription = &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char;
@@ -1689,15 +1678,18 @@ pub unsafe fn G_DoSaveGame(state: &mut GameState) {
         I_Error("Savegame buffer overrun");
     }
     fclose(state.p_saveg.save_stream);
-    if !recovery_savegame_file.is_null() {
+    if let Some(recovery_file) = &recovery_savegame_file {
         I_Error(&format!(
             "Failed to open savegame file '{}' for writing.\nBut your game has been saved to '{}' for recovery.",
-            ::std::ffi::CStr::from_ptr(temp_savegame_file).to_str().unwrap(),
-            ::std::ffi::CStr::from_ptr(recovery_savegame_file).to_str().unwrap(),
+            temp_savegame_file, recovery_file,
         ));
     }
-    remove(savegame_file);
-    rename(temp_savegame_file, savegame_file);
+    let savegame_file_cstring = ::std::ffi::CString::new(savegame_file.as_str()).unwrap();
+    remove(savegame_file_cstring.as_ptr());
+    rename(
+        temp_savegame_file_cstring.as_ptr(),
+        savegame_file_cstring.as_ptr(),
+    );
     state.g_game.gameaction = ga_nothing;
     M_StringCopy(
         &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char,

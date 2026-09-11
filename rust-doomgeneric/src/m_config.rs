@@ -1,5 +1,4 @@
 use crate::src::doomdef::NULL;
-use crate::src::fixed_cstr::FixedCStr;
 use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
@@ -34,10 +33,7 @@ use crate::src::m_controls::KEY_RSHIFT;
 use crate::src::m_controls::KEY_SCRLCK;
 use crate::src::m_controls::KEY_UPARROW;
 use crate::src::m_misc::M_MakeDirectory;
-use crate::src::m_misc::M_StringJoin;
 use crate::src::m_misc::M_StrToInt;
-use crate::src::stdint_types::size_t;
-use libc::malloc;
 use libc::strdup;
 
 extern "C" {
@@ -59,23 +55,23 @@ pub struct default_t {
     pub original_translated: i32,
     pub bound: bool,
 }
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 #[repr(C)]
 pub struct default_collection_t {
     pub defaults: *mut default_t,
     pub numdefaults: i32,
-    pub filename: *mut ::core::ffi::c_char,
+    pub filename: String,
 }
-pub const DIR_SEPARATOR_S: FixedCStr<2> = FixedCStr(*b"/\0");
+pub const DIR_SEPARATOR_S: &str = "/";
 pub const KEY_RCTRL: i32 = 0x80 + 0x1d as i32;
 pub const KEY_PRTSCR: i32 = 0x80 + 0x59 as i32;
 pub const KEYP_5: i32 = '5' as i32;
 pub const KEYP_PLUS: i32 = '+' as i32;
 pub const KEYP_MULTIPLY: i32 = '*' as i32;
 pub struct MConfigState {
-    configdir: *mut ::core::ffi::c_char,
-    default_main_config: *mut ::core::ffi::c_char,
-    default_extra_config: *mut ::core::ffi::c_char,
+    configdir: String,
+    default_main_config: &'static str,
+    default_extra_config: &'static str,
     doom_defaults_list: [default_t; 76],
     doom_defaults: default_collection_t,
     extra_defaults_list: [default_t; 119],
@@ -85,11 +81,9 @@ pub struct MConfigState {
 impl MConfigState {
     pub const fn new() -> Self {
         MConfigState {
-            configdir: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
-            default_main_config: ::core::ptr::null::<::core::ffi::c_char>()
-                as *mut ::core::ffi::c_char,
-            default_extra_config: ::core::ptr::null::<::core::ffi::c_char>()
-                as *mut ::core::ffi::c_char,
+            configdir: String::new(),
+            default_main_config: "",
+            default_extra_config: "",
             doom_defaults_list: [
                 default_t {
                     name: "mouse_sensitivity",
@@ -703,7 +697,7 @@ impl MConfigState {
             doom_defaults: default_collection_t {
                 defaults: ::core::ptr::null::<default_t>() as *mut default_t,
                 numdefaults: 0,
-                filename: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+                filename: String::new(),
             },
             extra_defaults_list: [
                 default_t {
@@ -1662,7 +1656,7 @@ impl MConfigState {
             extra_defaults: default_collection_t {
                 defaults: ::core::ptr::null::<default_t>() as *mut default_t,
                 numdefaults: 0,
-                filename: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+                filename: String::new(),
             },
         }
     }
@@ -1861,25 +1855,19 @@ unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_ch
 }
 pub unsafe fn M_SetConfigFilenames(
     state: &mut MConfigState,
-    mut main_config: *mut ::core::ffi::c_char,
-    mut extra_config: *mut ::core::ffi::c_char,
+    main_config: &'static str,
+    extra_config: &'static str,
 ) {
     state.default_main_config = main_config;
     state.default_extra_config = extra_config;
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveDefaults(_state: &mut GameState) {}
-pub unsafe fn M_SaveDefaultsAlternate(
-    state: &mut MConfigState,
-    mut main_0: *mut ::core::ffi::c_char,
-    mut extra: *mut ::core::ffi::c_char,
-) {
-    let mut orig_main: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut orig_extra: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    orig_main = state.doom_defaults.filename;
-    orig_extra = state.extra_defaults.filename;
-    state.doom_defaults.filename = main_0;
-    state.extra_defaults.filename = extra;
+pub unsafe fn M_SaveDefaultsAlternate(state: &mut MConfigState, main_0: &str, extra: &str) {
+    let orig_main = state.doom_defaults.filename.clone();
+    let orig_extra = state.extra_defaults.filename.clone();
+    state.doom_defaults.filename = main_0.to_string();
+    state.extra_defaults.filename = extra.to_string();
     M_SaveDefaults(unsafe { game_state() });
     state.doom_defaults.filename = orig_main;
     state.extra_defaults.filename = orig_extra;
@@ -1888,36 +1876,35 @@ pub unsafe fn M_LoadDefaults(state: &mut GameState) {
     let mut i: i32 = 0;
     i = M_CheckParmWithArgs(state, "-config", 1 as i32);
     if i != 0 {
-        state.m_config.doom_defaults.filename =
-            state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
+        state.m_config.doom_defaults.filename = state.m_argv.myargv[(i + 1 as i32) as usize]
+            .to_str()
+            .unwrap()
+            .to_string();
         println!(
             "\tdefault file: {}",
-            ::std::ffi::CStr::from_ptr(state.m_config.doom_defaults.filename).to_string_lossy(),
+            state.m_config.doom_defaults.filename,
         );
     } else {
-        state.m_config.doom_defaults.filename = M_StringJoin(
-            state.m_config.configdir,
-            state.m_config.default_main_config,
-            NULL,
+        state.m_config.doom_defaults.filename = format!(
+            "{}{}",
+            state.m_config.configdir, state.m_config.default_main_config
         );
     }
-    println!(
-        "saving config in {}",
-        ::std::ffi::CStr::from_ptr(state.m_config.doom_defaults.filename).to_string_lossy(),
-    );
+    println!("saving config in {}", state.m_config.doom_defaults.filename);
     i = M_CheckParmWithArgs(state, "-extraconfig", 1 as i32);
     if i != 0 {
-        state.m_config.extra_defaults.filename =
-            state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
+        state.m_config.extra_defaults.filename = state.m_argv.myargv[(i + 1 as i32) as usize]
+            .to_str()
+            .unwrap()
+            .to_string();
         println!(
             "        extra configuration file: {}",
-            ::std::ffi::CStr::from_ptr(state.m_config.extra_defaults.filename).to_string_lossy(),
+            state.m_config.extra_defaults.filename,
         );
     } else {
-        state.m_config.extra_defaults.filename = M_StringJoin(
-            state.m_config.configdir,
-            state.m_config.default_extra_config,
-            NULL,
+        state.m_config.extra_defaults.filename = format!(
+            "{}{}",
+            state.m_config.configdir, state.m_config.default_extra_config
         );
     }
 }
@@ -1989,46 +1976,28 @@ pub unsafe fn M_GetFloatVariable(state: &mut MConfigState, name: &str) -> f32 {
     }
     return *((*variable).location as *mut f32);
 }
-unsafe fn GetDefaultConfigDir() -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = malloc(2 as size_t) as *mut ::core::ffi::c_char;
-    *result.offset(0 as i32 as isize) = '.' as i32 as ::core::ffi::c_char;
-    *result.offset(1 as i32 as isize) = '\0' as i32 as ::core::ffi::c_char;
-    return result;
+fn GetDefaultConfigDir() -> String {
+    ".".to_string()
 }
-pub unsafe fn M_SetConfigDir(state: &mut MConfigState, mut dir: *mut ::core::ffi::c_char) {
-    if !dir.is_null() {
-        state.configdir = dir;
+pub unsafe fn M_SetConfigDir(state: &mut MConfigState, dir: Option<&str>) {
+    if let Some(dir) = dir {
+        state.configdir = dir.to_string();
     } else {
         state.configdir = GetDefaultConfigDir();
     }
-    if !::std::ffi::CStr::from_ptr(state.configdir).to_bytes().is_empty()
-    {
-        println!(
-            "Using {} for configuration and saves",
-            ::std::ffi::CStr::from_ptr(state.configdir).to_string_lossy(),
-        );
+    if !state.configdir.is_empty() {
+        println!("Using {} for configuration and saves", state.configdir);
     }
-    M_MakeDirectory(state.configdir);
+    M_MakeDirectory(&state.configdir);
 }
-pub unsafe fn M_GetSaveGameDir(
-    state: &mut MConfigState,
-    _iwadname: &'static str,
-) -> *mut ::core::ffi::c_char {
-    let mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    if ::std::ffi::CStr::from_ptr(state.configdir).to_bytes().is_empty() {
-        savegamedir = strdup(b"\0" as *const u8 as *const ::core::ffi::c_char);
+pub unsafe fn M_GetSaveGameDir(state: &mut MConfigState, _iwadname: &'static str) -> String {
+    let savegamedir;
+    if state.configdir.is_empty() {
+        savegamedir = String::new();
     } else {
-        savegamedir = M_StringJoin(
-            state.configdir,
-            DIR_SEPARATOR_S.as_ptr(),
-            b".savegame/\0" as *const u8 as *const ::core::ffi::c_char,
-            NULL,
-        );
-        M_MakeDirectory(savegamedir);
-        println!(
-            "Using {} for savegames",
-            ::std::ffi::CStr::from_ptr(savegamedir).to_string_lossy(),
-        );
+        savegamedir = format!("{}{}.savegame/", state.configdir, DIR_SEPARATOR_S);
+        M_MakeDirectory(&savegamedir);
+        println!("Using {} for savegames", savegamedir);
     }
-    return savegamedir;
+    savegamedir
 }

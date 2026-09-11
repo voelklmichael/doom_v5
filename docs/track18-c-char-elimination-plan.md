@@ -267,19 +267,88 @@ strict improvement, not investigated further), release build clean, 3x Xvfb boot
 with no panics, savegame-dir startup output spot-checked byte-for-byte (`Using .
 for configuration and saves` / `Using ./.savegame/ for savegames`).
 
+**Phase 12 done** (`c-char-phase12-configdir-savegame-paths`, PR pending): tackled
+the `M_StringJoin`/`configdir`/`savegamedir` file-I/O path-building cluster flagged
+above as needing its own dedicated phase. This was the riskiest phase in the track
+so far — it touches real save-file I/O, not just display strings — so it got the
+full verification bar including an actual interactive save/load round-trip test
+(see below), not just a boot smoke test.
+- `m_misc.rs`'s `M_StringJoin` (a variadic C-ABI function, `extern "C" fn(s: *const
+  c_char, args: ...)`) had only 5 call sites total — removed entirely, each site
+  replaced with a direct `format!`. `DIR_SEPARATOR_S` (duplicated per-file as
+  `FixedCStr<2>` in `m_misc.rs`/`m_config.rs` alongside an already-native `&str`
+  copy in `d_iwad.rs`) converted to plain `&str = "/"` in both remaining files,
+  matching the existing precedent. `M_MakeDirectory` retyped to take `&str`,
+  building the `CString` for the `mkdir` libc call internally.
+- `m_config.rs`'s `MConfigState.configdir`/`default_main_config`/
+  `default_extra_config` and `default_collection_t.filename` (the `doom_defaults`/
+  `extra_defaults` display-only path fields) converted to `String`/`&'static str`.
+  `M_SetConfigDir`'s `dir: *mut c_char` parameter (a "null means use the default"
+  C idiom) became `dir: Option<&str>`, the natural Rust equivalent.
+  `GetDefaultConfigDir`/`M_GetSaveGameDir` now return `String` directly instead of
+  a `malloc`'d/`strdup`'d buffer. `M_SaveDefaultsAlternate` (confirmed zero
+  callers, same dead-code status noted in phase 11) needed its body's raw-pointer
+  swap-and-restore dance updated to `.clone()` to keep compiling, since `String`
+  isn't `Copy` — a one-line fix to keep dead code compiling, not a behavior
+  change.
+- `d_main.rs`'s `DMainState.savegamedir` converted to `String`; its two
+  `M_SetConfigDir`/`M_SetConfigFilenames` call sites updated to pass
+  `None`/plain `&str` literals instead of raw pointers.
+- `p_saveg.rs`'s `PSavegState` simplified: `temp_savegame_filename` (`*mut
+  c_char`) became `Option<String>`, preserving the original's compute-once-cache
+  behavior. `savegame_file_filename`/`savegame_file_filename_size` (a
+  `malloc`'d-once, `M_snprintf`'d-fresh-every-call buffer — a pure
+  implementation-detail optimization with no observable behavior difference from
+  just building a fresh `String`) removed entirely; `P_SaveGameFile`/
+  `P_TempSaveGameFile` now return `String` built via `format!`.
+- Every downstream consumer of these paths updated to match, following this
+  codebase's established `CString::new(path).unwrap()` bound to a local variable
+  before passing `.as_ptr()` to the real libc boundary call (`fopen`/`remove`/
+  `rename`/`mkdir`) — the same pattern already used elsewhere in this codebase
+  (`d_main.rs`, `m_menu.rs`, `w_wad.rs`, `hu_stuff.rs`) before this phase, not a
+  new one invented for it. Three call sites (`g_game.rs`'s `G_DoSaveGame`,
+  `m_menu.rs`'s `M_ReadSaveStrings`/`M_LoadSelect`) that previously round-tripped
+  through a local `[c_char; 256]` scratch buffer via `M_StringCopy` before
+  `fopen`/`G_LoadGame` were simplified to build the `CString` directly from the
+  now-owned `String`, removing the unnecessary intermediate buffer.
+- **Verification**: 0 new build warnings (same one pre-existing warning
+  improvement as phase 11), release build clean, 3x Xvfb boot with no panics. Plus
+  a real interactive save/load round-trip via `xdotool` (see below): saved a game
+  ("GAME SAVED." confirmed on screen, `doomsav0.dsg` written to `.savegame/`),
+  restarted the process fresh, opened the Load Game menu (confirmed the saved
+  slot's description showing), selected it, and confirmed gameplay resumed with
+  no panic. This exercised every `fopen`/`remove`/`rename` boundary call and their
+  `CString` lifetimes for real, not just the display-only startup paths the boot
+  smoke test alone would have covered.
+- **Environment note for future interactive tests in this repo**: this Xvfb
+  instance's XKB keymap has a reproducible **+3 offset bug** on F-keys only —
+  sending keysym `F`*N* via `xdotool key` triggers the DOOM action normally bound
+  to `F`*(N+3)* (confirmed via screenshots: requested `F1`→got Sound Volume menu,
+  which is `key_menu_volume`/F4's action; requested `F3`→got the Save Game menu,
+  which is `key_menu_qsave`/F6's fallback behavior when no slot is picked yet).
+  Return, Escape, arrow keys, and letter keys are all unaffected — only the F-row
+  is shifted. Root cause not investigated (likely an Xvfb/XTEST keycode-table
+  quirk unrelated to this codebase). Workaround used successfully: navigate the
+  actual menu screens with Escape/arrows/Return instead of relying on the F-key
+  shortcuts, and remember to call `xdotool windowfocus <winid>` before sending any
+  keys — this app never calls `XSetInputFocus` itself, so without an explicit
+  `windowfocus` call (there is no window manager in this environment to grant
+  focus automatically) no keyboard input reaches it at all.
+
+`c_char` references: 1236 → 1141.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
-concentrations are `d_main.rs` (130, largely local `[c_char; 256]` scratch buffers
-for demo/turbo/mission-pack argument parsing — lower value, this track has
-deliberately deferred local scratch buffers throughout), `g_game.rs` (83),
-`st_stuff.rs` (79), `p_inter.rs` (74), `wi_stuff.rs` (71), `m_misc.rs` (55, likely
-includes `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI printf
-reimplementations still used by many buffer-building call sites, a structural
-piece rather than a simple field conversion), `m_menu.rs` (37), `hu_stuff.rs` (36),
-`m_config.rs` (33, now down to the `configdir`/`M_StringJoin`/savegame-path
-cluster — real file-I/O path-building code, needs its own dedicated phase with a
-save/load round-trip test per this doc's verification bar, not a quick sweep).
-Each needs the same per-cluster triage phases 10-11 used (is it a lumpname-shaped
-const table, an always-null/always-dead field or function, a local scratch buffer,
-or a structural printf/path-building engine piece) before deciding scope — the
-original blanket 1369-count estimate has already proven an unreliable guide to
-where the real work is.
+concentrations are `d_main.rs` (~120, largely local `[c_char; 256]` scratch
+buffers for demo/turbo/mission-pack argument parsing — lower value, this track
+has deliberately deferred local scratch buffers throughout), `g_game.rs` (~80),
+`st_stuff.rs` (79), `p_inter.rs` (74), `wi_stuff.rs` (71), `m_misc.rs` (now mostly
+just `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI printf
+reimplementations still used by many buffer-building call sites across the
+codebase, a structural piece rather than a simple field conversion — replacing
+these would mean auditing and converting every one of their callers, a much
+larger undertaking than this phase's bounded `M_StringJoin` removal), `m_menu.rs`
+(37), `hu_stuff.rs` (36). Each needs the same per-cluster triage phases 10-12 used
+(is it a lumpname-shaped const table, an always-null/always-dead field or
+function, a local scratch buffer, or a structural printf/path-building engine
+piece) before deciding scope — the original blanket 1369-count estimate has
+already proven an unreliable guide to where the real work is.

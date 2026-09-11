@@ -10,7 +10,6 @@ use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
 use crate::src::i_system::{fread, ftell, fwrite};
 use crate::src::m_fixed::fixed_t;
-use crate::src::m_misc::M_StringJoin;
 use crate::src::m_misc::M_snprintf;
 use crate::src::p_ceilng::ceiling_e;
 use crate::src::p_ceilng::P_AddActiveCeiling;
@@ -42,7 +41,6 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVEL;
 use libc::memset;
-use libc::{malloc, snprintf};
 
 use crate::src::d_player::NUMAMMO;
 use crate::src::doomdef::MAXPLAYERS;
@@ -62,9 +60,7 @@ use crate::src::p_plats::T_PlatRaise;
 pub struct PSavegState {
     pub save_stream: *mut FILE,
     pub savegame_error: bool,
-    pub temp_savegame_filename: *mut ::core::ffi::c_char,
-    pub savegame_file_filename: *mut ::core::ffi::c_char,
-    pub savegame_file_filename_size: size_t,
+    pub temp_savegame_filename: Option<String>,
 }
 
 impl PSavegState {
@@ -72,11 +68,7 @@ impl PSavegState {
         PSavegState {
             save_stream: ::core::ptr::null::<FILE>() as *mut FILE,
             savegame_error: false,
-            temp_savegame_filename: ::core::ptr::null::<::core::ffi::c_char>()
-                as *mut ::core::ffi::c_char,
-            savegame_file_filename: ::core::ptr::null::<::core::ffi::c_char>()
-                as *mut ::core::ffi::c_char,
-            savegame_file_filename_size: 0,
+            temp_savegame_filename: None,
         }
     }
 }
@@ -98,38 +90,15 @@ pub const SAVEGAME_EOF: i32 = 0x1d;
 pub const VERSIONSIZE: i32 = 16;
 #[no_mangle]
 pub static savegamelength: i32 = 0;
-pub unsafe fn P_TempSaveGameFile(state: &mut GameState) -> *mut ::core::ffi::c_char {
-    if state.p_saveg.temp_savegame_filename.is_null() {
-        state.p_saveg.temp_savegame_filename = M_StringJoin(
-            state.d_main.savegamedir,
-            b"temp.dsg\0" as *const u8 as *const ::core::ffi::c_char,
-            NULL,
-        );
+pub unsafe fn P_TempSaveGameFile(state: &mut GameState) -> String {
+    if state.p_saveg.temp_savegame_filename.is_none() {
+        state.p_saveg.temp_savegame_filename =
+            Some(format!("{}temp.dsg", state.d_main.savegamedir));
     }
-    return state.p_saveg.temp_savegame_filename;
+    state.p_saveg.temp_savegame_filename.clone().unwrap()
 }
-pub unsafe fn P_SaveGameFile(state: &mut GameState, mut slot: i32) -> *mut ::core::ffi::c_char {
-    let mut basename: [::core::ffi::c_char; 32] = [0; 32];
-    if state.p_saveg.savegame_file_filename.is_null() {
-        state.p_saveg.savegame_file_filename_size =
-            ::std::ffi::CStr::from_ptr(state.d_main.savegamedir as *const ::core::ffi::c_char).to_bytes().len().wrapping_add(32 as size_t);
-        state.p_saveg.savegame_file_filename =
-            malloc(state.p_saveg.savegame_file_filename_size) as *mut ::core::ffi::c_char;
-    }
-    snprintf(
-        &raw mut basename as *mut ::core::ffi::c_char,
-        32 as size_t,
-        b"doomsav%d.dsg\0" as *const u8 as *const ::core::ffi::c_char,
-        slot,
-    );
-    M_snprintf(
-        state.p_saveg.savegame_file_filename,
-        state.p_saveg.savegame_file_filename_size,
-        b"%s%s\0" as *const u8 as *const ::core::ffi::c_char,
-        state.d_main.savegamedir,
-        &raw mut basename as *mut ::core::ffi::c_char,
-    );
-    return state.p_saveg.savegame_file_filename;
+pub unsafe fn P_SaveGameFile(state: &mut GameState, slot: i32) -> String {
+    format!("{}doomsav{}.dsg", state.d_main.savegamedir, slot)
 }
 unsafe fn saveg_read8(state: &mut GameState) -> byte {
     let mut result: byte = 0;
