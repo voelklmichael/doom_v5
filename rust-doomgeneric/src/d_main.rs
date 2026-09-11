@@ -424,8 +424,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
             y = state.r_draw.viewwindowy + 4 as i32;
         }
         let __wcache429_2 = W_CacheLumpName(state, "M_PAUSE", PU_CACHE as i32) as *mut patch_t;
-        V_DrawPatchDirect(
-            &mut state.v_video,
+        V_DrawPatchDirect(state,
             state.r_draw.viewwindowx + (state.r_draw.scaledviewwidth - 68 as i32) / 2 as i32,
             y,
             __wcache429_2,
@@ -606,8 +605,7 @@ pub unsafe fn D_PageTicker(state: &mut GameState) {
 pub unsafe fn D_PageDrawer(state: &mut GameState) {
     let __wcache609_1 = W_CacheLumpName(state, &wad_name8_to_string(state.d_main.pagename), PU_CACHE as i32)
             as *mut patch_t;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         0 as i32,
         0 as i32,
         __wcache609_1,

@@ -445,8 +445,7 @@ pub unsafe fn F_TextWrite(state: &mut GameState) {
         }
         y += 1;
     }
-    V_MarkRect(
-        &mut state.v_video,
+    V_MarkRect(state,
         0 as i32,
         0 as i32,
         SCREENWIDTH,
@@ -476,8 +475,7 @@ pub unsafe fn F_TextWrite(state: &mut GameState) {
                 if cx + w > SCREENWIDTH {
                     break;
                 }
-                V_DrawPatch(
-                    &mut state.v_video,
+                V_DrawPatch(state,
                     cx,
                     cy,
                     state.hu_stuff.hu_font[c as usize],
@@ -842,8 +840,7 @@ pub unsafe fn F_CastPrint(state: &mut GameState, text: &str) {
             cx += 4 as i32;
         } else {
             w = (*state.hu_stuff.hu_font[c as usize]).width as i32;
-            V_DrawPatch(
-                &mut state.v_video,
+            V_DrawPatch(state,
                 cx,
                 180 as i32,
                 state.hu_stuff.hu_font[c as usize],
@@ -859,8 +856,7 @@ pub unsafe fn F_CastDrawer(state: &mut GameState) {
     let mut flip: bool = false;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     let __wcache865_4 = W_CacheLumpName(state, "BOSSBACK", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         0 as i32,
         0 as i32,
         __wcache865_4,
@@ -881,9 +877,9 @@ pub unsafe fn F_CastDrawer(state: &mut GameState) {
     flip = (*sprframe).flip[0 as i32 as usize] != 0;
     patch = W_CacheLumpNum(state, lump + state.r_data.firstspritelump, PU_CACHE as i32) as *mut patch_t;
     if flip {
-        V_DrawPatchFlipped(&mut state.v_video, 160 as i32, 170 as i32, patch);
+        V_DrawPatchFlipped(state, 160 as i32, 170 as i32, patch);
     } else {
-        V_DrawPatch(&mut state.v_video, 160 as i32, 170 as i32, patch);
+        V_DrawPatch(state, 160 as i32, 170 as i32, patch);
     };
 }
 pub unsafe fn F_DrawPatchCol(
@@ -930,8 +926,7 @@ pub unsafe fn F_BunnyScroll(state: &mut GameState) {
     let mut stage: i32 = 0;
     p1 = W_CacheLumpName(state, "PFUB2", PU_LEVEL as i32) as *mut patch_t;
     p2 = W_CacheLumpName(state, "PFUB1", PU_LEVEL as i32) as *mut patch_t;
-    V_MarkRect(
-        &mut state.v_video,
+    V_MarkRect(state,
         0 as i32,
         0 as i32,
         SCREENWIDTH,
@@ -958,8 +953,7 @@ pub unsafe fn F_BunnyScroll(state: &mut GameState) {
     }
     if state.f_finale.finalecount < 1180 as u32 {
         let __wcache963_3 = W_CacheLumpName(state, "END0", PU_CACHE as i32) as *mut patch_t;
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             (SCREENWIDTH - 13 as i32 * 8 as i32) / 2 as i32,
             (SCREENHEIGHT - 8 as i32 * 8 as i32) / 2 as i32,
             __wcache963_3,
@@ -990,8 +984,7 @@ pub unsafe fn F_BunnyScroll(state: &mut GameState) {
         &wad_name8_to_string(&raw mut name as *mut ::core::ffi::c_char),
         PU_CACHE as i32,
     ) as *mut patch_t;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         (SCREENWIDTH - 13 as i32 * 8 as i32) / 2 as i32,
         (SCREENHEIGHT - 8 as i32 * 8 as i32) / 2 as i32,
         __wcache990_2,
@@ -1024,8 +1017,7 @@ unsafe fn F_ArtScreenDrawer(state: &mut GameState) {
         }
         lumpname = lumpname;
         let __wcache1026_1 = W_CacheLumpName(state, &wad_name8_to_string(lumpname), PU_CACHE as i32) as *mut patch_t;
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             0 as i32,
             0 as i32,
             __wcache1026_1,

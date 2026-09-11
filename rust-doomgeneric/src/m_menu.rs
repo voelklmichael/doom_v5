@@ -884,8 +884,7 @@ pub unsafe fn M_ReadSaveStrings(state: &mut GameState) {
 pub unsafe extern "C" fn M_DrawLoad(state: &mut GameState) {
     let mut i: i32 = 0;
     let __wcache890_24 = W_CacheLumpName(state, "M_LOADG", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         72 as i32,
         28 as i32,
         __wcache890_24,
@@ -903,8 +902,7 @@ pub unsafe extern "C" fn M_DrawLoad(state: &mut GameState) {
 pub unsafe fn M_DrawSaveLoadBorder(state: &mut GameState, mut x: i32, mut y: i32) {
     let mut i: i32 = 0;
     let __wcache908_23 = W_CacheLumpName(state, "M_LSLEFT", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         x - 8 as i32,
         y + 7 as i32,
         __wcache908_23,
@@ -912,8 +910,7 @@ pub unsafe fn M_DrawSaveLoadBorder(state: &mut GameState, mut x: i32, mut y: i32
     i = 0 as i32;
     while i < 24 as i32 {
         let __wcache916_22 = W_CacheLumpName(state, "M_LSCNTR", PU_CACHE as i32) as *mut patch_t;
-        V_DrawPatchDirect(
-            &mut state.v_video,
+        V_DrawPatchDirect(state,
             x,
             y + 7 as i32,
             __wcache916_22,
@@ -922,8 +919,7 @@ pub unsafe fn M_DrawSaveLoadBorder(state: &mut GameState, mut x: i32, mut y: i32
         i += 1;
     }
     let __wcache925_21 = W_CacheLumpName(state, "M_LSRGHT", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         x,
         y + 7 as i32,
         __wcache925_21,
@@ -959,8 +955,7 @@ pub unsafe extern "C" fn M_LoadGame(state: &mut GameState, mut choice: i32) {
 pub unsafe extern "C" fn M_DrawSave(state: &mut GameState) {
     let mut i: i32 = 0;
     let __wcache961_20 = W_CacheLumpName(state, "M_SAVEG", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         72 as i32,
         28 as i32,
         __wcache961_20,
@@ -1157,8 +1152,7 @@ pub unsafe extern "C" fn M_DrawReadThis1(state: &mut GameState) {
     }
     lumpname = lumpname;
     let __wcache1158_19 = W_CacheLumpName(state, &wad_name8_to_string(lumpname), PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         0 as i32,
         0 as i32,
         __wcache1158_19,
@@ -1170,8 +1164,7 @@ pub unsafe extern "C" fn M_DrawReadThis1(state: &mut GameState) {
 pub unsafe extern "C" fn M_DrawReadThis2(state: &mut GameState) {
     state.m_menu.inhelpscreens = true;
     let __wcache1170_18 = W_CacheLumpName(state, "HELP1", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         0 as i32,
         0 as i32,
         __wcache1170_18,
@@ -1180,8 +1173,7 @@ pub unsafe extern "C" fn M_DrawReadThis2(state: &mut GameState) {
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawSound(state: &mut GameState) {
     let __wcache1179_17 = W_CacheLumpName(state, "M_SVOL", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         60 as i32,
         38 as i32,
         __wcache1179_17,
@@ -1243,8 +1235,7 @@ pub unsafe extern "C" fn M_MusicVol(state: &mut GameState, mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawMainMenu(state: &mut GameState) {
     let __wcache1241_16 = W_CacheLumpName(state, "M_DOOM", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         94 as i32,
         2 as i32,
         __wcache1241_16,
@@ -1253,15 +1244,13 @@ pub unsafe extern "C" fn M_DrawMainMenu(state: &mut GameState) {
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawNewGame(state: &mut GameState) {
     let __wcache1250_15 = W_CacheLumpName(state, "M_NEWG", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         96 as i32,
         14 as i32,
         __wcache1250_15,
     );
     let __wcache1256_14 = W_CacheLumpName(state, "M_SKILL", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         54 as i32,
         38 as i32,
         __wcache1256_14,
@@ -1291,8 +1280,7 @@ pub unsafe extern "C" fn M_NewGame(state: &mut GameState, mut choice: i32) {
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawEpisode(state: &mut GameState) {
     let __wcache1286_13 = W_CacheLumpName(state, "M_EPISOD", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         54 as i32,
         38 as i32,
         __wcache1286_13,
@@ -1364,8 +1352,7 @@ static msgNames: [&str; 2] = ["M_MSGOFF", "M_MSGON"];
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawOptions(state: &mut GameState) {
     let __wcache1358_12 = W_CacheLumpName(state, "M_OPTTTL", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         108 as i32,
         15 as i32,
         __wcache1358_12,
@@ -1375,8 +1362,7 @@ pub unsafe extern "C" fn M_DrawOptions(state: &mut GameState) {
         detailNames[state.m_menu.detailLevel as usize],
         PU_CACHE as i32,
     ) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         state.m_menu.defs.OptionsDef.x as i32 + 175 as i32,
         state.m_menu.defs.OptionsDef.y as i32 + LINEHEIGHT * detail as i32,
         __wcache1364_11,
@@ -1386,8 +1372,7 @@ pub unsafe extern "C" fn M_DrawOptions(state: &mut GameState) {
         msgNames[state.m_menu.showMessages as usize],
         PU_CACHE as i32,
     ) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         state.m_menu.defs.OptionsDef.x as i32 + 120 as i32,
         state.m_menu.defs.OptionsDef.y as i32 + LINEHEIGHT * messages as i32,
         __wcache1373_10,
@@ -1630,8 +1615,7 @@ pub unsafe fn M_DrawThermo(
     let mut i: i32 = 0;
     xx = x;
     let __wcache1619_9 = W_CacheLumpName(state, "M_THERML", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         xx,
         y,
         __wcache1619_9,
@@ -1640,8 +1624,7 @@ pub unsafe fn M_DrawThermo(
     i = 0 as i32;
     while i < thermWidth {
         let __wcache1628_8 = W_CacheLumpName(state, "M_THERMM", PU_CACHE as i32) as *mut patch_t;
-        V_DrawPatchDirect(
-            &mut state.v_video,
+        V_DrawPatchDirect(state,
             xx,
             y,
             __wcache1628_8,
@@ -1650,15 +1633,13 @@ pub unsafe fn M_DrawThermo(
         i += 1;
     }
     let __wcache1637_7 = W_CacheLumpName(state, "M_THERMR", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         xx,
         y,
         __wcache1637_7,
     );
     let __wcache1643_6 = W_CacheLumpName(state, "M_THERMO", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         x + 8 as i32 + thermDot * 8 as i32,
         y,
         __wcache1643_6,
@@ -1666,8 +1647,7 @@ pub unsafe fn M_DrawThermo(
 }
 pub unsafe fn M_DrawEmptyCell(state: &mut GameState, mut menu: *mut menu_t, mut item: i32) {
     let __wcache1651_5 = W_CacheLumpName(state, "M_CELL1", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         (*menu).x as i32 - 10 as i32,
         (*menu).y as i32 + item * LINEHEIGHT - 1 as i32,
         __wcache1651_5,
@@ -1675,8 +1655,7 @@ pub unsafe fn M_DrawEmptyCell(state: &mut GameState, mut menu: *mut menu_t, mut 
 }
 pub unsafe fn M_DrawSelCell(state: &mut GameState, mut menu: *mut menu_t, mut item: i32) {
     let __wcache1659_4 = W_CacheLumpName(state, "M_CELL2", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         (*menu).x as i32 - 10 as i32,
         (*menu).y as i32 + item * LINEHEIGHT - 1 as i32,
         __wcache1659_4,
@@ -1747,8 +1726,7 @@ pub unsafe fn M_WriteText(state: &mut GameState, x: i32, y: i32, string: &str) {
                 if cx + w > SCREENWIDTH {
                     break 'outer;
                 }
-                V_DrawPatchDirect(
-                    &mut state.v_video,
+                V_DrawPatchDirect(state,
                     cx,
                     cy,
                     state.hu_stuff.hu_font[c as usize],
@@ -2239,8 +2217,7 @@ pub unsafe fn M_Drawer(state: &mut GameState) {
             as *mut ::core::ffi::c_char;
         if *name.offset(0 as i32 as isize) != 0 {
             let __wcache2221_2 = W_CacheLumpName(state, &wad_name8_to_string(name), PU_CACHE as i32) as *mut patch_t;
-            V_DrawPatchDirect(
-                &mut state.v_video,
+            V_DrawPatchDirect(state,
                 state.m_menu.drawer_x as i32,
                 state.m_menu.drawer_y as i32,
                 __wcache2221_2,
@@ -2251,8 +2228,7 @@ pub unsafe fn M_Drawer(state: &mut GameState) {
     }
     let __wcache2231_1 = W_CacheLumpName(state, skullName[state.m_menu.whichSkull as usize], PU_CACHE as i32)
             as *mut patch_t;
-    V_DrawPatchDirect(
-        &mut state.v_video,
+    V_DrawPatchDirect(state,
         state.m_menu.drawer_x as i32 + SKULLXOFF,
         (*state.m_menu.currentMenu).y as i32 - 5 as i32 + state.m_menu.itemOn as i32 * LINEHEIGHT,
         __wcache2231_1,

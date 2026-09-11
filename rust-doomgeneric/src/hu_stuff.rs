@@ -465,14 +465,13 @@ pub unsafe fn HU_Start(state: &mut GameState) {
     state.hu_stuff.headsupactive = true;
 }
 pub unsafe fn HU_Drawer(state: &mut GameState) {
-    HUlib_drawSText(&mut state.v_video, &raw mut state.hu_stuff.w_message);
-    HUlib_drawIText(&mut state.v_video, &raw mut state.hu_stuff.w_chat);
+    let w_message = &raw mut state.hu_stuff.w_message;
+    HUlib_drawSText(state, w_message);
+    let w_chat = &raw mut state.hu_stuff.w_chat;
+    HUlib_drawIText(state, w_chat);
     if state.am_map.automapactive {
-        HUlib_drawTextLine(
-            &mut state.v_video,
-            &raw mut state.hu_stuff.w_title,
-            false_0 as boolean,
-        );
+        let w_title = &raw mut state.hu_stuff.w_title;
+        HUlib_drawTextLine(state, w_title, false_0 as boolean);
     }
 }
 pub unsafe fn HU_Erase(state: &mut GameState) {

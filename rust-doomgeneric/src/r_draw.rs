@@ -606,8 +606,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
     patch = W_CacheLumpName(state, "brdr_t", PU_CACHE as i32) as *mut patch_t;
     x = 0 as i32;
     while x < state.r_draw.scaledviewwidth {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             state.r_draw.viewwindowx + x,
             state.r_draw.viewwindowy - 8 as i32,
             patch,
@@ -617,8 +616,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
     patch = W_CacheLumpName(state, "brdr_b", PU_CACHE as i32) as *mut patch_t;
     x = 0 as i32;
     while x < state.r_draw.scaledviewwidth {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             state.r_draw.viewwindowx + x,
             state.r_draw.viewwindowy + state.r_draw.viewheight,
             patch,
@@ -628,8 +626,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
     patch = W_CacheLumpName(state, "brdr_l", PU_CACHE as i32) as *mut patch_t;
     y = 0 as i32;
     while y < state.r_draw.viewheight {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             state.r_draw.viewwindowx - 8 as i32,
             state.r_draw.viewwindowy + y,
             patch,
@@ -639,8 +636,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
     patch = W_CacheLumpName(state, "brdr_r", PU_CACHE as i32) as *mut patch_t;
     y = 0 as i32;
     while y < state.r_draw.viewheight {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             state.r_draw.viewwindowx + state.r_draw.scaledviewwidth,
             state.r_draw.viewwindowy + y,
             patch,
@@ -648,29 +644,25 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
         y += 8 as i32;
     }
     let __wcache654_4 = W_CacheLumpName(state, "brdr_tl", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         state.r_draw.viewwindowx - 8 as i32,
         state.r_draw.viewwindowy - 8 as i32,
         __wcache654_4,
     );
     let __wcache660_3 = W_CacheLumpName(state, "brdr_tr", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         state.r_draw.viewwindowx + state.r_draw.scaledviewwidth,
         state.r_draw.viewwindowy - 8 as i32,
         __wcache660_3,
     );
     let __wcache666_2 = W_CacheLumpName(state, "brdr_bl", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         state.r_draw.viewwindowx - 8 as i32,
         state.r_draw.viewwindowy + state.r_draw.viewheight,
         __wcache666_2,
     );
     let __wcache672_1 = W_CacheLumpName(state, "brdr_br", PU_CACHE as i32) as *mut patch_t;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         state.r_draw.viewwindowx + state.r_draw.scaledviewwidth,
         state.r_draw.viewwindowy + state.r_draw.viewheight,
         __wcache672_1,
@@ -707,8 +699,7 @@ pub unsafe fn R_DrawViewBorder(state: &mut GameState) {
         ofs += SCREENWIDTH;
         i += 1;
     }
-    V_MarkRect(
-        &mut state.v_video,
+    V_MarkRect(state,
         0 as i32,
         0 as i32,
         SCREENWIDTH,

@@ -1505,8 +1505,7 @@ pub unsafe fn AM_drawMarks(state: &mut GameState) {
                 && fy >= state.am_map.f_y
                 && fy <= state.am_map.f_h - h
             {
-                V_DrawPatch(
-                    &mut state.v_video,
+                V_DrawPatch(state,
                     fx,
                     fy,
                     state.am_map.marknums[i as usize],
@@ -1544,7 +1543,7 @@ pub unsafe fn AM_Drawer(state: &mut GameState) {
         state.am_map.f_w,
         state.am_map.f_h,
     );
-    V_MarkRect(&mut state.v_video, f_x, f_y, f_w, f_h);
+    V_MarkRect(state, f_x, f_y, f_w, f_h);
 }
 unsafe extern "C" fn run_static_initializers() {
     unsafe { game_state() }.am_map.cheat_amap = cheatseq_t {

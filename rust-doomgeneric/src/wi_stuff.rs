@@ -860,8 +860,7 @@ static lnodes: [[point_t; 9]; 4] = [
 ];
 pub const SHOWNEXTLOCDELAY: i32 = 4;
 pub unsafe fn WI_slamBackground(state: &mut GameState) {
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         0 as i32,
         0 as i32,
         state.wi_stuff.background,
@@ -875,8 +874,7 @@ pub unsafe fn WI_drawLF(state: &mut GameState) {
     if state.doomstat.gamemode as u32 != commercial as i32 as u32
         || (*state.wi_stuff.wbs).last < state.wi_stuff.NUMCMAPS
     {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             (SCREENWIDTH
                 - (**state
                     .wi_stuff
@@ -897,8 +895,7 @@ pub unsafe fn WI_drawLF(state: &mut GameState) {
                 .offset((*state.wi_stuff.wbs).last as isize))
             .height as i32
             / 4 as i32;
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             (SCREENWIDTH - (*state.wi_stuff.finished).width as i32) / 2 as i32,
             y,
             state.wi_stuff.finished,
@@ -914,14 +911,13 @@ pub unsafe fn WI_drawLF(state: &mut GameState) {
                     0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32, 0 as i32,
                 ],
             };
-            V_DrawPatch(&mut state.v_video, 0 as i32, y, &raw mut tmp);
+            V_DrawPatch(state, 0 as i32, y, &raw mut tmp);
         }
     }
 }
 pub unsafe fn WI_drawEL(state: &mut GameState) {
     let mut y: i32 = WI_TITLEY;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         (SCREENWIDTH - (*state.wi_stuff.entering).width as i32) / 2 as i32,
         y,
         state.wi_stuff.entering,
@@ -933,8 +929,7 @@ pub unsafe fn WI_drawEL(state: &mut GameState) {
             .offset((*state.wi_stuff.wbs).next as isize))
         .height as i32
         / 4 as i32;
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         (SCREENWIDTH
             - (**state
                 .wi_stuff
@@ -974,8 +969,7 @@ pub unsafe fn WI_drawOnLnode(state: &mut GameState, mut n: i32, mut c: *mut *mut
         }
     }
     if fits && i < 2 as i32 {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].x,
             lnodes[(*state.wi_stuff.wbs).epsd as usize][n as usize].y,
             *c.offset(i as isize),
@@ -1082,8 +1076,7 @@ pub unsafe fn WI_drawAnimatedBack(state: &mut GameState) {
             .offset((*state.wi_stuff.wbs).epsd as isize))
         .offset(i as isize) as *mut anim_t;
         if (*a).ctr >= 0 as i32 {
-            V_DrawPatch(
-                &mut state.v_video,
+            V_DrawPatch(state,
                 (*a).loc.x,
                 (*a).loc.y,
                 (*a).p[(*a).ctr as usize],
@@ -1128,8 +1121,7 @@ pub unsafe fn WI_drawNum(
             break;
         }
         x -= fontwidth;
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             x,
             y,
             state.wi_stuff.num[(n % 10 as i32) as usize],
@@ -1138,7 +1130,7 @@ pub unsafe fn WI_drawNum(
     }
     if neg != 0 {
         x -= 8 as i32;
-        V_DrawPatch(&mut state.v_video, x, y, state.wi_stuff.wiminus);
+        V_DrawPatch(state, x, y, state.wi_stuff.wiminus);
     }
     return x;
 }
@@ -1146,7 +1138,7 @@ pub unsafe fn WI_drawPercent(state: &mut GameState, mut x: i32, mut y: i32, mut 
     if p_0 < 0 as i32 {
         return;
     }
-    V_DrawPatch(&mut state.v_video, x, y, state.wi_stuff.percent);
+    V_DrawPatch(state, x, y, state.wi_stuff.percent);
     WI_drawNum(state, x, y, p_0, -(1 as i32));
 }
 pub unsafe fn WI_drawTime(state: &mut GameState, mut x: i32, mut y: i32, mut t: i32) {
@@ -1162,15 +1154,14 @@ pub unsafe fn WI_drawTime(state: &mut GameState, mut x: i32, mut y: i32, mut t: 
             x = WI_drawNum(state, x, y, n, 2 as i32) - (*state.wi_stuff.colon).width as i32;
             div *= 60 as i32;
             if div == 60 as i32 || t / div != 0 {
-                V_DrawPatch(&mut state.v_video, x, y, state.wi_stuff.colon);
+                V_DrawPatch(state, x, y, state.wi_stuff.colon);
             }
             if !(t / div != 0) {
                 break;
             }
         }
     } else {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             x - (*state.wi_stuff.sucks).width as i32,
             y,
             state.wi_stuff.sucks,
@@ -1400,20 +1391,17 @@ pub unsafe fn WI_drawDeathmatchStats(state: &mut GameState) {
     WI_slamBackground(state);
     WI_drawAnimatedBack(state);
     WI_drawLF(state);
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         DM_TOTALSX - (*state.wi_stuff.total).width as i32 / 2 as i32,
         DM_MATRIXY - WI_SPACINGY + 10 as i32,
         state.wi_stuff.total,
     );
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         DM_KILLERSX,
         DM_KILLERSY,
         state.wi_stuff.killers,
     );
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         DM_VICTIMSX,
         DM_VICTIMSY,
         state.wi_stuff.victims,
@@ -1423,27 +1411,23 @@ pub unsafe fn WI_drawDeathmatchStats(state: &mut GameState) {
     i = 0 as i32;
     while i < MAXPLAYERS {
         if state.g_game.playeringame[i as usize] != 0 {
-            V_DrawPatch(
-                &mut state.v_video,
+            V_DrawPatch(state,
                 x - (*state.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
                 DM_MATRIXY - WI_SPACINGY,
                 state.wi_stuff.p[i as usize],
             );
-            V_DrawPatch(
-                &mut state.v_video,
+            V_DrawPatch(state,
                 DM_MATRIXX - (*state.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
                 y,
                 state.wi_stuff.p[i as usize],
             );
             if i == state.wi_stuff.me {
-                V_DrawPatch(
-                    &mut state.v_video,
+                V_DrawPatch(state,
                     x - (*state.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
                     DM_MATRIXY - WI_SPACINGY,
                     state.wi_stuff.bstar,
                 );
-                V_DrawPatch(
-                    &mut state.v_video,
+                V_DrawPatch(state,
                     DM_MATRIXX - (*state.wi_stuff.p[i as usize]).width as i32 / 2 as i32,
                     y,
                     state.wi_stuff.star,
@@ -1690,8 +1674,7 @@ pub unsafe fn WI_drawNetgameStats(state: &mut GameState) {
     WI_slamBackground(state);
     WI_drawAnimatedBack(state);
     WI_drawLF(state);
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         32 as i32
             + (*state.wi_stuff.star).width as i32 / 2 as i32
             + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32
@@ -1700,8 +1683,7 @@ pub unsafe fn WI_drawNetgameStats(state: &mut GameState) {
         NG_STATSY,
         state.wi_stuff.kills,
     );
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         32 as i32
             + (*state.wi_stuff.star).width as i32 / 2 as i32
             + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32
@@ -1710,8 +1692,7 @@ pub unsafe fn WI_drawNetgameStats(state: &mut GameState) {
         NG_STATSY,
         state.wi_stuff.items,
     );
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         32 as i32
             + (*state.wi_stuff.star).width as i32 / 2 as i32
             + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32
@@ -1721,8 +1702,7 @@ pub unsafe fn WI_drawNetgameStats(state: &mut GameState) {
         state.wi_stuff.secret,
     );
     if state.wi_stuff.dofrags != 0 {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             32 as i32
                 + (*state.wi_stuff.star).width as i32 / 2 as i32
                 + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32
@@ -1739,15 +1719,13 @@ pub unsafe fn WI_drawNetgameStats(state: &mut GameState) {
             x = 32 as i32
                 + (*state.wi_stuff.star).width as i32 / 2 as i32
                 + 32 as i32 * (state.wi_stuff.dofrags == 0) as i32;
-            V_DrawPatch(
-                &mut state.v_video,
+            V_DrawPatch(state,
                 x - (*state.wi_stuff.p[i as usize]).width as i32,
                 y,
                 state.wi_stuff.p[i as usize],
             );
             if i == state.wi_stuff.me {
-                V_DrawPatch(
-                    &mut state.v_video,
+                V_DrawPatch(state,
                     x - (*state.wi_stuff.p[i as usize]).width as i32,
                     y,
                     state.wi_stuff.star,
@@ -1932,24 +1910,21 @@ pub unsafe fn WI_drawStats(state: &mut GameState) {
     WI_slamBackground(state);
     WI_drawAnimatedBack(state);
     WI_drawLF(state);
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         SP_STATSX,
         SP_STATSY,
         state.wi_stuff.kills,
     );
     let cnt_kills = state.wi_stuff.cnt_kills[0 as i32 as usize];
     WI_drawPercent(state, SCREENWIDTH - SP_STATSX, SP_STATSY, cnt_kills);
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         SP_STATSX,
         SP_STATSY + lh,
         state.wi_stuff.items,
     );
     let cnt_items = state.wi_stuff.cnt_items[0 as i32 as usize];
     WI_drawPercent(state, SCREENWIDTH - SP_STATSX, SP_STATSY + lh, cnt_items);
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         SP_STATSX,
         SP_STATSY + 2 as i32 * lh,
         state.wi_stuff.sp_secret,
@@ -1961,8 +1936,7 @@ pub unsafe fn WI_drawStats(state: &mut GameState) {
         SP_STATSY + 2 as i32 * lh,
         cnt_secret,
     );
-    V_DrawPatch(
-        &mut state.v_video,
+    V_DrawPatch(state,
         SP_TIMEX,
         SP_TIMEY,
         state.wi_stuff.timepatch,
@@ -1970,8 +1944,7 @@ pub unsafe fn WI_drawStats(state: &mut GameState) {
     let cnt_time = state.wi_stuff.cnt_time;
     WI_drawTime(state, SCREENWIDTH / 2 as i32 - SP_TIMEX, SP_TIMEY, cnt_time);
     if (*state.wi_stuff.wbs).epsd < 3 as i32 {
-        V_DrawPatch(
-            &mut state.v_video,
+        V_DrawPatch(state,
             SCREENWIDTH / 2 as i32 + SP_TIMEX,
             SP_TIMEY,
             state.wi_stuff.par,

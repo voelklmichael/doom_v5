@@ -442,13 +442,12 @@ pub const ST_MAXAMMO3Y: i32 = 185;
 pub unsafe fn ST_refreshBackground(state: &mut GameState) {
     if state.st_stuff.st_statusbaron {
         V_UseBuffer(&mut state.v_video, state.st_stuff.st_backing_screen);
-        V_DrawPatch(&mut state.v_video, ST_X, 0 as i32, state.st_stuff.sbar);
+        V_DrawPatch(state, ST_X, 0 as i32, state.st_stuff.sbar);
         if state.g_game.netgame {
-            V_DrawPatch(&mut state.v_video, ST_FX, 0 as i32, state.st_stuff.faceback);
+            V_DrawPatch(state, ST_FX, 0 as i32, state.st_stuff.faceback);
         }
         V_RestoreBuffer(state);
-        V_CopyRect(
-            &mut state.v_video,
+        V_CopyRect(state,
             ST_X,
             0 as i32,
             state.st_stuff.st_backing_screen,

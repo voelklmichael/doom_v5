@@ -83,7 +83,7 @@ pub unsafe fn HUlib_delCharFromTextLine(mut t: *mut hu_textline_t) -> bool {
     };
 }
 pub unsafe fn HUlib_drawTextLine(
-    state: &mut crate::src::v_video::VVideoState,
+    state: &mut GameState,
     mut l: *mut hu_textline_t,
     mut drawcursor: boolean,
 ) {
@@ -220,7 +220,7 @@ pub unsafe fn HUlib_addMessageToSText(
     }
 }
 pub unsafe fn HUlib_drawSText(
-    state: &mut crate::src::v_video::VVideoState,
+    state: &mut GameState,
     mut s: *mut hu_stext_t,
 ) {
     let mut i: i32 = 0;
@@ -317,7 +317,7 @@ pub unsafe fn HUlib_keyInIText(mut it: *mut hu_itext_t, mut ch: u8) -> boolean {
     return true_0 as boolean;
 }
 pub unsafe fn HUlib_drawIText(
-    state: &mut crate::src::v_video::VVideoState,
+    state: &mut GameState,
     mut it: *mut hu_itext_t,
 ) {
     let mut l: *mut hu_textline_t = &raw mut (*it).l;
