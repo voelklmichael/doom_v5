@@ -49,7 +49,7 @@ pub struct RThingsState {
     pub numsprites: i32,
     pub sprtemp: [spriteframe_t; 29],
     pub maxframe: i32,
-    pub spritename: *mut ::core::ffi::c_char,
+    pub spritename: &'static str,
     pub vissprites: [vissprite_t; 128],
     pub vissprite_p: *mut vissprite_t,
     pub overflowsprite: vissprite_t,
@@ -78,7 +78,7 @@ impl RThingsState {
                 flip: [0; 8],
             }; 29],
             maxframe: 0,
-            spritename: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            spritename: "",
             vissprites: [vissprite_s {
                 prev: ::core::ptr::null::<vissprite_s>() as *mut vissprite_s,
                 next: ::core::ptr::null::<vissprite_s>() as *mut vissprite_s,
@@ -187,18 +187,14 @@ pub unsafe fn R_InstallSpriteLump(
         if state.r_things.sprtemp[frame as usize].rotate == false_0 as boolean {
             I_Error(&format!(
                 "R_InitSprites: Sprite {} frame {} has multip rot=0 lump",
-                ::std::ffi::CStr::from_ptr(state.r_things.spritename)
-                    .to_str()
-                    .unwrap(),
+                state.r_things.spritename,
                 ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
             ));
         }
         if state.r_things.sprtemp[frame as usize].rotate == true_0 as boolean {
             I_Error(&format!(
                 "R_InitSprites: Sprite {} frame {} has rotations and a rot=0 lump",
-                ::std::ffi::CStr::from_ptr(state.r_things.spritename)
-                    .to_str()
-                    .unwrap(),
+                state.r_things.spritename,
                 ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
             ));
         }
@@ -215,9 +211,7 @@ pub unsafe fn R_InstallSpriteLump(
     if state.r_things.sprtemp[frame as usize].rotate == false_0 as boolean {
         I_Error(&format!(
             "R_InitSprites: Sprite {} frame {} has rotations and a rot=0 lump",
-            ::std::ffi::CStr::from_ptr(state.r_things.spritename)
-                .to_str()
-                .unwrap(),
+            state.r_things.spritename,
             ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
         ));
     }
@@ -226,9 +220,7 @@ pub unsafe fn R_InstallSpriteLump(
     if state.r_things.sprtemp[frame as usize].lump[rotation as usize] as i32 != -(1 as i32) {
         I_Error(&format!(
             "R_InitSprites: Sprite {} : {} : {} has two lumps mapped to it",
-            ::std::ffi::CStr::from_ptr(state.r_things.spritename)
-                .to_str()
-                .unwrap(),
+            state.r_things.spritename,
             ('A' as i32 as u32).wrapping_add(frame) as u8 as char,
             ('1' as i32 as u32).wrapping_add(rotation) as u8 as char,
         ));
@@ -237,9 +229,7 @@ pub unsafe fn R_InstallSpriteLump(
         (lump - state.r_data.firstspritelump) as i16;
     state.r_things.sprtemp[frame as usize].flip[rotation as usize] = flipped as byte;
 }
-pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::core::ffi::c_char) {
-    let mut check: *mut *mut ::core::ffi::c_char =
-        ::core::ptr::null_mut::<*mut ::core::ffi::c_char>();
+pub unsafe fn R_InitSpriteDefs(state: &mut GameState, namelist: &[&'static str]) {
     let mut i: i32 = 0;
     let mut l: i32 = 0;
     let mut frame: i32 = 0;
@@ -247,11 +237,7 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::
     let mut start: i32 = 0;
     let mut end: i32 = 0;
     let mut patched: i32 = 0;
-    check = namelist;
-    while !(*check).is_null() {
-        check = check.offset(1);
-    }
-    state.r_things.numsprites = check.offset_from(namelist) as i64 as i32;
+    state.r_things.numsprites = namelist.len() as i32;
     if state.r_things.numsprites == 0 {
         return;
     }
@@ -266,7 +252,7 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::
     end = state.r_data.lastspritelump + 1 as i32;
     i = 0 as i32;
     while i < state.r_things.numsprites {
-        state.r_things.spritename = *namelist.offset(i as isize);
+        state.r_things.spritename = namelist[i as usize];
         memset(
             &raw mut state.r_things.sprtemp as *mut spriteframe_t as *mut ::core::ffi::c_void,
             -(1 as i32),
@@ -277,10 +263,7 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::
         while l < end {
             if (*state.w_wad.lumpinfo.offset(l as isize))
                 .name
-                .eq_bytes_ignore_ascii_case_n(
-                    ::std::ffi::CStr::from_ptr(state.r_things.spritename).to_bytes(),
-                    4,
-                )
+                .eq_bytes_ignore_ascii_case_n(state.r_things.spritename.as_bytes(), 4)
             {
                 frame = (*state.w_wad.lumpinfo.offset(l as isize)).name[4 as i32 as usize] as i32
                     - 'A' as i32;
@@ -317,9 +300,7 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::
                     -1 => {
                         I_Error(&format!(
                             "R_InitSprites: No patches found for {} frame {}",
-                            ::std::ffi::CStr::from_ptr(state.r_things.spritename)
-                                .to_str()
-                                .unwrap(),
+                            state.r_things.spritename,
                             (frame + 'A' as i32) as u8 as char,
                         ));
                     }
@@ -331,9 +312,7 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::
                             {
                                 I_Error(&format!(
                                     "R_InitSprites: Sprite {} frame {} is missing rotations",
-                                    ::std::ffi::CStr::from_ptr(state.r_things.spritename)
-                                        .to_str()
-                                        .unwrap(),
+                                    state.r_things.spritename,
                                     (frame + 'A' as i32) as u8 as char,
                                 ));
                             }
@@ -367,7 +346,7 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::
 }
 #[no_mangle]
 pub static newvissprite: i32 = 0;
-pub unsafe fn R_InitSprites(state: &mut GameState, mut namelist: *mut *mut ::core::ffi::c_char) {
+pub unsafe fn R_InitSprites(state: &mut GameState, namelist: &[&'static str]) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < SCREENWIDTH {

@@ -73,7 +73,7 @@ pub const mus_None: C2RustUnnamed_0 = 0;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct sfxinfo_struct {
-    pub tagname: *mut ::core::ffi::c_char,
+    pub tagname: Option<&'static str>,
     pub name: FixedCStr<9>,
     pub priority: i32,
     pub link: *mut sfxinfo_t,
@@ -88,7 +88,7 @@ pub type sfxinfo_t = sfxinfo_struct;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct musicinfo_t {
-    pub name: *mut ::core::ffi::c_char,
+    pub name: FixedCStr<7>,
     pub lumpnum: i32,
     pub data: *mut ::core::ffi::c_void,
     pub handle: *mut ::core::ffi::c_void,
@@ -206,409 +206,409 @@ pub const sfx_shotgn: C2RustUnnamed = 2;
 pub const sfx_None: C2RustUnnamed = 0;
 const INITIAL_S_MUSIC: [musicinfo_t; 68] = [
     musicinfo_t {
-        name: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+        name: FixedCStr([0u8; 7]),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m1\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m2\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m3\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m4\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m4\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m5\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m5\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m6\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m6\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m7\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m7\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m8\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m8\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e1m9\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e1m9\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m1\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m2\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m3\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m4\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m4\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m5\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m5\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m6\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m6\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m7\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m7\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m8\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m8\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e2m9\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e2m9\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m1\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m2\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m3\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m4\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m4\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m5\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m5\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m6\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m6\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m7\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m7\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m8\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m8\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"e3m9\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"e3m9\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"inter\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"inter\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"intro\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"intro\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"bunny\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"bunny\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"victor\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"victor\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"introa\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"introa\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"runnin\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"runnin\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"stalks\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"stalks\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"countd\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"countd\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"betwee\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"betwee\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"doom\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"doom\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"the_da\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"the_da\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"shawn\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"shawn\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"ddtblu\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"ddtblu\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"in_cit\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"in_cit\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"dead\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"dead\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"stlks2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"stlks2\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"theda2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"theda2\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"doom2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"doom2\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"ddtbl2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"ddtbl2\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"runni2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"runni2\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"dead2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"dead2\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"stlks3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"stlks3\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"romero\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"romero\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"shawn2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"shawn2\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"messag\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"messag\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"count2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"count2\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"ddtbl3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"ddtbl3\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"ampie\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"ampie\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"theda3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"theda3\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"adrian\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"adrian\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"messg2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"messg2\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"romer2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"romer2\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"tense\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"tense\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"shawn3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"shawn3\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"openin\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"openin\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"evil\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"evil\x00\x00\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"ultima\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"ultima\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"read_m\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"read_m\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"dm2ttl\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"dm2ttl\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
     },
     musicinfo_t {
-        name: b"dm2int\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        name: FixedCStr(*b"dm2int\x00"),
         lumpnum: 0 as i32,
         data: NULL,
         handle: NULL,
@@ -626,7 +626,7 @@ impl SoundsState {
             S_music: INITIAL_S_MUSIC,
             S_sfx: [
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"none\0\0\0\0\0"),
                     priority: 0 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -638,7 +638,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"pistol\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -650,7 +650,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"shotgn\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -662,7 +662,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sgcock\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -674,7 +674,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"dshtgn\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -686,7 +686,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"dbopn\0\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -698,7 +698,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"dbcls\0\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -710,7 +710,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"dbload\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -722,7 +722,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"plasma\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -734,7 +734,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bfg\0\0\0\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -746,7 +746,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sawup\0\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -758,7 +758,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sawidl\0\0\0"),
                     priority: 118 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -770,7 +770,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sawful\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -782,7 +782,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sawhit\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -794,7 +794,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"rlaunc\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -806,7 +806,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"rxplod\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -818,7 +818,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"firsht\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -830,7 +830,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"firxpl\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -842,7 +842,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"pstart\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -854,7 +854,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"pstop\0\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -866,7 +866,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"doropn\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -878,7 +878,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"dorcls\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -890,7 +890,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"stnmov\0\0\0"),
                     priority: 119 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -902,7 +902,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"swtchn\0\0\0"),
                     priority: 78 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -914,7 +914,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"swtchx\0\0\0"),
                     priority: 78 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -926,7 +926,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"plpain\0\0\0"),
                     priority: 96 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -938,7 +938,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"dmpain\0\0\0"),
                     priority: 96 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -950,7 +950,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"popain\0\0\0"),
                     priority: 96 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -962,7 +962,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"vipain\0\0\0"),
                     priority: 96 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -974,7 +974,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"mnpain\0\0\0"),
                     priority: 96 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -986,7 +986,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"pepain\0\0\0"),
                     priority: 96 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -998,7 +998,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"slop\0\0\0\0\0"),
                     priority: 78 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1010,7 +1010,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"itemup\0\0\0"),
                     priority: 78 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1022,7 +1022,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"wpnup\0\0\0\0"),
                     priority: 78 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1034,7 +1034,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"oof\0\0\0\0\0\0"),
                     priority: 96 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1046,7 +1046,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"telept\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1058,7 +1058,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"posit1\0\0\0"),
                     priority: 98 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1070,7 +1070,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"posit2\0\0\0"),
                     priority: 98 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1082,7 +1082,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"posit3\0\0\0"),
                     priority: 98 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1094,7 +1094,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bgsit1\0\0\0"),
                     priority: 98 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1106,7 +1106,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bgsit2\0\0\0"),
                     priority: 98 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1118,7 +1118,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sgtsit\0\0\0"),
                     priority: 98 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1130,7 +1130,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"cacsit\0\0\0"),
                     priority: 98 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1142,7 +1142,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"brssit\0\0\0"),
                     priority: 94 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1154,7 +1154,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"cybsit\0\0\0"),
                     priority: 92 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1166,7 +1166,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"spisit\0\0\0"),
                     priority: 90 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1178,7 +1178,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bspsit\0\0\0"),
                     priority: 90 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1190,7 +1190,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"kntsit\0\0\0"),
                     priority: 90 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1202,7 +1202,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"vilsit\0\0\0"),
                     priority: 90 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1214,7 +1214,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"mansit\0\0\0"),
                     priority: 90 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1226,7 +1226,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"pesit\0\0\0\0"),
                     priority: 90 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1238,7 +1238,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sklatk\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1250,7 +1250,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sgtatk\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1262,7 +1262,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"skepch\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1274,7 +1274,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"vilatk\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1286,7 +1286,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"claw\0\0\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1298,7 +1298,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"skeswg\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1310,7 +1310,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"pldeth\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1322,7 +1322,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"pdiehi\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1334,7 +1334,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"podth1\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1346,7 +1346,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"podth2\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1358,7 +1358,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"podth3\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1370,7 +1370,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bgdth1\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1382,7 +1382,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bgdth2\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1394,7 +1394,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sgtdth\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1406,7 +1406,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"cacdth\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1418,7 +1418,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"skldth\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1430,7 +1430,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"brsdth\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1442,7 +1442,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"cybdth\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1454,7 +1454,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"spidth\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1466,7 +1466,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bspdth\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1478,7 +1478,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"vildth\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1490,7 +1490,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"kntdth\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1502,7 +1502,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"pedth\0\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1514,7 +1514,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"skedth\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1526,7 +1526,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"posact\0\0\0"),
                     priority: 120 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1538,7 +1538,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bgact\0\0\0\0"),
                     priority: 120 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1550,7 +1550,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"dmact\0\0\0\0"),
                     priority: 120 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1562,7 +1562,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bspact\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1574,7 +1574,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bspwlk\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1586,7 +1586,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"vilact\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1598,7 +1598,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"noway\0\0\0\0"),
                     priority: 78 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1610,7 +1610,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"barexp\0\0\0"),
                     priority: 60 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1622,7 +1622,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"punch\0\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1634,7 +1634,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"hoof\0\0\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1646,7 +1646,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"metal\0\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1658,7 +1658,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"chgun\0\0\0\0"),
                     priority: 64 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1670,7 +1670,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"tink\0\0\0\0\0"),
                     priority: 60 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1682,7 +1682,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bdopn\0\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1694,7 +1694,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bdcls\0\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1706,7 +1706,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"itmbk\0\0\0\0"),
                     priority: 100 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1718,7 +1718,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"flame\0\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1730,7 +1730,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"flamst\0\0\0"),
                     priority: 32 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1742,7 +1742,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"getpow\0\0\0"),
                     priority: 60 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1754,7 +1754,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bospit\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1766,7 +1766,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"boscub\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1778,7 +1778,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bossit\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1790,7 +1790,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bospn\0\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1802,7 +1802,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"bosdth\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1814,7 +1814,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"manatk\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1826,7 +1826,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"mandth\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1838,7 +1838,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"sssit\0\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1850,7 +1850,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"ssdth\0\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1862,7 +1862,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"keenpn\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1874,7 +1874,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"keendt\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1886,7 +1886,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"skeact\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1898,7 +1898,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"skesit\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1910,7 +1910,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"skeatk\0\0\0"),
                     priority: 70 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),
@@ -1922,7 +1922,7 @@ impl SoundsState {
                     driver_data: NULL,
                 },
                 sfxinfo_struct {
-                    tagname: ::core::ptr::null_mut::<::core::ffi::c_char>(),
+                    tagname: None,
                     name: FixedCStr(*b"radio\0\0\0\0"),
                     priority: 60 as i32,
                     link: ::core::ptr::null_mut::<sfxinfo_t>(),

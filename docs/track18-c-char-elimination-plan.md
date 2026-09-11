@@ -198,8 +198,46 @@ printed by `R_Init` itself, and the newline comes from the following `P_Init` me
 exactly as the original C code structured it).
 
 Printf-family conversion is now complete except for the 19 dead-code call sites
-documented in Status above. Next candidate: re-survey the remaining raw
-`*mut`/`*const c_char` pointers now that phases 4-9 have converted every
-struct-field/const-table/printf site touching them, then decide whether `memcpy`/
-`memset`/`memmove` (74 sites) or the deferred `strncasecmp`/`strdup` sites are the
-better next target.
+documented in Status above.
+
+**Phase 10 done** (`c-char-phase10-sprnames-musicinfo`, PR pending): the re-survey
+turned up three more WAD-lumpname/const-table-shaped clusters, all converted:
+- `info.rs`'s `InfoState.sprnames: [*mut c_char; 139]` (a NULL-terminated pointer
+  array, the classic C idiom) → `[&'static str; 138]` (dropped the NULL sentinel —
+  Rust arrays carry their own length). Required touching the consumer chain:
+  `p_setup.rs::P_Init` (builds the pointer, calls `R_InitSprites`), `r_things.rs`'s
+  `R_InitSprites`/`R_InitSpriteDefs` (`*mut *mut c_char` param → `&[&'static str]`,
+  the NULL-terminated `while !(*check).is_null()` walk → `namelist.len()`), and
+  `RThingsState.spritename` (`*mut c_char` → `&'static str`, default `""`) plus its
+  6 `CStr::from_ptr(...).to_str().unwrap()` read sites, now direct field reads.
+- `sounds.rs`'s `sfxinfo_struct.tagname: *mut c_char` (109 entries) — confirmed via
+  full-codebase grep this field is never read anywhere, only ever written `NULL`;
+  retyped to `Option<&'static str>` (kept the field rather than deleting it, since
+  unlike the track's confirmed-dead *functions* this is a live struct still used
+  every frame — only this one field is inert) with all 109 sites → `None`.
+- `sounds.rs`'s `musicinfo_t.name: *mut c_char` (68 entries, max length 6) — same
+  WAD-lumpname family as `sfxinfo_struct.name` (phase 5), just missed by that sweep
+  since it's a different struct in the same file. Converted to `FixedCStr<7>`; the
+  one live read site (`s_sound.rs`'s `S_ChangeMusic`, feeding it to `M_snprintf`'s
+  `%s`) updated to `.as_ptr() as *const c_char`, matching the `D_DEVSTR` precedent
+  from phase 9. The `mus_None` dummy entry's `name: null` became `FixedCStr([0u8;
+  7])` (all-zero/empty) — strictly safer than the null pointer it replaced.
+
+`c_char` references: 1793 → 1260 (a further 30% cut, 44% cumulative from the
+original 2262). Verified with the full bar: 0 new warnings, release build clean, 3x
+Xvfb boot with no panics, screenshot-confirmed sprite rendering intact (the
+`R_InitSprites` path is exercised by every level load).
+
+Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
+concentrations are `d_main.rs` (130, largely local `[c_char; 256]` scratch buffers
+for demo/turbo/mission-pack argument parsing — lower value, this track has
+deliberately deferred local scratch buffers throughout), `g_game.rs` (83),
+`st_stuff.rs` (79), `p_inter.rs` (74), `wi_stuff.rs` (71), `m_misc.rs` (55, likely
+includes `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI printf
+reimplementations still used by many buffer-building call sites, a structural
+piece rather than a simple field conversion), `m_menu.rs` (37), `hu_stuff.rs` (36),
+`m_config.rs` (33, includes the 2 deliberately-deferred `strdup` sites). Each needs
+the same per-cluster triage this phase used (is it a lumpname-shaped const table,
+an always-null dead field, a local scratch buffer, or a structural printf-engine
+piece) before deciding scope — the original blanket 1369-count estimate has already
+proven an unreliable guide to where the real work is.

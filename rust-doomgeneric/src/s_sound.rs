@@ -451,7 +451,7 @@ pub unsafe fn S_ChangeMusic(state: &mut GameState, mut musicnum: i32, mut loopin
             &raw mut namebuf as *mut ::core::ffi::c_char,
             ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             b"d_%s\0" as *const u8 as *const ::core::ffi::c_char,
-            (*music).name,
+            (*music).name.as_ptr() as *const ::core::ffi::c_char,
         );
         (*music).lumpnum = W_GetNumForName(&wad_name8_to_string(
             &raw mut namebuf as *mut ::core::ffi::c_char,

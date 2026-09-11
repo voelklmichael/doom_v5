@@ -983,6 +983,6 @@ pub unsafe fn P_SetupLevel(
 pub unsafe fn P_Init(state: &mut GameState) {
     P_InitSwitchList(state);
     P_InitPicAnims(state);
-    let sprnames = &raw mut state.info.sprnames as *mut *mut ::core::ffi::c_char;
-    R_InitSprites(state, sprnames);
+    let sprnames = state.info.sprnames;
+    R_InitSprites(state, &sprnames);
 }
