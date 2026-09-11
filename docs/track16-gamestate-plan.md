@@ -191,3 +191,57 @@ actually gets there.
   known hub families — before converting any module, grep for its function names used
   as bare values (same check Track 5/9/13 already established) to catch a fifth hub
   early rather than discovering it mid-phase.
+
+## Final status (2026-09-11) — the bridge is permanent, not temporary
+
+The bridge-collapse sub-track (BC1–BC93, run as a distinct effort after this plan's
+original phase list finished — see git log for `Bridge-collapse BC*` commits) threaded
+real `&mut GameState` parameters through essentially the entire codebase, including all
+three of the last whole-codebase-fanout utility hubs (`S_StartSound`, `W_CacheLumpNum`/
+`W_CacheLumpName`, the `V_DrawPatch` family) and `I_Error` (replaced with a bare
+`panic!` instead of being threaded — see `known-deviations.md`). A final full-codebase
+audit (BC93) individually verified every one of the ~230 remaining `game_state()` call
+sites and confirmed each falls into one of a small number of permanent categories:
+
+- **Confirmed dead code**, left in place untouched (this track's consistent precedent
+  throughout, e.g. BC22's Heretic/Hexen/Strife binds): `m_controls.rs`'s Heretic/Hexen/
+  Strife bind functions, `memio.rs`'s entire MEMFILE abstraction, `d_loop.rs`'s
+  `D_Disconnected`/`D_ReceiveTic`, `i_scale.rs`'s `GenerateStretchTable` cluster,
+  `p_pspr.rs`'s `P_CalcSwing`, `m_misc.rs`'s `M_ReadFile`, `m_argv.rs`'s
+  `M_GetExecutableName`, `am_map.rs`'s `AM_updateLightLev`, `g_game.rs`'s
+  `G_InitPlayer`.
+- **`atexit_func_t` registrants** — `G_CheckDemoStatus`, `D_QuitNetGame`, `D_Endoom`,
+  `M_SaveDefaults`, `StatDump`, `S_Shutdown` — each a raw C-ABI `unsafe extern "C" fn()
+  -> ()` stored in `atexit_listentry_t`, genuinely unable to carry a `&mut GameState`
+  argument without breaking that callback contract. (`I_AtExit`/`I_Quit` themselves,
+  the infrastructure that manages this list, are NOT similarly constrained and were
+  converted in BC93 — only the registered callback bodies stay permanently zero-arg.)
+- **Other C-ABI-bound hub payloads**: `w_file_stdc.rs`'s `W_StdC_OpenFile`/
+  `CloseFile`/`Read` (`wad_file_class_t`'s fields), `st_lib.rs`'s `ST_loadCallback` /
+  `wi_stuff.rs`'s `WI_loadCallback` (`load_callback_t`), `d_main.rs`'s
+  `D_GrabMouseCallback` (`grabmouse_callback_t`, whose setter is a no-op stub, so this
+  one is also dead-in-practice).
+- **Per-file `run_static_initializers`-style constructor blocks**: `am_map.rs`'s
+  `cheat_amap`, `st_stuff.rs`'s `cheat_clev`/`cheat_mypos`/etc. — a long-standing
+  const-fn-construction exception (see the [[doom_v5_known_gotchas]] memory / BC10's
+  landmine note), not related to threading at all.
+- **One deliberately deferred large-fanout cluster**: `w_wad.rs`'s
+  `W_CheckNumForName`/`W_GetNumForName` (19 and 15 external call sites across 5-6
+  files respectively) and the leaf functions tightly coupled to them
+  (`W_AddFile`/`ExtendLumpInfo`/`W_LumpLength`/`W_ReleaseLumpNum`/etc.) — same
+  S_StartSound-scale class the other three hubs were, deliberately left for a future
+  dedicated phase if ever revisited, not attempted as part of the final sweep.
+- **Two deliberate low-value shims** (poor effort/benefit — widening would ripple a
+  whole dispatch table or narrow-substate call chain for one field read):
+  `i_scale.rs`'s `I_Stretch5x` `-scanline` check (the `screen_mode_t.DrawScreen` hub),
+  `v_video.rs`'s `V_LoadTintTable`/`V_LoadXlaTable`.
+- **The one legitimate root**: `doomgeneric_xlib.rs`'s single `game_state()` call that
+  constructs the initial state before the tick loop begins — this is what `game_state()`
+  exists to bootstrap, not a leftover.
+
+**Conclusion**: `GAME_STATE`/`OnceLock`/`game_state()` cannot be deleted, and this is
+not a temporary shortfall to fix later — it is the permanent, correct shape for this
+codebase given the `atexit_func_t` C-ABI constraint alone. The bridge (`game_state.rs`)
+stays as permanent infrastructure, not a transitional scaffold. Calling this track
+"done" means accepting that, not treating the OnceLock's continued existence as
+unfinished work.
