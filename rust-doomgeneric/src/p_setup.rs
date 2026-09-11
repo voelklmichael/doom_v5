@@ -257,7 +257,7 @@ pub unsafe fn P_LoadVertexes(state: &mut GameState, mut lump: i32) {
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut vertex_t;
-    data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
+    data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     ml = data as *mut mapvertex_t;
     li = state.p_setup.vertexes;
     i = 0 as i32;
@@ -315,7 +315,7 @@ pub unsafe fn P_LoadSegs(state: &mut GameState, mut lump: i32) {
         0 as i32,
         (state.p_setup.numsegs as size_t).wrapping_mul(::core::mem::size_of::<seg_t>() as size_t),
     );
-    data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
+    data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     ml = data as *mut mapseg_t;
     li = state.p_setup.segs;
     i = 0 as i32;
@@ -356,7 +356,7 @@ pub unsafe fn P_LoadSubsectors(state: &mut GameState, mut lump: i32) {
         as i32;
     state.p_setup.numsubsectors = numsubsectors;
     state.p_setup.subsectors = Vec::with_capacity(numsubsectors as usize);
-    data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
+    data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     ms = data as *mut mapsubsector_t;
     i = 0 as i32;
     while i < numsubsectors {
@@ -378,7 +378,7 @@ pub unsafe fn P_LoadSectors(state: &mut GameState, mut lump: i32) {
         .wrapping_div(::core::mem::size_of::<mapsector_t>() as usize) as i32;
     state.p_setup.numsectors = numsectors;
     state.p_setup.sectors = vec![ZERO_SECTOR; numsectors as usize];
-    data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
+    data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     ms = data as *mut mapsector_t;
     i = 0 as i32;
     while i < numsectors {
@@ -419,7 +419,7 @@ pub unsafe fn P_LoadNodes(state: &mut GameState, mut lump: i32) {
         PU_LEVEL as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut node_t;
-    data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
+    data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     mn = data as *mut mapnode_t;
     no = state.p_setup.nodes;
     i = 0 as i32;
@@ -458,7 +458,7 @@ pub unsafe fn P_LoadThings(state: &mut GameState, mut lump: i32) {
     };
     let mut numthings: i32 = 0;
     let mut spawn: bool = false;
-    data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
+    data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     numthings = (W_LumpLength(lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapthing_t>() as usize) as i32;
     mt = data as *mut mapthing_t;
@@ -584,7 +584,7 @@ pub unsafe fn P_LoadLineDefs(state: &mut GameState, mut lump: i32) {
         0 as i32,
         (state.p_setup.numlines as size_t).wrapping_mul(::core::mem::size_of::<line_t>() as size_t),
     );
-    data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
+    data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     mld = data as *mut maplinedef_t;
     ld = state.p_setup.lines;
     i = 0 as i32;
@@ -649,7 +649,7 @@ pub unsafe fn P_LoadSideDefs(state: &mut GameState, mut lump: i32) {
         .wrapping_div(::core::mem::size_of::<mapsidedef_t>() as usize) as i32;
     state.p_setup.numsides = numsides;
     state.p_setup.sides = Vec::with_capacity(numsides as usize);
-    data = W_CacheLumpNum(lump, PU_STATIC as i32) as *mut byte;
+    data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     msd = data as *mut mapsidedef_t;
     i = 0 as i32;
     while i < numsides {
@@ -875,7 +875,7 @@ unsafe fn P_LoadReject(state: &mut GameState, mut lumpnum: i32) {
     minlength = (state.p_setup.numsectors * state.p_setup.numsectors + 7 as i32) / 8 as i32;
     lumplen = W_LumpLength(lumpnum as u32);
     if lumplen >= minlength {
-        state.p_setup.rejectmatrix = W_CacheLumpNum(lumpnum, PU_LEVEL as i32) as *mut byte;
+        state.p_setup.rejectmatrix = W_CacheLumpNum(state, lumpnum, PU_LEVEL as i32) as *mut byte;
     } else {
         state.p_setup.rejectmatrix = Z_Malloc(
             &mut state.z_zone,

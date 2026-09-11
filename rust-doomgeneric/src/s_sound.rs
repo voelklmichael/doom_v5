@@ -458,7 +458,7 @@ pub unsafe fn S_ChangeMusic(state: &mut GameState, mut musicnum: i32, mut loopin
             &raw mut namebuf as *mut ::core::ffi::c_char,
         ));
     }
-    (*music).data = W_CacheLumpNum((*music).lumpnum, PU_STATIC as i32);
+    (*music).data = W_CacheLumpNum(state, (*music).lumpnum, PU_STATIC as i32);
     handle = I_RegisterSong(
         &mut state.i_sound,
         (*music).data,

@@ -578,7 +578,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
     } else {
         name = name1;
     }
-    src = W_CacheLumpName(&wad_name8_to_string(name), PU_CACHE as i32) as *mut byte;
+    src = W_CacheLumpName(state, &wad_name8_to_string(name), PU_CACHE as i32) as *mut byte;
     dest = state.r_draw.background_buffer;
     y = 0 as i32;
     while y < SCREENHEIGHT - SBARHEIGHT {
@@ -603,7 +603,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
         y += 1;
     }
     V_UseBuffer(&mut state.v_video, state.r_draw.background_buffer);
-    patch = W_CacheLumpName("brdr_t", PU_CACHE as i32) as *mut patch_t;
+    patch = W_CacheLumpName(state, "brdr_t", PU_CACHE as i32) as *mut patch_t;
     x = 0 as i32;
     while x < state.r_draw.scaledviewwidth {
         V_DrawPatch(
@@ -614,7 +614,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
         );
         x += 8 as i32;
     }
-    patch = W_CacheLumpName("brdr_b", PU_CACHE as i32) as *mut patch_t;
+    patch = W_CacheLumpName(state, "brdr_b", PU_CACHE as i32) as *mut patch_t;
     x = 0 as i32;
     while x < state.r_draw.scaledviewwidth {
         V_DrawPatch(
@@ -625,7 +625,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
         );
         x += 8 as i32;
     }
-    patch = W_CacheLumpName("brdr_l", PU_CACHE as i32) as *mut patch_t;
+    patch = W_CacheLumpName(state, "brdr_l", PU_CACHE as i32) as *mut patch_t;
     y = 0 as i32;
     while y < state.r_draw.viewheight {
         V_DrawPatch(
@@ -636,7 +636,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
         );
         y += 8 as i32;
     }
-    patch = W_CacheLumpName("brdr_r", PU_CACHE as i32) as *mut patch_t;
+    patch = W_CacheLumpName(state, "brdr_r", PU_CACHE as i32) as *mut patch_t;
     y = 0 as i32;
     while y < state.r_draw.viewheight {
         V_DrawPatch(
@@ -647,29 +647,33 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
         );
         y += 8 as i32;
     }
+    let __wcache654_4 = W_CacheLumpName(state, "brdr_tl", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatch(
         &mut state.v_video,
         state.r_draw.viewwindowx - 8 as i32,
         state.r_draw.viewwindowy - 8 as i32,
-        W_CacheLumpName("brdr_tl", PU_CACHE as i32) as *mut patch_t,
+        __wcache654_4,
     );
+    let __wcache660_3 = W_CacheLumpName(state, "brdr_tr", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatch(
         &mut state.v_video,
         state.r_draw.viewwindowx + state.r_draw.scaledviewwidth,
         state.r_draw.viewwindowy - 8 as i32,
-        W_CacheLumpName("brdr_tr", PU_CACHE as i32) as *mut patch_t,
+        __wcache660_3,
     );
+    let __wcache666_2 = W_CacheLumpName(state, "brdr_bl", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatch(
         &mut state.v_video,
         state.r_draw.viewwindowx - 8 as i32,
         state.r_draw.viewwindowy + state.r_draw.viewheight,
-        W_CacheLumpName("brdr_bl", PU_CACHE as i32) as *mut patch_t,
+        __wcache666_2,
     );
+    let __wcache672_1 = W_CacheLumpName(state, "brdr_br", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatch(
         &mut state.v_video,
         state.r_draw.viewwindowx + state.r_draw.scaledviewwidth,
         state.r_draw.viewwindowy + state.r_draw.viewheight,
-        W_CacheLumpName("brdr_br", PU_CACHE as i32) as *mut patch_t,
+        __wcache672_1,
     );
     V_RestoreBuffer(state);
 }

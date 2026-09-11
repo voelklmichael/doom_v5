@@ -2093,7 +2093,7 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
     let mut map: i32 = 0;
     let mut demoversion: i32 = 0;
     state.g_game.gameaction = ga_nothing;
-    state.g_game.demo_p = W_CacheLumpName(
+    state.g_game.demo_p = W_CacheLumpName(state, 
         &wad_name8_to_string(state.g_game.defdemoname),
         PU_STATIC as i32,
     ) as *mut byte;

@@ -371,7 +371,7 @@ pub unsafe fn HU_Init(state: &mut GameState) {
             b"STCFN%.3d\0" as *const u8 as *const ::core::ffi::c_char,
             fresh0,
         );
-        state.hu_stuff.hu_font[i as usize] = W_CacheLumpName(
+        state.hu_stuff.hu_font[i as usize] = W_CacheLumpName(state, 
             &wad_name8_to_string(&raw mut buffer as *mut ::core::ffi::c_char),
             PU_STATIC as i32,
         ) as *mut patch_t;

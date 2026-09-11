@@ -2268,7 +2268,7 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
     );
 }
 unsafe fn WI_loadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
-    *variable = W_CacheLumpName(&wad_name8_to_string(name), PU_STATIC as i32) as *mut patch_t;
+    *variable = W_CacheLumpName(unsafe { game_state() }, &wad_name8_to_string(name), PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn WI_loadData(state: &mut GameState) {
     if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
@@ -2292,8 +2292,8 @@ pub unsafe fn WI_loadData(state: &mut GameState) {
         state,
         Some(WI_loadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> ()),
     );
-    state.wi_stuff.star = W_CacheLumpName("STFST01", PU_STATIC as i32) as *mut patch_t;
-    state.wi_stuff.bstar = W_CacheLumpName("STFDEAD0", PU_STATIC as i32) as *mut patch_t;
+    state.wi_stuff.star = W_CacheLumpName(state, "STFST01", PU_STATIC as i32) as *mut patch_t;
+    state.wi_stuff.bstar = W_CacheLumpName(state, "STFDEAD0", PU_STATIC as i32) as *mut patch_t;
 }
 unsafe fn WI_unloadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
     W_ReleaseLumpName(&wad_name8_to_string(name));

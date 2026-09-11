@@ -4,6 +4,7 @@ use crate::src::d_mode::D_GameMissionString;
 use crate::src::d_mode::{doom, heretic, hexen, strife, GameMission_t};
 use crate::src::doomdef::NULL;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_misc::M_ExtractFileBase;
 use crate::src::m_misc::__ctype_toupper_loc;
@@ -355,16 +356,17 @@ pub unsafe fn W_ReadLump(mut lump: u32, mut dest: *mut ::core::ffi::c_void) {
         ));
     }
 }
-pub unsafe fn W_CacheLumpNum(mut lumpnum: i32, mut tag: i32) -> *mut ::core::ffi::c_void {
+pub unsafe fn W_CacheLumpNum(
+    state: &mut GameState,
+    mut lumpnum: i32,
+    mut tag: i32,
+) -> *mut ::core::ffi::c_void {
     let mut result: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut lump: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
-    if lumpnum as u32 >= unsafe { game_state() }.w_wad.numlumps {
+    if lumpnum as u32 >= state.w_wad.numlumps {
         I_Error(&format!("W_CacheLumpNum: {} >= numlumps", lumpnum));
     }
-    lump = unsafe { game_state() }
-        .w_wad
-        .lumpinfo
-        .offset(lumpnum as isize) as *mut lumpinfo_t;
+    lump = state.w_wad.lumpinfo.offset(lumpnum as isize) as *mut lumpinfo_t;
     if !(*(*lump).wad_file).mapped.is_null() {
         result = (*(*lump).wad_file).mapped.offset((*lump).position as isize);
     } else if !(*lump).cache.is_null() {
@@ -377,7 +379,7 @@ pub unsafe fn W_CacheLumpNum(mut lumpnum: i32, mut tag: i32) -> *mut ::core::ffi
         );
     } else {
         (*lump).cache = Z_Malloc(
-            unsafe { &mut game_state().z_zone },
+            &mut state.z_zone,
             W_LumpLength(lumpnum as u32),
             tag,
             &raw mut (*lump).cache as *mut ::core::ffi::c_void,
@@ -387,8 +389,12 @@ pub unsafe fn W_CacheLumpNum(mut lumpnum: i32, mut tag: i32) -> *mut ::core::ffi
     }
     return result as *mut ::core::ffi::c_void;
 }
-pub unsafe fn W_CacheLumpName(name: &str, mut tag: i32) -> *mut ::core::ffi::c_void {
-    return W_CacheLumpNum(W_GetNumForName(name), tag);
+pub unsafe fn W_CacheLumpName(
+    state: &mut GameState,
+    name: &str,
+    mut tag: i32,
+) -> *mut ::core::ffi::c_void {
+    return W_CacheLumpNum(state, W_GetNumForName(name), tag);
 }
 pub unsafe fn W_ReleaseLumpNum(mut lumpnum: i32) {
     let mut lump: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();

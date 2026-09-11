@@ -723,7 +723,7 @@ pub unsafe fn AM_loadPics(state: &mut GameState) {
             b"AMMNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
             i,
         );
-        state.am_map.marknums[i as usize] = W_CacheLumpName(
+        state.am_map.marknums[i as usize] = W_CacheLumpName(state, 
             &wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char),
             PU_STATIC as i32,
         ) as *mut patch_t;

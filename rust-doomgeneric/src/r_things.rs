@@ -442,7 +442,7 @@ pub unsafe fn R_DrawVisSprite(
     let mut texturecolumn: i32 = 0;
     let mut frac: fixed_t = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    patch = W_CacheLumpNum((*vis).patch + state.r_data.firstspritelump, PU_CACHE as i32)
+    patch = W_CacheLumpNum(state, (*vis).patch + state.r_data.firstspritelump, PU_CACHE as i32)
         as *mut patch_t;
     state.r_draw.dc_colormap = (*vis).colormap;
     if state.r_draw.dc_colormap.is_null() {

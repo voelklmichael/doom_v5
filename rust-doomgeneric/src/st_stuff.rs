@@ -981,7 +981,7 @@ pub unsafe fn ST_doPaletteStuff(state: &mut GameState) {
     }
     if palette != state.st_stuff.st_palette {
         state.st_stuff.st_palette = palette;
-        pal = (W_CacheLumpNum(state.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte)
+        pal = (W_CacheLumpNum(state, state.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte)
             .offset((palette * 768 as i32) as isize);
         I_SetPalette(state, pal);
     }
@@ -1227,7 +1227,7 @@ unsafe fn ST_loadUnloadGraphics(state: &mut GameState, mut callback: load_callba
     facenum += 1;
 }
 unsafe fn ST_loadCallback(mut lumpname: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
-    *variable = W_CacheLumpName(&wad_name8_to_string(lumpname), PU_STATIC as i32) as *mut patch_t;
+    *variable = W_CacheLumpName(unsafe { game_state() }, &wad_name8_to_string(lumpname), PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn ST_loadGraphics(state: &mut GameState) {
     ST_loadUnloadGraphics(
@@ -1475,9 +1475,10 @@ pub unsafe fn ST_Stop(state: &mut GameState) {
     if state.st_stuff.st_stopped {
         return;
     }
+    let __wcache1480_1 = W_CacheLumpNum(state, state.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte;
     I_SetPalette(
         state,
-        W_CacheLumpNum(state.st_stuff.lu_palette, PU_CACHE as i32) as *mut byte,
+        __wcache1480_1,
     );
     state.st_stuff.st_stopped = true;
 }

@@ -511,10 +511,10 @@ pub unsafe fn V_DrawShadowedPatch(
     }
 }
 pub unsafe fn V_LoadTintTable(state: &mut VVideoState) {
-    state.tinttable = W_CacheLumpName("TINTTAB", PU_STATIC as i32) as *mut byte;
+    state.tinttable = W_CacheLumpName(unsafe { game_state() }, "TINTTAB", PU_STATIC as i32) as *mut byte;
 }
 pub unsafe fn V_LoadXlaTable(state: &mut VVideoState) {
-    state.xlatab = W_CacheLumpName("XLATAB", PU_STATIC as i32) as *mut byte;
+    state.xlatab = W_CacheLumpName(unsafe { game_state() }, "XLATAB", PU_STATIC as i32) as *mut byte;
 }
 pub unsafe fn V_DrawBlock(
     state: &mut VVideoState,
@@ -738,13 +738,14 @@ pub unsafe fn V_ScreenShot(state: &mut GameState) {
         I_Error("V_ScreenShot: Couldn't create a PCX");
     }
     let lbmname = lbmname.as_ptr() as *mut ::core::ffi::c_char;
+    let __wcache747_1 = W_CacheLumpName(state, "PLAYPAL", PU_CACHE as i32) as *mut byte;
     WritePCXfile(
         &mut state.z_zone,
         lbmname,
         state.i_video.I_VideoBuffer,
         SCREENWIDTH,
         SCREENHEIGHT,
-        W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte,
+        __wcache747_1,
     );
 }
 pub const MOUSE_SPEED_BOX_WIDTH: i32 = 120;

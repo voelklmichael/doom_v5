@@ -382,9 +382,10 @@ pub unsafe fn D_Display(state: &mut GameState) {
     if state.g_game.gamestate as u32 != state.d_main.d_display_oldgamestate as u32
         && state.g_game.gamestate != GameScreenState::GS_LEVEL
     {
+        let __wcache387_3 = W_CacheLumpName(state, "PLAYPAL", PU_CACHE as i32) as *mut byte;
         I_SetPalette(
             state,
-            W_CacheLumpName("PLAYPAL", PU_CACHE as i32) as *mut byte,
+            __wcache387_3,
         );
     }
     if state.g_game.gamestate == GameScreenState::GS_LEVEL
@@ -422,11 +423,12 @@ pub unsafe fn D_Display(state: &mut GameState) {
         } else {
             y = state.r_draw.viewwindowy + 4 as i32;
         }
+        let __wcache429_2 = W_CacheLumpName(state, "M_PAUSE", PU_CACHE as i32) as *mut patch_t;
         V_DrawPatchDirect(
             &mut state.v_video,
             state.r_draw.viewwindowx + (state.r_draw.scaledviewwidth - 68 as i32) / 2 as i32,
             y,
-            W_CacheLumpName("M_PAUSE", PU_CACHE as i32) as *mut patch_t,
+            __wcache429_2,
         );
     }
     M_Drawer(state);
@@ -602,12 +604,13 @@ pub unsafe fn D_PageTicker(state: &mut GameState) {
     }
 }
 pub unsafe fn D_PageDrawer(state: &mut GameState) {
+    let __wcache609_1 = W_CacheLumpName(state, &wad_name8_to_string(state.d_main.pagename), PU_CACHE as i32)
+            as *mut patch_t;
     V_DrawPatch(
         &mut state.v_video,
         0 as i32,
         0 as i32,
-        W_CacheLumpName(&wad_name8_to_string(state.d_main.pagename), PU_CACHE as i32)
-            as *mut patch_t,
+        __wcache609_1,
     );
 }
 pub unsafe fn D_AdvanceDemo(state: &mut GameState) {
