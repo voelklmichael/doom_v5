@@ -239,21 +239,21 @@ pub unsafe fn EV_DoFloor(
                 (*floor).direction = -(1 as i32);
                 (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
-                (*floor).floordestheight = P_FindHighestFloorSurrounding(sec);
+                (*floor).floordestheight = P_FindHighestFloorSurrounding(state, sec);
                 current_block_84 = 15514718523126015390;
             }
             1 => {
                 (*floor).direction = -(1 as i32);
                 (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
-                (*floor).floordestheight = P_FindLowestFloorSurrounding(sec);
+                (*floor).floordestheight = P_FindLowestFloorSurrounding(state, sec);
                 current_block_84 = 15514718523126015390;
             }
             2 => {
                 (*floor).direction = -(1 as i32);
                 (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = (FLOORSPEED * 4 as i32) as fixed_t;
-                (*floor).floordestheight = P_FindHighestFloorSurrounding(sec);
+                (*floor).floordestheight = P_FindHighestFloorSurrounding(state, sec);
                 if (*floor).floordestheight != (*sec).floorheight {
                     (*floor).floordestheight += 8 as i32 * FRACUNIT;
                 }
@@ -270,14 +270,14 @@ pub unsafe fn EV_DoFloor(
                 (*floor).direction = 1 as i32;
                 (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = (FLOORSPEED * 4 as i32) as fixed_t;
-                (*floor).floordestheight = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
+                (*floor).floordestheight = P_FindNextHighestFloor(state, sec, (*sec).floorheight as i32);
                 current_block_84 = 15514718523126015390;
             }
             4 => {
                 (*floor).direction = 1 as i32;
                 (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
-                (*floor).floordestheight = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
+                (*floor).floordestheight = P_FindNextHighestFloor(state, sec, (*sec).floorheight as i32);
                 current_block_84 = 15514718523126015390;
             }
             7 => {
@@ -356,7 +356,7 @@ pub unsafe fn EV_DoFloor(
                 (*floor).direction = -(1 as i32);
                 (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
-                (*floor).floordestheight = P_FindLowestFloorSurrounding(sec);
+                (*floor).floordestheight = P_FindLowestFloorSurrounding(state, sec);
                 (*floor).texture = (*sec).floorpic;
                 i = 0 as i32;
                 while i < (*sec).linecount {
@@ -390,7 +390,7 @@ pub unsafe fn EV_DoFloor(
                 (*floor).direction = 1 as i32;
                 (*floor).sector = SectorId(secnum as u32);
                 (*floor).speed = FLOORSPEED as fixed_t;
-                (*floor).floordestheight = P_FindLowestCeilingSurrounding(sec);
+                (*floor).floordestheight = P_FindLowestCeilingSurrounding(state, sec);
                 if (*floor).floordestheight > (*sec).ceilingheight {
                     (*floor).floordestheight = (*sec).ceilingheight;
                 }

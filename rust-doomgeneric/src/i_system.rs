@@ -1,4 +1,3 @@
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_misc::M_StrToInt;
@@ -67,14 +66,14 @@ pub struct atexit_listentry_s {
 }
 pub const DEFAULT_RAM: i32 = 6;
 pub const MIN_RAM: i32 = 6;
-pub unsafe fn I_AtExit(mut func: atexit_func_t, mut run_on_error: bool) {
+pub unsafe fn I_AtExit(state: &mut ISystemState, mut func: atexit_func_t, mut run_on_error: bool) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
     entry =
         malloc(::core::mem::size_of::<atexit_listentry_t>() as size_t) as *mut atexit_listentry_t;
     (*entry).func = func;
     (*entry).run_on_error = run_on_error;
-    (*entry).next = unsafe { game_state() }.i_system.exit_funcs;
-    unsafe { game_state() }.i_system.exit_funcs = entry;
+    (*entry).next = state.exit_funcs;
+    state.exit_funcs = entry;
 }
 pub unsafe fn I_Tactile(mut on: i32, mut off: i32, mut total: i32) {}
 unsafe fn AutoAllocMemory(mut size: *mut i32, mut default_ram: i32, mut min_ram: i32) -> *mut byte {
@@ -149,9 +148,9 @@ pub unsafe fn I_PrintStartupBanner(mut gamedescription: *mut ::core::ffi::c_char
 pub unsafe fn I_ConsoleStdout() -> bool {
     return false;
 }
-pub unsafe fn I_Quit() {
+pub unsafe fn I_Quit(state: &mut ISystemState) {
     let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
-    entry = unsafe { game_state() }.i_system.exit_funcs;
+    entry = state.exit_funcs;
     while !entry.is_null() {
         (*entry).func.expect("non-null function pointer")();
         entry = (*entry).next;

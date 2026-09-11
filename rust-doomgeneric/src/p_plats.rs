@@ -185,7 +185,7 @@ pub unsafe fn EV_DoPlat(
                 let neighbor_sector_id =
                     state.p_setup.sides[(*line).sidenum[0 as i32 as usize] as usize].sector;
                 (*sec).floorpic = (*state.p_setup.sector_mut(neighbor_sector_id)).floorpic;
-                (*plat).high = P_FindNextHighestFloor(sec, (*sec).floorheight as i32);
+                (*plat).high = P_FindNextHighestFloor(state, sec, (*sec).floorheight as i32);
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
                 (*sec).special = 0 as i16;
@@ -211,7 +211,7 @@ pub unsafe fn EV_DoPlat(
             }
             1 => {
                 (*plat).speed = (PLATSPEED * 4 as i32) as fixed_t;
-                (*plat).low = P_FindLowestFloorSurrounding(sec);
+                (*plat).low = P_FindLowestFloorSurrounding(state, sec);
                 if (*plat).low > (*sec).floorheight {
                     (*plat).low = (*sec).floorheight;
                 }
@@ -226,7 +226,7 @@ pub unsafe fn EV_DoPlat(
             }
             4 => {
                 (*plat).speed = (PLATSPEED * 8 as i32) as fixed_t;
-                (*plat).low = P_FindLowestFloorSurrounding(sec);
+                (*plat).low = P_FindLowestFloorSurrounding(state, sec);
                 if (*plat).low > (*sec).floorheight {
                     (*plat).low = (*sec).floorheight;
                 }
@@ -241,11 +241,11 @@ pub unsafe fn EV_DoPlat(
             }
             0 => {
                 (*plat).speed = PLATSPEED as fixed_t;
-                (*plat).low = P_FindLowestFloorSurrounding(sec);
+                (*plat).low = P_FindLowestFloorSurrounding(state, sec);
                 if (*plat).low > (*sec).floorheight {
                     (*plat).low = (*sec).floorheight;
                 }
-                (*plat).high = P_FindHighestFloorSurrounding(sec);
+                (*plat).high = P_FindHighestFloorSurrounding(state, sec);
                 if (*plat).high < (*sec).floorheight {
                     (*plat).high = (*sec).floorheight;
                 }

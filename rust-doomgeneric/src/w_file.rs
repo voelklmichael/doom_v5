@@ -1,4 +1,4 @@
-use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
@@ -33,12 +33,12 @@ impl WFileState {
 }
 
 pub unsafe fn W_OpenFile(
-    state: &mut WFileState,
+    state: &mut GameState,
     mut path: *mut ::core::ffi::c_char,
 ) -> *mut wad_file_t {
     let mut result: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     let mut i: i32 = 0;
-    if M_CheckParm(unsafe { game_state() }, "-mmap") == 0 {
+    if M_CheckParm(state, "-mmap") == 0 {
         return stdc_wad_file.OpenFile.expect("non-null function pointer")(path);
     }
     result = ::core::ptr::null_mut::<wad_file_t>();
@@ -47,7 +47,7 @@ pub unsafe fn W_OpenFile(
         < (::core::mem::size_of::<[*mut wad_file_class_t; 1]>() as usize)
             .wrapping_div(::core::mem::size_of::<*mut wad_file_class_t>() as usize)
     {
-        result = (*state.wad_file_classes[i as usize])
+        result = (*state.w_file.wad_file_classes[i as usize])
             .OpenFile
             .expect("non-null function pointer")(path);
         if !result.is_null() {

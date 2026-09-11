@@ -82,7 +82,7 @@ pub unsafe fn P_SpawnFireFlicker(state: &mut GameState, mut sector: SectorId) {
     (*flick).thinker.function = ThinkerFn::FireFlicker(T_FireFlicker);
     (*flick).sector = sector;
     (*flick).maxlight = (*sec).lightlevel as i32;
-    (*flick).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32) + 16 as i32;
+    (*flick).minlight = P_FindMinSurroundingLight(state, sec, (*sec).lightlevel as i32) + 16 as i32;
     (*flick).count = 4 as i32;
 }
 pub unsafe fn T_LightFlash(state: &mut GameState, mut flash: *mut lightflash_t) {
@@ -113,7 +113,7 @@ pub unsafe fn P_SpawnLightFlash(state: &mut GameState, mut sector: SectorId) {
     (*flash).thinker.function = ThinkerFn::LightFlash(T_LightFlash);
     (*flash).sector = sector;
     (*flash).maxlight = (*sec).lightlevel as i32;
-    (*flash).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32);
+    (*flash).minlight = P_FindMinSurroundingLight(state, sec, (*sec).lightlevel as i32);
     (*flash).maxtime = 64 as i32;
     (*flash).mintime = 7 as i32;
     (*flash).count = (P_Random(&mut state.m_random) & (*flash).maxtime) + 1 as i32;
@@ -152,7 +152,7 @@ pub unsafe fn P_SpawnStrobeFlash(
     (*flash).brighttime = STROBEBRIGHT;
     (*flash).thinker.function = ThinkerFn::Strobe(T_StrobeFlash);
     (*flash).maxlight = (*sec).lightlevel as i32;
-    (*flash).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32);
+    (*flash).minlight = P_FindMinSurroundingLight(state, sec, (*sec).lightlevel as i32);
     if (*flash).minlight == (*flash).maxlight {
         (*flash).minlight = 0 as i32;
     }
@@ -265,7 +265,7 @@ pub unsafe fn P_SpawnGlowingLight(state: &mut GameState, mut sector: SectorId) {
     ) as *mut glow_t;
     P_AddThinker(state, &raw mut (*g).thinker);
     (*g).sector = sector;
-    (*g).minlight = P_FindMinSurroundingLight(sec, (*sec).lightlevel as i32);
+    (*g).minlight = P_FindMinSurroundingLight(state, sec, (*sec).lightlevel as i32);
     (*g).maxlight = (*sec).lightlevel as i32;
     (*g).thinker.function = ThinkerFn::Glow(T_Glow);
     (*g).direction = -(1 as i32);

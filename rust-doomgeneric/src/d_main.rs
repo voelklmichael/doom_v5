@@ -1108,7 +1108,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     let mut p: i32 = 0;
     let mut file: [::core::ffi::c_char; 256] = [0; 256];
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
-    I_AtExit(Some(D_Endoom as unsafe extern "C" fn() -> ()), false);
+    I_AtExit(&mut state.i_system, Some(D_Endoom as unsafe extern "C" fn() -> ()), false);
     I_PrintBanner(PACKAGE_STRING.as_ptr() as *mut ::core::ffi::c_char);
     printf(
         b"Z_Init: Init zone memory allocation daemon. \n\0" as *const u8
@@ -1169,7 +1169,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     );
     D_BindVariables(state);
     M_LoadDefaults(state);
-    I_AtExit(Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
+    I_AtExit(&mut state.i_system, Some(M_SaveDefaults as unsafe extern "C" fn() -> ()), false);
     let mut gamemission_out = state.doomstat.gamemission;
     state.d_main.iwadfile = D_FindIWAD(
         state,
@@ -1200,7 +1200,8 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         );
         state.d_main.bfgedition = true;
     }
-    state.doomstat.modifiedgame = W_ParseCommandLine();
+    let modifiedgame = W_ParseCommandLine(state);
+    state.doomstat.modifiedgame = modifiedgame;
     p = M_CheckParmWithArgs(state, "-playdemo", 1 as i32);
     if p == 0 {
         p = M_CheckParmWithArgs(state, "-timedemo", 1 as i32);
@@ -1248,6 +1249,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         );
     }
     I_AtExit(
+        &mut state.i_system,
         ::core::mem::transmute::<Option<unsafe extern "C" fn() -> boolean>, atexit_func_t>(Some(
             G_CheckDemoStatus as unsafe extern "C" fn() -> boolean,
         )),
@@ -1426,7 +1428,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.d_main.storedemo = true;
     }
     if M_CheckParmWithArgs(state, "-statdump", 1 as i32) != 0 {
-        I_AtExit(Some(StatDump as unsafe extern "C" fn() -> ()), true);
+        I_AtExit(&mut state.i_system, Some(StatDump as unsafe extern "C" fn() -> ()), true);
         printf(b"External statistics registered.\n\0" as *const u8 as *const ::core::ffi::c_char);
     }
     p = M_CheckParmWithArgs(state, "-record", 1 as i32);

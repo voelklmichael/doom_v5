@@ -159,7 +159,7 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
     let mut fileinfo: *mut filelump_t = ::core::ptr::null_mut::<filelump_t>();
     let mut filerover: *mut filelump_t = ::core::ptr::null_mut::<filelump_t>();
     let mut newnumlumps: i32 = 0;
-    wad_file = W_OpenFile(unsafe { &mut game_state().w_file }, filename);
+    wad_file = W_OpenFile(unsafe { game_state() }, filename);
     if wad_file.is_null() {
         printf(
             b" couldn't open %s\n\0" as *const u8 as *const ::core::ffi::c_char,

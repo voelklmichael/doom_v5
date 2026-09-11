@@ -257,7 +257,7 @@ pub unsafe fn EV_DoDoor(state: &mut GameState, mut line: *mut line_t, mut type_0
         (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
         match type_0 as u32 {
             7 => {
-                (*door).topheight = P_FindLowestCeilingSurrounding(sec);
+                (*door).topheight = P_FindLowestCeilingSurrounding(state, sec);
                 (*door).topheight -= 4 as i32 * FRACUNIT;
                 (*door).direction = -(1 as i32);
                 (*door).speed = (FRACUNIT * 2 as i32 * 4 as i32) as fixed_t;
@@ -268,7 +268,7 @@ pub unsafe fn EV_DoDoor(state: &mut GameState, mut line: *mut line_t, mut type_0
                 );
             }
             2 => {
-                (*door).topheight = P_FindLowestCeilingSurrounding(sec);
+                (*door).topheight = P_FindLowestCeilingSurrounding(state, sec);
                 (*door).topheight -= 4 as i32 * FRACUNIT;
                 (*door).direction = -(1 as i32);
                 S_StartSound(
@@ -288,7 +288,7 @@ pub unsafe fn EV_DoDoor(state: &mut GameState, mut line: *mut line_t, mut type_0
             }
             5 | 6 => {
                 (*door).direction = 1 as i32;
-                (*door).topheight = P_FindLowestCeilingSurrounding(sec);
+                (*door).topheight = P_FindLowestCeilingSurrounding(state, sec);
                 (*door).topheight -= 4 as i32 * FRACUNIT;
                 (*door).speed = (FRACUNIT * 2 as i32 * 4 as i32) as fixed_t;
                 if (*door).topheight != (*sec).ceilingheight {
@@ -301,7 +301,7 @@ pub unsafe fn EV_DoDoor(state: &mut GameState, mut line: *mut line_t, mut type_0
             }
             0 | 3 => {
                 (*door).direction = 1 as i32;
-                (*door).topheight = P_FindLowestCeilingSurrounding(sec);
+                (*door).topheight = P_FindLowestCeilingSurrounding(state, sec);
                 (*door).topheight -= 4 as i32 * FRACUNIT;
                 if (*door).topheight != (*sec).ceilingheight {
                     S_StartSound(
@@ -461,7 +461,7 @@ pub unsafe fn EV_VerticalDoor(
         }
         _ => {}
     }
-    (*door).topheight = P_FindLowestCeilingSurrounding(sec);
+    (*door).topheight = P_FindLowestCeilingSurrounding(state, sec);
     (*door).topheight -= 4 as i32 * FRACUNIT;
 }
 pub unsafe fn P_SpawnDoorCloseIn30(state: &mut GameState, mut sector: SectorId) {
@@ -504,7 +504,7 @@ pub unsafe fn P_SpawnDoorRaiseIn5Mins(
     (*door).direction = 2 as i32;
     (*door).type_0 = vld_raiseIn5Mins;
     (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
-    (*door).topheight = P_FindLowestCeilingSurrounding(sec);
+    (*door).topheight = P_FindLowestCeilingSurrounding(state, sec);
     (*door).topheight -= 4 as i32 * FRACUNIT;
     (*door).topwait = VDOORWAIT;
     (*door).topcountdown = 5 as i32 * 60 as i32 * TICRATE;

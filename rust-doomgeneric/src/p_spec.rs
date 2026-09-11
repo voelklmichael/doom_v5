@@ -67,7 +67,6 @@ use libc::memset;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::doomdef::TICRATE;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
@@ -433,7 +432,7 @@ pub unsafe fn getNextSector(
     }
     return front;
 }
-pub unsafe fn P_FindLowestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
+pub unsafe fn P_FindLowestFloorSurrounding(state: &mut GameState, mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -441,7 +440,7 @@ pub unsafe fn P_FindLowestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
     i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
-        other = getNextSector(unsafe { game_state() }, check, sec);
+        other = getNextSector(state, check, sec);
         if !other.is_null() {
             if (*other).floorheight < floor {
                 floor = (*other).floorheight;
@@ -451,7 +450,7 @@ pub unsafe fn P_FindLowestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
     }
     return floor;
 }
-pub unsafe fn P_FindHighestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
+pub unsafe fn P_FindHighestFloorSurrounding(state: &mut GameState, mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -459,7 +458,7 @@ pub unsafe fn P_FindHighestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
     i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
-        other = getNextSector(unsafe { game_state() }, check, sec);
+        other = getNextSector(state, check, sec);
         if !other.is_null() {
             if (*other).floorheight > floor {
                 floor = (*other).floorheight;
@@ -470,7 +469,7 @@ pub unsafe fn P_FindHighestFloorSurrounding(mut sec: *mut sector_t) -> fixed_t {
     return floor;
 }
 pub const MAX_ADJOINING_SECTORS: i32 = 20;
-pub unsafe fn P_FindNextHighestFloor(mut sec: *mut sector_t, mut currentheight: i32) -> fixed_t {
+pub unsafe fn P_FindNextHighestFloor(state: &mut GameState, mut sec: *mut sector_t, mut currentheight: i32) -> fixed_t {
     let mut i: i32 = 0;
     let mut h: i32 = 0;
     let mut min: i32 = 0;
@@ -482,7 +481,7 @@ pub unsafe fn P_FindNextHighestFloor(mut sec: *mut sector_t, mut currentheight: 
     h = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
-        other = getNextSector(unsafe { game_state() }, check, sec);
+        other = getNextSector(state, check, sec);
         if !other.is_null() {
             if (*other).floorheight > height {
                 if h == MAX_ADJOINING_SECTORS + 1 as i32 {
@@ -510,7 +509,7 @@ pub unsafe fn P_FindNextHighestFloor(mut sec: *mut sector_t, mut currentheight: 
     }
     return min as fixed_t;
 }
-pub unsafe fn P_FindLowestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t {
+pub unsafe fn P_FindLowestCeilingSurrounding(state: &mut GameState, mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -518,7 +517,7 @@ pub unsafe fn P_FindLowestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t 
     i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
-        other = getNextSector(unsafe { game_state() }, check, sec);
+        other = getNextSector(state, check, sec);
         if !other.is_null() {
             if (*other).ceilingheight < height {
                 height = (*other).ceilingheight;
@@ -528,7 +527,7 @@ pub unsafe fn P_FindLowestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t 
     }
     return height;
 }
-pub unsafe fn P_FindHighestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t {
+pub unsafe fn P_FindHighestCeilingSurrounding(state: &mut GameState, mut sec: *mut sector_t) -> fixed_t {
     let mut i: i32 = 0;
     let mut check: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut other: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
@@ -536,7 +535,7 @@ pub unsafe fn P_FindHighestCeilingSurrounding(mut sec: *mut sector_t) -> fixed_t
     i = 0 as i32;
     while i < (*sec).linecount {
         check = *(*sec).lines.offset(i as isize) as *mut line_t;
-        other = getNextSector(unsafe { game_state() }, check, sec);
+        other = getNextSector(state, check, sec);
         if !other.is_null() {
             if (*other).ceilingheight > height {
                 height = (*other).ceilingheight;
@@ -561,7 +560,11 @@ pub unsafe fn P_FindSectorFromLineTag(
     }
     return -(1 as i32);
 }
-pub unsafe fn P_FindMinSurroundingLight(mut sector: *mut sector_t, mut max: i32) -> i32 {
+pub unsafe fn P_FindMinSurroundingLight(
+    state: &mut GameState,
+    mut sector: *mut sector_t,
+    mut max: i32,
+) -> i32 {
     let mut i: i32 = 0;
     let mut min: i32 = 0;
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
@@ -570,7 +573,7 @@ pub unsafe fn P_FindMinSurroundingLight(mut sector: *mut sector_t, mut max: i32)
     i = 0 as i32;
     while i < (*sector).linecount {
         line = *(*sector).lines.offset(i as isize) as *mut line_t;
-        check = getNextSector(unsafe { game_state() }, line, sector);
+        check = getNextSector(state, line, sector);
         if !check.is_null() {
             if ((*check).lightlevel as i32) < min {
                 min = (*check).lightlevel as i32;

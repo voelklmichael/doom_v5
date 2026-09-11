@@ -115,7 +115,7 @@ pub unsafe fn S_Init(state: &mut GameState, mut sfxVolume_0: i32, mut musicVolum
         (*(&raw mut state.sounds.S_sfx as *mut sfxinfo_t).offset(i as isize)).lumpnum = *fresh1;
         i += 1;
     }
-    I_AtExit(Some(S_Shutdown as unsafe extern "C" fn() -> ()), true);
+    I_AtExit(&mut state.i_system, Some(S_Shutdown as unsafe extern "C" fn() -> ()), true);
 }
 #[no_mangle]
 pub unsafe extern "C" fn S_Shutdown() {

@@ -224,7 +224,7 @@ pub unsafe fn EV_DoCeiling(
                 current_block_26 = 6994972524166957283;
             }
             1 => {
-                (*ceiling).topheight = P_FindHighestCeilingSurrounding(sec);
+                (*ceiling).topheight = P_FindHighestCeilingSurrounding(state, sec);
                 (*ceiling).direction = 1 as i32;
                 (*ceiling).speed = CEILSPEED as fixed_t;
                 current_block_26 = 7056779235015430508;

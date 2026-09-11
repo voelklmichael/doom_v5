@@ -2201,7 +2201,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus() -> boolean {
         unsafe { game_state() }.d_main.nomonsters = false;
         unsafe { game_state() }.g_game.consoleplayer = 0 as i32;
         if unsafe { game_state() }.g_game.singledemo {
-            I_Quit();
+            I_Quit(unsafe { &mut game_state().i_system });
         } else {
             D_AdvanceDemo(unsafe { game_state() });
         }
