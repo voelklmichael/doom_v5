@@ -1293,8 +1293,6 @@ pub unsafe fn G_CheckSpot(
         }
         _ => {
             I_Error(&format!("G_CheckSpot: unexpected angle {}\n", an));
-            ya = 0 as i32 as fixed_t;
-            xa = ya;
         }
     }
     let floorheight = (*state.p_setup.sector_mut((*ss).sector)).floorheight;

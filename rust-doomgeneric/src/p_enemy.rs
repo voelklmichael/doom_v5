@@ -346,7 +346,6 @@ pub unsafe fn P_NewChaseDir(state: &mut GameState, mut actor: *mut mobj_t) {
         Some(target) => target,
         None => {
             I_Error("P_NewChaseDir: called with no target");
-            return;
         }
     };
     olddir = (*actor).movedir as dirtype_t;

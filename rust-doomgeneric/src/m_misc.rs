@@ -225,7 +225,6 @@ pub unsafe fn M_StringReplace(
     result = malloc(result_len) as *mut ::core::ffi::c_char;
     if result.is_null() {
         I_Error("M_StringReplace: Failed to allocate new string");
-        return ::core::ptr::null_mut::<::core::ffi::c_char>();
     }
     dst = result;
     dst_len = result_len;
@@ -304,7 +303,6 @@ pub unsafe extern "C" fn M_StringJoin(
     result = malloc(result_len) as *mut ::core::ffi::c_char;
     if result.is_null() {
         I_Error("M_StringJoin: Failed to allocate new string.");
-        return ::core::ptr::null_mut::<::core::ffi::c_char>();
     }
     M_StringCopy(result, s, result_len);
     args_0 = args.clone();

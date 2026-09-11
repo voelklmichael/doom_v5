@@ -1,19 +1,16 @@
 use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
-use crate::src::m_argv::{M_CheckParmWithArgs, M_ParmExists};
+use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_misc::M_StrToInt;
-use crate::src::m_misc::M_snprintf;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use libc::{atoi, strcasecmp, strlen};
-use libc::{exit, free, malloc, printf, puts};
+use libc::{malloc, printf, puts};
 
 pub struct ISystemState {
     pub exit_funcs: *mut atexit_listentry_t,
-    pub already_quitting: bool,
     pub mem_dump_custom: [u8; 10],
     pub dos_mem_dump: *const u8,
-    pub zenity_errorboxpath_size: size_t,
     pub get_memory_value_firsttime: bool,
 }
 
@@ -21,10 +18,8 @@ impl ISystemState {
     pub fn new() -> Self {
         ISystemState {
             exit_funcs: ::core::ptr::null::<atexit_listentry_t>() as *mut atexit_listentry_t,
-            already_quitting: false,
             mem_dump_custom: [0; 10],
             dos_mem_dump: &raw const mem_dump_dos622 as *const u8,
-            zenity_errorboxpath_size: 0,
             get_memory_value_firsttime: true,
         }
     }
@@ -32,7 +27,6 @@ impl ISystemState {
 
 extern "C" {
     pub type FILE;
-    fn system(__command: *const ::core::ffi::c_char) -> i32;
     pub static mut stderr: *mut FILE;
     pub fn fflush(__stream: *mut FILE) -> i32;
     pub fn fprintf(__stream: *mut FILE, __format: *const ::core::ffi::c_char, ...) -> i32;
@@ -61,7 +55,6 @@ extern "C" {
     pub fn fseek(__stream: *mut FILE, __off: i64, __whence: i32) -> i32;
     pub fn ftell(__stream: *mut FILE) -> i64;
     fn putchar(__c: i32) -> i32;
-    fn strchr(__s: *const ::core::ffi::c_char, __c: i32) -> *mut ::core::ffi::c_char;
 }
 pub type atexit_func_t = Option<unsafe extern "C" fn() -> ()>;
 pub type atexit_listentry_t = atexit_listentry_s;
@@ -164,104 +157,8 @@ pub unsafe fn I_Quit() {
         entry = (*entry).next;
     }
 }
-pub const ZENITY_BINARY: [::core::ffi::c_char; 16] =
-    unsafe { ::core::mem::transmute::<[u8; 16], [::core::ffi::c_char; 16]>(*b"/usr/bin/zenity\0") };
-unsafe fn ZenityAvailable() -> i32 {
-    return (system(
-        b"/usr/bin/zenity --help >/dev/null 2>&1\0" as *const u8 as *const ::core::ffi::c_char,
-    ) == 0 as i32) as i32;
-}
-unsafe fn EscapeShellString(mut string: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char {
-    let mut result: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut r: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut s: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    result = malloc(
-        strlen(string)
-            .wrapping_mul(2 as size_t)
-            .wrapping_add(3 as size_t),
-    ) as *mut ::core::ffi::c_char;
-    r = result;
-    *r = '"' as i32 as ::core::ffi::c_char;
-    r = r.offset(1);
-    s = string;
-    while *s as i32 != '\0' as i32 {
-        if !strchr(
-            b"$`\\!\0" as *const u8 as *const ::core::ffi::c_char,
-            *s as i32,
-        )
-        .is_null()
-        {
-            *r = '\\' as i32 as ::core::ffi::c_char;
-            r = r.offset(1);
-        }
-        *r = *s;
-        r = r.offset(1);
-        s = s.offset(1);
-    }
-    *r = '"' as i32 as ::core::ffi::c_char;
-    r = r.offset(1);
-    *r = '\0' as i32 as ::core::ffi::c_char;
-    return result;
-}
-unsafe fn ZenityErrorBox(mut message: *mut ::core::ffi::c_char) -> i32 {
-    let mut result: i32 = 0;
-    let mut escaped_message: *mut ::core::ffi::c_char =
-        ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut errorboxpath: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    if ZenityAvailable() == 0 {
-        return 0 as i32;
-    }
-    escaped_message = EscapeShellString(message);
-    unsafe { game_state() }.i_system.zenity_errorboxpath_size = strlen(ZENITY_BINARY.as_ptr())
-        .wrapping_add(strlen(escaped_message))
-        .wrapping_add(19 as size_t);
-    errorboxpath = malloc(unsafe { game_state() }.i_system.zenity_errorboxpath_size)
-        as *mut ::core::ffi::c_char;
-    M_snprintf(
-        errorboxpath,
-        unsafe { game_state() }.i_system.zenity_errorboxpath_size,
-        b"%s --error --text=%s\0" as *const u8 as *const ::core::ffi::c_char,
-        ZENITY_BINARY.as_ptr(),
-        escaped_message,
-    );
-    result = system(errorboxpath);
-    free(errorboxpath as *mut ::core::ffi::c_void);
-    free(escaped_message as *mut ::core::ffi::c_void);
-    return result;
-}
-pub unsafe fn I_Error(message: &str) {
-    let mut entry: *mut atexit_listentry_t = ::core::ptr::null_mut::<atexit_listentry_t>();
-    let mut exit_gui_popup: bool = false;
-    if unsafe { game_state() }.i_system.already_quitting {
-        fprintf(
-            stderr,
-            b"Warning: recursive call to I_Error detected.\n\0" as *const u8
-                as *const ::core::ffi::c_char,
-        );
-    } else {
-        unsafe { game_state() }.i_system.already_quitting = true;
-    }
-    let message_cstring = ::std::ffi::CString::new(message)
-        .unwrap_or_else(|_| ::std::ffi::CString::new("(error message contains NUL)").unwrap());
-    fprintf(
-        stderr,
-        b"%s\0" as *const u8 as *const ::core::ffi::c_char,
-        message_cstring.as_ptr(),
-    );
-    fprintf(stderr, b"\n\n\0" as *const u8 as *const ::core::ffi::c_char);
-    fflush(stderr);
-    entry = unsafe { game_state() }.i_system.exit_funcs;
-    while !entry.is_null() {
-        if (*entry).run_on_error {
-            (*entry).func.expect("non-null function pointer")();
-        }
-        entry = (*entry).next;
-    }
-    exit_gui_popup = !M_ParmExists(unsafe { game_state() }, "-nogui");
-    if exit_gui_popup && !I_ConsoleStdout() {
-        ZenityErrorBox(message_cstring.as_ptr() as *mut ::core::ffi::c_char);
-    }
-    exit(-(1 as i32));
+pub unsafe fn I_Error(message: &str) -> ! {
+    panic!("{}", message);
 }
 pub const DOS_MEM_DUMP_SIZE: i32 = 10;
 static mem_dump_dos622: [u8; 10] = [
