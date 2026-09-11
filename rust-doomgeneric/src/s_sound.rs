@@ -17,14 +17,13 @@ use crate::src::i_sound::I_UpdateSoundParams;
 use crate::src::i_system::I_AtExit;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::FixedMul;
-use crate::src::m_misc::M_snprintf;
 use crate::src::p_mobj::mobj_t;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::tables::finesine;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::w_wad::W_LumpLength;
 use crate::src::w_wad::W_ReleaseLumpNum;
-use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::w_wad::W_GetNumForName;
 use crate::src::z_zone::Z_Malloc;
 
 use crate::src::d_mode::commercial;
@@ -42,7 +41,6 @@ use crate::src::sounds::{
     mus_e3m3, mus_e3m4, mus_intro, mus_introa, mus_runnin, NUMMUSIC,
 };
 use crate::src::sounds::{musicinfo_t, sfxinfo_t};
-use crate::src::stdint_types::size_t;
 use crate::src::tables::angle_t;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::z_zone::PU_STATIC;
@@ -428,7 +426,6 @@ pub unsafe fn S_StartMusic(state: &mut GameState, mut m_id: i32) {
 }
 pub unsafe fn S_ChangeMusic(state: &mut GameState, mut musicnum: i32, mut looping: i32) {
     let mut music: *mut musicinfo_t = ::core::ptr::null_mut::<musicinfo_t>();
-    let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
     let mut handle: *mut ::core::ffi::c_void = ::core::ptr::null_mut::<::core::ffi::c_void>();
     if musicnum == mus_intro as i32
         && (state.i_sound.snd_musicdevice == SNDDEVICE_ADLIB as i32
@@ -447,15 +444,8 @@ pub unsafe fn S_ChangeMusic(state: &mut GameState, mut musicnum: i32, mut loopin
     }
     S_StopMusic(state);
     if (*music).lumpnum == 0 {
-        M_snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
-            b"d_%s\0" as *const u8 as *const ::core::ffi::c_char,
-            (*music).name.as_ptr() as *const ::core::ffi::c_char,
-        );
-        (*music).lumpnum = W_GetNumForName(&wad_name8_to_string(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-        ));
+        let namebuf = format!("d_{}", (*music).name.as_str());
+        (*music).lumpnum = W_GetNumForName(&namebuf);
     }
     (*music).data = W_CacheLumpNum(state, (*music).lumpnum, PU_STATIC as i32);
     handle = I_RegisterSong(

@@ -779,6 +779,35 @@ in the top spot (97 occurrences) after phase 23 shrank the previous leaders.
 
 `c_char` references: 357 → 291.
 
+**Phase 25 done** (`c-char-phase25-music-lumpname-and-savegame-vcheck`, PR
+pending): two small independent clusters.
+- `S_ChangeMusic`'s (`s_sound.rs`) `namebuf` scratch buffer (an
+  `M_snprintf`-built `"d_%s"` lump-name lookup) collapsed to
+  `format!("d_{}", (*music).name.as_str())` fed directly into
+  `W_GetNumForName`, dropping the buffer and the `wad_name8_to_string`
+  wrapper — the standard snprintf-into-buffer-then-lookup pattern.
+- `P_ReadSaveGameHeader`'s (`p_saveg.rs`) `vcheck`/`read_vcheck` savegame
+  version-check buffers → `[u8; 16]`, matching phase 21's write-side
+  `P_WriteSaveGameHeader` construction (`format!("version {}", ...)` into a
+  zero-padded fixed buffer). The comparison itself needed care: the original
+  used `CStr::from_ptr(...).to_bytes()` on both buffers, which only compares
+  up to each buffer's first NUL — but `read_vcheck` is filled byte-for-byte
+  from file data with no guaranteed NUL within its 16 bytes, so the original
+  C-idiom translation was reading past the stack array's bounds on any
+  malformed/non-NUL-terminated save file (latent UB, not something visibly
+  triggered by any real save this build produces, since versions are always
+  short integers). Replaced with a small `cstr_prefix()` helper that finds
+  the first NUL within the slice (or uses the full slice if none), then
+  compares the two prefixes — identical behavior for every real save file,
+  but safe (bounded) instead of unsound for a malformed one.
+- Verified beyond the standard bar with a full interactive save/load
+  round-trip: saved via the in-game menu ("GAME SAVED." confirmed, a real
+  25638-byte `doomsav0.dsg` written), then loaded it in a fresh process and
+  confirmed gameplay resumed in the same scene — directly exercising
+  `P_ReadSaveGameHeader`'s new comparison logic against a real file.
+
+`c_char` references: 291 → 275.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (63 occurrences, mostly the `cheatseq_t`
 byte-sequence family, deliberately kept as plain `c_char` arrays since Track 18
@@ -793,22 +822,28 @@ still used by many buffer-building call sites across the codebase, a
 structural piece rather than a simple field conversion — replacing these would
 mean auditing and converting every one of their callers, a much larger
 undertaking than a bounded field-conversion phase), `doomgeneric_xlib.rs` (16
-occurrences, likely genuine cross-crate FFI boundary code, needs a careful
-look before assuming it's in scope), `g_game.rs` (`defdemoname`/
-`G_DeferedPlayDemo`/`G_TimeDemo`, deliberately deferred this phase — see
-above), `z_zone.rs`, `p_saveg.rs`, the `D_FindWADByName`/`D_FindIWAD`/
-`D_AddFile`/`W_AddFile` IWAD-search-and-open chain (`d_iwad.rs`/`d_main.rs`/
-`w_wad.rs` — real file-I/O, deeper than it first looks, several `into_raw()`
-leaks like phase 11 found; deferred once already for being bigger than it
-seemed, worth a dedicated phase rather than folding into a sweep). Each
-needs the same per-cluster triage phases 10-24 used (is it a lumpname-shaped const
-table, an always-null/always-dead field or function, a local scratch buffer, a
+occurrences — checked in phase 25's survey and confirmed genuine X11/cross-crate
+FFI struct layouts (`Display`, `XClassHint`, `XPointer`, etc.) that must stay
+`c_char` to match the C library's real memory layout; out of scope, not
+revisit-worthy), `g_game.rs` (`defdemoname`/`G_DeferedPlayDemo`/`G_TimeDemo`,
+deliberately deferred phase 24 — see above), `z_zone.rs` (11 occurrences,
+confirmed to be entirely inside `Z_DumpHeap`/`Z_FileDumpHeap`, two zero-caller
+debug-dump functions — per this track's "leave dead code alone" convention for
+whole dead *functions* (as opposed to dead field values inside live functions),
+not a conversion candidate), the `D_FindWADByName`/`D_FindIWAD`/`D_AddFile`/
+`W_AddFile` IWAD-search-and-open chain (`d_iwad.rs`/`d_main.rs`/`w_wad.rs` —
+real file-I/O, deeper than it first looks, several `into_raw()` leaks like
+phase 11 found; deferred once already for being bigger than it seemed, worth a
+dedicated phase rather than folding into a sweep). Each needs the same
+per-cluster triage phases 10-25 used (is it a lumpname-shaped const table, an
+always-null/always-dead field or function, a local scratch buffer, a
 cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
 callback-type hub, a small widely-called name-resolution function trio, an
 already-native-String-round-tripping-through-a-raw-buffer, a genuine module-level
 `static mut` deferred since Track 16, a whole function that's provably dead code
 behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom debug parameter, a
-checksummed-data-buffer needing byte-exact-not-shape-exact translation, or a
-structural printf/path-building engine piece) before deciding scope — the
-original blanket 1369-count estimate has already proven an unreliable guide to
-where the real work is.
+checksummed/version-checked-data-buffer needing byte-exact-not-shape-exact
+translation, a whole dead debug-dump function, a genuine cross-crate FFI struct
+layout, or a structural printf/path-building engine piece) before deciding
+scope — the original blanket 1369-count estimate has already proven an
+unreliable guide to where the real work is.

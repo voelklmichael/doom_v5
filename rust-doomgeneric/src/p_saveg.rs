@@ -10,7 +10,6 @@ use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
 use crate::src::i_system::{fread, ftell, fwrite};
 use crate::src::m_fixed::fixed_t;
-use crate::src::m_misc::M_snprintf;
 use crate::src::p_ceilng::ceiling_e;
 use crate::src::p_ceilng::P_AddActiveCeiling;
 use crate::src::p_doors::vldoor_e;
@@ -40,7 +39,6 @@ use crate::src::tables::angle_t;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVEL;
-use libc::memset;
 
 use crate::src::d_player::NUMAMMO;
 use crate::src::doomdef::MAXPLAYERS;
@@ -704,8 +702,7 @@ pub unsafe fn P_ReadSaveGameHeader(state: &mut GameState) -> bool {
     let mut a: byte = 0;
     let mut b: byte = 0;
     let mut c: byte = 0;
-    let mut vcheck: [::core::ffi::c_char; 16] = [0; 16];
-    let mut read_vcheck: [::core::ffi::c_char; 16] = [0; 16];
+    let mut read_vcheck: [u8; 16] = [0; 16];
     i = 0 as i32;
     while i < SAVESTRINGSIZE {
         saveg_read8(state);
@@ -713,23 +710,18 @@ pub unsafe fn P_ReadSaveGameHeader(state: &mut GameState) -> bool {
     }
     i = 0 as i32;
     while i < VERSIONSIZE {
-        read_vcheck[i as usize] = saveg_read8(state) as ::core::ffi::c_char;
+        read_vcheck[i as usize] = saveg_read8(state);
         i += 1;
     }
-    memset(
-        &raw mut vcheck as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
-        0 as i32,
-        ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
-    );
-    M_snprintf(
-        &raw mut vcheck as *mut ::core::ffi::c_char,
-        ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
-        b"version %i\0" as *const u8 as *const ::core::ffi::c_char,
-        G_VanillaVersionCode(&mut state.doomstat),
-    );
-    if ::std::ffi::CStr::from_ptr(&raw const read_vcheck as *const ::core::ffi::c_char).to_bytes()
-        != ::std::ffi::CStr::from_ptr(&raw const vcheck as *const ::core::ffi::c_char).to_bytes()
-    {
+    let version_name = format!("version {}", G_VanillaVersionCode(&mut state.doomstat));
+    let mut vcheck: [u8; 16] = [0; 16];
+    let copy_len = version_name.len().min(16);
+    vcheck[..copy_len].copy_from_slice(&version_name.as_bytes()[..copy_len]);
+    fn cstr_prefix(buf: &[u8]) -> &[u8] {
+        let len = buf.iter().position(|&b| b == 0).unwrap_or(buf.len());
+        &buf[..len]
+    }
+    if cstr_prefix(&read_vcheck) != cstr_prefix(&vcheck) {
         return false;
     }
     state.g_game.gameskill = saveg_read8(state) as skill_t;
