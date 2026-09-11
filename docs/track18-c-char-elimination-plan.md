@@ -541,6 +541,47 @@ convertible without touching those). Four independent findings:
 
 `c_char` references: 626 → 558.
 
+**Phase 18 done** (`c-char-phase18-chat-char-queue`, PR pending): cleared
+`hu_stuff.rs` from 37 down to 7 (the remaining 7 are `player_names`, a
+module-level `static mut` — the one genuinely-deferred piece here, see below).
+- The chat-character queue subsystem (`chatchars`/`chat_dest`/`chat_char`/
+  `HU_queueChatChar`/`HU_dequeueChatChar`) — never string data, `c_char` used as
+  a numeric byte type throughout (matching phases 14/16/17's established
+  pattern), and every real source/sink at its boundary
+  (`ticcmd_t.chatchar`/`HUlib_keyInIText`) was already `u8`/`byte`. Converted the
+  whole subsystem to `u8` in one pass, including `HU_Ticker`'s local `c` and a
+  cast-boundary fix where `chat_macros` (still `*mut c_char` at the time) fed a
+  byte into the now-`u8` queue function.
+- `HU_Init`'s `STCFN%.3d` font-lump-name buffer — the same
+  `snprintf`-into-`[c_char;9]`-then-`wad_name8_to_string` pattern phase 15 found
+  and removed elsewhere; replaced with `format!("STCFN{:03}", n)`.
+- `HuStuffState.chat_macros` (`[*mut c_char; 10]`, the 10 canned chat messages
+  bound to Alt+0-9) — confirmed via grep its `HUSTR_CHATMACRO0`-`9` source
+  constants are referenced nowhere else, so rather than bridge 10 differently-
+  sized `FixedCStr<N>` instantiations (each macro string is a different length,
+  making a uniform array element type awkward), inlined the literal text
+  directly as `[&'static str; 10]` and deleted the 10 now-unused constants.
+  This is a struct field inside `HuStuffState`, not a module-level `static mut`
+  — the `Sync`-safety concern that keeps `player_names` (a real `static mut`)
+  deferred doesn't apply here, since it's threaded through `&mut GameState`
+  like everything else in this codebase post-bridge-collapse. The byte-queueing
+  loop that walks a macro's raw pointer until a NUL simplified to
+  `for b in macromessage.bytes() { HU_queueChatChar(state, b); }`.
+- `player_names` (line ~272, the 4 colored player-name-prefix strings used in
+  netgame chat message attribution) confirmed left alone: it's a genuine
+  module-level `pub static mut`, the same category Track 16 already flagged and
+  deferred (`doom_v5_bridge_collapse_plan` memory: "Sync-blocked raw-pointer
+  array") — out of scope for a field-level Track 18 phase.
+- **Verification note**: the chat-macro feature itself (Alt+0-9 while chat is
+  open) requires `netgame == true`, unreachable in this sandbox's single-player
+  Xvfb setup — not exercised interactively. Confidence rests on: `.bytes()` on
+  an ASCII `&str` yielding byte-for-byte the same sequence the old
+  NUL-terminated-pointer walk produced (no embedded NUL in any of the 10
+  strings, confirmed by inspection), and the queue mechanics/timeout/overflow
+  logic being completely untouched — only the element type changed.
+
+`c_char` references: 558 → 527.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
@@ -552,11 +593,12 @@ non-callback-hub sites), `m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselv
 genuine variadic C-ABI printf reimplementations still used by many buffer-building
 call sites across the codebase, a structural piece rather than a simple field
 conversion — replacing these would mean auditing and converting every one of their
-callers, a much larger undertaking than a bounded field-conversion phase),
-`hu_stuff.rs`. Each needs the same per-cluster triage phases 10-17 used (is it a
-lumpname-shaped const table, an always-null/always-dead field or function, a local
-scratch buffer, a cheat-sequence byte array, a numeric-lookup-table mislabeled as
-c_char, a shared callback-type hub, a small widely-called name-resolution function
-trio, an already-native-String-round-tripping-through-a-raw-buffer, or a structural
-printf/path-building engine piece) before deciding scope — the original blanket
-1369-count estimate has already proven an unreliable guide to where the real work is.
+callers, a much larger undertaking than a bounded field-conversion phase). Each
+needs the same per-cluster triage phases 10-18 used (is it a lumpname-shaped const
+table, an always-null/always-dead field or function, a local scratch buffer, a
+cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
+callback-type hub, a small widely-called name-resolution function trio, an
+already-native-String-round-tripping-through-a-raw-buffer, a genuine module-level
+`static mut` deferred since Track 16, or a structural printf/path-building engine
+piece) before deciding scope — the original blanket 1369-count estimate has already
+proven an unreliable guide to where the real work is.
