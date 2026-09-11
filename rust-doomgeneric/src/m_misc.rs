@@ -2,14 +2,12 @@ use crate::src::doomdef::NULL;
 use crate::src::fixed_cstr::FixedCStr;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
-use crate::src::i_system::FILE;
-use crate::src::i_system::SEEK_SET;
-use crate::src::i_system::{fclose, fopen, fread, fseek, ftell, fwrite};
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::malloc;
+use std::io::{Read, Write};
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -21,11 +19,9 @@ extern "C" {
         __haystack: *const ::core::ffi::c_char,
         __needle: *const ::core::ffi::c_char,
     ) -> *mut ::core::ffi::c_char;
-    fn __errno_location() -> *mut i32;
     fn mkdir(__path: *const ::core::ffi::c_char, __mode: __mode_t) -> i32;
 }
 pub type __mode_t = u32;
-pub const SEEK_END: i32 = 2;
 pub const EISDIR: i32 = 21;
 pub const DIR_SEPARATOR: i32 = '/' as i32;
 pub const DIR_SEPARATOR_S: &str = "/";
@@ -33,78 +29,42 @@ pub unsafe fn M_MakeDirectory(path: &str) {
     let path_cstring = ::std::ffi::CString::new(path).unwrap();
     mkdir(path_cstring.as_ptr(), 0o755 as __mode_t);
 }
-pub unsafe fn M_FileExists(filename: &str) -> bool {
-    let mut fstream: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    let filename_cstring = ::std::ffi::CString::new(filename).unwrap();
-    fstream = fopen(
-        filename_cstring.as_ptr(),
-        b"r\0" as *const u8 as *const ::core::ffi::c_char,
-    ) as *mut FILE;
-    if !fstream.is_null() {
-        fclose(fstream);
-        return true;
-    } else {
-        return *__errno_location() == EISDIR;
+pub fn M_FileExists(filename: &str) -> bool {
+    match std::fs::File::open(filename) {
+        Ok(_) => true,
+        Err(e) => e.raw_os_error() == Some(EISDIR),
+    }
+}
+pub fn M_FileLength(file: &std::fs::File) -> i64 {
+    file.metadata().map(|m| m.len() as i64).unwrap_or(0)
+}
+pub unsafe fn M_WriteFile(name: &str, source: *mut ::core::ffi::c_void, length: i32) -> bool {
+    let handle = match std::fs::File::create(name) {
+        Ok(handle) => handle,
+        Err(_) => return false,
     };
+    let mut handle = handle;
+    let slice = ::core::slice::from_raw_parts(source as *const u8, length as usize);
+    handle.write_all(slice).is_ok()
 }
-pub unsafe fn M_FileLength(mut handle: *mut FILE) -> i64 {
-    let mut savedpos: i64 = 0;
-    let mut length: i64 = 0;
-    savedpos = ftell(handle);
-    fseek(handle, 0 as i64, SEEK_END);
-    length = ftell(handle);
-    fseek(handle, savedpos, SEEK_SET);
-    return length;
-}
-pub unsafe fn M_WriteFile(name: &str, mut source: *mut ::core::ffi::c_void, mut length: i32) -> bool {
-    let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    let mut count: i32 = 0;
-    let name_cstring = ::std::ffi::CString::new(name).unwrap();
-    handle = fopen(
-        name_cstring.as_ptr(),
-        b"wb\0" as *const u8 as *const ::core::ffi::c_char,
-    ) as *mut FILE;
-    if handle.is_null() {
-        return false;
-    }
-    count = fwrite(source, 1 as size_t, length as size_t, handle) as i32;
-    fclose(handle);
-    if count < length {
-        return false;
-    }
-    return true;
-}
-pub unsafe fn M_ReadFile(mut name: *mut ::core::ffi::c_char, mut buffer: *mut *mut byte) -> i32 {
-    let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    let mut count: i32 = 0;
-    let mut length: i32 = 0;
-    let mut buf: *mut byte = ::core::ptr::null_mut::<byte>();
-    handle = fopen(name, b"rb\0" as *const u8 as *const ::core::ffi::c_char) as *mut FILE;
-    if handle.is_null() {
-        I_Error(&format!(
-            "Couldn't read file {}",
-            ::std::ffi::CStr::from_ptr(name).to_str().unwrap()
-        ));
-    }
-    length = M_FileLength(handle) as i32;
-    buf = Z_Malloc(
+pub unsafe fn M_ReadFile(name: *mut ::core::ffi::c_char, buffer: *mut *mut byte) -> i32 {
+    let name_str = ::std::ffi::CStr::from_ptr(name).to_str().unwrap();
+    let mut handle = match std::fs::File::open(name_str) {
+        Ok(handle) => handle,
+        Err(_) => {
+            I_Error(&format!("Couldn't read file {}", name_str));
+        }
+    };
+    let length = M_FileLength(&handle) as i32;
+    let buf = Z_Malloc(
         unsafe { &mut game_state().z_zone },
         length,
         PU_STATIC as i32,
         NULL,
     ) as *mut byte;
-    count = fread(
-        buf as *mut ::core::ffi::c_void,
-        1 as size_t,
-        length as size_t,
-        handle,
-    ) as i32;
-    fclose(handle);
-    if count < length {
-        I_Error(&format!(
-            "Couldn't read file {}",
-            ::std::ffi::CStr::from_ptr(name).to_str().unwrap()
-        ));
+    let slice = ::core::slice::from_raw_parts_mut(buf, length as usize);
+    if handle.read_exact(slice).is_err() {
+        I_Error(&format!("Couldn't read file {}", name_str));
     }
     *buffer = buf;
     return length;

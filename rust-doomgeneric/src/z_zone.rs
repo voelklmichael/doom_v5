@@ -1,10 +1,9 @@
 use crate::src::game_state::GameState;
-use crate::src::i_system::fprintf;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_ZoneBase;
-use crate::src::i_system::FILE;
 use crate::src::stdint_types::byte;
 use libc::printf;
+use std::io::Write;
 
 pub type C2RustUnnamed = u32;
 pub const PU_NUM_TAGS: C2RustUnnamed = 9;
@@ -259,20 +258,19 @@ pub unsafe fn Z_DumpHeap(state: &mut ZZoneState, mut lowtag: i32, mut hightag: i
         block = (*block).next as *mut memblock_t;
     }
 }
-pub unsafe fn Z_FileDumpHeap(state: &mut ZZoneState, mut f: *mut FILE) {
+pub unsafe fn Z_FileDumpHeap(state: &mut ZZoneState, f: &mut impl Write) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
-    fprintf(
+    let _ = write!(
         f,
-        b"zone size: %i  location: %p\n\0" as *const u8 as *const ::core::ffi::c_char,
+        "zone size: {}  location: {:p}\n",
         (*state.mainzone).size,
         state.mainzone,
     );
     block = (*state.mainzone).blocklist.next as *mut memblock_t;
     loop {
-        fprintf(
+        let _ = write!(
             f,
-            b"block:%p    size:%7i    user:%p    tag:%3i\n\0" as *const u8
-                as *const ::core::ffi::c_char,
+            "block:{:p}    size:{:7}    user:{:p}    tag:{:3}\n",
             block,
             (*block).size,
             (*block).user,
@@ -282,25 +280,13 @@ pub unsafe fn Z_FileDumpHeap(state: &mut ZZoneState, mut f: *mut FILE) {
             break;
         }
         if (block as *mut byte).offset((*block).size as isize) != (*block).next as *mut byte {
-            fprintf(
-                f,
-                b"ERROR: block size does not touch the next block\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            let _ = write!(f, "ERROR: block size does not touch the next block\n");
         }
         if (*(*block).next).prev != block {
-            fprintf(
-                f,
-                b"ERROR: next block doesn't have proper back link\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            let _ = write!(f, "ERROR: next block doesn't have proper back link\n");
         }
         if (*block).tag == PU_FREE as i32 && (*(*block).next).tag == PU_FREE as i32 {
-            fprintf(
-                f,
-                b"ERROR: two consecutive free blocks\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            let _ = write!(f, "ERROR: two consecutive free blocks\n");
         }
         block = (*block).next as *mut memblock_t;
     }

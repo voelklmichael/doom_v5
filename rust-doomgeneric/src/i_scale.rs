@@ -2,8 +2,6 @@ use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::game_state;
-use crate::src::i_system::fflush;
-use crate::src::i_system::FILE;
 use crate::src::m_argv::M_CheckParm;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::stdint_types::byte;
@@ -13,9 +11,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::{memcpy, memset};
 use libc::{printf, puts};
-extern "C" {
-    static mut stdout: *mut FILE;
-}
+use std::io::Write;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct screen_mode_t {
@@ -573,10 +569,10 @@ unsafe fn I_InitStretchTables(state: &mut IScaleState, mut palette: *mut byte) {
         b"I_InitStretchTables: Generating lookup tables..\0" as *const u8
             as *const ::core::ffi::c_char,
     );
-    fflush(stdout);
+    let _ = std::io::stdout().flush();
     state.stretch_tables[0 as i32 as usize] = GenerateStretchTable(palette, 20 as i32);
     printf(b"..\0" as *const u8 as *const ::core::ffi::c_char);
-    fflush(stdout);
+    let _ = std::io::stdout().flush();
     state.stretch_tables[1 as i32 as usize] = GenerateStretchTable(palette, 40 as i32);
     puts(b"\0" as *const u8 as *const ::core::ffi::c_char);
 }
@@ -588,7 +584,7 @@ unsafe fn I_InitSquashTable(state: &mut IScaleState, mut palette: *mut byte) {
         b"I_InitSquashTable: Generating lookup table..\0" as *const u8
             as *const ::core::ffi::c_char,
     );
-    fflush(stdout);
+    let _ = std::io::stdout().flush();
     state.half_stretch_table = GenerateStretchTable(palette, 50 as i32);
     puts(b"\0" as *const u8 as *const ::core::ffi::c_char);
 }

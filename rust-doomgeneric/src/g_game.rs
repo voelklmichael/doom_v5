@@ -45,8 +45,6 @@ use crate::src::hu_stuff::HU_Ticker;
 use crate::src::hu_stuff::HU_dequeueChatChar;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_Quit;
-use crate::src::i_system::FILE;
-use crate::src::i_system::{fclose, fopen, ftell};
 use crate::src::i_timer::I_GetTime;
 use crate::src::info::{S_SARG_PAIN2, S_SARG_RUN1};
 use crate::src::m_argv::{M_ArgvAtoi, M_CheckParm, M_CheckParmWithArgs};
@@ -115,6 +113,7 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::{memcpy, memset};
+use std::io::Seek;
 
 pub struct GGameState {
     pub oldgamestate: GameScreenState,
@@ -350,10 +349,6 @@ impl GGameState {
     }
 }
 
-extern "C" {
-    fn remove(__filename: *const ::core::ffi::c_char) -> i32;
-    fn rename(__old: *const ::core::ffi::c_char, __new: *const ::core::ffi::c_char) -> i32;
-}
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct C2RustUnnamed_5 {
@@ -1570,17 +1565,13 @@ pub unsafe fn G_LoadGame(state: &mut GameState, name: &str) {
 pub unsafe fn G_DoLoadGame(state: &mut GameState) {
     let mut savedleveltime: i32 = 0;
     state.g_game.gameaction = ga_nothing;
-    let savename_cstring = ::std::ffi::CString::new(state.g_game.savename.as_str()).unwrap();
-    state.p_saveg.save_stream = fopen(
-        savename_cstring.as_ptr(),
-        b"rb\0" as *const u8 as *const ::core::ffi::c_char,
-    ) as *mut FILE;
-    if state.p_saveg.save_stream.is_null() {
+    state.p_saveg.save_stream = std::fs::File::open(&state.g_game.savename).ok();
+    if state.p_saveg.save_stream.is_none() {
         return;
     }
     state.p_saveg.savegame_error = false;
     if !P_ReadSaveGameHeader(state) {
-        fclose(state.p_saveg.save_stream);
+        state.p_saveg.save_stream = None;
         return;
     }
     savedleveltime = state.p_tick.leveltime;
@@ -1598,7 +1589,7 @@ pub unsafe fn G_DoLoadGame(state: &mut GameState) {
     if !P_ReadSaveGameEOF(state) {
         I_Error("Bad savegame");
     }
-    fclose(state.p_saveg.save_stream);
+    state.p_saveg.save_stream = None;
     if state.r_main.setsizeneeded {
         R_ExecuteSetViewSize(state);
     }
@@ -1617,19 +1608,11 @@ pub unsafe fn G_DoSaveGame(state: &mut GameState) {
     let mut recovery_savegame_file: Option<String> = None;
     let temp_savegame_file = P_TempSaveGameFile(state);
     let savegame_file = P_SaveGameFile(state, state.g_game.savegameslot);
-    let temp_savegame_file_cstring = ::std::ffi::CString::new(temp_savegame_file.as_str()).unwrap();
-    state.p_saveg.save_stream = fopen(
-        temp_savegame_file_cstring.as_ptr(),
-        b"wb\0" as *const u8 as *const ::core::ffi::c_char,
-    ) as *mut FILE;
-    if state.p_saveg.save_stream.is_null() {
+    state.p_saveg.save_stream = std::fs::File::create(&temp_savegame_file).ok();
+    if state.p_saveg.save_stream.is_none() {
         let recovery_file = M_TempFile("recovery.dsg");
-        let recovery_file_cstring = ::std::ffi::CString::new(recovery_file.as_str()).unwrap();
-        state.p_saveg.save_stream = fopen(
-            recovery_file_cstring.as_ptr(),
-            b"wb\0" as *const u8 as *const ::core::ffi::c_char,
-        ) as *mut FILE;
-        if state.p_saveg.save_stream.is_null() {
+        state.p_saveg.save_stream = std::fs::File::create(&recovery_file).ok();
+        if state.p_saveg.save_stream.is_none() {
             I_Error(&format!(
                 "Failed to open either '{}' or '{}' to write savegame.",
                 temp_savegame_file, recovery_file,
@@ -1646,23 +1629,26 @@ pub unsafe fn G_DoSaveGame(state: &mut GameState) {
     P_ArchiveSpecials(state);
     P_WriteSaveGameEOF(state);
     if state.g_game.vanilla_savegame_limit != 0
-        && ftell(state.p_saveg.save_stream) > SAVEGAMESIZE as i64
+        && state
+            .p_saveg
+            .save_stream
+            .as_mut()
+            .unwrap()
+            .stream_position()
+            .unwrap_or(0)
+            > SAVEGAMESIZE as u64
     {
         I_Error("Savegame buffer overrun");
     }
-    fclose(state.p_saveg.save_stream);
+    state.p_saveg.save_stream = None;
     if let Some(recovery_file) = &recovery_savegame_file {
         I_Error(&format!(
             "Failed to open savegame file '{}' for writing.\nBut your game has been saved to '{}' for recovery.",
             temp_savegame_file, recovery_file,
         ));
     }
-    let savegame_file_cstring = ::std::ffi::CString::new(savegame_file.as_str()).unwrap();
-    remove(savegame_file_cstring.as_ptr());
-    rename(
-        temp_savegame_file_cstring.as_ptr(),
-        savegame_file_cstring.as_ptr(),
-    );
+    let _ = std::fs::remove_file(&savegame_file);
+    let _ = std::fs::rename(&temp_savegame_file, &savegame_file);
     state.g_game.gameaction = ga_nothing;
     state.g_game.savedescription.clear();
     state.g_game.players[state.g_game.consoleplayer as usize].message =

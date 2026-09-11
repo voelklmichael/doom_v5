@@ -3,7 +3,6 @@ use crate::src::d_main::D_StartTitle;
 use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
-use crate::src::i_system::FILE;
 use crate::src::w_wad::W_CacheLumpName;
 
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse, ev_quit};
@@ -22,7 +21,6 @@ use crate::src::game_state::GameState;
 use crate::src::hu_stuff::HU_FONTSIZE;
 use crate::src::hu_stuff::HU_FONTSTART;
 use crate::src::i_system::I_Quit;
-use crate::src::i_system::{fclose, fopen, fread};
 use crate::src::i_timer::I_GetTime;
 use crate::src::i_video::I_SetPalette;
 use crate::src::m_controls::KEY_BACKSPACE;
@@ -42,7 +40,6 @@ use crate::src::sounds::{
     sfx_swtchn, sfx_swtchx, sfx_telept, sfx_vilact,
 };
 use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
 use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::z_zone::PU_CACHE;
 
@@ -737,33 +734,24 @@ pub static sound_e: C2RustUnnamed_7 = sfx_vol;
 #[no_mangle]
 pub static load_e: C2RustUnnamed_8 = load1;
 pub unsafe fn M_ReadSaveStrings(state: &mut GameState) {
-    let mut handle: *mut FILE = ::core::ptr::null_mut::<FILE>();
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < load_end as i32 {
         let savegame_file = P_SaveGameFile(state, i);
-        let savegame_file_cstring = ::std::ffi::CString::new(savegame_file.as_str()).unwrap();
-        handle = fopen(
-            savegame_file_cstring.as_ptr(),
-            b"rb\0" as *const u8 as *const ::core::ffi::c_char,
-        ) as *mut FILE;
-        if handle.is_null() {
-            state.m_menu.savegamestrings[i as usize] =
-                EMPTYSTRING.trim_end_matches('\0').to_string();
-            state.m_menu.menus.LoadMenu[i as usize].status = 0 as i16;
-        } else {
-            let mut buf: [u8; 24] = [0; 24];
-            fread(
-                buf.as_mut_ptr() as *mut ::core::ffi::c_void,
-                1 as size_t,
-                SAVESTRINGSIZE as size_t,
-                handle,
-            );
-            let len = buf.iter().position(|&b| b == 0).unwrap_or(buf.len());
-            state.m_menu.savegamestrings[i as usize] =
-                String::from_utf8_lossy(&buf[..len]).into_owned();
-            fclose(handle);
-            state.m_menu.menus.LoadMenu[i as usize].status = 1 as i16;
+        match std::fs::File::open(&savegame_file) {
+            Err(_) => {
+                state.m_menu.savegamestrings[i as usize] =
+                    EMPTYSTRING.trim_end_matches('\0').to_string();
+                state.m_menu.menus.LoadMenu[i as usize].status = 0 as i16;
+            }
+            Ok(mut handle) => {
+                let mut buf: [u8; SAVESTRINGSIZE as usize] = [0; SAVESTRINGSIZE as usize];
+                let _ = std::io::Read::read(&mut handle, &mut buf);
+                let len = buf.iter().position(|&b| b == 0).unwrap_or(buf.len());
+                state.m_menu.savegamestrings[i as usize] =
+                    String::from_utf8_lossy(&buf[..len]).into_owned();
+                state.m_menu.menus.LoadMenu[i as usize].status = 1 as i16;
+            }
         }
         i += 1;
     }
