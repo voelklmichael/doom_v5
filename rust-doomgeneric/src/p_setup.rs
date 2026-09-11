@@ -39,12 +39,11 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::w_wad::W_LumpLength;
 use crate::src::w_wad::W_ReadLump;
 use crate::src::w_wad::W_ReleaseLumpNum;
-use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::w_wad::W_GetNumForName;
 use crate::src::z_zone::Z_FreeTags;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_LEVEL, PU_PURGELEVEL, PU_STATIC};
 use libc::memset;
-use libc::snprintf;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct SectorId(pub u32);
@@ -888,7 +887,6 @@ pub unsafe fn P_SetupLevel(
     mut skill: skill_t,
 ) {
     let mut i: i32 = 0;
-    let mut lumpname: [::core::ffi::c_char; 9] = [0; 9];
     let mut lumpnum: i32 = 0;
     state.g_game.wminfo.maxfrags = 0 as i32;
     state.g_game.totalsecret = state.g_game.wminfo.maxfrags;
@@ -910,32 +908,20 @@ pub unsafe fn P_SetupLevel(
         PU_PURGELEVEL as i32 - 1 as i32,
     );
     P_InitThinkers(state);
-    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+    let lumpname = if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         if map < 10 as i32 {
-            snprintf(
-                &raw mut lumpname as *mut ::core::ffi::c_char,
-                9 as size_t,
-                b"map0%i\0" as *const u8 as *const ::core::ffi::c_char,
-                map,
-            );
+            format!("map0{}", map)
         } else {
-            snprintf(
-                &raw mut lumpname as *mut ::core::ffi::c_char,
-                9 as size_t,
-                b"map%i\0" as *const u8 as *const ::core::ffi::c_char,
-                map,
-            );
+            format!("map{}", map)
         }
     } else {
-        lumpname[0 as i32 as usize] = 'E' as i32 as ::core::ffi::c_char;
-        lumpname[1 as i32 as usize] = ('0' as i32 + episode) as ::core::ffi::c_char;
-        lumpname[2 as i32 as usize] = 'M' as i32 as ::core::ffi::c_char;
-        lumpname[3 as i32 as usize] = ('0' as i32 + map) as ::core::ffi::c_char;
-        lumpname[4 as i32 as usize] = 0 as ::core::ffi::c_char;
-    }
-    lumpnum = W_GetNumForName(&wad_name8_to_string(
-        &raw mut lumpname as *mut ::core::ffi::c_char,
-    ));
+        format!(
+            "E{}M{}",
+            char::from((('0' as i32) + episode) as u8),
+            char::from((('0' as i32) + map) as u8)
+        )
+    };
+    lumpnum = W_GetNumForName(&lumpname);
     state.p_tick.leveltime = 0 as i32;
     P_LoadBlockMap(state, lumpnum + ML_BLOCKMAP as i32);
     P_LoadVertexes(state, lumpnum + ML_VERTEXES as i32);

@@ -600,23 +600,67 @@ automap-init time, not silently misbehaved.
 
 `c_char` references: 527 → 505.
 
+**Phase 20 done** (`c-char-phase20-gamedescription-and-levelname`, PR pending):
+the biggest single-phase drop since phase 9 — 47 occurrences in one function
+turned out to be entirely dead code.
+- `p_setup.rs`'s `P_SetupLevel` level-lumpname builder (`ExMy`/`MAPxx`) — the
+  same `snprintf`/manual-byte-assignment-into-`[c_char;9]` pattern phases 15/17/
+  19 already handled repeatedly; replaced with a `format!`-based `if`, matching
+  the `map < 10` zero-padding behavior exactly (`format!("map0{}", map)` vs.
+  `format!("map{}", map)`).
+- `doomstat.rs`'s `gamedescription` (`*mut c_char` → `&'static str`) and its
+  three consumers (`I_SetWindowTitle`, `I_PrintBanner`/`I_PrintStartupBanner`)
+  converted to `&str`, `I_SetWindowTitle` bridging via `CString` at its real
+  boundary (the cross-crate `extern "C" fn DG_SetWindowTitle`, a confirmed
+  Track-16 FFI-boundary exception — left untouched, only its lib-side wrapper
+  changed).
+- **The actual find**: `d_main.rs`'s `GetGameName` — called from all 9 branches
+  of `D_SetGameDescription` to build a version-substituted game name string via
+  `Z_Malloc`/`M_snprintf`/manual whitespace-trimming with glibc `ctype` macros —
+  turned out to be **provably dead code shaped like live code**: its whole body
+  is gated behind `if deh_sub_str != banners[i as usize]`, comparing a value to
+  itself (the exact same self-comparison-always-false artifact phase 9 found in
+  `PrintDehackedBanners`, apparently a c2rust mistranslation of upstream's
+  dehacked-string-override feature, which this codebase doesn't implement).
+  Since the condition is always false, the function is — and has always been,
+  since c2rust first produced it — a pure identity function: `GetGameName(state,
+  x)` returns `x` unchanged, every time, for every caller. Confirmed this by
+  tracing the loop to its unconditional `return gamename;` after the dead
+  branch. Replaced all 9 call sites (`state.doomstat.gamedescription =
+  GetGameName(state, b"X\0"...)`) with direct literal assignment
+  (`state.doomstat.gamedescription = "X";`), then deleted `GetGameName` and its
+  now-orphaned `banners` const table entirely (30+ lines of `Z_Malloc`/
+  `memmove`/`__ctype_b_loc` machinery that had never executed once since this
+  codebase existed).
+- Verified beyond the standard bar: the startup log output
+  (`Doom Generic 0.1` / `DOOM Registered` banners) spot-checked byte-for-byte
+  identical to every prior phase's verified output, confirming
+  `I_PrintBanner`/`I_PrintStartupBanner`/`gamedescription`'s new plumbing
+  produces the exact same text the dead `GetGameName` machinery was never
+  actually contributing to in the first place.
+
+`c_char` references: 505 → 458.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
 in any meaningful sense, a sequence of raw keycodes matched byte-by-byte), `d_main.rs`
-(~120, largely local `[c_char; 256]` scratch buffers for demo/turbo/mission-pack
+(largely local `[c_char; 256]` scratch buffers for demo/turbo/mission-pack
 argument parsing — lower value, this track has deliberately deferred local scratch
-buffers throughout), `g_game.rs`, `p_inter.rs`, `wi_stuff.rs` (its own remaining
-non-callback-hub sites), `m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselves —
-genuine variadic C-ABI printf reimplementations still used by many buffer-building
-call sites across the codebase, a structural piece rather than a simple field
-conversion — replacing these would mean auditing and converting every one of their
-callers, a much larger undertaking than a bounded field-conversion phase). Each
-needs the same per-cluster triage phases 10-19 used (is it a lumpname-shaped const
-table, an always-null/always-dead field or function, a local scratch buffer, a
+buffers throughout, though phase 20 shows it's worth re-checking each one for the
+same "looks complex but is actually dead/trivial" pattern rather than assuming),
+`g_game.rs`, `p_inter.rs`, `wi_stuff.rs` (its own remaining non-callback-hub sites),
+`m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI
+printf reimplementations still used by many buffer-building call sites across the
+codebase, a structural piece rather than a simple field conversion — replacing
+these would mean auditing and converting every one of their callers, a much larger
+undertaking than a bounded field-conversion phase). Each needs the same
+per-cluster triage phases 10-20 used (is it a lumpname-shaped const table, an
+always-null/always-dead field or function, a local scratch buffer, a
 cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
 callback-type hub, a small widely-called name-resolution function trio, an
 already-native-String-round-tripping-through-a-raw-buffer, a genuine module-level
-`static mut` deferred since Track 16, or a structural printf/path-building engine
-piece) before deciding scope — the original blanket 1369-count estimate has already
+`static mut` deferred since Track 16, a whole function that's provably dead code
+behind a self-comparison, or a structural printf/path-building engine piece)
+before deciding scope — the original blanket 1369-count estimate has already
 proven an unreliable guide to where the real work is.

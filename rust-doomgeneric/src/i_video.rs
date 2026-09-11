@@ -428,7 +428,8 @@ pub unsafe fn I_GetPaletteIndex(mut r: i32, mut g: i32, mut b: i32) -> i32 {
     }
     return best;
 }
-pub unsafe fn I_SetWindowTitle(mut title: *mut ::core::ffi::c_char) {
-    DG_SetWindowTitle(title);
+pub unsafe fn I_SetWindowTitle(title: &str) {
+    let title_cstring = ::std::ffi::CString::new(title).unwrap();
+    DG_SetWindowTitle(title_cstring.as_ptr());
 }
 pub unsafe fn I_SetGrabMouseCallback(mut func: grabmouse_callback_t) {}

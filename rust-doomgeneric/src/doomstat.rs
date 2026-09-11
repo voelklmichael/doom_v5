@@ -5,7 +5,7 @@ pub struct DoomstatState {
     pub gamemode: GameMode_t,
     pub gamemission: GameMission_t,
     pub gameversion: GameVersion,
-    pub gamedescription: *mut ::core::ffi::c_char,
+    pub gamedescription: &'static str,
     pub modifiedgame: bool,
 }
 impl DoomstatState {
@@ -14,7 +14,7 @@ impl DoomstatState {
             gamemode: indetermined,
             gamemission: doom,
             gameversion: GameVersion::final2,
-            gamedescription: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            gamedescription: "",
             modifiedgame: false,
         }
     }

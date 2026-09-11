@@ -105,16 +105,15 @@ pub unsafe fn I_ZoneBase(state: &mut GameState, mut size: *mut i32) -> *mut byte
     println!("zone memory: {:p}, {:x} allocated for zone", zonemem, *size);
     return zonemem;
 }
-pub unsafe fn I_PrintBanner(mut msg: *mut ::core::ffi::c_char) {
-    let msg_str = ::std::ffi::CStr::from_ptr(msg).to_string_lossy();
-    let spaces = 35usize.saturating_sub(msg_str.len() / 2);
+pub unsafe fn I_PrintBanner(msg: &str) {
+    let spaces = 35usize.saturating_sub(msg.len() / 2);
     print!("{}", " ".repeat(spaces));
-    println!("{}", msg_str);
+    println!("{}", msg);
 }
 pub unsafe fn I_PrintDivider() {
     println!("{}", "=".repeat(75));
 }
-pub unsafe fn I_PrintStartupBanner(mut gamedescription: *mut ::core::ffi::c_char) {
+pub unsafe fn I_PrintStartupBanner(gamedescription: &str) {
     I_PrintDivider();
     I_PrintBanner(gamedescription);
     I_PrintDivider();
