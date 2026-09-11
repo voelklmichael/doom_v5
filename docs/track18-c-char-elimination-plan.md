@@ -94,5 +94,12 @@ matching every prior track's experience):
 eliminated everywhere, including collapsing several c2rust glibc-macro-expansion
 blocks it turned out most call sites were hiding inside (see commit message for the
 `if 0 != 0` dead-branch pattern — check for this same shape before assuming any other
-libc call is a simple one-liner). Next: phase 2, `strlen`/`strcmp`/`strncmp`/
-`strcasecmp`/`strncasecmp` at sites already holding or cheaply able to get a `&str`.
+libc call is a simple one-liner).
+
+**Phase 2 done** (`c-char-phase2-strlen-strcmp`, PR #276): `strlen`/`strcmp`/
+`strncmp`/`strcasecmp`/`strncasecmp` eliminated everywhere except 6 sites that compare
+a WAD lump name's fixed 8-byte (possibly non-null-terminated) field — deliberately
+deferred to the lump-name newtype phase rather than risk the truncation edge case.
+Confirmed via full-codebase audit that every comparison-function usage in this
+codebase only checks equality (`== 0`/`!= 0`), never true C-style ordering, which
+simplified every conversion. Next: phase 3, `atoi`/`sscanf`/`strdup`/`strncpy`.
