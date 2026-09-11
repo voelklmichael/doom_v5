@@ -228,6 +228,45 @@ original 2262). Verified with the full bar: 0 new warnings, release build clean,
 Xvfb boot with no panics, screenshot-confirmed sprite rendering intact (the
 `R_InitSprites` path is exercised by every level load).
 
+**Phase 11 done** (`c-char-phase11-return-string-fns`, PR pending): swept the
+codebase for functions with a `-> *mut/*const c_char` return signature (a cleaner,
+more mechanically-verifiable unit than a raw grep-count) and converted every live
+one:
+- `d_mode.rs`'s `D_GameMissionString` — a pure match-over-literals function, ->
+  `&'static str` directly, its one caller (`w_wad.rs`) simplified to drop the
+  `CStr::from_ptr(...).to_str().unwrap()` wrapping.
+- `d_iwad.rs`'s `D_SuggestGameName`/`D_SaveGameIWADName` — both were doing
+  `CString::new(iwad.description_or_name).unwrap().into_raw()`, i.e. **leaking
+  heap memory on every call** to manufacture a `*mut c_char` out of an `iwad_t`
+  field that was already `&'static str` (from an earlier track). Converting both
+  to return `&'static str` directly eliminates the leak as a side effect, not just
+  the `c_char`. `D_SuggestGameName`'s caller (`w_wad.rs`) simplified to match.
+  `D_SaveGameIWADName`'s caller (`d_main.rs`) needed no change (already just
+  forwards the value into `M_GetSaveGameDir`).
+- `m_config.rs`'s `M_GetSaveGameDir`'s `iwadname` parameter — confirmed via
+  reading the function body that it's never actually used (dead parameter, a
+  vestige of chocolate-doom's per-game save-dir logic this port doesn't need) —
+  retyped `*mut c_char` -> `&'static str` to match its new caller, zero functional
+  risk since nothing inside the function reads it.
+- `d_iwad.rs`'s `D_SuggestIWADName` (same `into_raw()`-leaking shape, confirmed
+  zero callers via full-codebase grep) and `m_config.rs`'s `GetDefaultConfigDir`/
+  `M_GetStrVariable`/`M_TempFile`/`p_saveg.rs`'s `P_TempSaveGameFile`/
+  `P_SaveGameFile` left alone — each either confirmed dead (`M_GetStrVariable`,
+  reached only through `M_SetVariable`, which is itself zero-caller: the whole
+  runtime `.cfg`-file-parsing path that would invoke `SetVariable`/`strdup` does
+  not exist in this codebase, so **the 2 "deliberately deferred" `strdup` sites
+  noted since phase 2/3 are in fact confirmed dead code**, not merely low-priority)
+  or depends on the `M_StringJoin`/`configdir` cluster, a genuinely bigger
+  structural piece (real file-I/O path-building, used pervasively) deferred to a
+  dedicated future phase rather than rushed here.
+
+`c_char` references: 1260 → 1236. Small numerically, but each site converted here
+was a correctness/resource-leak fix as much as a style change. Verified: 0 new
+warnings (one pre-existing `unused variable: iwadname` warning disappeared, a
+strict improvement, not investigated further), release build clean, 3x Xvfb boot
+with no panics, savegame-dir startup output spot-checked byte-for-byte (`Using .
+for configuration and saves` / `Using ./.savegame/ for savegames`).
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `d_main.rs` (130, largely local `[c_char; 256]` scratch buffers
 for demo/turbo/mission-pack argument parsing — lower value, this track has
@@ -236,8 +275,11 @@ deliberately deferred local scratch buffers throughout), `g_game.rs` (83),
 includes `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI printf
 reimplementations still used by many buffer-building call sites, a structural
 piece rather than a simple field conversion), `m_menu.rs` (37), `hu_stuff.rs` (36),
-`m_config.rs` (33, includes the 2 deliberately-deferred `strdup` sites). Each needs
-the same per-cluster triage this phase used (is it a lumpname-shaped const table,
-an always-null dead field, a local scratch buffer, or a structural printf-engine
-piece) before deciding scope — the original blanket 1369-count estimate has already
-proven an unreliable guide to where the real work is.
+`m_config.rs` (33, now down to the `configdir`/`M_StringJoin`/savegame-path
+cluster — real file-I/O path-building code, needs its own dedicated phase with a
+save/load round-trip test per this doc's verification bar, not a quick sweep).
+Each needs the same per-cluster triage phases 10-11 used (is it a lumpname-shaped
+const table, an always-null/always-dead field or function, a local scratch buffer,
+or a structural printf/path-building engine piece) before deciding scope — the
+original blanket 1369-count estimate has already proven an unreliable guide to
+where the real work is.

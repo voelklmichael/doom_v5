@@ -441,15 +441,11 @@ pub unsafe fn W_CheckCorrectIWAD(mut mission: GameMission_t) {
             if lumpnum >= 0 as i32 {
                 I_Error(&format!(
                     "\nYou are trying to use a {} IWAD file with the {}{} binary.\nThis isn't going to work.\nYou probably want to use the {}{} binary.",
-                    ::std::ffi::CStr::from_ptr(
-                        D_SuggestGameName(unique_lumps[i as usize].mission, indetermined),
-                    ).to_str().unwrap(),
+                    D_SuggestGameName(unique_lumps[i as usize].mission, indetermined),
                     PROGRAM_PREFIX.as_str(),
-                    ::std::ffi::CStr::from_ptr(D_GameMissionString(mission)).to_str().unwrap(),
+                    D_GameMissionString(mission),
                     PROGRAM_PREFIX.as_str(),
-                    ::std::ffi::CStr::from_ptr(
-                        D_GameMissionString(unique_lumps[i as usize].mission),
-                    ).to_str().unwrap(),
+                    D_GameMissionString(unique_lumps[i as usize].mission),
                 ));
             }
         }

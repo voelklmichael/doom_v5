@@ -259,13 +259,13 @@ pub unsafe fn D_FindAllIWADs(state: &mut DIwadState, mut mask: i32) -> *mut *con
     result.push(::core::ptr::null());
     Box::leak(result.into_boxed_slice()).as_mut_ptr()
 }
-pub unsafe fn D_SaveGameIWADName(mut gamemission: GameMission_t) -> *mut ::core::ffi::c_char {
+pub unsafe fn D_SaveGameIWADName(gamemission: GameMission_t) -> &'static str {
     for iwad in iwads.iter() {
         if gamemission == iwad.mission {
-            return ::std::ffi::CString::new(iwad.name).unwrap().into_raw();
+            return iwad.name;
         }
     }
-    ::std::ffi::CString::new("unknown.wad").unwrap().into_raw()
+    "unknown.wad"
 }
 pub unsafe fn D_SuggestIWADName(
     mut mission: GameMission_t,
@@ -278,18 +278,11 @@ pub unsafe fn D_SuggestIWADName(
     }
     ::std::ffi::CString::new("unknown.wad").unwrap().into_raw()
 }
-pub unsafe fn D_SuggestGameName(
-    mut mission: GameMission_t,
-    mut mode: GameMode_t,
-) -> *mut ::core::ffi::c_char {
+pub unsafe fn D_SuggestGameName(mission: GameMission_t, mode: GameMode_t) -> &'static str {
     for iwad in iwads.iter() {
         if iwad.mission == mission && (mode == indetermined || iwad.mode == mode) {
-            return ::std::ffi::CString::new(iwad.description)
-                .unwrap()
-                .into_raw();
+            return iwad.description;
         }
     }
-    ::std::ffi::CString::new("Unknown game?")
-        .unwrap()
-        .into_raw()
+    "Unknown game?"
 }

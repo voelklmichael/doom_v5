@@ -300,46 +300,37 @@ pub unsafe fn D_IsEpisodeMap(mut mission: GameMission_t) -> bool {
         9 | 7 | 1 | 5 | 2 | 3 | 8 | _ => return false,
     };
 }
-pub unsafe fn D_GameMissionString(mut mission: GameMission_t) -> *mut ::core::ffi::c_char {
+pub unsafe fn D_GameMissionString(mission: GameMission_t) -> &'static str {
     match mission as u32 {
         0 => {
-            return b"doom\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "doom";
         }
         1 => {
-            return b"doom2\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "doom2";
         }
         2 => {
-            return b"tnt\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            return "tnt";
         }
         3 => {
-            return b"plutonia\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "plutonia";
         }
         5 => {
-            return b"hacx\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "hacx";
         }
         4 => {
-            return b"chex\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "chex";
         }
         6 => {
-            return b"heretic\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "heretic";
         }
         7 => {
-            return b"hexen\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "hexen";
         }
         8 => {
-            return b"strife\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "strife";
         }
         9 | _ => {
-            return b"none\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            return "none";
         }
     };
 }

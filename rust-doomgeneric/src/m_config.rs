@@ -2012,7 +2012,7 @@ pub unsafe fn M_SetConfigDir(state: &mut MConfigState, mut dir: *mut ::core::ffi
 }
 pub unsafe fn M_GetSaveGameDir(
     state: &mut MConfigState,
-    mut iwadname: *mut ::core::ffi::c_char,
+    _iwadname: &'static str,
 ) -> *mut ::core::ffi::c_char {
     let mut savegamedir: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     if ::std::ffi::CStr::from_ptr(state.configdir).to_bytes().is_empty() {
