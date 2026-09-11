@@ -21,7 +21,6 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::NULL;
-use crate::src::fixed_cstr::FixedCStr;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
@@ -30,6 +29,7 @@ use crate::src::f_finale::F_Drawer;
 use crate::src::f_wipe::wipe_EndScreen;
 use crate::src::f_wipe::wipe_ScreenWipe;
 use crate::src::f_wipe::wipe_StartScreen;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::g_game::G_BeginRecording;
 use crate::src::g_game::G_CheckDemoStatus;
 use crate::src::g_game::G_DeferedPlayDemo;
@@ -68,7 +68,6 @@ use crate::src::m_config::M_LoadDefaults;
 use crate::src::m_config::M_SaveDefaults;
 use crate::src::m_config::M_SetConfigDir;
 use crate::src::m_config::M_SetConfigFilenames;
-use crate::src::statdump::StatDump;
 use crate::src::m_controls::M_BindBaseControls;
 use crate::src::m_controls::M_BindChatControls;
 use crate::src::m_controls::M_BindMapControls;
@@ -92,6 +91,7 @@ use crate::src::s_sound::S_UpdateSounds;
 use crate::src::sounds::{mus_dm2ttl, mus_intro};
 use crate::src::st_stuff::ST_Drawer;
 use crate::src::st_stuff::ST_Init;
+use crate::src::statdump::StatDump;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::v_video::V_DrawMouseSpeedBox;
@@ -107,7 +107,6 @@ use crate::src::w_wad::{W_CacheLumpName, W_CheckNumForName};
 use crate::src::wi_stuff::WI_Drawer;
 use crate::src::z_zone::Z_Init;
 use crate::src::z_zone::PU_CACHE;
-use libc::exit;
 
 pub struct DMainState {
     pub savegamedir: String,
@@ -352,10 +351,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         && state.g_game.gamestate != GameScreenState::GS_LEVEL
     {
         let __wcache387_3 = W_CacheLumpName(state, "PLAYPAL", PU_CACHE as i32) as *mut byte;
-        I_SetPalette(
-            state,
-            __wcache387_3,
-        );
+        I_SetPalette(state, __wcache387_3);
     }
     if state.g_game.gamestate == GameScreenState::GS_LEVEL
         && state.d_main.d_display_oldgamestate != GameScreenState::GS_LEVEL
@@ -393,7 +389,8 @@ pub unsafe fn D_Display(state: &mut GameState) {
             y = state.r_draw.viewwindowy + 4 as i32;
         }
         let __wcache429_2 = W_CacheLumpName(state, "M_PAUSE", PU_CACHE as i32) as *mut patch_t;
-        V_DrawPatchDirect(state,
+        V_DrawPatchDirect(
+            state,
             state.r_draw.viewwindowx + (state.r_draw.scaledviewwidth - 68 as i32) / 2 as i32,
             y,
             __wcache429_2,
@@ -563,13 +560,9 @@ pub unsafe fn D_PageTicker(state: &mut GameState) {
     }
 }
 pub unsafe fn D_PageDrawer(state: &mut GameState) {
-    let __wcache609_1 = W_CacheLumpName(state, state.d_main.pagename, PU_CACHE as i32)
-            as *mut patch_t;
-    V_DrawPatch(state,
-        0 as i32,
-        0 as i32,
-        __wcache609_1,
-    );
+    let __wcache609_1 =
+        W_CacheLumpName(state, state.d_main.pagename, PU_CACHE as i32) as *mut patch_t;
+    V_DrawPatch(state, 0 as i32, 0 as i32, __wcache609_1);
 }
 pub unsafe fn D_AdvanceDemo(state: &mut GameState) {
     state.d_main.advancedemo = true;
@@ -902,17 +895,21 @@ unsafe extern "C" fn D_Endoom(state: &mut GameState) {
     if state.d_main.show_endoom == 0
         || !state.d_main.main_loop_started
         || state.i_video.screensaver_mode
-        || M_CheckParm(state, "-testcontrols") > 0 as i32
+        || M_CheckParm(state, "-testcontrols") > 0
     {
         return;
     }
-    exit(0 as i32);
+    std::process::exit(0);
 }
 pub unsafe fn D_DoomMain(state: &mut GameState) {
     let mut p: i32 = 0;
     let mut file: String = String::new();
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
-    I_AtExit(&mut state.i_system, Some(D_Endoom as unsafe extern "C" fn(&mut GameState) -> ()), false);
+    I_AtExit(
+        &mut state.i_system,
+        Some(D_Endoom as unsafe extern "C" fn(&mut GameState) -> ()),
+        false,
+    );
     I_PrintBanner(&PACKAGE_STRING.as_str());
     println!("Z_Init: Init zone memory allocation daemon. ");
     Z_Init(state);
@@ -934,8 +931,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     if p != 0 {
         let mut scale: i32 = 200 as i32;
         if p < state.m_argv.myargv.len() as i32 - 1 as i32 {
-            scale =
-                M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
+            scale = M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
         }
         if scale < 10 as i32 {
             scale = 10 as i32;
@@ -958,7 +954,11 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     M_SetConfigFilenames(&mut state.m_config, "default.cfg", "doomgenericdoom.cfg");
     D_BindVariables(state);
     M_LoadDefaults(state);
-    I_AtExit(&mut state.i_system, Some(M_SaveDefaults as unsafe extern "C" fn(&mut GameState) -> ()), false);
+    I_AtExit(
+        &mut state.i_system,
+        Some(M_SaveDefaults as unsafe extern "C" fn(&mut GameState) -> ()),
+        false,
+    );
     let mut gamemission_out = state.doomstat.gamemission;
     state.d_main.iwadfile = D_FindIWAD(
         state,
@@ -1122,8 +1122,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     state.g_game.timelimit = 0 as i32;
     p = M_CheckParmWithArgs(state, "-timer", 1 as i32);
     if p != 0 {
-        state.g_game.timelimit =
-            M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
+        state.g_game.timelimit = M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
     }
     p = M_CheckParm(state, "-avg");
     if p != 0 {
@@ -1132,8 +1131,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     p = M_CheckParmWithArgs(state, "-warp", 1 as i32);
     if p != 0 {
         if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
-            state.d_main.startmap =
-                M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
+            state.d_main.startmap = M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
         } else {
             state.d_main.startepisode = state.m_argv.myargv[(p + 1 as i32) as usize]
                 .as_bytes()
@@ -1163,8 +1161,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     p = M_CheckParmWithArgs(state, "-loadgame", 1 as i32);
     if p != 0 {
-        state.d_main.startloadgame =
-            M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
+        state.d_main.startloadgame = M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
     } else {
         state.d_main.startloadgame = -(1 as i32);
     }
@@ -1194,7 +1191,11 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.d_main.storedemo = true;
     }
     if M_CheckParmWithArgs(state, "-statdump", 1 as i32) != 0 {
-        I_AtExit(&mut state.i_system, Some(StatDump as unsafe extern "C" fn(&mut GameState) -> ()), true);
+        I_AtExit(
+            &mut state.i_system,
+            Some(StatDump as unsafe extern "C" fn(&mut GameState) -> ()),
+            true,
+        );
         println!("External statistics registered.");
     }
     p = M_CheckParmWithArgs(state, "-record", 1 as i32);

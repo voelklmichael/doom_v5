@@ -12,7 +12,7 @@ impl MArgvState {
 }
 
 pub const DIR_SEPARATOR: char = '/';
-pub unsafe fn M_CheckParmWithArgs(state: &mut GameState, check: &str, mut num_args: i32) -> i32 {
+pub fn M_CheckParmWithArgs(state: &mut GameState, check: &str, mut num_args: i32) -> i32 {
     let mut i: i32 = 1 as i32;
     while i < state.m_argv.myargv.len() as i32 - num_args {
         if state.m_argv.myargv[i as usize]
@@ -25,13 +25,13 @@ pub unsafe fn M_CheckParmWithArgs(state: &mut GameState, check: &str, mut num_ar
     }
     return 0 as i32;
 }
-pub unsafe fn M_ParmExists(state: &mut GameState, check: &str) -> bool {
+pub fn M_ParmExists(state: &mut GameState, check: &str) -> bool {
     return M_CheckParm(state, check) != 0 as i32;
 }
-pub unsafe fn M_CheckParm(state: &mut GameState, check: &str) -> i32 {
+pub fn M_CheckParm(state: &mut GameState, check: &str) -> i32 {
     return M_CheckParmWithArgs(state, check, 0 as i32);
 }
-pub unsafe fn M_FindResponseFile(state: &mut GameState) {
+pub fn M_FindResponseFile(state: &mut GameState) {
     let mut i: i32 = 1 as i32;
     while i < state.m_argv.myargv.len() as i32 {
         i += 1;
@@ -49,7 +49,9 @@ pub fn M_ArgvAtoi(arg: &::std::ffi::CStr) -> i32 {
     }
     let mut value: i32 = 0;
     while i < bytes.len() && bytes[i].is_ascii_digit() {
-        value = value.wrapping_mul(10).wrapping_add((bytes[i] - b'0') as i32);
+        value = value
+            .wrapping_mul(10)
+            .wrapping_add((bytes[i] - b'0') as i32);
         i += 1;
     }
     if negative {
@@ -58,8 +60,8 @@ pub fn M_ArgvAtoi(arg: &::std::ffi::CStr) -> i32 {
         value
     }
 }
-pub unsafe fn M_GetExecutableName() -> &'static str {
-    let arg0 = unsafe { game_state() }.m_argv.myargv[0].to_str().unwrap();
+pub fn M_GetExecutableName(game_state: &'static GameState) -> &'static str {
+    let arg0 = game_state.m_argv.myargv[0].to_str().unwrap();
     match arg0.rfind(DIR_SEPARATOR) {
         Some(pos) => &arg0[pos + 1..],
         None => arg0,

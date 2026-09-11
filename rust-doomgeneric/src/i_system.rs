@@ -94,8 +94,7 @@ pub unsafe fn I_ZoneBase(state: &mut GameState, mut size: *mut i32) -> *mut byte
     let mut p: i32 = 0;
     p = M_CheckParmWithArgs(state, "-mb", 1 as i32);
     if p > 0 as i32 {
-        default_ram =
-            M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
+        default_ram = M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
         min_ram = default_ram;
     } else {
         default_ram = DEFAULT_RAM;
@@ -134,7 +133,7 @@ pub unsafe fn I_Quit(state: &mut GameState) {
     }
 }
 pub unsafe fn I_Error(message: &str) -> ! {
-    panic!("{}", message);
+    panic!("{}", message)
 }
 pub const DOS_MEM_DUMP_SIZE: i32 = 10;
 static mem_dump_dos622: [u8; 10] = [
