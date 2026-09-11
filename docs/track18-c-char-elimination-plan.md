@@ -90,5 +90,9 @@ matching every prior track's experience):
 
 ## Status
 
-Not yet started as of this doc's creation. See git log for `c-char-*`/similar phase
-branches once work begins.
+**Phase 1 done** (`c-char-phase1-toupper-tolower`, PR #275): `toupper`/`tolower`
+eliminated everywhere, including collapsing several c2rust glibc-macro-expansion
+blocks it turned out most call sites were hiding inside (see commit message for the
+`if 0 != 0` dead-branch pattern — check for this same shape before assuming any other
+libc call is a simple one-liner). Next: phase 2, `strlen`/`strcmp`/`strncmp`/
+`strcasecmp`/`strncasecmp` at sites already holding or cheaply able to get a `&str`.
