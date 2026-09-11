@@ -1307,7 +1307,7 @@ pub unsafe fn G_CheckSpot(
     );
     if state.g_game.players[state.g_game.consoleplayer as usize].viewz != 1 as i32 {
         S_StartSound(
-            &mut state.sounds,
+            state,
             mo as *mut ::core::ffi::c_void,
             sfx_telept as i32,
         );

@@ -168,7 +168,7 @@ pub unsafe fn T_MoveFloor(state: &mut GameState, mut floor: *mut floormove_t) {
     );
     if state.p_tick.leveltime & 7 as i32 == 0 {
         S_StartSound(
-            &mut state.sounds,
+            state,
             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
             sfx_stnmov as i32,
         );
@@ -194,7 +194,7 @@ pub unsafe fn T_MoveFloor(state: &mut GameState, mut floor: *mut floormove_t) {
         }
         P_RemoveThinker(&raw mut (*floor).thinker);
         S_StartSound(
-            &mut state.sounds,
+            state,
             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
             sfx_pstop as i32,
         );

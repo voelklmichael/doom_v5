@@ -63,7 +63,7 @@ pub unsafe fn EV_Teleport(
                             }
                             fog = P_SpawnMobj(state, oldx, oldy, oldz, MT_TFOG);
                             S_StartSound(
-                                &mut state.sounds,
+                                state,
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );
@@ -76,7 +76,7 @@ pub unsafe fn EV_Teleport(
                                 MT_TFOG,
                             );
                             S_StartSound(
-                                &mut state.sounds,
+                                state,
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );

@@ -67,7 +67,7 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
             {
                 if state.p_tick.leveltime & 7 as i32 == 0 {
                     S_StartSound(
-                        &mut state.sounds,
+                        state,
                         &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                         sfx_stnmov as i32,
                     );
@@ -77,7 +77,7 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
                 (*plat).count = (*plat).wait;
                 (*plat).status = down;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
@@ -85,7 +85,7 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
                 (*plat).count = (*plat).wait;
                 (*plat).status = waiting;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstop as i32,
                 );
@@ -114,7 +114,7 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
                 (*plat).count = (*plat).wait;
                 (*plat).status = waiting;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstop as i32,
                 );
@@ -129,7 +129,7 @@ pub unsafe fn T_PlatRaise(state: &mut GameState, mut plat: *mut plat_t) {
                     (*plat).status = down;
                 }
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
@@ -190,7 +190,7 @@ pub unsafe fn EV_DoPlat(
                 (*plat).status = up;
                 (*sec).special = 0 as i16;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_stnmov as i32,
                 );
@@ -204,7 +204,7 @@ pub unsafe fn EV_DoPlat(
                 (*plat).wait = 0 as i32;
                 (*plat).status = up;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_stnmov as i32,
                 );
@@ -219,7 +219,7 @@ pub unsafe fn EV_DoPlat(
                 (*plat).wait = TICRATE * PLATWAIT;
                 (*plat).status = down;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
@@ -234,7 +234,7 @@ pub unsafe fn EV_DoPlat(
                 (*plat).wait = TICRATE * PLATWAIT;
                 (*plat).status = down;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );
@@ -252,7 +252,7 @@ pub unsafe fn EV_DoPlat(
                 (*plat).wait = TICRATE * PLATWAIT;
                 (*plat).status = (P_Random(&mut state.m_random) & 1 as i32) as plat_e;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                     sfx_pstart as i32,
                 );

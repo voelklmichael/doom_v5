@@ -606,7 +606,7 @@ pub unsafe fn F_CastTicker(state: &mut GameState) {
             != 0
         {
             S_StartSound(
-                &mut state.sounds,
+                state,
                 NULL,
                 state.info.mobjinfo
                     [state.f_finale.castorder[state.f_finale.castnum as usize].type_0 as usize]
@@ -690,7 +690,7 @@ pub unsafe fn F_CastTicker(state: &mut GameState) {
             }
         }
         if sfx != 0 {
-            S_StartSound(&mut state.sounds, NULL, sfx);
+            S_StartSound(state, NULL, sfx);
         }
         current_block = 1356832168064818221;
     }
@@ -812,7 +812,7 @@ pub unsafe fn F_CastResponder(state: &mut GameState, mut ev: &event_t) -> bool {
         != 0
     {
         S_StartSound(
-            &mut state.sounds,
+            state,
             NULL,
             state.info.mobjinfo
                 [state.f_finale.castorder[state.f_finale.castnum as usize].type_0 as usize]
@@ -974,7 +974,7 @@ pub unsafe fn F_BunnyScroll(state: &mut GameState) {
         stage = 6 as i32;
     }
     if stage > state.f_finale.laststage {
-        S_StartSound(&mut state.sounds, NULL, sfx_pistol as i32);
+        S_StartSound(state, NULL, sfx_pistol as i32);
         state.f_finale.laststage = stage;
     }
     snprintf(

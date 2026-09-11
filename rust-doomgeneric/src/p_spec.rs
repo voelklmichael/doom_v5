@@ -1043,13 +1043,10 @@ pub unsafe fn P_UpdateSpecials(state: &mut GameState) {
                     }
                     _ => {}
                 }
-                S_StartSound(
-                    &mut state.sounds,
-                    &raw mut (*(&raw mut state.p_switch.buttonlist as *mut button_t)
-                        .offset(i as isize))
-                    .soundorg as *mut ::core::ffi::c_void,
-                    sfx_swtchn as i32,
-                );
+                let soundorg = &raw mut (*(&raw mut state.p_switch.buttonlist as *mut button_t)
+                    .offset(i as isize))
+                .soundorg as *mut ::core::ffi::c_void;
+                S_StartSound(state, soundorg, sfx_swtchn as i32);
                 memset(
                     (&raw mut state.p_switch.buttonlist as *mut button_t).offset(i as isize)
                         as *mut button_t as *mut ::core::ffi::c_void,

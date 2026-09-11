@@ -174,7 +174,7 @@ pub unsafe fn P_GiveWeapon(
             == (&raw mut state.g_game.players as *mut player_t)
                 .offset(state.g_game.consoleplayer as isize) as *mut player_t
         {
-            S_StartSound(&mut state.sounds, NULL, sfx_wpnup as i32);
+            S_StartSound(state, NULL, sfx_wpnup as i32);
         }
         return false;
     }
@@ -645,7 +645,7 @@ pub unsafe fn P_TouchSpecialThing(
         == (&raw mut state.g_game.players as *mut player_t)
             .offset(state.g_game.consoleplayer as isize) as *mut player_t
     {
-        S_StartSound(&mut state.sounds, NULL, sound);
+        S_StartSound(state, NULL, sound);
     }
 }
 pub unsafe fn P_KillMobj(state: &mut GameState, mut source: *mut mobj_t, mut target: *mut mobj_t) {

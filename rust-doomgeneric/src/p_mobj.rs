@@ -602,7 +602,7 @@ pub unsafe fn P_ExplodeMissile(state: &mut GameState, mut mo: *mut mobj_t) {
     (*mo).flags &= !(MF_MISSILE as i32);
     if (*(*mo).info).deathsound != 0 {
         S_StartSound(
-            &mut state.sounds,
+            state,
             mo as *mut ::core::ffi::c_void,
             (*(*mo).info).deathsound,
         );
@@ -753,7 +753,7 @@ pub unsafe fn P_ZMovement(state: &mut GameState, mut mo: *mut mobj_t) {
             if !(*mo).player.is_null() && (*mo).momz < -GRAVITY * 8 as i32 {
                 (*(*mo).player).deltaviewheight = (*mo).momz >> 3 as i32;
                 S_StartSound(
-                    &mut state.sounds,
+                    state,
                     mo as *mut ::core::ffi::c_void,
                     sfx_oof as i32,
                 );
@@ -804,7 +804,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut GameState, mut mobj: *mut mobj_t) {
     let floorheight1 = (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
     mo = P_SpawnMobj(state, (*mobj).x, (*mobj).y, floorheight1, MT_TFOG);
     S_StartSound(
-        &mut state.sounds,
+        state,
         mo as *mut ::core::ffi::c_void,
         sfx_telept as i32,
     );
@@ -812,7 +812,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut GameState, mut mobj: *mut mobj_t) {
     let floorheight2 = (*state.p_setup.sector_mut((*ss).sector)).floorheight;
     mo = P_SpawnMobj(state, x, y, floorheight2, MT_TFOG);
     S_StartSound(
-        &mut state.sounds,
+        state,
         mo as *mut ::core::ffi::c_void,
         sfx_telept as i32,
     );
@@ -1119,7 +1119,7 @@ pub unsafe fn P_RespawnSpecials(state: &mut GameState) {
     let floorheight = (*state.p_setup.sector_mut((*ss).sector)).floorheight;
     mo = P_SpawnMobj(state, x, y, floorheight, MT_IFOG);
     S_StartSound(
-        &mut state.sounds,
+        state,
         mo as *mut ::core::ffi::c_void,
         sfx_itmbk as i32,
     );
@@ -1357,7 +1357,7 @@ pub unsafe fn P_SpawnMissile(
     );
     if (*(*th).info).seesound != 0 {
         S_StartSound(
-            &mut state.sounds,
+            state,
             th as *mut ::core::ffi::c_void,
             (*(*th).info).seesound,
         );
@@ -1413,7 +1413,7 @@ pub unsafe fn P_SpawnPlayerMissile(
     th = P_SpawnMobj(state, x, y, z, type_0);
     if (*(*th).info).seesound != 0 {
         S_StartSound(
-            &mut state.sounds,
+            state,
             th as *mut ::core::ffi::c_void,
             (*(*th).info).seesound,
         );

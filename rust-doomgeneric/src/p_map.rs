@@ -991,7 +991,7 @@ pub unsafe extern "C" fn PTR_UseTraverse(
         P_LineOpening(state, (*in_0).d.line);
         if state.p_maputl.openrange <= 0 as i32 {
             S_StartSound(
-                &mut state.sounds,
+                state,
                 state.p_map.usething as *mut ::core::ffi::c_void,
                 sfx_noway as i32,
             );

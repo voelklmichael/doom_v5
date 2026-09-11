@@ -544,13 +544,13 @@ pub unsafe fn HU_Ticker(state: &mut GameState) {
                                 state.hu_stuff.message_counter = HU_MSGTIMEOUT;
                                 if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
                                     S_StartSound(
-                                        &mut state.sounds,
+                                        state,
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                         sfx_radio as i32,
                                     );
                                 } else {
                                     S_StartSound(
-                                        &mut state.sounds,
+                                        state,
                                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                         sfx_tink as i32,
                                     );
