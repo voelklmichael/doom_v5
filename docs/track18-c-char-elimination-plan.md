@@ -641,6 +641,46 @@ turned out to be entirely dead code.
 
 `c_char` references: 505 → 458.
 
+**Phase 21 done** (`c-char-phase21-savename-savedescription`, PR pending): the
+save-file-name/description cluster in `g_game.rs`/`p_saveg.rs`/`m_menu.rs` —
+touches the `.dsg` binary format again (like phase 12/13), so got the full
+interactive save/load round-trip bar, not just a boot smoke test.
+- `DemoVersionDescription` (`g_game.rs`) — a version-number-to-label function
+  mixing 6 literal-match arms with a dynamic `M_snprintf`-into-buffer fallback;
+  converted to return `String` directly (`format!` for the dynamic case), and
+  its now-pointless `demo_version_description_resultbuf` field removed.
+- `GGameState.savename` (`*mut c_char` buffer `G_LoadGame` copies its argument
+  into, later `fopen`'d by `G_DoLoadGame`) → `String`. Both callers
+  (`d_main.rs`, `m_menu.rs`'s `M_LoadSelect`) were already round-tripping an
+  already-native `String` (`P_SaveGameFile`'s return) through a `CString` just
+  to satisfy the old raw-pointer parameter — simplified to pass the `String`
+  directly now that `G_LoadGame` accepts `&str`.
+- `GGameState.savedescription` (the save-slot label typed by the player) →
+  `String`, along with `G_SaveGame`'s `description` parameter and
+  `p_saveg.rs`'s `P_WriteSaveGameHeader` — the function that actually
+  byte-writes the description into the `.dsg` file header. This one needed
+  care: the original walked `description` byte-by-byte until a NUL (no length
+  cap on that loop — a real quirk of the original code, not a bug to "fix"),
+  then zero-padded up to `SAVESTRINGSIZE` (24) if shorter. Reimplemented
+  faithfully as `for &b in description.as_bytes() { saveg_write8(state, b); }`
+  followed by the same conditional zero-pad, preserving the exact
+  no-artificial-cap behavior. The function's other local `[c_char; 16]`
+  version-string buffer (`"version {N}"`, always machine-generated, never user
+  data) converted the same way. `m_menu.rs`'s `M_DoSave` simplified similarly
+  to phase-12/13's pattern — it was CString-round-tripping an already-`String`
+  `savegamestrings[slot]` for no reason.
+- **Verified with the full interactive round-trip**: saved a game with
+  description "MySave123" via the in-game menu, confirmed "GAME SAVED."
+  on-screen, restarted the process fresh, opened Load Game, and
+  screenshot-confirmed the slot shows "MYSAVE123" exactly (the game's own
+  uppercase-only HUD font, not a transcription artifact) — a precise,
+  byte-for-byte confirmation that `P_WriteSaveGameHeader`'s rewritten
+  byte-loop round-trips real save data correctly, not just that the file
+  opens without erroring. Selected the slot and confirmed gameplay resumed
+  with no panic.
+
+`c_char` references: 458 → 412.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
@@ -649,14 +689,18 @@ in any meaningful sense, a sequence of raw keycodes matched byte-by-byte), `d_ma
 argument parsing — lower value, this track has deliberately deferred local scratch
 buffers throughout, though phase 20 shows it's worth re-checking each one for the
 same "looks complex but is actually dead/trivial" pattern rather than assuming),
-`g_game.rs`, `p_inter.rs`, `wi_stuff.rs` (its own remaining non-callback-hub sites),
-`m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI
-printf reimplementations still used by many buffer-building call sites across the
+`p_inter.rs`, `wi_stuff.rs` (its own remaining non-callback-hub sites), `m_misc.rs`
+(mostly `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI printf
+reimplementations still used by many buffer-building call sites across the
 codebase, a structural piece rather than a simple field conversion — replacing
 these would mean auditing and converting every one of their callers, a much larger
-undertaking than a bounded field-conversion phase). Each needs the same
-per-cluster triage phases 10-20 used (is it a lumpname-shaped const table, an
-always-null/always-dead field or function, a local scratch buffer, a
+undertaking than a bounded field-conversion phase), the `D_FindWADByName`/
+`D_FindIWAD`/`D_AddFile`/`W_AddFile` IWAD-search-and-open chain (`d_iwad.rs`/
+`d_main.rs`/`w_wad.rs` — real file-I/O, deeper than it first looks, several
+`into_raw()` leaks like phase 11 found; deferred once already for being bigger
+than it seemed, worth a dedicated phase rather than folding into a sweep). Each
+needs the same per-cluster triage phases 10-21 used (is it a lumpname-shaped const
+table, an always-null/always-dead field or function, a local scratch buffer, a
 cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
 callback-type hub, a small widely-called name-resolution function trio, an
 already-native-String-round-tripping-through-a-raw-buffer, a genuine module-level

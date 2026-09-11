@@ -662,35 +662,23 @@ unsafe fn saveg_write_glow_t(state: &mut GameState, mut str: *mut glow_t) {
     saveg_write32(state, (*str).maxlight);
     saveg_write32(state, (*str).direction);
 }
-pub unsafe fn P_WriteSaveGameHeader(
-    state: &mut GameState,
-    mut description: *mut ::core::ffi::c_char,
-) {
-    let mut name: [::core::ffi::c_char; 16] = [0; 16];
+pub unsafe fn P_WriteSaveGameHeader(state: &mut GameState, description: &str) {
     let mut i: i32 = 0;
-    i = 0 as i32;
-    while *description.offset(i as isize) as i32 != '\0' as i32 {
-        saveg_write8(state, *description.offset(i as isize) as byte);
+    for &b in description.as_bytes() {
+        saveg_write8(state, b);
         i += 1;
     }
     while i < SAVESTRINGSIZE {
         saveg_write8(state, 0 as byte);
         i += 1;
     }
-    memset(
-        &raw mut name as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
-        0 as i32,
-        ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
-    );
-    M_snprintf(
-        &raw mut name as *mut ::core::ffi::c_char,
-        ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
-        b"version %i\0" as *const u8 as *const ::core::ffi::c_char,
-        G_VanillaVersionCode(&mut state.doomstat),
-    );
+    let name = format!("version {}", G_VanillaVersionCode(&mut state.doomstat));
+    let mut name_bytes = [0u8; 16];
+    let copy_len = name.len().min(16);
+    name_bytes[..copy_len].copy_from_slice(&name.as_bytes()[..copy_len]);
     i = 0 as i32;
     while i < VERSIONSIZE {
-        saveg_write8(state, name[i as usize] as byte);
+        saveg_write8(state, name_bytes[i as usize]);
         i += 1;
     }
     saveg_write8(state, state.g_game.gameskill as byte);

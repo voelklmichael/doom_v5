@@ -54,7 +54,6 @@ use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_menu::M_StartControlPanel;
-use crate::src::m_misc::M_StringCopy;
 use crate::src::m_misc::M_TempFile;
 use crate::src::m_misc::M_WriteFile;
 use crate::src::m_misc::M_snprintf;
@@ -182,19 +181,18 @@ pub struct GGameState {
     pub joyarray: [boolean; 21],
     pub joybuttons: *mut boolean,
     pub savegameslot: i32,
-    pub savedescription: [::core::ffi::c_char; 32],
+    pub savedescription: String,
     pub bodyque: [*mut mobj_t; 32],
     pub bodyqueslot: i32,
     pub vanilla_savegame_limit: i32,
     pub vanilla_demo_limit: i32,
     pub secretexit: bool,
-    pub savename: [::core::ffi::c_char; 256],
+    pub savename: String,
     pub d_skill: skill_t,
     pub d_episode: i32,
     pub d_map: i32,
     pub defdemoname: *mut ::core::ffi::c_char,
     pub g_build_ticcmd_carry: i16,
-    pub demo_version_description_resultbuf: [::core::ffi::c_char; 16],
 }
 
 const NEW_PLAYER: player_s = player_s {
@@ -337,19 +335,18 @@ impl GGameState {
             joyarray: [0; 21],
             joybuttons: ::core::ptr::null::<boolean>() as *mut boolean,
             savegameslot: 0,
-            savedescription: [0; 32],
+            savedescription: String::new(),
             bodyque: [::core::ptr::null::<mobj_t>() as *mut mobj_t; 32],
             bodyqueslot: 0,
             vanilla_savegame_limit: 1,
             vanilla_demo_limit: 1,
             secretexit: false,
-            savename: [0; 256],
+            savename: String::new(),
             d_skill: sk_baby,
             d_episode: 0,
             d_map: 0,
             defdemoname: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
             g_build_ticcmd_carry: 0,
-            demo_version_description_resultbuf: [0; 16],
         }
     }
 }
@@ -1102,12 +1099,8 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
                         }
                     }
                     2 => {
-                        if state.g_game.savedescription[0 as i32 as usize] == 0 {
-                            M_StringCopy(
-                                &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char,
-                                b"NET GAME\0" as *const u8 as *const ::core::ffi::c_char,
-                                ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
-                            );
+                        if state.g_game.savedescription.is_empty() {
+                            state.g_game.savedescription = "NET GAME".to_string();
                         }
                         state.g_game.savegameslot = (state.g_game.players[i as usize].cmd.buttons
                             as i32
@@ -1571,19 +1564,16 @@ pub unsafe fn G_DoWorldDone(state: &mut GameState) {
     state.g_game.gameaction = ga_nothing;
     state.g_game.viewactive = true;
 }
-pub unsafe fn G_LoadGame(state: &mut GameState, mut name: *mut ::core::ffi::c_char) {
-    M_StringCopy(
-        &raw mut state.g_game.savename as *mut ::core::ffi::c_char,
-        name,
-        ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
-    );
+pub unsafe fn G_LoadGame(state: &mut GameState, name: &str) {
+    state.g_game.savename = name.to_string();
     state.g_game.gameaction = ga_loadgame;
 }
 pub unsafe fn G_DoLoadGame(state: &mut GameState) {
     let mut savedleveltime: i32 = 0;
     state.g_game.gameaction = ga_nothing;
+    let savename_cstring = ::std::ffi::CString::new(state.g_game.savename.as_str()).unwrap();
     state.p_saveg.save_stream = fopen(
-        &raw mut state.g_game.savename as *mut ::core::ffi::c_char,
+        savename_cstring.as_ptr(),
         b"rb\0" as *const u8 as *const ::core::ffi::c_char,
     ) as *mut FILE;
     if state.p_saveg.save_stream.is_null() {
@@ -1618,14 +1608,10 @@ pub unsafe fn G_DoLoadGame(state: &mut GameState) {
 pub unsafe fn G_SaveGame(
     state: &mut GameState,
     mut slot: i32,
-    mut description: *mut ::core::ffi::c_char,
+    description: &str,
 ) {
     state.g_game.savegameslot = slot;
-    M_StringCopy(
-        &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char,
-        description,
-        ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
-    );
+    state.g_game.savedescription = description.to_string();
     state.g_game.sendsave = true;
 }
 pub unsafe fn G_DoSaveGame(state: &mut GameState) {
@@ -1653,8 +1639,8 @@ pub unsafe fn G_DoSaveGame(state: &mut GameState) {
         recovery_savegame_file = Some(recovery_file);
     }
     state.p_saveg.savegame_error = false;
-    let savedescription = &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char;
-    P_WriteSaveGameHeader(state, savedescription);
+    let savedescription = state.g_game.savedescription.clone();
+    P_WriteSaveGameHeader(state, &savedescription);
     P_ArchivePlayers(state);
     P_ArchiveWorld(state);
     P_ArchiveThinkers(state);
@@ -1679,11 +1665,7 @@ pub unsafe fn G_DoSaveGame(state: &mut GameState) {
         savegame_file_cstring.as_ptr(),
     );
     state.g_game.gameaction = ga_nothing;
-    M_StringCopy(
-        &raw mut state.g_game.savedescription as *mut ::core::ffi::c_char,
-        b"\0" as *const u8 as *const ::core::ffi::c_char,
-        ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
-    );
+    state.g_game.savedescription.clear();
     state.g_game.players[state.g_game.consoleplayer as usize].message =
         Some("game saved.".to_string());
     R_FillBackScreen(state);
@@ -2007,51 +1989,21 @@ pub unsafe fn G_DeferedPlayDemo(state: &mut GameState, mut name: *mut ::core::ff
     state.g_game.defdemoname = name;
     state.g_game.gameaction = ga_playdemo;
 }
-unsafe fn DemoVersionDescription(
-    state: &mut GameState,
-    mut version: i32,
-) -> *mut ::core::ffi::c_char {
+unsafe fn DemoVersionDescription(_state: &mut GameState, version: i32) -> String {
     match version {
-        104 => {
-            return b"v1.4\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
-        }
-        105 => {
-            return b"v1.5\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
-        }
-        106 => {
-            return b"v1.6/v1.666\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
-        }
-        107 => {
-            return b"v1.7/v1.7a\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
-        }
-        108 => {
-            return b"v1.8\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
-        }
-        109 => {
-            return b"v1.9\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
-        }
+        104 => return "v1.4".to_string(),
+        105 => return "v1.5".to_string(),
+        106 => return "v1.6/v1.666".to_string(),
+        107 => return "v1.7/v1.7a".to_string(),
+        108 => return "v1.8".to_string(),
+        109 => return "v1.9".to_string(),
         _ => {}
     }
     if version >= 0 as i32 && version <= 4 as i32 {
-        return b"v1.0/v1.1/v1.2\0" as *const u8 as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char;
+        "v1.0/v1.1/v1.2".to_string()
     } else {
-        M_snprintf(
-            &raw mut state.g_game.demo_version_description_resultbuf as *mut ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 16]>() as size_t,
-            b"%i.%i (unknown)\0" as *const u8 as *const ::core::ffi::c_char,
-            version / 100 as i32,
-            version % 100 as i32,
-        );
-        return &raw mut state.g_game.demo_version_description_resultbuf
-            as *mut ::core::ffi::c_char;
-    };
+        format!("{}.{} (unknown)", version / 100 as i32, version % 100 as i32)
+    }
 }
 pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
     let mut skill: skill_t = sk_baby;
@@ -2077,7 +2029,7 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
             "Demo is from a different game version!\n(read {}, should be {})\n\n*** You may need to upgrade your version of Doom to v1.9. ***\n    See: https://www.doomworld.com/classicdoom/info/patches.php\n    This appears to be {}.",
             demoversion,
             G_VanillaVersionCode(&mut state.doomstat),
-            ::std::ffi::CStr::from_ptr(DemoVersionDescription(state, demoversion)).to_string_lossy(),
+            DemoVersionDescription(state, demoversion),
         );
     }
     let fresh25 = state.g_game.demo_p;

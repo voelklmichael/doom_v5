@@ -1313,11 +1313,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     if state.d_main.startloadgame >= 0 as i32 {
         let savegame_file = P_SaveGameFile(state, state.d_main.startloadgame);
-        let savegame_file_cstring = ::std::ffi::CString::new(savegame_file.as_str()).unwrap();
-        G_LoadGame(
-            state,
-            savegame_file_cstring.as_ptr() as *mut ::core::ffi::c_char,
-        );
+        G_LoadGame(state, &savegame_file);
     }
     if state.g_game.gameaction as u32 != ga_loadgame as i32 as u32 {
         if state.d_main.autostart || state.g_game.netgame {

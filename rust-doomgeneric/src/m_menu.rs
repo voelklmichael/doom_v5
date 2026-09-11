@@ -800,11 +800,7 @@ pub unsafe fn M_DrawSaveLoadBorder(state: &mut GameState, mut x: i32, mut y: i32
 #[no_mangle]
 pub unsafe extern "C" fn M_LoadSelect(state: &mut GameState, choice: i32) {
     let savegame_file = P_SaveGameFile(state, choice);
-    let savegame_file_cstring = ::std::ffi::CString::new(savegame_file.as_str()).unwrap();
-    G_LoadGame(
-        state,
-        savegame_file_cstring.as_ptr() as *mut ::core::ffi::c_char,
-    );
+    G_LoadGame(state, &savegame_file);
     M_ClearMenus(state);
 }
 #[no_mangle]
@@ -845,13 +841,8 @@ pub unsafe extern "C" fn M_DrawSave(state: &mut GameState) {
     }
 }
 pub unsafe fn M_DoSave(state: &mut GameState, mut slot: i32) {
-    let name_cstring =
-        ::std::ffi::CString::new(state.m_menu.savegamestrings[slot as usize].as_str()).unwrap();
-    G_SaveGame(
-        state,
-        slot,
-        name_cstring.as_ptr() as *mut ::core::ffi::c_char,
-    );
+    let savegame_name = state.m_menu.savegamestrings[slot as usize].clone();
+    G_SaveGame(state, slot, &savegame_name);
     M_ClearMenus(state);
     if state.m_menu.quickSaveSlot == -(2 as i32) {
         state.m_menu.quickSaveSlot = slot;
