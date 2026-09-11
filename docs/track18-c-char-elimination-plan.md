@@ -808,42 +808,78 @@ pending): two small independent clusters.
 
 `c_char` references: 291 → 275.
 
+**Phase 26 done** (`c-char-phase26-iwad-search-and-open-chain`, PR pending):
+the IWAD-search-and-open chain, previously deferred twice for being "bigger
+than it looks." Turned out to be tractable in one phase because most of its
+internals (`iwad_t`, `file_exists`, `dir_is_file`, `identify_iwad_by_name`,
+`search_directory_for_iwad`) were already native `&str`/`String` from earlier
+phases — only the boundary functions still spoke `*mut c_char`.
+- `D_FindWADByName`/`D_TryFindWADByName`/`D_FindIWAD` (`d_iwad.rs`) → `&str`
+  params, `Option<String>`/`String` returns — this also fixed the two
+  `into_raw()` memory leaks the plan doc had flagged (every found-IWAD path
+  was heap-allocated via `CString::into_raw()` and never freed).
+  `D_SuggestIWADName` (confirmed zero callers) left alone.
+- `DMainState.iwadfile` (`d_main.rs`) → `String`; `D_AddFile` → `&str`; the
+  `-playdemo`/`-timedemo` local `file` scratch buffer (previously
+  `[c_char; 256]` built via `M_StringCopy`/`snprintf`) → `String` via
+  `format!`, since it only fed `D_AddFile` and a `println!`. Its sibling
+  `demolumpname` buffer stays untouched (still feeds the deferred
+  `G_DeferedPlayDemo`/`defdemoname`, per phase 24).
+- `W_AddFile` (`w_wad.rs`) → `filename: &str`; its `.wad`-suffix check
+  rewritten as a plain `&str` slice comparison.
+- `W_OpenFile`/`wad_file_class_t.OpenFile` (`w_file.rs`) and
+  `W_StdC_OpenFile` (`w_file_stdc.rs`, single implementor) → `&str`,
+  bridging to the real `fopen` FFI call via `CString` at that one genuine
+  C-ABI boundary.
+- `M_ExtractFileBase` (`m_misc.rs`) → `(path: &str, dest: &mut FixedCStr<8>)`.
+  Found and fixed a second latent out-of-bounds read (same shape as phase
+  25's savegame vcheck bug): the truncation-warning branch's
+  `CStr::from_ptr(dest)` assumed `dest`'s 8-byte buffer contained a NUL, but
+  by the time truncation triggers all 8 bytes are filled — a real,
+  reachable bug (triggers for any `-file` argument whose base name is 9+
+  characters). Rewritten to build the truncated name from the same bytes
+  already computed, no OOB read possible.
+- `W_LumpNameHash` (`w_wad.rs`) → `&[u8]`, dropping `unsafe` entirely; fixed
+  its 4 call sites, 2 of which were building a throwaway `CString` solely to
+  satisfy the old pointer signature.
+- Verified beyond the standard bar: the 3 Xvfb boot-smoke tests are a direct,
+  strong end-to-end test of this exact phase (a healthy boot to E1M1
+  requires `D_FindIWAD` to locate `doom1.wad`, `D_AddFile`/`W_AddFile` to
+  open and parse it, and `W_CheckCorrectIWAD` to validate it); additionally
+  captured the startup log (confirms `D_IdentifyVersion`/`InitGameVersion`
+  correctly identify "Ultimate Doom" from the loaded IWAD) and a screenshot
+  of E1M1 rendering correctly.
+
+`c_char` references: 275 → 230.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (63 occurrences, mostly the `cheatseq_t`
 byte-sequence family, deliberately kept as plain `c_char` arrays since Track 18
 phase 2/3 — not a string in any meaningful sense, a sequence of raw keycodes
 matched byte-by-byte — worth a pass to confirm nothing else is hiding in that
-file besides `cheatseq_t`), `d_main.rs`'s remaining ~60 occurrences (the
-`demolumpname`/`file`/`-turbo`/`-playdemo`/`-timedemo` argument-parsing scratch
-buffers plus `D_FindIWAD`'s `iwadfile` field — this is squarely the
-IWAD-search-and-open chain flagged below), `m_misc.rs` (mostly `M_snprintf`/
-`M_vsnprintf` themselves — genuine variadic C-ABI printf reimplementations
-still used by many buffer-building call sites across the codebase, a
-structural piece rather than a simple field conversion — replacing these would
-mean auditing and converting every one of their callers, a much larger
-undertaking than a bounded field-conversion phase), `doomgeneric_xlib.rs` (16
-occurrences — checked in phase 25's survey and confirmed genuine X11/cross-crate
-FFI struct layouts (`Display`, `XClassHint`, `XPointer`, etc.) that must stay
-`c_char` to match the C library's real memory layout; out of scope, not
-revisit-worthy), `g_game.rs` (`defdemoname`/`G_DeferedPlayDemo`/`G_TimeDemo`,
-deliberately deferred phase 24 — see above), `z_zone.rs` (11 occurrences,
-confirmed to be entirely inside `Z_DumpHeap`/`Z_FileDumpHeap`, two zero-caller
-debug-dump functions — per this track's "leave dead code alone" convention for
-whole dead *functions* (as opposed to dead field values inside live functions),
-not a conversion candidate), the `D_FindWADByName`/`D_FindIWAD`/`D_AddFile`/
-`W_AddFile` IWAD-search-and-open chain (`d_iwad.rs`/`d_main.rs`/`w_wad.rs` —
-real file-I/O, deeper than it first looks, several `into_raw()` leaks like
-phase 11 found; deferred once already for being bigger than it seemed, worth a
-dedicated phase rather than folding into a sweep). Each needs the same
-per-cluster triage phases 10-25 used (is it a lumpname-shaped const table, an
-always-null/always-dead field or function, a local scratch buffer, a
-cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
-callback-type hub, a small widely-called name-resolution function trio, an
-already-native-String-round-tripping-through-a-raw-buffer, a genuine module-level
-`static mut` deferred since Track 16, a whole function that's provably dead code
-behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom debug parameter, a
-checksummed/version-checked-data-buffer needing byte-exact-not-shape-exact
-translation, a whole dead debug-dump function, a genuine cross-crate FFI struct
-layout, or a structural printf/path-building engine piece) before deciding
-scope — the original blanket 1369-count estimate has already proven an
+file besides `cheatseq_t`), `d_main.rs`'s remaining occurrences (the
+`demolumpname`/`-turbo` argument-parsing scratch buffers, the `title` static
+(`#[no_mangle]`, always-empty, likely a cross-crate FFI symbol — check before
+touching), `g_game.rs` (`defdemoname`/`G_DeferedPlayDemo`/`G_TimeDemo`,
+deliberately deferred phase 24 — see above, this is `demolumpname`'s other
+half), `m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselves — genuine
+variadic C-ABI printf reimplementations still used by many buffer-building
+call sites across the codebase, a structural piece rather than a simple field
+conversion — replacing these would mean auditing and converting every one of
+their callers, a much larger undertaking than a bounded field-conversion
+phase), `doomgeneric_xlib.rs` (confirmed genuine X11/cross-crate FFI struct
+layouts, out of scope), `z_zone.rs` (confirmed entirely inside 2 zero-caller
+debug-dump functions, left alone per "leave dead code alone"). Each needs the
+same per-cluster triage phases 10-26 used (is it a lumpname-shaped const
+table, an always-null/always-dead field or function, a local scratch buffer,
+a cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a
+shared callback-type hub, a small widely-called name-resolution function
+trio, an already-native-String-round-tripping-through-a-raw-buffer, a genuine
+module-level `static mut` deferred since Track 16, a whole function that's
+provably dead code behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom
+debug parameter, a checksummed/version-checked-data-buffer needing
+byte-exact-not-shape-exact translation, a whole dead debug-dump function, a
+genuine cross-crate FFI struct layout, or a structural printf/path-building
+engine piece) before deciding scope — the original blanket 1369-count
+estimate has already proven an
 unreliable guide to where the real work is.

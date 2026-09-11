@@ -71,15 +71,13 @@ pub struct C2RustUnnamed_0 {
     pub lumpname: &'static str,
 }
 pub const PROGRAM_PREFIX: FixedCStr<12> = FixedCStr(*b"doomgeneric\0");
-pub unsafe fn W_LumpNameHash(mut s: *const ::core::ffi::c_char) -> u32 {
+pub fn W_LumpNameHash(s: &[u8]) -> u32 {
     let mut result: u32 = 5381 as u32;
-    let mut i: u32 = 0;
-    i = 0 as u32;
-    while i < 8 as u32 && *s.offset(i as isize) as i32 != '\0' as i32 {
-        result = result << 5 as i32
-            ^ result
-            ^ (*s.offset(i as isize) as u8).to_ascii_uppercase() as u32;
-        i = i.wrapping_add(1);
+    for &b in s.iter().take(8) {
+        if b == 0 {
+            break;
+        }
+        result = result << 5 as i32 ^ result ^ b.to_ascii_uppercase() as u32;
     }
     return result;
 }
@@ -124,7 +122,7 @@ unsafe fn ExtendLumpInfo(mut newnumlumps: i32) {
     unsafe { game_state() }.w_wad.lumpinfo = newlumpinfo;
     unsafe { game_state() }.w_wad.numlumps = newnumlumps as u32;
 }
-pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file_t {
+pub unsafe fn W_AddFile(filename: &str) -> *mut wad_file_t {
     let mut header: wadinfo_t = wadinfo_t {
         identification: FixedCStr([0; 4]),
         numlumps: 0,
@@ -140,17 +138,12 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
     let mut newnumlumps: i32 = 0;
     wad_file = W_OpenFile(unsafe { game_state() }, filename);
     if wad_file.is_null() {
-        println!(" couldn't open {}", ::std::ffi::CStr::from_ptr(filename).to_string_lossy());
+        println!(" couldn't open {}", filename);
         return ::core::ptr::null_mut::<wad_file_t>();
     }
     newnumlumps = unsafe { game_state() }.w_wad.numlumps as i32;
-    let filename_suffix = filename
-        .offset(::std::ffi::CStr::from_ptr(filename as *const ::core::ffi::c_char).to_bytes().len() as isize)
-        .offset(-(3 as i32 as isize));
-    if !::std::ffi::CStr::from_ptr(filename_suffix)
-        .to_bytes()
-        .eq_ignore_ascii_case(b"wad")
-    {
+    let is_wad = filename.len() >= 3 && filename[filename.len() - 3..].eq_ignore_ascii_case("wad");
+    if !is_wad {
         fileinfo = Z_Malloc(
             unsafe { &mut game_state().z_zone },
             ::core::mem::size_of::<filelump_t>() as i32,
@@ -159,10 +152,7 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
         ) as *mut filelump_t;
         (*fileinfo).filepos = 0 as i32;
         (*fileinfo).size = (*wad_file).length as i32;
-        M_ExtractFileBase(
-            filename,
-            &raw mut (*fileinfo).name as *mut ::core::ffi::c_char,
-        );
+        M_ExtractFileBase(filename, &mut (*fileinfo).name);
         newnumlumps += 1;
     } else {
         W_Read(
@@ -175,7 +165,7 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
             if header.identification.0 != *b"PWAD" {
                 I_Error(&format!(
                     "Wad file {} doesn't have IWAD or PWAD id\n",
-                    ::std::ffi::CStr::from_ptr(filename).to_str().unwrap(),
+                    filename,
                 ));
             }
         }
@@ -243,14 +233,12 @@ pub unsafe fn wad_name8_to_string(ptr: *const ::core::ffi::c_char) -> String {
     String::from_utf8_lossy(&bytes[..len]).into_owned()
 }
 pub unsafe fn W_CheckNumForName(name: &str) -> i32 {
-    let name_cstring = ::std::ffi::CString::new(name).unwrap();
-    let name_ptr = name_cstring.as_ptr() as *mut ::core::ffi::c_char;
     let mut lump_p: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     let mut i: i32 = 0;
     if !unsafe { game_state() }.w_wad.lumphash.is_null() {
         let mut hash: i32 = 0;
-        hash =
-            W_LumpNameHash(name_ptr).wrapping_rem(unsafe { game_state() }.w_wad.numlumps) as i32;
+        hash = W_LumpNameHash(name.as_bytes())
+            .wrapping_rem(unsafe { game_state() }.w_wad.numlumps) as i32;
         lump_p = *unsafe { game_state() }.w_wad.lumphash.offset(hash as isize);
         while !lump_p.is_null() {
             if (*lump_p).name.eq_str_ignore_ascii_case(name) {
@@ -398,8 +386,9 @@ pub unsafe fn W_GenerateHashTable() {
         while i < unsafe { game_state() }.w_wad.numlumps {
             let mut hash: u32 = 0;
             hash = W_LumpNameHash(
-                &raw mut (*unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize)).name
-                    as *mut ::core::ffi::c_char,
+                (*unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize))
+                    .name
+                    .as_bytes(),
             )
             .wrapping_rem(unsafe { game_state() }.w_wad.numlumps);
             let ref mut fresh1 = (*unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize)).next;

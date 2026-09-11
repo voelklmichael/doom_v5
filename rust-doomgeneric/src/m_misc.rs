@@ -1,4 +1,5 @@
 use crate::src::doomdef::NULL;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::game_state::game_state;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
@@ -8,7 +9,6 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use libc::memset;
 use libc::malloc;
 extern "C" {
     fn vsnprintf(
@@ -147,39 +147,27 @@ pub unsafe fn M_StrToInt(mut str: *const ::core::ffi::c_char, mut result: *mut i
         None => false,
     }
 }
-pub unsafe fn M_ExtractFileBase(
-    mut path: *mut ::core::ffi::c_char,
-    mut dest: *mut ::core::ffi::c_char,
-) {
-    let mut src: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut filename: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut length: i32 = 0;
-    src = path
-        .offset(::std::ffi::CStr::from_ptr(path as *const ::core::ffi::c_char).to_bytes().len() as isize)
-        .offset(-(1 as i32 as isize));
-    while src != path && *src.offset(-(1 as i32 as isize)) as i32 != DIR_SEPARATOR {
-        src = src.offset(-1);
-    }
-    filename = src;
-    length = 0 as i32;
-    memset(dest as *mut ::core::ffi::c_void, 0 as i32, 8 as size_t);
-    while *src as i32 != '\0' as i32 && *src as i32 != '.' as i32 {
-        if length >= 8 as i32 {
-            println!(
-                "Warning: Truncated '{}' lump name to '{:.8}'.",
-                ::std::ffi::CStr::from_ptr(filename).to_string_lossy(),
-                ::std::ffi::CStr::from_ptr(dest).to_string_lossy(),
-            );
+pub fn M_ExtractFileBase(path: &str, dest: &mut FixedCStr<8>) {
+    let filename = match path.rfind('/') {
+        Some(idx) => &path[idx + 1..],
+        None => path,
+    };
+    let base = match filename.find('.') {
+        Some(idx) => &filename[..idx],
+        None => filename,
+    };
+    let mut buf = [0u8; 8];
+    let mut length = 0usize;
+    for &b in base.as_bytes() {
+        if length >= 8 {
+            let truncated = String::from_utf8_lossy(&buf[..length.min(8)]);
+            println!("Warning: Truncated '{}' lump name to '{:.8}'.", filename, truncated);
             break;
-        } else {
-            let fresh3 = length;
-            length = length + 1;
-            let fresh1 = src;
-            src = src.offset(1);
-            *dest.offset(fresh3 as isize) =
-                (*fresh1 as u8).to_ascii_uppercase() as ::core::ffi::c_char;
         }
+        buf[length] = b.to_ascii_uppercase();
+        length += 1;
     }
+    *dest = FixedCStr(buf);
 }
 pub fn M_ForceUppercase(text: &str) -> String {
     text.to_uppercase()

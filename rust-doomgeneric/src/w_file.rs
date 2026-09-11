@@ -14,7 +14,7 @@ pub struct _wad_file_s {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct wad_file_class_t {
-    pub OpenFile: Option<unsafe fn(*mut ::core::ffi::c_char) -> *mut wad_file_t>,
+    pub OpenFile: Option<unsafe fn(&str) -> *mut wad_file_t>,
     pub CloseFile: Option<unsafe fn(*mut wad_file_t) -> ()>,
     pub Read: Option<unsafe fn(*mut wad_file_t, u32, *mut ::core::ffi::c_void, size_t) -> size_t>,
 }
@@ -32,10 +32,7 @@ impl WFileState {
     }
 }
 
-pub unsafe fn W_OpenFile(
-    state: &mut GameState,
-    mut path: *mut ::core::ffi::c_char,
-) -> *mut wad_file_t {
+pub unsafe fn W_OpenFile(state: &mut GameState, path: &str) -> *mut wad_file_t {
     let mut result: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     let mut i: i32 = 0;
     if M_CheckParm(state, "-mmap") == 0 {

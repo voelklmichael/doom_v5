@@ -16,10 +16,14 @@ pub struct stdc_wad_file_t {
     pub wad: wad_file_t,
     pub fstream: *mut FILE,
 }
-unsafe fn W_StdC_OpenFile(mut path: *mut ::core::ffi::c_char) -> *mut wad_file_t {
+unsafe fn W_StdC_OpenFile(path: &str) -> *mut wad_file_t {
     let mut result: *mut stdc_wad_file_t = ::core::ptr::null_mut::<stdc_wad_file_t>();
     let mut fstream: *mut FILE = ::core::ptr::null_mut::<FILE>();
-    fstream = fopen(path, b"rb\0" as *const u8 as *const ::core::ffi::c_char) as *mut FILE;
+    let path_cstring = ::std::ffi::CString::new(path).unwrap();
+    fstream = fopen(
+        path_cstring.as_ptr(),
+        b"rb\0" as *const u8 as *const ::core::ffi::c_char,
+    ) as *mut FILE;
     if fstream.is_null() {
         return ::core::ptr::null_mut::<wad_file_t>();
     }
@@ -59,7 +63,7 @@ pub unsafe fn W_StdC_Read(
 }
 pub static mut stdc_wad_file: wad_file_class_t = unsafe {
     wad_file_class_t {
-        OpenFile: Some(W_StdC_OpenFile as unsafe fn(*mut ::core::ffi::c_char) -> *mut wad_file_t),
+        OpenFile: Some(W_StdC_OpenFile as unsafe fn(&str) -> *mut wad_file_t),
         CloseFile: Some(W_StdC_CloseFile as unsafe fn(*mut wad_file_t) -> ()),
         Read: Some(
             W_StdC_Read

@@ -16,17 +16,12 @@ pub unsafe fn W_ParseCommandLine(state: &mut GameState) -> bool {
             {
                 break;
             }
-            let mut filename: *mut ::core::ffi::c_char =
-                ::core::ptr::null_mut::<::core::ffi::c_char>();
-            filename = D_TryFindWADByName(
+            let filename = D_TryFindWADByName(
                 &mut state.d_iwad,
-                state.m_argv.myargv[p as usize].as_ptr() as *mut ::core::ffi::c_char,
+                state.m_argv.myargv[p as usize].to_str().unwrap(),
             );
-            println!(
-                " adding {}",
-                ::std::ffi::CStr::from_ptr(filename).to_string_lossy(),
-            );
-            W_AddFile(filename);
+            println!(" adding {}", filename);
+            W_AddFile(&filename);
         }
     }
     return modifiedgame;

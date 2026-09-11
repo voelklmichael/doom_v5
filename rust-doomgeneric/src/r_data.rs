@@ -342,10 +342,8 @@ unsafe fn GenerateTextureHashTable(state: &mut GameState) {
     i = 0 as i32;
     while i < state.r_data.numtextures {
         (**state.r_data.textures.offset(i as isize)).index = i;
-        key = W_LumpNameHash(
-            (**state.r_data.textures.offset(i as isize)).name.as_ptr() as *const ::core::ffi::c_char,
-        )
-        .wrapping_rem(state.r_data.numtextures as u32) as i32;
+        key = W_LumpNameHash((**state.r_data.textures.offset(i as isize)).name.as_bytes())
+            .wrapping_rem(state.r_data.numtextures as u32) as i32;
         rover = state.r_data.textures_hashtable.offset(key as isize) as *mut *mut texture_t;
         while !(*rover).is_null() {
             rover = &raw mut (**rover).next;
@@ -667,8 +665,7 @@ pub unsafe fn R_CheckTextureNumForName(state: &mut RDataState, name: &str) -> i3
     if name.as_bytes().first() == Some(&b'-') {
         return 0 as i32;
     }
-    let name_cstring = ::std::ffi::CString::new(name).unwrap();
-    key = W_LumpNameHash(name_cstring.as_ptr()).wrapping_rem(state.numtextures as u32) as i32;
+    key = W_LumpNameHash(name.as_bytes()).wrapping_rem(state.numtextures as u32) as i32;
     texture = *state.textures_hashtable.offset(key as isize);
     while !texture.is_null() {
         if (*texture).name.eq_bytes_ignore_ascii_case(name.as_bytes()) {

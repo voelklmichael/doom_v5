@@ -108,11 +108,11 @@ use crate::src::w_wad::{W_CacheLumpName, W_CheckNumForName};
 use crate::src::wi_stuff::WI_Drawer;
 use crate::src::z_zone::Z_Init;
 use crate::src::z_zone::PU_CACHE;
-use libc::{exit, snprintf};
+use libc::exit;
 
 pub struct DMainState {
     pub savegamedir: String,
-    pub iwadfile: *mut ::core::ffi::c_char,
+    pub iwadfile: String,
     pub devparm: bool,
     pub nomonsters: bool,
     pub respawnparm: bool,
@@ -146,7 +146,7 @@ impl DMainState {
     pub const fn new() -> Self {
         DMainState {
             savegamedir: String::new(),
-            iwadfile: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
+            iwadfile: String::new(),
             devparm: false,
             nomonsters: false,
             respawnparm: false,
@@ -815,12 +815,9 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
 }
 #[no_mangle]
 pub static title: [::core::ffi::c_char; 128] = [0; 128];
-unsafe fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> bool {
+unsafe fn D_AddFile(filename: &str) -> bool {
     let mut handle: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
-    println!(
-        " adding {}",
-        ::std::ffi::CStr::from_ptr(filename).to_string_lossy()
-    );
+    println!(" adding {}", filename);
     handle = W_AddFile(filename);
     return handle != NULL as *mut wad_file_t;
 }
@@ -922,7 +919,7 @@ unsafe extern "C" fn D_Endoom(state: &mut GameState) {
 }
 pub unsafe fn D_DoomMain(state: &mut GameState) {
     let mut p: i32 = 0;
-    let mut file: [::core::ffi::c_char; 256] = [0; 256];
+    let mut file: String = String::new();
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
     I_AtExit(&mut state.i_system, Some(D_Endoom as unsafe extern "C" fn(&mut GameState) -> ()), false);
     I_PrintBanner(&PACKAGE_STRING.as_str());
@@ -983,14 +980,14 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         &raw mut gamemission_out,
     );
     state.doomstat.gamemission = gamemission_out;
-    if state.d_main.iwadfile.is_null() {
+    if state.d_main.iwadfile.is_empty() {
         I_Error(
             "Game mode indeterminate.  No IWAD file was found.  Try\nspecifying one with the '-iwad' command line parameter.\n",
         );
     }
     state.doomstat.modifiedgame = false;
     println!("W_Init: Init WADfiles.");
-    D_AddFile(state.d_main.iwadfile);
+    D_AddFile(&state.d_main.iwadfile);
     W_CheckCorrectIWAD(doom);
     D_IdentifyVersion(state);
     InitGameVersion(state);
@@ -1005,26 +1002,15 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         p = M_CheckParmWithArgs(state, "-timedemo", 1 as i32);
     }
     if p != 0 {
-        if M_StringEndsWith(
-            state.m_argv.myargv[(p + 1 as i32) as usize]
-                .to_str()
-                .unwrap(),
-            ".lmp",
-        ) {
-            M_StringCopy(
-                &raw mut file as *mut ::core::ffi::c_char,
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
-                ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
-            );
+        let arg = state.m_argv.myargv[(p + 1 as i32) as usize]
+            .to_str()
+            .unwrap();
+        if M_StringEndsWith(arg, ".lmp") {
+            file = arg.to_string();
         } else {
-            snprintf(
-                &raw mut file as *mut ::core::ffi::c_char,
-                ::core::mem::size_of::<[::core::ffi::c_char; 256]>() as size_t,
-                b"%s.lmp\0" as *const u8 as *const ::core::ffi::c_char,
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
-            );
+            file = format!("{}.lmp", arg);
         }
-        if D_AddFile(&raw mut file as *mut ::core::ffi::c_char) {
+        if D_AddFile(&file) {
             M_StringCopy(
                 &raw mut demolumpname as *mut ::core::ffi::c_char,
                 &raw mut (*state
@@ -1041,11 +1027,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         }
-        println!(
-            "Playing demo {}.",
-            ::std::ffi::CStr::from_ptr(&raw mut file as *mut ::core::ffi::c_char)
-                .to_string_lossy()
-        );
+        println!("Playing demo {}.", file);
     }
     I_AtExit(
         &mut state.i_system,
