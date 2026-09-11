@@ -194,9 +194,62 @@ pub struct GGameState {
     pub d_map: i32,
     pub defdemoname: *mut ::core::ffi::c_char,
     pub g_build_ticcmd_carry: i16,
-    pub g_ticker_turbomessage: [::core::ffi::c_char; 80],
     pub demo_version_description_resultbuf: [::core::ffi::c_char; 16],
 }
+
+const NEW_PLAYER: player_s = player_s {
+    mo: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
+    playerstate: PST_LIVE,
+    cmd: ticcmd_t {
+        forwardmove: 0,
+        sidemove: 0,
+        angleturn: 0,
+        chatchar: 0,
+        buttons: 0,
+        consistancy: 0,
+        buttons2: 0,
+        inventory: 0,
+        lookfly: 0,
+        arti: 0,
+    },
+    viewz: 0,
+    viewheight: 0,
+    deltaviewheight: 0,
+    bob: 0,
+    health: 0,
+    armorpoints: 0,
+    armortype: 0,
+    powers: [0; 6],
+    cards: [false; 6],
+    backpack: false,
+    frags: [0; 4],
+    readyweapon: wp_fist,
+    pendingweapon: wp_fist,
+    weaponowned: [false; 9],
+    ammo: [0; 4],
+    maxammo: [0; 4],
+    attackdown: 0,
+    usedown: 0,
+    cheats: 0,
+    refire: 0,
+    killcount: 0,
+    itemcount: 0,
+    secretcount: 0,
+    message: None,
+    damagecount: 0,
+    bonuscount: 0,
+    attacker: None,
+    extralight: 0,
+    fixedcolormap: 0,
+    colormap: 0,
+    psprites: [pspdef_t {
+        state: ::core::ptr::null::<state_t>() as *mut state_t,
+        tics: 0,
+        sx: 0,
+        sy: 0,
+    }; 2],
+    didsecret: false,
+};
 
 impl GGameState {
     pub const fn new() -> Self {
@@ -220,59 +273,7 @@ impl GGameState {
             deathmatch: 0,
             netgame: false,
             playeringame: [0; 4],
-            players: [player_s {
-                mo: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
-                playerstate: PST_LIVE,
-                cmd: ticcmd_t {
-                    forwardmove: 0,
-                    sidemove: 0,
-                    angleturn: 0,
-                    chatchar: 0,
-                    buttons: 0,
-                    consistancy: 0,
-                    buttons2: 0,
-                    inventory: 0,
-                    lookfly: 0,
-                    arti: 0,
-                },
-                viewz: 0,
-                viewheight: 0,
-                deltaviewheight: 0,
-                bob: 0,
-                health: 0,
-                armorpoints: 0,
-                armortype: 0,
-                powers: [0; 6],
-                cards: [false; 6],
-                backpack: false,
-                frags: [0; 4],
-                readyweapon: wp_fist,
-                pendingweapon: wp_fist,
-                weaponowned: [false; 9],
-                ammo: [0; 4],
-                maxammo: [0; 4],
-                attackdown: 0,
-                usedown: 0,
-                cheats: 0,
-                refire: 0,
-                killcount: 0,
-                itemcount: 0,
-                secretcount: 0,
-                message: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
-                damagecount: 0,
-                bonuscount: 0,
-                attacker: None,
-                extralight: 0,
-                fixedcolormap: 0,
-                colormap: 0,
-                psprites: [pspdef_t {
-                    state: ::core::ptr::null::<state_t>() as *mut state_t,
-                    tics: 0,
-                    sx: 0,
-                    sy: 0,
-                }; 2],
-                didsecret: false,
-            }; 4],
+            players: [NEW_PLAYER, NEW_PLAYER, NEW_PLAYER, NEW_PLAYER],
             turbodetected: [0; 4],
             consoleplayer: 0,
             displayplayer: 0,
@@ -348,7 +349,6 @@ impl GGameState {
             d_map: 0,
             defdemoname: ::core::ptr::null::<::core::ffi::c_char>() as *mut ::core::ffi::c_char,
             g_build_ticcmd_carry: 0,
-            g_ticker_turbomessage: [0; 80],
             demo_version_description_resultbuf: [0; 16],
         }
     }
@@ -868,8 +868,7 @@ pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
     );
     if state.g_game.testcontrols {
         state.g_game.players[state.g_game.consoleplayer as usize].message =
-            b"Press escape to quit.\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            Some("Press escape to quit.".to_string());
     }
 }
 unsafe fn SetJoyButtons(state: &mut GameState, mut buttons_mask: u32) {
@@ -1034,8 +1033,7 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
             9 => {
                 V_ScreenShot(state);
                 state.g_game.players[state.g_game.consoleplayer as usize].message =
-                    b"screen shot\0" as *const u8 as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char;
+                    Some("screen shot".to_string());
                 state.g_game.gameaction = ga_nothing;
             }
             0 | _ => {}
@@ -1066,14 +1064,11 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
                 && (state.d_loop.gametic >> 5 as i32) % MAXPLAYERS == i
                 && state.g_game.turbodetected[i as usize] != 0
             {
-                M_snprintf(
-                    &raw mut state.g_game.g_ticker_turbomessage as *mut ::core::ffi::c_char,
-                    ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
-                    b"%s is turbo!\0" as *const u8 as *const ::core::ffi::c_char,
-                    player_names[i as usize],
-                );
+                let player_name = ::std::ffi::CStr::from_ptr(player_names[i as usize])
+                    .to_string_lossy()
+                    .into_owned();
                 state.g_game.players[state.g_game.consoleplayer as usize].message =
-                    &raw mut state.g_game.g_ticker_turbomessage as *mut ::core::ffi::c_char;
+                    Some(format!("{} is turbo!", player_name));
                 state.g_game.turbodetected[i as usize] = false_0 as boolean;
             }
             if state.g_game.netgame
@@ -1203,6 +1198,7 @@ pub unsafe fn G_PlayerReborn(state: &mut GGameState, mut player: i32) {
         0 as i32,
         ::core::mem::size_of::<player_t>() as size_t,
     );
+    ::core::ptr::write(&raw mut (*p).message, None);
     memcpy(
         &raw mut (*(&raw mut state.players as *mut player_t).offset(player as isize)).frags
             as *mut i32 as *mut ::core::ffi::c_void,
@@ -1697,7 +1693,7 @@ pub unsafe fn G_DoSaveGame(state: &mut GameState) {
         ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
     );
     state.g_game.players[state.g_game.consoleplayer as usize].message =
-        b"game saved.\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+        Some("game saved.".to_string());
     R_FillBackScreen(state);
 }
 pub unsafe fn G_DeferedInitNew(

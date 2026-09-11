@@ -187,9 +187,7 @@ pub unsafe fn EV_DoLockedDoor(
             }
             if !(*p).cards[it_bluecard as i32 as usize] && !(*p).cards[it_blueskull as i32 as usize]
             {
-                (*p).message = b"You need a blue key to activate this object\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*p).message = Some("You need a blue key to activate this object".to_string());
                 S_StartSound(state, NULL, sfx_oof as i32);
                 return 0 as i32;
             }
@@ -199,9 +197,7 @@ pub unsafe fn EV_DoLockedDoor(
                 return 0 as i32;
             }
             if !(*p).cards[it_redcard as i32 as usize] && !(*p).cards[it_redskull as i32 as usize] {
-                (*p).message = b"You need a red key to activate this object\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*p).message = Some("You need a red key to activate this object".to_string());
                 S_StartSound(state, NULL, sfx_oof as i32);
                 return 0 as i32;
             }
@@ -213,9 +209,7 @@ pub unsafe fn EV_DoLockedDoor(
             if !(*p).cards[it_yellowcard as i32 as usize]
                 && !(*p).cards[it_yellowskull as i32 as usize]
             {
-                (*p).message = b"You need a yellow key to activate this object\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*p).message = Some("You need a yellow key to activate this object".to_string());
                 S_StartSound(state, NULL, sfx_oof as i32);
                 return 0 as i32;
             }
@@ -334,9 +328,7 @@ pub unsafe fn EV_VerticalDoor(
             if !(*player).cards[it_bluecard as i32 as usize]
                 && !(*player).cards[it_blueskull as i32 as usize]
             {
-                (*player).message = b"You need a blue key to open this door\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("You need a blue key to open this door".to_string());
                 S_StartSound(state, NULL, sfx_oof as i32);
                 return;
             }
@@ -348,9 +340,7 @@ pub unsafe fn EV_VerticalDoor(
             if !(*player).cards[it_yellowcard as i32 as usize]
                 && !(*player).cards[it_yellowskull as i32 as usize]
             {
-                (*player).message = b"You need a yellow key to open this door\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("You need a yellow key to open this door".to_string());
                 S_StartSound(state, NULL, sfx_oof as i32);
                 return;
             }
@@ -362,9 +352,7 @@ pub unsafe fn EV_VerticalDoor(
             if !(*player).cards[it_redcard as i32 as usize]
                 && !(*player).cards[it_redskull as i32 as usize]
             {
-                (*player).message = b"You need a red key to open this door\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("You need a red key to open this door".to_string());
                 S_StartSound(state, NULL, sfx_oof as i32);
                 return;
             }

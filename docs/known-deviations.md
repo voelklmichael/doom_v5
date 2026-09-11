@@ -60,3 +60,39 @@ the whole problem, since `panic!` doesn't need any state at all.
 handful of now-unreachable `return`/assignment statements immediately after
 `I_Error(...)` calls in `g_game.rs`/`m_misc.rs`/`p_enemy.rs` (the compiler's own
 `unreachable_code` lint caught these once `I_Error`'s return type became `!`).
+
+## `player_t.message`: savegame field no longer round-trips a raw pointer (2026-09-11)
+
+**What changed**: `player_t.message` (the pending-HUD-message slot — "Picked up a
+clip.", "game saved.", cheat feedback, etc.) was `*mut c_char`, `NULL` meaning "no
+message pending." Track 18 converted it to `Option<String>`. The field is also part
+of the `.dsg` savegame binary format: `saveg_write_player_t`/`saveg_read_player_t`
+write/read it as a raw 4-byte slot (`saveg_writep`/`saveg_readp`, the same
+pointer-sized-placeholder mechanism used for several other pointer fields that get
+properly relinked after load via a separate fixup pass). `message` was never one of
+the fields with a real fixup pass — chocolate-doom's original C saved literally
+whatever the in-process pointer bit pattern happened to be at save time, and reading
+it back in a *different* process (after a load) reconstructs a bit pattern with no
+relationship to any valid memory in the new process. Nothing has ever safely
+dereferenced a loaded `.message` value: `P_UnArchivePlayers` (the only caller of
+`saveg_read_player_t` for live players) unconditionally overwrites it to `NULL`
+immediately afterward, every time. The field's 4 bytes in the file have therefore
+always been meaningless padding in practice, not restorable content.
+
+The new code preserves the file's byte *layout* exactly (still reads and writes
+exactly 4 bytes for this field, so `.dsg` file size and every other field's offset is
+unchanged) but writes a fixed placeholder (`0` for `None`, `1` for `Some`) instead of
+a real pointer bit pattern, and unconditionally sets `message = None` on read.
+
+**Why**: `Option<String>` cannot represent an arbitrary saved pointer value, and
+there was never a real value to preserve in the first place — `P_UnArchivePlayers`
+discarding it immediately confirms the original design already treated this slot as
+disposable. Reconstructing "faithful" garbage would add complexity for a value that
+was never observable.
+
+**What was given up**: nothing observable. The one theoretical difference: the
+original code, had some future caller ever read `.message` right after a load
+without the existing unconditional reset, would have dereferenced a wild pointer
+(undefined behavior, likely a crash). The new code can't do that — a loaded message
+is always safely `None`. Strictly safer, not a behavior loss for any code path that
+currently exists.

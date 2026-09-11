@@ -23,7 +23,6 @@ use crate::src::i_video::I_SetPalette;
 use crate::src::m_cheat::cheatseq_t;
 use crate::src::m_cheat::cht_CheckCheat;
 use crate::src::m_cheat::cht_GetParam;
-use crate::src::m_misc::M_snprintf;
 use crate::src::m_random::M_Random;
 use crate::src::p_inter::P_GivePower;
 use crate::src::p_inter::NUMCARDS;
@@ -113,7 +112,6 @@ pub struct StStuffState {
     pub st_updatefacewidget_lastattackdown: i32,
     pub st_updatefacewidget_priority: i32,
     pub st_updatewidgets_largeammo: i32,
-    pub st_responder_mypos_buf: [::core::ffi::c_char; 52],
     pub st_palette: i32,
     pub st_stopped: bool,
 }
@@ -340,7 +338,6 @@ impl StStuffState {
             st_updatefacewidget_lastattackdown: -1,
             st_updatefacewidget_priority: 0,
             st_updatewidgets_largeammo: 1994,
-            st_responder_mypos_buf: [0; 52],
             st_palette: 0,
             st_stopped: true,
         }
@@ -486,13 +483,9 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                         (*(*state.st_stuff.plyr).mo).health = 100 as i32;
                     }
                     (*state.st_stuff.plyr).health = deh_god_mode_health;
-                    (*state.st_stuff.plyr).message = b"Degreelessness Mode On\0" as *const u8
-                        as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char;
+                    (*state.st_stuff.plyr).message = Some("Degreelessness Mode On".to_string());
                 } else {
-                    (*state.st_stuff.plyr).message = b"Degreelessness Mode Off\0" as *const u8
-                        as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char;
+                    (*state.st_stuff.plyr).message = Some("Degreelessness Mode Off".to_string());
                 }
             } else if cht_CheckCheat(
                 &raw mut state.st_stuff.cheat_ammonokey,
@@ -512,9 +505,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                         (*state.st_stuff.plyr).maxammo[i as usize];
                     i += 1;
                 }
-                (*state.st_stuff.plyr).message = b"Ammo (no keys) Added\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.st_stuff.plyr).message = Some("Ammo (no keys) Added".to_string());
             } else if cht_CheckCheat(
                 &raw mut state.st_stuff.cheat_ammo,
                 (*ev).data2 as ::core::ffi::c_char,
@@ -538,9 +529,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                     (*state.st_stuff.plyr).cards[i as usize] = true;
                     i += 1;
                 }
-                (*state.st_stuff.plyr).message = b"Very Happy Ammo Added\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.st_stuff.plyr).message = Some("Very Happy Ammo Added".to_string());
             } else if cht_CheckCheat(
                 &raw mut state.st_stuff.cheat_mus,
                 (*ev).data2 as ::core::ffi::c_char,
@@ -548,9 +537,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
             {
                 let mut buf: [::core::ffi::c_char; 3] = [0; 3];
                 let mut musnum: i32 = 0;
-                (*state.st_stuff.plyr).message = b"Music Change\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.st_stuff.plyr).message = Some("Music Change".to_string());
                 cht_GetParam(
                     &raw mut state.st_stuff.cheat_mus,
                     &raw mut buf as *mut ::core::ffi::c_char,
@@ -568,9 +555,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                         - '0' as i32
                         > 35 as i32
                     {
-                        (*state.st_stuff.plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
-                            as *const ::core::ffi::c_char
-                            as *mut ::core::ffi::c_char;
+                        (*state.st_stuff.plyr).message = Some("IMPOSSIBLE SELECTION".to_string());
                     } else {
                         S_ChangeMusic(state, musnum, 1 as i32);
                     }
@@ -583,9 +568,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                         - '1' as i32
                         > 31 as i32
                     {
-                        (*state.st_stuff.plyr).message = b"IMPOSSIBLE SELECTION\0" as *const u8
-                            as *const ::core::ffi::c_char
-                            as *mut ::core::ffi::c_char;
+                        (*state.st_stuff.plyr).message = Some("IMPOSSIBLE SELECTION".to_string());
                     } else {
                         S_ChangeMusic(state, musnum, 1 as i32);
                     }
@@ -619,13 +602,9 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
             {
                 (*state.st_stuff.plyr).cheats ^= CF_NOCLIP as i32;
                 if (*state.st_stuff.plyr).cheats & CF_NOCLIP as i32 != 0 {
-                    (*state.st_stuff.plyr).message = b"No Clipping Mode ON\0" as *const u8
-                        as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char;
+                    (*state.st_stuff.plyr).message = Some("No Clipping Mode ON".to_string());
                 } else {
-                    (*state.st_stuff.plyr).message = b"No Clipping Mode OFF\0" as *const u8
-                        as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char;
+                    (*state.st_stuff.plyr).message = Some("No Clipping Mode OFF".to_string());
                 }
             }
             i = 0 as i32;
@@ -643,9 +622,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                     } else {
                         (*state.st_stuff.plyr).powers[i as usize] = 0 as i32;
                     }
-                    (*state.st_stuff.plyr).message = b"Power-up Toggled\0" as *const u8
-                        as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char;
+                    (*state.st_stuff.plyr).message = Some("Power-up Toggled".to_string());
                 }
                 i += 1;
             }
@@ -655,10 +632,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                 (*ev).data2 as ::core::ffi::c_char,
             ) != 0
             {
-                (*state.st_stuff.plyr).message = b"inVuln, Str, Inviso, Rad, Allmap, or Lite-amp\0"
-                    as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.st_stuff.plyr).message = Some("inVuln, Str, Inviso, Rad, Allmap, or Lite-amp".to_string());
             } else if cht_CheckCheat(
                 &raw mut state.st_stuff.cheat_choppers,
                 (*ev).data2 as ::core::ffi::c_char,
@@ -666,24 +640,18 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
             {
                 (*state.st_stuff.plyr).weaponowned[wp_chainsaw as i32 as usize] = true;
                 (*state.st_stuff.plyr).powers[pw_invulnerability as i32 as usize] = true_0;
-                (*state.st_stuff.plyr).message = b"... doesn't suck - GM\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.st_stuff.plyr).message = Some("... doesn't suck - GM".to_string());
             } else if cht_CheckCheat(
                 &raw mut state.st_stuff.cheat_mypos,
                 (*ev).data2 as ::core::ffi::c_char,
             ) != 0
             {
-                M_snprintf(
-                    &raw mut state.st_stuff.st_responder_mypos_buf as *mut ::core::ffi::c_char,
-                    ::core::mem::size_of::<[::core::ffi::c_char; 52]>() as size_t,
-                    b"ang=0x%x;x,y=(0x%x,0x%x)\0" as *const u8 as *const ::core::ffi::c_char,
+                (*state.st_stuff.plyr).message = Some(format!(
+                    "ang=0x{:x};x,y=(0x{:x},0x{:x})",
                     (*state.g_game.players[state.g_game.consoleplayer as usize].mo).angle,
                     (*state.g_game.players[state.g_game.consoleplayer as usize].mo).x,
                     (*state.g_game.players[state.g_game.consoleplayer as usize].mo).y,
-                );
-                (*state.st_stuff.plyr).message =
-                    &raw mut state.st_stuff.st_responder_mypos_buf as *mut ::core::ffi::c_char;
+                ));
             }
         }
         if !state.g_game.netgame
@@ -737,9 +705,7 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
             {
                 return false;
             }
-            (*state.st_stuff.plyr).message = b"Changing Level...\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*state.st_stuff.plyr).message = Some("Changing Level...".to_string());
             let gameskill = state.g_game.gameskill;
             G_DeferedInitNew(state, gameskill, epsd, map);
         }

@@ -10,9 +10,7 @@ use crate::src::doomdef::boolean;
 use crate::src::g_game::G_CheckDemoStatus;
 use crate::src::g_game::G_Ticker;
 use crate::src::m_argv::M_CheckParm;
-use crate::src::m_misc::M_StringCopy;
 use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
 use crate::src::w_checksum::W_Checksum;
 use crate::src::w_wad::W_CheckNumForName;
 
@@ -38,19 +36,11 @@ impl DNetState {
 }
 
 unsafe fn PlayerQuitGame(state: &mut GameState, mut player: *mut player_t) {
-    static mut exitmsg: [::core::ffi::c_char; 80] = [0; 80];
     let mut player_num: u32 = 0;
     player_num = player.offset_from(&raw mut state.g_game.players as *mut player_t) as i64 as u32;
-    M_StringCopy(
-        &raw mut exitmsg as *mut ::core::ffi::c_char,
-        b"Player 1 left the game\0" as *const u8 as *const ::core::ffi::c_char,
-        ::core::mem::size_of::<[::core::ffi::c_char; 80]>() as size_t,
-    );
-    exitmsg[7 as i32 as usize] = (exitmsg[7 as i32 as usize] as u32).wrapping_add(player_num)
-        as ::core::ffi::c_char as ::core::ffi::c_char;
     state.g_game.playeringame[player_num as usize] = false_0 as boolean;
     state.g_game.players[state.g_game.consoleplayer as usize].message =
-        &raw mut exitmsg as *mut ::core::ffi::c_char;
+        Some(format!("Player {} left the game", player_num + 1));
     if state.g_game.demorecording {
         G_CheckDemoStatus(state);
     }

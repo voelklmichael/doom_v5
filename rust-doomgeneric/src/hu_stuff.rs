@@ -20,7 +20,6 @@ use crate::src::m_controls::KEY_ENTER;
 use crate::src::m_controls::KEY_ESCAPE;
 use crate::src::m_controls::KEY_RALT;
 use crate::src::m_controls::KEY_RSHIFT;
-use crate::src::m_misc::M_StringCopy;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::{sfx_radio, sfx_tink};
 use crate::src::stdint_types::byte;
@@ -48,7 +47,6 @@ pub struct HuStuffState {
     pub head: i32,
     pub tail: i32,
     pub chat_macros: [*mut ::core::ffi::c_char; 10],
-    pub hu_responder_lastmessage: [::core::ffi::c_char; 81],
     pub hu_responder_altdown: bool,
     pub hu_responder_num_nobrainers: i32,
 }
@@ -120,7 +118,6 @@ impl HuStuffState {
                 HUSTR_CHATMACRO8.as_ptr() as *mut ::core::ffi::c_char,
                 HUSTR_CHATMACRO9.as_ptr() as *mut ::core::ffi::c_char,
             ],
-            hu_responder_lastmessage: [0; 81],
             hu_responder_altdown: false,
             hu_responder_num_nobrainers: 0,
         }
@@ -477,17 +474,15 @@ pub unsafe fn HU_Ticker(state: &mut GameState) {
         state.hu_stuff.message_nottobefuckedwith = false;
     }
     if state.m_menu.showMessages != 0 || state.hu_stuff.message_dontfuckwithme {
-        if !(*state.hu_stuff.plr).message.is_null() && !state.hu_stuff.message_nottobefuckedwith
-            || !(*state.hu_stuff.plr).message.is_null() && state.hu_stuff.message_dontfuckwithme
+        if (*state.hu_stuff.plr).message.is_some() && !state.hu_stuff.message_nottobefuckedwith
+            || (*state.hu_stuff.plr).message.is_some() && state.hu_stuff.message_dontfuckwithme
         {
             HUlib_addMessageToSText(
                 &raw mut state.hu_stuff.w_message,
                 ::core::ptr::null_mut::<::core::ffi::c_char>(),
-                ::std::ffi::CStr::from_ptr((*state.hu_stuff.plr).message)
-                    .to_str()
-                    .unwrap(),
+                (*state.hu_stuff.plr).message.as_deref().unwrap(),
             );
-            (*state.hu_stuff.plr).message = ::core::ptr::null_mut::<::core::ffi::c_char>();
+            (*state.hu_stuff.plr).message = None;
             state.hu_stuff.message_on = true;
             state.hu_stuff.message_counter = HU_MSGTIMEOUT;
             state.hu_stuff.message_nottobefuckedwith = state.hu_stuff.message_dontfuckwithme;
@@ -555,9 +550,7 @@ pub unsafe fn HU_Ticker(state: &mut GameState) {
 pub const QUEUESIZE: i32 = 128;
 pub unsafe fn HU_queueChatChar(state: &mut GameState, mut c: ::core::ffi::c_char) {
     if state.hu_stuff.head + 1 as i32 & QUEUESIZE - 1 as i32 == state.hu_stuff.tail {
-        (*state.hu_stuff.plr).message = b"[Message unsent]\0" as *const u8
-            as *const ::core::ffi::c_char
-            as *mut ::core::ffi::c_char;
+        (*state.hu_stuff.plr).message = Some("[Message unsent]".to_string());
     } else {
         state.hu_stuff.chatchars[state.hu_stuff.head as usize] = c;
         state.hu_stuff.head = state.hu_stuff.head + 1 as i32 & QUEUESIZE - 1 as i32;
@@ -619,25 +612,18 @@ pub unsafe fn HU_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                     } else if i == state.g_game.consoleplayer {
                         state.hu_stuff.hu_responder_num_nobrainers += 1;
                         if state.hu_stuff.hu_responder_num_nobrainers < 3 as i32 {
-                            (*state.hu_stuff.plr).message = b"You mumble to yourself\0" as *const u8
-                                as *const ::core::ffi::c_char
-                                as *mut ::core::ffi::c_char;
+                            (*state.hu_stuff.plr).message =
+                                Some("You mumble to yourself".to_string());
                         } else if state.hu_stuff.hu_responder_num_nobrainers < 6 as i32 {
-                            (*state.hu_stuff.plr).message = b"Who's there?\0" as *const u8
-                                as *const ::core::ffi::c_char
-                                as *mut ::core::ffi::c_char;
+                            (*state.hu_stuff.plr).message = Some("Who's there?".to_string());
                         } else if state.hu_stuff.hu_responder_num_nobrainers < 9 as i32 {
-                            (*state.hu_stuff.plr).message = b"You scare yourself\0" as *const u8
-                                as *const ::core::ffi::c_char
-                                as *mut ::core::ffi::c_char;
+                            (*state.hu_stuff.plr).message =
+                                Some("You scare yourself".to_string());
                         } else if state.hu_stuff.hu_responder_num_nobrainers < 32 as i32 {
-                            (*state.hu_stuff.plr).message = b"You start to rave\0" as *const u8
-                                as *const ::core::ffi::c_char
-                                as *mut ::core::ffi::c_char;
+                            (*state.hu_stuff.plr).message = Some("You start to rave".to_string());
                         } else {
-                            (*state.hu_stuff.plr).message = b"You've lost it...\0" as *const u8
-                                as *const ::core::ffi::c_char
-                                as *mut ::core::ffi::c_char;
+                            (*state.hu_stuff.plr).message =
+                                Some("You've lost it...".to_string());
                         }
                     }
                 }
@@ -658,13 +644,11 @@ pub unsafe fn HU_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
         }
         HU_queueChatChar(state, KEY_ENTER as ::core::ffi::c_char);
         state.hu_stuff.chat_on = false;
-        M_StringCopy(
-            &raw mut state.hu_stuff.hu_responder_lastmessage as *mut ::core::ffi::c_char,
-            state.hu_stuff.chat_macros[c as usize],
-            ::core::mem::size_of::<[::core::ffi::c_char; 81]>() as size_t,
+        (*state.hu_stuff.plr).message = Some(
+            ::std::ffi::CStr::from_ptr(state.hu_stuff.chat_macros[c as usize])
+                .to_string_lossy()
+                .into_owned(),
         );
-        (*state.hu_stuff.plr).message =
-            &raw mut state.hu_stuff.hu_responder_lastmessage as *mut ::core::ffi::c_char;
         eatkey = true;
     } else {
         c = (*ev).data2 as u8;
@@ -675,15 +659,7 @@ pub unsafe fn HU_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
         if c as i32 == KEY_ENTER {
             state.hu_stuff.chat_on = false;
             if !state.hu_stuff.w_chat.l.l.is_empty() {
-                let w_chat_l_cstring =
-                    ::std::ffi::CString::new(state.hu_stuff.w_chat.l.l.as_str()).unwrap();
-                M_StringCopy(
-                    &raw mut state.hu_stuff.hu_responder_lastmessage as *mut ::core::ffi::c_char,
-                    w_chat_l_cstring.as_ptr(),
-                    ::core::mem::size_of::<[::core::ffi::c_char; 81]>() as size_t,
-                );
-                (*state.hu_stuff.plr).message =
-                    &raw mut state.hu_stuff.hu_responder_lastmessage as *mut ::core::ffi::c_char;
+                (*state.hu_stuff.plr).message = Some(state.hu_stuff.w_chat.l.l.clone());
             }
         } else if c as i32 == KEY_ESCAPE {
             state.hu_stuff.chat_on = false;

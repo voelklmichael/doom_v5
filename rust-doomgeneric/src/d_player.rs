@@ -43,7 +43,7 @@ pub const PST_REBORN: playerstate_t = 2;
 pub const PST_DEAD: playerstate_t = 1;
 pub const PST_LIVE: playerstate_t = 0;
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 #[repr(C)]
 pub struct player_s {
     pub mo: *mut mobj_t,
@@ -72,7 +72,7 @@ pub struct player_s {
     pub killcount: i32,
     pub itemcount: i32,
     pub secretcount: i32,
-    pub message: *mut ::core::ffi::c_char,
+    pub message: Option<String>,
     pub damagecount: i32,
     pub bonuscount: i32,
     pub attacker: Option<MobjId>,

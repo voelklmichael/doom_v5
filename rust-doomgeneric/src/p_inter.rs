@@ -276,16 +276,13 @@ pub unsafe fn P_TouchSpecialThing(
             if !P_GiveArmor(player, deh_green_armor_class) {
                 return;
             }
-            (*player).message = b"Picked up the armor.\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up the armor.".to_string());
         }
         56 => {
             if !P_GiveArmor(player, deh_blue_armor_class) {
                 return;
             }
-            (*player).message = b"Picked up the MegaArmor!\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up the MegaArmor!".to_string());
         }
         60 => {
             (*player).health += 1;
@@ -293,9 +290,7 @@ pub unsafe fn P_TouchSpecialThing(
                 (*player).health = deh_max_health;
             }
             (*(*player).mo).health = (*player).health;
-            (*player).message = b"Picked up a health bonus.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up a health bonus.".to_string());
         }
         61 => {
             (*player).armorpoints += 1;
@@ -305,9 +300,7 @@ pub unsafe fn P_TouchSpecialThing(
             if (*player).armortype == 0 {
                 (*player).armortype = 1 as i32;
             }
-            (*player).message = b"Picked up an armor bonus.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up an armor bonus.".to_string());
         }
         70 => {
             (*player).health += deh_soulsphere_health;
@@ -315,8 +308,7 @@ pub unsafe fn P_TouchSpecialThing(
                 (*player).health = deh_max_soulsphere;
             }
             (*(*player).mo).health = (*player).health;
-            (*player).message = b"Supercharge!\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Supercharge!".to_string());
             sound = sfx_getpow as i32;
         }
         74 => {
@@ -326,15 +318,12 @@ pub unsafe fn P_TouchSpecialThing(
             (*player).health = deh_megasphere_health;
             (*(*player).mo).health = (*player).health;
             P_GiveArmor(player, 2 as i32);
-            (*player).message = b"MegaSphere!\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("MegaSphere!".to_string());
             sound = sfx_getpow as i32;
         }
         62 => {
             if !(*player).cards[it_bluecard as i32 as usize] {
-                (*player).message = b"Picked up a blue keycard.\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("Picked up a blue keycard.".to_string());
             }
             P_GiveCard(player, it_bluecard);
             if state.g_game.netgame {
@@ -343,9 +332,7 @@ pub unsafe fn P_TouchSpecialThing(
         }
         64 => {
             if !(*player).cards[it_yellowcard as i32 as usize] {
-                (*player).message = b"Picked up a yellow keycard.\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("Picked up a yellow keycard.".to_string());
             }
             P_GiveCard(player, it_yellowcard);
             if state.g_game.netgame {
@@ -354,9 +341,7 @@ pub unsafe fn P_TouchSpecialThing(
         }
         63 => {
             if !(*player).cards[it_redcard as i32 as usize] {
-                (*player).message = b"Picked up a red keycard.\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("Picked up a red keycard.".to_string());
             }
             P_GiveCard(player, it_redcard);
             if state.g_game.netgame {
@@ -365,9 +350,7 @@ pub unsafe fn P_TouchSpecialThing(
         }
         65 => {
             if !(*player).cards[it_blueskull as i32 as usize] {
-                (*player).message = b"Picked up a blue skull key.\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("Picked up a blue skull key.".to_string());
             }
             P_GiveCard(player, it_blueskull);
             if state.g_game.netgame {
@@ -376,9 +359,7 @@ pub unsafe fn P_TouchSpecialThing(
         }
         67 => {
             if !(*player).cards[it_yellowskull as i32 as usize] {
-                (*player).message = b"Picked up a yellow skull key.\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("Picked up a yellow skull key.".to_string());
             }
             P_GiveCard(player, it_yellowskull);
             if state.g_game.netgame {
@@ -387,9 +368,7 @@ pub unsafe fn P_TouchSpecialThing(
         }
         66 => {
             if !(*player).cards[it_redskull as i32 as usize] {
-                (*player).message = b"Picked up a red skull key.\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("Picked up a red skull key.".to_string());
             }
             P_GiveCard(player, it_redskull);
             if state.g_game.netgame {
@@ -400,38 +379,30 @@ pub unsafe fn P_TouchSpecialThing(
             if !P_GiveBody(player, 10 as i32) {
                 return;
             }
-            (*player).message = b"Picked up a stimpack.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up a stimpack.".to_string());
         }
         69 => {
             if !P_GiveBody(player, 25 as i32) {
                 return;
             }
             if (*player).health < 25 as i32 {
-                (*player).message = b"Picked up a medikit that you REALLY need!\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("Picked up a medikit that you REALLY need!".to_string());
             } else {
-                (*player).message = b"Picked up a medikit.\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*player).message = Some("Picked up a medikit.".to_string());
             }
         }
         71 => {
             if !P_GivePower(player, pw_invulnerability as i32) {
                 return;
             }
-            (*player).message = b"Invulnerability!\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Invulnerability!".to_string());
             sound = sfx_getpow as i32;
         }
         72 => {
             if !P_GivePower(player, pw_strength as i32) {
                 return;
             }
-            (*player).message = b"Berserk!\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Berserk!".to_string());
             if (*player).readyweapon as u32 != wp_fist as i32 as u32 {
                 (*player).pendingweapon = wp_fist;
             }
@@ -441,34 +412,28 @@ pub unsafe fn P_TouchSpecialThing(
             if !P_GivePower(player, pw_invisibility as i32) {
                 return;
             }
-            (*player).message = b"Partial Invisibility\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Partial Invisibility".to_string());
             sound = sfx_getpow as i32;
         }
         75 => {
             if !P_GivePower(player, pw_ironfeet as i32) {
                 return;
             }
-            (*player).message = b"Radiation Shielding Suit\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Radiation Shielding Suit".to_string());
             sound = sfx_getpow as i32;
         }
         76 => {
             if !P_GivePower(player, pw_allmap as i32) {
                 return;
             }
-            (*player).message = b"Computer Area Map\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Computer Area Map".to_string());
             sound = sfx_getpow as i32;
         }
         77 => {
             if !P_GivePower(player, pw_infrared as i32) {
                 return;
             }
-            (*player).message = b"Light Amplification Visor\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Light Amplification Visor".to_string());
             sound = sfx_getpow as i32;
         }
         78 => {
@@ -479,63 +444,49 @@ pub unsafe fn P_TouchSpecialThing(
             } else if !P_GiveAmmo(state, player, am_clip, 1 as i32) {
                 return;
             }
-            (*player).message = b"Picked up a clip.\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up a clip.".to_string());
         }
         79 => {
             if !P_GiveAmmo(state, player, am_clip, 5 as i32) {
                 return;
             }
-            (*player).message = b"Picked up a box of bullets.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up a box of bullets.".to_string());
         }
         80 => {
             if !P_GiveAmmo(state, player, am_misl, 1 as i32) {
                 return;
             }
-            (*player).message = b"Picked up a rocket.\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up a rocket.".to_string());
         }
         81 => {
             if !P_GiveAmmo(state, player, am_misl, 5 as i32) {
                 return;
             }
-            (*player).message = b"Picked up a box of rockets.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up a box of rockets.".to_string());
         }
         82 => {
             if !P_GiveAmmo(state, player, am_cell, 1 as i32) {
                 return;
             }
-            (*player).message = b"Picked up an energy cell.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up an energy cell.".to_string());
         }
         83 => {
             if !P_GiveAmmo(state, player, am_cell, 5 as i32) {
                 return;
             }
-            (*player).message = b"Picked up an energy cell pack.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up an energy cell pack.".to_string());
         }
         84 => {
             if !P_GiveAmmo(state, player, am_shell, 1 as i32) {
                 return;
             }
-            (*player).message = b"Picked up 4 shotgun shells.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up 4 shotgun shells.".to_string());
         }
         85 => {
             if !P_GiveAmmo(state, player, am_shell, 5 as i32) {
                 return;
             }
-            (*player).message = b"Picked up a box of shotgun shells.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up a box of shotgun shells.".to_string());
         }
         86 => {
             if !(*player).backpack {
@@ -551,17 +502,13 @@ pub unsafe fn P_TouchSpecialThing(
                 P_GiveAmmo(state, player, i as ammotype_t, 1 as i32);
                 i += 1;
             }
-            (*player).message = b"Picked up a backpack full of ammo!\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("Picked up a backpack full of ammo!".to_string());
         }
         87 => {
             if !P_GiveWeapon(state, player, wp_bfg, false) {
                 return;
             }
-            (*player).message = b"You got the BFG9000!  Oh, yes.\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("You got the BFG9000!  Oh, yes.".to_string());
             sound = sfx_wpnup as i32;
         }
         88 => {
@@ -573,36 +520,28 @@ pub unsafe fn P_TouchSpecialThing(
             ) {
                 return;
             }
-            (*player).message = b"You got the chaingun!\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("You got the chaingun!".to_string());
             sound = sfx_wpnup as i32;
         }
         89 => {
             if !P_GiveWeapon(state, player, wp_chainsaw, false) {
                 return;
             }
-            (*player).message = b"A chainsaw!  Find some meat!\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("A chainsaw!  Find some meat!".to_string());
             sound = sfx_wpnup as i32;
         }
         90 => {
             if !P_GiveWeapon(state, player, wp_missile, false) {
                 return;
             }
-            (*player).message = b"You got the rocket launcher!\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("You got the rocket launcher!".to_string());
             sound = sfx_wpnup as i32;
         }
         91 => {
             if !P_GiveWeapon(state, player, wp_plasma, false) {
                 return;
             }
-            (*player).message = b"You got the plasma gun!\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("You got the plasma gun!".to_string());
             sound = sfx_wpnup as i32;
         }
         92 => {
@@ -614,8 +553,7 @@ pub unsafe fn P_TouchSpecialThing(
             ) {
                 return;
             }
-            (*player).message = b"You got the shotgun!\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("You got the shotgun!".to_string());
             sound = sfx_wpnup as i32;
         }
         93 => {
@@ -627,9 +565,7 @@ pub unsafe fn P_TouchSpecialThing(
             ) {
                 return;
             }
-            (*player).message = b"You got the super shotgun!\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*player).message = Some("You got the super shotgun!".to_string());
             sound = sfx_wpnup as i32;
         }
         _ => {

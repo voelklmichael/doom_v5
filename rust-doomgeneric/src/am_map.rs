@@ -18,7 +18,6 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
-use crate::src::m_misc::M_snprintf;
 use crate::src::p_maputl::MAPBLOCKUNITS;
 use crate::src::p_mobj::line_t;
 use crate::src::p_mobj::mobj_t;
@@ -86,7 +85,6 @@ pub struct AmMapState {
     pub am_start_lastlevel: i32,
     pub am_start_lastepisode: i32,
     pub am_responder_bigstate: i32,
-    pub am_responder_buffer: [::core::ffi::c_char; 20],
     pub am_drawfline_fuck: i32,
     pub am_updatelightlev_nexttic: i32,
     pub am_updatelightlev_litelevelscnt: i32,
@@ -149,7 +147,6 @@ impl AmMapState {
             am_start_lastlevel: -1,
             am_start_lastepisode: -1,
             am_responder_bigstate: 0,
-            am_responder_buffer: [0; 20],
             am_drawfline_fuck: 0,
             am_updatelightlev_nexttic: 0,
             am_updatelightlev_litelevelscnt: 0,
@@ -875,41 +872,24 @@ pub unsafe fn AM_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
             state.am_map.followplayer = (state.am_map.followplayer == 0) as i32;
             state.am_map.f_oldloc.x = INT_MAX as fixed_t;
             if state.am_map.followplayer != 0 {
-                (*state.am_map.plr).message = b"Follow Mode ON\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.am_map.plr).message = Some("Follow Mode ON".to_string());
             } else {
-                (*state.am_map.plr).message = b"Follow Mode OFF\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.am_map.plr).message = Some("Follow Mode OFF".to_string());
             }
         } else if key == state.m_controls.key_map_grid {
             state.am_map.grid = (state.am_map.grid == 0) as i32;
             if state.am_map.grid != 0 {
-                (*state.am_map.plr).message = b"Grid ON\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.am_map.plr).message = Some("Grid ON".to_string());
             } else {
-                (*state.am_map.plr).message = b"Grid OFF\0" as *const u8
-                    as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                (*state.am_map.plr).message = Some("Grid OFF".to_string());
             }
         } else if key == state.m_controls.key_map_mark {
-            M_snprintf(
-                &raw mut state.am_map.am_responder_buffer as *mut ::core::ffi::c_char,
-                ::core::mem::size_of::<[::core::ffi::c_char; 20]>() as size_t,
-                b"%s %d\0" as *const u8 as *const ::core::ffi::c_char,
-                b"Marked Spot\0" as *const u8 as *const ::core::ffi::c_char,
-                state.am_map.markpointnum,
-            );
             (*state.am_map.plr).message =
-                &raw mut state.am_map.am_responder_buffer as *mut ::core::ffi::c_char;
+                Some(format!("Marked Spot {}", state.am_map.markpointnum));
             AM_addMark(state);
         } else if key == state.m_controls.key_map_clearmark {
             AM_clearMarks(state);
-            (*state.am_map.plr).message = b"All Marks Cleared\0" as *const u8
-                as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            (*state.am_map.plr).message = Some("All Marks Cleared".to_string());
         } else {
             rc = false_0;
         }

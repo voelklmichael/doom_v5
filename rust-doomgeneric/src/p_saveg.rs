@@ -409,7 +409,8 @@ unsafe fn saveg_read_player_t(state: &mut GameState, mut str: *mut player_t) {
     (*str).killcount = saveg_read32(state);
     (*str).itemcount = saveg_read32(state);
     (*str).secretcount = saveg_read32(state);
-    (*str).message = saveg_readp(state) as *mut ::core::ffi::c_char;
+    saveg_readp(state);
+    (*str).message = None;
     (*str).damagecount = saveg_read32(state);
     (*str).bonuscount = saveg_read32(state);
     saveg_read32(state);
@@ -479,7 +480,14 @@ unsafe fn saveg_write_player_t(state: &mut GameState, mut str: *mut player_t) {
     saveg_write32(state, (*str).killcount);
     saveg_write32(state, (*str).itemcount);
     saveg_write32(state, (*str).secretcount);
-    saveg_writep(state, (*str).message as *mut ::core::ffi::c_void);
+    saveg_writep(
+        state,
+        if (*str).message.is_some() {
+            1 as *mut ::core::ffi::c_void
+        } else {
+            ::core::ptr::null_mut()
+        },
+    );
     saveg_write32(state, (*str).damagecount);
     saveg_write32(state, (*str).bonuscount);
     saveg_write32(state, 0 as i32);
@@ -781,8 +789,7 @@ pub unsafe fn P_UnArchivePlayers(state: &mut GameState) {
                 as *mut player_t;
             saveg_read_player_t(state, player);
             state.g_game.players[i as usize].mo = ::core::ptr::null_mut::<mobj_t>();
-            state.g_game.players[i as usize].message =
-                ::core::ptr::null_mut::<::core::ffi::c_char>();
+            state.g_game.players[i as usize].message = None;
             state.g_game.players[i as usize].attacker = None;
         }
         i += 1;

@@ -1240,11 +1240,10 @@ pub unsafe extern "C" fn M_ChangeMessages(state: &mut GameState, mut choice: i32
     state.m_menu.showMessages = 1 as i32 - state.m_menu.showMessages;
     if state.m_menu.showMessages == 0 {
         state.g_game.players[state.g_game.consoleplayer as usize].message =
-            b"Messages OFF\0" as *const u8 as *const ::core::ffi::c_char
-                as *mut ::core::ffi::c_char;
+            Some("Messages OFF".to_string());
     } else {
         state.g_game.players[state.g_game.consoleplayer as usize].message =
-            b"Messages ON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            Some("Messages ON".to_string());
     }
     state.hu_stuff.message_dontfuckwithme = true;
 }
@@ -1417,10 +1416,10 @@ pub unsafe extern "C" fn M_ChangeDetail(state: &mut GameState, mut choice: i32) 
     R_SetViewSize(state, screenblocks, detail_level);
     if state.m_menu.detailLevel == 0 {
         state.g_game.players[state.g_game.consoleplayer as usize].message =
-            b"High detail\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            Some("High detail".to_string());
     } else {
         state.g_game.players[state.g_game.consoleplayer as usize].message =
-            b"Low detail\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            Some("Low detail".to_string());
     };
 }
 #[no_mangle]
@@ -1808,7 +1807,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
                 state.i_video.usegamma = 0 as i32;
             }
             state.g_game.players[state.g_game.consoleplayer as usize].message =
-                gammamsg[state.i_video.usegamma as usize].as_ptr() as *mut ::core::ffi::c_char;
+                Some(gammamsg[state.i_video.usegamma as usize].to_string());
             let __wcache2009_3 = W_CacheLumpName(state, "PLAYPAL", PU_CACHE as i32) as *mut byte;
             I_SetPalette(state, __wcache2009_3);
             return true;

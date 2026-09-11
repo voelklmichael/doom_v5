@@ -1171,7 +1171,7 @@ pub unsafe fn P_SpawnPlayer(state: &mut GameState, mut mthing: *mut mapthing_t) 
     (*p).mo = mobj;
     (*p).playerstate = PST_LIVE;
     (*p).refire = 0 as i32;
-    (*p).message = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    (*p).message = None;
     (*p).damagecount = 0 as i32;
     (*p).bonuscount = 0 as i32;
     (*p).extralight = 0 as i32;

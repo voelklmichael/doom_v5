@@ -337,18 +337,72 @@ full verification bar including an actual interactive save/load round-trip test
 
 `c_char` references: 1236 → 1141.
 
+**Phase 13 done** (`c-char-phase13-player-message`, PR pending): converted
+`player_t.message` (the pending-HUD-message slot: pickup notices, cheat feedback,
+"game saved.", chat messages, etc.) from `*mut c_char` to `Option<String>` — a
+89-usage hub spanning 10 files (`d_player.rs`, `g_game.rs`, `d_net.rs`,
+`hu_stuff.rs`, `p_doors.rs`, `st_stuff.rs`, `p_inter.rs`, `m_menu.rs`, `am_map.rs`,
+`p_saveg.rs`, `p_mobj.rs`).
+- `player_s` dropped its `#[derive(Copy, ...)]` (kept `Clone`) since `String` isn't
+  `Copy`. Verified safe first: full-codebase grep for any by-value `player_t`
+  usage (function parameters, struct-to-struct assignment) found none — every use
+  is through a pointer or reference.
+- Found and fixed a real memset-landmine before it could bite: `G_PlayerReborn`
+  does `memset(p, 0, size_of::<player_t>())` then explicitly restores a few
+  preserved fields (frags/killcount/itemcount/secretcount) — added
+  `ptr::write(&raw mut (*p).message, None)` to that same restore step, since a raw
+  memset doesn't properly initialize a non-`Copy` field even though the resulting
+  all-zero-bytes bit pattern happens to be a valid `None` today. Matches this
+  function's own established "memset then fix up specific fields" idiom rather
+  than introducing a new pattern.
+- Three now-pointless scratch buffers removed entirely, once `.message` could own
+  its `String` directly instead of pointing at them: `hu_stuff.rs`'s
+  `hu_responder_lastmessage` (chat messages — simplified to
+  `Some(w_chat.l.l.clone())`, no longer even needs the old 81-byte truncation
+  logic since `HU_MAXLINELENGTH` already caps typed chat input at 80 chars, so the
+  truncation path was dead weight, not a behavior difference), `g_game.rs`'s
+  `g_ticker_turbomessage` ("X is turbo!"), `st_stuff.rs`'s `st_responder_mypos_buf`
+  ("ang=0x..;x,y=(..)" debug readout), `am_map.rs`'s `am_responder_buffer`
+  ("Marked Spot N") — each was an `M_snprintf`-into-fixed-buffer-then-point-at-it
+  dance, replaced by a direct `format!` → `Some(...)`.
+- `d_net.rs`'s `PlayerQuitGame` simplified similarly: the C original copied a
+  literal "Player 1 left the game" into a function-local `static mut` buffer then
+  arithmetically incremented the `'1'` byte to reflect the actual player number —
+  replaced with `format!("Player {} left the game", player_num + 1)`, removing the
+  `static mut` entirely.
+- The savegame-format serialization pair (`saveg_read_player_t`/
+  `saveg_write_player_t` in `p_saveg.rs`) needed real thought since `.message` is
+  part of the `.dsg` binary layout — see `docs/known-deviations.md`'s new entry
+  for the full reasoning: the field was always meaningless padding in practice
+  (its loaded value gets unconditionally discarded by `P_UnArchivePlayers` every
+  time, confirming upstream never actually restored it), so the new code keeps the
+  same 4-byte-slot file layout but writes a fixed placeholder and always loads as
+  `None` — strictly safer than the original's latent wild-pointer-read risk, not a
+  behavior loss for any code path that exists today.
+- Verified with the full bar plus two targeted interactive checks beyond the
+  standard save/load round-trip (redone here too, since this phase touches the
+  save format): the `idkfa` cheat (screenshot-confirmed "VERY HAPPY AMMO ADDED"
+  displays correctly through the new `Option<String>` HUD path) and a fresh
+  save→restart→load round trip (`doomsav0.dsg` identical size to phase 12's,
+  confirming the file layout truly didn't change; load completed with no panic
+  and no garbled message).
+
+`c_char` references: 1141 → 955.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
-concentrations are `d_main.rs` (~120, largely local `[c_char; 256]` scratch
-buffers for demo/turbo/mission-pack argument parsing — lower value, this track
-has deliberately deferred local scratch buffers throughout), `g_game.rs` (~80),
-`st_stuff.rs` (79), `p_inter.rs` (74), `wi_stuff.rs` (71), `m_misc.rs` (now mostly
-just `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI printf
-reimplementations still used by many buffer-building call sites across the
-codebase, a structural piece rather than a simple field conversion — replacing
-these would mean auditing and converting every one of their callers, a much
-larger undertaking than this phase's bounded `M_StringJoin` removal), `m_menu.rs`
-(37), `hu_stuff.rs` (36). Each needs the same per-cluster triage phases 10-12 used
-(is it a lumpname-shaped const table, an always-null/always-dead field or
-function, a local scratch buffer, or a structural printf/path-building engine
-piece) before deciding scope — the original blanket 1369-count estimate has
-already proven an unreliable guide to where the real work is.
+concentrations are `st_stuff.rs`/`i_input.rs` (largely the `cheatseq_t` byte-sequence
+family, deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a
+string in any meaningful sense, a sequence of raw keycodes matched byte-by-byte),
+`d_main.rs` (~120, largely local `[c_char; 256]` scratch buffers for demo/turbo/
+mission-pack argument parsing — lower value, this track has deliberately deferred
+local scratch buffers throughout), `g_game.rs`, `p_inter.rs`, `wi_stuff.rs`,
+`m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI
+printf reimplementations still used by many buffer-building call sites across the
+codebase, a structural piece rather than a simple field conversion — replacing these
+would mean auditing and converting every one of their callers, a much larger
+undertaking than a bounded field-conversion phase), `m_menu.rs`, `hu_stuff.rs`. Each
+needs the same per-cluster triage phases 10-13 used (is it a lumpname-shaped const
+table, an always-null/always-dead field or function, a local scratch buffer, a
+cheat-sequence byte array, or a structural printf/path-building engine piece) before
+deciding scope — the original blanket 1369-count estimate has already proven an
+unreliable guide to where the real work is.
