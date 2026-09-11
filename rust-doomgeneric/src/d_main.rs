@@ -109,7 +109,6 @@ use crate::src::wi_stuff::WI_Drawer;
 use crate::src::z_zone::Z_Init;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::strncasecmp;
 use libc::{exit, printf, snprintf};
 
 pub struct DMainState {
@@ -826,21 +825,15 @@ pub unsafe fn D_IdentifyVersion(state: &mut GameState) {
         let mut i: u32 = 0;
         i = 0 as u32;
         while i < state.w_wad.numlumps {
-            if strncasecmp(
-                &raw mut (*state.w_wad.lumpinfo.offset(i as isize)).name
-                    as *mut ::core::ffi::c_char,
-                b"MAP01\0" as *const u8 as *const ::core::ffi::c_char,
-                8 as size_t,
-            ) == 0
+            if (*state.w_wad.lumpinfo.offset(i as isize))
+                .name
+                .eq_str_ignore_ascii_case("MAP01")
             {
                 state.doomstat.gamemission = doom2;
                 break;
-            } else if strncasecmp(
-                &raw mut (*state.w_wad.lumpinfo.offset(i as isize)).name
-                    as *mut ::core::ffi::c_char,
-                b"E1M1\0" as *const u8 as *const ::core::ffi::c_char,
-                8 as size_t,
-            ) == 0
+            } else if (*state.w_wad.lumpinfo.offset(i as isize))
+                .name
+                .eq_str_ignore_ascii_case("E1M1")
             {
                 state.doomstat.gamemission = doom;
                 break;

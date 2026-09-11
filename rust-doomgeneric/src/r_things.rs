@@ -34,10 +34,9 @@ use crate::src::stdint_types::size_t;
 use crate::src::tables::angle_t;
 use crate::src::tables::ANG45;
 use crate::src::w_wad::W_CacheLumpNum;
-use crate::src::w_wad::{wad_name8_to_string, W_GetNumForName};
+use crate::src::w_wad::W_GetNumForName;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::strncasecmp;
 use libc::{memcpy, memset};
 
 pub struct RThingsState {
@@ -276,12 +275,12 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::
         state.r_things.maxframe = -(1 as i32);
         l = start + 1 as i32;
         while l < end {
-            if strncasecmp(
-                &raw mut (*state.w_wad.lumpinfo.offset(l as isize)).name
-                    as *mut ::core::ffi::c_char,
-                state.r_things.spritename,
-                4 as size_t,
-            ) == 0
+            if (*state.w_wad.lumpinfo.offset(l as isize))
+                .name
+                .eq_bytes_ignore_ascii_case_n(
+                    ::std::ffi::CStr::from_ptr(state.r_things.spritename).to_bytes(),
+                    4,
+                )
             {
                 frame = (*state.w_wad.lumpinfo.offset(l as isize)).name[4 as i32 as usize] as i32
                     - 'A' as i32;
@@ -289,10 +288,9 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, mut namelist: *mut *mut ::
                     as i32
                     - '0' as i32;
                 if state.doomstat.modifiedgame {
-                    patched = W_GetNumForName(&wad_name8_to_string(
-                        &raw const (*state.w_wad.lumpinfo.offset(l as isize)).name
-                            as *const ::core::ffi::c_char,
-                    ));
+                    patched = W_GetNumForName(
+                        &(*state.w_wad.lumpinfo.offset(l as isize)).name.as_str(),
+                    );
                 } else {
                     patched = l;
                 }

@@ -1,4 +1,5 @@
 use crate::src::doomdef::NULL;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_ConsoleStdout;
@@ -24,7 +25,6 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::printf;
-use libc::strncasecmp;
 use libc::{memcpy, memset};
 
 pub struct RDataState {
@@ -102,7 +102,7 @@ pub type texture_t = texture_s;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct texture_s {
-    pub name: [::core::ffi::c_char; 8],
+    pub name: FixedCStr<8>,
     pub width: i16,
     pub height: i16,
     pub index: i32,
@@ -129,7 +129,7 @@ pub struct mappatch_t {
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct maptexture_t {
-    pub name: [::core::ffi::c_char; 8],
+    pub name: FixedCStr<8>,
     pub masked: i32,
     pub width: i16,
     pub height: i16,
@@ -519,11 +519,7 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
         (*texture).width = (*mtexture).width;
         (*texture).height = (*mtexture).height;
         (*texture).patchcount = (*mtexture).patchcount;
-        memcpy(
-            &raw mut (*texture).name as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
-            &raw mut (*mtexture).name as *mut ::core::ffi::c_char as *const ::core::ffi::c_void,
-            ::core::mem::size_of::<[::core::ffi::c_char; 8]>() as size_t,
-        );
+        (*texture).name = (*mtexture).name;
         mpatch = (&raw mut (*mtexture).patches as *mut mappatch_t).offset(0 as i32 as isize)
             as *mut mappatch_t;
         patch = (&raw mut (*texture).patches as *mut texpatch_t).offset(0 as i32 as isize)
@@ -697,11 +693,9 @@ pub unsafe fn R_CheckTextureNumForName(
     key = W_LumpNameHash(name).wrapping_rem(state.numtextures as u32) as i32;
     texture = *state.textures_hashtable.offset(key as isize);
     while !texture.is_null() {
-        if strncasecmp(
-            &raw mut (*texture).name as *mut ::core::ffi::c_char,
-            name,
-            8 as size_t,
-        ) == 0
+        if (*texture)
+            .name
+            .eq_bytes_ignore_ascii_case(::std::ffi::CStr::from_ptr(name).to_bytes())
         {
             return (*texture).index;
         }

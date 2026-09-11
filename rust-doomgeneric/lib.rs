@@ -30,6 +30,7 @@ pub mod src {
     pub mod dummy;
     pub mod f_finale;
     pub mod f_wipe;
+    pub mod fixed_cstr;
     pub mod g_game;
     pub mod game_state;
     pub mod hu_lib;

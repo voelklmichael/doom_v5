@@ -3,6 +3,7 @@ use crate::src::d_mode::indetermined;
 use crate::src::d_mode::D_GameMissionString;
 use crate::src::d_mode::{doom, heretic, hexen, strife, GameMission_t};
 use crate::src::doomdef::NULL;
+use crate::src::fixed_cstr::FixedCStr;
 use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
@@ -19,7 +20,6 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{free, printf};
 use libc::{memcpy, memset};
-use libc::{strncasecmp, strncpy};
 
 pub struct WWadState {
     pub lumpinfo: *mut lumpinfo_t,
@@ -43,7 +43,7 @@ extern "C" {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lumpinfo_s {
-    pub name: [::core::ffi::c_char; 8],
+    pub name: FixedCStr<8>,
     pub wad_file: *mut wad_file_t,
     pub position: i32,
     pub size: i32,
@@ -56,12 +56,12 @@ pub type lumpinfo_t = lumpinfo_s;
 pub struct filelump_t {
     pub filepos: i32,
     pub size: i32,
-    pub name: [::core::ffi::c_char; 8],
+    pub name: FixedCStr<8>,
 }
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct wadinfo_t {
-    pub identification: [::core::ffi::c_char; 4],
+    pub identification: FixedCStr<4>,
     pub numlumps: i32,
     pub infotableofs: i32,
 }
@@ -127,7 +127,7 @@ unsafe fn ExtendLumpInfo(mut newnumlumps: i32) {
 }
 pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file_t {
     let mut header: wadinfo_t = wadinfo_t {
-        identification: [0; 4],
+        identification: FixedCStr([0; 4]),
         numlumps: 0,
         infotableofs: 0,
     };
@@ -175,8 +175,8 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
             &raw mut header as *mut ::core::ffi::c_void,
             ::core::mem::size_of::<wadinfo_t>() as size_t,
         );
-        if header.identification.map(|c| c as u8) != *b"IWAD" {
-            if header.identification.map(|c| c as u8) != *b"PWAD" {
+        if header.identification.0 != *b"IWAD" {
+            if header.identification.0 != *b"PWAD" {
                 I_Error(&format!(
                     "Wad file {} doesn't have IWAD or PWAD id\n",
                     ::std::ffi::CStr::from_ptr(filename).to_str().unwrap(),
@@ -214,11 +214,7 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
         (*lump_p).position = (*filerover).filepos;
         (*lump_p).size = (*filerover).size;
         (*lump_p).cache = NULL;
-        strncpy(
-            &raw mut (*lump_p).name as *mut ::core::ffi::c_char,
-            &raw mut (*filerover).name as *mut ::core::ffi::c_char,
-            8 as size_t,
-        );
+        (*lump_p).name = (*filerover).name;
         lump_p = lump_p.offset(1);
         filerover = filerover.offset(1);
         i = i.wrapping_add(1);
@@ -252,20 +248,16 @@ pub unsafe fn wad_name8_to_string(ptr: *const ::core::ffi::c_char) -> String {
 }
 pub unsafe fn W_CheckNumForName(name: &str) -> i32 {
     let name_cstring = ::std::ffi::CString::new(name).unwrap();
-    let name = name_cstring.as_ptr() as *mut ::core::ffi::c_char;
+    let name_ptr = name_cstring.as_ptr() as *mut ::core::ffi::c_char;
     let mut lump_p: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     let mut i: i32 = 0;
     if !unsafe { game_state() }.w_wad.lumphash.is_null() {
         let mut hash: i32 = 0;
-        hash = W_LumpNameHash(name).wrapping_rem(unsafe { game_state() }.w_wad.numlumps) as i32;
+        hash =
+            W_LumpNameHash(name_ptr).wrapping_rem(unsafe { game_state() }.w_wad.numlumps) as i32;
         lump_p = *unsafe { game_state() }.w_wad.lumphash.offset(hash as isize);
         while !lump_p.is_null() {
-            if strncasecmp(
-                &raw mut (*lump_p).name as *mut ::core::ffi::c_char,
-                name,
-                8 as size_t,
-            ) == 0
-            {
+            if (*lump_p).name.eq_str_ignore_ascii_case(name) {
                 return lump_p.offset_from(unsafe { game_state() }.w_wad.lumpinfo) as i64 as i32;
             }
             lump_p = (*lump_p).next;
@@ -276,12 +268,9 @@ pub unsafe fn W_CheckNumForName(name: &str) -> i32 {
             .numlumps
             .wrapping_sub(1 as u32) as i32;
         while i >= 0 as i32 {
-            if strncasecmp(
-                &raw mut (*unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize)).name
-                    as *mut ::core::ffi::c_char,
-                name,
-                8 as size_t,
-            ) == 0
+            if (*unsafe { game_state() }.w_wad.lumpinfo.offset(i as isize))
+                .name
+                .eq_str_ignore_ascii_case(name)
             {
                 return i;
             }
