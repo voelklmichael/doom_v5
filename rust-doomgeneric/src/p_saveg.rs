@@ -7,8 +7,7 @@ use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::doomdef::boolean;
 use crate::src::g_game::G_VanillaVersionCode;
 use crate::src::i_system::I_Error;
-use crate::src::i_system::FILE;
-use crate::src::i_system::{fread, ftell, fwrite};
+use std::io::{Read, Seek, Write};
 use crate::src::m_fixed::fixed_t;
 use crate::src::p_ceilng::ceiling_e;
 use crate::src::p_ceilng::P_AddActiveCeiling;
@@ -34,7 +33,6 @@ use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_InitThinkers;
 use crate::src::r_defs::side_t;
 use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
 use crate::src::tables::angle_t;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
@@ -56,7 +54,7 @@ use crate::src::p_mobj::P_MobjThinker;
 use crate::src::p_plats::T_PlatRaise;
 
 pub struct PSavegState {
-    pub save_stream: *mut FILE,
+    pub save_stream: Option<std::fs::File>,
     pub savegame_error: bool,
     pub temp_savegame_filename: Option<String>,
 }
@@ -64,7 +62,7 @@ pub struct PSavegState {
 impl PSavegState {
     pub const fn new() -> Self {
         PSavegState {
-            save_stream: ::core::ptr::null::<FILE>() as *mut FILE,
+            save_stream: None,
             savegame_error: false,
             temp_savegame_filename: None,
         }
@@ -99,28 +97,32 @@ pub unsafe fn P_SaveGameFile(state: &mut GameState, slot: i32) -> String {
     format!("{}doomsav{}.dsg", state.d_main.savegamedir, slot)
 }
 unsafe fn saveg_read8(state: &mut GameState) -> byte {
-    let mut result: byte = 0;
-    if fread(
-        &raw mut result as *mut ::core::ffi::c_void,
-        1 as size_t,
-        1 as size_t,
-        state.p_saveg.save_stream,
-    ) < 1 as u64
+    let mut result: [byte; 1] = [0];
+    if state
+        .p_saveg
+        .save_stream
+        .as_mut()
+        .unwrap()
+        .read(&mut result)
+        .unwrap_or(0)
+        < 1
     {
         if !state.p_saveg.savegame_error {
             eprintln!("saveg_read8: Unexpected end of file while reading save game");
             state.p_saveg.savegame_error = true;
         }
     }
-    return result;
+    return result[0];
 }
-unsafe fn saveg_write8(state: &mut GameState, mut value: byte) {
-    if fwrite(
-        &raw mut value as *const ::core::ffi::c_void,
-        1 as size_t,
-        1 as size_t,
-        state.p_saveg.save_stream,
-    ) < 1 as u64
+unsafe fn saveg_write8(state: &mut GameState, value: byte) {
+    if state
+        .p_saveg
+        .save_stream
+        .as_mut()
+        .unwrap()
+        .write(&[value])
+        .unwrap_or(0)
+        < 1
     {
         if !state.p_saveg.savegame_error {
             eprintln!("saveg_write8: Error while writing save game");
@@ -153,10 +155,15 @@ unsafe fn saveg_write32(state: &mut GameState, mut value: i32) {
     saveg_write8(state, (value >> 24 as i32 & 0xff as i32) as byte);
 }
 unsafe fn saveg_read_pad(state: &mut GameState) {
-    let mut pos: u64 = 0;
     let mut padding: i32 = 0;
     let mut i: i32 = 0;
-    pos = ftell(state.p_saveg.save_stream) as u64;
+    let pos = state
+        .p_saveg
+        .save_stream
+        .as_mut()
+        .unwrap()
+        .stream_position()
+        .unwrap_or(0);
     padding = ((4 as u64).wrapping_sub(pos & 3 as u64) & 3 as u64) as i32;
     i = 0 as i32;
     while i < padding {
@@ -165,10 +172,15 @@ unsafe fn saveg_read_pad(state: &mut GameState) {
     }
 }
 unsafe fn saveg_write_pad(state: &mut GameState) {
-    let mut pos: u64 = 0;
     let mut padding: i32 = 0;
     let mut i: i32 = 0;
-    pos = ftell(state.p_saveg.save_stream) as u64;
+    let pos = state
+        .p_saveg
+        .save_stream
+        .as_mut()
+        .unwrap()
+        .stream_position()
+        .unwrap_or(0);
     padding = ((4 as u64).wrapping_sub(pos & 3 as u64) & 3 as u64) as i32;
     i = 0 as i32;
     while i < padding {
