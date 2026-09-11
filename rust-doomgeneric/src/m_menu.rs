@@ -4,7 +4,7 @@ use crate::src::dstrings::{doom1_endmsg, doom2_endmsg};
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::FILE;
-use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::w_wad::W_CacheLumpName;
 
 use crate::src::d_event::{ev_joystick, ev_keydown, ev_mouse, ev_quit};
 use crate::src::d_mode::{commercial, registered, retail, shareware};
@@ -45,7 +45,6 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::v_video::V_DrawPatchDirect;
 use crate::src::z_zone::PU_CACHE;
-use libc::snprintf;
 
 pub struct MMenuDefsHolder {
     pub MainDef: menu_t,
@@ -167,37 +166,37 @@ impl MMenuMenusHolder {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_NGAME\0\0\0"),
                     routine: None,
-                    alphaKey: 'n' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'n' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_OPTION\0\0"),
                     routine: None,
-                    alphaKey: 'o' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'o' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_LOADG\0\0\0"),
                     routine: None,
-                    alphaKey: 'l' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'l' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_SAVEG\0\0\0"),
                     routine: None,
-                    alphaKey: 's' as i32 as ::core::ffi::c_char,
+                    alphaKey: 's' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_RDTHIS\0\0"),
                     routine: None,
-                    alphaKey: 'r' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'r' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_QUITG\0\0\0"),
                     routine: None,
-                    alphaKey: 'q' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'q' as u8,
                 },
             ],
             EpisodeMenu: [
@@ -205,25 +204,25 @@ impl MMenuMenusHolder {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_EPI1\0\0\0\0"),
                     routine: None,
-                    alphaKey: 'k' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'k' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_EPI2\0\0\0\0"),
                     routine: None,
-                    alphaKey: 't' as i32 as ::core::ffi::c_char,
+                    alphaKey: 't' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_EPI3\0\0\0\0"),
                     routine: None,
-                    alphaKey: 'i' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'i' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_EPI4\0\0\0\0"),
                     routine: None,
-                    alphaKey: 't' as i32 as ::core::ffi::c_char,
+                    alphaKey: 't' as u8,
                 },
             ],
             NewGameMenu: [
@@ -231,31 +230,31 @@ impl MMenuMenusHolder {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_JKILL\0\0\0"),
                     routine: None,
-                    alphaKey: 'i' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'i' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_ROUGH\0\0\0"),
                     routine: None,
-                    alphaKey: 'h' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'h' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_HURT\0\0\0\0"),
                     routine: None,
-                    alphaKey: 'h' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'h' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_ULTRA\0\0\0"),
                     routine: None,
-                    alphaKey: 'u' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'u' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_NMARE\0\0\0"),
                     routine: None,
-                    alphaKey: 'n' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'n' as u8,
                 },
             ],
             OptionsMenu: [
@@ -263,87 +262,87 @@ impl MMenuMenusHolder {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_ENDGAM\0\0"),
                     routine: None,
-                    alphaKey: 'e' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'e' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_MESSG\0\0\0"),
                     routine: None,
-                    alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'm' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_DETAIL\0\0"),
                     routine: None,
-                    alphaKey: 'g' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'g' as u8,
                 },
                 menuitem_t {
                     status: 2 as i16,
                     name: FixedCStr(*b"M_SCRNSZ\0\0"),
                     routine: None,
-                    alphaKey: 's' as i32 as ::core::ffi::c_char,
+                    alphaKey: 's' as u8,
                 },
                 menuitem_t {
                     status: -(1 as i32) as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                    alphaKey: '\0' as u8,
                 },
                 menuitem_t {
                     status: 2 as i16,
                     name: FixedCStr(*b"M_MSENS\0\0\0"),
                     routine: None,
-                    alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'm' as u8,
                 },
                 menuitem_t {
                     status: -(1 as i32) as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                    alphaKey: '\0' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"M_SVOL\0\0\0\0"),
                     routine: None,
-                    alphaKey: 's' as i32 as ::core::ffi::c_char,
+                    alphaKey: 's' as u8,
                 },
             ],
             ReadMenu1: [menuitem_t {
                 status: 1 as i16,
                 name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                 routine: None,
-                alphaKey: 0 as ::core::ffi::c_char,
+                alphaKey: 0 as u8,
             }],
             ReadMenu2: [menuitem_t {
                 status: 1 as i16,
                 name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                 routine: None,
-                alphaKey: 0 as ::core::ffi::c_char,
+                alphaKey: 0 as u8,
             }],
             SoundMenu: [
                 menuitem_t {
                     status: 2 as i16,
                     name: FixedCStr(*b"M_SFXVOL\0\0"),
                     routine: None,
-                    alphaKey: 's' as i32 as ::core::ffi::c_char,
+                    alphaKey: 's' as u8,
                 },
                 menuitem_t {
                     status: -(1 as i32) as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                    alphaKey: '\0' as u8,
                 },
                 menuitem_t {
                     status: 2 as i16,
                     name: FixedCStr(*b"M_MUSVOL\0\0"),
                     routine: None,
-                    alphaKey: 'm' as i32 as ::core::ffi::c_char,
+                    alphaKey: 'm' as u8,
                 },
                 menuitem_t {
                     status: -(1 as i32) as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '\0' as i32 as ::core::ffi::c_char,
+                    alphaKey: '\0' as u8,
                 },
             ],
             LoadMenu: [
@@ -351,37 +350,37 @@ impl MMenuMenusHolder {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '1' as i32 as ::core::ffi::c_char,
+                    alphaKey: '1' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '2' as i32 as ::core::ffi::c_char,
+                    alphaKey: '2' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '3' as i32 as ::core::ffi::c_char,
+                    alphaKey: '3' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '4' as i32 as ::core::ffi::c_char,
+                    alphaKey: '4' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '5' as i32 as ::core::ffi::c_char,
+                    alphaKey: '5' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '6' as i32 as ::core::ffi::c_char,
+                    alphaKey: '6' as u8,
                 },
             ],
             SaveMenu: [
@@ -389,37 +388,37 @@ impl MMenuMenusHolder {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '1' as i32 as ::core::ffi::c_char,
+                    alphaKey: '1' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '2' as i32 as ::core::ffi::c_char,
+                    alphaKey: '2' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '3' as i32 as ::core::ffi::c_char,
+                    alphaKey: '3' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '4' as i32 as ::core::ffi::c_char,
+                    alphaKey: '4' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '5' as i32 as ::core::ffi::c_char,
+                    alphaKey: '5' as u8,
                 },
                 menuitem_t {
                     status: 1 as i16,
                     name: FixedCStr(*b"\0\0\0\0\0\0\0\0\0\0"),
                     routine: None,
-                    alphaKey: '6' as i32 as ::core::ffi::c_char,
+                    alphaKey: '6' as u8,
                 },
             ],
         }
@@ -449,12 +448,10 @@ pub struct MMenuState {
     pub inhelpscreens: bool,
     pub menuactive: bool,
     pub savegamestrings: [String; 10],
-    pub endstring: [::core::ffi::c_char; 160],
     pub itemOn: i16,
     pub skullAnimCounter: i16,
     pub whichSkull: i16,
     pub currentMenu: *mut menu_t,
-    pub tempstring: [::core::ffi::c_char; 80],
     pub epi: i32,
     pub responder_joywait: i32,
     pub responder_mousewait: i32,
@@ -502,12 +499,10 @@ impl MMenuState {
                 String::new(),
                 String::new(),
             ],
-            endstring: [0; 160],
             itemOn: 0,
             skullAnimCounter: 0,
             whichSkull: 0,
             currentMenu: ::core::ptr::null::<menu_t>() as *mut menu_t,
-            tempstring: [0; 80],
             epi: 0,
             responder_joywait: 0,
             responder_mousewait: 0,
@@ -646,7 +641,7 @@ pub struct menuitem_t {
     pub status: i16,
     pub name: FixedCStr<10>,
     pub routine: Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
-    pub alphaKey: ::core::ffi::c_char,
+    pub alphaKey: u8,
 }
 pub type menu_t = menu_s;
 #[derive(Copy, Clone)]
@@ -914,22 +909,10 @@ pub unsafe fn M_QuickSave(state: &mut GameState) {
         state.m_menu.quickSaveSlot = -(2 as i32);
         return;
     }
-    let quicksave_name_cstring = ::std::ffi::CString::new(
-        state.m_menu.savegamestrings[state.m_menu.quickSaveSlot as usize].as_str(),
-    )
-    .unwrap();
-    snprintf(
-        &raw mut state.m_menu.tempstring as *mut ::core::ffi::c_char,
-        80 as size_t,
-        b"quicksave over your game named\n\n'%s'?\n\npress y or n.\0" as *const u8
-            as *const ::core::ffi::c_char,
-        quicksave_name_cstring.as_ptr(),
+    let msg = format!(
+        "quicksave over your game named\n\n'{}'?\n\npress y or n.",
+        state.m_menu.savegamestrings[state.m_menu.quickSaveSlot as usize],
     );
-    let msg =
-        ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.tempstring as *mut ::core::ffi::c_char)
-            .to_str()
-            .unwrap()
-            .to_string();
     let routine = ::core::mem::transmute::<
         Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
         *mut ::core::ffi::c_void,
@@ -965,22 +948,10 @@ pub unsafe fn M_QuickLoad(state: &mut GameState) {
         );
         return;
     }
-    let quickload_name_cstring = ::std::ffi::CString::new(
-        state.m_menu.savegamestrings[state.m_menu.quickSaveSlot as usize].as_str(),
-    )
-    .unwrap();
-    snprintf(
-        &raw mut state.m_menu.tempstring as *mut ::core::ffi::c_char,
-        80 as size_t,
-        b"do you want to quickload the game named\n\n'%s'?\n\npress y or n.\0" as *const u8
-            as *const ::core::ffi::c_char,
-        quickload_name_cstring.as_ptr(),
+    let msg = format!(
+        "do you want to quickload the game named\n\n'{}'?\n\npress y or n.",
+        state.m_menu.savegamestrings[state.m_menu.quickSaveSlot as usize],
     );
-    let msg =
-        ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.tempstring as *mut ::core::ffi::c_char)
-            .to_str()
-            .unwrap()
-            .to_string();
     let routine = ::core::mem::transmute::<
         Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
         *mut ::core::ffi::c_void,
@@ -991,40 +962,33 @@ pub unsafe fn M_QuickLoad(state: &mut GameState) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_DrawReadThis1(state: &mut GameState) {
-    let mut lumpname: *mut ::core::ffi::c_char =
-        b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+    let mut lumpname: &str = "CREDIT";
     let mut skullx: i32 = 330 as i32;
     let mut skully: i32 = 175 as i32;
     state.m_menu.inhelpscreens = true;
     match state.doomstat.gameversion as u32 {
         1 | 2 | 3 | 4 | 5 => {
             if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
-                lumpname = b"HELP\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                lumpname = "HELP";
                 skullx = 330 as i32;
                 skully = 165 as i32;
             } else {
-                lumpname = b"HELP2\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                lumpname = "HELP2";
                 skullx = 280 as i32;
                 skully = 185 as i32;
             }
         }
         6 | 9 => {
-            lumpname =
-                b"HELP1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            lumpname = "HELP1";
         }
         7 | 8 => {
-            lumpname =
-                b"HELP\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            lumpname = "HELP";
         }
         _ => {
             I_Error("Unhandled game version");
         }
     }
-    lumpname = lumpname;
-    let __wcache1158_19 =
-        W_CacheLumpName(state, &wad_name8_to_string(lumpname), PU_CACHE as i32) as *mut patch_t;
+    let __wcache1158_19 = W_CacheLumpName(state, lumpname, PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 0 as i32, 0 as i32, __wcache1158_19);
     state.m_menu.defs.ReadDef1.x = skullx as i16;
     state.m_menu.defs.ReadDef1.y = skully as i16;
@@ -1372,18 +1336,10 @@ unsafe fn M_SelectEndMessage(state: &mut GameState) -> &'static str {
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_QuitDOOM(state: &mut GameState, mut choice: i32) {
-    let endmsg_cstring = ::std::ffi::CString::new(M_SelectEndMessage(state)).unwrap();
-    snprintf(
-        &raw mut state.m_menu.endstring as *mut ::core::ffi::c_char,
-        ::core::mem::size_of::<[::core::ffi::c_char; 160]>() as size_t,
-        b"%s\n\n(press y to quit to dos.)\0" as *const u8 as *const ::core::ffi::c_char,
-        endmsg_cstring.as_ptr(),
+    let msg = format!(
+        "{}\n\n(press y to quit to dos.)",
+        M_SelectEndMessage(state)
     );
-    let msg =
-        ::std::ffi::CStr::from_ptr(&raw mut state.m_menu.endstring as *mut ::core::ffi::c_char)
-            .to_str()
-            .unwrap()
-            .to_string();
     let routine = ::core::mem::transmute::<
         Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
         *mut ::core::ffi::c_void,
@@ -1978,7 +1934,6 @@ pub unsafe fn M_StartControlPanel(state: &mut GameState) {
 pub unsafe fn M_Drawer(state: &mut GameState) {
     let mut i: u32 = 0;
     let mut max: u32 = 0;
-    let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     state.m_menu.inhelpscreens = false;
     if state.m_menu.messageToPrint != 0 {
         let message_string = state.m_menu.messageString.clone();
@@ -2013,11 +1968,10 @@ pub unsafe fn M_Drawer(state: &mut GameState) {
     max = (*state.m_menu.currentMenu).numitems as u32;
     i = 0 as u32;
     while i < max {
-        name = &raw mut (*(*state.m_menu.currentMenu).menuitems.offset(i as isize)).name
-            as *mut ::core::ffi::c_char;
-        if *name.offset(0 as i32 as isize) != 0 {
+        let item_name = (*(*state.m_menu.currentMenu).menuitems.offset(i as isize)).name;
+        if !item_name.is_empty() {
             let __wcache2221_2 =
-                W_CacheLumpName(state, &wad_name8_to_string(name), PU_CACHE as i32) as *mut patch_t;
+                W_CacheLumpName(state, &item_name.as_str(), PU_CACHE as i32) as *mut patch_t;
             V_DrawPatchDirect(
                 state,
                 state.m_menu.drawer_x as i32,

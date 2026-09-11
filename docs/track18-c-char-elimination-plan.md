@@ -509,6 +509,38 @@ their editor.
 
 `c_char` references: 649 → 626.
 
+**Phase 17 done** (`c-char-phase17-menuitem-messages`, PR pending): cleared
+`m_menu.rs` down from 67 to 3 `c_char` occurrences (the 3 remaining are the same
+established `CString`-boundary pattern for `fopen`/`G_LoadGame`, not further
+convertible without touching those). Four independent findings:
+- `menuitem_t.alphaKey` (the per-item keyboard-shortcut character, e.g. `'n'` for
+  New Game) — never a string, `c_char` used as a numeric byte type compared
+  against a keypress code (same pattern as phases 14/16's `shiftxform`/`pcx_t`).
+  Converted to `u8`, 41 literal entries across the 9 menu tables mechanically
+  updated.
+- `tempstring`/`endstring` (`MMenuState` fields, 80 and 160 bytes) — both were
+  `snprintf`-into-buffer-then-`CStr::from_ptr`-back-out round trips building a
+  confirmation message from data that was **already a native `String`**
+  (`savegamestrings[slot]` for quicksave/quickload, `M_SelectEndMessage`'s
+  return for quit) — collapsed to plain `format!(...)` calls, and both
+  now-pointless buffer fields removed entirely.
+- `M_DrawReadThis1`'s `lumpname` local (selects which HELP/CREDIT screen lump to
+  show based on game version) — was building a raw pointer through 5 duplicated
+  byte-string-cast branches for what's structurally just picking one of 4
+  literal `&str`s; simplified directly.
+- `M_Drawer`'s per-menu-item name resolution — `menuitem_t.name` is already
+  `FixedCStr<10>` (phase 6); the loop was still going through a raw-pointer
+  `wad_name8_to_string` dance to read it. Simplified to `FixedCStr`'s own
+  `.is_empty()`/`.as_str()`.
+- Verified beyond the standard bar: screenshot-confirmed the main menu renders
+  correctly (exercises `M_Drawer`'s name-resolution change for all 6 items) and
+  a full quicksave confirmation dialog shows the exact expected multi-line text
+  ("QUICKSAVE OVER YOUR GAME NAMED 'TEST'? PRESS Y OR N.", built via the new
+  `format!`), via the same interactive `xdotool` technique established in
+  phase 12.
+
+`c_char` references: 626 → 558.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
@@ -520,11 +552,11 @@ non-callback-hub sites), `m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselv
 genuine variadic C-ABI printf reimplementations still used by many buffer-building
 call sites across the codebase, a structural piece rather than a simple field
 conversion — replacing these would mean auditing and converting every one of their
-callers, a much larger undertaking than a bounded field-conversion phase), `m_menu.rs`,
-`hu_stuff.rs`. Each needs the same per-cluster triage phases 10-16 used (is it a
+callers, a much larger undertaking than a bounded field-conversion phase),
+`hu_stuff.rs`. Each needs the same per-cluster triage phases 10-17 used (is it a
 lumpname-shaped const table, an always-null/always-dead field or function, a local
 scratch buffer, a cheat-sequence byte array, a numeric-lookup-table mislabeled as
 c_char, a shared callback-type hub, a small widely-called name-resolution function
-trio, or a structural printf/path-building engine piece) before deciding scope —
-the original blanket 1369-count estimate has already proven an unreliable guide to
-where the real work is.
+trio, an already-native-String-round-tripping-through-a-raw-buffer, or a structural
+printf/path-building engine piece) before deciding scope — the original blanket
+1369-count estimate has already proven an unreliable guide to where the real work is.
