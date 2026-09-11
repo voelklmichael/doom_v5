@@ -397,7 +397,7 @@ pub unsafe fn HU_Start(state: &mut GameState) {
         s = mapnames[(state.g_game.gamemap - 1 as i32) as usize];
     }
     for b in s.bytes() {
-        HUlib_addCharToTextLine(&raw mut state.hu_stuff.w_title, b as ::core::ffi::c_char);
+        HUlib_addCharToTextLine(&raw mut state.hu_stuff.w_title, b);
     }
     HUlib_initIText(
         &raw mut state.hu_stuff.w_chat,

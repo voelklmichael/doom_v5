@@ -1,8 +1,6 @@
 use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_config::M_BindVariable;
-use crate::src::m_misc::M_snprintf;
-use crate::src::stdint_types::size_t;
 
 pub struct MControlsState {
     pub key_right: i32,
@@ -882,7 +880,6 @@ pub unsafe fn M_BindMenuControls(state: &mut GameState) {
     );
 }
 pub unsafe fn M_BindChatControls(state: &mut GameState, mut num_players: u32) {
-    let mut name: [::core::ffi::c_char; 32] = [0; 32];
     let mut i: u32 = 0;
     M_BindVariable(
         &mut state.m_config,
@@ -891,17 +888,10 @@ pub unsafe fn M_BindChatControls(state: &mut GameState, mut num_players: u32) {
     );
     i = 0 as u32;
     while i < num_players {
-        M_snprintf(
-            &raw mut name as *mut ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
-            b"key_multi_msgplayer%i\0" as *const u8 as *const ::core::ffi::c_char,
-            i.wrapping_add(1 as u32),
-        );
+        let name = format!("key_multi_msgplayer{}", i.wrapping_add(1 as u32));
         M_BindVariable(
             &mut state.m_config,
-            ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
-                .to_str()
-                .unwrap(),
+            &name,
             (&raw mut state.m_controls.key_multi_msgplayer as *mut i32).offset(i as isize)
                 as *mut i32 as *mut ::core::ffi::c_void,
         );

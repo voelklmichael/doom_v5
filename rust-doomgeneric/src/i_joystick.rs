@@ -1,7 +1,5 @@
 use crate::src::game_state::GameState;
 use crate::src::m_config::M_BindVariable;
-use crate::src::m_misc::M_snprintf;
-use crate::src::stdint_types::size_t;
 
 pub const NUM_VIRTUAL_BUTTONS: i32 = 10;
 
@@ -80,18 +78,10 @@ pub unsafe fn I_BindJoystickVariables(state: &mut GameState) {
     );
     i = 0 as i32;
     while i < NUM_VIRTUAL_BUTTONS {
-        let mut name: [::core::ffi::c_char; 32] = [0; 32];
-        M_snprintf(
-            &raw mut name as *mut ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 32]>() as size_t,
-            b"joystick_physical_button%i\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
+        let name = format!("joystick_physical_button{}", i);
         M_BindVariable(
             &mut state.m_config,
-            ::std::ffi::CStr::from_ptr(&raw mut name as *mut ::core::ffi::c_char)
-                .to_str()
-                .unwrap(),
+            &name,
             (&raw mut state.i_joystick.joystick_physical_buttons as *mut i32).offset(i as isize)
                 as *mut i32 as *mut ::core::ffi::c_void,
         );

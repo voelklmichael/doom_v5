@@ -710,6 +710,43 @@ boundaries, not further simplifiable without touching those). Two clusters:
 
 `c_char` references: 412 → 384.
 
+**Phase 23 done** (`c-char-phase23-hulib-and-small-config-buffers`, PR pending):
+a sweep of several small, independent, low-risk clusters found across
+different files during a fresh full-codebase survey.
+- `HUlib_addCharToTextLine` (`hu_lib.rs`) — takes a single character byte to
+  append to a HUD text line's `String`; never string data itself, `c_char` was
+  a redundant type label on what's already a byte parameter. Converted to
+  `u8`, and its 5 call sites (spread across `hu_lib.rs`/`hu_stuff.rs`)
+  dropped their now-pointless `as c_char` casts. `HUlib_addMessageToSText`'s
+  `prefix: *mut c_char` parameter left alone — its one non-null caller
+  (`hu_stuff.rs`) feeds it from `player_names`, the confirmed-deferred
+  module-level `static mut` from phase 18 — converting `prefix` would require
+  converting `player_names` too.
+- `R_FillBackScreen`'s sky-flat-name selection (`r_draw.rs`) — two literal
+  names picked by branch, the same `M_DrawReadThis1`/`skytexturename` shape
+  phases 15/17/20 already handled repeatedly.
+- Two config-key-name builders (`m_controls.rs`'s per-player chat-message key,
+  `i_joystick.rs`'s per-button physical-button key) — both the established
+  `snprintf`-into-buffer-then-`CStr::from_ptr` pattern, replaced with
+  `format!` feeding directly into `M_BindVariable` (already `&str`-taking).
+- `w_checksum.rs`'s `ChecksumAddLump` — copied a lump's already-`FixedCStr<8>`
+  name into a local `[c_char; 9]` buffer before hashing it. This one needed
+  care: `SHA1_UpdateString` hashes `strlen(str)+1` bytes (including the NUL
+  terminator in the checksum, a real behavioral detail, not incidental), and
+  the original `M_StringCopy`-based buffer construction copied only the
+  *logical* string length before zero-padding — copying the raw 8 bytes
+  verbatim (including whatever garbage might follow an embedded NUL in a
+  malformed lump name) would NOT have been equivalent. Reimplemented using
+  `FixedCStr::len()` to copy exactly the logical-length prefix into a
+  zero-initialized `[u8; 9]`, byte-for-byte matching the original's semantics
+  rather than the shape of its code. `SHA1_UpdateString` itself (a single
+  remaining caller) left untouched.
+- Verified beyond the standard bar: screenshot-confirmed the automap's level
+  title ("E1M1: HANGAR") renders correctly, directly exercising
+  `HUlib_addCharToTextLine`'s new signature.
+
+`c_char` references: 384 → 357.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
@@ -728,13 +765,14 @@ undertaking than a bounded field-conversion phase), the `D_FindWADByName`/
 `d_main.rs`/`w_wad.rs` — real file-I/O, deeper than it first looks, several
 `into_raw()` leaks like phase 11 found; deferred once already for being bigger
 than it seemed, worth a dedicated phase rather than folding into a sweep). Each
-needs the same per-cluster triage phases 10-22 used (is it a lumpname-shaped const
+needs the same per-cluster triage phases 10-23 used (is it a lumpname-shaped const
 table, an always-null/always-dead field or function, a local scratch buffer, a
 cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
 callback-type hub, a small widely-called name-resolution function trio, an
 already-native-String-round-tripping-through-a-raw-buffer, a genuine module-level
 `static mut` deferred since Track 16, a whole function that's provably dead code
-behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom debug parameter, or a
+behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom debug parameter, a
+checksummed-data-buffer needing byte-exact-not-shape-exact translation, or a
 structural printf/path-building engine piece) before deciding scope — the
 original blanket 1369-count estimate has already proven an unreliable guide to
 where the real work is.

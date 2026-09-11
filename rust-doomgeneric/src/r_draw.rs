@@ -14,7 +14,7 @@ use crate::src::v_video::V_DrawPatch;
 use crate::src::v_video::V_MarkRect;
 use crate::src::v_video::V_RestoreBuffer;
 use crate::src::v_video::V_UseBuffer;
-use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::w_wad::W_CacheLumpName;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
@@ -550,11 +550,9 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    let mut name1: *mut ::core::ffi::c_char =
-        b"FLOOR7_2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    let mut name2: *mut ::core::ffi::c_char =
-        b"GRNROCK\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-    let mut name: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let name1: &str = "FLOOR7_2";
+    let name2: &str = "GRNROCK";
+    let name: &str;
     if state.r_draw.scaledviewwidth == SCREENWIDTH {
         if !state.r_draw.background_buffer.is_null() {
             Z_Free(
@@ -578,7 +576,7 @@ pub unsafe fn R_FillBackScreen(state: &mut GameState) {
     } else {
         name = name1;
     }
-    src = W_CacheLumpName(state, &wad_name8_to_string(name), PU_CACHE as i32) as *mut byte;
+    src = W_CacheLumpName(state, name, PU_CACHE as i32) as *mut byte;
     dest = state.r_draw.background_buffer;
     y = 0 as i32;
     while y < SCREENHEIGHT - SBARHEIGHT {

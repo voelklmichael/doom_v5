@@ -1,5 +1,4 @@
 use crate::src::game_state::GameState;
-use crate::src::m_misc::M_StringCopy;
 use crate::src::sha1::{
     sha1_context_s, sha1_context_t, SHA1_Final, SHA1_Init, SHA1_UpdateInt32, SHA1_UpdateString,
 };
@@ -50,13 +49,10 @@ unsafe fn ChecksumAddLump(
     mut sha1_context: *mut sha1_context_t,
     mut lump: *mut lumpinfo_t,
 ) {
-    let mut buf: [::core::ffi::c_char; 9] = [0; 9];
-    M_StringCopy(
-        &raw mut buf as *mut ::core::ffi::c_char,
-        &raw mut (*lump).name as *mut ::core::ffi::c_char,
-        ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
-    );
-    SHA1_UpdateString(sha1_context, &raw mut buf as *mut ::core::ffi::c_char);
+    let mut buf: [u8; 9] = [0; 9];
+    let name_len = (*lump).name.len();
+    buf[..name_len].copy_from_slice(&(*lump).name.as_bytes()[..name_len]);
+    SHA1_UpdateString(sha1_context, buf.as_mut_ptr() as *mut ::core::ffi::c_char);
     SHA1_UpdateInt32(sha1_context, GetFileNumber(state, (*lump).wad_file) as u32);
     SHA1_UpdateInt32(sha1_context, (*lump).position as u32);
     SHA1_UpdateInt32(sha1_context, (*lump).size as u32);

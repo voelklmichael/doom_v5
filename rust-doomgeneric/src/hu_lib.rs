@@ -58,14 +58,11 @@ pub unsafe fn HUlib_initTextLine(
     (*t).sc = sc;
     HUlib_clearTextLine(t);
 }
-pub unsafe fn HUlib_addCharToTextLine(
-    mut t: *mut hu_textline_t,
-    mut ch: ::core::ffi::c_char,
-) -> boolean {
+pub unsafe fn HUlib_addCharToTextLine(t: *mut hu_textline_t, ch: u8) -> boolean {
     if (*t).l.len() as i32 == HU_MAXLINELENGTH {
         return false_0 as boolean;
     } else {
-        (*t).l.push(ch as u8 as char);
+        (*t).l.push(ch as char);
         (*t).needsupdate = 4 as i32;
         return true_0 as boolean;
     };
@@ -205,14 +202,14 @@ pub unsafe fn HUlib_addMessageToSText(
             HUlib_addCharToTextLine(
                 (&raw mut (*s).l as *mut hu_textline_t).offset((*s).cl as isize)
                     as *mut hu_textline_t,
-                *fresh1,
+                *fresh1 as u8,
             );
         }
     }
     for b in msg.bytes() {
         HUlib_addCharToTextLine(
             (&raw mut (*s).l as *mut hu_textline_t).offset((*s).cl as isize) as *mut hu_textline_t,
-            b as ::core::ffi::c_char,
+            b,
         );
     }
 }
@@ -281,14 +278,14 @@ pub unsafe fn HUlib_resetIText(mut it: *mut hu_itext_t) {
 }
 pub unsafe fn HUlib_addPrefixToIText(it: *mut hu_itext_t, s: &str) {
     for b in s.bytes() {
-        HUlib_addCharToTextLine(&raw mut (*it).l, b as ::core::ffi::c_char);
+        HUlib_addCharToTextLine(&raw mut (*it).l, b);
     }
     (*it).lm = (*it).l.l.len() as i32;
 }
 pub unsafe fn HUlib_keyInIText(mut it: *mut hu_itext_t, mut ch: u8) -> boolean {
     ch = ch.to_ascii_uppercase();
     if ch as i32 >= ' ' as i32 && ch as i32 <= '_' as i32 {
-        HUlib_addCharToTextLine(&raw mut (*it).l, ch as ::core::ffi::c_char);
+        HUlib_addCharToTextLine(&raw mut (*it).l, ch);
     } else if ch as i32 == KEY_BACKSPACE {
         HUlib_delCharFromIText(it);
     } else if ch as i32 != KEY_ENTER {
