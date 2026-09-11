@@ -32,10 +32,9 @@ use crate::src::tables::finesine;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::v_video::V_DrawPatch;
 use crate::src::v_video::V_MarkRect;
-use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_ReleaseLumpName};
+use crate::src::w_wad::{W_CacheLumpName, W_ReleaseLumpName};
 use crate::src::z_zone::PU_STATIC;
 use libc::memset;
-use libc::snprintf;
 
 pub struct AmMapState {
     pub cheating: i32,
@@ -710,36 +709,20 @@ pub unsafe fn AM_initVariables(state: &mut GameState) {
 }
 pub unsafe fn AM_loadPics(state: &mut GameState) {
     let mut i: i32 = 0;
-    let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
     i = 0 as i32;
     while i < 10 as i32 {
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"AMMNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        state.am_map.marknums[i as usize] = W_CacheLumpName(state, 
-            &wad_name8_to_string(&raw mut namebuf as *mut ::core::ffi::c_char),
-            PU_STATIC as i32,
-        ) as *mut patch_t;
+        let namebuf = format!("AMMNUM{}", i);
+        state.am_map.marknums[i as usize] =
+            W_CacheLumpName(state, &namebuf, PU_STATIC as i32) as *mut patch_t;
         i += 1;
     }
 }
 pub unsafe fn AM_unloadPics() {
     let mut i: i32 = 0;
-    let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
     i = 0 as i32;
     while i < 10 as i32 {
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"AMMNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        W_ReleaseLumpName(&wad_name8_to_string(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-        ));
+        let namebuf = format!("AMMNUM{}", i);
+        W_ReleaseLumpName(&namebuf);
         i += 1;
     }
 }

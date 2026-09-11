@@ -39,10 +39,9 @@ use crate::src::v_video::V_DrawPatch;
 use crate::src::v_video::V_DrawPatchFlipped;
 use crate::src::v_video::V_MarkRect;
 use crate::src::w_wad::W_CacheLumpNum;
-use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName};
+use crate::src::w_wad::W_CacheLumpName;
 use crate::src::z_zone::{PU_CACHE, PU_LEVEL};
 use libc::memcpy;
-use libc::snprintf;
 pub type finalestage_t = u32;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;
@@ -921,7 +920,6 @@ pub unsafe fn F_BunnyScroll(state: &mut GameState) {
     let mut x: i32 = 0;
     let mut p1: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
     let mut p2: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    let mut name: [::core::ffi::c_char; 10] = [0; 10];
     let mut stage: i32 = 0;
     p1 = W_CacheLumpName(state, "PFUB2", PU_LEVEL as i32) as *mut patch_t;
     p2 = W_CacheLumpName(state, "PFUB1", PU_LEVEL as i32) as *mut patch_t;
@@ -972,17 +970,8 @@ pub unsafe fn F_BunnyScroll(state: &mut GameState) {
         S_StartSound(state, NULL, sfx_pistol as i32);
         state.f_finale.laststage = stage;
     }
-    snprintf(
-        &raw mut name as *mut ::core::ffi::c_char,
-        10 as size_t,
-        b"END%i\0" as *const u8 as *const ::core::ffi::c_char,
-        stage,
-    );
-    let __wcache990_2 = W_CacheLumpName(
-        state,
-        &wad_name8_to_string(&raw mut name as *mut ::core::ffi::c_char),
-        PU_CACHE as i32,
-    ) as *mut patch_t;
+    let name = format!("END{}", stage);
+    let __wcache990_2 = W_CacheLumpName(state, &name, PU_CACHE as i32) as *mut patch_t;
     V_DrawPatch(state,
         (SCREENWIDTH - 13 as i32 * 8 as i32) / 2 as i32,
         (SCREENHEIGHT - 8 as i32 * 8 as i32) / 2 as i32,
@@ -990,32 +979,28 @@ pub unsafe fn F_BunnyScroll(state: &mut GameState) {
     );
 }
 unsafe fn F_ArtScreenDrawer(state: &mut GameState) {
-    let mut lumpname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let lumpname: &str;
     if state.g_game.gameepisode == 3 as i32 {
         F_BunnyScroll(state);
     } else {
         match state.g_game.gameepisode {
             1 => {
                 if state.doomstat.gamemode as u32 == retail as i32 as u32 {
-                    lumpname = b"CREDIT\0" as *const u8 as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char;
+                    lumpname = "CREDIT";
                 } else {
-                    lumpname = b"HELP2\0" as *const u8 as *const ::core::ffi::c_char
-                        as *mut ::core::ffi::c_char;
+                    lumpname = "HELP2";
                 }
             }
             2 => {
-                lumpname = b"VICTORY2\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                lumpname = "VICTORY2";
             }
             4 => {
-                lumpname = b"ENDPIC\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                lumpname = "ENDPIC";
             }
             _ => return,
         }
-        lumpname = lumpname;
-        let __wcache1026_1 = W_CacheLumpName(state, &wad_name8_to_string(lumpname), PU_CACHE as i32) as *mut patch_t;
+        let __wcache1026_1 =
+            W_CacheLumpName(state, lumpname, PU_CACHE as i32) as *mut patch_t;
         V_DrawPatch(state,
             0 as i32,
             0 as i32,

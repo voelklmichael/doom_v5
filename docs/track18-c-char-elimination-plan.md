@@ -582,6 +582,24 @@ module-level `static mut` — the one genuinely-deferred piece here, see below).
 
 `c_char` references: 558 → 527.
 
+**Phase 19 done** (`c-char-phase19-finale-automap-lumpnames`, PR pending):
+cleared `f_finale.rs` to 0 and `am_map.rs` down to 4 (the remaining 4 are the
+`cheatseq_t`/cheat-input byte-sequence family, deliberately deferred since phase
+2/3 — not string data). Both were the same by-now-familiar
+`snprintf`-into-`[c_char;N]`-buffer-then-`wad_name8_to_string` pattern:
+`F_BunnyScroll`'s `END{n}` end-of-episode-sequence frame numbers, `am_map.rs`'s
+`AMMNUM{n}` automap marker-digit font (`AM_loadPics`/`AM_unloadPics`), and two
+lumpname-selection-by-branching locals (`f_finale.rs`'s `F_ArtScreenDrawer`,
+matching the exact `M_DrawReadThis1`/`skytexturename` shape phases 15/17 already
+handled) — all replaced with `format!`/plain `&str` literals. Verified beyond
+the standard bar: screenshot-confirmed the automap renders correctly (title,
+level geometry); `AM_loadPics` preloading the `AMMNUM0`-`9` patches without
+throwing `W_CacheLumpName`'s `I_Error` on a bad lump name is itself a real
+end-to-end check, since a wrong name there would have panicked immediately at
+automap-init time, not silently misbehaved.
+
+`c_char` references: 527 → 505.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
@@ -594,7 +612,7 @@ genuine variadic C-ABI printf reimplementations still used by many buffer-buildi
 call sites across the codebase, a structural piece rather than a simple field
 conversion — replacing these would mean auditing and converting every one of their
 callers, a much larger undertaking than a bounded field-conversion phase). Each
-needs the same per-cluster triage phases 10-18 used (is it a lumpname-shaped const
+needs the same per-cluster triage phases 10-19 used (is it a lumpname-shaped const
 table, an always-null/always-dead field or function, a local scratch buffer, a
 cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
 callback-type hub, a small widely-called name-resolution function trio, an
