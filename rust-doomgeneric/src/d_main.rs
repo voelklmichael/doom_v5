@@ -110,7 +110,7 @@ use crate::src::wi_stuff::WI_Drawer;
 use crate::src::z_zone::Z_Init;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::{exit, printf, snprintf};
+use libc::{exit, snprintf};
 
 pub struct DMainState {
     pub savegamedir: *mut ::core::ffi::c_char,
@@ -571,9 +571,8 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
             || state.g_game.gameaction as u32 == ga_playdemo as i32 as u32
             || state.g_game.netgame)
     {
-        printf(
-            b" WARNING: You are playing using one of the Doom Classic\n IWAD files shipped with the Doom 3: BFG Edition. These are\n known to be incompatible with the regular IWAD files and\n may cause demos and network games to get out of sync.\n\0"
-                as *const u8 as *const ::core::ffi::c_char,
+        println!(
+            " WARNING: You are playing using one of the Doom Classic\n IWAD files shipped with the Doom 3: BFG Edition. These are\n known to be incompatible with the regular IWAD files and\n may cause demos and network games to get out of sync."
         );
     }
     if state.g_game.demorecording {
@@ -800,15 +799,15 @@ unsafe fn SetMissionForPackName(state: &mut GameState, mut pack_name: *mut ::cor
         }
         i += 1;
     }
-    printf(b"Valid mission packs are:\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("Valid mission packs are:");
     i = 0 as i32;
     while (i as usize)
         < (::core::mem::size_of::<[C2RustUnnamed_3; 3]>() as usize)
             .wrapping_div(::core::mem::size_of::<C2RustUnnamed_3>() as usize)
     {
-        printf(
-            b"\t%s\n\0" as *const u8 as *const ::core::ffi::c_char,
-            packs[i as usize].name,
+        println!(
+            "\t{}",
+            ::std::ffi::CStr::from_ptr(packs[i as usize].name).to_string_lossy()
         );
         i += 1;
     }
@@ -974,9 +973,9 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
 pub static title: [::core::ffi::c_char; 128] = [0; 128];
 unsafe fn D_AddFile(mut filename: *mut ::core::ffi::c_char) -> bool {
     let mut handle: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
-    printf(
-        b" adding %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-        filename,
+    println!(
+        " adding {}",
+        ::std::ffi::CStr::from_ptr(filename).to_string_lossy()
     );
     handle = W_AddFile(filename);
     return handle != NULL as *mut wad_file_t;
@@ -992,13 +991,9 @@ pub unsafe fn PrintDehackedBanners() {
     while i < copyright_banners.len() as size_t {
         let deh_s_str: &str = copyright_banners[i as usize];
         if deh_s_str != copyright_banners[i as usize] {
-            let deh_s_cstring = ::std::ffi::CString::new(deh_s_str).unwrap();
-            let deh_s: *mut ::core::ffi::c_char =
-                deh_s_cstring.as_ptr() as *mut ::core::ffi::c_char;
-            printf(b"%s\0" as *const u8 as *const ::core::ffi::c_char, deh_s);
-            if *deh_s.offset(::std::ffi::CStr::from_ptr(deh_s as *const ::core::ffi::c_char).to_bytes().len().wrapping_sub(1 as size_t) as isize) as i32 != '\n' as i32
-            {
-                printf(b"\n\0" as *const u8 as *const ::core::ffi::c_char);
+            print!("{}", deh_s_str);
+            if !deh_s_str.ends_with('\n') {
+                println!();
             }
         }
         i = i.wrapping_add(1);
@@ -1022,13 +1017,15 @@ unsafe fn InitGameVersion(state: &mut GameState) {
             }
         }
         if state.d_main.gameversions[i as usize].description.is_null() {
-            printf(b"Supported game versions:\n\0" as *const u8 as *const ::core::ffi::c_char);
+            println!("Supported game versions:");
             i = 0 as i32;
             while !state.d_main.gameversions[i as usize].description.is_null() {
-                printf(
-                    b"\t%s (%s)\n\0" as *const u8 as *const ::core::ffi::c_char,
-                    state.d_main.gameversions[i as usize].cmdline,
-                    state.d_main.gameversions[i as usize].description,
+                println!(
+                    "\t{} ({})",
+                    ::std::ffi::CStr::from_ptr(state.d_main.gameversions[i as usize].cmdline)
+                        .to_string_lossy(),
+                    ::std::ffi::CStr::from_ptr(state.d_main.gameversions[i as usize].description)
+                        .to_string_lossy()
                 );
                 i += 1;
             }
@@ -1074,10 +1071,10 @@ pub unsafe fn PrintGameVersion(state: &mut GameState) {
     i = 0 as i32;
     while !state.d_main.gameversions[i as usize].description.is_null() {
         if state.d_main.gameversions[i as usize].version == state.doomstat.gameversion {
-            printf(
-                b"Emulating the behavior of the '%s' executable.\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-                state.d_main.gameversions[i as usize].description,
+            println!(
+                "Emulating the behavior of the '{}' executable.",
+                ::std::ffi::CStr::from_ptr(state.d_main.gameversions[i as usize].description)
+                    .to_string_lossy()
             );
             break;
         } else {
@@ -1101,10 +1098,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
     I_AtExit(&mut state.i_system, Some(D_Endoom as unsafe extern "C" fn(&mut GameState) -> ()), false);
     I_PrintBanner(PACKAGE_STRING.as_ptr() as *mut ::core::ffi::c_char);
-    printf(
-        b"Z_Init: Init zone memory allocation daemon. \n\0" as *const u8
-            as *const ::core::ffi::c_char,
-    );
+    println!("Z_Init: Init zone memory allocation daemon. ");
     Z_Init(state);
     state.d_main.nomonsters = M_CheckParm(state, "-nomonsters") != 0;
     state.d_main.respawnparm = M_CheckParm(state, "-respawn") != 0;
@@ -1117,7 +1111,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.g_game.deathmatch = 2 as i32;
     }
     if state.d_main.devparm {
-        printf(D_DEVSTR.as_ptr() as *const ::core::ffi::c_char);
+        print!("{}", D_DEVSTR.as_str());
     }
     M_SetConfigDir(
         &mut state.m_config,
@@ -1136,10 +1130,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         if scale > 400 as i32 {
             scale = 400 as i32;
         }
-        printf(
-            b"turbo scale: %i%%\n\0" as *const u8 as *const ::core::ffi::c_char,
-            scale,
-        );
+        println!("turbo scale: {}%", scale);
         state.g_game.forwardmove[0 as i32 as usize] =
             state.g_game.forwardmove[0 as i32 as usize] * scale / 100 as i32;
         state.g_game.forwardmove[1 as i32 as usize] =
@@ -1149,8 +1140,8 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         state.g_game.sidemove[1 as i32 as usize] =
             state.g_game.sidemove[1 as i32 as usize] * scale / 100 as i32;
     }
-    printf(b"V_Init: allocate screens.\n\0" as *const u8 as *const ::core::ffi::c_char);
-    printf(b"M_LoadDefaults: Load system defaults.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("V_Init: allocate screens.");
+    println!("M_LoadDefaults: Load system defaults.");
     M_SetConfigFilenames(
         &mut state.m_config,
         b"default.cfg\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
@@ -1178,16 +1169,13 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         );
     }
     state.doomstat.modifiedgame = false;
-    printf(b"W_Init: Init WADfiles.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("W_Init: Init WADfiles.");
     D_AddFile(state.d_main.iwadfile);
     W_CheckCorrectIWAD(doom);
     D_IdentifyVersion(state);
     InitGameVersion(state);
     if W_CheckNumForName("dmenupic") >= 0 as i32 {
-        printf(
-            b"BFG Edition: Using workarounds as needed.\n\0" as *const u8
-                as *const ::core::ffi::c_char,
-        );
+        println!("BFG Edition: Using workarounds as needed.");
         state.d_main.bfgedition = true;
     }
     let modifiedgame = W_ParseCommandLine(state);
@@ -1233,9 +1221,10 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
                 ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
             );
         }
-        printf(
-            b"Playing demo %s.\n\0" as *const u8 as *const ::core::ffi::c_char,
-            &raw mut file as *mut ::core::ffi::c_char,
+        println!(
+            "Playing demo {}.",
+            ::std::ffi::CStr::from_ptr(&raw mut file as *mut ::core::ffi::c_char)
+                .to_string_lossy()
         );
     }
     I_AtExit(
@@ -1296,21 +1285,19 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     if W_CheckNumForName("SS_START") >= 0 as i32 || W_CheckNumForName("FF_END") >= 0 as i32 {
         I_PrintDivider();
-        printf(
-            b" WARNING: The loaded WAD file contains modified sprites or\n floor textures.  You may want to use the '-merge' command\n line option instead of '-file'.\n\0"
-                as *const u8 as *const ::core::ffi::c_char,
+        println!(
+            " WARNING: The loaded WAD file contains modified sprites or\n floor textures.  You may want to use the '-merge' command\n line option instead of '-file'."
         );
     }
     I_PrintStartupBanner(state.doomstat.gamedescription);
     PrintDehackedBanners();
     if W_CheckNumForName("FREEDOOM") >= 0 as i32 && W_CheckNumForName("FREEDM") < 0 as i32 {
-        printf(
-            b" WARNING: You are playing using one of the Freedoom IWAD\n files, which might not work in this port. See this page\n for more information on how to play using Freedoom:\n   http://www.chocolate-doom.org/wiki/index.php/Freedoom\n\0"
-                as *const u8 as *const ::core::ffi::c_char,
+        println!(
+            " WARNING: You are playing using one of the Freedoom IWAD\n files, which might not work in this port. See this page\n for more information on how to play using Freedoom:\n   http://www.chocolate-doom.org/wiki/index.php/Freedoom"
         );
         I_PrintDivider();
     }
-    printf(b"I_Init: Setting up machine state.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("I_Init: Setting up machine state.");
     I_InitSound(state, true);
     I_InitMusic(&mut state.i_sound);
     D_ConnectNetGame(state);
@@ -1388,27 +1375,25 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     } else {
         state.d_main.startloadgame = -(1 as i32);
     }
-    printf(b"M_Init: Init miscellaneous info.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("M_Init: Init miscellaneous info.");
     M_Init(state);
-    printf(b"R_Init: Init DOOM refresh daemon - \0" as *const u8 as *const ::core::ffi::c_char);
+    print!("R_Init: Init DOOM refresh daemon - ");
     R_Init(state);
-    printf(b"\nP_Init: Init Playloop state.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!();
+    println!("P_Init: Init Playloop state.");
     P_Init(state);
-    printf(b"S_Init: Setting up sound.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("S_Init: Setting up sound.");
     S_Init(
         state,
         state.s_sound.sfxVolume * 8 as i32,
         state.s_sound.musicVolume * 8 as i32,
     );
-    printf(
-        b"D_CheckNetGame: Checking network game status.\n\0" as *const u8
-            as *const ::core::ffi::c_char,
-    );
+    println!("D_CheckNetGame: Checking network game status.");
     D_CheckNetGame(state);
     PrintGameVersion(state);
-    printf(b"HU_Init: Setting up heads up display.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("HU_Init: Setting up heads up display.");
     HU_Init(state);
-    printf(b"ST_Init: Init status bar.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("ST_Init: Init status bar.");
     ST_Init(state);
     if state.doomstat.gamemode as u32 == commercial as i32 as u32
         && W_CheckNumForName("map01") < 0 as i32
@@ -1417,7 +1402,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     if M_CheckParmWithArgs(state, "-statdump", 1 as i32) != 0 {
         I_AtExit(&mut state.i_system, Some(StatDump as unsafe extern "C" fn(&mut GameState) -> ()), true);
-        printf(b"External statistics registered.\n\0" as *const u8 as *const ::core::ffi::c_char);
+        println!("External statistics registered.");
     }
     p = M_CheckParmWithArgs(state, "-record", 1 as i32);
     if p != 0 {

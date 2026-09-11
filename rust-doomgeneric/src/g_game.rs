@@ -116,7 +116,6 @@ use crate::src::z_zone::Z_CheckHeap;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use libc::printf;
 use libc::{memcpy, memset};
 
 pub struct GGameState {
@@ -2103,13 +2102,11 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
     } else if demoversion == DOOM_191_VERSION {
         state.g_game.longtics = true;
     } else {
-        let mut message: *mut ::core::ffi::c_char = b"Demo is from a different game version!\n(read %i, should be %i)\n\n*** You may need to upgrade your version of Doom to v1.9. ***\n    See: https://www.doomworld.com/classicdoom/info/patches.php\n    This appears to be %s.\0"
-            as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
-        printf(
-            message,
+        println!(
+            "Demo is from a different game version!\n(read {}, should be {})\n\n*** You may need to upgrade your version of Doom to v1.9. ***\n    See: https://www.doomworld.com/classicdoom/info/patches.php\n    This appears to be {}.",
             demoversion,
             G_VanillaVersionCode(&mut state.doomstat),
-            DemoVersionDescription(state, demoversion),
+            ::std::ffi::CStr::from_ptr(DemoVersionDescription(state, demoversion)).to_string_lossy(),
         );
     }
     let fresh25 = state.g_game.demo_p;

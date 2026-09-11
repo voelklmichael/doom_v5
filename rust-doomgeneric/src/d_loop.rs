@@ -18,7 +18,6 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::sha1::sha1_digest_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use libc::printf;
 use libc::{memcpy, memset};
 
 pub struct DLoopState {
@@ -224,7 +223,7 @@ unsafe fn D_Disconnected() {
     if drone {
         I_Error("Disconnected from server in drone mode.");
     }
-    printf(b"Disconnected from server.\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("Disconnected from server.");
 }
 pub unsafe fn D_ReceiveTic(mut ticcmds: *mut ticcmd_t, mut players_mask: *mut boolean) {
     let mut i: i32 = 0;

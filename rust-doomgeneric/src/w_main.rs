@@ -2,7 +2,6 @@ use crate::src::d_iwad::D_TryFindWADByName;
 use crate::src::game_state::GameState;
 use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::w_wad::W_AddFile;
-use libc::printf;
 
 pub unsafe fn W_ParseCommandLine(state: &mut GameState) -> bool {
     let mut modifiedgame: bool = false;
@@ -23,9 +22,9 @@ pub unsafe fn W_ParseCommandLine(state: &mut GameState) -> bool {
                 &mut state.d_iwad,
                 state.m_argv.myargv[p as usize].as_ptr() as *mut ::core::ffi::c_char,
             );
-            printf(
-                b" adding %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-                filename,
+            println!(
+                " adding {}",
+                ::std::ffi::CStr::from_ptr(filename).to_string_lossy(),
             );
             W_AddFile(filename);
         }

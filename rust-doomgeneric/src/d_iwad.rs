@@ -7,7 +7,6 @@ use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::M_CheckParmWithArgs;
 use crate::src::m_misc::M_FileExists;
-use libc::printf;
 #[derive(Copy, Clone)]
 pub struct iwad_t {
     pub name: &'static str,
@@ -141,11 +140,7 @@ unsafe fn check_directory_has_iwad(dir: &str, iwadname: &str) -> Option<String> 
     } else {
         format!("{}{}{}", dir, DIR_SEPARATOR_S, iwadname)
     };
-    let filename_cstring = ::std::ffi::CString::new(filename.as_str()).unwrap();
-    printf(
-        b"Trying IWAD file:%s\n\0" as *const u8 as *const ::core::ffi::c_char,
-        filename_cstring.as_ptr(),
-    );
+    println!("Trying IWAD file:{}", filename);
     if file_exists(&filename) {
         Some(filename)
     } else {
@@ -240,10 +235,7 @@ pub unsafe fn D_FindIWAD(
             identify_iwad_by_name(::std::ffi::CStr::from_ptr(result).to_str().unwrap(), mask);
         result
     } else {
-        printf(
-            b"-iwad not specified, trying a few iwad names\n\0" as *const u8
-                as *const ::core::ffi::c_char,
-        );
+        println!("-iwad not specified, trying a few iwad names");
         build_iwad_dir_list(&mut state.d_iwad);
         for dir in state.d_iwad.iwad_dirs.iter() {
             if let Some(found) = search_directory_for_iwad(dir, mask, mission) {

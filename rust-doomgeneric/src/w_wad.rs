@@ -18,7 +18,7 @@ use crate::src::z_zone::Z_ChangeUser;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::{free, printf};
+use libc::free;
 use libc::{memcpy, memset};
 
 pub struct WWadState {
@@ -140,10 +140,7 @@ pub unsafe fn W_AddFile(mut filename: *mut ::core::ffi::c_char) -> *mut wad_file
     let mut newnumlumps: i32 = 0;
     wad_file = W_OpenFile(unsafe { game_state() }, filename);
     if wad_file.is_null() {
-        printf(
-            b" couldn't open %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-            filename,
-        );
+        println!(" couldn't open {}", ::std::ffi::CStr::from_ptr(filename).to_string_lossy());
         return ::core::ptr::null_mut::<wad_file_t>();
     }
     newnumlumps = unsafe { game_state() }.w_wad.numlumps as i32;

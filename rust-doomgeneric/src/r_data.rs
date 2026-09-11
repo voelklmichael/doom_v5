@@ -24,7 +24,6 @@ use crate::src::z_zone::Z_ChangeTag2;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::printf;
 use libc::{memcpy, memset};
 
 pub struct RDataState {
@@ -289,10 +288,9 @@ pub unsafe fn R_GenerateLookup(state: &mut GameState, mut texnum: i32) {
     x = 0 as i32;
     while x < (*texture).width as i32 {
         if *patchcount.offset(x as isize) == 0 {
-            printf(
-                b"R_GenerateLookup: column without a patch (%s)\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-                &raw mut (*texture).name as *mut ::core::ffi::c_char,
+            println!(
+                "R_GenerateLookup: column without a patch ({})",
+                (*texture).name.as_str(),
             );
             return;
         }
@@ -477,23 +475,23 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     temp3 = (temp2 - temp1 + 63 as i32) / 64 as i32
         + (state.r_data.numtextures + 63 as i32) / 64 as i32;
     if I_ConsoleStdout() {
-        printf(b"[\0" as *const u8 as *const ::core::ffi::c_char);
+        print!("[");
         i = 0 as i32;
         while i < temp3 + 9 as i32 {
-            printf(b" \0" as *const u8 as *const ::core::ffi::c_char);
+            print!(" ");
             i += 1;
         }
-        printf(b"]\0" as *const u8 as *const ::core::ffi::c_char);
+        print!("]");
         i = 0 as i32;
         while i < temp3 + 10 as i32 {
-            printf(b"\x08\0" as *const u8 as *const ::core::ffi::c_char);
+            print!("\x08");
             i += 1;
         }
     }
     i = 0 as i32;
     while i < state.r_data.numtextures {
         if i & 63 as i32 == 0 {
-            printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+            print!(".");
         }
         if i == numtextures1 {
             maptex = maptex2;
@@ -637,7 +635,7 @@ pub unsafe fn R_InitSpriteLumps(state: &mut GameState) {
     i = 0 as i32;
     while i < state.r_data.numspritelumps {
         if i & 63 as i32 == 0 {
-            printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+            print!(".");
         }
         patch = W_CacheLumpNum(state, state.r_data.firstspritelump + i, PU_CACHE as i32) as *mut patch_t;
         *state.r_data.spritewidth.offset(i as isize) =
@@ -656,11 +654,11 @@ pub unsafe fn R_InitColormaps(state: &mut GameState) {
 }
 pub unsafe fn R_InitData(state: &mut GameState) {
     R_InitTextures(state);
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+    print!(".");
     R_InitFlats(state);
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+    print!(".");
     R_InitSpriteLumps(state);
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+    print!(".");
     R_InitColormaps(state);
 }
 pub unsafe fn R_FlatNumForName(state: &mut RDataState, mut name: *mut ::core::ffi::c_char) -> i32 {

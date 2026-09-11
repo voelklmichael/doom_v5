@@ -18,7 +18,6 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use ::c2rust_bitfields;
-use libc::printf;
 use libc::{memcpy, memset};
 
 pub struct IVideoState {
@@ -234,18 +233,16 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
             ::std::ffi::CStr::from_ptr(mode).to_str().unwrap(),
         ));
     }
-    printf(
-        b"I_InitGraphics: framebuffer: x_res: %d, y_res: %d, x_virtual: %d, y_virtual: %d, bpp: %d\n\0"
-            as *const u8 as *const ::core::ffi::c_char,
+    println!(
+        "I_InitGraphics: framebuffer: x_res: {}, y_res: {}, x_virtual: {}, y_virtual: {}, bpp: {}",
         state.i_video.s_Fb.xres,
         state.i_video.s_Fb.yres,
         state.i_video.s_Fb.xres_virtual,
         state.i_video.s_Fb.yres_virtual,
         state.i_video.s_Fb.bits_per_pixel,
     );
-    printf(
-        b"I_InitGraphics: framebuffer: RGBA: %d%d%d%d, red_off: %d, green_off: %d, blue_off: %d, transp_off: %d\n\0"
-            as *const u8 as *const ::core::ffi::c_char,
+    println!(
+        "I_InitGraphics: framebuffer: RGBA: {}{}{}{}, red_off: {}, green_off: {}, blue_off: {}, transp_off: {}",
         state.i_video.s_Fb.red.length,
         state.i_video.s_Fb.green.length,
         state.i_video.s_Fb.blue.length,
@@ -255,20 +252,15 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
         state.i_video.s_Fb.blue.offset,
         state.i_video.s_Fb.transp.offset,
     );
-    printf(
-        b"I_InitGraphics: DOOM screen size: w x h: %d x %d\n\0" as *const u8
-            as *const ::core::ffi::c_char,
-        SCREENWIDTH,
-        SCREENHEIGHT,
+    println!(
+        "I_InitGraphics: DOOM screen size: w x h: {} x {}",
+        SCREENWIDTH, SCREENHEIGHT,
     );
     i = M_CheckParmWithArgs(state, "-scaling", 1 as i32);
     if i > 0 as i32 {
         i = M_ArgvAtoi(&state.m_argv.myargv[(i + 1 as i32) as usize]);
         state.i_video.fb_scaling = i;
-        printf(
-            b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8 as *const ::core::ffi::c_char,
-            state.i_video.fb_scaling,
-        );
+        println!("I_InitGraphics: Scaling factor: {}", state.i_video.fb_scaling);
     } else {
         state.i_video.fb_scaling = state
             .i_video
@@ -289,11 +281,7 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
                 .wrapping_div(SCREENHEIGHT as uint32_t)
                 as i32;
         }
-        printf(
-            b"I_InitGraphics: Auto-scaling factor: %d\n\0" as *const u8
-                as *const ::core::ffi::c_char,
-            state.i_video.fb_scaling,
-        );
+        println!("I_InitGraphics: Auto-scaling factor: {}", state.i_video.fb_scaling);
     }
     state.i_video.I_VideoBuffer = Z_Malloc(
         &mut state.z_zone,
@@ -418,7 +406,7 @@ pub unsafe fn I_GetPaletteIndex(mut r: i32, mut g: i32, mut b: i32) -> i32 {
     let mut diff: i32 = 0;
     let mut i: i32 = 0;
     let mut color: col_t = col_t { r: 0, g: 0, b: 0 };
-    printf(b"I_GetPaletteIndex\n\0" as *const u8 as *const ::core::ffi::c_char);
+    println!("I_GetPaletteIndex");
     best = 0 as i32;
     best_diff = INT_MAX;
     i = 0 as i32;

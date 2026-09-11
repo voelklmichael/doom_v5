@@ -37,7 +37,7 @@ use crate::src::m_misc::M_MakeDirectory;
 use crate::src::m_misc::M_StringJoin;
 use crate::src::m_misc::M_StrToInt;
 use crate::src::stdint_types::size_t;
-use libc::{malloc, printf};
+use libc::malloc;
 use libc::strdup;
 
 extern "C" {
@@ -1890,9 +1890,9 @@ pub unsafe fn M_LoadDefaults(state: &mut GameState) {
     if i != 0 {
         state.m_config.doom_defaults.filename =
             state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
-        printf(
-            b"\tdefault file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-            state.m_config.doom_defaults.filename,
+        println!(
+            "\tdefault file: {}",
+            ::std::ffi::CStr::from_ptr(state.m_config.doom_defaults.filename).to_string_lossy(),
         );
     } else {
         state.m_config.doom_defaults.filename = M_StringJoin(
@@ -1901,17 +1901,17 @@ pub unsafe fn M_LoadDefaults(state: &mut GameState) {
             NULL,
         );
     }
-    printf(
-        b"saving config in %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-        state.m_config.doom_defaults.filename,
+    println!(
+        "saving config in {}",
+        ::std::ffi::CStr::from_ptr(state.m_config.doom_defaults.filename).to_string_lossy(),
     );
     i = M_CheckParmWithArgs(state, "-extraconfig", 1 as i32);
     if i != 0 {
         state.m_config.extra_defaults.filename =
             state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char;
-        printf(
-            b"        extra configuration file: %s\n\0" as *const u8 as *const ::core::ffi::c_char,
-            state.m_config.extra_defaults.filename,
+        println!(
+            "        extra configuration file: {}",
+            ::std::ffi::CStr::from_ptr(state.m_config.extra_defaults.filename).to_string_lossy(),
         );
     } else {
         state.m_config.extra_defaults.filename = M_StringJoin(
@@ -2003,9 +2003,9 @@ pub unsafe fn M_SetConfigDir(state: &mut MConfigState, mut dir: *mut ::core::ffi
     }
     if !::std::ffi::CStr::from_ptr(state.configdir).to_bytes().is_empty()
     {
-        printf(
-            b"Using %s for configuration and saves\n\0" as *const u8 as *const ::core::ffi::c_char,
-            state.configdir,
+        println!(
+            "Using {} for configuration and saves",
+            ::std::ffi::CStr::from_ptr(state.configdir).to_string_lossy(),
         );
     }
     M_MakeDirectory(state.configdir);
@@ -2025,9 +2025,9 @@ pub unsafe fn M_GetSaveGameDir(
             NULL,
         );
         M_MakeDirectory(savegamedir);
-        printf(
-            b"Using %s for savegames\n\0" as *const u8 as *const ::core::ffi::c_char,
-            savegamedir,
+        println!(
+            "Using {} for savegames",
+            ::std::ffi::CStr::from_ptr(savegamedir).to_string_lossy(),
         );
     }
     return savegamedir;

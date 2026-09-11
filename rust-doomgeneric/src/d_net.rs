@@ -15,7 +15,6 @@ use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::w_checksum::W_Checksum;
 use crate::src::w_wad::W_CheckNumForName;
-use libc::printf;
 
 use crate::src::d_main::D_ProcessEvents;
 use crate::src::doomdef::false_0;
@@ -98,9 +97,8 @@ unsafe fn LoadGameSettings(state: &mut GameState, mut settings: *mut net_gameset
     state.g_game.timelimit = (*settings).timelimit;
     state.g_game.consoleplayer = (*settings).consoleplayer;
     if state.g_game.lowres_turn {
-        printf(
-            b"NOTE: Turning resolution is reduced; this is probably because there is a client recording a Vanilla demo.\n\0"
-                as *const u8 as *const ::core::ffi::c_char,
+        println!(
+            "NOTE: Turning resolution is reduced; this is probably because there is a client recording a Vanilla demo."
         );
     }
     i = 0 as u32;
@@ -188,35 +186,28 @@ pub unsafe fn D_CheckNetGame(state: &mut GameState) {
     SaveGameSettings(state, &raw mut settings);
     D_StartNetGame(state, &raw mut settings, None);
     LoadGameSettings(state, &raw mut settings);
-    printf(
-        b"startskill %i  deathmatch: %i  startmap: %i  startepisode: %i\n\0" as *const u8
-            as *const ::core::ffi::c_char,
+    println!(
+        "startskill {}  deathmatch: {}  startmap: {}  startepisode: {}",
         state.d_main.startskill as i32,
         state.g_game.deathmatch,
         state.d_main.startmap,
         state.d_main.startepisode,
     );
-    printf(
-        b"player %i of %i (%i nodes)\n\0" as *const u8 as *const ::core::ffi::c_char,
+    println!(
+        "player {} of {} ({} nodes)",
         state.g_game.consoleplayer + 1 as i32,
         settings.num_players,
         settings.num_players,
     );
     if state.g_game.timelimit > 0 as i32 && state.g_game.deathmatch != 0 {
         if state.g_game.timelimit == 20 as i32 && M_CheckParm(state, "-avg") != 0 {
-            printf(
-                b"Austin Virtual Gaming: Levels will end after 20 minutes\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            println!("Austin Virtual Gaming: Levels will end after 20 minutes");
         } else {
-            printf(
-                b"Levels will end after %d minute\0" as *const u8 as *const ::core::ffi::c_char,
-                state.g_game.timelimit,
-            );
+            print!("Levels will end after {} minute", state.g_game.timelimit);
             if state.g_game.timelimit > 1 as i32 {
-                printf(b"s\0" as *const u8 as *const ::core::ffi::c_char);
+                print!("s");
             }
-            printf(b".\n\0" as *const u8 as *const ::core::ffi::c_char);
+            println!(".");
         }
     }
 }

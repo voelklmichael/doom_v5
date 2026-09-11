@@ -40,7 +40,6 @@ use crate::src::tables::ANG270;
 use crate::src::tables::ANG90;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::tables::FINEANGLES;
-use libc::printf;
 
 pub struct RMainState {
     pub viewangleoffset: i32,
@@ -491,16 +490,16 @@ pub unsafe fn R_ExecuteSetViewSize(state: &mut GameState) {
 }
 pub unsafe fn R_Init(state: &mut GameState) {
     R_InitData(state);
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+    print!(".");
+    print!(".");
     let (screenblocks, detail_level) = (state.m_menu.screenblocks, state.m_menu.detailLevel);
     R_SetViewSize(state, screenblocks, detail_level);
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+    print!(".");
     R_InitLightTables(state);
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+    print!(".");
     R_InitSkyMap(state);
     R_InitTranslationTables(state);
-    printf(b".\0" as *const u8 as *const ::core::ffi::c_char);
+    print!(".");
     state.r_main.framecount = 0 as i32;
 }
 pub unsafe fn R_PointInSubsector(

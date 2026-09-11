@@ -10,7 +10,7 @@ use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memset;
-use libc::{malloc, printf};
+use libc::malloc;
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -163,11 +163,10 @@ pub unsafe fn M_ExtractFileBase(
     memset(dest as *mut ::core::ffi::c_void, 0 as i32, 8 as size_t);
     while *src as i32 != '\0' as i32 && *src as i32 != '.' as i32 {
         if length >= 8 as i32 {
-            printf(
-                b"Warning: Truncated '%s' lump name to '%.8s'.\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-                filename,
-                dest,
+            println!(
+                "Warning: Truncated '{}' lump name to '{:.8}'.",
+                ::std::ffi::CStr::from_ptr(filename).to_string_lossy(),
+                ::std::ffi::CStr::from_ptr(dest).to_string_lossy(),
             );
             break;
         } else {

@@ -27,7 +27,7 @@ use crate::src::w_wad::{
 };
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use libc::{printf, snprintf};
+use libc::snprintf;
 
 pub struct WiStuffState {
     pub anims: [*mut anim_t; 4],
@@ -975,10 +975,7 @@ pub unsafe fn WI_drawOnLnode(state: &mut GameState, mut n: i32, mut c: *mut *mut
             *c.offset(i as isize),
         );
     } else {
-        printf(
-            b"Could not place patch on level %d\0" as *const u8 as *const ::core::ffi::c_char,
-            n + 1 as i32,
-        );
+        print!("Could not place patch on level {}", n + 1 as i32);
     };
 }
 pub unsafe fn WI_initAnimatedBack(state: &mut GameState) {

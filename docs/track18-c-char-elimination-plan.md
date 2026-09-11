@@ -90,22 +90,28 @@ matching every prior track's experience):
 
 ## Status
 
-As of phase 7 (2026-09-11): `c_char` references down from 2262 to 1882 (17%
+As of phase 9 (2026-09-11): `c_char` references down from 2262 to 1793 (21%
 reduction). Every libc string/char function is now gone except 2 `strncasecmp` and 2
-`strdup` sites, both deliberately deferred (see phase 2/3 notes below) — the ~100
-`printf`/`fprintf`/`vfprintf`/`puts` calls are the next major chunk, untouched so far.
+`strdup` sites, both deliberately deferred (see phase 2/3 notes below). The
+`printf`/`fprintf`/`vfprintf`/`puts`/`putchar` family is now fully converted: every
+live call site across the codebase uses `print!`/`println!`/`eprint!`/`eprintln!`;
+the only `printf`/`fprintf` calls left (19 sites: 11 in `z_zone.rs`'s
+`Z_DumpHeap`/`Z_FileDumpHeap`, 5 in `i_scale.rs`'s stretch-table cluster, 2 in
+`memio.rs`'s MEMFILE module, plus `i_system.rs`'s `fprintf` extern declaration which
+`z_zone.rs` still legitimately uses) are confirmed dead code (zero callers each,
+verified by full-codebase grep) and left untouched per this track's "leave dead code
+alone" precedent.
 `FixedCStr<N>` (phase 4) is now the established, working pattern for every
 WAD-lumpname-family field found across `w_wad.rs`/`r_data.rs`/`sounds.rs`/
 `p_switch.rs`/`p_spec.rs`/`d_main.rs`/`hu_stuff.rs`/`m_menu.rs`/`p_setup.rs`. Remaining
-known work: `printf`-family conversion (phase 8+, the big remaining chunk), the local
-`[c_char; N]` scratch/formatting buffers this track deliberately skipped throughout
-(lower value than struct fields — revisit only if they start blocking something),
-`memcpy`/`memset`/`memmove` (74 sites, not yet assessed — likely mostly legitimate
-raw-buffer operations rather than string-shaped, needs per-site triage before deciding
-scope), and the general `*mut`/`*const c_char` pointer sweep the plan's phase 5
-describes (much of it may already be resolved as a side effect of phases 4/6/7's
-struct-field conversions — re-survey before scoping that phase rather than trusting
-the original 1369-count estimate).
+known work: the local `[c_char; N]` scratch/formatting buffers this track
+deliberately skipped throughout (lower value than struct fields — revisit only if
+they start blocking something), `memcpy`/`memset`/`memmove` (74 sites, not yet
+assessed — likely mostly legitimate raw-buffer operations rather than string-shaped,
+needs per-site triage before deciding scope), and the general `*mut`/`*const c_char`
+pointer sweep the plan's phase 5 describes (much of it may already be resolved as a
+side effect of phases 4/6/7/9's struct-field and printf conversions — re-survey
+before scoping that phase rather than trusting the original 1369-count estimate).
 
 **Phase 1 done** (`c-char-phase1-toupper-tolower`, PR #275): `toupper`/`tolower`
 eliminated everywhere, including collapsing several c2rust glibc-macro-expansion
@@ -160,5 +166,40 @@ WAD-lumpname family found in a file outside phase 4's original sweep. Confirmed 
 the runtime `side_t` struct that these names are purely transient (resolved to `i16`
 indices during level load, never kept as strings).
 
-Next candidate: phase 8, the `printf`/`fprintf`/`vfprintf`/`puts` family (~104 sites)
-— per decision 2, in scope for this track, not deferred separately.
+**Phase 8 done** (`c-char-phase8-fprintf-puts-putchar`, PR #282): first half of the
+printf-family phase. `fprintf`: all 13 live call sites wrote to stderr, converted to
+`eprintln!`/`eprint!` (one exception, `am_map.rs`'s debug counter, uses `\r` not `\n`
+so became `eprint!` to preserve the in-place-overwrite behavior); `z_zone.rs`'s
+`Z_FileDumpHeap` left untouched (dead code, zero callers). `puts`/`putchar`:
+`i_system.rs`'s `I_PrintBanner`/`I_PrintDivider`/`I_PrintStartupBanner` converted to
+`print!`/`println!`, including their embedded `printf` calls (`%p`/`%x` zone-memory
+line, literal license-text block). `i_scale.rs`'s 2 `puts("")` calls left alone (dead
+code). Removed a fully dead `vfprintf` extern declaration.
+
+**Phase 9 done** (`c-char-phase9-printf-sweep`, PR pending): second half — the
+remaining ~90 plain `printf` call sites across `r_main.rs`, `r_data.rs`, `w_main.rs`,
+`w_wad.rs`, `d_net.rs`, `d_iwad.rs`, `d_loop.rs`, `i_video.rs`, `g_game.rs`,
+`wi_stuff.rs`, `m_misc.rs`, `m_config.rs`, and `d_main.rs` (28 sites, the largest
+single chunk — startup banner/init-sequence messages, turbo-scale/demo-name/
+mission-pack diagnostics). All converted to `print!`/`println!`, using
+`CStr::from_ptr(...).to_string_lossy()` wherever the original argument was a raw
+`*const c_char` pointer rather than a literal. `PrintDehackedBanners` (`d_main.rs`)
+simplified along the way: its `printf("%s", deh_s)` was round-tripping an already-
+owned `&str` through a `CString`/`CStr` conversion for no reason (the `if deh_s_str
+!= copyright_banners[i]` guard compares the string to itself, always false — a
+preexisting artifact, not something this phase changed) — replaced with a direct
+`print!("{}", deh_s_str)`. Verified: 0 new build warnings (full sorted-warning-text
+diff against the pre-phase baseline is empty, 104 warnings both sides), release build
+clean, 3x Xvfb boot with no panics, screenshot-confirmed rendering intact, startup
+banner output spot-checked byte-for-byte against the original printf formatting
+(including the `R_Init: Init DOOM refresh daemon - .........` line, which splits a
+`print!` without a trailing newline across two source locations — the dots are
+printed by `R_Init` itself, and the newline comes from the following `P_Init` message,
+exactly as the original C code structured it).
+
+Printf-family conversion is now complete except for the 19 dead-code call sites
+documented in Status above. Next candidate: re-survey the remaining raw
+`*mut`/`*const c_char` pointers now that phases 4-9 have converted every
+struct-field/const-table/printf site touching them, then decide whether `memcpy`/
+`memset`/`memmove` (74 sites) or the deferred `strncasecmp`/`strdup` sites are the
+better next target.
