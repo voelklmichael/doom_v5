@@ -8,7 +8,7 @@ use crate::src::doomgeneric::DOOMGENERIC_RESY;
 use crate::src::game_state::GameState;
 use crate::src::i_input::I_GetEvent;
 use crate::src::i_system::I_Error;
-use crate::src::m_argv::M_CheckParmWithArgs;
+use crate::src::m_argv::{M_ArgvAtoi, M_CheckParmWithArgs};
 use crate::src::m_fixed::INT_MAX;
 use crate::src::stdint_types::size_t;
 use crate::src::stdint_types::uint32_t;
@@ -19,7 +19,6 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use ::c2rust_bitfields;
 use libc::printf;
-use libc::atoi;
 use libc::{memcpy, memset};
 
 pub struct IVideoState {
@@ -264,7 +263,7 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
     );
     i = M_CheckParmWithArgs(state, "-scaling", 1 as i32);
     if i > 0 as i32 {
-        i = atoi(state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+        i = M_ArgvAtoi(&state.m_argv.myargv[(i + 1 as i32) as usize]);
         state.i_video.fb_scaling = i;
         printf(
             b"I_InitGraphics: Scaling factor: %d\n\0" as *const u8 as *const ::core::ffi::c_char,

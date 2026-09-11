@@ -37,6 +37,27 @@ pub unsafe fn M_FindResponseFile(state: &mut GameState) {
         i += 1;
     }
 }
+pub fn M_ArgvAtoi(arg: &::std::ffi::CStr) -> i32 {
+    let bytes = arg.to_bytes();
+    let mut i = 0;
+    while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+        i += 1;
+    }
+    let negative = i < bytes.len() && bytes[i] == b'-';
+    if i < bytes.len() && (bytes[i] == b'-' || bytes[i] == b'+') {
+        i += 1;
+    }
+    let mut value: i32 = 0;
+    while i < bytes.len() && bytes[i].is_ascii_digit() {
+        value = value.wrapping_mul(10).wrapping_add((bytes[i] - b'0') as i32);
+        i += 1;
+    }
+    if negative {
+        -value
+    } else {
+        value
+    }
+}
 pub unsafe fn M_GetExecutableName() -> &'static str {
     let arg0 = unsafe { game_state() }.m_argv.myargv[0].to_str().unwrap();
     match arg0.rfind(DIR_SEPARATOR) {

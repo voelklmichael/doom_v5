@@ -1,9 +1,8 @@
 use crate::src::game_state::GameState;
-use crate::src::m_argv::M_CheckParmWithArgs;
+use crate::src::m_argv::{M_ArgvAtoi, M_CheckParmWithArgs};
 use crate::src::m_misc::M_StrToInt;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use libc::atoi;
 use libc::{malloc, printf, puts};
 
 pub struct ISystemState {
@@ -102,7 +101,7 @@ pub unsafe fn I_ZoneBase(state: &mut GameState, mut size: *mut i32) -> *mut byte
     p = M_CheckParmWithArgs(state, "-mb", 1 as i32);
     if p > 0 as i32 {
         default_ram =
-            atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+            M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
         min_ram = default_ram;
     } else {
         default_ram = DEFAULT_RAM;

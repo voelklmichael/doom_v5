@@ -9,8 +9,7 @@ use crate::src::stdint_types::size_t;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memset;
-use libc::{malloc, printf, sscanf};
-use libc::strncpy;
+use libc::{malloc, printf};
 extern "C" {
     fn vsnprintf(
         __s: *mut ::core::ffi::c_char,
@@ -111,27 +110,40 @@ pub unsafe fn M_TempFile(mut s: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c
     tempdir = b"/tmp\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
     return M_StringJoin(tempdir, DIR_SEPARATOR_S.as_ptr(), s, NULL);
 }
+fn m_strtoint_digit_prefix(s: &str, radix: u32) -> Option<i32> {
+    let end = s
+        .find(|c: char| !c.is_digit(radix))
+        .unwrap_or(s.len());
+    if end == 0 {
+        None
+    } else {
+        i32::from_str_radix(&s[..end], radix).ok()
+    }
+}
 pub unsafe fn M_StrToInt(mut str: *const ::core::ffi::c_char, mut result: *mut i32) -> bool {
-    return sscanf(
-        str,
-        b" 0x%x\0" as *const u8 as *const ::core::ffi::c_char,
-        result,
-    ) == 1 as i32
-        || sscanf(
-            str,
-            b" 0X%x\0" as *const u8 as *const ::core::ffi::c_char,
-            result,
-        ) == 1 as i32
-        || sscanf(
-            str,
-            b" 0%o\0" as *const u8 as *const ::core::ffi::c_char,
-            result,
-        ) == 1 as i32
-        || sscanf(
-            str,
-            b" %d\0" as *const u8 as *const ::core::ffi::c_char,
-            result,
-        ) == 1 as i32;
+    let s = ::std::ffi::CStr::from_ptr(str).to_string_lossy();
+    let trimmed = s.trim_start();
+    let (sign, unsigned) = match trimmed.strip_prefix('-') {
+        Some(rest) => (-1, rest),
+        None => (1, trimmed.strip_prefix('+').unwrap_or(trimmed)),
+    };
+    let parsed = unsigned
+        .strip_prefix("0x")
+        .or_else(|| unsigned.strip_prefix("0X"))
+        .and_then(|rest| m_strtoint_digit_prefix(rest, 16))
+        .or_else(|| {
+            unsigned
+                .strip_prefix('0')
+                .and_then(|rest| m_strtoint_digit_prefix(rest, 8))
+        })
+        .or_else(|| m_strtoint_digit_prefix(unsigned, 10));
+    match parsed {
+        Some(v) => {
+            *result = sign * v;
+            true
+        }
+        None => false,
+    }
 }
 pub unsafe fn M_ExtractFileBase(
     mut path: *mut ::core::ffi::c_char,
@@ -230,16 +242,19 @@ pub unsafe fn M_StringCopy(
     mut src: *const ::core::ffi::c_char,
     mut dest_size: size_t,
 ) -> bool {
-    let mut len: size_t = 0;
-    if dest_size >= 1 as size_t {
-        *dest.offset(dest_size.wrapping_sub(1 as size_t) as isize) =
-            '\0' as i32 as ::core::ffi::c_char;
-        strncpy(dest, src, dest_size.wrapping_sub(1 as size_t));
-    } else {
+    if dest_size < 1 as size_t {
         return false;
     }
-    len = ::std::ffi::CStr::from_ptr(dest as *const ::core::ffi::c_char).to_bytes().len();
-    return *src.offset(len as isize) as i32 == '\0' as i32;
+    let src_bytes = ::std::ffi::CStr::from_ptr(src).to_bytes();
+    let copy_len = src_bytes.len().min(dest_size - 1 as size_t);
+    for i in 0..dest_size {
+        *dest.add(i) = if i < copy_len {
+            src_bytes[i] as ::core::ffi::c_char
+        } else {
+            0
+        };
+    }
+    src_bytes.len() == copy_len
 }
 pub unsafe fn M_StringConcat(
     mut dest: *mut ::core::ffi::c_char,

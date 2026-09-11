@@ -61,7 +61,7 @@ use crate::src::i_video::I_InitGraphics;
 use crate::src::i_video::I_SetGrabMouseCallback;
 use crate::src::i_video::I_SetPalette;
 use crate::src::i_video::I_SetWindowTitle;
-use crate::src::m_argv::{M_CheckParm, M_CheckParmWithArgs};
+use crate::src::m_argv::{M_ArgvAtoi, M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_config::M_BindVariable;
 use crate::src::m_config::M_GetSaveGameDir;
 use crate::src::m_config::M_LoadDefaults;
@@ -109,7 +109,7 @@ use crate::src::wi_stuff::WI_Drawer;
 use crate::src::z_zone::Z_Init;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::{atoi, strncasecmp};
+use libc::strncasecmp;
 use libc::{exit, printf, snprintf};
 
 pub struct DMainState {
@@ -1138,8 +1138,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         let mut scale: i32 = 200 as i32;
         if p < state.m_argv.myargv.len() as i32 - 1 as i32 {
             scale =
-                atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char);
+                M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
         }
         if scale < 10 as i32 {
             scale = 10 as i32;
@@ -1358,7 +1357,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     p = M_CheckParmWithArgs(state, "-timer", 1 as i32);
     if p != 0 {
         state.g_game.timelimit =
-            atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+            M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
     }
     p = M_CheckParm(state, "-avg");
     if p != 0 {
@@ -1368,8 +1367,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     if p != 0 {
         if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
             state.d_main.startmap =
-                atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr()
-                    as *mut ::core::ffi::c_char);
+                M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
         } else {
             state.d_main.startepisode = state.m_argv.myargv[(p + 1 as i32) as usize]
                 .as_bytes()
@@ -1400,7 +1398,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     p = M_CheckParmWithArgs(state, "-loadgame", 1 as i32);
     if p != 0 {
         state.d_main.startloadgame =
-            atoi(state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char);
+            M_ArgvAtoi(&state.m_argv.myargv[(p + 1 as i32) as usize]);
     } else {
         state.d_main.startloadgame = -(1 as i32);
     }

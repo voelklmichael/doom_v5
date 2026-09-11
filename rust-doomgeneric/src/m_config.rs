@@ -34,8 +34,9 @@ use crate::src::m_controls::KEY_SCRLCK;
 use crate::src::m_controls::KEY_UPARROW;
 use crate::src::m_misc::M_MakeDirectory;
 use crate::src::m_misc::M_StringJoin;
+use crate::src::m_misc::M_StrToInt;
 use crate::src::stdint_types::size_t;
-use libc::{malloc, printf, sscanf};
+use libc::{malloc, printf};
 use libc::strdup;
 
 extern "C" {
@@ -1828,21 +1829,7 @@ static scantokey: [i32; 128] = [
 ];
 unsafe fn ParseIntParameter(mut strparm: *mut ::core::ffi::c_char) -> i32 {
     let mut parm: i32 = 0;
-    if *strparm.offset(0 as i32 as isize) as i32 == '0' as i32
-        && *strparm.offset(1 as i32 as isize) as i32 == 'x' as i32
-    {
-        sscanf(
-            strparm.offset(2 as i32 as isize),
-            b"%x\0" as *const u8 as *const ::core::ffi::c_char,
-            &raw mut parm,
-        );
-    } else {
-        sscanf(
-            strparm,
-            b"%i\0" as *const u8 as *const ::core::ffi::c_char,
-            &raw mut parm,
-        );
-    }
+    M_StrToInt(strparm, &raw mut parm);
     return parm;
 }
 unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_char) {

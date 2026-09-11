@@ -49,7 +49,7 @@ use crate::src::i_system::FILE;
 use crate::src::i_system::{fclose, fopen, ftell};
 use crate::src::i_timer::I_GetTime;
 use crate::src::info::{S_SARG_PAIN2, S_SARG_RUN1};
-use crate::src::m_argv::{M_CheckParm, M_CheckParmWithArgs};
+use crate::src::m_argv::{M_ArgvAtoi, M_CheckParm, M_CheckParmWithArgs};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
@@ -117,7 +117,6 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::printf;
-use libc::atoi;
 use libc::{memcpy, memset};
 
 pub struct GGameState {
@@ -1968,7 +1967,7 @@ pub unsafe fn G_RecordDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_
     i = M_CheckParmWithArgs(state, "-maxdemo", 1 as i32);
     if i != 0 {
         maxsize =
-            atoi(state.m_argv.myargv[(i + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char)
+            M_ArgvAtoi(&state.m_argv.myargv[(i + 1 as i32) as usize])
                 * 1024 as i32;
     }
     state.g_game.demobuffer =
