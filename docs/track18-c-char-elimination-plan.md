@@ -389,20 +389,64 @@ full verification bar including an actual interactive save/load round-trip test
 
 `c_char` references: 1141 → 955.
 
+**Phase 14 done** (`c-char-phase14-callback-hub-and-shiftxform`, PR pending): two
+independent wins found during the fresh post-phase-13 survey.
+- `i_input.rs`'s `shiftxform` — a 128-entry keyboard shift-translation lookup table
+  (raw keycode → its shifted character, e.g. `'1'` → `'!'`). This was never a
+  string; `c_char` was being used purely as a numeric byte type here (a Track-4-
+  flavored finding inside a Track-18 sweep). All 128 entries are non-negative
+  ASCII values, confirmed by inspection, so `[c_char; 128]` → `[u8; 128]` is a
+  pure representation change with zero risk. Its one call site's `as u8` cast and
+  a `size_of::<[c_char;128]>()/size_of::<c_char>()` array-length idiom (a c2rust
+  way of writing `128`) both simplified away. `i_input.rs`: 131 → 0.
+- The `load_callback_t` hub (`st_stuff.rs`/`wi_stuff.rs`) — a shared function-
+  pointer TYPE (`Option<unsafe fn(*mut c_char, *mut *mut patch_t)>`) used by
+  `ST_loadUnloadGraphics`/`WI_loadUnloadData` to abstract "load or unload this WAD
+  lump into this patch-pointer slot" over 4 different callback implementations
+  (`ST_loadCallback`/`ST_unloadCallback`/`WI_loadCallback`/`WI_unloadCallback`).
+  Matches the project's known "shared fn-pointer type is a real blocker, must
+  convert every implementor together" pattern (see [[doom_v5_known_gotchas]] in
+  memory) — but unlike Track 2's boolean-callback hub, this one turned out
+  tractable in one phase since it's fully contained to 2 files. Each callback
+  body was already calling `wad_name8_to_string(...)` on its raw pointer
+  immediately, then passing the result to `W_CacheLumpName`/`W_ReleaseLumpName`
+  (both already `&str`-taking) — so retyping the callback parameter to `&str`
+  let every implementation drop that conversion wrapper entirely, not just
+  change its signature. The two call sites (`ST_loadUnloadGraphics`,
+  `WI_loadUnloadData`) mechanically converted via script: ~90 `M_snprintf`/
+  `snprintf`-into-a-`[c_char;9]`-buffer-then-pass-its-address call pairs became
+  direct `format!(...)` calls (with a small printf-format-string-to-Rust-format-
+  string translator handling the `%d`/`%2.2d`/`%.2d` specifiers actually used),
+  and literal-only calls dropped their byte-string-cast boilerplate for a plain
+  `&str` literal. One non-matching call site (`WI_loadUnloadData`'s background-
+  pic selection, an if/else-if/else choosing between two literals and one
+  `format!`) needed manual conversion since the buffer-write and callback-call
+  were separated by branching logic the mechanical script's pattern didn't cover.
+  Both now-empty `[c_char; 9]` scratch buffers removed. Verified beyond the
+  standard bar: screenshot-confirmed the status bar (health/ammo/armor/face/arms
+  — all loaded through `ST_loadCallback`) renders pixel-correct; the
+  intermission-screen half (`WI_loadCallback`) wasn't feasible to reach via an
+  automated Xvfb test (requires completing a level) but is the identical
+  mechanism verified working on the status-bar half, same call pattern, same
+  underlying `W_CacheLumpName`.
+
+`c_char` references: 955 → 700.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
-concentrations are `st_stuff.rs`/`i_input.rs` (largely the `cheatseq_t` byte-sequence
-family, deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a
-string in any meaningful sense, a sequence of raw keycodes matched byte-by-byte),
-`d_main.rs` (~120, largely local `[c_char; 256]` scratch buffers for demo/turbo/
-mission-pack argument parsing — lower value, this track has deliberately deferred
-local scratch buffers throughout), `g_game.rs`, `p_inter.rs`, `wi_stuff.rs`,
-`m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI
-printf reimplementations still used by many buffer-building call sites across the
-codebase, a structural piece rather than a simple field conversion — replacing these
-would mean auditing and converting every one of their callers, a much larger
-undertaking than a bounded field-conversion phase), `m_menu.rs`, `hu_stuff.rs`. Each
-needs the same per-cluster triage phases 10-13 used (is it a lumpname-shaped const
-table, an always-null/always-dead field or function, a local scratch buffer, a
-cheat-sequence byte array, or a structural printf/path-building engine piece) before
-deciding scope — the original blanket 1369-count estimate has already proven an
-unreliable guide to where the real work is.
+concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
+deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
+in any meaningful sense, a sequence of raw keycodes matched byte-by-byte), `d_main.rs`
+(~120, largely local `[c_char; 256]` scratch buffers for demo/turbo/mission-pack
+argument parsing — lower value, this track has deliberately deferred local scratch
+buffers throughout), `g_game.rs`, `p_inter.rs`, `wi_stuff.rs` (its own remaining
+non-callback-hub sites), `m_misc.rs` (mostly `M_snprintf`/`M_vsnprintf` themselves —
+genuine variadic C-ABI printf reimplementations still used by many buffer-building
+call sites across the codebase, a structural piece rather than a simple field
+conversion — replacing these would mean auditing and converting every one of their
+callers, a much larger undertaking than a bounded field-conversion phase), `m_menu.rs`,
+`hu_stuff.rs`. Each needs the same per-cluster triage phases 10-14 used (is it a
+lumpname-shaped const table, an always-null/always-dead field or function, a local
+scratch buffer, a cheat-sequence byte array, a numeric-lookup-table mislabeled as
+c_char, a shared callback-type hub, or a structural printf/path-building engine
+piece) before deciding scope — the original blanket 1369-count estimate has already
+proven an unreliable guide to where the real work is.

@@ -13,21 +13,16 @@ use crate::src::g_game::G_WorldDone;
 use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
-use crate::src::m_misc::M_StringCopy;
 use crate::src::m_random::M_Random;
 use crate::src::s_sound::S_ChangeMusic;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::{mus_dm2int, mus_inter};
 use crate::src::sounds::{sfx_barexp, sfx_pistol, sfx_pldeth, sfx_sgcock, sfx_slop};
 use crate::src::st_stuff::load_callback_t;
-use crate::src::stdint_types::size_t;
 use crate::src::v_video::V_DrawPatch;
-use crate::src::w_wad::{
-    wad_name8_to_string, W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName,
-};
+use crate::src::w_wad::{W_CacheLumpName, W_CheckNumForName, W_ReleaseLumpName};
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use libc::snprintf;
 
 pub struct WiStuffState {
     pub anims: [*mut anim_t; 4],
@@ -1169,7 +1164,7 @@ pub unsafe fn WI_End(state: &mut GameState) {
     pub unsafe fn WI_unloadData_0(state: &mut GameState) {
         WI_loadUnloadData(
             state,
-            Some(WI_unloadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> ()),
+            Some(WI_unloadCallback as unsafe fn(&str, *mut *mut patch_t) -> ()),
         );
     }
     WI_unloadData_0(state);
@@ -2010,54 +2005,26 @@ pub unsafe fn WI_Ticker(state: &mut GameState) {
 unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t) {
     let mut i: i32 = 0;
     let mut j: i32 = 0;
-    let mut name: [::core::ffi::c_char; 9] = [0; 9];
     let mut a: *mut anim_t = ::core::ptr::null_mut::<anim_t>();
     if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
         i = 0 as i32;
         while i < state.wi_stuff.NUMCMAPS {
-            snprintf(
-                &raw mut name as *mut ::core::ffi::c_char,
-                9 as size_t,
-                b"CWILV%2.2d\0" as *const u8 as *const ::core::ffi::c_char,
-                i,
-            );
-            callback.expect("non-null function pointer")(
-                &raw mut name as *mut ::core::ffi::c_char,
-                state.wi_stuff.lnames.offset(i as isize) as *mut *mut patch_t,
-            );
+            callback.expect("non-null function pointer")(&format!("CWILV{:02}", i,), state.wi_stuff.lnames.offset(i as isize) as *mut *mut patch_t,);
             i += 1;
         }
     } else {
         i = 0 as i32;
         while i < NUMMAPS {
-            snprintf(
-                &raw mut name as *mut ::core::ffi::c_char,
-                9 as size_t,
-                b"WILV%d%d\0" as *const u8 as *const ::core::ffi::c_char,
-                (*state.wi_stuff.wbs).epsd,
-                i,
-            );
-            callback.expect("non-null function pointer")(
-                &raw mut name as *mut ::core::ffi::c_char,
-                state.wi_stuff.lnames.offset(i as isize) as *mut *mut patch_t,
-            );
+            callback.expect("non-null function pointer")(&format!("WILV{}{}", (*state.wi_stuff.wbs).epsd,
+                i,), state.wi_stuff.lnames.offset(i as isize) as *mut *mut patch_t,);
             i += 1;
         }
-        callback.expect("non-null function pointer")(
-            b"WIURH0\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(0 as i32 as isize)
-                as *mut *mut patch_t,
-        );
-        callback.expect("non-null function pointer")(
-            b"WIURH1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(1 as i32 as isize)
-                as *mut *mut patch_t,
-        );
-        callback.expect("non-null function pointer")(
-            b"WISPLAT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.splat as *mut *mut patch_t).offset(0 as i32 as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")("WIURH0", (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(0 as i32 as isize)
+                as *mut *mut patch_t,);
+        callback.expect("non-null function pointer")("WIURH1", (&raw mut state.wi_stuff.yah as *mut *mut patch_t).offset(1 as i32 as isize)
+                as *mut *mut patch_t,);
+        callback.expect("non-null function pointer")("WISPLAT", (&raw mut state.wi_stuff.splat as *mut *mut patch_t).offset(0 as i32 as isize)
+                as *mut *mut patch_t,);
         if (*state.wi_stuff.wbs).epsd < 3 as i32 {
             j = 0 as i32;
             while j < state.wi_stuff.NUMANIMS[(*state.wi_stuff.wbs).epsd as usize] {
@@ -2067,19 +2034,10 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
                 i = 0 as i32;
                 while i < (*a).nanims {
                     if (*state.wi_stuff.wbs).epsd != 1 as i32 || j != 8 as i32 {
-                        snprintf(
-                            &raw mut name as *mut ::core::ffi::c_char,
-                            9 as size_t,
-                            b"WIA%d%.2d%.2d\0" as *const u8 as *const ::core::ffi::c_char,
-                            (*state.wi_stuff.wbs).epsd,
+                        callback.expect("non-null function pointer")(&format!("WIA{}{:02}{:02}", (*state.wi_stuff.wbs).epsd,
                             j,
-                            i,
-                        );
-                        callback.expect("non-null function pointer")(
-                            &raw mut name as *mut ::core::ffi::c_char,
-                            (&raw mut (*a).p as *mut *mut patch_t).offset(i as isize)
-                                as *mut *mut patch_t,
-                        );
+                            i,), (&raw mut (*a).p as *mut *mut patch_t).offset(i as isize)
+                                as *mut *mut patch_t,);
                     } else {
                         (*a).p[i as usize] = (*state.wi_stuff.anims[1 as i32 as usize]
                             .offset(4 as i32 as isize))
@@ -2091,154 +2049,57 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
             }
         }
     }
-    callback.expect("non-null function pointer")(
-        b"WIMINUS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.wiminus,
-    );
+    callback.expect("non-null function pointer")("WIMINUS", &raw mut state.wi_stuff.wiminus,);
     i = 0 as i32;
     while i < 10 as i32 {
-        snprintf(
-            &raw mut name as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"WINUM%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.num as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("WINUM{}", i,), (&raw mut state.wi_stuff.num as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,);
         i += 1;
     }
-    callback.expect("non-null function pointer")(
-        b"WIPCNT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.percent,
-    );
-    callback.expect("non-null function pointer")(
-        b"WIF\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.finished,
-    );
-    callback.expect("non-null function pointer")(
-        b"WIENTER\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.entering,
-    );
-    callback.expect("non-null function pointer")(
-        b"WIOSTK\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.kills,
-    );
-    callback.expect("non-null function pointer")(
-        b"WIOSTS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.secret,
-    );
-    callback.expect("non-null function pointer")(
-        b"WISCRT2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.sp_secret,
-    );
+    callback.expect("non-null function pointer")("WIPCNT", &raw mut state.wi_stuff.percent,);
+    callback.expect("non-null function pointer")("WIF", &raw mut state.wi_stuff.finished,);
+    callback.expect("non-null function pointer")("WIENTER", &raw mut state.wi_stuff.entering,);
+    callback.expect("non-null function pointer")("WIOSTK", &raw mut state.wi_stuff.kills,);
+    callback.expect("non-null function pointer")("WIOSTS", &raw mut state.wi_stuff.secret,);
+    callback.expect("non-null function pointer")("WISCRT2", &raw mut state.wi_stuff.sp_secret,);
     if W_CheckNumForName("WIOBJ") >= 0 as i32 {
         if state.g_game.netgame && state.g_game.deathmatch == 0 {
-            callback.expect("non-null function pointer")(
-                b"WIOBJ\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                &raw mut state.wi_stuff.items,
-            );
+            callback.expect("non-null function pointer")("WIOBJ", &raw mut state.wi_stuff.items,);
         } else {
-            callback.expect("non-null function pointer")(
-                b"WIOSTI\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-                &raw mut state.wi_stuff.items,
-            );
+            callback.expect("non-null function pointer")("WIOSTI", &raw mut state.wi_stuff.items,);
         }
     } else {
-        callback.expect("non-null function pointer")(
-            b"WIOSTI\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-            &raw mut state.wi_stuff.items,
-        );
+        callback.expect("non-null function pointer")("WIOSTI", &raw mut state.wi_stuff.items,);
     }
-    callback.expect("non-null function pointer")(
-        b"WIFRGS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.frags,
-    );
-    callback.expect("non-null function pointer")(
-        b"WICOLON\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.colon,
-    );
-    callback.expect("non-null function pointer")(
-        b"WITIME\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.timepatch,
-    );
-    callback.expect("non-null function pointer")(
-        b"WISUCKS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.sucks,
-    );
-    callback.expect("non-null function pointer")(
-        b"WIPAR\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.par,
-    );
-    callback.expect("non-null function pointer")(
-        b"WIKILRS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.killers,
-    );
-    callback.expect("non-null function pointer")(
-        b"WIVCTMS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.victims,
-    );
-    callback.expect("non-null function pointer")(
-        b"WIMSTT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.total,
-    );
+    callback.expect("non-null function pointer")("WIFRGS", &raw mut state.wi_stuff.frags,);
+    callback.expect("non-null function pointer")("WICOLON", &raw mut state.wi_stuff.colon,);
+    callback.expect("non-null function pointer")("WITIME", &raw mut state.wi_stuff.timepatch,);
+    callback.expect("non-null function pointer")("WISUCKS", &raw mut state.wi_stuff.sucks,);
+    callback.expect("non-null function pointer")("WIPAR", &raw mut state.wi_stuff.par,);
+    callback.expect("non-null function pointer")("WIKILRS", &raw mut state.wi_stuff.killers,);
+    callback.expect("non-null function pointer")("WIVCTMS", &raw mut state.wi_stuff.victims,);
+    callback.expect("non-null function pointer")("WIMSTT", &raw mut state.wi_stuff.total,);
     i = 0 as i32;
     while i < MAXPLAYERS {
-        snprintf(
-            &raw mut name as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STPB%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.p as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,
-        );
-        snprintf(
-            &raw mut name as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"WIBP%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i + 1 as i32,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut name as *mut ::core::ffi::c_char,
-            (&raw mut state.wi_stuff.bp as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("STPB{}", i,), (&raw mut state.wi_stuff.p as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,);
+        callback.expect("non-null function pointer")(&format!("WIBP{}", i + 1 as i32,), (&raw mut state.wi_stuff.bp as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,);
         i += 1;
     }
-    if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
-        M_StringCopy(
-            &raw mut name as *mut ::core::ffi::c_char,
-            b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
-        );
+    let name = if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
+        "INTERPIC".to_string()
     } else if state.doomstat.gamemode as u32 == retail as i32 as u32
         && (*state.wi_stuff.wbs).epsd == 3 as i32
     {
-        M_StringCopy(
-            &raw mut name as *mut ::core::ffi::c_char,
-            b"INTERPIC\0" as *const u8 as *const ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
-        );
+        "INTERPIC".to_string()
     } else {
-        snprintf(
-            &raw mut name as *mut ::core::ffi::c_char,
-            ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
-            b"WIMAP%d\0" as *const u8 as *const ::core::ffi::c_char,
-            (*state.wi_stuff.wbs).epsd,
-        );
-    }
-    callback.expect("non-null function pointer")(
-        &raw mut name as *mut ::core::ffi::c_char,
-        &raw mut state.wi_stuff.background,
-    );
+        format!("WIMAP{}", (*state.wi_stuff.wbs).epsd)
+    };
+    callback.expect("non-null function pointer")(&name, &raw mut state.wi_stuff.background);
 }
-unsafe fn WI_loadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
-    *variable = W_CacheLumpName(unsafe { game_state() }, &wad_name8_to_string(name), PU_STATIC as i32) as *mut patch_t;
+unsafe fn WI_loadCallback(name: &str, variable: *mut *mut patch_t) {
+    *variable = W_CacheLumpName(unsafe { game_state() }, name, PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn WI_loadData(state: &mut GameState) {
     if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
@@ -2260,13 +2121,13 @@ pub unsafe fn WI_loadData(state: &mut GameState) {
     }
     WI_loadUnloadData(
         state,
-        Some(WI_loadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> ()),
+        Some(WI_loadCallback as unsafe fn(&str, *mut *mut patch_t) -> ()),
     );
     state.wi_stuff.star = W_CacheLumpName(state, "STFST01", PU_STATIC as i32) as *mut patch_t;
     state.wi_stuff.bstar = W_CacheLumpName(state, "STFDEAD0", PU_STATIC as i32) as *mut patch_t;
 }
-unsafe fn WI_unloadCallback(mut name: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
-    W_ReleaseLumpName(&wad_name8_to_string(name));
+unsafe fn WI_unloadCallback(name: &str, variable: *mut *mut patch_t) {
+    W_ReleaseLumpName(name);
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
 pub unsafe fn WI_Drawer(state: &mut GameState) {

@@ -49,10 +49,9 @@ use crate::src::v_video::V_DrawPatch;
 use crate::src::v_video::V_RestoreBuffer;
 use crate::src::v_video::V_UseBuffer;
 use crate::src::w_wad::W_CacheLumpNum;
-use crate::src::w_wad::{wad_name8_to_string, W_CacheLumpName, W_GetNumForName, W_ReleaseLumpName};
+use crate::src::w_wad::{W_CacheLumpName, W_GetNumForName, W_ReleaseLumpName};
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::snprintf;
 
 pub struct StStuffState {
     pub st_backing_screen: *mut byte,
@@ -351,7 +350,7 @@ pub type st_chatstateenum_t = u32;
 pub const GetChatState: st_chatstateenum_t = 2;
 pub const WaitDestState: st_chatstateenum_t = 1;
 pub const StartChatState: st_chatstateenum_t = 0;
-pub type load_callback_t = Option<unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> ()>;
+pub type load_callback_t = Option<unsafe fn(&str, *mut *mut patch_t) -> ()>;
 pub const DEH_DEFAULT_GOD_MODE_HEALTH: i32 = 100;
 pub const DEH_DEFAULT_IDFA_ARMOR: i32 = 200;
 pub const DEH_DEFAULT_IDFA_ARMOR_CLASS: i32 = 2;
@@ -1014,207 +1013,89 @@ unsafe fn ST_loadUnloadGraphics(state: &mut GameState, mut callback: load_callba
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut facenum: i32 = 0;
-    let mut namebuf: [::core::ffi::c_char; 9] = [0; 9];
     i = 0 as i32;
     while i < 10 as i32 {
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STTNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut state.st_stuff.tallnum as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,
-        );
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STYSNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut state.st_stuff.shortnum as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("STTNUM{}", i,), (&raw mut state.st_stuff.tallnum as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,);
+        callback.expect("non-null function pointer")(&format!("STYSNUM{}", i,), (&raw mut state.st_stuff.shortnum as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,);
         i += 1;
     }
-    callback.expect("non-null function pointer")(
-        b"STTPRCNT\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.st_stuff.tallpercent,
-    );
+    callback.expect("non-null function pointer")("STTPRCNT", &raw mut state.st_stuff.tallpercent,);
     i = 0 as i32;
     while i < NUMCARDS as i32 {
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STKEYS%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut state.st_stuff.keys as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("STKEYS{}", i,), (&raw mut state.st_stuff.keys as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t,);
         i += 1;
     }
-    callback.expect("non-null function pointer")(
-        b"STARMS\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.st_stuff.armsbg,
-    );
+    callback.expect("non-null function pointer")("STARMS", &raw mut state.st_stuff.armsbg,);
     i = 0 as i32;
     while i < 6 as i32 {
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STGNUM%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i + 2 as i32,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut *(&raw mut state.st_stuff.arms as *mut [*mut patch_t; 2]).offset(i as isize)
+        callback.expect("non-null function pointer")(&format!("STGNUM{}", i + 2 as i32,), (&raw mut *(&raw mut state.st_stuff.arms as *mut [*mut patch_t; 2]).offset(i as isize)
                 as *mut *mut patch_t)
-                .offset(0 as i32 as isize) as *mut *mut patch_t,
-        );
+                .offset(0 as i32 as isize) as *mut *mut patch_t,);
         state.st_stuff.arms[i as usize][1 as i32 as usize] =
             state.st_stuff.shortnum[(i + 2 as i32) as usize];
         i += 1;
     }
-    snprintf(
-        &raw mut namebuf as *mut ::core::ffi::c_char,
-        9 as size_t,
-        b"STFB%d\0" as *const u8 as *const ::core::ffi::c_char,
-        state.g_game.consoleplayer,
-    );
-    callback.expect("non-null function pointer")(
-        &raw mut namebuf as *mut ::core::ffi::c_char,
-        &raw mut state.st_stuff.faceback,
-    );
-    callback.expect("non-null function pointer")(
-        b"STBAR\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        &raw mut state.st_stuff.sbar,
-    );
+    callback.expect("non-null function pointer")(&format!("STFB{}", state.g_game.consoleplayer,), &raw mut state.st_stuff.faceback,);
+    callback.expect("non-null function pointer")("STBAR", &raw mut state.st_stuff.sbar,);
     facenum = 0 as i32;
     i = 0 as i32;
     while i < ST_NUMPAINFACES {
         j = 0 as i32;
         while j < ST_NUMSTRAIGHTFACES {
-            snprintf(
-                &raw mut namebuf as *mut ::core::ffi::c_char,
-                9 as size_t,
-                b"STFST%d%d\0" as *const u8 as *const ::core::ffi::c_char,
-                i,
-                j,
-            );
-            callback.expect("non-null function pointer")(
-                &raw mut namebuf as *mut ::core::ffi::c_char,
-                (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                    as *mut *mut patch_t,
-            );
+            callback.expect("non-null function pointer")(&format!("STFST{}{}", i,
+                j,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                    as *mut *mut patch_t,);
             facenum += 1;
             j += 1;
         }
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STFTR%d0\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("STFTR{}0", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t,);
         facenum += 1;
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STFTL%d0\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("STFTL{}0", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t,);
         facenum += 1;
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STFOUCH%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("STFOUCH{}", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t,);
         facenum += 1;
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STFEVL%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("STFEVL{}", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t,);
         facenum += 1;
-        snprintf(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            9 as size_t,
-            b"STFKILL%d\0" as *const u8 as *const ::core::ffi::c_char,
-            i,
-        );
-        callback.expect("non-null function pointer")(
-            &raw mut namebuf as *mut ::core::ffi::c_char,
-            (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,
-        );
+        callback.expect("non-null function pointer")(&format!("STFKILL{}", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t,);
         facenum += 1;
         i += 1;
     }
-    callback.expect("non-null function pointer")(
-        b"STFGOD0\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-            as *mut *mut patch_t,
-    );
+    callback.expect("non-null function pointer")("STFGOD0", (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+            as *mut *mut patch_t,);
     facenum += 1;
-    callback.expect("non-null function pointer")(
-        b"STFDEAD0\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-        (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-            as *mut *mut patch_t,
-    );
+    callback.expect("non-null function pointer")("STFDEAD0", (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+            as *mut *mut patch_t,);
     facenum += 1;
 }
-unsafe fn ST_loadCallback(mut lumpname: *mut ::core::ffi::c_char, mut variable: *mut *mut patch_t) {
-    *variable = W_CacheLumpName(unsafe { game_state() }, &wad_name8_to_string(lumpname), PU_STATIC as i32) as *mut patch_t;
+unsafe fn ST_loadCallback(lumpname: &str, variable: *mut *mut patch_t) {
+    *variable = W_CacheLumpName(unsafe { game_state() }, lumpname, PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn ST_loadGraphics(state: &mut GameState) {
     ST_loadUnloadGraphics(
         state,
-        Some(ST_loadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> ()),
+        Some(ST_loadCallback as unsafe fn(&str, *mut *mut patch_t) -> ()),
     );
 }
 pub unsafe fn ST_loadData(state: &mut GameState) {
     state.st_stuff.lu_palette = W_GetNumForName("PLAYPAL");
     ST_loadGraphics(state);
 }
-unsafe fn ST_unloadCallback(
-    mut lumpname: *mut ::core::ffi::c_char,
-    mut variable: *mut *mut patch_t,
-) {
-    W_ReleaseLumpName(&wad_name8_to_string(lumpname));
+unsafe fn ST_unloadCallback(lumpname: &str, variable: *mut *mut patch_t) {
+    W_ReleaseLumpName(lumpname);
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
 pub unsafe fn ST_unloadGraphics(state: &mut GameState) {
     ST_loadUnloadGraphics(
         state,
-        Some(ST_unloadCallback as unsafe fn(*mut ::core::ffi::c_char, *mut *mut patch_t) -> ()),
+        Some(ST_unloadCallback as unsafe fn(&str, *mut *mut patch_t) -> ()),
     );
 }
 pub unsafe fn ST_unloadData(state: &mut GameState) {
