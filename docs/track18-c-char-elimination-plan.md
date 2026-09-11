@@ -747,25 +747,61 @@ different files during a fresh full-codebase survey.
 
 `c_char` references: 384 → 357.
 
+**Phase 24 done** (`c-char-phase24-gameversion-mission-pagename`, PR pending):
+converted the `gameversions`/mission-pack/`pagename` clusters in `d_main.rs`,
+found via a fresh `grep -c 'c_char' src/*.rs` survey that put `d_main.rs` back
+in the top spot (97 occurrences) after phase 23 shrank the previous leaders.
+- `C2RustUnnamed_4` (the `gameversions` const table: `description`/`cmdline`
+  string fields keyed to a `GameVersion` enum, driving `-gameversion`
+  command-line parsing and the startup version banner) → `&'static str`
+  fields; dropped the array's NULL-sentinel 10th entry (same move as phase 10's
+  `sprnames`), switching `InitGameVersion`/`PrintGameVersion`'s NULL-terminated
+  walk loops to `.iter().find(...)`.
+- `C2RustUnnamed_3` (`SetMissionForPackName`'s local 3-entry `-pack doom2/tnt/
+  plutonia` lookup table) → `&'static str` name field; its `pack_name` param
+  → `&str`, sourced from `myargv`'s already-`CString` entries via `.to_str()`.
+- `DMainState.pagename` (the title-screen/demo-sequence lump-name selector
+  driving `D_PageDrawer`/`D_AdvanceDemo`) → `&'static str`; dropped the
+  `wad_name8_to_string` wrapper at its one read site now that it's a native
+  `&str`.
+- Deliberately left alone: `G_DeferedPlayDemo`/`G_TimeDemo`/`defdemoname`
+  (`g_game.rs`) — 4 of their call sites are `pagename`-adjacent string
+  literals in `D_DoAdvanceDemo` and were tempting to convert alongside
+  `pagename`, but `defdemoname` also gets fed from `d_main.rs`'s
+  `demolumpname`, a local `[c_char; 9]` scratch buffer built from command-line
+  args inside the still-deferred IWAD-search-and-open chain — converting it
+  would have pulled that larger cluster into this phase's scope, so those 4
+  call sites keep their raw byte-literal-cast form.
+- Verified beyond the standard bar: screenshot of the TITLEPIC title screen
+  (no `-warp`, so the demo-sequence/`pagename` path actually renders) confirms
+  `D_AdvanceDemo`'s new `&'static str` assignment and `D_PageDrawer`'s lookup
+  both work correctly end-to-end.
+
+`c_char` references: 357 → 291.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
-concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
-deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
-in any meaningful sense, a sequence of raw keycodes matched byte-by-byte), `d_main.rs`
-(largely local `[c_char; 256]` scratch buffers for demo/turbo/mission-pack
-argument parsing — lower value, this track has deliberately deferred local scratch
-buffers throughout, though phase 20 shows it's worth re-checking each one for the
-same "looks complex but is actually dead/trivial" pattern rather than assuming),
-`p_inter.rs`, `wi_stuff.rs` (its own remaining non-callback-hub sites), `m_misc.rs`
-(mostly `M_snprintf`/`M_vsnprintf` themselves — genuine variadic C-ABI printf
-reimplementations still used by many buffer-building call sites across the
-codebase, a structural piece rather than a simple field conversion — replacing
-these would mean auditing and converting every one of their callers, a much larger
-undertaking than a bounded field-conversion phase), the `D_FindWADByName`/
-`D_FindIWAD`/`D_AddFile`/`W_AddFile` IWAD-search-and-open chain (`d_iwad.rs`/
-`d_main.rs`/`w_wad.rs` — real file-I/O, deeper than it first looks, several
-`into_raw()` leaks like phase 11 found; deferred once already for being bigger
-than it seemed, worth a dedicated phase rather than folding into a sweep). Each
-needs the same per-cluster triage phases 10-23 used (is it a lumpname-shaped const
+concentrations are `st_stuff.rs` (63 occurrences, mostly the `cheatseq_t`
+byte-sequence family, deliberately kept as plain `c_char` arrays since Track 18
+phase 2/3 — not a string in any meaningful sense, a sequence of raw keycodes
+matched byte-by-byte — worth a pass to confirm nothing else is hiding in that
+file besides `cheatseq_t`), `d_main.rs`'s remaining ~60 occurrences (the
+`demolumpname`/`file`/`-turbo`/`-playdemo`/`-timedemo` argument-parsing scratch
+buffers plus `D_FindIWAD`'s `iwadfile` field — this is squarely the
+IWAD-search-and-open chain flagged below), `m_misc.rs` (mostly `M_snprintf`/
+`M_vsnprintf` themselves — genuine variadic C-ABI printf reimplementations
+still used by many buffer-building call sites across the codebase, a
+structural piece rather than a simple field conversion — replacing these would
+mean auditing and converting every one of their callers, a much larger
+undertaking than a bounded field-conversion phase), `doomgeneric_xlib.rs` (16
+occurrences, likely genuine cross-crate FFI boundary code, needs a careful
+look before assuming it's in scope), `g_game.rs` (`defdemoname`/
+`G_DeferedPlayDemo`/`G_TimeDemo`, deliberately deferred this phase — see
+above), `z_zone.rs`, `p_saveg.rs`, the `D_FindWADByName`/`D_FindIWAD`/
+`D_AddFile`/`W_AddFile` IWAD-search-and-open chain (`d_iwad.rs`/`d_main.rs`/
+`w_wad.rs` — real file-I/O, deeper than it first looks, several `into_raw()`
+leaks like phase 11 found; deferred once already for being bigger than it
+seemed, worth a dedicated phase rather than folding into a sweep). Each
+needs the same per-cluster triage phases 10-24 used (is it a lumpname-shaped const
 table, an always-null/always-dead field or function, a local scratch buffer, a
 cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
 callback-type hub, a small widely-called name-resolution function trio, an
