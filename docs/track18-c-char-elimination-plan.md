@@ -681,6 +681,35 @@ interactive save/load round-trip bar, not just a boot smoke test.
 
 `c_char` references: 458 → 412.
 
+**Phase 22 done** (`c-char-phase22-precache-and-changetag`, PR pending):
+`r_data.rs` down from 21 to 2 (the last 2 are boundary casts into
+`W_LumpNameHash`/`wad_name8_to_string`, genuine remaining utility-function
+boundaries, not further simplifiable without touching those). Two clusters:
+- `R_PrecacheLevel`'s `flatpresent`/`texturepresent`/`spritepresent` — three
+  `Z_Malloc`'d "is this flat/texture/sprite used in this level" flag arrays,
+  never string data, `c_char` used purely as a byte-sized boolean flag
+  (`1 as c_char` / `!= 0` comparisons) — matching phases 14/16/17/18's
+  established numeric-byte pattern. Converted to `*mut u8`/`u8`.
+  `R_InitTextures`'s PNAMES-parsing raw pointer pair (`names`/`name_p`, walking
+  the raw WAD lump byte buffer with `.offset(i*8)` arithmetic) converted the
+  same way, with casts to `*const c_char` only at the two remaining calls into
+  `wad_name8_to_string`/`W_CheckNumForName`.
+- `Z_ChangeTag2` (`z_zone.rs`) — takes a `file`/`line` pair for zone-memory
+  debug-error messages (a C `__FILE__`/`__LINE__` idiom baked into the call
+  sites as literal `b"r_data.c\0"`/`b"w_wad.c\0"` filenames). Converted to
+  `&str`; its 3 callers (`r_data.rs`, `w_wad.rs` ×2) simplified from a 3-line
+  byte-cast to a plain string literal. Also simplified two now-redundant
+  `wad_name8_to_string`-on-a-`FixedCStr`-field round trips in `r_data.rs` to
+  direct `.as_str()` calls (the field was already `FixedCStr<8>` from an
+  earlier phase; the wrapper call had never been updated).
+- Verified beyond the standard bar with a screenshot: `R_PrecacheLevel` runs
+  once per level load and determines exactly which flat/texture/sprite lumps
+  get cached, so a pixel-correct render (identical to every prior verified
+  screenshot) is direct end-to-end confirmation the presence-array logic is
+  unchanged.
+
+`c_char` references: 412 → 384.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
@@ -699,12 +728,13 @@ undertaking than a bounded field-conversion phase), the `D_FindWADByName`/
 `d_main.rs`/`w_wad.rs` — real file-I/O, deeper than it first looks, several
 `into_raw()` leaks like phase 11 found; deferred once already for being bigger
 than it seemed, worth a dedicated phase rather than folding into a sweep). Each
-needs the same per-cluster triage phases 10-21 used (is it a lumpname-shaped const
+needs the same per-cluster triage phases 10-22 used (is it a lumpname-shaped const
 table, an always-null/always-dead field or function, a local scratch buffer, a
 cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a shared
 callback-type hub, a small widely-called name-resolution function trio, an
 already-native-String-round-tripping-through-a-raw-buffer, a genuine module-level
 `static mut` deferred since Track 16, a whole function that's provably dead code
-behind a self-comparison, or a structural printf/path-building engine piece)
-before deciding scope — the original blanket 1369-count estimate has already
-proven an unreliable guide to where the real work is.
+behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom debug parameter, or a
+structural printf/path-building engine piece) before deciding scope — the
+original blanket 1369-count estimate has already proven an unreliable guide to
+where the real work is.

@@ -329,7 +329,7 @@ pub unsafe fn W_CacheLumpNum(
         Z_ChangeTag2(
             (*lump).cache,
             tag,
-            b"w_wad.c\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "w_wad.c",
             410 as i32,
         );
     } else {
@@ -364,7 +364,7 @@ pub unsafe fn W_ReleaseLumpNum(mut lumpnum: i32) {
         Z_ChangeTag2(
             (*lump).cache,
             PU_CACHE as i32,
-            b"w_wad.c\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+            "w_wad.c",
             461 as i32,
         );
     }

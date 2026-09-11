@@ -324,7 +324,7 @@ pub unsafe fn Z_CheckHeap(state: &mut ZZoneState) {
 pub unsafe fn Z_ChangeTag2(
     mut ptr: *mut ::core::ffi::c_void,
     mut tag: i32,
-    mut file: *mut ::core::ffi::c_char,
+    file: &str,
     mut line: i32,
 ) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
@@ -333,15 +333,13 @@ pub unsafe fn Z_ChangeTag2(
     if (*block).id != ZONEID {
         I_Error(&format!(
             "{}:{}: Z_ChangeTag: block without a ZONEID!",
-            ::std::ffi::CStr::from_ptr(file).to_str().unwrap(),
-            line,
+            file, line,
         ));
     }
     if tag >= PU_PURGELEVEL as i32 && (*block).user.is_null() {
         I_Error(&format!(
             "{}:{}: Z_ChangeTag: an owner is required for purgable blocks",
-            ::std::ffi::CStr::from_ptr(file).to_str().unwrap(),
-            line,
+            file, line,
         ));
     }
     (*block).tag = tag;

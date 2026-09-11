@@ -225,7 +225,7 @@ pub unsafe fn R_GenerateComposite(state: &mut GameState, mut texnum: i32) {
     Z_ChangeTag2(
         block as *mut ::core::ffi::c_void,
         PU_CACHE as i32,
-        b"r_data.c\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
+        "r_data.c",
         286 as i32,
     );
 }
@@ -343,7 +343,7 @@ unsafe fn GenerateTextureHashTable(state: &mut GameState) {
     while i < state.r_data.numtextures {
         (**state.r_data.textures.offset(i as isize)).index = i;
         key = W_LumpNameHash(
-            &raw mut (**state.r_data.textures.offset(i as isize)).name as *mut ::core::ffi::c_char,
+            (**state.r_data.textures.offset(i as isize)).name.as_ptr() as *const ::core::ffi::c_char,
         )
         .wrapping_rem(state.r_data.numtextures as u32) as i32;
         rover = state.r_data.textures_hashtable.offset(key as isize) as *mut *mut texture_t;
@@ -366,8 +366,8 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     let mut maptex: *mut i32 = ::core::ptr::null_mut::<i32>();
     let mut maptex2: *mut i32 = ::core::ptr::null_mut::<i32>();
     let mut maptex1: *mut i32 = ::core::ptr::null_mut::<i32>();
-    let mut names: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut name_p: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let mut names: *mut u8 = ::core::ptr::null_mut::<u8>();
+    let mut name_p: *mut u8 = ::core::ptr::null_mut::<u8>();
     let mut patchlookup: *mut i32 = ::core::ptr::null_mut::<i32>();
     let mut totalwidth: i32 = 0;
     let mut nummappatches: i32 = 0;
@@ -380,7 +380,7 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     let mut temp1: i32 = 0;
     let mut temp2: i32 = 0;
     let mut temp3: i32 = 0;
-    names = W_CacheLumpName(state, "PNAMES", PU_STATIC as i32) as *mut ::core::ffi::c_char;
+    names = W_CacheLumpName(state, "PNAMES", PU_STATIC as i32) as *mut u8;
     nummappatches = *(names as *mut i32);
     name_p = names.offset(4 as i32 as isize);
     patchlookup = Z_Malloc(
@@ -392,7 +392,7 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     i = 0 as i32;
     while i < nummappatches {
         *patchlookup.offset(i as isize) = W_CheckNumForName(&wad_name8_to_string(
-            name_p.offset((i * 8 as i32) as isize),
+            name_p.offset((i * 8 as i32) as isize) as *const ::core::ffi::c_char,
         ));
         i += 1;
     }
@@ -522,7 +522,7 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
             if (*patch).patch == -(1 as i32) {
                 I_Error(&format!(
                     "R_InitTextures: Missing patch in texture {}",
-                    wad_name8_to_string(&raw mut (*texture).name as *mut ::core::ffi::c_char),
+                    (*texture).name.as_str(),
                 ));
             }
             j += 1;
@@ -687,11 +687,9 @@ pub unsafe fn R_TextureNumForName(state: &mut RDataState, name: &str) -> i32 {
     return i;
 }
 pub unsafe fn R_PrecacheLevel(state: &mut GameState) {
-    let mut flatpresent: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut texturepresent: *mut ::core::ffi::c_char =
-        ::core::ptr::null_mut::<::core::ffi::c_char>();
-    let mut spritepresent: *mut ::core::ffi::c_char =
-        ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let mut flatpresent: *mut u8 = ::core::ptr::null_mut::<u8>();
+    let mut texturepresent: *mut u8 = ::core::ptr::null_mut::<u8>();
+    let mut spritepresent: *mut u8 = ::core::ptr::null_mut::<u8>();
     let mut i: i32 = 0;
     let mut j: i32 = 0;
     let mut k: i32 = 0;
@@ -707,7 +705,7 @@ pub unsafe fn R_PrecacheLevel(state: &mut GameState) {
         state.r_data.numflats,
         PU_STATIC as i32,
         NULL,
-    ) as *mut ::core::ffi::c_char;
+    ) as *mut u8;
     memset(
         flatpresent as *mut ::core::ffi::c_void,
         0 as i32,
@@ -716,9 +714,9 @@ pub unsafe fn R_PrecacheLevel(state: &mut GameState) {
     i = 0 as i32;
     while i < state.p_setup.numsectors {
         *flatpresent.offset(state.p_setup.sectors[i as usize].floorpic as isize) =
-            1 as ::core::ffi::c_char;
+            1 as u8;
         *flatpresent.offset(state.p_setup.sectors[i as usize].ceilingpic as isize) =
-            1 as ::core::ffi::c_char;
+            1 as u8;
         i += 1;
     }
     state.r_data.flatmemory = 0 as i32;
@@ -737,7 +735,7 @@ pub unsafe fn R_PrecacheLevel(state: &mut GameState) {
         state.r_data.numtextures,
         PU_STATIC as i32,
         NULL,
-    ) as *mut ::core::ffi::c_char;
+    ) as *mut u8;
     memset(
         texturepresent as *mut ::core::ffi::c_void,
         0 as i32,
@@ -746,14 +744,14 @@ pub unsafe fn R_PrecacheLevel(state: &mut GameState) {
     i = 0 as i32;
     while i < state.p_setup.numsides {
         *texturepresent.offset(state.p_setup.sides[i as usize].toptexture as isize) =
-            1 as ::core::ffi::c_char;
+            1 as u8;
         *texturepresent.offset(state.p_setup.sides[i as usize].midtexture as isize) =
-            1 as ::core::ffi::c_char;
+            1 as u8;
         *texturepresent.offset(state.p_setup.sides[i as usize].bottomtexture as isize) =
-            1 as ::core::ffi::c_char;
+            1 as u8;
         i += 1;
     }
-    *texturepresent.offset(state.r_sky.skytexture as isize) = 1 as ::core::ffi::c_char;
+    *texturepresent.offset(state.r_sky.skytexture as isize) = 1 as u8;
     state.r_data.texturememory = 0 as i32;
     i = 0 as i32;
     while i < state.r_data.numtextures {
@@ -778,7 +776,7 @@ pub unsafe fn R_PrecacheLevel(state: &mut GameState) {
         state.r_things.numsprites,
         PU_STATIC as i32,
         NULL,
-    ) as *mut ::core::ffi::c_char;
+    ) as *mut u8;
     memset(
         spritepresent as *mut ::core::ffi::c_void,
         0 as i32,
@@ -788,7 +786,7 @@ pub unsafe fn R_PrecacheLevel(state: &mut GameState) {
     while th != &raw mut state.p_tick.thinkercap {
         if matches!((*th).function, ThinkerFn::Mobj(_)) {
             *spritepresent.offset((*(th as *mut mobj_t)).sprite as isize) =
-                1 as ::core::ffi::c_char;
+                1 as u8;
         }
         th = (*th).next as *mut thinker_t;
     }
