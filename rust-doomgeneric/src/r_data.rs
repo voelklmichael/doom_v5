@@ -6,7 +6,6 @@ use crate::src::i_system::I_ConsoleStdout;
 use crate::src::i_system::I_Error;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACBITS;
-use crate::src::m_misc::M_StringCopy;
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::thinker_t;
 use crate::src::p_mobj::ThinkerFn;
@@ -367,7 +366,6 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     let mut maptex: *mut i32 = ::core::ptr::null_mut::<i32>();
     let mut maptex2: *mut i32 = ::core::ptr::null_mut::<i32>();
     let mut maptex1: *mut i32 = ::core::ptr::null_mut::<i32>();
-    let mut name: [::core::ffi::c_char; 9] = [0; 9];
     let mut names: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut name_p: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
     let mut patchlookup: *mut i32 = ::core::ptr::null_mut::<i32>();
@@ -382,7 +380,6 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     let mut temp1: i32 = 0;
     let mut temp2: i32 = 0;
     let mut temp3: i32 = 0;
-    name[8 as i32 as usize] = 0 as ::core::ffi::c_char;
     names = W_CacheLumpName(state, "PNAMES", PU_STATIC as i32) as *mut ::core::ffi::c_char;
     nummappatches = *(names as *mut i32);
     name_p = names.offset(4 as i32 as isize);
@@ -394,13 +391,8 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     ) as *mut i32;
     i = 0 as i32;
     while i < nummappatches {
-        M_StringCopy(
-            &raw mut name as *mut ::core::ffi::c_char,
-            name_p.offset((i * 8 as i32) as isize),
-            ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
-        );
         *patchlookup.offset(i as isize) = W_CheckNumForName(&wad_name8_to_string(
-            &raw const name as *const ::core::ffi::c_char,
+            name_p.offset((i * 8 as i32) as isize),
         ));
         i += 1;
     }
@@ -661,57 +653,36 @@ pub unsafe fn R_InitData(state: &mut GameState) {
     print!(".");
     R_InitColormaps(state);
 }
-pub unsafe fn R_FlatNumForName(state: &mut RDataState, mut name: *mut ::core::ffi::c_char) -> i32 {
+pub unsafe fn R_FlatNumForName(state: &mut RDataState, name: &str) -> i32 {
     let mut i: i32 = 0;
-    let mut namet: [::core::ffi::c_char; 9] = [0; 9];
-    i = W_CheckNumForName(&wad_name8_to_string(name));
+    i = W_CheckNumForName(name);
     if i == -(1 as i32) {
-        namet[8 as i32 as usize] = 0 as ::core::ffi::c_char;
-        memcpy(
-            &raw mut namet as *mut ::core::ffi::c_char as *mut ::core::ffi::c_void,
-            name as *const ::core::ffi::c_void,
-            8 as size_t,
-        );
-        I_Error(&format!(
-            "R_FlatNumForName: {} not found",
-            wad_name8_to_string(&raw mut namet as *mut ::core::ffi::c_char),
-        ));
+        I_Error(&format!("R_FlatNumForName: {} not found", name));
     }
     return i - state.firstflat;
 }
-pub unsafe fn R_CheckTextureNumForName(
-    state: &mut RDataState,
-    mut name: *mut ::core::ffi::c_char,
-) -> i32 {
+pub unsafe fn R_CheckTextureNumForName(state: &mut RDataState, name: &str) -> i32 {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();
     let mut key: i32 = 0;
-    if *name.offset(0 as i32 as isize) as i32 == '-' as i32 {
+    if name.as_bytes().first() == Some(&b'-') {
         return 0 as i32;
     }
-    key = W_LumpNameHash(name).wrapping_rem(state.numtextures as u32) as i32;
+    let name_cstring = ::std::ffi::CString::new(name).unwrap();
+    key = W_LumpNameHash(name_cstring.as_ptr()).wrapping_rem(state.numtextures as u32) as i32;
     texture = *state.textures_hashtable.offset(key as isize);
     while !texture.is_null() {
-        if (*texture)
-            .name
-            .eq_bytes_ignore_ascii_case(::std::ffi::CStr::from_ptr(name).to_bytes())
-        {
+        if (*texture).name.eq_bytes_ignore_ascii_case(name.as_bytes()) {
             return (*texture).index;
         }
         texture = (*texture).next;
     }
     return -(1 as i32);
 }
-pub unsafe fn R_TextureNumForName(
-    state: &mut RDataState,
-    mut name: *mut ::core::ffi::c_char,
-) -> i32 {
+pub unsafe fn R_TextureNumForName(state: &mut RDataState, name: &str) -> i32 {
     let mut i: i32 = 0;
     i = R_CheckTextureNumForName(state, name);
     if i == -(1 as i32) {
-        I_Error(&format!(
-            "R_TextureNumForName: {} not found",
-            wad_name8_to_string(name)
-        ));
+        I_Error(&format!("R_TextureNumForName: {} not found", name));
     }
     return i;
 }

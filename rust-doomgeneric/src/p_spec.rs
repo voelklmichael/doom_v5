@@ -59,7 +59,7 @@ use crate::src::r_defs::side_t;
 use crate::src::s_sound::S_StartSound;
 use crate::src::sounds::sfx_swtchn;
 use crate::src::stdint_types::size_t;
-use crate::src::w_wad::{wad_name8_to_string, W_CheckNumForName};
+use crate::src::w_wad::W_CheckNumForName;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
 use libc::memset;
@@ -330,27 +330,22 @@ pub unsafe fn P_InitPicAnims(state: &mut GameState) {
     let mut current_block_13: u64;
     i = 0 as i32;
     while animdefs[i as usize].istexture != -(1 as i32) {
-        let mut startname: *mut ::core::ffi::c_char =
-            ::core::ptr::null_mut::<::core::ffi::c_char>();
-        let mut endname: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
-        startname = &raw mut (*(&raw const animdefs as *mut animdef_t).offset(i as isize)).startname
-            as *mut ::core::ffi::c_char;
-        endname = &raw mut (*(&raw const animdefs as *mut animdef_t).offset(i as isize)).endname
-            as *mut ::core::ffi::c_char;
+        let startname = animdefs[i as usize].startname.as_str();
+        let endname = animdefs[i as usize].endname.as_str();
         if animdefs[i as usize].istexture != 0 {
-            if R_CheckTextureNumForName(&mut state.r_data, startname) == -(1 as i32) {
+            if R_CheckTextureNumForName(&mut state.r_data, &startname) == -(1 as i32) {
                 current_block_13 = 12237857397564741460;
             } else {
-                (*state.p_spec.lastanim).picnum = R_TextureNumForName(&mut state.r_data, endname);
+                (*state.p_spec.lastanim).picnum = R_TextureNumForName(&mut state.r_data, &endname);
                 (*state.p_spec.lastanim).basepic =
-                    R_TextureNumForName(&mut state.r_data, startname);
+                    R_TextureNumForName(&mut state.r_data, &startname);
                 current_block_13 = 11650488183268122163;
             }
-        } else if W_CheckNumForName(&wad_name8_to_string(startname)) == -(1 as i32) {
+        } else if W_CheckNumForName(&startname) == -(1 as i32) {
             current_block_13 = 12237857397564741460;
         } else {
-            (*state.p_spec.lastanim).picnum = R_FlatNumForName(&mut state.r_data, endname);
-            (*state.p_spec.lastanim).basepic = R_FlatNumForName(&mut state.r_data, startname);
+            (*state.p_spec.lastanim).picnum = R_FlatNumForName(&mut state.r_data, &endname);
+            (*state.p_spec.lastanim).basepic = R_FlatNumForName(&mut state.r_data, &startname);
             current_block_13 = 11650488183268122163;
         }
         match current_block_13 {
@@ -361,8 +356,7 @@ pub unsafe fn P_InitPicAnims(state: &mut GameState) {
                 if (*state.p_spec.lastanim).numpics < 2 as i32 {
                     I_Error(&format!(
                         "P_InitPicAnims: bad cycle from {} to {}",
-                        wad_name8_to_string(startname),
-                        wad_name8_to_string(endname),
+                        startname, endname,
                     ));
                 }
                 (*state.p_spec.lastanim).speed = animdefs[i as usize].speed;

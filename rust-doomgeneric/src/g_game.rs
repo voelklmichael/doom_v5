@@ -790,26 +790,18 @@ pub unsafe fn G_BuildTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t, mut m
 }
 pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
     let mut i: i32 = 0;
-    state.r_sky.skyflatnum = R_FlatNumForName(
-        &mut state.r_data,
-        b"F_SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char,
-    );
+    state.r_sky.skyflatnum = R_FlatNumForName(&mut state.r_data, "F_SKY1");
     if state.doomstat.gamemode as u32 == commercial as u32
         && [GameVersion::final2, GameVersion::chex].contains(&state.doomstat.gameversion)
     {
-        let mut skytexturename: *mut ::core::ffi::c_char =
-            ::core::ptr::null_mut::<::core::ffi::c_char>();
+        let skytexturename: &str;
         if state.g_game.gamemap < 12 as i32 {
-            skytexturename =
-                b"SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            skytexturename = "SKY1";
         } else if state.g_game.gamemap < 21 as i32 {
-            skytexturename =
-                b"SKY2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            skytexturename = "SKY2";
         } else {
-            skytexturename =
-                b"SKY3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            skytexturename = "SKY3";
         }
-        skytexturename = skytexturename;
         state.r_sky.skytexture = R_TextureNumForName(&mut state.r_data, skytexturename);
     }
     state.g_game.levelstarttic = state.d_loop.gametic;
@@ -1728,8 +1720,7 @@ pub unsafe fn G_DoNewGame(state: &mut GameState) {
     state.g_game.gameaction = ga_nothing;
 }
 pub unsafe fn G_InitNew(state: &mut GameState, mut skill: skill_t, mut episode: i32, mut map: i32) {
-    let mut skytexturename: *mut ::core::ffi::c_char =
-        ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let skytexturename: &str;
     let mut i: i32 = 0;
     if state.g_game.paused {
         state.g_game.paused = false;
@@ -1805,36 +1796,28 @@ pub unsafe fn G_InitNew(state: &mut GameState, mut skill: skill_t, mut episode: 
     state.g_game.viewactive = true;
     if state.doomstat.gamemode as u32 == commercial as u32 {
         if state.g_game.gamemap < 12 as i32 {
-            skytexturename =
-                b"SKY1\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            skytexturename = "SKY1";
         } else if state.g_game.gamemap < 21 as i32 {
-            skytexturename =
-                b"SKY2\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            skytexturename = "SKY2";
         } else {
-            skytexturename =
-                b"SKY3\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+            skytexturename = "SKY3";
         }
     } else {
         match state.g_game.gameepisode {
             2 => {
-                skytexturename = b"SKY2\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                skytexturename = "SKY2";
             }
             3 => {
-                skytexturename = b"SKY3\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                skytexturename = "SKY3";
             }
             4 => {
-                skytexturename = b"SKY4\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                skytexturename = "SKY4";
             }
             1 | _ => {
-                skytexturename = b"SKY1\0" as *const u8 as *const ::core::ffi::c_char
-                    as *mut ::core::ffi::c_char;
+                skytexturename = "SKY1";
             }
         }
     }
-    skytexturename = skytexturename;
     state.r_sky.skytexture = R_TextureNumForName(&mut state.r_data, skytexturename);
     G_DoLoadLevel(state);
 }

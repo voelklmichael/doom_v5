@@ -432,6 +432,40 @@ independent wins found during the fresh post-phase-13 survey.
 
 `c_char` references: 955 → 700.
 
+**Phase 15 done** (`c-char-phase15-texture-flat-lookup`, PR pending): converted the
+`R_FlatNumForName`/`R_CheckTextureNumForName`/`R_TextureNumForName` trio
+(`r_data.rs`) from `*mut c_char` to `&str` — a small (3-function) but
+widely-called mini-hub for resolving a texture/flat name to its internal index,
+used across level setup, animated-texture init, switch init, and sky selection.
+- `R_InitTextures`'s PNAMES-parsing loop turned out to have a fully redundant
+  `[c_char; 9]` scratch buffer: it was `M_StringCopy`-ing 8 raw bytes out of the
+  WAD's patch-name table into a local buffer, null-padding it, then immediately
+  calling `wad_name8_to_string` on it — but `wad_name8_to_string` already reads
+  exactly 8 raw bytes and handles the not-necessarily-null-terminated case
+  itself, so the buffer added nothing. Simplified to call it directly on the WAD
+  buffer offset.
+- `R_FlatNumForName`'s own error-path had the same redundancy (re-decoding the
+  same raw pointer into a second local buffer just to print it) — removed, using
+  the already-decoded `&str` parameter directly.
+- `R_CheckTextureNumForName` bridges to `W_LumpNameHash` (a lower-level hash
+  function still on the `*const c_char` boundary, used elsewhere too and out of
+  scope for this phase) via a `CString`, matching this codebase's established
+  boundary-conversion pattern rather than converting that function too.
+- All 8 external call sites (`g_game.rs` ×3 — including simplifying two
+  "select a sky texture name by branching" locals from raw-pointer juggling to
+  plain `&str` assignment, `p_setup.rs` ×5 reading `mapsector_t`/`mapsidedef_t`'s
+  already-`FixedCStr` fields via `.as_str()`, `p_switch.rs` ×2 simplifying
+  needlessly-manual pointer-offset array indexing to plain indexing,
+  `p_spec.rs` ×5 reading `animdef_t`'s already-`FixedCStr` fields) updated to
+  match — every one of them was already backed by a `FixedCStr` field, a
+  literal, or a branch-selected literal, so no new `CString` bridging was
+  needed at any call site.
+- Verified beyond the standard bar with a screenshot: this trio resolves every
+  floor/ceiling/wall texture and the sky texture for the whole level, so a
+  pixel-correct render is a strong end-to-end signal for the entire change.
+
+`c_char` references: 700 → 649.
+
 Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
 concentrations are `st_stuff.rs` (the `cheatseq_t` byte-sequence family,
 deliberately kept as plain `c_char` arrays since Track 18 phase 2/3 — not a string
@@ -444,9 +478,10 @@ genuine variadic C-ABI printf reimplementations still used by many buffer-buildi
 call sites across the codebase, a structural piece rather than a simple field
 conversion — replacing these would mean auditing and converting every one of their
 callers, a much larger undertaking than a bounded field-conversion phase), `m_menu.rs`,
-`hu_stuff.rs`. Each needs the same per-cluster triage phases 10-14 used (is it a
+`hu_stuff.rs`. Each needs the same per-cluster triage phases 10-15 used (is it a
 lumpname-shaped const table, an always-null/always-dead field or function, a local
 scratch buffer, a cheat-sequence byte array, a numeric-lookup-table mislabeled as
-c_char, a shared callback-type hub, or a structural printf/path-building engine
-piece) before deciding scope — the original blanket 1369-count estimate has already
-proven an unreliable guide to where the real work is.
+c_char, a shared callback-type hub, a small widely-called name-resolution function
+trio, or a structural printf/path-building engine piece) before deciding scope —
+the original blanket 1369-count estimate has already proven an unreliable guide to
+where the real work is.

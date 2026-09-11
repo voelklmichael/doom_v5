@@ -385,14 +385,8 @@ pub unsafe fn P_LoadSectors(state: &mut GameState, mut lump: i32) {
         let ss = &mut state.p_setup.sectors[i as usize];
         ss.floorheight = (((*ms).floorheight as i32) << FRACBITS) as fixed_t;
         ss.ceilingheight = (((*ms).ceilingheight as i32) << FRACBITS) as fixed_t;
-        ss.floorpic = R_FlatNumForName(
-            &mut state.r_data,
-            &raw mut (*ms).floorpic as *mut ::core::ffi::c_char,
-        ) as i16;
-        ss.ceilingpic = R_FlatNumForName(
-            &mut state.r_data,
-            &raw mut (*ms).ceilingpic as *mut ::core::ffi::c_char,
-        ) as i16;
+        ss.floorpic = R_FlatNumForName(&mut state.r_data, &(*ms).floorpic.as_str()) as i16;
+        ss.ceilingpic = R_FlatNumForName(&mut state.r_data, &(*ms).ceilingpic.as_str()) as i16;
         ss.lightlevel = (*ms).lightlevel;
         ss.special = (*ms).special;
         ss.tag = (*ms).tag;
@@ -656,18 +650,12 @@ pub unsafe fn P_LoadSideDefs(state: &mut GameState, mut lump: i32) {
         let sd = side_t {
             textureoffset: (((*msd).textureoffset as i32) << FRACBITS) as fixed_t,
             rowoffset: (((*msd).rowoffset as i32) << FRACBITS) as fixed_t,
-            toptexture: R_TextureNumForName(
-                &mut state.r_data,
-                &raw mut (*msd).toptexture as *mut ::core::ffi::c_char,
-            ) as i16,
-            bottomtexture: R_TextureNumForName(
-                &mut state.r_data,
-                &raw mut (*msd).bottomtexture as *mut ::core::ffi::c_char,
-            ) as i16,
-            midtexture: R_TextureNumForName(
-                &mut state.r_data,
-                &raw mut (*msd).midtexture as *mut ::core::ffi::c_char,
-            ) as i16,
+            toptexture: R_TextureNumForName(&mut state.r_data, &(*msd).toptexture.as_str())
+                as i16,
+            bottomtexture: R_TextureNumForName(&mut state.r_data, &(*msd).bottomtexture.as_str())
+                as i16,
+            midtexture: R_TextureNumForName(&mut state.r_data, &(*msd).midtexture.as_str())
+                as i16,
             sector: SectorId((*msd).sector as u32),
         };
         state.p_setup.sides.push(sd);
