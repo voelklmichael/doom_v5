@@ -96,3 +96,51 @@ without the existing unconditional reset, would have dereferenced a wild pointer
 (undefined behavior, likely a crash). The new code can't do that — a loaded message
 is always safely `None`. Strictly safer, not a behavior loss for any code path that
 currently exists.
+
+## `SetVariable` (m_config.rs) string duplication: intentional one-time leak (2026-09-11)
+
+**What it does**: when a config file line sets a `DEFAULT_STRING`-typed variable
+(e.g. `back_flat`, `savedir`, `video_driver`), `SetVariable` duplicates the parsed
+value and stores the new pointer into the variable's bound location:
+`CStr::from_ptr(value).to_owned().into_raw()`. This replaced a raw libc
+`strdup(value)` call — same shape (heap-allocate a nul-terminated copy, hand back
+an owned `*mut c_char`), just Rust's allocator instead of libc's.
+
+**Why this is safe to leak**: `into_raw()` (like the `strdup` it replaced) forgets
+the allocation — nothing ever calls `CString::from_raw` on these pointers to
+reclaim and drop them, and nothing in the codebase calls `free()` on them either
+(the only `free(` call anywhere is `w_wad.rs`'s unrelated `lumpinfo` cleanup).
+Every config variable overwrite therefore leaks its previous string value for the
+life of the process. This has always been true of the original C (`strdup` without
+a matching `free` on reload), so it's not a new deviation — noted here so the
+`into_raw()` call isn't mistaken for a bug (a "leaked memory" clippy/reviewer flag)
+or "fixed" by adding a `from_raw`/drop that would double-free or free a
+libc-vs-Rust-allocator-mismatched pointer.
+
+## Known bug (dormant): `snd_musiccmd` config binding can corrupt its own length field
+
+**What's wrong**: `i_sound.rs`'s `ISoundState.snd_musiccmd` field is typed
+`Option<&'static str>` (a fat pointer + length, 16 bytes on a 64-bit target), but
+it's bound into the config system with `M_BindVariable(state, "snd_musiccmd",
+&raw mut state.i_sound.snd_musiccmd as *mut c_void)`. `SetVariable`'s
+`DEFAULT_STRING` case treats every bound string location uniformly as a bare
+`*mut *mut c_char` (8 bytes) and writes only a pointer there. If a config file
+ever actually contained a `snd_musiccmd` line, this would overwrite just the first
+8 bytes of the 16-byte `Option<&str>`, leaving its length field as whatever
+garbage was previously in memory — corrupting the value instead of setting it.
+
+**Why it hasn't bitten anyone**: `snd_musiccmd` is written to `default.cfg` (as
+part of the full config dump) but never read back anywhere else in the port — the
+sound backend this was wired up for was dropped along the way and nothing
+dereferences `state.i_sound.snd_musiccmd`. The corruption happens but nothing
+looks at the corrupted value, so it's inert today.
+
+**Why it's not fixed here**: found incidentally while replacing `strdup` in
+`SetVariable` (same 8-byte pointer write existed before that change, under the old
+`strdup` call too — this is not a regression from that swap). Fixing it properly
+means either giving `snd_musiccmd` a `*mut c_char`-shaped storage representation
+consistent with every other `DEFAULT_STRING` binding, or teaching `SetVariable`
+about wide (`Option<&str>`) string locations specifically — both are a real design
+decision, not a drive-by fix, so it's flagged here instead of silently patched.
+**Before ever wiring a reader up to `snd_musiccmd`** (or converting another
+`DEFAULT_STRING`-bound field to `Option<&'static str>`), fix this binding first.
