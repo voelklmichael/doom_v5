@@ -912,37 +912,57 @@ two small clusters, plus a significant discovery.
 
 `c_char` references: 224 → 215.
 
-Next candidate: continue the raw `*mut`/`*const c_char` pointer sweep — remaining
-concentrations are `st_stuff.rs` (63 occurrences, mostly the `cheatseq_t`
-byte-sequence family, deliberately kept as plain `c_char` arrays since Track 18
-phase 2/3 — not a string in any meaningful sense, a sequence of raw keycodes
-matched byte-by-byte — worth a pass to confirm nothing else is hiding in that
-file besides `cheatseq_t`), `d_main.rs`'s remaining occurrences (the
-`demolumpname`/`-turbo` argument-parsing scratch buffers, the `title` static
-(`#[no_mangle]`, always-empty, likely a cross-crate FFI symbol — check before
-touching), `g_game.rs` (`defdemoname`/`G_DeferedPlayDemo`/`G_TimeDemo`,
-deliberately deferred phase 24 — see above, this is `demolumpname`'s other
-half), `m_config.rs`'s remaining occurrences (the generic type-erased
-config-variable storage system — `default_t.location: *mut c_void` cast
-per-type, with `DEFAULT_STRING` variables `strdup`'d into a raw `*mut
-c_char` — a real redesign, not a field conversion; also now confirmed the
-whole `SetVariable`/`M_SetVariable` write path is dead code, same category
-as `z_zone.rs`'s dump functions), `doomgeneric_xlib.rs`
-(confirmed genuine X11/cross-crate FFI struct layouts, out of scope),
-`z_zone.rs` (confirmed entirely inside 2 zero-caller debug-dump functions,
-left alone per "leave dead code alone"). Each needs the
-same per-cluster triage phases 10-28 used (is it a lumpname-shaped const
-table, an always-null/always-dead field or function, a local scratch buffer,
-a cheat-sequence byte array, a numeric-lookup-table mislabeled as c_char, a
-shared callback-type hub, a small widely-called name-resolution function
-trio, an already-native-String-round-tripping-through-a-raw-buffer, a genuine
-module-level `static mut` deferred since Track 16, a whole function that's
-provably dead code behind a self-comparison, a C `__FILE__`/`__LINE__`-idiom
-debug parameter, a checksummed/version-checked-data-buffer needing
-byte-exact-not-shape-exact translation, a whole dead debug-dump function or
-write-path, a genuine cross-crate FFI struct layout, a generic type-erased
-storage system, a raw zone-allocated buffer that must stay a raw pointer, or
-a structural printf/path-building engine piece — though the printf piece
-itself is now fully dead, see phase 28) before deciding scope —
-the original blanket 1369-count estimate has already proven an
-unreliable guide to where the real work is.
+**Phase 29 done** (`c-char-phase29-gfxmode-and-track-closure`, PR pending):
+`I_InitGraphics`'s (`i_video.rs`) `-gfxmode` local `mode` variable
+(`"rgba8888"`/`"rgb565"` string comparison, previously `*mut c_char` via
+`CStr::from_ptr`) → `&str`. Found during a fresh full-codebase re-survey
+(`grep -c 'c_char' src/*.rs | sort -rn`) done specifically to look for any
+remaining live, convertible clusters before concluding the track. Verified
+with the standard 3x boot plus a dedicated `-gfxmode rgb565` boot to
+exercise the branch the default boot path never reaches.
+
+`c_char` references: 215 → 210.
+
+**Track 18 status: substantially complete (~91% reduction, 2262 → 210).**
+This phase's full-codebase re-survey (every remaining file's occurrences
+individually inspected, not just counted) found that everything left falls
+into one of five categories this track has always treated as out of
+scope, with none of them hiding a further live, convertible cluster:
+
+1. **Deliberately-not-string-data**: `st_stuff.rs`/`m_cheat.rs`/`am_map.rs`'s
+   `cheatseq_t` family (~70 occurrences combined) — raw keycode byte
+   sequences matched one key at a time, not text, out of scope since phase
+   2/3.
+2. **Confirmed dead code, left alone per this track's standing
+   convention**: `z_zone.rs`'s `Z_DumpHeap`/`Z_FileDumpHeap` (11),
+   `memio.rs`'s `mem_fread`/`mem_fseek` (2), `m_misc.rs`'s
+   `M_snprintf`/`M_vsnprintf` (now fully dead as of phase 28) plus
+   `M_ReadFile`/`M_StringReplace`/`M_StringConcat`, `m_config.rs`'s
+   `SetVariable`/`M_SetVariable` write path, `d_iwad.rs`'s
+   `D_SuggestIWADName`.
+3. **Genuine C-ABI/FFI boundaries that should never become Rust strings**:
+   `doomgeneric_xlib.rs`'s X11 struct layouts (16), `i_system.rs`'s
+   `fopen`/`fprintf` extern declarations, `w_file_stdc.rs`/`m_menu.rs`'s
+   `"rb\0"` fopen-mode literals, `sha1.rs`'s `SHA1_UpdateString`
+   (single already-fixed caller in `w_checksum.rs`), `w_checksum.rs`
+   itself.
+4. **A genuine module-level `static mut` deferred since Track 16**:
+   `hu_stuff.rs`'s `player_names` and its one dependent parameter,
+   `hu_lib.rs`'s `HUlib_addMessageToSText`'s `prefix`.
+5. **A structural redesign, not a field conversion**: `m_config.rs`'s
+   generic type-erased config-variable storage (`default_t.location: *mut
+   c_void` cast per-type) — converting this properly means redesigning how
+   the config system stores heterogeneous variable types, not converting a
+   field.
+6. **Raw zone-allocated buffers that must stay raw pointers**:
+   `r_data.rs`'s PNAMES-parsing `name_p` (raw WAD-buffer arithmetic,
+   already funneled through the safe `wad_name8_to_string` helper).
+
+None of these are bounded-phase candidates without either violating the
+track's own scoping principles (category 1), doing something bigger than a
+c_char-conversion phase should do on its own (deleting dead code in
+category 2, redesigning the config system in category 5), or converting a
+genuine FFI boundary that shouldn't be a Rust string in the first place
+(category 3). Any future work here would be a different, explicitly-scoped
+follow-up track (e.g. "delete confirmed-dead functions" or "redesign the
+config-variable type system"), not a continuation of this one.

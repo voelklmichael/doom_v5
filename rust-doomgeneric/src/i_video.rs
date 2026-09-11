@@ -190,7 +190,7 @@ pub unsafe fn cmap_to_fb(
 pub unsafe fn I_InitGraphics(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut gfxmodeparm: i32 = 0;
-    let mut mode: *mut ::core::ffi::c_char = ::core::ptr::null_mut::<::core::ffi::c_char>();
+    let mut mode: &str = "";
     memset(
         &raw mut state.i_video.s_Fb as *mut ::core::ffi::c_void,
         0 as i32,
@@ -202,12 +202,13 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
     state.i_video.s_Fb.yres_virtual = state.i_video.s_Fb.yres;
     gfxmodeparm = M_CheckParmWithArgs(state, "-gfxmode", 1 as i32);
     if gfxmodeparm != 0 {
-        mode = state.m_argv.myargv[(gfxmodeparm + 1 as i32) as usize].as_ptr()
-            as *mut ::core::ffi::c_char;
+        mode = state.m_argv.myargv[(gfxmodeparm + 1 as i32) as usize]
+            .to_str()
+            .unwrap();
     } else {
-        mode = b"rgba8888\0" as *const u8 as *const ::core::ffi::c_char as *mut ::core::ffi::c_char;
+        mode = "rgba8888";
     }
-    if ::std::ffi::CStr::from_ptr(mode).to_bytes() == b"rgba8888" {
+    if mode == "rgba8888" {
         state.i_video.s_Fb.bits_per_pixel = 32 as uint32_t;
         state.i_video.s_Fb.blue.length = 8 as uint32_t;
         state.i_video.s_Fb.green.length = 8 as uint32_t;
@@ -217,7 +218,7 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
         state.i_video.s_Fb.green.offset = 8 as uint32_t;
         state.i_video.s_Fb.red.offset = 16 as uint32_t;
         state.i_video.s_Fb.transp.offset = 24 as uint32_t;
-    } else if ::std::ffi::CStr::from_ptr(mode).to_bytes() == b"rgb565" {
+    } else if mode == "rgb565" {
         state.i_video.s_Fb.bits_per_pixel = 16 as uint32_t;
         state.i_video.s_Fb.blue.length = 5 as uint32_t;
         state.i_video.s_Fb.green.length = 6 as uint32_t;
@@ -228,10 +229,7 @@ pub unsafe fn I_InitGraphics(state: &mut GameState) {
         state.i_video.s_Fb.red.offset = 0 as uint32_t;
         state.i_video.s_Fb.transp.offset = 16 as uint32_t;
     } else {
-        I_Error(&format!(
-            "Unknown gfxmode value: {}\n",
-            ::std::ffi::CStr::from_ptr(mode).to_str().unwrap(),
-        ));
+        I_Error(&format!("Unknown gfxmode value: {}\n", mode));
     }
     println!(
         "I_InitGraphics: framebuffer: x_res: {}, y_res: {}, x_virtual: {}, y_virtual: {}, bpp: {}",
