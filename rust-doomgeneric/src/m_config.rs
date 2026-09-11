@@ -34,7 +34,6 @@ use crate::src::m_controls::KEY_SCRLCK;
 use crate::src::m_controls::KEY_UPARROW;
 use crate::src::m_misc::M_MakeDirectory;
 use crate::src::m_misc::M_StrToInt;
-use libc::strdup;
 
 extern "C" {
     fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
@@ -1831,7 +1830,7 @@ unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_ch
     match (*def).type_0 as u32 {
         2 => {
             let ref mut fresh0 = *((*def).location as *mut *mut ::core::ffi::c_char);
-            *fresh0 = strdup(value);
+            *fresh0 = ::std::ffi::CStr::from_ptr(value).to_owned().into_raw();
         }
         0 | 1 => {
             *((*def).location as *mut i32) =
