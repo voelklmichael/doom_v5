@@ -446,6 +446,7 @@ pub unsafe fn P_UnsetThingPosition(state: &mut GameState, mut thing: *mut mobj_t
                 let ref mut fresh1 = *state
                     .p_setup
                     .blocklinks
+                    .as_mut_ptr()
                     .offset((blocky * state.p_setup.bmapwidth + blockx) as isize);
                 *fresh1 = (*thing).bnext as *mut mobj_t;
             }
@@ -480,8 +481,8 @@ pub unsafe fn P_SetThingPosition(state: &mut GameState, mut thing: *mut mobj_t) 
             link = state
                 .p_setup
                 .blocklinks
-                .offset((blocky * state.p_setup.bmapwidth + blockx) as isize)
-                as *mut *mut mobj_t;
+                .as_mut_ptr()
+                .offset((blocky * state.p_setup.bmapwidth + blockx) as isize);
             (*thing).bprev = ::core::ptr::null_mut::<mobj_s>();
             (*thing).bnext = *link as *mut mobj_s;
             if !(*link).is_null() {
@@ -509,7 +510,7 @@ pub unsafe fn P_BlockLinesIterator(
     }
     offset = y * state.p_setup.bmapwidth + x;
     offset = *state.p_setup.blockmap.offset(offset as isize) as i32;
-    list = state.p_setup.blockmaplump.offset(offset as isize);
+    list = state.p_setup.blockmaplump.as_mut_ptr().offset(offset as isize);
     while *list as i32 != -(1 as i32) {
         ld = state.p_setup.lines.as_mut_ptr().offset(*list as isize);
         if !((*ld).validcount == state.r_main.validcount) {
@@ -536,6 +537,7 @@ pub unsafe fn P_BlockThingsIterator(
     mobj = *state
         .p_setup
         .blocklinks
+        .as_mut_ptr()
         .offset((y * state.p_setup.bmapwidth + x) as isize);
     while !mobj.is_null() {
         if func.expect("non-null function pointer")(state, (*mobj).id) == 0 {
