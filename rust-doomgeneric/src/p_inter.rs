@@ -684,9 +684,9 @@ pub unsafe fn P_KillMobj(mut source: *mut mobj_t, mut target: *mut mobj_t) {
         }
     }
     if (*target).health < -(*(*target).info).spawnhealth && (*(*target).info).xdeathstate != 0 {
-        P_SetMobjState(target, (*(*target).info).xdeathstate as statenum_t);
+        P_SetMobjState(unsafe { game_state() }, target, (*(*target).info).xdeathstate as statenum_t);
     } else {
-        P_SetMobjState(target, (*(*target).info).deathstate as statenum_t);
+        P_SetMobjState(unsafe { game_state() }, target, (*(*target).info).deathstate as statenum_t);
     }
     (*target).tics -= P_Random(unsafe { &mut game_state().m_random }) & 3 as i32;
     if (*target).tics < 1 as i32 {
@@ -820,7 +820,7 @@ pub unsafe fn P_DamageMobj(
         && (*target).flags & MF_SKULLFLY as i32 == 0
     {
         (*target).flags |= MF_JUSTHIT as i32;
-        P_SetMobjState(target, (*(*target).info).painstate as statenum_t);
+        P_SetMobjState(unsafe { game_state() }, target, (*(*target).info).painstate as statenum_t);
     }
     (*target).reactiontime = 0 as i32;
     if ((*target).threshold == 0 || (*target).type_0 as u32 == MT_VILE as i32 as u32)
@@ -835,7 +835,7 @@ pub unsafe fn P_DamageMobj(
                 as *mut state_t
             && (*(*target).info).seestate != S_NULL as i32
         {
-            P_SetMobjState(target, (*(*target).info).seestate as statenum_t);
+            P_SetMobjState(unsafe { game_state() }, target, (*(*target).info).seestate as statenum_t);
         }
     }
 }

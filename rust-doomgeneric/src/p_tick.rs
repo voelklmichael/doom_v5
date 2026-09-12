@@ -44,29 +44,32 @@ pub unsafe fn P_AddThinker(mut thinker: *mut thinker_t) {
 pub unsafe fn P_RemoveThinker(mut thinker: *mut thinker_t) {
     (*thinker).function = ThinkerFn::Removed;
 }
-pub unsafe fn P_RunThinkers() {
+pub unsafe fn P_RunThinkers(state: &mut GameState) {
     let mut currentthinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
-    currentthinker = unsafe { game_state() }.p_tick.thinkercap.next as *mut thinker_t;
-    while currentthinker != &raw mut unsafe { game_state() }.p_tick.thinkercap {
+    currentthinker = state.p_tick.thinkercap.next as *mut thinker_t;
+    while currentthinker != &raw mut state.p_tick.thinkercap {
         match (*currentthinker).function {
             ThinkerFn::Removed => {
                 (*(*currentthinker).next).prev = (*currentthinker).prev;
                 (*(*currentthinker).prev).next = (*currentthinker).next;
                 Z_Free(
-                    unsafe { &mut game_state().z_zone },
+                    &mut state.z_zone,
                     currentthinker as *mut ::core::ffi::c_void,
                 );
             }
             ThinkerFn::Paused | ThinkerFn::Unresolved => {}
-            ThinkerFn::Mobj(f) => f((*(currentthinker as *mut mobj_t)).id),
-            ThinkerFn::Ceiling(f) => f(currentthinker as *mut ceiling_t),
-            ThinkerFn::Door(f) => f(currentthinker as *mut vldoor_t),
-            ThinkerFn::Floor(f) => f(currentthinker as *mut floormove_t),
-            ThinkerFn::Plat(f) => f(currentthinker as *mut plat_t),
-            ThinkerFn::FireFlicker(f) => f(currentthinker as *mut fireflicker_t),
-            ThinkerFn::LightFlash(f) => f(currentthinker as *mut lightflash_t),
-            ThinkerFn::Strobe(f) => f(currentthinker as *mut strobe_t),
-            ThinkerFn::Glow(f) => f(currentthinker as *mut glow_t),
+            ThinkerFn::Mobj(f) => {
+                let mobj_id = (*(currentthinker as *mut mobj_t)).id;
+                f(state, mobj_id);
+            }
+            ThinkerFn::Ceiling(f) => f(state, currentthinker as *mut ceiling_t),
+            ThinkerFn::Door(f) => f(state, currentthinker as *mut vldoor_t),
+            ThinkerFn::Floor(f) => f(state, currentthinker as *mut floormove_t),
+            ThinkerFn::Plat(f) => f(state, currentthinker as *mut plat_t),
+            ThinkerFn::FireFlicker(f) => f(state, currentthinker as *mut fireflicker_t),
+            ThinkerFn::LightFlash(f) => f(state, currentthinker as *mut lightflash_t),
+            ThinkerFn::Strobe(f) => f(state, currentthinker as *mut strobe_t),
+            ThinkerFn::Glow(f) => f(state, currentthinker as *mut glow_t),
         }
         currentthinker = (*currentthinker).next as *mut thinker_t;
     }
@@ -93,7 +96,7 @@ pub unsafe fn P_Ticker(state: &mut GameState) {
         }
         i += 1;
     }
-    P_RunThinkers();
+    P_RunThinkers(state);
     P_UpdateSpecials(&mut state.p_switch);
     P_RespawnSpecials(&mut state.p_mobj);
     state.p_tick.leveltime += 1;

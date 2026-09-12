@@ -324,7 +324,7 @@ pub unsafe extern "C" fn PIT_CheckThing(state: &mut GameState, mut thing_id: Mob
             (*state.p_map.tmthing).momz;
         (*state.p_map.tmthing).momx =
             (*state.p_map.tmthing).momy;
-        P_SetMobjState(
+        P_SetMobjState(state, 
             state.p_map.tmthing,
             (*(*state.p_map.tmthing).info).spawnstate as statenum_t,
         );
@@ -1154,7 +1154,7 @@ pub unsafe extern "C" fn PIT_ChangeSector(state: &mut GameState, mut thing_id: M
         return true_0 as boolean;
     }
     if (*thing).health <= 0 as i32 {
-        P_SetMobjState(thing, S_GIBS);
+        P_SetMobjState(state, thing, S_GIBS);
         (*thing).flags &= !(MF_SOLID as i32);
         (*thing).height = 0 as i32 as fixed_t;
         (*thing).radius = 0 as i32 as fixed_t;

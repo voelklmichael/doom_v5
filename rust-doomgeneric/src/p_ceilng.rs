@@ -1,5 +1,6 @@
 use crate::src::doomdef::NULL;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_floor::T_MovePlane;
@@ -38,9 +39,9 @@ impl PCeilngState {
     }
 }
 
-pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
+pub unsafe fn T_MoveCeiling(state: &mut GameState, mut ceiling: *mut ceiling_t) {
     let mut res: result_e = ok;
-    let sec = unsafe { game_state() }.p_setup.sector_mut((*ceiling).sector);
+    let sec = state.p_setup.sector_mut((*ceiling).sector);
     match (*ceiling).direction {
         1 => {
             res = T_MovePlane(
@@ -51,12 +52,12 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 1 as i32,
                 (*ceiling).direction,
             );
-            if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
+            if state.p_tick.leveltime & 7 as i32 == 0 {
                 match (*ceiling).type_0 as u32 {
                     5 => {}
                     _ => {
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_stnmov as i32,
                         );
@@ -67,12 +68,12 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 let mut current_block_7: u64;
                 match (*ceiling).type_0 as u32 {
                     1 => {
-                        P_RemoveActiveCeiling(unsafe { &mut game_state().p_ceilng }, ceiling);
+                        P_RemoveActiveCeiling(&mut state.p_ceilng, ceiling);
                         current_block_7 = 10599921512955367680;
                     }
                     5 => {
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_pstop as i32,
                         );
@@ -102,12 +103,12 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 1 as i32,
                 (*ceiling).direction,
             );
-            if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
+            if state.p_tick.leveltime & 7 as i32 == 0 {
                 match (*ceiling).type_0 as u32 {
                     5 => {}
                     _ => {
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_stnmov as i32,
                         );
@@ -119,7 +120,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                 match (*ceiling).type_0 as u32 {
                     5 => {
                         S_StartSound(
-                            unsafe { &mut game_state().sounds },
+                            &mut state.sounds,
                             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
                             sfx_pstop as i32,
                         );
@@ -132,7 +133,7 @@ pub unsafe fn T_MoveCeiling(mut ceiling: *mut ceiling_t) {
                         current_block_19 = 14600216857840559743;
                     }
                     2 | 0 => {
-                        P_RemoveActiveCeiling(unsafe { &mut game_state().p_ceilng }, ceiling);
+                        P_RemoveActiveCeiling(&mut state.p_ceilng, ceiling);
                         current_block_19 = 16924917904204750491;
                     }
                     _ => {

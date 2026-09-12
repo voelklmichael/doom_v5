@@ -1,5 +1,6 @@
 use crate::src::doomdef::NULL;
 use crate::src::game_state::game_state;
+use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
@@ -153,9 +154,9 @@ pub unsafe fn T_MovePlane(
     }
     return ok;
 }
-pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
+pub unsafe fn T_MoveFloor(state: &mut GameState, mut floor: *mut floormove_t) {
     let mut res: result_e = ok;
-    let sec = unsafe { game_state() }.p_setup.sector_mut((*floor).sector);
+    let sec = state.p_setup.sector_mut((*floor).sector);
     res = T_MovePlane(
         sec,
         (*floor).speed,
@@ -164,9 +165,9 @@ pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
         0 as i32,
         (*floor).direction,
     );
-    if unsafe { game_state() }.p_tick.leveltime & 7 as i32 == 0 {
+    if state.p_tick.leveltime & 7 as i32 == 0 {
         S_StartSound(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
             sfx_stnmov as i32,
         );
@@ -192,7 +193,7 @@ pub unsafe fn T_MoveFloor(mut floor: *mut floormove_t) {
         }
         P_RemoveThinker(&raw mut (*floor).thinker);
         S_StartSound(
-            unsafe { &mut game_state().sounds },
+            &mut state.sounds,
             &raw mut (*sec).soundorg as *mut ::core::ffi::c_void,
             sfx_pstop as i32,
         );
