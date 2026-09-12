@@ -379,12 +379,12 @@ pub unsafe fn D_Display(state: &mut GameState) {
         return;
     }
     wipe_EndScreen(state, 0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
-    wipestart = I_GetTime(&mut state.i_timer) - 1 as i32;
+    wipestart = I_GetTime(state) - 1 as i32;
     loop {
         loop {
-            nowtime = I_GetTime(&mut state.i_timer);
+            nowtime = I_GetTime(state);
             tics = nowtime - wipestart;
-            I_Sleep(1 as i32);
+            I_Sleep(state, 1 as i32);
             if !(tics <= 0 as i32) {
                 break;
             }
@@ -491,9 +491,7 @@ pub unsafe fn D_GrabMouseCallback() -> boolean {
         && !unsafe { game_state() }.g_game.demoplayback
         && !unsafe { game_state() }.d_main.advancedemo) as i32 as boolean;
 }
-#[no_mangle]
-pub unsafe extern "C" fn doomgeneric_Tick(state: *mut ::core::ffi::c_void) {
-    let state = unsafe { &mut *(state as *mut GameState) };
+pub unsafe fn doomgeneric_Tick(state: &mut GameState) {
     TryRunTics(state);
     let listener_mo = state.g_game.players[state.g_game.consoleplayer as usize].mo;
     S_UpdateSounds(state, listener_mo);
@@ -516,7 +514,7 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
     }
     state.d_main.main_loop_started = true;
     TryRunTics(state);
-    I_SetWindowTitle(state.doomstat.gamedescription);
+    I_SetWindowTitle(state, state.doomstat.gamedescription);
     I_SetGrabMouseCallback();
     I_InitGraphics(state);
     V_RestoreBuffer(state);
@@ -525,7 +523,7 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
     if state.g_game.testcontrols {
         state.d_main.wipegamestate = state.g_game.gamestate;
     }
-    doomgeneric_Tick(state as *mut GameState as *mut ::core::ffi::c_void);
+    doomgeneric_Tick(state);
 }
 pub unsafe fn D_PageTicker(state: &mut GameState) {
     state.d_main.pagetic -= 1;

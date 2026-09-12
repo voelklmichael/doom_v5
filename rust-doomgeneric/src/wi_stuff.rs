@@ -2183,8 +2183,8 @@ pub unsafe fn WI_Start(state: &mut GameState, mut wbstartstruct: *mut wbstartstr
         WI_initStats(state);
     };
 }
-unsafe extern "C" fn run_static_initializers() {
-    unsafe { game_state() }.wi_stuff.NUMANIMS = [
+pub unsafe fn fixup_numanims(state: &mut GameState) {
+    state.wi_stuff.NUMANIMS = [
         (::core::mem::size_of::<[anim_t; 10]>() as usize)
             .wrapping_div(::core::mem::size_of::<anim_t>() as usize) as i32,
         (::core::mem::size_of::<[anim_t; 9]>() as usize)
@@ -2194,8 +2194,3 @@ unsafe extern "C" fn run_static_initializers() {
         0,
     ];
 }
-#[used]
-#[cfg_attr(target_os = "linux", link_section = ".init_array")]
-#[cfg_attr(target_os = "windows", link_section = ".CRT$XIB")]
-#[cfg_attr(target_os = "macos", link_section = "__DATA,__mod_init_func")]
-static INIT_ARRAY: [unsafe extern "C" fn(); 1] = [run_static_initializers];

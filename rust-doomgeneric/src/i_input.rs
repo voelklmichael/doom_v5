@@ -4,9 +4,6 @@ use crate::src::d_event::{ev_keydown, ev_keyup};
 use crate::src::game_state::GameState;
 use crate::src::m_controls::KEY_RSHIFT;
 
-extern "C" {
-    fn DG_GetKey(pressed: *mut i32, key: *mut u8) -> i32;
-}
 pub struct IInputState {
     pub vanilla_keyboard_mapping: i32,
     shiftdown: i32,
@@ -184,9 +181,8 @@ pub unsafe fn I_GetEvent(state: &mut GameState) {
         data3: 0,
         data4: 0,
     };
-    let mut pressed: i32 = 0;
-    let mut key: u8 = 0;
-    while DG_GetKey(&raw mut pressed, &raw mut key) != 0 {
+    while let Some((pressed, key)) = state.platform.get_key() {
+        let pressed = pressed as i32;
         UpdateShiftStatus(&mut state.i_input, pressed, key);
         if pressed != 0 {
             event.type_0 = ev_keydown;

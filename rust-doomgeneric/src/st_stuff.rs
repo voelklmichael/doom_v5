@@ -1337,8 +1337,8 @@ pub unsafe fn ST_Init(state: &mut GameState) {
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut byte;
 }
-unsafe extern "C" fn run_static_initializers() {
-    unsafe { game_state() }.st_stuff.cheat_clev = cheatseq_t {
+pub unsafe fn fixup_cheat_sequences(state: &mut GameState) {
+    state.st_stuff.cheat_clev = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"idclev\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1349,7 +1349,7 @@ unsafe extern "C" fn run_static_initializers() {
         param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
-    unsafe { game_state() }.st_stuff.cheat_mypos = cheatseq_t {
+    state.st_stuff.cheat_mypos = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"idmypos\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1360,7 +1360,7 @@ unsafe extern "C" fn run_static_initializers() {
         param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
-    unsafe { game_state() }.st_stuff.cheat_choppers = cheatseq_t {
+    state.st_stuff.cheat_choppers = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"idchoppers\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1371,7 +1371,7 @@ unsafe extern "C" fn run_static_initializers() {
         param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
-    unsafe { game_state() }.st_stuff.cheat_powerup = [
+    state.st_stuff.cheat_powerup = [
         cheatseq_t {
             sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
                 *b"idbeholdv\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -1464,7 +1464,7 @@ unsafe extern "C" fn run_static_initializers() {
             ),
         },
     ];
-    unsafe { game_state() }.st_stuff.cheat_commercial_noclip = cheatseq_t {
+    state.st_stuff.cheat_commercial_noclip = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"idclip\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1475,7 +1475,7 @@ unsafe extern "C" fn run_static_initializers() {
         param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
-    unsafe { game_state() }.st_stuff.cheat_noclip = cheatseq_t {
+    state.st_stuff.cheat_noclip = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"idspispopd\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1486,7 +1486,7 @@ unsafe extern "C" fn run_static_initializers() {
         param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
-    unsafe { game_state() }.st_stuff.cheat_mus = cheatseq_t {
+    state.st_stuff.cheat_mus = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"idmus\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1497,7 +1497,7 @@ unsafe extern "C" fn run_static_initializers() {
         param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
-    unsafe { game_state() }.st_stuff.cheat_ammo = cheatseq_t {
+    state.st_stuff.cheat_ammo = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"idkfa\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1508,7 +1508,7 @@ unsafe extern "C" fn run_static_initializers() {
         param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
-    unsafe { game_state() }.st_stuff.cheat_ammonokey = cheatseq_t {
+    state.st_stuff.cheat_ammonokey = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"idfa\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1519,7 +1519,7 @@ unsafe extern "C" fn run_static_initializers() {
         param_chars_read: 0 as i32,
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
-    unsafe { game_state() }.st_stuff.cheat_god = cheatseq_t {
+    state.st_stuff.cheat_god = cheatseq_t {
         sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
             *b"iddqd\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
         ),
@@ -1531,8 +1531,3 @@ unsafe extern "C" fn run_static_initializers() {
         parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
     };
 }
-#[used]
-#[cfg_attr(target_os = "linux", link_section = ".init_array")]
-#[cfg_attr(target_os = "windows", link_section = ".CRT$XIB")]
-#[cfg_attr(target_os = "macos", link_section = "__DATA,__mod_init_func")]
-static INIT_ARRAY: [unsafe extern "C" fn(); 1] = [run_static_initializers];

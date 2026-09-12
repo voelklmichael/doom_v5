@@ -134,7 +134,7 @@ static localplayer: i32 = 0;
 pub static offsetms: fixed_t = 0;
 unsafe fn GetAdjustedTime(state: &mut GameState) -> i32 {
     let mut time_ms: i32 = 0;
-    time_ms = I_GetTimeMS(&mut state.i_timer);
+    time_ms = I_GetTimeMS(state);
     if state.d_loop.new_sync {
         time_ms += offsetms as i32 / FRACUNIT;
     }
@@ -354,7 +354,7 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
     let mut realtics: i32 = 0;
     let mut availabletics: i32 = 0;
     let mut counts: i32 = 0;
-    entertic = I_GetTime(&mut state.i_timer) / state.d_loop.ticdup;
+    entertic = I_GetTime(state) / state.d_loop.ticdup;
     realtics = entertic - state.d_loop.try_run_tics_oldentertics;
     state.d_loop.try_run_tics_oldentertics = entertic;
     if state.d_loop.singletics {
@@ -390,10 +390,10 @@ pub unsafe fn TryRunTics(state: &mut GameState) {
         if lowtic < state.d_loop.gametic / state.d_loop.ticdup {
             I_Error("TryRunTics: lowtic < gametic");
         }
-        if I_GetTime(&mut state.i_timer) / state.d_loop.ticdup - entertic > 0 as i32 {
+        if I_GetTime(state) / state.d_loop.ticdup - entertic > 0 as i32 {
             return;
         }
-        I_Sleep(1 as i32);
+        I_Sleep(state, 1 as i32);
     }
     loop {
         let fresh0 = counts;

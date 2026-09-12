@@ -347,6 +347,15 @@ impl GGameState {
             g_build_ticcmd_carry: 0,
         }
     }
+
+    // joyarray[0]/mousearray[0] are unused (mirrors the original C, where
+    // index 0 is reserved); joybuttons/mousebuttons alias the rest of the
+    // array. Self-referential, so must run once the struct is at its final,
+    // permanently-stable address -- see game_state::finish_init.
+    pub fn fixup_button_pointers(&mut self) {
+        self.joybuttons = (&raw mut self.joyarray as *mut boolean).wrapping_offset(1);
+        self.mousebuttons = (&raw mut self.mousearray as *mut boolean).wrapping_offset(1);
+    }
 }
 
 #[derive(Copy, Clone)]
@@ -2057,7 +2066,7 @@ pub unsafe fn G_DoPlayDemo(state: &mut GameState) {
     state.g_game.precache = false;
     G_InitNew(state, skill, episode, map);
     state.g_game.precache = true;
-    state.g_game.starttime = I_GetTime(&mut state.i_timer);
+    state.g_game.starttime = I_GetTime(state);
     state.g_game.usergame = false;
     state.g_game.demoplayback = true;
 }
@@ -2074,7 +2083,7 @@ pub unsafe extern "C" fn G_CheckDemoStatus(state: &mut GameState) -> boolean {
     if state.g_game.timingdemo {
         let mut fps: f32 = 0.;
         let mut realtics: i32 = 0;
-        endtime = I_GetTime(&mut state.i_timer);
+        endtime = I_GetTime(state);
         realtics = endtime - state.g_game.starttime;
         fps = state.d_loop.gametic as f32 * TICRATE as f32 / realtics as f32;
         state.g_game.timingdemo = false;
@@ -2134,16 +2143,3 @@ pub unsafe extern "C" fn G_CheckDemoStatus(state: &mut GameState) -> boolean {
     return false_0 as boolean;
 }
 pub const MAX_MOUSE_BUTTONS: i32 = 8;
-unsafe extern "C" fn run_static_initializers() {
-    unsafe { game_state() }.g_game.joybuttons = (&raw mut unsafe { game_state() }.g_game.joyarray
-        as *mut boolean)
-        .offset(1 as i32 as isize) as *mut boolean;
-    unsafe { game_state() }.g_game.mousebuttons =
-        (&raw mut unsafe { game_state() }.g_game.mousearray as *mut boolean)
-            .offset(1 as i32 as isize) as *mut boolean;
-}
-#[used]
-#[cfg_attr(target_os = "linux", link_section = ".init_array")]
-#[cfg_attr(target_os = "windows", link_section = ".CRT$XIB")]
-#[cfg_attr(target_os = "macos", link_section = "__DATA,__mod_init_func")]
-static INIT_ARRAY: [unsafe extern "C" fn(); 1] = [run_static_initializers];
