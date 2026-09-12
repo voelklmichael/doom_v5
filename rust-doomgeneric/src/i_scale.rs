@@ -86,14 +86,12 @@ unsafe fn I_Scale1x(
     return true;
 }
 #[no_mangle]
-pub static mode_scale_1x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH,
-        height: SCREENHEIGHT,
-        InitMode: None,
-        DrawScreen: Some(I_Scale1x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_scale_1x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH,
+    height: SCREENHEIGHT,
+    InitMode: None,
+    DrawScreen: Some(I_Scale1x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 unsafe fn I_Scale2x(
     state: &mut IScaleState,
@@ -150,14 +148,12 @@ unsafe fn I_Scale2x(
     return true;
 }
 #[no_mangle]
-pub static mode_scale_2x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH * 2 as i32,
-        height: SCREENHEIGHT * 2 as i32,
-        InitMode: None,
-        DrawScreen: Some(I_Scale2x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_scale_2x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH * 2 as i32,
+    height: SCREENHEIGHT * 2 as i32,
+    InitMode: None,
+    DrawScreen: Some(I_Scale2x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 unsafe fn I_Scale3x(
     state: &mut IScaleState,
@@ -234,14 +230,12 @@ unsafe fn I_Scale3x(
     return true;
 }
 #[no_mangle]
-pub static mode_scale_3x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH * 3 as i32,
-        height: SCREENHEIGHT * 3 as i32,
-        InitMode: None,
-        DrawScreen: Some(I_Scale3x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_scale_3x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH * 3 as i32,
+    height: SCREENHEIGHT * 3 as i32,
+    InitMode: None,
+    DrawScreen: Some(I_Scale3x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 unsafe fn I_Scale4x(
     state: &mut IScaleState,
@@ -344,14 +338,12 @@ unsafe fn I_Scale4x(
     return true;
 }
 #[no_mangle]
-pub static mode_scale_4x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH * 4 as i32,
-        height: SCREENHEIGHT * 4 as i32,
-        InitMode: None,
-        DrawScreen: Some(I_Scale4x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_scale_4x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH * 4 as i32,
+    height: SCREENHEIGHT * 4 as i32,
+    InitMode: None,
+    DrawScreen: Some(I_Scale4x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 unsafe fn I_Scale5x(
     state: &mut IScaleState,
@@ -486,14 +478,12 @@ unsafe fn I_Scale5x(
     return true;
 }
 #[no_mangle]
-pub static mode_scale_5x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH * 5 as i32,
-        height: SCREENHEIGHT * 5 as i32,
-        InitMode: None,
-        DrawScreen: Some(I_Scale5x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_scale_5x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH * 5 as i32,
+    height: SCREENHEIGHT * 5 as i32,
+    InitMode: None,
+    DrawScreen: Some(I_Scale5x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 unsafe fn FindNearestColor(mut palette: *mut byte, mut r: i32, mut g: i32, mut b: i32) -> i32 {
     let mut col: *mut byte = ::core::ptr::null_mut::<byte>();
@@ -694,14 +684,12 @@ unsafe fn I_Stretch1x(
     return true;
 }
 #[no_mangle]
-pub static mode_stretch_1x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH,
-        height: SCREENHEIGHT_4_3,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Stretch1x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: true,
-    }
+pub static mode_stretch_1x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH,
+    height: SCREENHEIGHT_4_3,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Stretch1x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: true,
 };
 #[inline]
 unsafe fn WriteLine2x(mut dest: *mut byte, mut src: *mut byte) {
@@ -812,14 +800,12 @@ unsafe fn I_Stretch2x(
     return true;
 }
 #[no_mangle]
-pub static mode_stretch_2x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH * 2 as i32,
-        height: SCREENHEIGHT_4_3 * 2 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Stretch2x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_stretch_2x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH * 2 as i32,
+    height: SCREENHEIGHT_4_3 * 2 as i32,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Stretch2x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 #[inline]
 unsafe fn WriteLine3x(mut dest: *mut byte, mut src: *mut byte) {
@@ -944,14 +930,12 @@ unsafe fn I_Stretch3x(
     return true;
 }
 #[no_mangle]
-pub static mode_stretch_3x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH * 3 as i32,
-        height: SCREENHEIGHT_4_3 * 3 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Stretch3x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_stretch_3x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH * 3 as i32,
+    height: SCREENHEIGHT_4_3 * 3 as i32,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Stretch3x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 #[inline]
 unsafe fn WriteLine4x(mut dest: *mut byte, mut src: *mut byte) {
@@ -1090,14 +1074,12 @@ unsafe fn I_Stretch4x(
     return true;
 }
 #[no_mangle]
-pub static mode_stretch_4x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH * 4 as i32,
-        height: SCREENHEIGHT_4_3 * 4 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Stretch4x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_stretch_4x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH * 4 as i32,
+    height: SCREENHEIGHT_4_3 * 4 as i32,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Stretch4x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 #[inline]
 unsafe fn WriteLine5x(mut dest: *mut byte, mut src: *mut byte) {
@@ -1170,14 +1152,12 @@ unsafe fn I_Stretch5x(
     return true;
 }
 #[no_mangle]
-pub static mode_stretch_5x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH * 5 as i32,
-        height: SCREENHEIGHT_4_3 * 5 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Stretch5x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_stretch_5x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH * 5 as i32,
+    height: SCREENHEIGHT_4_3 * 5 as i32,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Stretch5x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 #[inline]
 unsafe fn WriteSquashedLine1x(state: &mut IScaleState, mut dest: *mut byte, mut src: *mut byte) {
@@ -1237,14 +1217,12 @@ unsafe fn I_Squash1x(
     return true;
 }
 #[no_mangle]
-pub static mode_squash_1x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH_4_3,
-        height: SCREENHEIGHT,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Squash1x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: true,
-    }
+pub static mode_squash_1x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH_4_3,
+    height: SCREENHEIGHT,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Squash1x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: true,
 };
 #[inline]
 unsafe fn WriteSquashedLine2x(state: &mut IScaleState, mut dest: *mut byte, mut src: *mut byte) {
@@ -1351,14 +1329,12 @@ unsafe fn I_Squash2x(
     return true;
 }
 #[no_mangle]
-pub static mode_squash_2x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH_4_3 * 2 as i32,
-        height: SCREENHEIGHT * 2 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Squash2x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_squash_2x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH_4_3 * 2 as i32,
+    height: SCREENHEIGHT * 2 as i32,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Squash2x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 #[inline]
 unsafe fn WriteSquashedLine3x(state: &mut IScaleState, mut dest: *mut byte, mut src: *mut byte) {
@@ -1450,14 +1426,12 @@ unsafe fn I_Squash3x(
     return true;
 }
 #[no_mangle]
-pub static mode_squash_3x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: 800 as i32,
-        height: 600 as i32,
-        InitMode: Some(I_InitSquashTable as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Squash3x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_squash_3x: screen_mode_t = screen_mode_t {
+    width: 800 as i32,
+    height: 600 as i32,
+    InitMode: Some(I_InitSquashTable as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Squash3x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 #[inline]
 unsafe fn WriteSquashedLine4x(state: &mut IScaleState, mut dest: *mut byte, mut src: *mut byte) {
@@ -1713,14 +1687,12 @@ unsafe fn I_Squash4x(
     return true;
 }
 #[no_mangle]
-pub static mode_squash_4x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH_4_3 * 4 as i32,
-        height: SCREENHEIGHT * 4 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Squash4x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_squash_4x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH_4_3 * 4 as i32,
+    height: SCREENHEIGHT * 4 as i32,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Squash4x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
 #[inline]
 unsafe fn WriteSquashedLine5x(state: &mut IScaleState, mut dest: *mut byte, mut src: *mut byte) {
@@ -1827,12 +1799,10 @@ unsafe fn I_Squash5x(
     return true;
 }
 #[no_mangle]
-pub static mode_squash_5x: screen_mode_t = unsafe {
-    screen_mode_t {
-        width: SCREENWIDTH_4_3 * 5 as i32,
-        height: SCREENHEIGHT * 5 as i32,
-        InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
-        DrawScreen: Some(I_Squash5x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
-        poor_quality: false,
-    }
+pub static mode_squash_5x: screen_mode_t = screen_mode_t {
+    width: SCREENWIDTH_4_3 * 5 as i32,
+    height: SCREENHEIGHT * 5 as i32,
+    InitMode: Some(I_InitStretchTables as unsafe fn(&mut IScaleState, *mut byte) -> ()),
+    DrawScreen: Some(I_Squash5x as unsafe fn(&mut IScaleState, i32, i32, i32, i32) -> bool),
+    poor_quality: false,
 };
