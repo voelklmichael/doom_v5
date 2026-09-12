@@ -141,7 +141,7 @@ pub const USERANGE: i32 = 64 * FRACUNIT;
 pub const MAXSPECIALCROSS_ORIGINAL: i32 = 8;
 pub const DEFAULT_SPECHIT_MAGIC: i32 = 0x1c09c98;
 #[no_mangle]
-pub unsafe extern "C" fn PIT_StompThing(state: &mut GameState, mut thing_id: MobjId) -> boolean {
+pub unsafe fn PIT_StompThing(state: &mut GameState, mut thing_id: MobjId) -> boolean {
     let thing = state.p_mobj.mobj_get(thing_id).unwrap();
     let mut blockdist: fixed_t = 0;
     if (*thing).flags & MF_SHOOTABLE as i32 == 0 {
@@ -218,7 +218,7 @@ pub unsafe fn P_TeleportMove(
                 state,
                 bx,
                 by,
-                Some(PIT_StompThing as unsafe extern "C" fn(&mut GameState, MobjId) -> boolean),
+                Some(PIT_StompThing as unsafe fn(&mut GameState, MobjId) -> boolean),
             ) {
                 return false;
             }
@@ -235,7 +235,7 @@ pub unsafe fn P_TeleportMove(
     return true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_CheckLine(state: &mut GameState, mut ld: *mut line_t) -> boolean {
+pub unsafe fn PIT_CheckLine(state: &mut GameState, mut ld: *mut line_t) -> boolean {
     if state.p_map.tmbbox[BOXRIGHT as i32 as usize] <= (*ld).bbox[BOXLEFT as i32 as usize]
         || state.p_map.tmbbox[BOXLEFT as i32 as usize] >= (*ld).bbox[BOXRIGHT as i32 as usize]
         || state.p_map.tmbbox[BOXTOP as i32 as usize] <= (*ld).bbox[BOXBOTTOM as i32 as usize]
@@ -278,7 +278,7 @@ pub unsafe extern "C" fn PIT_CheckLine(state: &mut GameState, mut ld: *mut line_
     return true_0 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_CheckThing(state: &mut GameState, mut thing_id: MobjId) -> boolean {
+pub unsafe fn PIT_CheckThing(state: &mut GameState, mut thing_id: MobjId) -> boolean {
     let thing = state.p_mobj.mobj_get(thing_id).unwrap();
     let mut blockdist: fixed_t = 0;
     let mut solid: bool = false;
@@ -416,7 +416,7 @@ pub unsafe fn P_CheckPosition(
                 state,
                 bx,
                 by,
-                Some(PIT_CheckThing as unsafe extern "C" fn(&mut GameState, MobjId) -> boolean),
+                Some(PIT_CheckThing as unsafe fn(&mut GameState, MobjId) -> boolean),
             ) {
                 return false;
             }
@@ -440,7 +440,7 @@ pub unsafe fn P_CheckPosition(
                 state,
                 bx,
                 by,
-                Some(PIT_CheckLine as unsafe extern "C" fn(&mut GameState, *mut line_t) -> boolean),
+                Some(PIT_CheckLine as unsafe fn(&mut GameState, *mut line_t) -> boolean),
             ) {
                 return false;
             }
@@ -573,7 +573,7 @@ pub unsafe fn P_HitSlideLine(state: &mut GameState, mut ld: *mut line_t) {
     state.p_map.tmymove = FixedMul(newlen, finesine[lineangle as usize]);
 }
 #[no_mangle]
-pub unsafe extern "C" fn PTR_SlideTraverse(
+pub unsafe fn PTR_SlideTraverse(
     state: &mut GameState,
     mut in_0: *mut intercept_t,
 ) -> boolean {
@@ -644,7 +644,7 @@ pub unsafe fn P_SlideMove(state: &mut GameState, mut mo: *mut mobj_t) {
             PT_ADDLINES,
             Some(
                 PTR_SlideTraverse
-                    as unsafe extern "C" fn(&mut GameState, *mut intercept_t) -> boolean,
+                    as unsafe fn(&mut GameState, *mut intercept_t) -> boolean,
             ),
         );
         P_PathTraverse(
@@ -656,7 +656,7 @@ pub unsafe fn P_SlideMove(state: &mut GameState, mut mo: *mut mobj_t) {
             PT_ADDLINES,
             Some(
                 PTR_SlideTraverse
-                    as unsafe extern "C" fn(&mut GameState, *mut intercept_t) -> boolean,
+                    as unsafe fn(&mut GameState, *mut intercept_t) -> boolean,
             ),
         );
         P_PathTraverse(
@@ -668,7 +668,7 @@ pub unsafe fn P_SlideMove(state: &mut GameState, mut mo: *mut mobj_t) {
             PT_ADDLINES,
             Some(
                 PTR_SlideTraverse
-                    as unsafe extern "C" fn(&mut GameState, *mut intercept_t) -> boolean,
+                    as unsafe fn(&mut GameState, *mut intercept_t) -> boolean,
             ),
         );
         if state.p_map.bestslidefrac == FRACUNIT + 1 as i32 {
@@ -710,7 +710,7 @@ pub unsafe fn P_SlideMove(state: &mut GameState, mut mo: *mut mobj_t) {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn PTR_AimTraverse(
+pub unsafe fn PTR_AimTraverse(
     state: &mut GameState,
     mut in_0: *mut intercept_t,
 ) -> boolean {
@@ -780,7 +780,7 @@ pub unsafe extern "C" fn PTR_AimTraverse(
     return false_0 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn PTR_ShootTraverse(
+pub unsafe fn PTR_ShootTraverse(
     state: &mut GameState,
     mut in_0: *mut intercept_t,
 ) -> boolean {
@@ -942,7 +942,7 @@ pub unsafe fn P_AimLineAttack(
         x2,
         y2,
         PT_ADDLINES | PT_ADDTHINGS,
-        Some(PTR_AimTraverse as unsafe extern "C" fn(&mut GameState, *mut intercept_t) -> boolean),
+        Some(PTR_AimTraverse as unsafe fn(&mut GameState, *mut intercept_t) -> boolean),
     );
     if !state.p_map.linetarget.is_null() {
         return state.p_map.aimslope;
@@ -976,12 +976,12 @@ pub unsafe fn P_LineAttack(
         y2,
         PT_ADDLINES | PT_ADDTHINGS,
         Some(
-            PTR_ShootTraverse as unsafe extern "C" fn(&mut GameState, *mut intercept_t) -> boolean,
+            PTR_ShootTraverse as unsafe fn(&mut GameState, *mut intercept_t) -> boolean,
         ),
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn PTR_UseTraverse(
+pub unsafe fn PTR_UseTraverse(
     state: &mut GameState,
     mut in_0: *mut intercept_t,
 ) -> boolean {
@@ -1029,11 +1029,11 @@ pub unsafe fn P_UseLines(state: &mut GameState, mut player: *mut player_t) {
         x2,
         y2,
         PT_ADDLINES,
-        Some(PTR_UseTraverse as unsafe extern "C" fn(&mut GameState, *mut intercept_t) -> boolean),
+        Some(PTR_UseTraverse as unsafe fn(&mut GameState, *mut intercept_t) -> boolean),
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_RadiusAttack(state: &mut GameState, mut thing_id: MobjId) -> boolean {
+pub unsafe fn PIT_RadiusAttack(state: &mut GameState, mut thing_id: MobjId) -> boolean {
     let thing = state.p_mobj.mobj_get(thing_id).unwrap();
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
@@ -1097,7 +1097,7 @@ pub unsafe fn P_RadiusAttack(
                 state,
                 x,
                 y,
-                Some(PIT_RadiusAttack as unsafe extern "C" fn(&mut GameState, MobjId) -> boolean),
+                Some(PIT_RadiusAttack as unsafe fn(&mut GameState, MobjId) -> boolean),
             );
             x += 1;
         }
@@ -1105,7 +1105,7 @@ pub unsafe fn P_RadiusAttack(
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_ChangeSector(state: &mut GameState, mut thing_id: MobjId) -> boolean {
+pub unsafe fn PIT_ChangeSector(state: &mut GameState, mut thing_id: MobjId) -> boolean {
     let thing = state.p_mobj.mobj_get(thing_id).unwrap();
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     if P_ThingHeightClip(state, thing) {
@@ -1165,7 +1165,7 @@ pub unsafe fn P_ChangeSector(
                 state,
                 x,
                 y,
-                Some(PIT_ChangeSector as unsafe extern "C" fn(&mut GameState, MobjId) -> boolean),
+                Some(PIT_ChangeSector as unsafe fn(&mut GameState, MobjId) -> boolean),
             );
             y += 1;
         }
