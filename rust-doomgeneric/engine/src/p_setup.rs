@@ -42,7 +42,7 @@ use crate::src::w_wad::W_GetNumForName;
 use crate::src::z_zone::Z_FreeTags;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_LEVEL, PU_PURGELEVEL, PU_STATIC};
-use libc::memset;
+use crate::src::mem_compat::memset;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct SectorId(pub u32);

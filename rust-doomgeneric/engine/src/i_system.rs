@@ -1,9 +1,9 @@
 use crate::src::game_state::GameState;
 use crate::src::m_argv::{M_ArgvAtoi, M_CheckParmWithArgs};
 use crate::src::m_misc::M_StrToInt;
+use crate::src::mem_compat::malloc;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use libc::malloc;
 
 pub struct ISystemState {
     pub exit_funcs: *mut atexit_listentry_t,

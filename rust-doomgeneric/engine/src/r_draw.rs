@@ -18,7 +18,7 @@ use crate::src::w_wad::W_CacheLumpName;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::memcpy;
+use crate::src::mem_compat::memcpy;
 
 pub struct RDrawState {
     pub viewimage: *mut byte,

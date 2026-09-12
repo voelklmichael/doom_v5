@@ -62,7 +62,7 @@ use crate::src::stdint_types::size_t;
 use crate::src::w_wad::W_CheckNumForName;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_LEVSPEC;
-use libc::memset;
+use crate::src::mem_compat::memset;
 
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;

@@ -33,7 +33,7 @@ use crate::src::v_video::V_DrawPatch;
 use crate::src::v_video::V_MarkRect;
 use crate::src::w_wad::{W_CacheLumpName, W_ReleaseLumpName};
 use crate::src::z_zone::PU_STATIC;
-use libc::memset;
+use crate::src::mem_compat::memset;
 
 pub struct AmMapState {
     pub cheating: i32,

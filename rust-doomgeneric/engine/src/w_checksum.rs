@@ -3,12 +3,9 @@ use crate::src::sha1::{
     sha1_context_s, sha1_context_t, SHA1_Final, SHA1_Init, SHA1_UpdateInt32, SHA1_UpdateString,
 };
 use crate::src::stdint_types::byte;
-use crate::src::stdint_types::size_t;
 use crate::src::w_file::wad_file_t;
 use crate::src::w_wad::lumpinfo_t;
-extern "C" {
-    fn realloc(__ptr: *mut ::core::ffi::c_void, __size: size_t) -> *mut ::core::ffi::c_void;
-}
+use std::alloc::{alloc, realloc, Layout};
 pub struct WChecksumState {
     open_wadfiles: *mut *mut wad_file_t,
     num_open_wadfiles: i32,
@@ -33,11 +30,19 @@ unsafe fn GetFileNumber(state: &mut WChecksumState, mut handle: *mut wad_file_t)
         }
         i += 1;
     }
-    state.open_wadfiles = realloc(
-        state.open_wadfiles as *mut ::core::ffi::c_void,
-        (::core::mem::size_of::<*mut wad_file_t>() as size_t)
-            .wrapping_mul((state.num_open_wadfiles + 1 as i32) as size_t),
-    ) as *mut *mut wad_file_t;
+    let new_layout =
+        Layout::array::<*mut wad_file_t>((state.num_open_wadfiles + 1) as usize).unwrap();
+    state.open_wadfiles = if state.open_wadfiles.is_null() {
+        alloc(new_layout)
+    } else {
+        let old_layout =
+            Layout::array::<*mut wad_file_t>(state.num_open_wadfiles as usize).unwrap();
+        realloc(
+            state.open_wadfiles as *mut u8,
+            old_layout,
+            new_layout.size(),
+        )
+    } as *mut *mut wad_file_t;
     let ref mut fresh0 = *state.open_wadfiles.offset(state.num_open_wadfiles as isize);
     *fresh0 = handle;
     result = state.num_open_wadfiles;

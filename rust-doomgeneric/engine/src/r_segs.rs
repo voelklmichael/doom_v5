@@ -26,7 +26,7 @@ use crate::src::tables::finetangent;
 use crate::src::tables::ANG180;
 use crate::src::tables::ANG90;
 use crate::src::tables::ANGLETOFINESHIFT;
-use libc::memcpy;
+use crate::src::mem_compat::memcpy;
 
 pub struct RSegsState {
     pub segtextured: bool,

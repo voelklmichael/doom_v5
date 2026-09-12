@@ -10,7 +10,6 @@
 
 #[macro_use]
 extern crate c2rust_bitfields;
-extern crate libc;
 
 pub mod src {
     pub mod am_map;
@@ -52,6 +51,7 @@ pub mod src {
     pub mod m_menu;
     pub mod m_misc;
     pub mod m_random;
+    pub mod mem_compat;
     pub mod p_ceilng;
     pub mod p_doors;
     pub mod p_enemy;

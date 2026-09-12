@@ -37,7 +37,7 @@ use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::w_wad::W_GetNumForName;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::{memcpy, memset};
+use crate::src::mem_compat::{memcpy, memset};
 
 pub struct RThingsState {
     pub pspritescale: fixed_t,

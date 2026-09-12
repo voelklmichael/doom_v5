@@ -45,9 +45,8 @@ use crate::src::tables::finesine;
 use crate::src::tables::ANG45;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::mem_compat::{memcpy, memset};
 use crate::src::z_zone::PU_LEVEL;
-use ::libc;
-use libc::{memcpy, memset};
 
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]

@@ -111,7 +111,7 @@ use crate::src::z_zone::Z_CheckHeap;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use libc::{memcpy, memset};
+use crate::src::mem_compat::{memcpy, memset};
 use std::io::Seek;
 
 pub struct GGameState {

@@ -18,7 +18,7 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use ::c2rust_bitfields;
-use libc::{memcpy, memset};
+use crate::src::mem_compat::{memcpy, memset};
 
 pub struct IVideoState {
     pub s_Fb: FB_ScreenInfo,

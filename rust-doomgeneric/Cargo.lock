@@ -60,7 +60,6 @@ name = "rust_doomgeneric"
 version = "0.0.0"
 dependencies = [
  "c2rust-bitfields",
- "libc",
 ]
 
 [[package]]
