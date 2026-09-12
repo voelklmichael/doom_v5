@@ -1,4 +1,3 @@
-use crate::src::doomdef::NULL;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::M_CheckParmWithArgs;
@@ -41,10 +40,16 @@ pub const DEFAULT_STRING: default_type_t = 2;
 pub const DEFAULT_INT_HEX: default_type_t = 1;
 pub const DEFAULT_INT: default_type_t = 0;
 #[derive(Copy, Clone)]
+pub enum DefaultLocation {
+    Int(*mut i32),
+    Float(*mut f32),
+    Str(*mut *mut ::core::ffi::c_char),
+}
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct default_t {
     pub name: &'static str,
-    pub location: *mut ::core::ffi::c_void,
+    pub location: Option<DefaultLocation>,
     pub type_0: default_type_t,
     pub untranslated: i32,
     pub original_translated: i32,
@@ -82,7 +87,7 @@ impl MConfigState {
             doom_defaults_list: [
                 default_t {
                     name: "mouse_sensitivity",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -90,7 +95,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "sfx_volume",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -98,7 +103,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "music_volume",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -106,7 +111,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "show_talk",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -114,7 +119,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "voice_volume",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -122,7 +127,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "show_messages",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -130,7 +135,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_right",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -138,7 +143,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_left",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -146,7 +151,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_up",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -154,7 +159,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_down",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -162,7 +167,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_strafeleft",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -170,7 +175,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_straferight",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -178,7 +183,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_useHealth",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -186,7 +191,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_jump",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -194,7 +199,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_flyup",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -202,7 +207,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_flydown",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -210,7 +215,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_flycenter",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -218,7 +223,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_lookup",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -226,7 +231,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_lookdown",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -234,7 +239,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_lookcenter",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -242,7 +247,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invquery",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -250,7 +255,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_mission",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -258,7 +263,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invPop",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -266,7 +271,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invKey",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -274,7 +279,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invHome",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -282,7 +287,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invEnd",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -290,7 +295,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invleft",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -298,7 +303,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invright",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -306,7 +311,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invLeft",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -314,7 +319,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invRight",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -322,7 +327,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_useartifact",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -330,7 +335,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invUse",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -338,7 +343,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_invDrop",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -346,7 +351,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_lookUp",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -354,7 +359,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_lookDown",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -362,7 +367,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_fire",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -370,7 +375,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_use",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -378,7 +383,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_strafe",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -386,7 +391,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_speed",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -394,7 +399,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "use_mouse",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -402,7 +407,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_fire",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -410,7 +415,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_strafe",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -418,7 +423,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_forward",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -426,7 +431,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_jump",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -434,7 +439,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "use_joystick",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -442,7 +447,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_fire",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -450,7 +455,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_strafe",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -458,7 +463,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_use",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -466,7 +471,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_speed",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -474,7 +479,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_jump",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -482,7 +487,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "screenblocks",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -490,7 +495,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "screensize",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -498,7 +503,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "detaillevel",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -506,7 +511,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_channels",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -514,7 +519,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_musicdevice",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -522,7 +527,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_sfxdevice",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -530,7 +535,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_sbport",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -538,7 +543,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_sbirq",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -546,7 +551,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_sbdma",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -554,7 +559,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_mport",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -562,7 +567,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "usegamma",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -570,7 +575,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "savedir",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -578,7 +583,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "messageson",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -586,7 +591,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "back_flat",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -594,7 +599,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "nickname",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -602,7 +607,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro0",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -610,7 +615,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro1",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -618,7 +623,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro2",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -626,7 +631,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro3",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -634,7 +639,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro4",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -642,7 +647,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro5",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -650,7 +655,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro6",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -658,7 +663,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro7",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -666,7 +671,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro8",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -674,7 +679,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "chatmacro9",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -682,7 +687,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "comport",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -697,7 +702,7 @@ impl MConfigState {
             extra_defaults_list: [
                 default_t {
                     name: "graphical_startup",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -705,7 +710,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "autoadjust_video_settings",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -713,7 +718,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "fullscreen",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -721,7 +726,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "aspect_ratio_correct",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -729,7 +734,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "startup_delay",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -737,7 +742,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "screen_width",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -745,7 +750,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "screen_height",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -753,7 +758,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "screen_bpp",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -761,7 +766,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "grabmouse",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -769,7 +774,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "novert",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -777,7 +782,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouse_acceleration",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_FLOAT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -785,7 +790,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouse_threshold",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -793,7 +798,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_samplerate",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -801,7 +806,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_cachesize",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -809,7 +814,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_maxslicetime_ms",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -817,7 +822,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "snd_musiccmd",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -825,7 +830,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "opl_io_port",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT_HEX,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -833,7 +838,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "show_endoom",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -841,7 +846,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "png_screenshots",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -849,7 +854,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "vanilla_savegame_limit",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -857,7 +862,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "vanilla_demo_limit",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -865,7 +870,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "vanilla_keyboard_mapping",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -873,7 +878,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "video_driver",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -881,7 +886,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "window_position",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_STRING,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -889,7 +894,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_index",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -897,7 +902,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_x_axis",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -905,7 +910,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_x_invert",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -913,7 +918,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_y_axis",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -921,7 +926,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_y_invert",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -929,7 +934,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_strafe_axis",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -937,7 +942,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_strafe_invert",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -945,7 +950,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button0",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -953,7 +958,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button1",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -961,7 +966,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button2",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -969,7 +974,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button3",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -977,7 +982,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button4",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -985,7 +990,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button5",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -993,7 +998,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button6",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1001,7 +1006,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button7",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1009,7 +1014,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button8",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1017,7 +1022,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joystick_physical_button9",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1025,7 +1030,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_strafeleft",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1033,7 +1038,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_straferight",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1041,7 +1046,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_menu_activate",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1049,7 +1054,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_prevweapon",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1057,7 +1062,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "joyb_nextweapon",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1065,7 +1070,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_strafeleft",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1073,7 +1078,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_straferight",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1081,7 +1086,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_use",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1089,7 +1094,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_backward",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1097,7 +1102,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_prevweapon",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1105,7 +1110,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "mouseb_nextweapon",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1113,7 +1118,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "dclick_use",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_INT,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1121,7 +1126,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_pause",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1129,7 +1134,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_activate",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1137,7 +1142,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_up",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1145,7 +1150,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_down",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1153,7 +1158,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_left",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1161,7 +1166,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_right",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1169,7 +1174,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_back",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1177,7 +1182,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_forward",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1185,7 +1190,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_confirm",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1193,7 +1198,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_abort",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1201,7 +1206,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_help",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1209,7 +1214,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_save",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1217,7 +1222,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_load",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1225,7 +1230,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_volume",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1233,7 +1238,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_detail",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1241,7 +1246,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_qsave",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1249,7 +1254,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_endgame",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1257,7 +1262,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_messages",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1265,7 +1270,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_qload",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1273,7 +1278,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_quit",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1281,7 +1286,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_gamma",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1289,7 +1294,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_spy",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1297,7 +1302,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_incscreen",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1305,7 +1310,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_decscreen",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1313,7 +1318,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_menu_screenshot",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1321,7 +1326,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_toggle",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1329,7 +1334,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_north",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1337,7 +1342,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_south",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1345,7 +1350,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_east",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1353,7 +1358,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_west",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1361,7 +1366,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_zoomin",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1369,7 +1374,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_zoomout",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1377,7 +1382,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_maxzoom",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1385,7 +1390,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_follow",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1393,7 +1398,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_grid",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1401,7 +1406,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_mark",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1409,7 +1414,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_map_clearmark",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1417,7 +1422,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_weapon1",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1425,7 +1430,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_weapon2",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1433,7 +1438,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_weapon3",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1441,7 +1446,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_weapon4",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1449,7 +1454,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_weapon5",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1457,7 +1462,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_weapon6",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1465,7 +1470,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_weapon7",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1473,7 +1478,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_weapon8",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1481,7 +1486,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_prevweapon",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1489,7 +1494,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_nextweapon",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1497,7 +1502,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_arti_all",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1505,7 +1510,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_arti_health",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1513,7 +1518,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_arti_poisonbag",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1521,7 +1526,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_arti_blastradius",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1529,7 +1534,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_arti_teleport",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1537,7 +1542,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_arti_teleportother",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1545,7 +1550,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_arti_egg",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1553,7 +1558,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_arti_invulnerability",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1561,7 +1566,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_message_refresh",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1569,7 +1574,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_demo_quit",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1577,7 +1582,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msg",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1585,7 +1590,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msgplayer1",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1593,7 +1598,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msgplayer2",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1601,7 +1606,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msgplayer3",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1609,7 +1614,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msgplayer4",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1617,7 +1622,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msgplayer5",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1625,7 +1630,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msgplayer6",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1633,7 +1638,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msgplayer7",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1641,7 +1646,7 @@ impl MConfigState {
                 },
                 default_t {
                     name: "key_multi_msgplayer8",
-                    location: NULL,
+                    location: None,
                     type_0: DEFAULT_KEY,
                     untranslated: 0 as i32,
                     original_translated: 0 as i32,
@@ -1825,12 +1830,14 @@ unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_ch
     let mut intparm: i32 = 0;
     match (*def).type_0 as u32 {
         2 => {
-            let ref mut fresh0 = *((*def).location as *mut *mut ::core::ffi::c_char);
-            *fresh0 = ::std::ffi::CStr::from_ptr(value).to_owned().into_raw();
+            if let Some(DefaultLocation::Str(loc)) = (*def).location {
+                *loc = ::std::ffi::CStr::from_ptr(value).to_owned().into_raw();
+            }
         }
         0 | 1 => {
-            *((*def).location as *mut i32) =
-                ParseIntParameter(::std::ffi::CStr::from_ptr(value).to_str().unwrap());
+            if let Some(DefaultLocation::Int(loc)) = (*def).location {
+                *loc = ParseIntParameter(::std::ffi::CStr::from_ptr(value).to_str().unwrap());
+            }
         }
         4 => {
             intparm = ParseIntParameter(::std::ffi::CStr::from_ptr(value).to_str().unwrap());
@@ -1841,11 +1848,15 @@ unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_ch
                 intparm = 0 as i32;
             }
             (*def).original_translated = intparm;
-            *((*def).location as *mut i32) = intparm;
+            if let Some(DefaultLocation::Int(loc)) = (*def).location {
+                *loc = intparm;
+            }
         }
         3 => {
             let value_str = ::std::ffi::CStr::from_ptr(value).to_str().unwrap();
-            *((*def).location as *mut f32) = value_str.trim().parse::<f64>().unwrap_or(0.0) as f32;
+            if let Some(DefaultLocation::Float(loc)) = (*def).location {
+                *loc = value_str.trim().parse::<f64>().unwrap_or(0.0) as f32;
+            }
         }
         _ => {}
     };
@@ -1922,7 +1933,11 @@ pub unsafe fn M_BindVariable(
 ) {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
     variable = GetDefaultForName(state, name);
-    (*variable).location = location;
+    (*variable).location = Some(match (*variable).type_0 as u32 {
+        2 => DefaultLocation::Str(location as *mut *mut ::core::ffi::c_char),
+        3 => DefaultLocation::Float(location as *mut f32),
+        _ => DefaultLocation::Int(location as *mut i32),
+    });
     (*variable).bound = true;
 }
 pub unsafe fn M_SetVariable(
@@ -1948,7 +1963,10 @@ pub unsafe fn M_GetIntVariable(state: &mut MConfigState, name: &str) -> i32 {
     {
         return 0 as i32;
     }
-    return *((*variable).location as *mut i32);
+    return match (*variable).location {
+        Some(DefaultLocation::Int(loc)) => *loc,
+        _ => 0 as i32,
+    };
 }
 pub unsafe fn M_GetStrVariable(state: &mut MConfigState, name: &str) -> *const ::core::ffi::c_char {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
@@ -1959,7 +1977,10 @@ pub unsafe fn M_GetStrVariable(state: &mut MConfigState, name: &str) -> *const :
     {
         return ::core::ptr::null::<::core::ffi::c_char>();
     }
-    return *((*variable).location as *mut *const ::core::ffi::c_char);
+    return match (*variable).location {
+        Some(DefaultLocation::Str(loc)) => *loc as *const ::core::ffi::c_char,
+        _ => ::core::ptr::null::<::core::ffi::c_char>(),
+    };
 }
 pub unsafe fn M_GetFloatVariable(state: &mut MConfigState, name: &str) -> f32 {
     let mut variable: *mut default_t = ::core::ptr::null_mut::<default_t>();
@@ -1970,7 +1991,10 @@ pub unsafe fn M_GetFloatVariable(state: &mut MConfigState, name: &str) -> f32 {
     {
         return 0 as i32 as f32;
     }
-    return *((*variable).location as *mut f32);
+    return match (*variable).location {
+        Some(DefaultLocation::Float(loc)) => *loc,
+        _ => 0 as i32 as f32,
+    };
 }
 fn GetDefaultConfigDir() -> String {
     ".".to_string()

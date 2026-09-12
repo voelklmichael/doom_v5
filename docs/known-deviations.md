@@ -167,7 +167,7 @@ end state for the common case (something ends up set to `-1`), but reached throu
 one consistent, type-checked path instead of two different ones depending on
 whether the coincidental pre-check happened to trip first.
 
-## Known bug (dormant): `snd_musiccmd` config binding can corrupt its own length field
+## Known bug (dormant): `snd_musiccmd`/`chatmacro*` config bindings can corrupt their own length field
 
 **What's wrong**: `i_sound.rs`'s `ISoundState.snd_musiccmd` field is typed
 `Option<&'static str>` (a fat pointer + length, 16 bytes on a 64-bit target), but
@@ -185,12 +185,37 @@ sound backend this was wired up for was dropped along the way and nothing
 dereferences `state.i_sound.snd_musiccmd`. The corruption happens but nothing
 looks at the corrupted value, so it's inert today.
 
-**Why it's not fixed here**: found incidentally while replacing `strdup` in
-`SetVariable` (same 8-byte pointer write existed before that change, under the old
-`strdup` call too — this is not a regression from that swap). Fixing it properly
-means either giving `snd_musiccmd` a `*mut c_char`-shaped storage representation
-consistent with every other `DEFAULT_STRING` binding, or teaching `SetVariable`
-about wide (`Option<&str>`) string locations specifically — both are a real design
-decision, not a drive-by fix, so it's flagged here instead of silently patched.
-**Before ever wiring a reader up to `snd_musiccmd`** (or converting another
-`DEFAULT_STRING`-bound field to `Option<&'static str>`), fix this binding first.
+**A second instance, found during the `default_t.location` → `DefaultLocation`
+enum conversion (2026-09-12)**: `hu_stuff.rs`'s `chat_macros: [&'static str; 10]`
+has the identical shape of problem — each of the 10 `chatmacro0`..`chatmacro9`
+bindings passes `&raw mut chat_macros[i]` (a 16-byte `&'static str` slot) into a
+system that, for `DEFAULT_STRING` variables, only ever writes an 8-byte `*mut
+c_char`. This conversion phase fixed the *addressing* half of the bug — the
+pre-existing code computed each binding's address by casting the whole array to
+`*mut *mut c_char` and using `.offset(i)`, which steps 8 bytes at a time over an
+array whose real element stride is 16 bytes, so `chatmacro1`'s bound address
+actually pointed into the *second half of `chat_macros[0]`* (its length field),
+`chatmacro2` into `chat_macros[1]`'s first half, and so on — a config file setting
+any `chatmacro` line beyond `chatmacro0` would have corrupted a *different*
+slot's data than the one named. It's now `&raw mut chat_macros[i]`, so each
+binding at least addresses its own slot. The underlying storage-type mismatch
+(an 8-byte write landing in a 16-byte fat-pointer slot) described above for
+`snd_musiccmd` still applies here unchanged — writing a `chatmacro` line from a
+config file would still corrupt that one slot's length field, just no longer a
+neighboring slot's. Same "why it hasn't bitten anyone" reasoning applies: nothing
+in this codebase's `M_SaveDefaults` actually writes a config file (it's a no-op
+stub), so the only way this fires is a hand-edited or copied-from-another-port
+config file containing a `chatmacro1..9` line.
+
+**Why neither is fully fixed here**: found incidentally while replacing `strdup`
+in `SetVariable` (`snd_musiccmd`, same 8-byte pointer write existed before that
+change) and while giving `default_t.location` a real type (`chatmacro*`, same
+underlying mismatch, pre-existing under the old `*mut c_void` representation
+too — neither is a regression from either conversion). Fixing either properly
+means either giving the field a `*mut c_char`-shaped storage representation
+consistent with every other `DEFAULT_STRING` binding, or teaching `SetVariable`/
+`DefaultLocation` about wide (`&str`-shaped) string locations specifically — both
+are a real design decision, not a drive-by fix, so it's flagged here instead of
+silently patched. **Before ever wiring a reader up to `snd_musiccmd`, or writing
+a `chatmacro` config line, or converting another `DEFAULT_STRING`-bound field to
+`&'static str`/`Option<&'static str>`**, fix this binding mechanism first.
