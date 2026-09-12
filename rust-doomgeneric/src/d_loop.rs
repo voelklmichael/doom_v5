@@ -251,7 +251,6 @@ pub unsafe fn D_StartGameLoop(state: &mut GameState) {
 pub unsafe fn D_StartNetGame(
     state: &mut GameState,
     mut settings: *mut net_gamesettings_t,
-    mut callback: netgame_startup_callback_t,
 ) {
     (*settings).consoleplayer = 0 as i32;
     (*settings).num_players = 1 as i32;

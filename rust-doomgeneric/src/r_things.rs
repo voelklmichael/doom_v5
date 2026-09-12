@@ -409,12 +409,7 @@ pub unsafe fn R_DrawMaskedColumn(state: &mut GameState, mut column: *mut column_
     }
     state.r_draw.dc_texturemid = basetexturemid;
 }
-pub unsafe fn R_DrawVisSprite(
-    state: &mut GameState,
-    mut vis: *mut vissprite_t,
-    mut x1: i32,
-    mut x2: i32,
-) {
+pub unsafe fn R_DrawVisSprite(state: &mut GameState, mut vis: *mut vissprite_t) {
     let mut column: *mut column_t = ::core::ptr::null_mut::<column_t>();
     let mut texturecolumn: i32 = 0;
     let mut frac: fixed_t = 0;
@@ -696,7 +691,7 @@ pub unsafe fn R_DrawPSprite(state: &mut GameState, mut psp: *mut pspdef_t) {
             .spritelights
             .offset((MAXLIGHTSCALE - 1 as i32) as isize);
     }
-    R_DrawVisSprite(state, vis, (*vis).x1, (*vis).x2);
+    R_DrawVisSprite(state, vis);
 }
 pub unsafe fn R_DrawPlayerSprites(state: &mut GameState) {
     let mut i: i32 = 0;
@@ -901,7 +896,7 @@ pub unsafe fn R_DrawSprite(state: &mut GameState, mut spr: *mut vissprite_t) {
     }
     state.r_things.mfloorclip = &raw mut state.r_things.clipbot as *mut i16;
     state.r_things.mceilingclip = &raw mut state.r_things.cliptop as *mut i16;
-    R_DrawVisSprite(state, spr, (*spr).x1, (*spr).x2);
+    R_DrawVisSprite(state, spr);
 }
 pub unsafe fn R_DrawMasked(state: &mut GameState) {
     let mut spr: *mut vissprite_t = ::core::ptr::null_mut::<vissprite_t>();

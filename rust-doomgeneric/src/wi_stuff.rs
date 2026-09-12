@@ -1,4 +1,3 @@
-use crate::src::d_event::event_t;
 use crate::src::d_mode::{commercial, retail};
 use crate::src::d_player::player_t;
 use crate::src::d_ticcmd::{BT_ATTACK, BT_USE};
@@ -861,7 +860,7 @@ pub unsafe fn WI_slamBackground(state: &mut GameState) {
         state.wi_stuff.background,
     );
 }
-pub unsafe fn WI_Responder(mut ev: *mut event_t) -> bool {
+pub unsafe fn WI_Responder() -> bool {
     return false;
 }
 pub unsafe fn WI_drawLF(state: &mut GameState) {

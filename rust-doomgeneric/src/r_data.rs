@@ -367,7 +367,6 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     let mut names: *mut u8 = ::core::ptr::null_mut::<u8>();
     let mut name_p: *mut u8 = ::core::ptr::null_mut::<u8>();
     let mut patchlookup: *mut i32 = ::core::ptr::null_mut::<i32>();
-    let mut totalwidth: i32 = 0;
     let mut nummappatches: i32 = 0;
     let mut offset: i32 = 0;
     let mut maxoff: i32 = 0;
@@ -459,7 +458,6 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
-    totalwidth = 0 as i32;
     temp1 = W_GetNumForName("S_START");
     temp2 = W_GetNumForName("S_END") - 1 as i32;
     temp3 = (temp2 - temp1 + 63 as i32) / 64 as i32
@@ -548,7 +546,6 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
         *state.r_data.texturewidthmask.offset(i as isize) = j - 1 as i32;
         *state.r_data.textureheight.offset(i as isize) =
             (((*texture).height as i32) << FRACBITS) as fixed_t;
-        totalwidth += (*texture).width as i32;
         i += 1;
         directory = directory.offset(1);
     }

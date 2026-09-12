@@ -191,8 +191,6 @@ pub static fuzzoffset: [i32; 50] = [
 pub unsafe fn R_DrawFuzzColumn(state: &mut GameState) {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut frac: fixed_t = 0;
-    let mut fracstep: fixed_t = 0;
     if state.r_draw.dc_yl == 0 {
         state.r_draw.dc_yl = 1 as i32;
     }
@@ -214,9 +212,6 @@ pub unsafe fn R_DrawFuzzColumn(state: &mut GameState) {
     }
     dest = state.r_draw.ylookup[state.r_draw.dc_yl as usize]
         .offset(state.r_draw.columnofs[state.r_draw.dc_x as usize] as isize);
-    fracstep = state.r_draw.dc_iscale;
-    frac = state.r_draw.dc_texturemid
-        + (state.r_draw.dc_yl as fixed_t - state.r_main.centery as fixed_t) * fracstep;
     loop {
         *dest = *state.r_data.colormaps.offset(
             (6 as i32 * 256 as i32
@@ -228,7 +223,6 @@ pub unsafe fn R_DrawFuzzColumn(state: &mut GameState) {
             state.r_draw.fuzzpos = 0 as i32;
         }
         dest = dest.offset(SCREENWIDTH as isize);
-        frac += fracstep;
         let fresh2 = count;
         count = count - 1;
         if !(fresh2 != 0) {
@@ -240,8 +234,6 @@ pub unsafe fn R_DrawFuzzColumnLow(state: &mut GameState) {
     let mut count: i32 = 0;
     let mut dest: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut dest2: *mut byte = ::core::ptr::null_mut::<byte>();
-    let mut frac: fixed_t = 0;
-    let mut fracstep: fixed_t = 0;
     let mut x: i32 = 0;
     if state.r_draw.dc_yl == 0 {
         state.r_draw.dc_yl = 1 as i32;
@@ -267,9 +259,6 @@ pub unsafe fn R_DrawFuzzColumnLow(state: &mut GameState) {
         .offset(state.r_draw.columnofs[x as usize] as isize);
     dest2 = state.r_draw.ylookup[state.r_draw.dc_yl as usize]
         .offset(state.r_draw.columnofs[(x + 1 as i32) as usize] as isize);
-    fracstep = state.r_draw.dc_iscale;
-    frac = state.r_draw.dc_texturemid
-        + (state.r_draw.dc_yl as fixed_t - state.r_main.centery as fixed_t) * fracstep;
     loop {
         *dest = *state.r_data.colormaps.offset(
             (6 as i32 * 256 as i32
@@ -287,7 +276,6 @@ pub unsafe fn R_DrawFuzzColumnLow(state: &mut GameState) {
         }
         dest = dest.offset(SCREENWIDTH as isize);
         dest2 = dest2.offset(SCREENWIDTH as isize);
-        frac += fracstep;
         let fresh3 = count;
         count = count - 1;
         if !(fresh3 != 0) {

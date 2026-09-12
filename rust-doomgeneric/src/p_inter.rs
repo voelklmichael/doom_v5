@@ -662,7 +662,6 @@ pub unsafe fn P_DamageMobj(
     let mut saved: i32 = 0;
     let mut player: *mut player_t = ::core::ptr::null_mut::<player_t>();
     let mut thrust: fixed_t = 0;
-    let mut temp: i32 = 0;
     if (*target).flags & MF_SHOOTABLE as i32 == 0 {
         return;
     }
@@ -742,16 +741,11 @@ pub unsafe fn P_DamageMobj(
         if (*player).damagecount > 100 as i32 {
             (*player).damagecount = 100 as i32;
         }
-        temp = if damage < 100 as i32 {
-            damage
-        } else {
-            100 as i32
-        };
         if player
             == (&raw mut state.g_game.players as *mut player_t)
                 .offset(state.g_game.consoleplayer as isize) as *mut player_t
         {
-            I_Tactile(40 as i32, 10 as i32, 40 as i32 + temp * 2 as i32);
+            I_Tactile();
         }
     }
     (*target).health -= damage;

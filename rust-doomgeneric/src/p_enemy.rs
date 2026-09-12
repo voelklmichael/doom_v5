@@ -1560,7 +1560,7 @@ pub unsafe fn A_BabyMetal(state: &mut GameState, id: MobjId) {
 pub unsafe fn A_OpenShotgun2(
     state: &mut GameState,
     mut player: *mut player_t,
-    mut psp: *mut pspdef_t,
+    _psp: *mut pspdef_t,
 ) {
     S_StartSound(
         state,
@@ -1571,7 +1571,7 @@ pub unsafe fn A_OpenShotgun2(
 pub unsafe fn A_LoadShotgun2(
     state: &mut GameState,
     mut player: *mut player_t,
-    mut psp: *mut pspdef_t,
+    _psp: *mut pspdef_t,
 ) {
     S_StartSound(
         state,
@@ -1591,8 +1591,7 @@ pub unsafe fn A_CloseShotgun2(
     );
     A_ReFire(state, player, psp);
 }
-pub unsafe fn A_BrainAwake(state: &mut GameState, id: MobjId) {
-    let mo = state.p_mobj.mobj_get(id).unwrap();
+pub unsafe fn A_BrainAwake(state: &mut GameState, _id: MobjId) {
     let mut thinker: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut m: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     state.p_enemy.numbraintargets = 0 as i32;
@@ -1611,8 +1610,7 @@ pub unsafe fn A_BrainAwake(state: &mut GameState, id: MobjId) {
     }
     S_StartSound(state, NULL, sfx_bossit as i32);
 }
-pub unsafe fn A_BrainPain(state: &mut GameState, id: MobjId) {
-    let mo = state.p_mobj.mobj_get(id).unwrap();
+pub unsafe fn A_BrainPain(state: &mut GameState, _id: MobjId) {
     S_StartSound(state, NULL, sfx_bospn as i32);
 }
 pub unsafe fn A_BrainScream(state: &mut GameState, id: MobjId) {
@@ -1654,8 +1652,7 @@ pub unsafe fn A_BrainExplode(state: &mut GameState, id: MobjId) {
         (*th).tics = 1 as i32;
     }
 }
-pub unsafe fn A_BrainDie(state: &mut GameState, id: MobjId) {
-    let mo = state.p_mobj.mobj_get(id).unwrap();
+pub unsafe fn A_BrainDie(state: &mut GameState, _id: MobjId) {
     G_ExitLevel(state);
 }
 pub unsafe fn A_BrainSpit(state: &mut GameState, id: MobjId) {

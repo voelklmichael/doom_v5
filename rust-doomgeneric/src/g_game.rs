@@ -820,8 +820,6 @@ pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
         state,
         state.g_game.gameepisode,
         state.g_game.gamemap,
-        0 as i32,
-        state.g_game.gameskill,
     );
     state.g_game.displayplayer = state.g_game.consoleplayer;
     state.g_game.gameaction = ga_nothing;

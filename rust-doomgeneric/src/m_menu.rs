@@ -792,7 +792,7 @@ pub unsafe extern "C" fn M_LoadSelect(state: &mut GameState, choice: i32) {
     M_ClearMenus(state);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_LoadGame(state: &mut GameState, mut choice: i32) {
+pub unsafe extern "C" fn M_LoadGame(state: &mut GameState, _choice: i32) {
     if state.g_game.netgame {
         M_StartMessage(
             state,
@@ -847,7 +847,7 @@ pub unsafe extern "C" fn M_SaveSelect(state: &mut GameState, mut choice: i32) {
     state.m_menu.saveCharIndex = state.m_menu.savegamestrings[choice as usize].len() as i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SaveGame(state: &mut GameState, mut choice: i32) {
+pub unsafe extern "C" fn M_SaveGame(state: &mut GameState, _choice: i32) {
     if !state.g_game.usergame {
         M_StartMessage(
             state,
@@ -996,7 +996,7 @@ pub unsafe extern "C" fn M_DrawSound(state: &mut GameState) {
     M_DrawThermo(state, x, y, 16 as i32, vol);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_Sound(state: &mut GameState, mut choice: i32) {
+pub unsafe extern "C" fn M_Sound(state: &mut GameState, _choice: i32) {
     let menudef = &raw mut state.m_menu.defs.SoundDef;
     M_SetupNextMenu(state, menudef);
 }
@@ -1049,7 +1049,7 @@ pub unsafe extern "C" fn M_DrawNewGame(state: &mut GameState) {
     V_DrawPatchDirect(state, 54 as i32, 38 as i32, __wcache1256_14);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_NewGame(state: &mut GameState, mut choice: i32) {
+pub unsafe extern "C" fn M_NewGame(state: &mut GameState, _choice: i32) {
     if state.g_game.netgame && !state.g_game.demoplayback {
         M_StartMessage(
             state,
@@ -1173,13 +1173,12 @@ pub unsafe extern "C" fn M_DrawOptions(state: &mut GameState) {
     M_DrawThermo(state, x, y, 9 as i32, sz);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_Options(state: &mut GameState, mut choice: i32) {
+pub unsafe extern "C" fn M_Options(state: &mut GameState, _choice: i32) {
     let menudef = &raw mut state.m_menu.defs.OptionsDef;
     M_SetupNextMenu(state, menudef);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChangeMessages(state: &mut GameState, mut choice: i32) {
-    choice = 0 as i32;
+pub unsafe extern "C" fn M_ChangeMessages(state: &mut GameState, _choice: i32) {
     state.m_menu.showMessages = 1 as i32 - state.m_menu.showMessages;
     if state.m_menu.showMessages == 0 {
         state.g_game.players[state.g_game.consoleplayer as usize].message =
@@ -1200,8 +1199,7 @@ pub unsafe extern "C" fn M_EndGameResponse(state: &mut GameState, mut key: i32) 
     D_StartTitle(state);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_EndGame(state: &mut GameState, mut choice: i32) {
-    choice = 0 as i32;
+pub unsafe extern "C" fn M_EndGame(state: &mut GameState, _choice: i32) {
     if !state.g_game.usergame {
         S_StartSound(state, NULL, sfx_oof as i32);
         return;
@@ -1228,17 +1226,15 @@ pub unsafe extern "C" fn M_EndGame(state: &mut GameState, mut choice: i32) {
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ReadThis(state: &mut GameState, mut choice: i32) {
-    choice = 0 as i32;
+pub unsafe extern "C" fn M_ReadThis(state: &mut GameState, _choice: i32) {
     let menudef = &raw mut state.m_menu.defs.ReadDef1;
     M_SetupNextMenu(state, menudef);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ReadThis2(state: &mut GameState, mut choice: i32) {
+pub unsafe extern "C" fn M_ReadThis2(state: &mut GameState, _choice: i32) {
     if state.doomstat.gameversion.below_1_9()
         && state.doomstat.gamemode as u32 != commercial as i32 as u32
     {
-        choice = 0 as i32;
         let menudef = &raw mut state.m_menu.defs.ReadDef2;
         M_SetupNextMenu(state, menudef);
     } else {
@@ -1246,8 +1242,7 @@ pub unsafe extern "C" fn M_ReadThis2(state: &mut GameState, mut choice: i32) {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_FinishReadThis(state: &mut GameState, mut choice: i32) {
-    choice = 0 as i32;
+pub unsafe extern "C" fn M_FinishReadThis(state: &mut GameState, _choice: i32) {
     let menudef = &raw mut state.m_menu.defs.MainDef;
     M_SetupNextMenu(state, menudef);
 }
@@ -1314,7 +1309,7 @@ unsafe fn M_SelectEndMessage(state: &mut GameState) -> &'static str {
     endmsg[(state.d_loop.gametic % NUM_QUITMESSAGES) as usize]
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_QuitDOOM(state: &mut GameState, mut choice: i32) {
+pub unsafe extern "C" fn M_QuitDOOM(state: &mut GameState, _choice: i32) {
     let msg = format!(
         "{}\n\n(press y to quit to dos.)",
         M_SelectEndMessage(state)
@@ -1344,8 +1339,7 @@ pub unsafe extern "C" fn M_ChangeSensitivity(state: &mut GameState, mut choice: 
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChangeDetail(state: &mut GameState, mut choice: i32) {
-    choice = 0 as i32;
+pub unsafe extern "C" fn M_ChangeDetail(state: &mut GameState, _choice: i32) {
     state.m_menu.detailLevel = 1 as i32 - state.m_menu.detailLevel;
     let (screenblocks, detail_level) = (state.m_menu.screenblocks, state.m_menu.detailLevel);
     R_SetViewSize(state, screenblocks, detail_level);

@@ -172,7 +172,7 @@ pub unsafe fn D_CheckNetGame(state: &mut GameState) {
     }
     D_RegisterLoopCallbacks(state, &raw mut doom_loop_interface);
     SaveGameSettings(state, &raw mut settings);
-    D_StartNetGame(state, &raw mut settings, None);
+    D_StartNetGame(state, &raw mut settings);
     LoadGameSettings(state, &raw mut settings);
     println!(
         "startskill {}  deathmatch: {}  startmap: {}  startepisode: {}",

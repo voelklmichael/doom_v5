@@ -301,18 +301,9 @@ pub unsafe fn I_StartTic(state: &mut GameState) {
 pub unsafe fn I_FinishUpdate(state: &mut GameState) {
     let mut y: i32 = 0;
     let mut x_offset: i32 = 0;
-    let mut y_offset: i32 = 0;
     let mut x_offset_end: i32 = 0;
     let mut line_in: *mut u8 = ::core::ptr::null_mut::<u8>();
     let mut line_out: *mut u8 = ::core::ptr::null_mut::<u8>();
-    y_offset = state
-        .i_video
-        .s_Fb
-        .yres
-        .wrapping_sub((SCREENHEIGHT * state.i_video.fb_scaling) as uint32_t)
-        .wrapping_mul(state.i_video.s_Fb.bits_per_pixel)
-        .wrapping_div(8 as uint32_t)
-        .wrapping_div(2 as uint32_t) as i32;
     x_offset = state
         .i_video
         .s_Fb
@@ -430,4 +421,4 @@ pub unsafe fn I_SetWindowTitle(title: &str) {
     let title_cstring = ::std::ffi::CString::new(title).unwrap();
     DG_SetWindowTitle(title_cstring.as_ptr());
 }
-pub unsafe fn I_SetGrabMouseCallback(mut func: grabmouse_callback_t) {}
+pub unsafe fn I_SetGrabMouseCallback() {}

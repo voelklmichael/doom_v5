@@ -68,7 +68,7 @@ pub unsafe fn wipe_initColorXForm(
     state: &mut GameState,
     mut width: i32,
     mut height: i32,
-    mut ticks: i32,
+    _ticks: i32,
 ) -> i32 {
     memcpy(
         state.f_wipe.wipe_scr as *mut ::core::ffi::c_void,
@@ -117,9 +117,9 @@ pub unsafe fn wipe_doColorXForm(
 }
 pub unsafe fn wipe_exitColorXForm(
     _state: &mut GameState,
-    mut width: i32,
-    mut height: i32,
-    mut ticks: i32,
+    _width: i32,
+    _height: i32,
+    _ticks: i32,
 ) -> i32 {
     return 0 as i32;
 }
@@ -127,7 +127,7 @@ pub unsafe fn wipe_initMelt(
     state: &mut GameState,
     mut width: i32,
     mut height: i32,
-    mut ticks: i32,
+    _ticks: i32,
 ) -> i32 {
     let mut i: i32 = 0;
     let mut r: i32 = 0;
@@ -234,9 +234,9 @@ pub unsafe fn wipe_doMelt(
 }
 pub unsafe fn wipe_exitMelt(
     state: &mut GameState,
-    mut width: i32,
-    mut height: i32,
-    mut ticks: i32,
+    _width: i32,
+    _height: i32,
+    _ticks: i32,
 ) -> i32 {
     Z_Free(
         &mut state.z_zone,
@@ -252,13 +252,7 @@ pub unsafe fn wipe_exitMelt(
     );
     return 0 as i32;
 }
-pub unsafe fn wipe_StartScreen(
-    state: &mut GameState,
-    mut x: i32,
-    mut y_0: i32,
-    mut width: i32,
-    mut height: i32,
-) -> i32 {
+pub unsafe fn wipe_StartScreen(state: &mut GameState) -> i32 {
     state.f_wipe.wipe_scr_start = Z_Malloc(
         &mut state.z_zone,
         SCREENWIDTH * SCREENHEIGHT,
@@ -294,8 +288,6 @@ pub unsafe fn wipe_EndScreen(
 pub unsafe fn wipe_ScreenWipe(
     state: &mut GameState,
     mut wipeno: i32,
-    mut x: i32,
-    mut y_0: i32,
     mut width: i32,
     mut height: i32,
     mut ticks: i32,

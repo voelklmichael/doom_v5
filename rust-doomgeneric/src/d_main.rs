@@ -1,5 +1,4 @@
 use crate::src::am_map::AM_Drawer;
-use crate::src::d_event::event_t;
 use crate::src::d_event::D_PopEvent;
 use crate::src::d_event::GameScreenState;
 use crate::src::d_event::{ga_loadgame, ga_nothing, ga_playdemo};
@@ -245,7 +244,6 @@ pub const HUSTR_KEYINDIGO: i32 = 'i' as i32;
 pub const HUSTR_KEYBROWN: i32 = 'b' as i32;
 pub const HUSTR_KEYRED: i32 = 'r' as i32;
 pub unsafe fn D_ProcessEvents(state: &mut GameState) {
-    let mut ev: *mut event_t = ::core::ptr::null_mut::<event_t>();
     if state.d_main.storedemo {
         return;
     }
@@ -276,7 +274,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
     }
     if state.g_game.gamestate != state.d_main.wipegamestate {
         wipe = true;
-        wipe_StartScreen(state, 0 as i32, 0 as i32, SCREENWIDTH, SCREENHEIGHT);
+        wipe_StartScreen(state);
     } else {
         wipe = false;
     }
@@ -395,8 +393,6 @@ pub unsafe fn D_Display(state: &mut GameState) {
         done = wipe_ScreenWipe(
             state,
             wipe_Melt as i32,
-            0 as i32,
-            0 as i32,
             SCREENWIDTH,
             SCREENHEIGHT,
             tics,
@@ -521,7 +517,7 @@ pub unsafe fn D_DoomLoop(state: &mut GameState) {
     state.d_main.main_loop_started = true;
     TryRunTics(state);
     I_SetWindowTitle(state.doomstat.gamedescription);
-    I_SetGrabMouseCallback(Some(D_GrabMouseCallback as unsafe fn() -> boolean));
+    I_SetGrabMouseCallback();
     I_InitGraphics(state);
     V_RestoreBuffer(state);
     R_ExecuteSetViewSize(state);

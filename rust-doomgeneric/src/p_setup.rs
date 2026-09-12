@@ -1,5 +1,4 @@
 use crate::src::d_mode::commercial;
-use crate::src::d_mode::skill_t;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::fixed_cstr::FixedCStr;
 use crate::src::doomdef::NULL;
@@ -879,13 +878,7 @@ unsafe fn P_LoadReject(state: &mut GameState, mut lumpnum: i32) {
         );
     };
 }
-pub unsafe fn P_SetupLevel(
-    state: &mut GameState,
-    mut episode: i32,
-    mut map: i32,
-    mut playermask: i32,
-    mut skill: skill_t,
-) {
+pub unsafe fn P_SetupLevel(state: &mut GameState, mut episode: i32, mut map: i32) {
     let mut i: i32 = 0;
     let mut lumpnum: i32 = 0;
     state.g_game.wminfo.maxfrags = 0 as i32;

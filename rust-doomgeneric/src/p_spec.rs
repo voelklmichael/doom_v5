@@ -1061,8 +1061,6 @@ unsafe fn DonutOverrun(
     state: &mut GameState,
     mut s3_floorheight: *mut fixed_t,
     mut s3_floorpic: *mut i16,
-    mut line: *mut line_t,
-    mut pillar_sector: *mut sector_t,
 ) {
     let state = state;
     if state.p_spec.donut_overrun_first != 0 {
@@ -1140,13 +1138,7 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
                         eprintln!(
                             "EV_DoDonut: WARNING: emulating buffer overrun due to NULL back sector. Unexpected behavior may occur in Vanilla Doom."
                         );
-                        DonutOverrun(
-                            state,
-                            &raw mut s3_floorheight,
-                            &raw mut s3_floorpic,
-                            line,
-                            s1,
-                        );
+                        DonutOverrun(state, &raw mut s3_floorheight, &raw mut s3_floorpic);
                     } else {
                         s3_floorheight = (*s3).floorheight;
                         s3_floorpic = (*s3).floorpic;
@@ -1234,7 +1226,7 @@ pub unsafe fn P_SpawnSpecials(state: &mut GameState) {
                     P_SpawnStrobeFlash(state, secid, FASTDARK, 1 as i32);
                 }
                 14 => {
-                    P_SpawnDoorRaiseIn5Mins(state, secid, i);
+                    P_SpawnDoorRaiseIn5Mins(state, secid);
                 }
                 17 => {
                     P_SpawnFireFlicker(state, secid);

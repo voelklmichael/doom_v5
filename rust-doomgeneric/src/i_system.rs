@@ -43,7 +43,7 @@ pub unsafe fn I_AtExit(state: &mut ISystemState, mut func: atexit_func_t, mut ru
     (*entry).next = state.exit_funcs;
     state.exit_funcs = entry;
 }
-pub unsafe fn I_Tactile(mut on: i32, mut off: i32, mut total: i32) {}
+pub unsafe fn I_Tactile() {}
 unsafe fn AutoAllocMemory(mut size: *mut i32, mut default_ram: i32, mut min_ram: i32) -> *mut byte {
     let mut zonemem: *mut byte = ::core::ptr::null_mut::<byte>();
     zonemem = ::core::ptr::null_mut::<byte>();

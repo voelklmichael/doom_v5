@@ -1411,7 +1411,7 @@ pub unsafe fn AM_drawPlayers(state: &mut GameState) {
         i += 1;
     }
 }
-pub unsafe fn AM_drawThings(state: &mut GameState, mut colors: i32, mut colorrange: i32) {
+pub unsafe fn AM_drawThings(state: &mut GameState, mut colors: i32) {
     let mut i: i32 = 0;
     let mut t: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     i = 0 as i32;
@@ -1491,7 +1491,7 @@ pub unsafe fn AM_Drawer(state: &mut GameState) {
     AM_drawWalls(state);
     AM_drawPlayers(state);
     if state.am_map.cheating == 2 as i32 {
-        AM_drawThings(state, THINGCOLORS, THINGRANGE);
+        AM_drawThings(state, THINGCOLORS);
     }
     AM_drawCrosshair(state, XHAIRCOLORS);
     AM_drawMarks(state);

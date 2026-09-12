@@ -465,11 +465,7 @@ pub unsafe fn P_SpawnDoorCloseIn30(state: &mut GameState, mut sector: SectorId) 
     (*door).speed = (FRACUNIT * 2 as i32) as fixed_t;
     (*door).topcountdown = 30 as i32 * TICRATE;
 }
-pub unsafe fn P_SpawnDoorRaiseIn5Mins(
-    state: &mut GameState,
-    mut sector: SectorId,
-    mut secnum: i32,
-) {
+pub unsafe fn P_SpawnDoorRaiseIn5Mins(state: &mut GameState, mut sector: SectorId) {
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
     let sec = state.p_setup.sector_mut(sector);
     door = Z_Malloc(
