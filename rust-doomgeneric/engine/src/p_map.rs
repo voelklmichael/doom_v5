@@ -307,7 +307,7 @@ pub unsafe fn PIT_CheckThing(state: &mut GameState, mut thing_id: MobjId) -> boo
     }
     if (*state.p_map.tmthing).flags & MF_SKULLFLY as i32 != 0 {
         damage = (P_Random(&mut state.m_random) % 8 as i32 + 1 as i32)
-            * (*(*state.p_map.tmthing).info).damage;
+            * (*state.info.mobjinfo_mut((*state.p_map.tmthing).type_0)).damage;
         P_DamageMobj(
             state,
             thing,
@@ -319,11 +319,9 @@ pub unsafe fn PIT_CheckThing(state: &mut GameState, mut thing_id: MobjId) -> boo
         (*state.p_map.tmthing).momz = 0 as i32 as fixed_t;
         (*state.p_map.tmthing).momy = (*state.p_map.tmthing).momz;
         (*state.p_map.tmthing).momx = (*state.p_map.tmthing).momy;
-        P_SetMobjState(
-            state,
-            state.p_map.tmthing,
-            (*(*state.p_map.tmthing).info).spawnstate as statenum_t,
-        );
+        let spawnstate =
+            (*state.info.mobjinfo_mut((*state.p_map.tmthing).type_0)).spawnstate as statenum_t;
+        P_SetMobjState(state, state.p_map.tmthing, spawnstate);
         return false_0 as boolean;
     }
     if (*state.p_map.tmthing).flags & MF_MISSILE as i32 != 0 {
@@ -354,7 +352,7 @@ pub unsafe fn PIT_CheckThing(state: &mut GameState, mut thing_id: MobjId) -> boo
             return ((*thing).flags & MF_SOLID as i32 == 0) as i32 as boolean;
         }
         damage = (P_Random(&mut state.m_random) % 8 as i32 + 1 as i32)
-            * (*(*state.p_map.tmthing).info).damage;
+            * (*state.info.mobjinfo_mut((*state.p_map.tmthing).type_0)).damage;
         P_DamageMobj(
             state,
             thing,

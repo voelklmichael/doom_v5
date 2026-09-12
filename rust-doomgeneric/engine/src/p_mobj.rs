@@ -459,7 +459,6 @@ pub struct mobj_s {
     pub momz: fixed_t,
     pub validcount: i32,
     pub type_0: mobjtype_t,
-    pub info: *mut mobjinfo_t,
     pub tics: i32,
     pub state: Option<StateId>,
     pub flags: i32,
@@ -603,12 +602,9 @@ pub unsafe fn P_ExplodeMissile(state: &mut GameState, mut mo: *mut mobj_t) {
         (*mo).tics = 1 as i32;
     }
     (*mo).flags &= !(MF_MISSILE as i32);
-    if (*(*mo).info).deathsound != 0 {
-        S_StartSound(
-            state,
-            mo as *mut ::core::ffi::c_void,
-            (*(*mo).info).deathsound,
-        );
+    let deathsound = (*state.info.mobjinfo_mut((*mo).type_0)).deathsound;
+    if deathsound != 0 {
+        S_StartSound(state, mo as *mut ::core::ffi::c_void, deathsound);
     }
 }
 pub const STOPSPEED: i32 = 0x1000;
@@ -625,7 +621,8 @@ pub unsafe fn P_XYMovement(state: &mut GameState, mut mo: *mut mobj_t) {
             (*mo).momz = 0 as i32 as fixed_t;
             (*mo).momy = (*mo).momz;
             (*mo).momx = (*mo).momy;
-            P_SetMobjState(state, mo, (*(*mo).info).spawnstate as statenum_t);
+            let spawnstate = (*state.info.mobjinfo_mut((*mo).type_0)).spawnstate as statenum_t;
+            P_SetMobjState(state, mo, spawnstate);
         }
         return;
     }
@@ -830,7 +827,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut GameState, mut mobj: *mut mobj_t) {
         sfx_telept as i32,
     );
     mthing = &raw mut (*mobj).spawnpoint;
-    if (*(*mobj).info).flags & MF_SPAWNCEILING as i32 != 0 {
+    if (*state.info.mobjinfo_mut((*mobj).type_0)).flags & MF_SPAWNCEILING as i32 != 0 {
         z = ONCEILINGZ as fixed_t;
     } else {
         z = ONFLOORZ as fixed_t;
@@ -907,10 +904,8 @@ pub unsafe fn P_SpawnMobj(
         0 as i32,
         ::core::mem::size_of::<mobj_t>() as size_t,
     );
-    info = (&raw mut state.info.mobjinfo as *mut mobjinfo_t).offset(type_0 as isize)
-        as *mut mobjinfo_t;
+    info = state.info.mobjinfo_mut(type_0);
     (*mobj).type_0 = type_0;
-    (*mobj).info = info;
     (*mobj).x = x;
     (*mobj).y = y;
     (*mobj).radius = (*info).radius as fixed_t;
@@ -940,7 +935,7 @@ pub unsafe fn P_SpawnMobj(
     if z == ONFLOORZ {
         (*mobj).z = (*mobj).floorz;
     } else if z == ONCEILINGZ {
-        (*mobj).z = ((*mobj).ceilingz as i32 - (*(*mobj).info).height) as fixed_t;
+        (*mobj).z = ((*mobj).ceilingz as i32 - (*state.info.mobjinfo_mut((*mobj).type_0)).height) as fixed_t;
     } else {
         (*mobj).z = z;
     }
@@ -1065,7 +1060,6 @@ impl PMobjState {
                 momz: 0,
                 validcount: 0,
                 type_0: MT_PLAYER,
-                info: ::core::ptr::null::<mobjinfo_t>() as *mut mobjinfo_t,
                 tics: 0,
                 state: None,
                 flags: 0,
@@ -1376,12 +1370,9 @@ pub unsafe fn P_SpawnMissile(
         (*source).z + 4 as fixed_t * 8 as fixed_t * FRACUNIT,
         type_0,
     );
-    if (*(*th).info).seesound != 0 {
-        S_StartSound(
-            state,
-            th as *mut ::core::ffi::c_void,
-            (*(*th).info).seesound,
-        );
+    let seesound = (*state.info.mobjinfo_mut((*th).type_0)).seesound;
+    if seesound != 0 {
+        S_StartSound(state, th as *mut ::core::ffi::c_void, seesound);
     }
     (*th).target = Some((*source).id);
     an = R_PointToAngle2(state, (*source).x, (*source).y, (*dest).x, (*dest).y);
@@ -1392,10 +1383,10 @@ pub unsafe fn P_SpawnMissile(
     }
     (*th).angle = an;
     an >>= ANGLETOFINESHIFT;
-    (*th).momx = FixedMul((*(*th).info).speed as fixed_t, finecosine[an as isize]);
-    (*th).momy = FixedMul((*(*th).info).speed as fixed_t, finesine[an as usize]);
+    (*th).momx = FixedMul((*state.info.mobjinfo_mut((*th).type_0)).speed as fixed_t, finecosine[an as isize]);
+    (*th).momy = FixedMul((*state.info.mobjinfo_mut((*th).type_0)).speed as fixed_t, finesine[an as usize]);
     dist = P_AproxDistance((*dest).x - (*source).x, (*dest).y - (*source).y) as i32;
-    dist = dist / (*(*th).info).speed;
+    dist = dist / (*state.info.mobjinfo_mut((*th).type_0)).speed;
     if dist < 1 as i32 {
         dist = 1 as i32;
     }
@@ -1432,23 +1423,20 @@ pub unsafe fn P_SpawnPlayerMissile(
     y = (*source).y;
     z = ((*source).z as i32 + 4 as i32 * 8 as i32 * FRACUNIT) as fixed_t;
     th = P_SpawnMobj(state, x, y, z, type_0);
-    if (*(*th).info).seesound != 0 {
-        S_StartSound(
-            state,
-            th as *mut ::core::ffi::c_void,
-            (*(*th).info).seesound,
-        );
+    let seesound = (*state.info.mobjinfo_mut((*th).type_0)).seesound;
+    if seesound != 0 {
+        S_StartSound(state, th as *mut ::core::ffi::c_void, seesound);
     }
     (*th).target = Some((*source).id);
     (*th).angle = an;
     (*th).momx = FixedMul(
-        (*(*th).info).speed as fixed_t,
+        (*state.info.mobjinfo_mut((*th).type_0)).speed as fixed_t,
         finecosine[(an >> ANGLETOFINESHIFT) as isize],
     );
     (*th).momy = FixedMul(
-        (*(*th).info).speed as fixed_t,
+        (*state.info.mobjinfo_mut((*th).type_0)).speed as fixed_t,
         finesine[(an >> ANGLETOFINESHIFT) as usize],
     );
-    (*th).momz = FixedMul((*(*th).info).speed as fixed_t, slope);
+    (*th).momz = FixedMul((*state.info.mobjinfo_mut((*th).type_0)).speed as fixed_t, slope);
     P_CheckMissileSpawn(state, th);
 }

@@ -201,7 +201,7 @@ pub unsafe fn P_CheckMeleeRange(state: &mut GameState, mut actor: *mut mobj_t) -
         None => return false,
     };
     dist = P_AproxDistance((*pl).x - (*actor).x, (*pl).y - (*actor).y);
-    if dist >= MELEERANGE - 20 as i32 * FRACUNIT + (*(*pl).info).radius {
+    if dist >= MELEERANGE - 20 as i32 * FRACUNIT + (*state.info.mobjinfo_mut((*pl).type_0)).radius {
         return false;
     }
     if !P_CheckSight(state, actor, pl) {
@@ -227,7 +227,7 @@ pub unsafe fn P_CheckMissileRange(state: &mut GameState, mut actor: *mut mobj_t)
     }
     dist = (P_AproxDistance((*actor).x - (*target).x, (*actor).y - (*target).y) as i32
         - 64 as i32 * FRACUNIT) as fixed_t;
-    if (*(*actor).info).meleestate == 0 {
+    if (*state.info.mobjinfo_mut((*actor).type_0)).meleestate == 0 {
         dist -= 128 as i32 * FRACUNIT;
     }
     dist >>= 16 as i32;
@@ -293,8 +293,8 @@ pub unsafe fn P_Move(state: &mut GameState, mut actor: *mut mobj_t) -> bool {
     if (*actor).movedir as u32 >= 8 as u32 {
         I_Error("Weird actor->movedir!");
     }
-    tryx = (*actor).x + (*(*actor).info).speed as fixed_t * xspeed[(*actor).movedir as usize];
-    tryy = (*actor).y + (*(*actor).info).speed as fixed_t * yspeed[(*actor).movedir as usize];
+    tryx = (*actor).x + (*state.info.mobjinfo_mut((*actor).type_0)).speed as fixed_t * xspeed[(*actor).movedir as usize];
+    tryy = (*actor).y + (*state.info.mobjinfo_mut((*actor).type_0)).speed as fixed_t * yspeed[(*actor).movedir as usize];
     try_ok = P_TryMove(state, actor, tryx, tryy);
     if !try_ok {
         if (*actor).flags & MF_FLOAT as i32 != 0 && state.p_map.floatok {
@@ -569,9 +569,9 @@ pub unsafe fn A_Look(state: &mut GameState, id: MobjId) {
         }
         _ => {}
     }
-    if (*(*actor).info).seesound != 0 {
+    if (*state.info.mobjinfo_mut((*actor).type_0)).seesound != 0 {
         let mut sound: i32 = 0;
-        match (*(*actor).info).seesound {
+        match (*state.info.mobjinfo_mut((*actor).type_0)).seesound {
             36 | 37 | 38 => {
                 sound = sfx_posit1 as i32 + P_Random(&mut state.m_random) % 3 as i32;
             }
@@ -579,7 +579,7 @@ pub unsafe fn A_Look(state: &mut GameState, id: MobjId) {
                 sound = sfx_bgsit1 as i32 + P_Random(&mut state.m_random) % 2 as i32;
             }
             _ => {
-                sound = (*(*actor).info).seesound;
+                sound = (*state.info.mobjinfo_mut((*actor).type_0)).seesound;
             }
         }
         if (*actor).type_0 as u32 == MT_SPIDER as i32 as u32
@@ -590,7 +590,8 @@ pub unsafe fn A_Look(state: &mut GameState, id: MobjId) {
             S_StartSound(state, actor as *mut ::core::ffi::c_void, sound);
         }
     }
-    P_SetMobjState(state, actor, (*(*actor).info).seestate as statenum_t);
+    let seestate = (*state.info.mobjinfo_mut((*actor).type_0)).seestate as statenum_t;
+    P_SetMobjState(state, actor, seestate);
 }
 pub unsafe fn A_Chase(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
@@ -621,7 +622,8 @@ pub unsafe fn A_Chase(state: &mut GameState, id: MobjId) {
         if P_LookForPlayers(state, actor, true) {
             return;
         }
-        P_SetMobjState(state, actor, (*(*actor).info).spawnstate as statenum_t);
+        let spawnstate = (*state.info.mobjinfo_mut((*actor).type_0)).spawnstate as statenum_t;
+        P_SetMobjState(state, actor, spawnstate);
         return;
     }
     if (*actor).flags & MF_JUSTATTACKED as i32 != 0 {
@@ -631,24 +633,24 @@ pub unsafe fn A_Chase(state: &mut GameState, id: MobjId) {
         }
         return;
     }
-    if (*(*actor).info).meleestate != 0 && P_CheckMeleeRange(state, actor) {
-        if (*(*actor).info).attacksound != 0 {
-            S_StartSound(
-                state,
-                actor as *mut ::core::ffi::c_void,
-                (*(*actor).info).attacksound,
-            );
+    let actor_info = state.info.mobjinfo_mut((*actor).type_0);
+    if (*actor_info).meleestate != 0 && P_CheckMeleeRange(state, actor) {
+        let attacksound = (*state.info.mobjinfo_mut((*actor).type_0)).attacksound;
+        if attacksound != 0 {
+            S_StartSound(state, actor as *mut ::core::ffi::c_void, attacksound);
         }
-        P_SetMobjState(state, actor, (*(*actor).info).meleestate as statenum_t);
+        let meleestate = (*state.info.mobjinfo_mut((*actor).type_0)).meleestate as statenum_t;
+        P_SetMobjState(state, actor, meleestate);
         return;
     }
-    if (*(*actor).info).missilestate != 0 {
+    if (*state.info.mobjinfo_mut((*actor).type_0)).missilestate != 0 {
         if !((state.g_game.gameskill as i32) < sk_nightmare as i32
             && !state.d_main.fastparm
             && (*actor).movecount != 0)
         {
             if P_CheckMissileRange(state, actor) {
-                P_SetMobjState(state, actor, (*(*actor).info).missilestate as statenum_t);
+                let missilestate = (*state.info.mobjinfo_mut((*actor).type_0)).missilestate as statenum_t;
+                P_SetMobjState(state, actor, missilestate);
                 (*actor).flags |= MF_JUSTATTACKED as i32;
                 return;
             }
@@ -666,12 +668,9 @@ pub unsafe fn A_Chase(state: &mut GameState, id: MobjId) {
     if (*actor).movecount < 0 as i32 || !P_Move(state, actor) {
         P_NewChaseDir(state, actor);
     }
-    if (*(*actor).info).activesound != 0 && P_Random(&mut state.m_random) < 3 as i32 {
-        S_StartSound(
-            state,
-            actor as *mut ::core::ffi::c_void,
-            (*(*actor).info).activesound,
-        );
+    let activesound = (*state.info.mobjinfo_mut((*actor).type_0)).activesound;
+    if activesound != 0 && P_Random(&mut state.m_random) < 3 as i32 {
+        S_StartSound(state, actor as *mut ::core::ffi::c_void, activesound);
     }
 }
 pub unsafe fn A_FaceTarget(state: &mut GameState, id: MobjId) {
@@ -788,7 +787,8 @@ pub unsafe fn A_CPosRefire(state: &mut GameState, id: MobjId) {
         || (*target.unwrap()).health <= 0 as i32
         || !P_CheckSight(state, actor, target.unwrap())
     {
-        P_SetMobjState(state, actor, (*(*actor).info).seestate as statenum_t);
+        let seestate = (*state.info.mobjinfo_mut((*actor).type_0)).seestate as statenum_t;
+        P_SetMobjState(state, actor, seestate);
     }
 }
 pub unsafe fn A_SpidRefire(state: &mut GameState, id: MobjId) {
@@ -802,7 +802,8 @@ pub unsafe fn A_SpidRefire(state: &mut GameState, id: MobjId) {
         || (*target.unwrap()).health <= 0 as i32
         || !P_CheckSight(state, actor, target.unwrap())
     {
-        P_SetMobjState(state, actor, (*(*actor).info).seestate as statenum_t);
+        let seestate = (*state.info.mobjinfo_mut((*actor).type_0)).seestate as statenum_t;
+        P_SetMobjState(state, actor, seestate);
     }
 }
 pub unsafe fn A_BspiAttack(state: &mut GameState, id: MobjId) {
@@ -953,12 +954,12 @@ pub unsafe fn A_Tracer(state: &mut GameState, id: MobjId) {
     }
     exact = (*actor).angle >> ANGLETOFINESHIFT;
     (*actor).momx = FixedMul(
-        (*(*actor).info).speed as fixed_t,
+        (*state.info.mobjinfo_mut((*actor).type_0)).speed as fixed_t,
         finecosine[exact as isize],
     );
-    (*actor).momy = FixedMul((*(*actor).info).speed as fixed_t, finesine[exact as usize]);
+    (*actor).momy = FixedMul((*state.info.mobjinfo_mut((*actor).type_0)).speed as fixed_t, finesine[exact as usize]);
     dist = P_AproxDistance((*dest).x - (*actor).x, (*dest).y - (*actor).y);
-    dist = (dist as i32 / (*(*actor).info).speed) as fixed_t;
+    dist = (dist as i32 / (*state.info.mobjinfo_mut((*actor).type_0)).speed) as fixed_t;
     if dist < 1 as i32 {
         dist = 1 as i32 as fixed_t;
     }
@@ -1010,10 +1011,10 @@ pub unsafe fn PIT_VileCheck(state: &mut GameState, mut thing_id: MobjId) -> bool
     if (*thing).tics != -(1 as i32) {
         return true_0 as boolean;
     }
-    if (*(*thing).info).raisestate == S_NULL as i32 {
+    if (*state.info.mobjinfo_mut((*thing).type_0)).raisestate == S_NULL as i32 {
         return true_0 as boolean;
     }
-    maxdist = (*(*thing).info).radius + state.info.mobjinfo[MT_VILE as i32 as usize].radius;
+    maxdist = (*state.info.mobjinfo_mut((*thing).type_0)).radius + state.info.mobjinfo[MT_VILE as i32 as usize].radius;
     if ((*thing).x as i32 - state.p_enemy.viletryx as i32).abs() > maxdist
         || ((*thing).y as i32 - state.p_enemy.viletryy as i32).abs() > maxdist
     {
@@ -1047,9 +1048,9 @@ pub unsafe fn A_VileChase(state: &mut GameState, id: MobjId) {
     let mut temp: Option<MobjId> = None;
     if (*actor).movedir != DI_NODIR as i32 {
         state.p_enemy.viletryx =
-            (*actor).x + (*(*actor).info).speed as fixed_t * xspeed[(*actor).movedir as usize];
+            (*actor).x + (*state.info.mobjinfo_mut((*actor).type_0)).speed as fixed_t * xspeed[(*actor).movedir as usize];
         state.p_enemy.viletryy =
-            (*actor).y + (*(*actor).info).speed as fixed_t * yspeed[(*actor).movedir as usize];
+            (*actor).y + (*state.info.mobjinfo_mut((*actor).type_0)).speed as fixed_t * yspeed[(*actor).movedir as usize];
         xl = state.p_enemy.viletryx as i32
             - state.p_setup.bmaporgx as i32
             - 32 as i32 * FRACUNIT * 2 as i32
@@ -1085,7 +1086,7 @@ pub unsafe fn A_VileChase(state: &mut GameState, id: MobjId) {
                         state.p_enemy.corpsehit as *mut ::core::ffi::c_void,
                         sfx_slop as i32,
                     );
-                    info = (*state.p_enemy.corpsehit).info;
+                    info = state.info.mobjinfo_mut((*state.p_enemy.corpsehit).type_0);
                     P_SetMobjState(
                         state,
                         state.p_enemy.corpsehit,
@@ -1189,7 +1190,7 @@ pub unsafe fn A_VileAttack(state: &mut GameState, id: MobjId) {
         sfx_barexp as i32,
     );
     P_DamageMobj(state, target, actor, actor, 20 as i32);
-    (*target).momz = (1000 as i32 * FRACUNIT / (*(*target).info).mass) as fixed_t;
+    (*target).momz = (1000 as i32 * FRACUNIT / (*state.info.mobjinfo_mut((*target).type_0)).mass) as fixed_t;
     an = ((*actor).angle >> ANGLETOFINESHIFT) as i32;
     fire = (*actor)
         .tracer
@@ -1228,8 +1229,8 @@ pub unsafe fn A_FatAttack1(state: &mut GameState, id: MobjId) {
     mo = P_SpawnMissile(state, actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_add(FATSPREAD as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
-    (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
-    (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
+    (*mo).momx = FixedMul((*state.info.mobjinfo_mut((*mo).type_0)).speed as fixed_t, finecosine[an as isize]);
+    (*mo).momy = FixedMul((*state.info.mobjinfo_mut((*mo).type_0)).speed as fixed_t, finesine[an as usize]);
 }
 pub unsafe fn A_FatAttack2(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
@@ -1247,8 +1248,8 @@ pub unsafe fn A_FatAttack2(state: &mut GameState, id: MobjId) {
     mo = P_SpawnMissile(state, actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_sub((FATSPREAD * 2 as i32) as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
-    (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
-    (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
+    (*mo).momx = FixedMul((*state.info.mobjinfo_mut((*mo).type_0)).speed as fixed_t, finecosine[an as isize]);
+    (*mo).momy = FixedMul((*state.info.mobjinfo_mut((*mo).type_0)).speed as fixed_t, finesine[an as usize]);
 }
 pub unsafe fn A_FatAttack3(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
@@ -1264,13 +1265,13 @@ pub unsafe fn A_FatAttack3(state: &mut GameState, id: MobjId) {
     mo = P_SpawnMissile(state, actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_sub((FATSPREAD / 2 as i32) as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
-    (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
-    (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
+    (*mo).momx = FixedMul((*state.info.mobjinfo_mut((*mo).type_0)).speed as fixed_t, finecosine[an as isize]);
+    (*mo).momy = FixedMul((*state.info.mobjinfo_mut((*mo).type_0)).speed as fixed_t, finesine[an as usize]);
     mo = P_SpawnMissile(state, actor, target, MT_FATSHOT);
     (*mo).angle = (*mo).angle.wrapping_add((FATSPREAD / 2 as i32) as angle_t);
     an = ((*mo).angle >> ANGLETOFINESHIFT) as i32;
-    (*mo).momx = FixedMul((*(*mo).info).speed as fixed_t, finecosine[an as isize]);
-    (*mo).momy = FixedMul((*(*mo).info).speed as fixed_t, finesine[an as usize]);
+    (*mo).momx = FixedMul((*state.info.mobjinfo_mut((*mo).type_0)).speed as fixed_t, finecosine[an as isize]);
+    (*mo).momy = FixedMul((*state.info.mobjinfo_mut((*mo).type_0)).speed as fixed_t, finesine[an as usize]);
 }
 pub const SKULLSPEED: i32 = 20 * FRACUNIT;
 pub unsafe fn A_SkullAttack(state: &mut GameState, id: MobjId) {
@@ -1283,11 +1284,8 @@ pub unsafe fn A_SkullAttack(state: &mut GameState, id: MobjId) {
         None => return,
     };
     (*actor).flags |= MF_SKULLFLY as i32;
-    S_StartSound(
-        state,
-        actor as *mut ::core::ffi::c_void,
-        (*(*actor).info).attacksound,
-    );
+    let attacksound = (*state.info.mobjinfo_mut((*actor).type_0)).attacksound;
+    S_StartSound(state, actor as *mut ::core::ffi::c_void, attacksound);
     A_FaceTarget(state, (*actor).id);
     an = (*actor).angle >> ANGLETOFINESHIFT;
     (*actor).momx = FixedMul(SKULLSPEED, finecosine[an as isize]);
@@ -1325,7 +1323,7 @@ pub unsafe fn A_PainShootSkull(state: &mut GameState, mut actor: *mut mobj_t, mu
     an = angle >> ANGLETOFINESHIFT;
     prestep = 4 as i32 * FRACUNIT
         + 3 as i32
-            * ((*(*actor).info).radius + state.info.mobjinfo[MT_SKULL as i32 as usize].radius)
+            * ((*state.info.mobjinfo_mut((*actor).type_0)).radius + state.info.mobjinfo[MT_SKULL as i32 as usize].radius)
             / 2 as i32;
     x = (*actor).x + FixedMul(prestep as fixed_t, finecosine[an as isize]);
     y = (*actor).y + FixedMul(prestep as fixed_t, finesine[an as usize]);
@@ -1356,7 +1354,7 @@ pub unsafe fn A_PainDie(state: &mut GameState, id: MobjId) {
 pub unsafe fn A_Scream(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
     let mut sound: i32 = 0;
-    match (*(*actor).info).deathsound {
+    match (*state.info.mobjinfo_mut((*actor).type_0)).deathsound {
         0 => return,
         59 | 60 | 61 => {
             sound = sfx_podth1 as i32 + P_Random(&mut state.m_random) % 3 as i32;
@@ -1365,7 +1363,7 @@ pub unsafe fn A_Scream(state: &mut GameState, id: MobjId) {
             sound = sfx_bgdth1 as i32 + P_Random(&mut state.m_random) % 2 as i32;
         }
         _ => {
-            sound = (*(*actor).info).deathsound;
+            sound = (*state.info.mobjinfo_mut((*actor).type_0)).deathsound;
         }
     }
     if (*actor).type_0 as u32 == MT_SPIDER as i32 as u32
@@ -1386,12 +1384,9 @@ pub unsafe fn A_XScream(state: &mut GameState, id: MobjId) {
 }
 pub unsafe fn A_Pain(state: &mut GameState, id: MobjId) {
     let actor = state.p_mobj.mobj_get(id).unwrap();
-    if (*(*actor).info).painsound != 0 {
-        S_StartSound(
-            state,
-            actor as *mut ::core::ffi::c_void,
-            (*(*actor).info).painsound,
-        );
+    let painsound = (*state.info.mobjinfo_mut((*actor).type_0)).painsound;
+    if painsound != 0 {
+        S_StartSound(state, actor as *mut ::core::ffi::c_void, painsound);
     }
 }
 pub unsafe fn A_Fall(state: &mut GameState, id: MobjId) {
@@ -1735,7 +1730,8 @@ pub unsafe fn A_SpawnFly(state: &mut GameState, id: MobjId) {
     }
     newmobj = P_SpawnMobj(state, (*targ).x, (*targ).y, (*targ).z, type_0);
     if P_LookForPlayers(state, newmobj, true) {
-        P_SetMobjState(state, newmobj, (*(*newmobj).info).seestate as statenum_t);
+        let seestate = (*state.info.mobjinfo_mut((*newmobj).type_0)).seestate as statenum_t;
+        P_SetMobjState(state, newmobj, seestate);
     }
     P_TeleportMove(state, newmobj, (*newmobj).x, (*newmobj).y);
     P_RemoveMobj(state, mo);

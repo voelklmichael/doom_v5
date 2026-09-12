@@ -616,10 +616,13 @@ pub unsafe fn P_KillMobj(state: &mut GameState, mut source: *mut mobj_t, mut tar
             AM_Stop(state);
         }
     }
-    if (*target).health < -(*(*target).info).spawnhealth && (*(*target).info).xdeathstate != 0 {
-        P_SetMobjState(state, target, (*(*target).info).xdeathstate as statenum_t);
+    let target_info = state.info.mobjinfo_mut((*target).type_0);
+    if (*target).health < -(*target_info).spawnhealth && (*target_info).xdeathstate != 0 {
+        let xdeathstate = (*target_info).xdeathstate as statenum_t;
+        P_SetMobjState(state, target, xdeathstate);
     } else {
-        P_SetMobjState(state, target, (*(*target).info).deathstate as statenum_t);
+        let deathstate = (*target_info).deathstate as statenum_t;
+        P_SetMobjState(state, target, deathstate);
     }
     (*target).tics -= P_Random(&mut state.m_random) & 3 as i32;
     if (*target).tics < 1 as i32 {
@@ -687,7 +690,7 @@ pub unsafe fn P_DamageMobj(
             (*target).x,
             (*target).y,
         ) as u32;
-        thrust = (damage * (FRACUNIT >> 3 as i32) * 100 as i32 / (*(*target).info).mass) as fixed_t;
+        thrust = (damage * (FRACUNIT >> 3 as i32) * 100 as i32 / (*state.info.mobjinfo_mut((*target).type_0)).mass) as fixed_t;
         if damage < 40 as i32
             && damage > (*target).health
             && (*target).z - (*inflictor).z > 64 as i32 * FRACUNIT
@@ -751,11 +754,12 @@ pub unsafe fn P_DamageMobj(
         P_KillMobj(state, source, target);
         return;
     }
-    if P_Random(&mut state.m_random) < (*(*target).info).painchance
+    if P_Random(&mut state.m_random) < (*state.info.mobjinfo_mut((*target).type_0)).painchance
         && (*target).flags & MF_SKULLFLY as i32 == 0
     {
         (*target).flags |= MF_JUSTHIT as i32;
-        P_SetMobjState(state, target, (*(*target).info).painstate as statenum_t);
+        let painstate = (*state.info.mobjinfo_mut((*target).type_0)).painstate as statenum_t;
+        P_SetMobjState(state, target, painstate);
     }
     (*target).reactiontime = 0 as i32;
     if ((*target).threshold == 0 || (*target).type_0 as u32 == MT_VILE as i32 as u32)
@@ -765,10 +769,12 @@ pub unsafe fn P_DamageMobj(
     {
         (*target).target = Some((*source).id);
         (*target).threshold = BASETHRESHOLD;
-        if (*target).state == Some(StateId((*(*target).info).spawnstate as u32))
-            && (*(*target).info).seestate != S_NULL as i32
+        let target_info = state.info.mobjinfo_mut((*target).type_0);
+        if (*target).state == Some(StateId((*target_info).spawnstate as u32))
+            && (*target_info).seestate != S_NULL as i32
         {
-            P_SetMobjState(state, target, (*(*target).info).seestate as statenum_t);
+            let seestate = (*target_info).seestate as statenum_t;
+            P_SetMobjState(state, target, seestate);
         }
     }
 }
