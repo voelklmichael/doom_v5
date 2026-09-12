@@ -66,6 +66,13 @@ pub struct ISoundState {
     snd_sbirq: i32,
     snd_sbdma: i32,
     snd_mport: i32,
+    // Unused in this port: the M_BindVariable calls that would read/write
+    // these live behind #ifdef FEATURE_SOUND in the original C, which isn't
+    // defined here (sound_modules is a stub with no real backend). Kept as
+    // GameState fields (rather than deleted) so the names survive if real
+    // sound support is ever added.
+    pub use_libsamplerate: i32,
+    pub libsamplerate_scale: f32,
 }
 
 impl ISoundState {
@@ -83,6 +90,8 @@ impl ISoundState {
             snd_sbirq: 0,
             snd_sbdma: 0,
             snd_mport: 0,
+            use_libsamplerate: 0,
+            libsamplerate_scale: 0.65,
         }
     }
 }
@@ -313,12 +322,6 @@ pub unsafe fn I_MusicIsPlaying(state: &mut ISoundState) -> bool {
     };
 }
 pub unsafe fn I_BindSoundVariables(state: &mut GameState) {
-    extern "C" {
-        static mut use_libsamplerate: i32;
-    }
-    extern "C" {
-        static mut libsamplerate_scale: f32;
-    }
     M_BindVariable(
         &mut state.m_config,
         "snd_musicdevice",
