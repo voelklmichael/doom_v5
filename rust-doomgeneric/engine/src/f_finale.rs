@@ -41,7 +41,7 @@ use crate::src::v_video::V_MarkRect;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::w_wad::W_CacheLumpName;
 use crate::src::z_zone::{PU_CACHE, PU_LEVEL};
-use libc::memcpy;
+use crate::src::mem_compat::memcpy;
 pub type finalestage_t = u32;
 pub const F_STAGE_CAST: finalestage_t = 2;
 pub const F_STAGE_ARTSCREEN: finalestage_t = 1;

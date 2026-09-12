@@ -20,7 +20,7 @@ use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::{
-    line_t, mapthing_t, mobjinfo_t, sector_t, state_t, subsector_s, thinker_s, thinker_t, ThinkerFn,
+    line_t, mapthing_t, mobjinfo_t, sector_t, state_t, thinker_s, thinker_t, ThinkerFn,
 };
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::p_plats::plat_e;
@@ -28,6 +28,7 @@ use crate::src::p_plats::plattype_e;
 use crate::src::p_plats::P_AddActivePlat;
 use crate::src::p_setup::SectorId;
 use crate::src::p_setup::SideId;
+use crate::src::p_setup::SubsectorId;
 use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_InitThinkers;
@@ -247,7 +248,8 @@ unsafe fn saveg_read_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     (*str).frame = saveg_read32(state);
     (*str).bnext = saveg_readp(state) as *mut mobj_s;
     (*str).bprev = saveg_readp(state) as *mut mobj_s;
-    (*str).subsector = saveg_readp(state) as *mut subsector_s;
+    saveg_read32(state);
+    (*str).subsector = SubsectorId(0);
     (*str).floorz = saveg_read32(state) as fixed_t;
     (*str).ceilingz = saveg_read32(state) as fixed_t;
     (*str).radius = saveg_read32(state) as fixed_t;
@@ -295,7 +297,7 @@ unsafe fn saveg_write_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     saveg_write32(state, (*str).frame);
     saveg_writep(state, (*str).bnext as *mut ::core::ffi::c_void);
     saveg_writep(state, (*str).bprev as *mut ::core::ffi::c_void);
-    saveg_writep(state, (*str).subsector as *mut ::core::ffi::c_void);
+    saveg_write32(state, 0);
     saveg_write32(state, (*str).floorz as i32);
     saveg_write32(state, (*str).ceilingz as i32);
     saveg_write32(state, (*str).radius as i32);
@@ -925,10 +927,14 @@ pub unsafe fn P_UnArchiveThinkers(state: &mut GameState) {
                 (*mobj).info = (&raw mut state.info.mobjinfo as *mut mobjinfo_t)
                     .offset((*mobj).type_0 as isize)
                     as *mut mobjinfo_t;
-                (*mobj).floorz =
-                    (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
-                (*mobj).ceilingz =
-                    (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).ceilingheight;
+                (*mobj).floorz = (*state
+                    .p_setup
+                    .sector_mut(state.p_setup.subsectors[(*mobj).subsector.0 as usize].sector))
+                .floorheight;
+                (*mobj).ceilingz = (*state
+                    .p_setup
+                    .sector_mut(state.p_setup.subsectors[(*mobj).subsector.0 as usize].sector))
+                .ceilingheight;
                 (*mobj).thinker.function = ThinkerFn::Mobj(P_MobjThinker);
                 P_AddThinker(state, &raw mut (*mobj).thinker);
             }

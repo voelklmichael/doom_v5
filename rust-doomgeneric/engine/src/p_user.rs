@@ -190,9 +190,9 @@ pub unsafe fn P_PlayerThink(state: &mut GameState, mut player: *mut player_t) {
         P_MovePlayer(state, player);
     }
     P_CalcHeight(state, player);
-    if (*state
-        .p_setup
-        .sector_mut((*(*(*player).mo).subsector).sector))
+    if (*state.p_setup.sector_mut(
+        state.p_setup.subsectors[(*(*player).mo).subsector.0 as usize].sector,
+    ))
     .special
         != 0
     {

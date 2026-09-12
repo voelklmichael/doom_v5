@@ -15,7 +15,7 @@ use crate::src::d_mode::{
 use crate::src::d_mode::{sk_baby, sk_medium, skill_t};
 use crate::src::d_net::D_CheckNetGame;
 use crate::src::d_net::D_ConnectNetGame;
-use crate::src::d_player::{player_t, PST_LIVE};
+use crate::src::d_player::{PlayerId, PST_LIVE};
 use crate::src::doomdef::boolean;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::MAXPLAYERS;
@@ -313,10 +313,7 @@ pub unsafe fn D_Display(state: &mut GameState) {
         && !state.am_map.automapactive
         && state.d_loop.gametic != 0
     {
-        let displayplayer_mo = (&raw mut state.g_game.players as *mut player_t)
-            .offset(state.g_game.displayplayer as isize)
-            as *mut player_t;
-        R_RenderPlayerView(state, displayplayer_mo);
+        R_RenderPlayerView(state, PlayerId(state.g_game.displayplayer as u8));
     }
     if state.g_game.gamestate == GameScreenState::GS_LEVEL && state.d_loop.gametic != 0 {
         HU_Drawer(state);

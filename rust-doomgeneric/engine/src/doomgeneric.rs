@@ -2,8 +2,8 @@ use crate::src::d_main::D_DoomMain;
 use crate::src::doomdef::pixel_t;
 use crate::src::game_state::GameState;
 use crate::src::m_argv::M_FindResponseFile;
+use crate::src::mem_compat::malloc;
 use crate::src::stdint_types::size_t;
-use libc::malloc;
 
 pub const DOOMGENERIC_RESX: i32 = 640;
 pub const DOOMGENERIC_RESY: i32 = 400;

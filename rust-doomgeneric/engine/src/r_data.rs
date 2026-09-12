@@ -23,7 +23,7 @@ use crate::src::z_zone::Z_ChangeTag2;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::{memcpy, memset};
+use crate::src::mem_compat::{memcpy, memset};
 
 pub struct RDataState {
     pub firstflat: i32,

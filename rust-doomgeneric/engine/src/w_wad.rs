@@ -17,8 +17,8 @@ use crate::src::z_zone::Z_ChangeUser;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::free;
-use libc::{memcpy, memset};
+use crate::src::mem_compat::{memcpy, memset};
+use std::alloc::{alloc_zeroed, dealloc, Layout};
 
 pub struct WWadState {
     pub lumpinfo: *mut lumpinfo_t,
@@ -36,9 +36,6 @@ impl WWadState {
     }
 }
 
-extern "C" {
-    fn calloc(__nmemb: size_t, __size: size_t) -> *mut ::core::ffi::c_void;
-}
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct lumpinfo_s {
@@ -83,10 +80,11 @@ pub fn W_LumpNameHash(s: &[u8]) -> u32 {
 unsafe fn ExtendLumpInfo(state: &mut WWadState, mut newnumlumps: i32) {
     let mut newlumpinfo: *mut lumpinfo_t = ::core::ptr::null_mut::<lumpinfo_t>();
     let mut i: u32 = 0;
-    newlumpinfo = calloc(
-        newnumlumps as size_t,
-        ::core::mem::size_of::<lumpinfo_t>() as size_t,
-    ) as *mut lumpinfo_t;
+    let new_layout = match Layout::array::<lumpinfo_t>(newnumlumps as usize) {
+        Ok(layout) => layout,
+        Err(_) => I_Error("Couldn't realloc lumpinfo"),
+    };
+    newlumpinfo = alloc_zeroed(new_layout) as *mut lumpinfo_t;
     if newlumpinfo.is_null() {
         I_Error("Couldn't realloc lumpinfo");
     }
@@ -117,7 +115,10 @@ unsafe fn ExtendLumpInfo(state: &mut WWadState, mut newnumlumps: i32) {
         }
         i = i.wrapping_add(1);
     }
-    free(state.lumpinfo as *mut ::core::ffi::c_void);
+    if !state.lumpinfo.is_null() {
+        let old_layout = Layout::array::<lumpinfo_t>(state.numlumps as usize).unwrap();
+        dealloc(state.lumpinfo as *mut u8, old_layout);
+    }
     state.lumpinfo = newlumpinfo;
     state.numlumps = newnumlumps as u32;
 }

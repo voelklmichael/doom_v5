@@ -1,5 +1,5 @@
 use crate::src::d_loop::NetUpdate;
-use crate::src::d_player::player_t;
+use crate::src::d_player::PlayerId;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::game_state::GameState;
@@ -9,7 +9,6 @@ use crate::src::m_fixed::FixedDiv;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
-use crate::src::p_mobj::subsector_t;
 use crate::src::p_setup::SubsectorId;
 use crate::src::r_bsp::R_ClearClipSegs;
 use crate::src::r_bsp::R_ClearDrawSegs;
@@ -60,7 +59,7 @@ pub struct RMainState {
     pub viewangle: angle_t,
     pub viewcos: fixed_t,
     pub viewsin: fixed_t,
-    pub viewplayer: *mut player_t,
+    pub viewplayer: PlayerId,
     pub detailshift: i32,
     pub clipangle: angle_t,
     pub viewangletox: [i32; 4096],
@@ -100,7 +99,7 @@ impl RMainState {
             viewangle: 0,
             viewcos: 0,
             viewsin: 0,
-            viewplayer: ::core::ptr::null::<player_t>() as *mut player_t,
+            viewplayer: PlayerId(0),
             detailshift: 0,
             clipangle: 0,
             viewangletox: [0; 4096],
@@ -506,12 +505,12 @@ pub unsafe fn R_PointInSubsector(
     state: &mut GameState,
     mut x: fixed_t,
     mut y: fixed_t,
-) -> *mut subsector_t {
+) -> SubsectorId {
     let mut node: *mut node_t = ::core::ptr::null_mut::<node_t>();
     let mut side: i32 = 0;
     let mut nodenum: i32 = 0;
     if state.p_setup.numnodes == 0 {
-        return state.p_setup.subsector_mut(SubsectorId(0));
+        return SubsectorId(0);
     }
     nodenum = state.p_setup.numnodes - 1 as i32;
     while nodenum & NF_SUBSECTOR == 0 {
@@ -519,13 +518,12 @@ pub unsafe fn R_PointInSubsector(
         side = R_PointOnSide(x, y, node);
         nodenum = (*node).children[side as usize] as i32;
     }
-    return state
-        .p_setup
-        .subsector_mut(SubsectorId((nodenum & !NF_SUBSECTOR) as u32));
+    return SubsectorId((nodenum & !NF_SUBSECTOR) as u32);
 }
-pub unsafe fn R_SetupFrame(state: &mut GameState, mut player: *mut player_t) {
+pub unsafe fn R_SetupFrame(state: &mut GameState, player_id: PlayerId) {
     let mut i: i32 = 0;
-    state.r_main.viewplayer = player;
+    let player = state.g_game.player_mut(player_id);
+    state.r_main.viewplayer = player_id;
     state.r_main.viewx = (*(*player).mo).x;
     state.r_main.viewy = (*(*player).mo).y;
     state.r_main.viewangle = (*(*player).mo)
@@ -553,8 +551,8 @@ pub unsafe fn R_SetupFrame(state: &mut GameState, mut player: *mut player_t) {
     state.r_main.framecount += 1;
     state.r_main.validcount += 1;
 }
-pub unsafe fn R_RenderPlayerView(state: &mut GameState, mut player: *mut player_t) {
-    R_SetupFrame(state, player);
+pub unsafe fn R_RenderPlayerView(state: &mut GameState, player_id: PlayerId) {
+    R_SetupFrame(state, player_id);
     R_ClearClipSegs(state);
     R_ClearDrawSegs(state);
     R_ClearPlanes(state);

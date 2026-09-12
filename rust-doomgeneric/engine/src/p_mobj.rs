@@ -27,7 +27,7 @@ use crate::src::p_maputl::P_AproxDistance;
 use crate::src::p_maputl::P_SetThingPosition;
 use crate::src::p_maputl::P_UnsetThingPosition;
 use crate::src::p_pspr::P_SetupPsprites;
-use crate::src::p_setup::SectorId;
+use crate::src::p_setup::{SectorId, SubsectorId};
 use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_RemoveThinker;
@@ -45,9 +45,8 @@ use crate::src::tables::finesine;
 use crate::src::tables::ANG45;
 use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::z_zone::Z_Malloc;
+use crate::src::mem_compat::{memcpy, memset};
 use crate::src::z_zone::PU_LEVEL;
-use ::libc;
-use libc::{memcpy, memset};
 
 pub use crate::src::d_ticcmd::ticcmd_t;
 #[derive(Copy, Clone)]
@@ -449,7 +448,7 @@ pub struct mobj_s {
     pub frame: i32,
     pub bnext: *mut mobj_s,
     pub bprev: *mut mobj_s,
-    pub subsector: *mut subsector_s,
+    pub subsector: SubsectorId,
     pub floorz: fixed_t,
     pub ceilingz: fixed_t,
     pub radius: fixed_t,
@@ -693,7 +692,12 @@ pub unsafe fn P_XYMovement(state: &mut GameState, mut mo: *mut mobj_t) {
             || (*mo).momy > FRACUNIT / 4 as i32
             || (*mo).momy < -FRACUNIT / 4 as i32
         {
-            if (*mo).floorz != (*state.p_setup.sector_mut((*(*mo).subsector).sector)).floorheight {
+            if (*mo).floorz
+                != (*state
+                    .p_setup
+                    .sector_mut(state.p_setup.subsectors[(*mo).subsector.0 as usize].sector))
+                .floorheight
+            {
                 return;
             }
         }
@@ -793,7 +797,7 @@ pub unsafe fn P_NightmareRespawn(state: &mut GameState, mut mobj: *mut mobj_t) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
-    let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
+    let mut ss: SubsectorId = SubsectorId(0);
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut mthing: *mut mapthing_t = ::core::ptr::null_mut::<mapthing_t>();
     x = (((*mobj).spawnpoint.x as i32) << FRACBITS) as fixed_t;
@@ -801,7 +805,10 @@ pub unsafe fn P_NightmareRespawn(state: &mut GameState, mut mobj: *mut mobj_t) {
     if !P_CheckPosition(state, mobj, x, y) {
         return;
     }
-    let floorheight1 = (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
+    let floorheight1 = (*state
+        .p_setup
+        .sector_mut(state.p_setup.subsectors[(*mobj).subsector.0 as usize].sector))
+    .floorheight;
     mo = P_SpawnMobj(state, (*mobj).x, (*mobj).y, floorheight1, MT_TFOG);
     S_StartSound(
         state,
@@ -809,7 +816,8 @@ pub unsafe fn P_NightmareRespawn(state: &mut GameState, mut mobj: *mut mobj_t) {
         sfx_telept as i32,
     );
     ss = R_PointInSubsector(state, x, y);
-    let floorheight2 = (*state.p_setup.sector_mut((*ss).sector)).floorheight;
+    let floorheight2 =
+        (*state.p_setup.sector_mut(state.p_setup.subsectors[ss.0 as usize].sector)).floorheight;
     mo = P_SpawnMobj(state, x, y, floorheight2, MT_TFOG);
     S_StartSound(
         state,
@@ -915,8 +923,14 @@ pub unsafe fn P_SpawnMobj(
     (*mobj).frame = (*st).frame;
     (*mobj).id = state.p_mobj.register(mobj);
     P_SetThingPosition(state, mobj);
-    (*mobj).floorz = (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).floorheight;
-    (*mobj).ceilingz = (*state.p_setup.sector_mut((*(*mobj).subsector).sector)).ceilingheight;
+    (*mobj).floorz = (*state
+        .p_setup
+        .sector_mut(state.p_setup.subsectors[(*mobj).subsector.0 as usize].sector))
+    .floorheight;
+    (*mobj).ceilingz = (*state
+        .p_setup
+        .sector_mut(state.p_setup.subsectors[(*mobj).subsector.0 as usize].sector))
+    .ceilingheight;
     if z == ONFLOORZ {
         (*mobj).z = (*mobj).floorz;
     } else if z == ONCEILINGZ {
@@ -1035,7 +1049,7 @@ impl PMobjState {
                 frame: 0,
                 bnext: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
                 bprev: ::core::ptr::null::<mobj_s>() as *mut mobj_s,
-                subsector: ::core::ptr::null::<subsector_s>() as *mut subsector_s,
+                subsector: SubsectorId(0),
                 floorz: 0,
                 ceilingz: 0,
                 radius: 0,
@@ -1096,7 +1110,7 @@ pub unsafe fn P_RespawnSpecials(state: &mut GameState) {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
     let mut z: fixed_t = 0;
-    let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
+    let mut ss: SubsectorId = SubsectorId(0);
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut mthing: *mut mapthing_t = ::core::ptr::null_mut::<mapthing_t>();
     let mut i: i32 = 0;
@@ -1116,7 +1130,8 @@ pub unsafe fn P_RespawnSpecials(state: &mut GameState) {
     x = (((*mthing).x as i32) << FRACBITS) as fixed_t;
     y = (((*mthing).y as i32) << FRACBITS) as fixed_t;
     ss = R_PointInSubsector(state, x, y);
-    let floorheight = (*state.p_setup.sector_mut((*ss).sector)).floorheight;
+    let floorheight =
+        (*state.p_setup.sector_mut(state.p_setup.subsectors[ss.0 as usize].sector)).floorheight;
     mo = P_SpawnMobj(state, x, y, floorheight, MT_IFOG);
     S_StartSound(
         state,

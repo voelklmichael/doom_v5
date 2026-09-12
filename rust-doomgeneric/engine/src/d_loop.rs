@@ -17,7 +17,7 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::sha1::sha1_digest_t;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
-use libc::{memcpy, memset};
+use crate::src::mem_compat::{memcpy, memset};
 
 pub struct DLoopState {
     pub ticdata: [ticcmd_set_t; 128],

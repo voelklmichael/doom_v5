@@ -704,7 +704,11 @@ pub unsafe fn P_DamageMobj(
         (*target).momy += FixedMul(thrust, finesine[ang as usize]);
     }
     if !player.is_null() {
-        if (*state.p_setup.sector_mut((*(*target).subsector).sector)).special as i32 == 11 as i32
+        if (*state
+            .p_setup
+            .sector_mut(state.p_setup.subsectors[(*target).subsector.0 as usize].sector))
+        .special as i32
+            == 11 as i32
             && damage >= (*target).health
         {
             damage = (*target).health - 1 as i32;

@@ -38,6 +38,9 @@ pub const wp_shotgun: weapontype_t = 2;
 pub const wp_pistol: weapontype_t = 1;
 pub const wp_fist: weapontype_t = 0;
 
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct PlayerId(pub u8);
+
 pub type playerstate_t = u32;
 pub const PST_REBORN: playerstate_t = 2;
 pub const PST_DEAD: playerstate_t = 1;

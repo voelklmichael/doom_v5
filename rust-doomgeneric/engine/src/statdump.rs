@@ -2,7 +2,7 @@ use crate::src::game_state::GameState;
 use crate::src::m_argv::M_ParmExists;
 use crate::src::stdint_types::size_t;
 use crate::src::wi_stuff::{wbplayerstruct_t, wbstartstruct_t};
-use libc::memcpy;
+use crate::src::mem_compat::memcpy;
 pub const MAX_CAPTURES: i32 = 32;
 
 pub struct StatDumpState {

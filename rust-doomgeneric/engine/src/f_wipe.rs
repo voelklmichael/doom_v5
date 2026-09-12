@@ -11,7 +11,7 @@ use crate::src::v_video::V_MarkRect;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use libc::memcpy;
+use crate::src::mem_compat::memcpy;
 
 pub struct FWipeState {
     pub go: bool,

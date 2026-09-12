@@ -17,7 +17,7 @@ use crate::src::d_mode::{doom, doom2, pack_chex, pack_hacx};
 use crate::src::d_mode::{sk_baby, sk_nightmare, skill_t};
 use crate::src::d_player::pw_strength;
 use crate::src::d_player::{am_clip, NUMAMMO};
-use crate::src::d_player::{player_s, player_t, PST_DEAD, PST_LIVE, PST_REBORN};
+use crate::src::d_player::{player_s, player_t, PlayerId, PST_DEAD, PST_LIVE, PST_REBORN};
 use crate::src::d_player::{
     weapontype_t, wp_bfg, wp_chaingun, wp_chainsaw, wp_fist, wp_missile, wp_nochange, wp_pistol,
     wp_plasma, wp_shotgun, wp_supershotgun,
@@ -61,7 +61,7 @@ use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::P_SpawnPlayer;
 use crate::src::p_mobj::MF_SHADOW;
-use crate::src::p_mobj::{mapthing_t, state_t, subsector_t};
+use crate::src::p_mobj::{mapthing_t, state_t};
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::p_mobj::{MT_BRUISERSHOT, MT_HEADSHOT, MT_TFOG, MT_TROOPSHOT};
 use crate::src::p_saveg::P_ArchivePlayers;
@@ -79,6 +79,7 @@ use crate::src::p_saveg::P_UnArchiveWorld;
 use crate::src::p_saveg::P_WriteSaveGameEOF;
 use crate::src::p_saveg::P_WriteSaveGameHeader;
 use crate::src::p_setup::P_SetupLevel;
+use crate::src::p_setup::SubsectorId;
 use crate::src::p_tick::P_Ticker;
 use crate::src::r_data::R_FlatNumForName;
 use crate::src::r_data::R_TextureNumForName;
@@ -111,7 +112,7 @@ use crate::src::z_zone::Z_CheckHeap;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
-use libc::{memcpy, memset};
+use crate::src::mem_compat::{memcpy, memset};
 use std::io::Seek;
 
 pub struct GGameState {
@@ -354,6 +355,10 @@ impl GGameState {
     pub fn fixup_button_pointers(&mut self) {
         self.joybuttons = (&raw mut self.joyarray as *mut boolean).wrapping_offset(1);
         self.mousebuttons = (&raw mut self.mousearray as *mut boolean).wrapping_offset(1);
+    }
+
+    pub fn player_mut(&mut self, id: PlayerId) -> *mut player_t {
+        &mut self.players[id.0 as usize] as *mut player_t
     }
 }
 
@@ -1215,7 +1220,7 @@ pub unsafe fn G_CheckSpot(
 ) -> bool {
     let mut x: fixed_t = 0;
     let mut y: fixed_t = 0;
-    let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
+    let mut ss: SubsectorId = SubsectorId(0);
     let mut mo: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut i: i32 = 0;
     if state.g_game.players[playernum as usize].mo.is_null() {
@@ -1274,7 +1279,8 @@ pub unsafe fn G_CheckSpot(
             I_Error(&format!("G_CheckSpot: unexpected angle {}\n", an));
         }
     }
-    let floorheight = (*state.p_setup.sector_mut((*ss).sector)).floorheight;
+    let floorheight =
+        (*state.p_setup.sector_mut(state.p_setup.subsectors[ss.0 as usize].sector)).floorheight;
     mo = P_SpawnMobj(
         state,
         x + 20 as fixed_t * xa,

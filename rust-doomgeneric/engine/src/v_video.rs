@@ -19,7 +19,7 @@ use crate::src::z_zone::ZZoneState;
 use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
-use libc::{memcpy, memset};
+use crate::src::mem_compat::{memcpy, memset};
 
 pub type vpatchclipfunc_t = Option<unsafe fn(*mut patch_t, i32, i32) -> boolean>;
 #[derive(Copy, Clone)]

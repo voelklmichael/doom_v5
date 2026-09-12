@@ -38,7 +38,7 @@ use crate::src::p_mobj::P_SpawnBlood;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::P_SpawnPuff;
 use crate::src::p_mobj::P_SubstNullMobj;
-use crate::src::p_mobj::{line_t, sector_t, subsector_t, ST_HORIZONTAL, ST_VERTICAL};
+use crate::src::p_mobj::{line_t, sector_t, ST_HORIZONTAL, ST_VERTICAL};
 use crate::src::p_mobj::{
     MF_DROPOFF, MF_DROPPED, MF_FLOAT, MF_MISSILE, MF_NOBLOOD, MF_NOCLIP, MF_PICKUP, MF_SHOOTABLE,
     MF_SKULLFLY, MF_SOLID, MF_SPECIAL, MF_TELEPORT,
@@ -49,6 +49,7 @@ use crate::src::p_spec::P_CrossSpecialLine;
 use crate::src::p_spec::P_ShootSpecialLine;
 use crate::src::p_spec::ML_TWOSIDED;
 use crate::src::p_switch::P_UseSpecialLine;
+use crate::src::p_setup::SubsectorId;
 use crate::src::r_main::R_PointInSubsector;
 use crate::src::r_main::R_PointToAngle2;
 use crate::src::s_sound::S_StartSound;
@@ -180,7 +181,7 @@ pub unsafe fn P_TeleportMove(
     let mut yh: i32 = 0;
     let mut bx: i32 = 0;
     let mut by: i32 = 0;
-    let mut newsubsec: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
+    let mut newsubsec: SubsectorId = SubsectorId(0);
     state.p_map.tmthing = thing;
     state.p_map.tmflags = (*thing).flags;
     state.p_map.tmx = x;
@@ -191,9 +192,17 @@ pub unsafe fn P_TeleportMove(
     state.p_map.tmbbox[BOXLEFT as i32 as usize] = x - (*state.p_map.tmthing).radius;
     newsubsec = R_PointInSubsector(state, x, y);
     state.p_map.ceilingline = ::core::ptr::null_mut::<line_t>();
-    state.p_map.tmdropoffz = (*state.p_setup.sector_mut((*newsubsec).sector)).floorheight;
+    state.p_map.tmdropoffz =
+        (*state
+            .p_setup
+            .sector_mut(state.p_setup.subsectors[newsubsec.0 as usize].sector))
+        .floorheight;
     state.p_map.tmfloorz = state.p_map.tmdropoffz;
-    state.p_map.tmceilingz = (*state.p_setup.sector_mut((*newsubsec).sector)).ceilingheight;
+    state.p_map.tmceilingz =
+        (*state
+            .p_setup
+            .sector_mut(state.p_setup.subsectors[newsubsec.0 as usize].sector))
+        .ceilingheight;
     state.r_main.validcount += 1;
     state.p_map.numspechit = 0 as i32;
     xl = state.p_map.tmbbox[BOXLEFT as i32 as usize]
@@ -375,7 +384,7 @@ pub unsafe fn P_CheckPosition(
     let mut yh: i32 = 0;
     let mut bx: i32 = 0;
     let mut by: i32 = 0;
-    let mut newsubsec: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
+    let mut newsubsec: SubsectorId = SubsectorId(0);
     state.p_map.tmthing = thing;
     state.p_map.tmflags = (*thing).flags;
     state.p_map.tmx = x;
@@ -386,9 +395,17 @@ pub unsafe fn P_CheckPosition(
     state.p_map.tmbbox[BOXLEFT as i32 as usize] = x - (*state.p_map.tmthing).radius;
     newsubsec = R_PointInSubsector(state, x, y);
     state.p_map.ceilingline = ::core::ptr::null_mut::<line_t>();
-    state.p_map.tmdropoffz = (*state.p_setup.sector_mut((*newsubsec).sector)).floorheight;
+    state.p_map.tmdropoffz =
+        (*state
+            .p_setup
+            .sector_mut(state.p_setup.subsectors[newsubsec.0 as usize].sector))
+        .floorheight;
     state.p_map.tmfloorz = state.p_map.tmdropoffz;
-    state.p_map.tmceilingz = (*state.p_setup.sector_mut((*newsubsec).sector)).ceilingheight;
+    state.p_map.tmceilingz =
+        (*state
+            .p_setup
+            .sector_mut(state.p_setup.subsectors[newsubsec.0 as usize].sector))
+        .ceilingheight;
     state.r_main.validcount += 1;
     state.p_map.numspechit = 0 as i32;
     if state.p_map.tmflags & MF_NOCLIP as i32 != 0 {

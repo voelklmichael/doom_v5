@@ -22,7 +22,7 @@ use crate::src::tables::ANGLETOFINESHIFT;
 use crate::src::w_wad::W_CacheLumpNum;
 use crate::src::w_wad::W_ReleaseLumpNum;
 use crate::src::z_zone::PU_STATIC;
-use libc::memset;
+use crate::src::mem_compat::memset;
 
 pub struct RPlaneState {
     pub floorfunc: planefunction_t,
