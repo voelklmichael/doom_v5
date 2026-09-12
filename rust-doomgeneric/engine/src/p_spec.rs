@@ -341,11 +341,11 @@ pub unsafe fn P_InitPicAnims(state: &mut GameState) {
                     R_TextureNumForName(&mut state.r_data, &startname);
                 current_block_13 = 11650488183268122163;
             }
-        } else if W_CheckNumForName(&startname) == -(1 as i32) {
+        } else if W_CheckNumForName(&mut state.w_wad, &startname) == -(1 as i32) {
             current_block_13 = 12237857397564741460;
         } else {
-            (*state.p_spec.lastanim).picnum = R_FlatNumForName(&mut state.r_data, &endname);
-            (*state.p_spec.lastanim).basepic = R_FlatNumForName(&mut state.r_data, &startname);
+            (*state.p_spec.lastanim).picnum = R_FlatNumForName(state, &endname);
+            (*state.p_spec.lastanim).basepic = R_FlatNumForName(state, &startname);
             current_block_13 = 11650488183268122163;
         }
         match current_block_13 {

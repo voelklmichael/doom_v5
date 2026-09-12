@@ -723,12 +723,12 @@ pub unsafe fn AM_loadPics(state: &mut GameState) {
         i += 1;
     }
 }
-pub unsafe fn AM_unloadPics() {
+pub unsafe fn AM_unloadPics(state: &mut GameState) {
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < 10 as i32 {
         let namebuf = format!("AMMNUM{}", i);
-        W_ReleaseLumpName(&namebuf);
+        W_ReleaseLumpName(&mut state.w_wad, &namebuf);
         i += 1;
     }
 }
@@ -766,7 +766,7 @@ pub unsafe fn AM_Stop(state: &mut GameState) {
         data3: 0 as i32,
         data4: 0,
     };
-    AM_unloadPics();
+    AM_unloadPics(state);
     state.am_map.automapactive = false;
     ST_Responder(state, &st_notify);
     state.am_map.stopped = true;

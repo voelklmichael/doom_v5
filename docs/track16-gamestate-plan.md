@@ -263,11 +263,48 @@ of genuinely permanent categories:
   constructs the initial state before the tick loop begins — this is what `game_state()`
   exists to bootstrap, not a leftover.
 
-**Conclusion**: `GAME_STATE`/`OnceLock`/`game_state()` still cannot be deleted today —
-`w_file_stdc.rs`'s `wad_file_class_t` payload alone guarantees that, since nothing has
-checked whether IT is also a false C-ABI constraint the way `atexit_func_t` turned out
-to be. But given BC94's finding, don't assume any of the remaining "C-ABI-bound hub
-payload" entries above are actually permanent without applying the same check first.
-The bridge (`game_state.rs`) stays as infrastructure for now; whether it's truly
-permanent or just not-yet-revisited is an open question this doc should be updated
-with an answer to, not assumed.
+**Conclusion (superseded 2026-09-12, see below): `GAME_STATE`/`OnceLock`/`game_state()`
+still cannot be deleted today** — this turned out to be wrong; kept for history.
+
+## Final status (2026-09-12, BC95/BC96)
+
+The "open question" above was answered the very next session: the user asked to
+reopen the track, and applying BC94's own "is this a real FFI boundary?" check to
+every remaining category found none of them were actually permanent.
+
+- **BC95**: deleted `i_scale.rs` outright (confirmed zero callers for its entire
+  ~1900-line scale-driver apparatus, including the `screen_mode_t.DrawScreen` hub
+  that the `-scanline` shim was deferred on — moot once the whole file was gone).
+  Converted the remaining dead-code list from the audit above
+  (`m_controls.rs`'s Heretic/Hexen/Strife binds, `d_loop.rs`'s
+  `D_Disconnected`/`D_ReceiveTic`, `p_pspr.rs`'s `P_CalcSwing`, `am_map.rs`'s
+  `AM_updateLightLev`, `g_game.rs`'s `G_InitPlayer`, `d_main.rs`'s
+  `D_GrabMouseCallback`) and the two low-value shims (`v_video.rs`'s
+  `V_LoadTintTable`/`V_LoadXlaTable`) to take state, same as any other function.
+  Widened `load_callback_t` (st_stuff.rs/wi_stuff.rs) and `wad_file_class_t`
+  (w_file.rs/w_file_stdc.rs) — neither was a real FFI boundary either.
+- **BC96**: converted the one deliberately-deferred large-fanout cluster,
+  `w_wad.rs`'s `W_CheckNumForName`/`W_GetNumForName` and its tightly-coupled
+  leaves (`W_AddFile`/`ExtendLumpInfo`/`W_LumpLength`/`W_ReadLump`/
+  `W_ReleaseLumpNum`/`W_ReleaseLumpName`/`W_GenerateHashTable`/
+  `W_CheckCorrectIWAD`) — same S_StartSound-scale shape as the other three hubs,
+  ~55 external call sites across 13 files, almost all one-line fixes.
+- The per-file `run_static_initializers`-style const-fn constructor blocks
+  (`am_map.rs`'s `cheat_amap`, etc.) were never actually blockers — they don't
+  call `game_state()` at all, they were just listed alongside the real
+  categories in the audit above.
+- **The "one legitimate root" (`doomgeneric_xlib.rs`'s bootstrap call) turned out
+  not to exist by this point** — `main()` already called `init_game_state` and
+  used its return value directly, never the bare `game_state()` accessor.
+
+With every category converted, `game_state()` had zero remaining callers anywhere
+(verified by a full-codebase grep, comments excluded). Deleted `game_state()` and
+the `GAME_STATE: OnceLock` static entirely. `init_game_state` now builds the
+`GameState` and obtains its `&'static mut` via `Box::leak(Box::new(...))` instead
+of a lazily-initialized static — simpler, and needs no unsafe accessor at all.
+
+**Lesson**: a "cannot be deleted" or "permanent exception" conclusion is a
+snapshot of what nobody has re-checked yet, not a proof. The 2026-09-11 closure's
+own text acknowledged this ("don't assume... without applying the same check
+first") but still led with "cannot be deleted today" as the headline — the doc
+should have led with the open question, not the stale-by-construction conclusion.

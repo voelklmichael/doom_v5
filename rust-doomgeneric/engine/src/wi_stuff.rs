@@ -2073,7 +2073,7 @@ unsafe fn WI_loadUnloadData(state: &mut GameState, mut callback: load_callback_t
     callback.expect("non-null function pointer")(state, "WIOSTS", cb_ptr);
     let cb_ptr = &raw mut state.wi_stuff.sp_secret;
     callback.expect("non-null function pointer")(state, "WISCRT2", cb_ptr);
-    if W_CheckNumForName("WIOBJ") >= 0 as i32 {
+    if W_CheckNumForName(&mut state.w_wad, "WIOBJ") >= 0 as i32 {
         if state.g_game.netgame && state.g_game.deathmatch == 0 {
             let cb_ptr = &raw mut state.wi_stuff.items;
             callback.expect("non-null function pointer")(state, "WIOBJ", cb_ptr);
@@ -2151,8 +2151,8 @@ pub unsafe fn WI_loadData(state: &mut GameState) {
     state.wi_stuff.star = W_CacheLumpName(state, "STFST01", PU_STATIC as i32) as *mut patch_t;
     state.wi_stuff.bstar = W_CacheLumpName(state, "STFDEAD0", PU_STATIC as i32) as *mut patch_t;
 }
-unsafe fn WI_unloadCallback(_state: &mut GameState, name: &str, variable: *mut *mut patch_t) {
-    W_ReleaseLumpName(name);
+unsafe fn WI_unloadCallback(state: &mut GameState, name: &str, variable: *mut *mut patch_t) {
+    W_ReleaseLumpName(&mut state.w_wad, name);
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
 pub unsafe fn WI_Drawer(state: &mut GameState) {

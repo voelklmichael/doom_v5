@@ -612,7 +612,7 @@ pub unsafe fn D_DoAdvanceDemo(state: &mut GameState) {
     }
     if state.d_main.bfgedition
         && state.d_main.pagename.eq_ignore_ascii_case("TITLEPIC")
-        && W_CheckNumForName("titlepic") < 0 as i32
+        && W_CheckNumForName(&mut state.w_wad, "titlepic") < 0 as i32
     {
         state.d_main.pagename = "INTERPIC";
     }
@@ -684,9 +684,9 @@ pub unsafe fn D_IdentifyVersion(state: &mut GameState) {
         }
     }) == doom as i32 as u32
     {
-        if W_CheckNumForName("E4M1") > 0 as i32 {
+        if W_CheckNumForName(&mut state.w_wad, "E4M1") > 0 as i32 {
             state.doomstat.gamemode = retail;
-        } else if W_CheckNumForName("E3M1") > 0 as i32 {
+        } else if W_CheckNumForName(&mut state.w_wad, "E3M1") > 0 as i32 {
             state.doomstat.gamemode = registered;
         } else {
             state.doomstat.gamemode = shareware;
@@ -705,8 +705,8 @@ pub unsafe fn D_IdentifyVersion(state: &mut GameState) {
     };
 }
 pub unsafe fn D_SetGameDescription(state: &mut GameState) {
-    let mut is_freedoom: bool = W_CheckNumForName("FREEDOOM") >= 0 as i32;
-    let mut is_freedm: bool = W_CheckNumForName("FREEDM") >= 0 as i32;
+    let mut is_freedoom: bool = W_CheckNumForName(&mut state.w_wad, "FREEDOOM") >= 0 as i32;
+    let mut is_freedm: bool = W_CheckNumForName(&mut state.w_wad, "FREEDM") >= 0 as i32;
     state.doomstat.gamedescription = "Unknown";
     if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
@@ -770,10 +770,10 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
 }
 #[no_mangle]
 pub static title: [::core::ffi::c_char; 128] = [0; 128];
-unsafe fn D_AddFile(filename: &str) -> bool {
+unsafe fn D_AddFile(state: &mut GameState, filename: &str) -> bool {
     let mut handle: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     println!(" adding {}", filename);
-    handle = W_AddFile(filename);
+    handle = W_AddFile(state, filename);
     return handle != NULL as *mut wad_file_t;
 }
 static copyright_banners: [&str; 3] = [
@@ -949,11 +949,12 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     state.doomstat.modifiedgame = false;
     println!("W_Init: Init WADfiles.");
-    D_AddFile(&state.d_main.iwadfile);
-    W_CheckCorrectIWAD(doom);
+    let iwadfile = state.d_main.iwadfile.clone();
+    D_AddFile(state, &iwadfile);
+    W_CheckCorrectIWAD(&mut state.w_wad, doom);
     D_IdentifyVersion(state);
     InitGameVersion(state);
-    if W_CheckNumForName("dmenupic") >= 0 as i32 {
+    if W_CheckNumForName(&mut state.w_wad, "dmenupic") >= 0 as i32 {
         println!("BFG Edition: Using workarounds as needed.");
         state.d_main.bfgedition = true;
     }
@@ -972,7 +973,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         } else {
             file = format!("{}.lmp", arg);
         }
-        if D_AddFile(&file) {
+        if D_AddFile(state, &file) {
             let name = &(*state
                 .w_wad
                 .lumpinfo
@@ -1001,7 +1002,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         )),
         true,
     );
-    W_GenerateHashTable();
+    W_GenerateHashTable(state);
     D_SetGameDescription(state);
     state.d_main.savegamedir = M_GetSaveGameDir(
         &mut state.m_config,
@@ -1040,14 +1041,14 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
         if state.doomstat.gamemode as u32 == registered as i32 as u32 {
             i = 0 as i32;
             while i < 23 as i32 {
-                if W_CheckNumForName(&name[i as usize].as_str()) < 0 as i32 {
+                if W_CheckNumForName(&mut state.w_wad, &name[i as usize].as_str()) < 0 as i32 {
                     I_Error("\nThis is not the registered version.");
                 }
                 i += 1;
             }
         }
     }
-    if W_CheckNumForName("SS_START") >= 0 as i32 || W_CheckNumForName("FF_END") >= 0 as i32 {
+    if W_CheckNumForName(&mut state.w_wad, "SS_START") >= 0 as i32 || W_CheckNumForName(&mut state.w_wad, "FF_END") >= 0 as i32 {
         I_PrintDivider();
         println!(
             " WARNING: The loaded WAD file contains modified sprites or\n floor textures.  You may want to use the '-merge' command\n line option instead of '-file'."
@@ -1055,7 +1056,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     I_PrintStartupBanner(state.doomstat.gamedescription);
     PrintDehackedBanners();
-    if W_CheckNumForName("FREEDOOM") >= 0 as i32 && W_CheckNumForName("FREEDM") < 0 as i32 {
+    if W_CheckNumForName(&mut state.w_wad, "FREEDOOM") >= 0 as i32 && W_CheckNumForName(&mut state.w_wad, "FREEDM") < 0 as i32 {
         println!(
             " WARNING: You are playing using one of the Freedoom IWAD\n files, which might not work in this port. See this page\n for more information on how to play using Freedoom:\n   http://www.chocolate-doom.org/wiki/index.php/Freedoom"
         );
@@ -1157,7 +1158,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     println!("ST_Init: Init status bar.");
     ST_Init(state);
     if state.doomstat.gamemode as u32 == commercial as i32 as u32
-        && W_CheckNumForName("map01") < 0 as i32
+        && W_CheckNumForName(&mut state.w_wad, "map01") < 0 as i32
     {
         state.d_main.storedemo = true;
     }

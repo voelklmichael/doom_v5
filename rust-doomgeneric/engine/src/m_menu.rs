@@ -515,9 +515,9 @@ impl MMenuState {
     // Each menu_t's `menuitems` points at this same struct's own XxxMenu
     // array, and most also `prevMenu`-link to a sibling menu_t -- both are
     // only known once this value is at its final, permanently-stable
-    // 'static address (inside GameState, behind OnceLock). Called once
-    // from `game_state()` itself, strictly after `OnceLock::get_or_init`
-    // returns, same pattern as `sounds::fixup_self_links`/
+    // 'static address (inside GameState, behind Box::leak). Called once
+    // from `init_game_state`'s `finish_init`, same pattern as
+    // `sounds::fixup_self_links`/
     // `p_maputl::fixup_intercepts_overrun`/`m_controls::fixup_weapon_keys`.
     pub fn fixup_menu_routines(&mut self) {
         self.defs.MainDef.routine =
