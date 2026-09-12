@@ -389,7 +389,7 @@ pub unsafe fn R_DrawPlanes(state: &mut GameState) {
                     );
                     x += 1;
                 }
-                W_ReleaseLumpNum(lumpnum);
+                W_ReleaseLumpNum(&mut state.w_wad, lumpnum);
             }
         }
         pl = pl.offset(1);

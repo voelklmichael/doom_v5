@@ -1,14 +1,8 @@
-// Track 16 scaffolding: the aggregate state struct that replaces `static mut`
-// globals module by module. `GAME_STATE`/`game_state()` are a transitional
-// bridge for call sites not yet converted to receive `&mut GameState`
-// explicitly; both are deleted once the whole codebase is converted.
-// See /docs/track16-gamestate-plan.md for the full plan.
-//
-// GAME_STATE is lazily built via OnceLock rather than a const-evaluated
-// static initializer: some module states (e.g. WFileState) need to embed
-// the address of another static, which `const fn` can't do.
-
-use std::sync::OnceLock;
+// The aggregate state struct that replaces the codebase's original `static
+// mut` globals. Built once by `init_game_state`, which leaks it to a
+// `&'static mut GameState` and threads it explicitly through every function
+// from then on. See /docs/track16-gamestate-plan.md for the history of how
+// this replaced the globals module by module.
 
 use crate::src::am_map::AmMapState;
 use crate::src::d_event::DEventState;
@@ -196,8 +190,6 @@ impl GameState {
     }
 }
 
-static mut GAME_STATE: OnceLock<GameState> = OnceLock::new();
-
 // Self-referential pointers (e.g. sounds.S_sfx's one aliased entry) can only
 // be computed once the value is at its final, permanently-stable address --
 // i.e. here, not inside any XxxState::new(). Must run exactly once, right
@@ -218,19 +210,11 @@ pub fn finish_init(state: &mut GameState) {
     }
 }
 
-/// Constructs the single `GameState`, wired to the given platform backend.
-/// Must be called exactly once, before any call to `game_state()`.
+/// Constructs the single `GameState`, wired to the given platform backend,
+/// and leaks it to obtain a `&'static mut` -- the state is meant to live for
+/// the remainder of the process, so this is not actually a leak in practice.
 pub fn init_game_state(platform: Box<dyn DoomPlatform>) -> &'static mut GameState {
-    let cell: &'static mut OnceLock<GameState> = unsafe { &mut GAME_STATE };
-    cell.set(GameState::new(platform))
-        .unwrap_or_else(|_| panic!("init_game_state() called more than once"));
-    let state = cell.get_mut().unwrap();
+    let state = Box::leak(Box::new(GameState::new(platform)));
     finish_init(state);
     state
-}
-
-pub unsafe fn game_state() -> &'static mut GameState {
-    let cell: &'static mut OnceLock<GameState> = &mut GAME_STATE;
-    cell.get_mut()
-        .expect("game_state() called before init_game_state()")
 }

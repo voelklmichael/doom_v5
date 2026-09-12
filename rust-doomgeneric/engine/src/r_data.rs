@@ -388,21 +388,24 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
     ) as *mut i32;
     i = 0 as i32;
     while i < nummappatches {
-        *patchlookup.offset(i as isize) = W_CheckNumForName(&wad_name8_to_string(
+        let patch_name = wad_name8_to_string(
             name_p.offset((i * 8 as i32) as isize) as *const ::core::ffi::c_char,
-        ));
+        );
+        *patchlookup.offset(i as isize) = W_CheckNumForName(&mut state.w_wad, &patch_name);
         i += 1;
     }
-    W_ReleaseLumpName("PNAMES");
+    W_ReleaseLumpName(&mut state.w_wad, "PNAMES");
     maptex1 = W_CacheLumpName(state, "TEXTURE1", PU_STATIC as i32) as *mut i32;
     maptex = maptex1;
     numtextures1 = *maptex;
-    maxoff = W_LumpLength(W_GetNumForName("TEXTURE1") as u32);
+    let texture1_lump = W_GetNumForName(&mut state.w_wad, "TEXTURE1") as u32;
+    maxoff = W_LumpLength(&mut state.w_wad, texture1_lump);
     directory = maptex.offset(1 as i32 as isize);
-    if W_CheckNumForName("TEXTURE2") != -(1 as i32) {
+    if W_CheckNumForName(&mut state.w_wad, "TEXTURE2") != -(1 as i32) {
         maptex2 = W_CacheLumpName(state, "TEXTURE2", PU_STATIC as i32) as *mut i32;
         numtextures2 = *maptex2;
-        maxoff2 = W_LumpLength(W_GetNumForName("TEXTURE2") as u32);
+        let texture2_lump = W_GetNumForName(&mut state.w_wad, "TEXTURE2") as u32;
+        maxoff2 = W_LumpLength(&mut state.w_wad, texture2_lump);
     } else {
         maptex2 = ::core::ptr::null_mut::<i32>();
         numtextures2 = 0 as i32;
@@ -458,8 +461,8 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
         PU_STATIC as i32,
         ::core::ptr::null_mut::<::core::ffi::c_void>(),
     ) as *mut fixed_t;
-    temp1 = W_GetNumForName("S_START");
-    temp2 = W_GetNumForName("S_END") - 1 as i32;
+    temp1 = W_GetNumForName(&mut state.w_wad, "S_START");
+    temp2 = W_GetNumForName(&mut state.w_wad, "S_END") - 1 as i32;
     temp3 = (temp2 - temp1 + 63 as i32) / 64 as i32
         + (state.r_data.numtextures + 63 as i32) / 64 as i32;
     if I_ConsoleStdout() {
@@ -550,9 +553,9 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
         directory = directory.offset(1);
     }
     Z_Free(&mut state.z_zone, patchlookup as *mut ::core::ffi::c_void);
-    W_ReleaseLumpName("TEXTURE1");
+    W_ReleaseLumpName(&mut state.w_wad, "TEXTURE1");
     if !maptex2.is_null() {
-        W_ReleaseLumpName("TEXTURE2");
+        W_ReleaseLumpName(&mut state.w_wad, "TEXTURE2");
     }
     i = 0 as i32;
     while i < state.r_data.numtextures {
@@ -575,8 +578,8 @@ pub unsafe fn R_InitTextures(state: &mut GameState) {
 }
 pub unsafe fn R_InitFlats(state: &mut GameState) {
     let mut i: i32 = 0;
-    state.r_data.firstflat = W_GetNumForName("F_START") + 1 as i32;
-    state.r_data.lastflat = W_GetNumForName("F_END") - 1 as i32;
+    state.r_data.firstflat = W_GetNumForName(&mut state.w_wad, "F_START") + 1 as i32;
+    state.r_data.lastflat = W_GetNumForName(&mut state.w_wad, "F_END") - 1 as i32;
     state.r_data.numflats = state.r_data.lastflat - state.r_data.firstflat + 1 as i32;
     state.r_data.flattranslation = Z_Malloc(
         &mut state.z_zone,
@@ -594,8 +597,8 @@ pub unsafe fn R_InitFlats(state: &mut GameState) {
 pub unsafe fn R_InitSpriteLumps(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut patch: *mut patch_t = ::core::ptr::null_mut::<patch_t>();
-    state.r_data.firstspritelump = W_GetNumForName("S_START") + 1 as i32;
-    state.r_data.lastspritelump = W_GetNumForName("S_END") - 1 as i32;
+    state.r_data.firstspritelump = W_GetNumForName(&mut state.w_wad, "S_START") + 1 as i32;
+    state.r_data.lastspritelump = W_GetNumForName(&mut state.w_wad, "S_END") - 1 as i32;
     state.r_data.numspritelumps =
         state.r_data.lastspritelump - state.r_data.firstspritelump + 1 as i32;
     state.r_data.spritewidth = Z_Malloc(
@@ -636,7 +639,7 @@ pub unsafe fn R_InitSpriteLumps(state: &mut GameState) {
 }
 pub unsafe fn R_InitColormaps(state: &mut GameState) {
     let mut lump: i32 = 0;
-    lump = W_GetNumForName("COLORMAP");
+    lump = W_GetNumForName(&mut state.w_wad, "COLORMAP");
     state.r_data.colormaps = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut lighttable_t;
 }
 pub unsafe fn R_InitData(state: &mut GameState) {
@@ -648,13 +651,13 @@ pub unsafe fn R_InitData(state: &mut GameState) {
     print!(".");
     R_InitColormaps(state);
 }
-pub unsafe fn R_FlatNumForName(state: &mut RDataState, name: &str) -> i32 {
+pub unsafe fn R_FlatNumForName(state: &mut GameState, name: &str) -> i32 {
     let mut i: i32 = 0;
-    i = W_CheckNumForName(name);
+    i = W_CheckNumForName(&mut state.w_wad, name);
     if i == -(1 as i32) {
         I_Error(&format!("R_FlatNumForName: {} not found", name));
     }
-    return i - state.firstflat;
+    return i - state.r_data.firstflat;
 }
 pub unsafe fn R_CheckTextureNumForName(state: &mut RDataState, name: &str) -> i32 {
     let mut texture: *mut texture_t = ::core::ptr::null_mut::<texture_t>();

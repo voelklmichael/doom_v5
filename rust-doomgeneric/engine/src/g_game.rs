@@ -789,7 +789,7 @@ pub unsafe fn G_BuildTiccmd(state: &mut GameState, mut cmd: *mut ticcmd_t, mut m
 }
 pub unsafe fn G_DoLoadLevel(state: &mut GameState) {
     let mut i: i32 = 0;
-    state.r_sky.skyflatnum = R_FlatNumForName(&mut state.r_data, "F_SKY1");
+    state.r_sky.skyflatnum = R_FlatNumForName(state, "F_SKY1");
     if state.doomstat.gamemode as u32 == commercial as u32
         && [GameVersion::final2, GameVersion::chex].contains(&state.doomstat.gameversion)
     {
@@ -1389,7 +1389,8 @@ pub unsafe fn G_ExitLevel(state: &mut GameState) {
     state.g_game.gameaction = ga_completed;
 }
 pub unsafe fn G_SecretExitLevel(state: &mut GameState) {
-    if state.doomstat.gamemode as u32 == commercial as u32 && W_CheckNumForName("map31") < 0 as i32
+    if state.doomstat.gamemode as u32 == commercial as u32
+        && W_CheckNumForName(&mut state.w_wad, "map31") < 0 as i32
     {
         state.g_game.secretexit = false;
     } else {
@@ -2095,9 +2096,10 @@ pub unsafe extern "C" fn G_CheckDemoStatus(state: &mut GameState) -> boolean {
         ));
     }
     if state.g_game.demoplayback {
-        W_ReleaseLumpName(&wad_name8_to_string(
-            state.g_game.defdemoname,
-        ));
+        W_ReleaseLumpName(
+            &mut state.w_wad,
+            &wad_name8_to_string(state.g_game.defdemoname),
+        );
         state.g_game.demoplayback = false;
         state.g_game.netdemo = false;
         state.g_game.netgame = false;

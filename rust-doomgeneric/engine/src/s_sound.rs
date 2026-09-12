@@ -445,14 +445,11 @@ pub unsafe fn S_ChangeMusic(state: &mut GameState, mut musicnum: i32, mut loopin
     S_StopMusic(state);
     if (*music).lumpnum == 0 {
         let namebuf = format!("d_{}", (*music).name.as_str());
-        (*music).lumpnum = W_GetNumForName(&namebuf);
+        (*music).lumpnum = W_GetNumForName(&mut state.w_wad, &namebuf);
     }
     (*music).data = W_CacheLumpNum(state, (*music).lumpnum, PU_STATIC as i32);
-    handle = I_RegisterSong(
-        &mut state.i_sound,
-        (*music).data,
-        W_LumpLength((*music).lumpnum as u32),
-    );
+    let lumplen = W_LumpLength(&mut state.w_wad, (*music).lumpnum as u32);
+    handle = I_RegisterSong(&mut state.i_sound, (*music).data, lumplen);
     (*music).handle = handle;
     I_PlaySong(&mut state.i_sound, handle, looping != 0);
     state.s_sound.mus_playing = music;
@@ -467,7 +464,7 @@ pub unsafe fn S_StopMusic(state: &mut GameState) {
         }
         I_StopSong(&mut state.i_sound);
         I_UnRegisterSong(&mut state.i_sound, (*state.s_sound.mus_playing).handle);
-        W_ReleaseLumpNum((*state.s_sound.mus_playing).lumpnum);
+        W_ReleaseLumpNum(&mut state.w_wad, (*state.s_sound.mus_playing).lumpnum);
         (*state.s_sound.mus_playing).data = NULL;
         state.s_sound.mus_playing = ::core::ptr::null_mut::<musicinfo_t>();
     }

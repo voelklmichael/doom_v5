@@ -1938,10 +1938,10 @@ impl SoundsState {
     }
 
     // Must run only after `self` is at its final, permanently-stable address
-    // (i.e. once already moved into GameState's 'static storage) -- link's
-    // target address is computed from `self`'s own location, which would be
-    // invalidated by any subsequent move (e.g. the one `OnceLock::get_or_init`
-    // performs when placing the value it constructs). See game_state().
+    // (i.e. once already moved into GameState's 'static storage via
+    // `Box::leak`) -- link's target address is computed from `self`'s own
+    // location, which would be invalidated by any subsequent move. See
+    // init_game_state().
     pub unsafe fn fixup_self_links(&mut self) {
         self.S_sfx[sfx_chgun as usize].link =
             (&raw mut self.S_sfx as *mut sfxinfo_t).offset(sfx_pistol as i32 as isize);

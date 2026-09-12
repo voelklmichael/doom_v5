@@ -1659,10 +1659,10 @@ impl MConfigState {
     // `doom_defaults`/`extra_defaults`'s `.defaults` must point at this same
     // struct's own `_list` array field. That address isn't known until this
     // value is at its final, permanently-stable 'static home (inside
-    // `GameState`, behind `OnceLock`) -- computing it inline above, during
+    // `GameState`, behind `Box::leak`) -- computing it inline above, during
     // construction, would capture the address of a temporary that gets moved
-    // at least twice more before settling. Called once from `game_state()`
-    // itself, strictly after `OnceLock::get_or_init` returns, same pattern as
+    // at least twice more before settling. Called once from `init_game_state`'s
+    // `finish_init`, same pattern as
     // `sounds::fixup_self_links`/`p_maputl::fixup_intercepts_overrun`.
     pub fn fixup_defaults(&mut self) {
         self.doom_defaults.defaults = &raw mut self.doom_defaults_list as *mut default_t;

@@ -233,9 +233,8 @@ impl MControlsState {
     // weapon_keys records the addresses of this same struct's own
     // key_weapon1..8 fields -- only known once this value is at its final,
     // permanently-stable 'static address (inside GameState, behind
-    // OnceLock). Called once from `game_state()` itself, strictly after
-    // `OnceLock::get_or_init` returns, same pattern as
-    // `sounds::fixup_self_links`/`p_maputl::fixup_intercepts_overrun`.
+    // Box::leak). Called once from `init_game_state`'s `finish_init`, same
+    // pattern as `sounds::fixup_self_links`/`p_maputl::fixup_intercepts_overrun`.
     pub fn fixup_weapon_keys(&mut self) {
         self.weapon_keys = [
             &raw mut self.key_weapon1,

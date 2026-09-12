@@ -71,28 +71,28 @@ impl PMaputlState {
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
@@ -114,7 +114,7 @@ impl PMaputlState {
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
@@ -136,7 +136,7 @@ impl PMaputlState {
                     intercepts_overrun_t {
                         len: 40 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: true,
                     },
@@ -148,7 +148,7 @@ impl PMaputlState {
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
@@ -160,14 +160,14 @@ impl PMaputlState {
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
@@ -179,7 +179,7 @@ impl PMaputlState {
                     intercepts_overrun_t {
                         len: 4 as i32,
                         // Patched once, after GameState reaches its final 'static address,
-                        // by fixup_intercepts_overrun() -- see game_state()'s call site.
+                        // by fixup_intercepts_overrun() -- see init_game_state()'s call site.
                         addr: NULL,
                         int16_array: false,
                     },
@@ -676,7 +676,7 @@ pub unsafe fn P_TraverseIntercepts(
     return true;
 }
 // Must run only after `gs` is at its final, permanently-stable 'static
-// address (see game_state()) -- this table's `bulletslope` entry records
+// address (see init_game_state()) -- this table's `bulletslope` entry records
 // an address for the vanilla-intercepts-overrun memory-corruption
 // emulation to write through later; that address must be bulletslope's
 // real final location, not a temporary one that could move.

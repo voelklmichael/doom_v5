@@ -271,9 +271,8 @@ pub unsafe fn R_InitSpriteDefs(state: &mut GameState, namelist: &[&'static str])
                     as i32
                     - '0' as i32;
                 if state.doomstat.modifiedgame {
-                    patched = W_GetNumForName(
-                        &(*state.w_wad.lumpinfo.offset(l as isize)).name.as_str(),
-                    );
+                    let sprite_name = (*state.w_wad.lumpinfo.offset(l as isize)).name;
+                    patched = W_GetNumForName(&mut state.w_wad, &sprite_name.as_str());
                 } else {
                     patched = l;
                 }
