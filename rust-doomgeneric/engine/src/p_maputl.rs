@@ -215,7 +215,7 @@ pub union C2RustUnnamed_1 {
     pub thing: *mut mobj_t,
     pub line: *mut line_t,
 }
-pub type traverser_t = Option<unsafe extern "C" fn(&mut GameState, *mut intercept_t) -> boolean>;
+pub type traverser_t = Option<unsafe fn(&mut GameState, *mut intercept_t) -> boolean>;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct intercepts_overrun_t {
@@ -477,7 +477,7 @@ pub unsafe fn P_BlockLinesIterator(
     state: &mut GameState,
     mut x: i32,
     mut y: i32,
-    mut func: Option<unsafe extern "C" fn(&mut GameState, *mut line_t) -> boolean>,
+    mut func: Option<unsafe fn(&mut GameState, *mut line_t) -> boolean>,
 ) -> bool {
     let mut offset: i32 = 0;
     let mut list: *mut i16 = ::core::ptr::null_mut::<i16>();
@@ -505,7 +505,7 @@ pub unsafe fn P_BlockThingsIterator(
     state: &mut GameState,
     mut x: i32,
     mut y: i32,
-    mut func: Option<unsafe extern "C" fn(&mut GameState, MobjId) -> boolean>,
+    mut func: Option<unsafe fn(&mut GameState, MobjId) -> boolean>,
 ) -> bool {
     let mut mobj: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     if x < 0 as i32 || y < 0 as i32 || x >= state.p_setup.bmapwidth || y >= state.p_setup.bmapheight
@@ -525,7 +525,7 @@ pub unsafe fn P_BlockThingsIterator(
     return true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_AddLineIntercepts(
+pub unsafe fn PIT_AddLineIntercepts(
     state: &mut GameState,
     mut ld: *mut line_t,
 ) -> boolean {
@@ -578,7 +578,7 @@ pub unsafe extern "C" fn PIT_AddLineIntercepts(
     return true_0 as boolean;
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_AddThingIntercepts(
+pub unsafe fn PIT_AddThingIntercepts(
     state: &mut GameState,
     mut thing_id: MobjId,
 ) -> boolean {
@@ -751,7 +751,7 @@ pub unsafe fn P_PathTraverse(
     mut x2: fixed_t,
     mut y2: fixed_t,
     mut flags: i32,
-    mut trav: Option<unsafe extern "C" fn(&mut GameState, *mut intercept_t) -> boolean>,
+    mut trav: Option<unsafe fn(&mut GameState, *mut intercept_t) -> boolean>,
 ) -> bool {
     let mut xt1: fixed_t = 0;
     let mut yt1: fixed_t = 0;
@@ -827,7 +827,7 @@ pub unsafe fn P_PathTraverse(
                 mapy,
                 Some(
                     PIT_AddLineIntercepts
-                        as unsafe extern "C" fn(&mut GameState, *mut line_t) -> boolean,
+                        as unsafe fn(&mut GameState, *mut line_t) -> boolean,
                 ),
             ) {
                 return false;
@@ -840,7 +840,7 @@ pub unsafe fn P_PathTraverse(
                 mapy,
                 Some(
                     PIT_AddThingIntercepts
-                        as unsafe extern "C" fn(&mut GameState, MobjId) -> boolean,
+                        as unsafe fn(&mut GameState, MobjId) -> boolean,
                 ),
             ) {
                 return false;

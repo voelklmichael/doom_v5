@@ -995,7 +995,7 @@ pub unsafe fn A_SkelFist(state: &mut GameState, id: MobjId) {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn PIT_VileCheck(state: &mut GameState, mut thing_id: MobjId) -> boolean {
+pub unsafe fn PIT_VileCheck(state: &mut GameState, mut thing_id: MobjId) -> boolean {
     let thing = state.p_mobj.mobj_get(thing_id).unwrap();
     let mut maxdist: i32 = 0;
     let mut check: bool = false;
@@ -1068,7 +1068,7 @@ pub unsafe fn A_VileChase(state: &mut GameState, id: MobjId) {
                     state,
                     bx,
                     by,
-                    Some(PIT_VileCheck as unsafe extern "C" fn(&mut GameState, MobjId) -> boolean),
+                    Some(PIT_VileCheck as unsafe fn(&mut GameState, MobjId) -> boolean),
                 ) {
                     temp = (*actor).target;
                     (*actor).target = Some((*state.p_enemy.corpsehit).id);
