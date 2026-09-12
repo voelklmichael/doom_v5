@@ -172,7 +172,7 @@ pub unsafe fn EV_StartLightStrobing(state: &mut GameState, mut line: *mut line_t
             break;
         }
         let sec = state.p_setup.sector_mut(SectorId(secnum as u32));
-        if !(*sec).specialdata.is_null() {
+        if (*sec).specialdata.is_some() {
             continue;
         }
         P_SpawnStrobeFlash(state, SectorId(secnum as u32), SLOWDARK, 0 as i32);

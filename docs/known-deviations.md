@@ -117,6 +117,56 @@ a matching `free` on reload), so it's not a new deviation — noted here so the
 or "fixed" by adding a `from_raw`/drop that would double-free or free a
 libc-vs-Rust-allocator-mismatched pointer.
 
+## `EV_VerticalDoor`: dropped a byte-layout-coincidence fallback when retriggering an active mover (2026-09-12)
+
+**What changed**: `sector_t.specialdata` was `*mut c_void`, and `EV_VerticalDoor`
+(the handler for a player re-pressing/re-walking-into a door-type line while some
+mover is already running on that sector) unconditionally reinterpreted it as `*mut
+vldoor_t` *before* checking what it actually pointed at:
+
+```c
+door = sec->specialdata;
+if (door->direction == -1) { door->direction = 1; }   // read/write through the WRONG type if door isn't really a vldoor_t
+else { /* real type check via thinker->function, dispatch correctly */ }
+```
+
+The initial `door->direction == -1` check only reads the right field when the
+active mover genuinely is a door. If it's actually a `plat_t`/`ceiling_t`/
+`floormove_t`, this reads/writes whatever field happens to sit at the same byte
+offset as `vldoor_t.direction` in that other struct's layout — a real (if
+long-standing, vanilla-Doom-inherited) type-punning shortcut, and one that had
+already been silently altered by an earlier track: `sector: SectorId` (a 4-byte
+newtype) replaced the original `sector_t*` (an 8-byte pointer) in all four mover
+structs, shifting every field after it — so this offset "coincidence" was already
+producing different results than upstream well before this phase touched it.
+
+This phase converted `specialdata` to `Option<SectorSpecial>` (a real enum:
+`Door`/`Ceiling`/`Floor`/`Plat`, each holding its own typed pointer), which makes
+the speculative wrong-type read impossible to express — `match`ing the enum tells
+you the real type before you can touch any field. The rewrite now checks the real
+type *first* in all cases, including the door-reopen check, then acts on that
+type's own real field.
+
+**Why**: the pre-check was undefined behavior in Rust regardless of layout
+(reading a `*mut vldoor_t` when the pointee is actually a different type violates
+Rust's aliasing rules even when the bytes happen to line up), and the "coincidence"
+it depended on had already been broken by the `SectorId` shrink — so there was no
+still-working behavior left to faithfully preserve, only a subtly-already-wrong one
+to knowingly replace with a type-safe equivalent.
+
+**What was given up**: the specific case of re-triggering a door-type line while an
+active **Plat** is running on that sector previously reopened the "door" (in
+practice, wrote into whatever plat field the coincidence landed on, likely
+`plat_t.wait`) *without* requiring a player-initiated activation, before falling
+through to the real Plat dispatch (`plat.wait = -1`) on the *next* retrigger. The
+new code always requires a player activation and always dispatches directly to
+`plat.wait = -1` for a real Plat, `ceiling.direction = -1` for a Ceiling, and
+`floor.direction = -1` for a Floor (matching the pre-existing, always-type-correct
+`eprintln!("...wasn't a door.")` fallback branch's intent) — same practical
+end state for the common case (something ends up set to `-1`), but reached through
+one consistent, type-checked path instead of two different ones depending on
+whether the coincidental pre-check happened to trip first.
+
 ## Known bug (dormant): `snd_musiccmd` config binding can corrupt its own length field
 
 **What's wrong**: `i_sound.rs`'s `ISoundState.snd_musiccmd` field is typed

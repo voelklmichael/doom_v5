@@ -70,7 +70,6 @@ pub const ZERO_LINE: line_s = line_s {
     frontsector: None,
     backsector: None,
     validcount: 0,
-    specialdata: ::core::ptr::null::<::core::ffi::c_void>() as *mut ::core::ffi::c_void,
 };
 
 pub const ZERO_SECTOR: sector_t = sector_t {
@@ -96,7 +95,7 @@ pub const ZERO_SECTOR: sector_t = sector_t {
     },
     validcount: 0,
     thinglist: ::core::ptr::null::<mobj_t>() as *mut mobj_t,
-    specialdata: ::core::ptr::null::<::core::ffi::c_void>() as *mut ::core::ffi::c_void,
+    specialdata: None,
     linecount: 0,
     lines: ::core::ptr::null::<*mut line_s>() as *mut *mut line_s,
 };

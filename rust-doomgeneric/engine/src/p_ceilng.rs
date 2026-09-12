@@ -1,9 +1,9 @@
-use crate::src::doomdef::NULL;
 use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_floor::T_MovePlane;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
+use crate::src::p_mobj::SectorSpecial;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
 use crate::src::p_setup::SectorId;
@@ -189,7 +189,7 @@ pub unsafe fn EV_DoCeiling(
             break;
         }
         sec = state.p_setup.sector_mut(SectorId(secnum as u32));
-        if !(*sec).specialdata.is_null() {
+        if (*sec).specialdata.is_some() {
             continue;
         }
         rtn = 1 as i32;
@@ -200,7 +200,7 @@ pub unsafe fn EV_DoCeiling(
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut ceiling_t;
         P_AddThinker(state, &raw mut (*ceiling).thinker);
-        (*sec).specialdata = ceiling as *mut ::core::ffi::c_void;
+        (*sec).specialdata = Some(SectorSpecial::Ceiling(ceiling));
         (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
         (*ceiling).sector = SectorId(secnum as u32);
         (*ceiling).crush = false;
@@ -269,7 +269,7 @@ pub unsafe fn P_RemoveActiveCeiling(state: &mut GameState, mut c: *mut ceiling_t
             (*state
                 .p_setup
                 .sector_mut((*state.p_ceilng.activeceilings[i as usize]).sector))
-            .specialdata = NULL;
+            .specialdata = None;
             P_RemoveThinker(
                 &raw mut (**(&raw mut state.p_ceilng.activeceilings as *mut *mut ceiling_t)
                     .offset(i as isize))

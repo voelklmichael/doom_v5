@@ -21,7 +21,7 @@ use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::{
-    line_t, mapthing_t, sector_t, thinker_s, thinker_t, ThinkerFn,
+    line_t, mapthing_t, sector_t, thinker_s, thinker_t, SectorSpecial, ThinkerFn,
 };
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::p_plats::plat_e;
@@ -841,7 +841,7 @@ pub unsafe fn P_UnArchiveWorld(state: &mut GameState) {
         (*sec).lightlevel = saveg_read16(state);
         (*sec).special = saveg_read16(state);
         (*sec).tag = saveg_read16(state);
-        (*sec).specialdata = ::core::ptr::null_mut::<::core::ffi::c_void>();
+        (*sec).specialdata = None;
         (*sec).soundtarget = None;
         i += 1;
     }
@@ -1021,7 +1021,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut GameState) {
                 ) as *mut ceiling_t;
                 saveg_read_ceiling_t(state, ceiling);
                 (*state.p_setup.sector_mut((*ceiling).sector)).specialdata =
-                    ceiling as *mut ::core::ffi::c_void;
+                    Some(SectorSpecial::Ceiling(ceiling));
                 if matches!((*ceiling).thinker.function, ThinkerFn::Unresolved) {
                     (*ceiling).thinker.function = ThinkerFn::Ceiling(T_MoveCeiling);
                 }
@@ -1038,7 +1038,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut GameState) {
                 ) as *mut vldoor_t;
                 saveg_read_vldoor_t(state, door);
                 (*state.p_setup.sector_mut((*door).sector)).specialdata =
-                    door as *mut ::core::ffi::c_void;
+                    Some(SectorSpecial::Door(door));
                 (*door).thinker.function = ThinkerFn::Door(T_VerticalDoor);
                 P_AddThinker(state, &raw mut (*door).thinker);
             }
@@ -1052,7 +1052,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut GameState) {
                 ) as *mut floormove_t;
                 saveg_read_floormove_t(state, floor);
                 (*state.p_setup.sector_mut((*floor).sector)).specialdata =
-                    floor as *mut ::core::ffi::c_void;
+                    Some(SectorSpecial::Floor(floor));
                 (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                 P_AddThinker(state, &raw mut (*floor).thinker);
             }
@@ -1066,7 +1066,7 @@ pub unsafe fn P_UnArchiveSpecials(state: &mut GameState) {
                 ) as *mut plat_t;
                 saveg_read_plat_t(state, plat);
                 (*state.p_setup.sector_mut((*plat).sector)).specialdata =
-                    plat as *mut ::core::ffi::c_void;
+                    Some(SectorSpecial::Plat(plat));
                 if matches!((*plat).thinker.function, ThinkerFn::Unresolved) {
                     (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
                 }

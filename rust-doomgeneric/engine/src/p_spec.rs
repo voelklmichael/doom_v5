@@ -38,6 +38,7 @@ use crate::src::p_lights::P_SpawnGlowingLight;
 use crate::src::p_lights::P_SpawnLightFlash;
 use crate::src::p_lights::P_SpawnStrobeFlash;
 use crate::src::p_mobj::mobj_t;
+use crate::src::p_mobj::SectorSpecial;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t, thinker_t};
 use crate::src::p_plats::plat_e;
@@ -1112,7 +1113,7 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
             break;
         }
         s1 = state.p_setup.sector_mut(SectorId(secnum as u32));
-        if !(*s1).specialdata.is_null() {
+        if (*s1).specialdata.is_some() {
             continue;
         }
         rtn = 1 as i32;
@@ -1153,7 +1154,7 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     ) as *mut floormove_t;
                     P_AddThinker(state, &raw mut (*floor).thinker);
-                    (*s2).specialdata = floor as *mut ::core::ffi::c_void;
+                    (*s2).specialdata = Some(SectorSpecial::Floor(floor));
                     (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                     (*floor).type_0 = donutRaise;
                     (*floor).crush = false;
@@ -1170,7 +1171,7 @@ pub unsafe fn EV_DoDonut(state: &mut GameState, mut line: *mut line_t) -> i32 {
                         ::core::ptr::null_mut::<::core::ffi::c_void>(),
                     ) as *mut floormove_t;
                     P_AddThinker(state, &raw mut (*floor).thinker);
-                    (*s1).specialdata = floor as *mut ::core::ffi::c_void;
+                    (*s1).specialdata = Some(SectorSpecial::Floor(floor));
                     (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                     (*floor).type_0 = lowerFloor;
                     (*floor).crush = false;
