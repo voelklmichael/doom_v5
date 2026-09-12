@@ -1673,8 +1673,8 @@ pub unsafe fn A_BrainSpit(state: &mut GameState, id: MobjId) {
         (state.p_enemy.braintargeton + 1 as i32) % state.p_enemy.numbraintargets;
     newmobj = P_SpawnMissile(state, mo, targ, MT_SPAWNSHOT);
     (*newmobj).target = Some((*targ).id);
-    (*newmobj).reactiontime =
-        ((*targ).y as i32 - (*mo).y as i32) / (*newmobj).momy as i32 / (*(*newmobj).state).tics;
+    (*newmobj).reactiontime = ((*targ).y as i32 - (*mo).y as i32) / (*newmobj).momy as i32
+        / (*state.info.state_mut((*newmobj).state.unwrap())).tics;
     S_StartSound(state, NULL, sfx_bospit as i32);
 }
 pub unsafe fn A_SpawnSound(state: &mut GameState, id: MobjId) {

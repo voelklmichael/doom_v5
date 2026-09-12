@@ -50,6 +50,9 @@ use crate::src::sounds::{
     sfx_vilact, sfx_vildth, sfx_vilsit, sfx_vipain,
 };
 
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct StateId(pub u32);
+
 pub struct InfoState {
     pub sprnames: [&'static str; 138],
     pub states: [state_t; 967],
@@ -57,6 +60,10 @@ pub struct InfoState {
 }
 
 impl InfoState {
+    pub fn state_mut(&mut self, id: StateId) -> *mut state_t {
+        &mut self.states[id.0 as usize] as *mut state_t
+    }
+
     pub fn new() -> Self {
         InfoState {
             sprnames: [

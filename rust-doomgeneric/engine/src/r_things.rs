@@ -617,27 +617,24 @@ pub unsafe fn R_DrawPSprite(state: &mut GameState, mut psp: *mut pspdef_t) {
         colormap: ::core::ptr::null::<lighttable_t>() as *mut lighttable_t,
         mobjflags: 0,
     };
-    if (*(*psp).state).sprite as u32 >= state.r_things.numsprites as u32 {
+    let psp_state = state.info.state_mut((*psp).state.unwrap());
+    if (*psp_state).sprite as u32 >= state.r_things.numsprites as u32 {
         I_Error(&format!(
             "R_ProjectSprite: invalid sprite number {} ",
-            (*(*psp).state).sprite as u32,
+            (*psp_state).sprite as u32,
         ));
     }
-    sprdef = state
-        .r_things
-        .sprites
-        .offset((*(*psp).state).sprite as isize) as *mut spritedef_t;
-    if (*(*psp).state).frame & FF_FRAMEMASK >= (*sprdef).numframes {
+    sprdef = state.r_things.sprites.offset((*psp_state).sprite as isize) as *mut spritedef_t;
+    if (*psp_state).frame & FF_FRAMEMASK >= (*sprdef).numframes {
         I_Error(&format!(
             "R_ProjectSprite: invalid sprite frame {} : {} ",
-            (*(*psp).state).sprite as u32,
-            (*(*psp).state).frame,
+            (*psp_state).sprite as u32,
+            (*psp_state).frame,
         ));
     }
     sprframe = (*sprdef)
         .spriteframes
-        .offset(((*(*psp).state).frame & FF_FRAMEMASK) as isize)
-        as *mut spriteframe_t;
+        .offset(((*psp_state).frame & FF_FRAMEMASK) as isize) as *mut spriteframe_t;
     lump = (*sprframe).lump[0 as i32 as usize] as i32;
     flip = (*sprframe).flip[0 as i32 as usize] != 0;
     tx = ((*psp).sx as i32 - 160 as i32 * FRACUNIT) as fixed_t;
@@ -683,7 +680,7 @@ pub unsafe fn R_DrawPSprite(state: &mut GameState, mut psp: *mut pspdef_t) {
         (*vis).colormap = ::core::ptr::null_mut::<lighttable_t>();
     } else if !state.r_main.fixedcolormap.is_null() {
         (*vis).colormap = state.r_main.fixedcolormap;
-    } else if (*(*psp).state).frame & FF_FULLBRIGHT != 0 {
+    } else if (*psp_state).frame & FF_FULLBRIGHT != 0 {
         (*vis).colormap = state.r_data.colormaps;
     } else {
         (*vis).colormap = *state
@@ -722,7 +719,7 @@ pub unsafe fn R_DrawPlayerSprites(state: &mut GameState) {
     i = 0 as i32;
     psp = &raw mut (*viewplayer).psprites as *mut pspdef_t;
     while i < NUMPSPRITES as i32 {
-        if !(*psp).state.is_null() {
+        if (*psp).state.is_some() {
             R_DrawPSprite(state, psp);
         }
         i += 1;

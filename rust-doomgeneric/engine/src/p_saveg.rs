@@ -1,5 +1,6 @@
 use crate::src::d_mode::skill_t;
 use crate::src::d_player::NUMPOWERS;
+use crate::src::info::StateId;
 use crate::src::d_player::NUMPSPRITES;
 use crate::src::d_player::{player_t, playerstate_t, PlayerId};
 use crate::src::d_player::{weapontype_t, NUMWEAPONS};
@@ -20,7 +21,7 @@ use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::{
-    line_t, mapthing_t, mobjinfo_t, sector_t, state_t, thinker_s, thinker_t, ThinkerFn,
+    line_t, mapthing_t, mobjinfo_t, sector_t, thinker_s, thinker_t, ThinkerFn,
 };
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::p_plats::plat_e;
@@ -261,8 +262,7 @@ unsafe fn saveg_read_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     (*str).type_0 = saveg_read32(state) as mobjtype_t;
     (*str).info = saveg_readp(state) as *mut mobjinfo_t;
     (*str).tics = saveg_read32(state);
-    (*str).state = (&raw mut state.info.states as *mut state_t).offset(saveg_read32(state) as isize)
-        as *mut state_t;
+    (*str).state = Some(StateId(saveg_read32(state) as u32));
     (*str).flags = saveg_read32(state);
     (*str).health = saveg_read32(state);
     (*str).movedir = saveg_read32(state);
@@ -308,8 +308,7 @@ unsafe fn saveg_write_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     saveg_write32(state, (*str).type_0 as i32);
     saveg_writep(state, (*str).info as *mut ::core::ffi::c_void);
     saveg_write32(state, (*str).tics);
-    let states_base = &raw mut state.info.states as *mut state_t;
-    saveg_write32(state, (*str).state.offset_from(states_base) as i64 as i32);
+    saveg_write32(state, (*str).state.unwrap().0 as i32);
     saveg_write32(state, (*str).flags);
     saveg_write32(state, (*str).health);
     saveg_write32(state, (*str).movedir);
@@ -346,19 +345,17 @@ unsafe fn saveg_read_pspdef_t(state: &mut GameState, mut str: *mut pspdef_t) {
     let mut state_num: i32 = 0;
     state_num = saveg_read32(state);
     if state_num > 0 as i32 {
-        (*str).state =
-            (&raw mut state.info.states as *mut state_t).offset(state_num as isize) as *mut state_t;
+        (*str).state = Some(StateId(state_num as u32));
     } else {
-        (*str).state = ::core::ptr::null_mut::<state_t>();
+        (*str).state = None;
     }
     (*str).tics = saveg_read32(state);
     (*str).sx = saveg_read32(state) as fixed_t;
     (*str).sy = saveg_read32(state) as fixed_t;
 }
 unsafe fn saveg_write_pspdef_t(state: &mut GameState, mut str: *mut pspdef_t) {
-    if !(*str).state.is_null() {
-        let states_base = &raw mut state.info.states as *mut state_t;
-        saveg_write32(state, (*str).state.offset_from(states_base) as i64 as i32);
+    if let Some(state_id) = (*str).state {
+        saveg_write32(state, state_id.0 as i32);
     } else {
         saveg_write32(state, 0 as i32);
     }

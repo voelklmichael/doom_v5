@@ -12,12 +12,11 @@ use crate::src::d_ticcmd::{BT_CHANGE, BT_SPECIAL, BT_USE, BT_WEAPONMASK, BT_WEAP
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::game_state::GameState;
-use crate::src::info::{S_PLAY, S_PLAY_RUN1};
+use crate::src::info::{StateId, S_PLAY, S_PLAY_RUN1};
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::p_map::P_UseLines;
-use crate::src::p_mobj::state_t;
 use crate::src::p_mobj::P_SetMobjState;
 use crate::src::p_mobj::{MF_JUSTATTACKED, MF_NOCLIP, MF_SHADOW};
 use crate::src::p_pspr::P_MovePsprites;
@@ -116,9 +115,7 @@ pub unsafe fn P_MovePlayer(state: &mut GameState, mut player: *mut player_t) {
         );
     }
     if ((*cmd).forwardmove as i32 != 0 || (*cmd).sidemove as i32 != 0)
-        && (*(*player).mo).state
-            == (&raw mut state.info.states as *mut state_t).offset(S_PLAY as i32 as isize)
-                as *mut state_t
+        && (*(*player).mo).state == Some(StateId(S_PLAY))
     {
         P_SetMobjState(state, (*player).mo, S_PLAY_RUN1);
     }
