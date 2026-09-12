@@ -57,9 +57,9 @@ pub unsafe fn EV_Teleport(
                             if state.doomstat.gameversion != GameVersion::r#final {
                                 (*thing).z = (*thing).floorz;
                             }
-                            if !(*thing).player.is_null() {
-                                (*(*thing).player).viewz =
-                                    (*thing).z + (*(*thing).player).viewheight;
+                            if let Some(thing_player) = (*thing).player {
+                                let thing_player = state.g_game.player_mut(thing_player);
+                                (*thing_player).viewz = (*thing).z + (*thing_player).viewheight;
                             }
                             fog = P_SpawnMobj(state, oldx, oldy, oldz, MT_TFOG);
                             S_StartSound(
@@ -80,7 +80,7 @@ pub unsafe fn EV_Teleport(
                                 fog as *mut ::core::ffi::c_void,
                                 sfx_telept as i32,
                             );
-                            if !(*thing).player.is_null() {
+                            if (*thing).player.is_some() {
                                 (*thing).reactiontime = 18 as i32;
                             }
                             (*thing).angle = (*m).angle;

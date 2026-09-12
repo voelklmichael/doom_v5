@@ -586,7 +586,7 @@ pub unsafe fn P_CrossSpecialLine(
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut ok: i32 = 0;
     line = state.p_setup.lines.offset(linenum as isize) as *mut line_t;
-    if (*thing).player.is_null() {
+    if (*thing).player.is_none() {
         match (*thing).type_0 as u32 {
             33 | 34 | 35 | 31 | 32 | 16 => return,
             _ => {}
@@ -751,7 +751,7 @@ pub unsafe fn P_CrossSpecialLine(
             G_SecretExitLevel(state);
         }
         125 => {
-            if (*thing).player.is_null() {
+            if (*thing).player.is_none() {
                 EV_Teleport(state, line, side, thing);
                 (*line).special = 0 as i16;
             }
@@ -852,7 +852,7 @@ pub unsafe fn P_CrossSpecialLine(
             EV_DoPlat(state, line, blazeDWUS, 0 as i32);
         }
         126 => {
-            if (*thing).player.is_null() {
+            if (*thing).player.is_none() {
                 EV_Teleport(state, line, side, thing);
             }
         }
@@ -871,7 +871,7 @@ pub unsafe fn P_ShootSpecialLine(
     mut line: *mut line_t,
 ) {
     let mut ok: i32 = 0;
-    if (*thing).player.is_null() {
+    if (*thing).player.is_none() {
         ok = 0 as i32;
         match (*line).special as i32 {
             46 => {

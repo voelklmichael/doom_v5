@@ -157,7 +157,7 @@ pub unsafe fn PIT_StompThing(state: &mut GameState, mut thing_id: MobjId) -> boo
     if thing == state.p_map.tmthing {
         return true_0 as boolean;
     }
-    if (*state.p_map.tmthing).player.is_null() && state.g_game.gamemap != 30 as i32 {
+    if (*state.p_map.tmthing).player.is_none() && state.g_game.gamemap != 30 as i32 {
         return false_0 as boolean;
     }
     P_DamageMobj(
@@ -262,7 +262,7 @@ pub unsafe fn PIT_CheckLine(state: &mut GameState, mut ld: *mut line_t) -> boole
         if (*ld).flags as i32 & ML_BLOCKING != 0 {
             return false_0 as boolean;
         }
-        if (*state.p_map.tmthing).player.is_null() && (*ld).flags as i32 & ML_BLOCKMONSTERS != 0 {
+        if (*state.p_map.tmthing).player.is_none() && (*ld).flags as i32 & ML_BLOCKMONSTERS != 0 {
             return false_0 as boolean;
         }
     }

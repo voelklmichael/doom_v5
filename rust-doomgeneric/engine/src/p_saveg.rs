@@ -1,7 +1,7 @@
 use crate::src::d_mode::skill_t;
 use crate::src::d_player::NUMPOWERS;
 use crate::src::d_player::NUMPSPRITES;
-use crate::src::d_player::{player_s, player_t, playerstate_t};
+use crate::src::d_player::{player_t, playerstate_t, PlayerId};
 use crate::src::d_player::{weapontype_t, NUMWEAPONS};
 use crate::src::d_ticcmd::ticcmd_t;
 use crate::src::doomdef::boolean;
@@ -273,12 +273,11 @@ unsafe fn saveg_read_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     (*str).threshold = saveg_read32(state);
     pl = saveg_read32(state);
     if pl > 0 as i32 {
-        (*str).player = (&raw mut state.g_game.players as *mut player_t)
-            .offset((pl - 1 as i32) as isize) as *mut player_t
-            as *mut player_s;
-        (*(*str).player).mo = str;
+        let player_id = PlayerId((pl - 1 as i32) as u8);
+        (*str).player = Some(player_id);
+        (*state.g_game.player_mut(player_id)).mo = str;
     } else {
-        (*str).player = ::core::ptr::null_mut::<player_s>();
+        (*str).player = None;
     }
     (*str).lastlook = saveg_read32(state);
     saveg_read_mapthing_t(state, &raw mut (*str).spawnpoint);
@@ -318,10 +317,8 @@ unsafe fn saveg_write_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     saveg_write32(state, 0 as i32);
     saveg_write32(state, (*str).reactiontime);
     saveg_write32(state, (*str).threshold);
-    if !(*str).player.is_null() {
-        let players_base = &raw mut state.g_game.players as *mut player_t;
-        let player_num = ((*str).player.offset_from(players_base) as i64 + 1 as i64) as i32;
-        saveg_write32(state, player_num);
+    if let Some(player_id) = (*str).player {
+        saveg_write32(state, player_id.0 as i32 + 1 as i32);
     } else {
         saveg_write32(state, 0 as i32);
     }
