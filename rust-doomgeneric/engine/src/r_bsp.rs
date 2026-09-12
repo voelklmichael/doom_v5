@@ -354,7 +354,7 @@ pub unsafe fn R_Subsector(state: &mut GameState, mut num: i32) {
     sub = state.p_setup.subsector_mut(SubsectorId(num as u32));
     state.r_bsp.frontsector = Some((*sub).sector);
     count = (*sub).numlines as i32;
-    line = state.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
+    line = state.p_setup.segs.as_mut_ptr().offset((*sub).firstline as isize);
     let frontsector = state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap());
     if (*frontsector).floorheight < state.r_main.viewz {
         let (floorheight, floorpic, lightlevel) = (

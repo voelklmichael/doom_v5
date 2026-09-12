@@ -117,7 +117,7 @@ pub unsafe fn P_CrossSubsector(state: &mut GameState, mut num: i32) -> bool {
     }
     sub = state.p_setup.subsector_mut(SubsectorId(num as u32));
     count = (*sub).numlines as i32;
-    seg = state.p_setup.segs.offset((*sub).firstline as isize) as *mut seg_t;
+    seg = state.p_setup.segs.as_mut_ptr().offset((*sub).firstline as isize);
     while count != 0 {
         line = state.p_setup.line_mut((*seg).linedef);
         if !((*line).validcount == state.r_main.validcount) {
