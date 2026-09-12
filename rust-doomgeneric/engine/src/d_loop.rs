@@ -5,7 +5,6 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::TICRATE;
 use crate::src::dummy::drone;
 use crate::src::dummy::net_client_connected;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_AtExit;
 use crate::src::i_system::I_Error;
@@ -225,7 +224,11 @@ unsafe fn D_Disconnected() {
     }
     println!("Disconnected from server.");
 }
-pub unsafe fn D_ReceiveTic(mut ticcmds: *mut ticcmd_t, mut players_mask: *mut boolean) {
+pub unsafe fn D_ReceiveTic(
+    state: &mut DLoopState,
+    mut ticcmds: *mut ticcmd_t,
+    mut players_mask: *mut boolean,
+) {
     let mut i: i32 = 0;
     if ticcmds.is_null() && players_mask.is_null() {
         D_Disconnected();
@@ -234,16 +237,14 @@ pub unsafe fn D_ReceiveTic(mut ticcmds: *mut ticcmd_t, mut players_mask: *mut bo
     i = 0 as i32;
     while i < NET_MAXPLAYERS {
         if !(!drone && i == localplayer) {
-            unsafe { game_state() }.d_loop.ticdata
-                [(unsafe { game_state() }.d_loop.recvtic % BACKUPTICS) as usize]
-                .cmds[i as usize] = *ticcmds.offset(i as isize);
-            unsafe { game_state() }.d_loop.ticdata
-                [(unsafe { game_state() }.d_loop.recvtic % BACKUPTICS) as usize]
-                .ingame[i as usize] = *players_mask.offset(i as isize);
+            state.ticdata[(state.recvtic % BACKUPTICS) as usize].cmds[i as usize] =
+                *ticcmds.offset(i as isize);
+            state.ticdata[(state.recvtic % BACKUPTICS) as usize].ingame[i as usize] =
+                *players_mask.offset(i as isize);
         }
         i += 1;
     }
-    unsafe { game_state() }.d_loop.recvtic += 1;
+    state.recvtic += 1;
 }
 pub unsafe fn D_StartGameLoop(state: &mut GameState) {
     state.d_loop.lasttime = GetAdjustedTime(state) / state.d_loop.ticdup;

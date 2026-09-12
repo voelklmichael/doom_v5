@@ -7,7 +7,6 @@ use crate::src::doomdef::true_0;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::m_cheat::cheatseq_t;
@@ -952,36 +951,21 @@ pub unsafe fn AM_doFollowPlayer(state: &mut GameState) {
         state.am_map.f_oldloc.y = (*(*state.am_map.plr).mo).y;
     }
 }
-pub unsafe fn AM_updateLightLev() {
+pub unsafe fn AM_updateLightLev(state: &mut AmMapState) {
     const litelevels: [i32; 8] = [
         0 as i32, 4 as i32, 7 as i32, 10 as i32, 12 as i32, 14 as i32, 15 as i32, 15 as i32,
     ];
-    if unsafe { game_state() }.am_map.amclock
-        > unsafe { game_state() }.am_map.am_updatelightlev_nexttic
-    {
-        let fresh1 = unsafe { game_state() }
-            .am_map
-            .am_updatelightlev_litelevelscnt;
-        unsafe { game_state() }
-            .am_map
-            .am_updatelightlev_litelevelscnt = unsafe { game_state() }
-            .am_map
-            .am_updatelightlev_litelevelscnt
-            + 1;
-        unsafe { game_state() }.am_map.lightlev = litelevels[fresh1 as usize];
-        if unsafe { game_state() }
-            .am_map
-            .am_updatelightlev_litelevelscnt as usize
+    if state.amclock > state.am_updatelightlev_nexttic {
+        let fresh1 = state.am_updatelightlev_litelevelscnt;
+        state.am_updatelightlev_litelevelscnt = state.am_updatelightlev_litelevelscnt + 1;
+        state.lightlev = litelevels[fresh1 as usize];
+        if state.am_updatelightlev_litelevelscnt as usize
             == (::core::mem::size_of::<[i32; 8]>() as usize)
                 .wrapping_div(::core::mem::size_of::<i32>() as usize)
         {
-            unsafe { game_state() }
-                .am_map
-                .am_updatelightlev_litelevelscnt = 0 as i32;
+            state.am_updatelightlev_litelevelscnt = 0 as i32;
         }
-        unsafe { game_state() }.am_map.am_updatelightlev_nexttic =
-            unsafe { game_state() }.am_map.amclock + 6 as i32
-                - unsafe { game_state() }.am_map.amclock % 6 as i32;
+        state.am_updatelightlev_nexttic = state.amclock + 6 as i32 - state.amclock % 6 as i32;
     }
 }
 pub unsafe fn AM_Ticker(state: &mut GameState) {

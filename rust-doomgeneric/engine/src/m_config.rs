@@ -1,5 +1,4 @@
 use crate::src::doomdef::NULL;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_argv::M_CheckParmWithArgs;
@@ -1861,14 +1860,14 @@ pub unsafe fn M_SetConfigFilenames(
 }
 #[no_mangle]
 pub unsafe extern "C" fn M_SaveDefaults(_state: &mut GameState) {}
-pub unsafe fn M_SaveDefaultsAlternate(state: &mut MConfigState, main_0: &str, extra: &str) {
-    let orig_main = state.doom_defaults.filename.clone();
-    let orig_extra = state.extra_defaults.filename.clone();
-    state.doom_defaults.filename = main_0.to_string();
-    state.extra_defaults.filename = extra.to_string();
-    M_SaveDefaults(unsafe { game_state() });
-    state.doom_defaults.filename = orig_main;
-    state.extra_defaults.filename = orig_extra;
+pub unsafe fn M_SaveDefaultsAlternate(state: &mut GameState, main_0: &str, extra: &str) {
+    let orig_main = state.m_config.doom_defaults.filename.clone();
+    let orig_extra = state.m_config.extra_defaults.filename.clone();
+    state.m_config.doom_defaults.filename = main_0.to_string();
+    state.m_config.extra_defaults.filename = extra.to_string();
+    M_SaveDefaults(state);
+    state.m_config.doom_defaults.filename = orig_main;
+    state.m_config.extra_defaults.filename = orig_extra;
 }
 pub unsafe fn M_LoadDefaults(state: &mut GameState) {
     let mut i: i32 = 0;

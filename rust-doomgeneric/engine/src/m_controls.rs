@@ -1,4 +1,3 @@
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::m_config::M_BindVariable;
 
@@ -423,199 +422,199 @@ pub unsafe fn M_BindBaseControls(state: &mut GameState) {
         &raw mut state.m_controls.key_message_refresh as *mut ::core::ffi::c_void,
     );
 }
-pub unsafe fn M_BindHereticControls() {
+pub unsafe fn M_BindHereticControls(state: &mut GameState) {
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_flyup",
-        &raw mut unsafe { game_state() }.m_controls.key_flyup as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_flyup as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_flydown",
-        &raw mut unsafe { game_state() }.m_controls.key_flydown as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_flydown as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_flycenter",
-        &raw mut unsafe { game_state() }.m_controls.key_flycenter as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_flycenter as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_lookup",
-        &raw mut unsafe { game_state() }.m_controls.key_lookup as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_lookup as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_lookdown",
-        &raw mut unsafe { game_state() }.m_controls.key_lookdown as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_lookdown as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_lookcenter",
-        &raw mut unsafe { game_state() }.m_controls.key_lookcenter as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_lookcenter as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invleft",
-        &raw mut unsafe { game_state() }.m_controls.key_invleft as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invleft as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invright",
-        &raw mut unsafe { game_state() }.m_controls.key_invright as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invright as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_useartifact",
-        &raw mut unsafe { game_state() }.m_controls.key_useartifact as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_useartifact as *mut ::core::ffi::c_void,
     );
 }
-pub unsafe fn M_BindHexenControls() {
+pub unsafe fn M_BindHexenControls(state: &mut GameState) {
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_jump",
-        &raw mut unsafe { game_state() }.m_controls.key_jump as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_jump as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_jump",
-        &raw mut unsafe { game_state() }.m_controls.mousebjump as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebjump as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_jump",
-        &raw mut unsafe { game_state() }.m_controls.joybjump as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybjump as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_arti_all",
-        &raw mut unsafe { game_state() }.m_controls.key_arti_all as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_arti_all as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_arti_health",
-        &raw mut unsafe { game_state() }.m_controls.key_arti_health as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_arti_health as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_arti_poisonbag",
-        &raw mut unsafe { game_state() }.m_controls.key_arti_poisonbag as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_arti_poisonbag as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_arti_blastradius",
-        &raw mut unsafe { game_state() }.m_controls.key_arti_blastradius
+        &raw mut state.m_controls.key_arti_blastradius
             as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_arti_teleport",
-        &raw mut unsafe { game_state() }.m_controls.key_arti_teleport as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_arti_teleport as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_arti_teleportother",
-        &raw mut unsafe { game_state() }.m_controls.key_arti_teleportother
+        &raw mut state.m_controls.key_arti_teleportother
             as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_arti_egg",
-        &raw mut unsafe { game_state() }.m_controls.key_arti_egg as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_arti_egg as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_arti_invulnerability",
-        &raw mut unsafe { game_state() }.m_controls.key_arti_invulnerability
+        &raw mut state.m_controls.key_arti_invulnerability
             as *mut ::core::ffi::c_void,
     );
 }
-pub unsafe fn M_BindStrifeControls() {
-    unsafe { game_state() }.m_controls.key_message_refresh = '/' as i32;
-    unsafe { game_state() }.m_controls.key_jump = 'a' as i32;
-    unsafe { game_state() }.m_controls.key_lookup = KEY_PGUP;
-    unsafe { game_state() }.m_controls.key_lookdown = KEY_PGDN;
-    unsafe { game_state() }.m_controls.key_invleft = KEY_INS;
-    unsafe { game_state() }.m_controls.key_invright = KEY_DEL;
+pub unsafe fn M_BindStrifeControls(state: &mut GameState) {
+    state.m_controls.key_message_refresh = '/' as i32;
+    state.m_controls.key_jump = 'a' as i32;
+    state.m_controls.key_lookup = KEY_PGUP;
+    state.m_controls.key_lookdown = KEY_PGDN;
+    state.m_controls.key_invleft = KEY_INS;
+    state.m_controls.key_invright = KEY_DEL;
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_jump",
-        &raw mut unsafe { game_state() }.m_controls.key_jump as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_jump as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_lookUp",
-        &raw mut unsafe { game_state() }.m_controls.key_lookup as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_lookup as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_lookDown",
-        &raw mut unsafe { game_state() }.m_controls.key_lookdown as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_lookdown as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invLeft",
-        &raw mut unsafe { game_state() }.m_controls.key_invleft as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invleft as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invRight",
-        &raw mut unsafe { game_state() }.m_controls.key_invright as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invright as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_useHealth",
-        &raw mut unsafe { game_state() }.m_controls.key_usehealth as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_usehealth as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invquery",
-        &raw mut unsafe { game_state() }.m_controls.key_invquery as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invquery as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_mission",
-        &raw mut unsafe { game_state() }.m_controls.key_mission as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_mission as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invPop",
-        &raw mut unsafe { game_state() }.m_controls.key_invpop as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invpop as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invKey",
-        &raw mut unsafe { game_state() }.m_controls.key_invkey as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invkey as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invHome",
-        &raw mut unsafe { game_state() }.m_controls.key_invhome as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invhome as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invEnd",
-        &raw mut unsafe { game_state() }.m_controls.key_invend as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invend as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invUse",
-        &raw mut unsafe { game_state() }.m_controls.key_invuse as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invuse as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "key_invDrop",
-        &raw mut unsafe { game_state() }.m_controls.key_invdrop as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.key_invdrop as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "mouseb_jump",
-        &raw mut unsafe { game_state() }.m_controls.mousebjump as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.mousebjump as *mut ::core::ffi::c_void,
     );
     M_BindVariable(
-        unsafe { &mut game_state().m_config },
+        &mut state.m_config,
         "joyb_jump",
-        &raw mut unsafe { game_state() }.m_controls.joybjump as *mut ::core::ffi::c_void,
+        &raw mut state.m_controls.joybjump as *mut ::core::ffi::c_void,
     );
 }
 pub unsafe fn M_BindWeaponControls(state: &mut GameState) {

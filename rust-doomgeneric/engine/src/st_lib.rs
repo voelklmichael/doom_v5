@@ -1,4 +1,3 @@
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
@@ -60,8 +59,8 @@ impl StLibState {
     }
 }
 
-pub unsafe fn STlib_init(state: &mut StLibState) {
-    state.sttminus = W_CacheLumpName(unsafe { game_state() }, "STTMINUS", PU_STATIC as i32) as *mut patch_t;
+pub unsafe fn STlib_init(state: &mut GameState) {
+    state.st_lib.sttminus = W_CacheLumpName(state, "STTMINUS", PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn STlib_initNum(
     mut n: *mut st_number_t,

@@ -2,7 +2,6 @@ use crate::src::doomdef::boolean;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_system::I_Error;
@@ -499,11 +498,11 @@ pub unsafe fn V_DrawShadowedPatch(
         desttop2 = desttop2.offset(1);
     }
 }
-pub unsafe fn V_LoadTintTable(state: &mut VVideoState) {
-    state.tinttable = W_CacheLumpName(unsafe { game_state() }, "TINTTAB", PU_STATIC as i32) as *mut byte;
+pub unsafe fn V_LoadTintTable(state: &mut GameState) {
+    state.v_video.tinttable = W_CacheLumpName(state, "TINTTAB", PU_STATIC as i32) as *mut byte;
 }
-pub unsafe fn V_LoadXlaTable(state: &mut VVideoState) {
-    state.xlatab = W_CacheLumpName(unsafe { game_state() }, "XLATAB", PU_STATIC as i32) as *mut byte;
+pub unsafe fn V_LoadXlaTable(state: &mut GameState) {
+    state.v_video.xlatab = W_CacheLumpName(state, "XLATAB", PU_STATIC as i32) as *mut byte;
 }
 pub unsafe fn V_DrawBlock(
     state: &mut GameState,
