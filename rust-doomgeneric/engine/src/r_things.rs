@@ -676,8 +676,9 @@ pub unsafe fn R_DrawPSprite(state: &mut GameState, mut psp: *mut pspdef_t) {
         (*vis).startfrac += (*vis).xiscale as i32 * ((*vis).x1 - x1);
     }
     (*vis).patch = lump;
-    if (*state.r_main.viewplayer).powers[pw_invisibility as i32 as usize] > 4 as i32 * 32 as i32
-        || (*state.r_main.viewplayer).powers[pw_invisibility as i32 as usize] & 8 as i32 != 0
+    let viewplayer = state.g_game.player_mut(state.r_main.viewplayer);
+    if (*viewplayer).powers[pw_invisibility as i32 as usize] > 4 as i32 * 32 as i32
+        || (*viewplayer).powers[pw_invisibility as i32 as usize] & 8 as i32 != 0
     {
         (*vis).colormap = ::core::ptr::null_mut::<lighttable_t>();
     } else if !state.r_main.fixedcolormap.is_null() {
@@ -696,9 +697,10 @@ pub unsafe fn R_DrawPlayerSprites(state: &mut GameState) {
     let mut i: i32 = 0;
     let mut lightnum: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
-    lightnum = ((*state
-        .p_setup
-        .sector_mut((*(*(*state.r_main.viewplayer).mo).subsector).sector))
+    let viewplayer = state.g_game.player_mut(state.r_main.viewplayer);
+    lightnum = ((*state.p_setup.sector_mut(
+        state.p_setup.subsectors[(*(*viewplayer).mo).subsector.0 as usize].sector,
+    ))
     .lightlevel as i32
         >> LIGHTSEGSHIFT)
         + state.r_main.extralight;
@@ -718,7 +720,7 @@ pub unsafe fn R_DrawPlayerSprites(state: &mut GameState) {
     state.r_things.mfloorclip = &raw mut state.r_things.screenheightarray as *mut i16;
     state.r_things.mceilingclip = &raw mut state.r_things.negonearray as *mut i16;
     i = 0 as i32;
-    psp = &raw mut (*state.r_main.viewplayer).psprites as *mut pspdef_t;
+    psp = &raw mut (*viewplayer).psprites as *mut pspdef_t;
     while i < NUMPSPRITES as i32 {
         if !(*psp).state.is_null() {
             R_DrawPSprite(state, psp);

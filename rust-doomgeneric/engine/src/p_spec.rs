@@ -39,7 +39,7 @@ use crate::src::p_lights::P_SpawnLightFlash;
 use crate::src::p_lights::P_SpawnStrobeFlash;
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::ThinkerFn;
-use crate::src::p_mobj::{degenmobj_t, line_t, sector_t, thinker_t};
+use crate::src::p_mobj::{line_t, sector_t, thinker_t};
 use crate::src::p_plats::plat_e;
 use crate::src::p_plats::EV_DoPlat;
 use crate::src::p_plats::EV_StopPlat;
@@ -135,7 +135,7 @@ pub struct button_t {
     pub where_0: bwhere_e,
     pub btexture: i32,
     pub btimer: i32,
-    pub soundorg: *mut degenmobj_t,
+    pub soundorg: SectorId,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -903,7 +903,7 @@ pub unsafe fn P_PlayerInSpecialSector(state: &mut GameState, mut player: *mut pl
     let mut sector: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     sector = state
         .p_setup
-        .sector_mut((*(*(*player).mo).subsector).sector);
+        .sector_mut(state.p_setup.subsectors[(*(*player).mo).subsector.0 as usize].sector);
     if (*(*player).mo).z != (*sector).floorheight {
         return;
     }
@@ -1040,8 +1040,9 @@ pub unsafe fn P_UpdateSpecials(state: &mut GameState) {
                     }
                     _ => {}
                 }
-                let soundorg = &raw mut (*(&raw mut state.p_switch.buttonlist as *mut button_t)
-                    .offset(i as isize))
+                let soundorg = &raw mut (*state
+                    .p_setup
+                    .sector_mut(state.p_switch.buttonlist[i as usize].soundorg))
                 .soundorg as *mut ::core::ffi::c_void;
                 S_StartSound(state, soundorg, sfx_swtchn as i32);
                 memset(

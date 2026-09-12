@@ -46,7 +46,7 @@ pub unsafe fn EV_Teleport(
                 if matches!((*thinker).function, ThinkerFn::Mobj(_)) {
                     m = thinker as *mut mobj_t;
                     if !((*m).type_0 as u32 != MT_TELEPORTMAN as i32 as u32) {
-                        sector = (*(*m).subsector).sector;
+                        sector = state.p_setup.subsectors[(*m).subsector.0 as usize].sector;
                         if !(sector.0 != i as u32) {
                             oldx = (*thing).x;
                             oldy = (*thing).y;

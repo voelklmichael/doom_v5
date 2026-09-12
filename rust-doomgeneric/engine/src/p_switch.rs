@@ -21,7 +21,8 @@ use crate::src::p_floor::{
 };
 use crate::src::p_lights::EV_LightTurnOn;
 use crate::src::p_mobj::mobj_t;
-use crate::src::p_mobj::{degenmobj_t, line_t};
+use crate::src::p_mobj::line_t;
+use crate::src::p_setup::SectorId;
 use crate::src::p_plats::EV_DoPlat;
 use crate::src::p_plats::{blazeDWUS, downWaitUpStay, raiseAndChange, raiseToNearestAndChange};
 use crate::src::p_spec::button_t;
@@ -268,7 +269,7 @@ impl PSwitchState {
                 where_0: top,
                 btexture: 0,
                 btimer: 0,
-                soundorg: ::core::ptr::null::<degenmobj_t>() as *mut degenmobj_t,
+                soundorg: SectorId(0),
             }; 16],
         }
     }
@@ -336,8 +337,7 @@ pub unsafe fn P_StartButton(
             state.p_switch.buttonlist[i as usize].where_0 = w;
             state.p_switch.buttonlist[i as usize].btexture = texture;
             state.p_switch.buttonlist[i as usize].btimer = time;
-            state.p_switch.buttonlist[i as usize].soundorg =
-                &raw mut (*state.p_setup.sector_mut((*line).frontsector.unwrap())).soundorg;
+            state.p_switch.buttonlist[i as usize].soundorg = (*line).frontsector.unwrap();
             return;
         }
         i += 1;
@@ -367,8 +367,10 @@ pub unsafe fn P_ChangeSwitchTexture(
     i = 0 as i32;
     while i < state.p_switch.numswitches * 2 as i32 {
         if state.p_switch.switchlist[i as usize] == texTop {
-            let soundorg = (*(&raw mut state.p_switch.buttonlist as *mut button_t)).soundorg
-                as *mut ::core::ffi::c_void;
+            let soundorg = &raw mut (*state
+                .p_setup
+                .sector_mut(state.p_switch.buttonlist[0 as usize].soundorg))
+            .soundorg as *mut ::core::ffi::c_void;
             S_StartSound(state, soundorg, sound);
             state.p_setup.sides[(*line).sidenum[0 as i32 as usize] as usize].toptexture =
                 state.p_switch.switchlist[(i ^ 1 as i32) as usize] as i16;
@@ -383,8 +385,10 @@ pub unsafe fn P_ChangeSwitchTexture(
             }
             return;
         } else if state.p_switch.switchlist[i as usize] == texMid {
-            let soundorg = (*(&raw mut state.p_switch.buttonlist as *mut button_t)).soundorg
-                as *mut ::core::ffi::c_void;
+            let soundorg = &raw mut (*state
+                .p_setup
+                .sector_mut(state.p_switch.buttonlist[0 as usize].soundorg))
+            .soundorg as *mut ::core::ffi::c_void;
             S_StartSound(state, soundorg, sound);
             state.p_setup.sides[(*line).sidenum[0 as i32 as usize] as usize].midtexture =
                 state.p_switch.switchlist[(i ^ 1 as i32) as usize] as i16;
@@ -399,8 +403,10 @@ pub unsafe fn P_ChangeSwitchTexture(
             }
             return;
         } else if state.p_switch.switchlist[i as usize] == texBot {
-            let soundorg = (*(&raw mut state.p_switch.buttonlist as *mut button_t)).soundorg
-                as *mut ::core::ffi::c_void;
+            let soundorg = &raw mut (*state
+                .p_setup
+                .sector_mut(state.p_switch.buttonlist[0 as usize].soundorg))
+            .soundorg as *mut ::core::ffi::c_void;
             S_StartSound(state, soundorg, sound);
             state.p_setup.sides[(*line).sidenum[0 as i32 as usize] as usize].bottomtexture =
                 state.p_switch.switchlist[(i ^ 1 as i32) as usize] as i16;

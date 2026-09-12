@@ -224,8 +224,8 @@ pub unsafe fn P_CheckSight(
     let mut pnum: i32 = 0;
     let mut bytenum: i32 = 0;
     let mut bitnum: i32 = 0;
-    s1 = (*(*t1).subsector).sector.0 as i32;
-    s2 = (*(*t2).subsector).sector.0 as i32;
+    s1 = state.p_setup.subsectors[(*t1).subsector.0 as usize].sector.0 as i32;
+    s2 = state.p_setup.subsectors[(*t2).subsector.0 as usize].sector.0 as i32;
     pnum = s1 * state.p_setup.numsectors + s2;
     bytenum = pnum >> 3 as i32;
     bitnum = (1 as i32) << (pnum & 7 as i32);

@@ -10,9 +10,10 @@ use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
-use crate::src::p_mobj::{line_t, mapthing_t, sector_t, subsector_s, subsector_t};
+use crate::src::p_mobj::{line_t, mapthing_t, sector_t};
 use crate::src::p_mobj::{mobj_s, mobj_t};
 use crate::src::p_mobj::{MobjId, MF_NOBLOCKMAP, MF_NOSECTOR};
+use crate::src::p_setup::SubsectorId;
 use crate::src::r_main::R_PointInSubsector;
 
 pub struct PMaputlState {
@@ -404,7 +405,10 @@ pub unsafe fn P_UnsetThingPosition(state: &mut GameState, mut thing: *mut mobj_t
         if !(*thing).sprev.is_null() {
             (*(*thing).sprev).snext = (*thing).snext;
         } else {
-            (*state.p_setup.sector_mut((*(*thing).subsector).sector)).thinglist =
+            (*state
+                .p_setup
+                .sector_mut(state.p_setup.subsectors[(*thing).subsector.0 as usize].sector))
+            .thinglist =
                 (*thing).snext as *mut mobj_t;
         }
     }
@@ -432,15 +436,15 @@ pub unsafe fn P_UnsetThingPosition(state: &mut GameState, mut thing: *mut mobj_t
     }
 }
 pub unsafe fn P_SetThingPosition(state: &mut GameState, mut thing: *mut mobj_t) {
-    let mut ss: *mut subsector_t = ::core::ptr::null_mut::<subsector_t>();
+    let mut ss: SubsectorId = SubsectorId(0);
     let mut sec: *mut sector_t = ::core::ptr::null_mut::<sector_t>();
     let mut blockx: i32 = 0;
     let mut blocky: i32 = 0;
     let mut link: *mut *mut mobj_t = ::core::ptr::null_mut::<*mut mobj_t>();
     ss = R_PointInSubsector(state, (*thing).x, (*thing).y);
-    (*thing).subsector = ss as *mut subsector_s;
+    (*thing).subsector = ss;
     if (*thing).flags & MF_NOSECTOR as i32 == 0 {
-        sec = state.p_setup.sector_mut((*ss).sector);
+        sec = state.p_setup.sector_mut(state.p_setup.subsectors[ss.0 as usize].sector);
         (*thing).sprev = ::core::ptr::null_mut::<mobj_s>();
         (*thing).snext = (*sec).thinglist as *mut mobj_s;
         if !(*sec).thinglist.is_null() {

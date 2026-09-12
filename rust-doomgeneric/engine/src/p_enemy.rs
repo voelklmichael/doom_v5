@@ -188,7 +188,9 @@ pub unsafe fn P_NoiseAlert(
 ) {
     state.p_enemy.soundtarget = target;
     state.r_main.validcount += 1;
-    let sec = state.p_setup.sector_mut((*(*emmiter).subsector).sector);
+    let sec = state
+        .p_setup
+        .sector_mut(state.p_setup.subsectors[(*emmiter).subsector.0 as usize].sector);
     P_RecursiveSound(state, sec, 0 as i32);
 }
 pub unsafe fn P_CheckMeleeRange(state: &mut GameState, mut actor: *mut mobj_t) -> bool {
@@ -538,8 +540,10 @@ pub unsafe fn A_Look(state: &mut GameState, id: MobjId) {
     let mut current_block: u64;
     let mut targ: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     (*actor).threshold = 0 as i32;
-    targ = (*state.p_setup.sector_mut((*(*actor).subsector).sector))
-        .soundtarget
+    targ = (*state
+        .p_setup
+        .sector_mut(state.p_setup.subsectors[(*actor).subsector.0 as usize].sector))
+    .soundtarget
         .and_then(|id| state.p_mobj.mobj_get(id))
         .unwrap_or(::core::ptr::null_mut());
     if !targ.is_null() && (*targ).flags & MF_SHOOTABLE as i32 != 0 {

@@ -1,6 +1,7 @@
 use crate::src::d_event::event_t;
 use crate::src::d_event::{ev_keydown, ev_keyup};
 use crate::src::d_player::player_t;
+use crate::src::d_player::PlayerId;
 use crate::src::d_player::{pw_allmap, pw_invisibility};
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
@@ -73,7 +74,7 @@ pub struct AmMapState {
     pub f_oldloc: mpoint_t,
     pub scale_mtof: fixed_t,
     pub scale_ftom: fixed_t,
-    pub plr: *mut player_t,
+    pub plr: PlayerId,
     pub marknums: [*mut patch_t; 10],
     pub markpoints: [mpoint_t; 10],
     pub markpointnum: i32,
@@ -128,7 +129,7 @@ impl AmMapState {
             f_oldloc: mpoint_t { x: 0, y: 0 },
             scale_mtof: INITSCALEMTOF as fixed_t,
             scale_ftom: 0,
-            plr: ::core::ptr::null::<player_t>() as *mut player_t,
+            plr: PlayerId(0),
             marknums: [::core::ptr::null::<patch_t>() as *mut patch_t; 10],
             markpoints: [mpoint_t { x: 0, y: 0 }; 10],
             markpointnum: 0,
@@ -578,9 +579,9 @@ pub unsafe fn AM_restoreScaleAndLoc(state: &mut GameState) {
         state.am_map.m_y = state.am_map.old_m_y;
     } else {
         state.am_map.m_x =
-            ((*(*state.am_map.plr).mo).x as i32 - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
+            ((*(*state.g_game.player_mut(state.am_map.plr)).mo).x as i32 - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
         state.am_map.m_y =
-            ((*(*state.am_map.plr).mo).y as i32 - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
+            ((*(*state.g_game.player_mut(state.am_map.plr)).mo).y as i32 - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
     }
     state.am_map.m_x2 = state.am_map.m_x + state.am_map.m_w;
     state.am_map.m_y2 = state.am_map.m_y + state.am_map.m_h;
@@ -685,17 +686,13 @@ pub unsafe fn AM_initVariables(state: &mut GameState) {
         state.am_map.scale_ftom,
     );
     if state.g_game.playeringame[state.g_game.consoleplayer as usize] != 0 {
-        state.am_map.plr = (&raw mut state.g_game.players as *mut player_t)
-            .offset(state.g_game.consoleplayer as isize)
-            as *mut player_t;
+        state.am_map.plr = PlayerId(state.g_game.consoleplayer as u8);
     } else {
-        state.am_map.plr = (&raw mut state.g_game.players as *mut player_t)
-            .offset(0 as i32 as isize) as *mut player_t;
+        state.am_map.plr = PlayerId(0);
         pnum = 0 as i32;
         while pnum < MAXPLAYERS {
             if state.g_game.playeringame[pnum as usize] != 0 {
-                state.am_map.plr = (&raw mut state.g_game.players as *mut player_t)
-                    .offset(pnum as isize) as *mut player_t;
+                state.am_map.plr = PlayerId(pnum as u8);
                 break;
             } else {
                 pnum += 1;
@@ -703,9 +700,9 @@ pub unsafe fn AM_initVariables(state: &mut GameState) {
         }
     }
     state.am_map.m_x =
-        ((*(*state.am_map.plr).mo).x as i32 - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
+        ((*(*state.g_game.player_mut(state.am_map.plr)).mo).x as i32 - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
     state.am_map.m_y =
-        ((*(*state.am_map.plr).mo).y as i32 - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
+        ((*(*state.g_game.player_mut(state.am_map.plr)).mo).y as i32 - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
     AM_changeWindowLoc(state);
     state.am_map.old_m_x = state.am_map.m_x;
     state.am_map.old_m_y = state.am_map.m_y;
@@ -861,24 +858,24 @@ pub unsafe fn AM_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
             state.am_map.followplayer = (state.am_map.followplayer == 0) as i32;
             state.am_map.f_oldloc.x = INT_MAX as fixed_t;
             if state.am_map.followplayer != 0 {
-                (*state.am_map.plr).message = Some("Follow Mode ON".to_string());
+                (*state.g_game.player_mut(state.am_map.plr)).message = Some("Follow Mode ON".to_string());
             } else {
-                (*state.am_map.plr).message = Some("Follow Mode OFF".to_string());
+                (*state.g_game.player_mut(state.am_map.plr)).message = Some("Follow Mode OFF".to_string());
             }
         } else if key == state.m_controls.key_map_grid {
             state.am_map.grid = (state.am_map.grid == 0) as i32;
             if state.am_map.grid != 0 {
-                (*state.am_map.plr).message = Some("Grid ON".to_string());
+                (*state.g_game.player_mut(state.am_map.plr)).message = Some("Grid ON".to_string());
             } else {
-                (*state.am_map.plr).message = Some("Grid OFF".to_string());
+                (*state.g_game.player_mut(state.am_map.plr)).message = Some("Grid OFF".to_string());
             }
         } else if key == state.m_controls.key_map_mark {
-            (*state.am_map.plr).message =
+            (*state.g_game.player_mut(state.am_map.plr)).message =
                 Some(format!("Marked Spot {}", state.am_map.markpointnum));
             AM_addMark(state);
         } else if key == state.m_controls.key_map_clearmark {
             AM_clearMarks(state);
-            (*state.am_map.plr).message = Some("All Marks Cleared".to_string());
+            (*state.g_game.player_mut(state.am_map.plr)).message = Some("All Marks Cleared".to_string());
         } else {
             rc = false_0;
         }
@@ -930,25 +927,25 @@ pub unsafe fn AM_changeWindowScale(state: &mut GameState) {
     };
 }
 pub unsafe fn AM_doFollowPlayer(state: &mut GameState) {
-    if state.am_map.f_oldloc.x != (*(*state.am_map.plr).mo).x
-        || state.am_map.f_oldloc.y != (*(*state.am_map.plr).mo).y
+    if state.am_map.f_oldloc.x != (*(*state.g_game.player_mut(state.am_map.plr)).mo).x
+        || state.am_map.f_oldloc.y != (*(*state.g_game.player_mut(state.am_map.plr)).mo).y
     {
         state.am_map.m_x = (FixedMul(
-            (FixedMul((*(*state.am_map.plr).mo).x, state.am_map.scale_mtof) >> 16 as i32)
+            (FixedMul((*(*state.g_game.player_mut(state.am_map.plr)).mo).x, state.am_map.scale_mtof) >> 16 as i32)
                 << 16 as i32,
             state.am_map.scale_ftom,
         ) as i32
             - state.am_map.m_w as i32 / 2 as i32) as fixed_t;
         state.am_map.m_y = (FixedMul(
-            (FixedMul((*(*state.am_map.plr).mo).y, state.am_map.scale_mtof) >> 16 as i32)
+            (FixedMul((*(*state.g_game.player_mut(state.am_map.plr)).mo).y, state.am_map.scale_mtof) >> 16 as i32)
                 << 16 as i32,
             state.am_map.scale_ftom,
         ) as i32
             - state.am_map.m_h as i32 / 2 as i32) as fixed_t;
         state.am_map.m_x2 = state.am_map.m_x + state.am_map.m_w;
         state.am_map.m_y2 = state.am_map.m_y + state.am_map.m_h;
-        state.am_map.f_oldloc.x = (*(*state.am_map.plr).mo).x;
-        state.am_map.f_oldloc.y = (*(*state.am_map.plr).mo).y;
+        state.am_map.f_oldloc.x = (*(*state.g_game.player_mut(state.am_map.plr)).mo).x;
+        state.am_map.f_oldloc.y = (*(*state.g_game.player_mut(state.am_map.plr)).mo).y;
     }
 }
 pub unsafe fn AM_updateLightLev(state: &mut AmMapState) {
@@ -1278,7 +1275,7 @@ pub unsafe fn AM_drawWalls(state: &mut GameState) {
                     AM_drawMline(state, &raw mut l, TSWALLCOLORS + lightlev);
                 }
             }
-        } else if (*state.am_map.plr).powers[pw_allmap as i32 as usize] != 0 {
+        } else if (*state.g_game.player_mut(state.am_map.plr)).powers[pw_allmap as i32 as usize] != 0 {
             if (*li).flags as i32 & LINE_NEVERSEE == 0 {
                 AM_drawMline(state, &raw mut l, GRAYS + 3 as i32);
             }
@@ -1344,7 +1341,7 @@ pub unsafe fn AM_drawPlayers(state: &mut GameState) {
     let mut their_color: i32 = -(1 as i32);
     let mut color: i32 = 0;
     if !state.g_game.netgame {
-        let plr_mo = (*state.am_map.plr).mo;
+        let plr_mo = (*state.g_game.player_mut(state.am_map.plr)).mo;
         if state.am_map.cheating != 0 {
             AM_drawLineCharacter(
                 state,
@@ -1378,7 +1375,10 @@ pub unsafe fn AM_drawPlayers(state: &mut GameState) {
     while i < MAXPLAYERS {
         their_color += 1;
         p = (&raw mut state.g_game.players as *mut player_t).offset(i as isize) as *mut player_t;
-        if !(state.g_game.deathmatch != 0 && !state.g_game.singledemo && p != state.am_map.plr) {
+        if !(state.g_game.deathmatch != 0
+            && !state.g_game.singledemo
+            && PlayerId(i as u8) != state.am_map.plr)
+        {
             if !(state.g_game.playeringame[i as usize] == 0) {
                 if (*p).powers[pw_invisibility as i32 as usize] != 0 {
                     color = 246 as i32;
