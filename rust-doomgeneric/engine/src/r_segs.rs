@@ -124,10 +124,8 @@ pub unsafe fn R_RenderMaskedSegRange(
     state.r_bsp.curline = (*ds).curline;
     state.r_bsp.frontsector = (*state.r_bsp.curline).frontsector;
     state.r_bsp.backsector = (*state.r_bsp.curline).backsector;
-    texnum = *state
-        .r_data
-        .texturetranslation
-        .offset((*state.p_setup.side_mut((*state.r_bsp.curline).sidedef)).midtexture as isize);
+    texnum = state.r_data.texturetranslation
+        [(*state.p_setup.side_mut((*state.r_bsp.curline).sidedef)).midtexture as usize];
     lightnum = ((*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).lightlevel as i32
         >> LIGHTSEGSHIFT)
         + state.r_main.extralight;
@@ -168,7 +166,7 @@ pub unsafe fn R_RenderMaskedSegRange(
                 (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorheight
             };
         state.r_draw.dc_texturemid = state.r_draw.dc_texturemid
-            + *state.r_data.textureheight.offset(texnum as isize)
+            + state.r_data.textureheight[texnum as usize]
             - state.r_main.viewz;
     } else {
         state.r_draw.dc_texturemid =
@@ -422,18 +420,14 @@ pub unsafe fn R_StoreWallRange(state: &mut GameState, mut start: i32, mut stop: 
     state.r_segs.midtexture = state.r_segs.toptexture;
     (*state.r_bsp.ds_p).maskedtexturecol = ::core::ptr::null_mut::<i16>();
     if state.r_bsp.backsector.is_none() {
-        state.r_segs.midtexture = *state
-            .r_data
-            .texturetranslation
-            .offset((*state.p_setup.side_mut(state.r_bsp.sidedef)).midtexture as isize);
+        state.r_segs.midtexture = state.r_data.texturetranslation
+            [(*state.p_setup.side_mut(state.r_bsp.sidedef)).midtexture as usize];
         state.r_segs.markceiling = true;
         state.r_segs.markfloor = state.r_segs.markceiling;
         if (*state.p_setup.line_mut(state.r_bsp.linedef)).flags as i32 & ML_DONTPEGBOTTOM != 0 {
             vtop = (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight
-                + *state
-                    .r_data
-                    .textureheight
-                    .offset((*state.p_setup.side_mut(state.r_bsp.sidedef)).midtexture as isize);
+                + state.r_data.textureheight
+                    [(*state.p_setup.side_mut(state.r_bsp.sidedef)).midtexture as usize];
             state.r_segs.rw_midtexturemid = vtop - state.r_main.viewz;
         } else {
             state.r_segs.rw_midtexturemid = state.r_segs.worldtop as fixed_t;
@@ -528,26 +522,20 @@ pub unsafe fn R_StoreWallRange(state: &mut GameState, mut start: i32, mut stop: 
             state.r_segs.markceiling = state.r_segs.markfloor;
         }
         if state.r_segs.worldhigh < state.r_segs.worldtop {
-            state.r_segs.toptexture = *state
-                .r_data
-                .texturetranslation
-                .offset((*state.p_setup.side_mut(state.r_bsp.sidedef)).toptexture as isize);
+            state.r_segs.toptexture = state.r_data.texturetranslation
+                [(*state.p_setup.side_mut(state.r_bsp.sidedef)).toptexture as usize];
             if (*state.p_setup.line_mut(state.r_bsp.linedef)).flags as i32 & ML_DONTPEGTOP != 0 {
                 state.r_segs.rw_toptexturemid = state.r_segs.worldtop as fixed_t;
             } else {
                 vtop = (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingheight
-                    + *state
-                        .r_data
-                        .textureheight
-                        .offset((*state.p_setup.side_mut(state.r_bsp.sidedef)).toptexture as isize);
+                    + state.r_data.textureheight
+                        [(*state.p_setup.side_mut(state.r_bsp.sidedef)).toptexture as usize];
                 state.r_segs.rw_toptexturemid = vtop - state.r_main.viewz;
             }
         }
         if state.r_segs.worldlow > state.r_segs.worldbottom {
-            state.r_segs.bottomtexture = *state
-                .r_data
-                .texturetranslation
-                .offset((*state.p_setup.side_mut(state.r_bsp.sidedef)).bottomtexture as isize);
+            state.r_segs.bottomtexture = state.r_data.texturetranslation
+                [(*state.p_setup.side_mut(state.r_bsp.sidedef)).bottomtexture as usize];
             if (*state.p_setup.line_mut(state.r_bsp.linedef)).flags as i32 & ML_DONTPEGBOTTOM != 0 {
                 state.r_segs.rw_bottomtexturemid = state.r_segs.worldtop as fixed_t;
             } else {

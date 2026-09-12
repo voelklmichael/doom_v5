@@ -994,9 +994,9 @@ pub unsafe fn P_UpdateSpecials(state: &mut GameState) {
         while i < (*anim).basepic + (*anim).numpics {
             pic = (*anim).basepic + (state.p_tick.leveltime / (*anim).speed + i) % (*anim).numpics;
             if (*anim).istexture {
-                *state.r_data.texturetranslation.offset(i as isize) = pic;
+                state.r_data.texturetranslation[i as usize] = pic;
             } else {
-                *state.r_data.flattranslation.offset(i as isize) = pic;
+                state.r_data.flattranslation[i as usize] = pic;
             }
             i += 1;
         }

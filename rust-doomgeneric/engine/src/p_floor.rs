@@ -318,32 +318,20 @@ pub unsafe fn EV_DoFloor(
                     if twoSided(state, secnum, i) != 0 {
                         side = getSide(state, secnum, i, 0 as i32);
                         if (*side).bottomtexture as i32 >= 0 as i32 {
-                            if *state
-                                .r_data
-                                .textureheight
-                                .offset((*side).bottomtexture as isize)
-                                < minsize
+                            if state.r_data.textureheight[(*side).bottomtexture as usize] < minsize
                             {
-                                minsize = *state
-                                    .r_data
-                                    .textureheight
-                                    .offset((*side).bottomtexture as isize)
-                                    as i32;
+                                minsize =
+                                    state.r_data.textureheight[(*side).bottomtexture as usize]
+                                        as i32;
                             }
                         }
                         side = getSide(state, secnum, i, 1 as i32);
                         if (*side).bottomtexture as i32 >= 0 as i32 {
-                            if *state
-                                .r_data
-                                .textureheight
-                                .offset((*side).bottomtexture as isize)
-                                < minsize
+                            if state.r_data.textureheight[(*side).bottomtexture as usize] < minsize
                             {
-                                minsize = *state
-                                    .r_data
-                                    .textureheight
-                                    .offset((*side).bottomtexture as isize)
-                                    as i32;
+                                minsize =
+                                    state.r_data.textureheight[(*side).bottomtexture as usize]
+                                        as i32;
                             }
                         }
                     }

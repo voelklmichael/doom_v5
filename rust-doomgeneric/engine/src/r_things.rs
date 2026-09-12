@@ -513,12 +513,12 @@ pub unsafe fn R_ProjectSprite(state: &mut GameState, mut thing: *mut mobj_t) {
         lump = (*sprframe).lump[0 as i32 as usize] as i32;
         flip = (*sprframe).flip[0 as i32 as usize] != 0;
     }
-    tx -= *state.r_data.spriteoffset.offset(lump as isize);
+    tx -= state.r_data.spriteoffset[lump as usize];
     x1 = (state.r_main.centerxfrac + FixedMul(tx, xscale) >> FRACBITS) as i32;
     if x1 > state.r_draw.viewwidth {
         return;
     }
-    tx += *state.r_data.spritewidth.offset(lump as isize);
+    tx += state.r_data.spritewidth[lump as usize];
     x2 = (state.r_main.centerxfrac as i32 + FixedMul(tx, xscale) as i32 >> FRACBITS) - 1 as i32;
     if x2 < 0 as i32 {
         return;
@@ -529,7 +529,7 @@ pub unsafe fn R_ProjectSprite(state: &mut GameState, mut thing: *mut mobj_t) {
     (*vis).gx = (*thing).x;
     (*vis).gy = (*thing).y;
     (*vis).gz = (*thing).z;
-    (*vis).gzt = (*thing).z + *state.r_data.spritetopoffset.offset(lump as isize);
+    (*vis).gzt = (*thing).z + state.r_data.spritetopoffset[lump as usize];
     (*vis).texturemid = (*vis).gzt - state.r_main.viewz;
     (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
     (*vis).x2 = if x2 >= state.r_draw.viewwidth {
@@ -540,7 +540,7 @@ pub unsafe fn R_ProjectSprite(state: &mut GameState, mut thing: *mut mobj_t) {
     iscale = FixedDiv(FRACUNIT, xscale);
     if flip {
         (*vis).startfrac =
-            (*state.r_data.spritewidth.offset(lump as isize) as i32 - 1 as i32) as fixed_t;
+            (state.r_data.spritewidth[lump as usize] as i32 - 1 as i32) as fixed_t;
         (*vis).xiscale = -iscale;
     } else {
         (*vis).startfrac = 0 as i32 as fixed_t;
@@ -638,12 +638,12 @@ pub unsafe fn R_DrawPSprite(state: &mut GameState, mut psp: *mut pspdef_t) {
     lump = (*sprframe).lump[0 as i32 as usize] as i32;
     flip = (*sprframe).flip[0 as i32 as usize] != 0;
     tx = ((*psp).sx as i32 - 160 as i32 * FRACUNIT) as fixed_t;
-    tx -= *state.r_data.spriteoffset.offset(lump as isize);
+    tx -= state.r_data.spriteoffset[lump as usize];
     x1 = (state.r_main.centerxfrac + FixedMul(tx, state.r_things.pspritescale) >> FRACBITS) as i32;
     if x1 > state.r_draw.viewwidth {
         return;
     }
-    tx += *state.r_data.spritewidth.offset(lump as isize);
+    tx += state.r_data.spritewidth[lump as usize];
     x2 = (state.r_main.centerxfrac as i32 + FixedMul(tx, state.r_things.pspritescale) as i32
         >> FRACBITS)
         - 1 as i32;
@@ -653,7 +653,7 @@ pub unsafe fn R_DrawPSprite(state: &mut GameState, mut psp: *mut pspdef_t) {
     vis = &raw mut avis;
     (*vis).mobjflags = 0 as i32;
     (*vis).texturemid = (BASEYCENTER << FRACBITS) + FRACUNIT / 2 as fixed_t
-        - ((*psp).sy - *state.r_data.spritetopoffset.offset(lump as isize));
+        - ((*psp).sy - state.r_data.spritetopoffset[lump as usize]);
     (*vis).x1 = if x1 < 0 as i32 { 0 as i32 } else { x1 };
     (*vis).x2 = if x2 >= state.r_draw.viewwidth {
         state.r_draw.viewwidth - 1 as i32
@@ -664,7 +664,7 @@ pub unsafe fn R_DrawPSprite(state: &mut GameState, mut psp: *mut pspdef_t) {
     if flip {
         (*vis).xiscale = -state.r_things.pspriteiscale;
         (*vis).startfrac =
-            (*state.r_data.spritewidth.offset(lump as isize) as i32 - 1 as i32) as fixed_t;
+            (state.r_data.spritewidth[lump as usize] as i32 - 1 as i32) as fixed_t;
     } else {
         (*vis).xiscale = state.r_things.pspriteiscale;
         (*vis).startfrac = 0 as i32 as fixed_t;
