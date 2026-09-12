@@ -2,7 +2,6 @@ use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_ZoneBase;
 use crate::src::stdint_types::byte;
-use libc::printf;
 use std::io::Write;
 
 pub type C2RustUnnamed = u32;
@@ -212,22 +211,17 @@ pub unsafe fn Z_FreeTags(state: &mut ZZoneState, mut lowtag: i32, mut hightag: i
 }
 pub unsafe fn Z_DumpHeap(state: &mut ZZoneState, mut lowtag: i32, mut hightag: i32) {
     let mut block: *mut memblock_t = ::core::ptr::null_mut::<memblock_t>();
-    printf(
-        b"zone size: %i  location: %p\n\0" as *const u8 as *const ::core::ffi::c_char,
+    println!(
+        "zone size: {}  location: {:p}",
         (*state.mainzone).size,
         state.mainzone,
     );
-    printf(
-        b"tag range: %i to %i\n\0" as *const u8 as *const ::core::ffi::c_char,
-        lowtag,
-        hightag,
-    );
+    println!("tag range: {} to {}", lowtag, hightag);
     block = (*state.mainzone).blocklist.next as *mut memblock_t;
     loop {
         if (*block).tag >= lowtag && (*block).tag <= hightag {
-            printf(
-                b"block:%p    size:%7i    user:%p    tag:%3i\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
+            println!(
+                "block:{:p}    size:{:7}    user:{:p}    tag:{:3}",
                 block,
                 (*block).size,
                 (*block).user,
@@ -238,22 +232,13 @@ pub unsafe fn Z_DumpHeap(state: &mut ZZoneState, mut lowtag: i32, mut hightag: i
             break;
         }
         if (block as *mut byte).offset((*block).size as isize) != (*block).next as *mut byte {
-            printf(
-                b"ERROR: block size does not touch the next block\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            println!("ERROR: block size does not touch the next block");
         }
         if (*(*block).next).prev != block {
-            printf(
-                b"ERROR: next block doesn't have proper back link\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            println!("ERROR: next block doesn't have proper back link");
         }
         if (*block).tag == PU_FREE as i32 && (*(*block).next).tag == PU_FREE as i32 {
-            printf(
-                b"ERROR: two consecutive free blocks\n\0" as *const u8
-                    as *const ::core::ffi::c_char,
-            );
+            println!("ERROR: two consecutive free blocks");
         }
         block = (*block).next as *mut memblock_t;
     }

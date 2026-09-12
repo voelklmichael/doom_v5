@@ -10,7 +10,6 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::{memcpy, memset};
-use libc::{printf, puts};
 use std::io::Write;
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -565,28 +564,22 @@ unsafe fn I_InitStretchTables(state: &mut IScaleState, mut palette: *mut byte) {
     if !state.stretch_tables[0 as i32 as usize].is_null() {
         return;
     }
-    printf(
-        b"I_InitStretchTables: Generating lookup tables..\0" as *const u8
-            as *const ::core::ffi::c_char,
-    );
+    print!("I_InitStretchTables: Generating lookup tables..");
     let _ = std::io::stdout().flush();
     state.stretch_tables[0 as i32 as usize] = GenerateStretchTable(palette, 20 as i32);
-    printf(b"..\0" as *const u8 as *const ::core::ffi::c_char);
+    print!("..");
     let _ = std::io::stdout().flush();
     state.stretch_tables[1 as i32 as usize] = GenerateStretchTable(palette, 40 as i32);
-    puts(b"\0" as *const u8 as *const ::core::ffi::c_char);
+    println!();
 }
 unsafe fn I_InitSquashTable(state: &mut IScaleState, mut palette: *mut byte) {
     if !state.half_stretch_table.is_null() {
         return;
     }
-    printf(
-        b"I_InitSquashTable: Generating lookup table..\0" as *const u8
-            as *const ::core::ffi::c_char,
-    );
+    print!("I_InitSquashTable: Generating lookup table..");
     let _ = std::io::stdout().flush();
     state.half_stretch_table = GenerateStretchTable(palette, 50 as i32);
-    puts(b"\0" as *const u8 as *const ::core::ffi::c_char);
+    println!();
 }
 pub unsafe fn I_ResetScaleTables(state: &mut IScaleState, mut palette: *mut byte) {
     if !state.stretch_tables[0 as i32 as usize].is_null() {
@@ -598,10 +591,7 @@ pub unsafe fn I_ResetScaleTables(state: &mut IScaleState, mut palette: *mut byte
             unsafe { &mut game_state().z_zone },
             state.stretch_tables[1 as i32 as usize] as *mut ::core::ffi::c_void,
         );
-        printf(
-            b"I_ResetScaleTables: Regenerating lookup tables..\n\0" as *const u8
-                as *const ::core::ffi::c_char,
-        );
+        println!("I_ResetScaleTables: Regenerating lookup tables..");
         state.stretch_tables[0 as i32 as usize] = GenerateStretchTable(palette, 20 as i32);
         state.stretch_tables[1 as i32 as usize] = GenerateStretchTable(palette, 40 as i32);
     }
@@ -610,10 +600,7 @@ pub unsafe fn I_ResetScaleTables(state: &mut IScaleState, mut palette: *mut byte
             unsafe { &mut game_state().z_zone },
             state.half_stretch_table as *mut ::core::ffi::c_void,
         );
-        printf(
-            b"I_ResetScaleTables: Regenerating lookup table..\n\0" as *const u8
-                as *const ::core::ffi::c_char,
-        );
+        println!("I_ResetScaleTables: Regenerating lookup table..");
         state.half_stretch_table = GenerateStretchTable(palette, 50 as i32);
     }
 }

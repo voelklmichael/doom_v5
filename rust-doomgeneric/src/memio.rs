@@ -4,7 +4,6 @@ use crate::src::z_zone::Z_Free;
 use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::PU_STATIC;
 use libc::memcpy;
-use libc::printf;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _MEMFILE {
@@ -47,7 +46,7 @@ pub unsafe fn mem_fread(
 ) -> size_t {
     let mut items: size_t = 0;
     if (*stream).mode as u32 != MODE_READ as i32 as u32 {
-        printf(b"not a read stream\n\0" as *const u8 as *const ::core::ffi::c_char);
+        println!("not a read stream");
         return -(1 as i32) as size_t;
     }
     items = nmemb;
@@ -169,10 +168,7 @@ pub unsafe fn mem_fseek(mut stream: *mut MEMFILE, mut position: i64, mut whence:
         (*stream).position = newpos;
         return 0 as i32;
     } else {
-        printf(
-            b"Error seeking to %i\n\0" as *const u8 as *const ::core::ffi::c_char,
-            newpos,
-        );
+        println!("Error seeking to {}", newpos);
         return -(1 as i32);
     };
 }
