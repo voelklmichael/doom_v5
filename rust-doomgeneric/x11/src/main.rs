@@ -857,7 +857,7 @@ impl X11Platform {
     }
 }
 
-unsafe extern "C" fn convertToDoomKey(mut key: u32) -> u8 {
+fn convertToDoomKey(mut key: u32) -> u8 {
     match key {
         65293 => {
             key = KEY_ENTER as u32;

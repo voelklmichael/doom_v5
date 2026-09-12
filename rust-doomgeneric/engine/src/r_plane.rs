@@ -90,7 +90,7 @@ impl RPlaneState {
     }
 }
 
-pub type planefunction_t = Option<unsafe extern "C" fn(i32, i32) -> ()>;
+pub type planefunction_t = Option<unsafe fn(i32, i32) -> ()>;
 pub const ANGLETOSKYSHIFT: i32 = 22;
 pub const MAXVISPLANES: i32 = 128;
 pub unsafe fn R_MapPlane(state: &mut GameState, mut y: i32, mut x1: i32, mut x2: i32) {

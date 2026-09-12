@@ -140,7 +140,7 @@ unsafe fn saveg_write16(state: &mut GameState, mut value: i16) {
     saveg_write8(state, (value as i32 & 0xff as i32) as byte);
     saveg_write8(state, (value as i32 >> 8 as i32 & 0xff as i32) as byte);
 }
-unsafe extern "C" fn saveg_read32(state: &mut GameState) -> i32 {
+unsafe fn saveg_read32(state: &mut GameState) -> i32 {
     let mut result: i32 = 0;
     result = saveg_read8(state) as i32;
     result |= (saveg_read8(state) as i32) << 8 as i32;

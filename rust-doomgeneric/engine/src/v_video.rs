@@ -21,7 +21,7 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{memcpy, memset};
 
-pub type vpatchclipfunc_t = Option<unsafe extern "C" fn(*mut patch_t, i32, i32) -> boolean>;
+pub type vpatchclipfunc_t = Option<unsafe fn(*mut patch_t, i32, i32) -> boolean>;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
 pub struct pcx_t {
