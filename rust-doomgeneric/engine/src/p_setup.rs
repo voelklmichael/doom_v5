@@ -1,7 +1,6 @@
 use crate::src::d_mode::commercial;
 use crate::src::doomdef::MAXPLAYERS;
 use crate::src::fixed_cstr::FixedCStr;
-use crate::src::doomdef::NULL;
 use crate::src::g_game::G_DeathMatchSpawnPlayer;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_GetMemoryValue;
@@ -121,10 +120,10 @@ pub struct PSetupState {
     pub bmapwidth: i32,
     pub bmapheight: i32,
     pub blockmap: *mut i16,
-    pub blockmaplump: *mut i16,
+    pub blockmaplump: Vec<i16>,
     pub bmaporgx: fixed_t,
     pub bmaporgy: fixed_t,
-    pub blocklinks: *mut *mut mobj_t,
+    pub blocklinks: Vec<*mut mobj_t>,
     pub rejectmatrix: *mut byte,
     pub deathmatchstarts: [mapthing_t; 10],
     pub deathmatch_p: *mut mapthing_t,
@@ -153,10 +152,10 @@ impl PSetupState {
             bmapwidth: 0,
             bmapheight: 0,
             blockmap: ::core::ptr::null::<i16>() as *mut i16,
-            blockmaplump: ::core::ptr::null::<i16>() as *mut i16,
+            blockmaplump: Vec::new(),
             bmaporgx: 0,
             bmaporgy: 0,
-            blocklinks: ::core::ptr::null::<*mut mobj_t>() as *mut *mut mobj_t,
+            blocklinks: Vec::new(),
             rejectmatrix: ::core::ptr::null::<byte>() as *mut byte,
             deathmatchstarts: [mapthing_t {
                 x: 0,
@@ -680,39 +679,26 @@ pub unsafe fn P_LoadBlockMap(state: &mut GameState, mut lump: i32) {
     let mut lumplen: i32 = 0;
     lumplen = W_LumpLength(&mut state.w_wad, lump as u32);
     count = lumplen / 2 as i32;
-    state.p_setup.blockmaplump =
-        Z_Malloc(&mut state.z_zone, lumplen, PU_LEVEL as i32, NULL) as *mut i16;
-    W_ReadLump(&mut state.w_wad, 
+    state.p_setup.blockmaplump = vec![0 as i16; count as usize];
+    W_ReadLump(
+        &mut state.w_wad,
         lump as u32,
-        state.p_setup.blockmaplump as *mut ::core::ffi::c_void,
+        state.p_setup.blockmaplump.as_mut_ptr() as *mut ::core::ffi::c_void,
     );
-    state.p_setup.blockmap = state.p_setup.blockmaplump.offset(4 as i32 as isize);
+    state.p_setup.blockmap = state.p_setup.blockmaplump.as_mut_ptr().offset(4 as i32 as isize);
     i = 0 as i32;
     while i < count {
-        *state.p_setup.blockmaplump.offset(i as isize) =
-            *state.p_setup.blockmaplump.offset(i as isize);
+        state.p_setup.blockmaplump[i as usize] = state.p_setup.blockmaplump[i as usize];
         i += 1;
     }
-    state.p_setup.bmaporgx =
-        ((*state.p_setup.blockmaplump.offset(0 as i32 as isize) as i32) << FRACBITS) as fixed_t;
-    state.p_setup.bmaporgy =
-        ((*state.p_setup.blockmaplump.offset(1 as i32 as isize) as i32) << FRACBITS) as fixed_t;
-    state.p_setup.bmapwidth = *state.p_setup.blockmaplump.offset(2 as i32 as isize) as i32;
-    state.p_setup.bmapheight = *state.p_setup.blockmaplump.offset(3 as i32 as isize) as i32;
-    count = (::core::mem::size_of::<*mut mobj_t>() as usize)
-        .wrapping_mul(state.p_setup.bmapwidth as usize)
-        .wrapping_mul(state.p_setup.bmapheight as usize) as i32;
-    state.p_setup.blocklinks = Z_Malloc(
-        &mut state.z_zone,
-        count,
-        PU_LEVEL as i32,
-        ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut *mut mobj_t;
-    memset(
-        state.p_setup.blocklinks as *mut ::core::ffi::c_void,
-        0 as i32,
-        count as size_t,
-    );
+    state.p_setup.bmaporgx = ((state.p_setup.blockmaplump[0] as i32) << FRACBITS) as fixed_t;
+    state.p_setup.bmaporgy = ((state.p_setup.blockmaplump[1] as i32) << FRACBITS) as fixed_t;
+    state.p_setup.bmapwidth = state.p_setup.blockmaplump[2] as i32;
+    state.p_setup.bmapheight = state.p_setup.blockmaplump[3] as i32;
+    state.p_setup.blocklinks = vec![
+        ::core::ptr::null_mut::<mobj_t>();
+        (state.p_setup.bmapwidth as usize) * (state.p_setup.bmapheight as usize)
+    ];
 }
 pub unsafe fn P_GroupLines(state: &mut GameState) {
     let mut linebuffer: *mut *mut line_t = ::core::ptr::null_mut::<*mut line_t>();
