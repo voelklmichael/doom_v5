@@ -1074,11 +1074,11 @@ unsafe fn DonutOverrun(
         if p > 0 as i32 {
             M_StrToInt(
                 state.m_argv.myargv[(p + 1 as i32) as usize].to_str().unwrap(),
-                &raw mut state.p_spec.donut_overrun_tmp_s3_floorheight,
+                &mut state.p_spec.donut_overrun_tmp_s3_floorheight,
             );
             M_StrToInt(
                 state.m_argv.myargv[(p + 2 as i32) as usize].to_str().unwrap(),
-                &raw mut state.p_spec.donut_overrun_tmp_s3_floorpic,
+                &mut state.p_spec.donut_overrun_tmp_s3_floorpic,
             );
             if state.p_spec.donut_overrun_tmp_s3_floorpic >= state.r_data.numflats {
                 eprintln!(

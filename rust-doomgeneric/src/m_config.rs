@@ -35,9 +35,6 @@ use crate::src::m_controls::KEY_UPARROW;
 use crate::src::m_misc::M_MakeDirectory;
 use crate::src::m_misc::M_StrToInt;
 
-extern "C" {
-    fn atof(__nptr: *const ::core::ffi::c_char) -> f64;
-}
 pub type default_type_t = u32;
 pub const DEFAULT_KEY: default_type_t = 4;
 pub const DEFAULT_FLOAT: default_type_t = 3;
@@ -1822,7 +1819,7 @@ static scantokey: [i32; 128] = [
 ];
 unsafe fn ParseIntParameter(strparm: &str) -> i32 {
     let mut parm: i32 = 0;
-    M_StrToInt(strparm, &raw mut parm);
+    M_StrToInt(strparm, &mut parm);
     return parm;
 }
 unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_char) {
@@ -1848,7 +1845,8 @@ unsafe fn SetVariable(mut def: *mut default_t, mut value: *mut ::core::ffi::c_ch
             *((*def).location as *mut i32) = intparm;
         }
         3 => {
-            *((*def).location as *mut f32) = atof(value) as f32;
+            let value_str = ::std::ffi::CStr::from_ptr(value).to_str().unwrap();
+            *((*def).location as *mut f32) = value_str.trim().parse::<f64>().unwrap_or(0.0) as f32;
         }
         _ => {}
     };

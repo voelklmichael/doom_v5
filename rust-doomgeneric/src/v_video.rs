@@ -22,9 +22,6 @@ use crate::src::z_zone::Z_Malloc;
 use crate::src::z_zone::{PU_CACHE, PU_STATIC};
 use libc::{memcpy, memset};
 
-extern "C" {
-    fn fabs(__x: f64) -> f64;
-}
 pub type vpatchclipfunc_t = Option<unsafe extern "C" fn(*mut patch_t, i32, i32) -> boolean>;
 #[derive(Copy, Clone)]
 #[repr(C, packed)]
@@ -713,7 +710,10 @@ pub unsafe fn WritePCXfile(
         i += 1;
     }
     length = pack.offset_from(pcx as *mut byte) as i64 as i32;
-    M_WriteFile(filename, pcx as *mut ::core::ffi::c_void, length);
+    M_WriteFile(
+        filename,
+        ::core::slice::from_raw_parts(pcx as *const u8, length as usize),
+    );
     Z_Free(state, pcx as *mut ::core::ffi::c_void);
 }
 pub unsafe fn V_ScreenShot(state: &mut GameState) {
@@ -759,7 +759,7 @@ pub unsafe fn V_DrawMouseSpeedBox(state: &mut IVideoState, mut speed: i32) {
     black = I_GetPaletteIndex(0 as i32, 0 as i32, 0 as i32);
     yellow = I_GetPaletteIndex(0xff as i32, 0xff as i32, 0 as i32);
     white = I_GetPaletteIndex(0xff as i32, 0xff as i32, 0xff as i32);
-    if state.usemouse == 0 || fabs((state.mouse_acceleration - 1 as i32 as f32) as f64) < 0.01f64 {
+    if state.usemouse == 0 || ((state.mouse_acceleration - 1 as i32 as f32) as f64).abs() < 0.01f64 {
         return;
     }
     box_x = SCREENWIDTH - MOUSE_SPEED_BOX_WIDTH - 10 as i32;

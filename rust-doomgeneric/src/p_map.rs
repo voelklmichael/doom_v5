@@ -1179,10 +1179,12 @@ unsafe fn SpechitOverrun(state: &mut GameState, mut ld: *mut line_t) {
         let mut p: i32 = 0;
         p = M_CheckParmWithArgs(state, "-spechit", 1 as i32);
         if p > 0 as i32 {
+            let mut baseaddr: i32 = 0;
             M_StrToInt(
                 state.m_argv.myargv[(p + 1 as i32) as usize].to_str().unwrap(),
-                &raw mut state.p_map.baseaddr as *mut i32,
+                &mut baseaddr,
             );
+            state.p_map.baseaddr = baseaddr as u32;
         } else {
             state.p_map.baseaddr = DEFAULT_SPECHIT_MAGIC as u32;
         }

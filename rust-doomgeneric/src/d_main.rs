@@ -76,7 +76,6 @@ use crate::src::m_controls::M_BindWeaponControls;
 use crate::src::m_menu::M_Drawer;
 use crate::src::m_menu::M_Init;
 use crate::src::m_menu::M_Responder;
-use crate::src::m_misc::M_StringCopy;
 use crate::src::m_misc::M_StringEndsWith;
 use crate::src::p_saveg::P_SaveGameFile;
 use crate::src::p_setup::P_Init;
@@ -1002,21 +1001,21 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
             file = format!("{}.lmp", arg);
         }
         if D_AddFile(&file) {
-            M_StringCopy(
-                &raw mut demolumpname as *mut ::core::ffi::c_char,
-                &raw mut (*state
-                    .w_wad
-                    .lumpinfo
-                    .offset(state.w_wad.numlumps.wrapping_sub(1 as u32) as isize))
-                .name as *mut ::core::ffi::c_char,
-                ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
-            );
+            let name = &(*state
+                .w_wad
+                .lumpinfo
+                .offset(state.w_wad.numlumps.wrapping_sub(1 as u32) as isize))
+                .name;
+            let len = name.len().min(demolumpname.len() - 1);
+            for i in 0..len {
+                demolumpname[i] = name.as_bytes()[i] as ::core::ffi::c_char;
+            }
         } else {
-            M_StringCopy(
-                &raw mut demolumpname as *mut ::core::ffi::c_char,
-                state.m_argv.myargv[(p + 1 as i32) as usize].as_ptr() as *mut ::core::ffi::c_char,
-                ::core::mem::size_of::<[::core::ffi::c_char; 9]>() as size_t,
-            );
+            let src_bytes = state.m_argv.myargv[(p + 1 as i32) as usize].as_bytes();
+            let len = src_bytes.len().min(demolumpname.len() - 1);
+            for i in 0..len {
+                demolumpname[i] = src_bytes[i] as ::core::ffi::c_char;
+            }
         }
         println!("Playing demo {}.", file);
     }

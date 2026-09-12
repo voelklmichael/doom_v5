@@ -2116,13 +2116,10 @@ pub unsafe extern "C" fn G_CheckDemoStatus(state: &mut GameState) -> boolean {
         let fresh11 = state.g_game.demo_p;
         state.g_game.demo_p = state.g_game.demo_p.offset(1);
         *fresh11 = DEMOMARKER as byte;
+        let demo_len = state.g_game.demo_p.offset_from(state.g_game.demobuffer) as usize;
         M_WriteFile(
             &::std::ffi::CStr::from_ptr(state.g_game.demoname).to_string_lossy(),
-            state.g_game.demobuffer as *mut ::core::ffi::c_void,
-            state
-                .g_game
-                .demo_p
-                .offset_from(state.g_game.demobuffer) as i64 as i32,
+            ::core::slice::from_raw_parts(state.g_game.demobuffer, demo_len),
         );
         Z_Free(
             &mut state.z_zone,

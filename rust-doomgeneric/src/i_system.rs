@@ -188,7 +188,7 @@ pub unsafe fn I_GetMemoryValue(
                     }
                     M_StrToInt(
                         state.m_argv.myargv[p as usize].to_str().unwrap(),
-                        &raw mut val,
+                        &mut val,
                     );
                     let fresh0 = i;
                     i = i + 1;
