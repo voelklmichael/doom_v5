@@ -437,7 +437,7 @@ pub struct MMenuState {
     pub messy: i32,
     pub messageLastMenuActive: i32,
     pub messageNeedsInput: bool,
-    pub messageRoutine: Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
+    pub messageRoutine: Option<unsafe fn(&mut GameState, i32) -> ()>,
     pub saveStringEnter: i32,
     pub saveSlot: i32,
     pub saveCharIndex: i32,
@@ -521,95 +521,95 @@ impl MMenuState {
     // `p_maputl::fixup_intercepts_overrun`/`m_controls::fixup_weapon_keys`.
     pub fn fixup_menu_routines(&mut self) {
         self.defs.MainDef.routine =
-            Some(M_DrawMainMenu as unsafe extern "C" fn(&mut GameState) -> ());
+            Some(M_DrawMainMenu as unsafe fn(&mut GameState) -> ());
         self.defs.EpiDef.routine =
-            Some(M_DrawEpisode as unsafe extern "C" fn(&mut GameState) -> ());
+            Some(M_DrawEpisode as unsafe fn(&mut GameState) -> ());
         self.defs.NewDef.routine =
-            Some(M_DrawNewGame as unsafe extern "C" fn(&mut GameState) -> ());
+            Some(M_DrawNewGame as unsafe fn(&mut GameState) -> ());
         self.defs.OptionsDef.routine =
-            Some(M_DrawOptions as unsafe extern "C" fn(&mut GameState) -> ());
+            Some(M_DrawOptions as unsafe fn(&mut GameState) -> ());
         self.defs.ReadDef1.routine =
-            Some(M_DrawReadThis1 as unsafe extern "C" fn(&mut GameState) -> ());
+            Some(M_DrawReadThis1 as unsafe fn(&mut GameState) -> ());
         self.defs.ReadDef2.routine =
-            Some(M_DrawReadThis2 as unsafe extern "C" fn(&mut GameState) -> ());
+            Some(M_DrawReadThis2 as unsafe fn(&mut GameState) -> ());
         self.defs.SoundDef.routine =
-            Some(M_DrawSound as unsafe extern "C" fn(&mut GameState) -> ());
-        self.defs.LoadDef.routine = Some(M_DrawLoad as unsafe extern "C" fn(&mut GameState) -> ());
-        self.defs.SaveDef.routine = Some(M_DrawSave as unsafe extern "C" fn(&mut GameState) -> ());
+            Some(M_DrawSound as unsafe fn(&mut GameState) -> ());
+        self.defs.LoadDef.routine = Some(M_DrawLoad as unsafe fn(&mut GameState) -> ());
+        self.defs.SaveDef.routine = Some(M_DrawSave as unsafe fn(&mut GameState) -> ());
         self.menus.MainMenu[0].routine =
-            Some(M_NewGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_NewGame as unsafe fn(&mut GameState, i32) -> ());
         self.menus.MainMenu[1].routine =
-            Some(M_Options as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_Options as unsafe fn(&mut GameState, i32) -> ());
         self.menus.MainMenu[2].routine =
-            Some(M_LoadGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_LoadGame as unsafe fn(&mut GameState, i32) -> ());
         self.menus.MainMenu[3].routine =
-            Some(M_SaveGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SaveGame as unsafe fn(&mut GameState, i32) -> ());
         self.menus.MainMenu[4].routine =
-            Some(M_ReadThis as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ReadThis as unsafe fn(&mut GameState, i32) -> ());
         self.menus.MainMenu[5].routine =
-            Some(M_QuitDOOM as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_QuitDOOM as unsafe fn(&mut GameState, i32) -> ());
         self.menus.EpisodeMenu[0].routine =
-            Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_Episode as unsafe fn(&mut GameState, i32) -> ());
         self.menus.EpisodeMenu[1].routine =
-            Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_Episode as unsafe fn(&mut GameState, i32) -> ());
         self.menus.EpisodeMenu[2].routine =
-            Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_Episode as unsafe fn(&mut GameState, i32) -> ());
         self.menus.EpisodeMenu[3].routine =
-            Some(M_Episode as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_Episode as unsafe fn(&mut GameState, i32) -> ());
         self.menus.NewGameMenu[0].routine =
-            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ChooseSkill as unsafe fn(&mut GameState, i32) -> ());
         self.menus.NewGameMenu[1].routine =
-            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ChooseSkill as unsafe fn(&mut GameState, i32) -> ());
         self.menus.NewGameMenu[2].routine =
-            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ChooseSkill as unsafe fn(&mut GameState, i32) -> ());
         self.menus.NewGameMenu[3].routine =
-            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ChooseSkill as unsafe fn(&mut GameState, i32) -> ());
         self.menus.NewGameMenu[4].routine =
-            Some(M_ChooseSkill as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ChooseSkill as unsafe fn(&mut GameState, i32) -> ());
         self.menus.OptionsMenu[0].routine =
-            Some(M_EndGame as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_EndGame as unsafe fn(&mut GameState, i32) -> ());
         self.menus.OptionsMenu[1].routine =
-            Some(M_ChangeMessages as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ChangeMessages as unsafe fn(&mut GameState, i32) -> ());
         self.menus.OptionsMenu[2].routine =
-            Some(M_ChangeDetail as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ChangeDetail as unsafe fn(&mut GameState, i32) -> ());
         self.menus.OptionsMenu[3].routine =
-            Some(M_SizeDisplay as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SizeDisplay as unsafe fn(&mut GameState, i32) -> ());
         self.menus.OptionsMenu[5].routine =
-            Some(M_ChangeSensitivity as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ChangeSensitivity as unsafe fn(&mut GameState, i32) -> ());
         self.menus.OptionsMenu[7].routine =
-            Some(M_Sound as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_Sound as unsafe fn(&mut GameState, i32) -> ());
         self.menus.ReadMenu1[0].routine =
-            Some(M_ReadThis2 as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_ReadThis2 as unsafe fn(&mut GameState, i32) -> ());
         self.menus.ReadMenu2[0].routine =
-            Some(M_FinishReadThis as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_FinishReadThis as unsafe fn(&mut GameState, i32) -> ());
         self.menus.SoundMenu[0].routine =
-            Some(M_SfxVol as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SfxVol as unsafe fn(&mut GameState, i32) -> ());
         self.menus.SoundMenu[2].routine =
-            Some(M_MusicVol as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_MusicVol as unsafe fn(&mut GameState, i32) -> ());
         self.menus.LoadMenu[0].routine =
-            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_LoadSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.LoadMenu[1].routine =
-            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_LoadSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.LoadMenu[2].routine =
-            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_LoadSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.LoadMenu[3].routine =
-            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_LoadSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.LoadMenu[4].routine =
-            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_LoadSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.LoadMenu[5].routine =
-            Some(M_LoadSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_LoadSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.SaveMenu[0].routine =
-            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SaveSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.SaveMenu[1].routine =
-            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SaveSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.SaveMenu[2].routine =
-            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SaveSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.SaveMenu[3].routine =
-            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SaveSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.SaveMenu[4].routine =
-            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SaveSelect as unsafe fn(&mut GameState, i32) -> ());
         self.menus.SaveMenu[5].routine =
-            Some(M_SaveSelect as unsafe extern "C" fn(&mut GameState, i32) -> ());
+            Some(M_SaveSelect as unsafe fn(&mut GameState, i32) -> ());
     }
     pub fn fixup_menu_links(&mut self) {
         self.defs.MainDef.menuitems = &raw mut self.menus.MainMenu as *mut menuitem_t;
@@ -637,7 +637,7 @@ impl MMenuState {
 pub struct menuitem_t {
     pub status: i16,
     pub name: FixedCStr<10>,
-    pub routine: Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
+    pub routine: Option<unsafe fn(&mut GameState, i32) -> ()>,
     pub alphaKey: u8,
 }
 pub type menu_t = menu_s;
@@ -647,7 +647,7 @@ pub struct menu_s {
     pub numitems: i16,
     pub prevMenu: *mut menu_s,
     pub menuitems: *mut menuitem_t,
-    pub routine: Option<unsafe extern "C" fn(&mut GameState) -> ()>,
+    pub routine: Option<unsafe fn(&mut GameState) -> ()>,
     pub x: i16,
     pub y: i16,
     pub lastOn: i16,
@@ -757,7 +757,7 @@ pub unsafe fn M_ReadSaveStrings(state: &mut GameState) {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawLoad(state: &mut GameState) {
+pub unsafe fn M_DrawLoad(state: &mut GameState) {
     let mut i: i32 = 0;
     let __wcache890_24 = W_CacheLumpName(state, "M_LOADG", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 72 as i32, 28 as i32, __wcache890_24);
@@ -786,18 +786,18 @@ pub unsafe fn M_DrawSaveLoadBorder(state: &mut GameState, mut x: i32, mut y: i32
     V_DrawPatchDirect(state, x, y + 7 as i32, __wcache925_21);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_LoadSelect(state: &mut GameState, choice: i32) {
+pub unsafe fn M_LoadSelect(state: &mut GameState, choice: i32) {
     let savegame_file = P_SaveGameFile(state, choice);
     G_LoadGame(state, &savegame_file);
     M_ClearMenus(state);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_LoadGame(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_LoadGame(state: &mut GameState, _choice: i32) {
     if state.g_game.netgame {
         M_StartMessage(
             state,
             "you can't do load while in a net game!\n\npress a key.",
-            NULL,
+            None,
             false,
         );
         return;
@@ -807,7 +807,7 @@ pub unsafe extern "C" fn M_LoadGame(state: &mut GameState, _choice: i32) {
     M_ReadSaveStrings(state);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawSave(state: &mut GameState) {
+pub unsafe fn M_DrawSave(state: &mut GameState) {
     let mut i: i32 = 0;
     let __wcache961_20 = W_CacheLumpName(state, "M_SAVEG", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 72 as i32, 28 as i32, __wcache961_20);
@@ -837,7 +837,7 @@ pub unsafe fn M_DoSave(state: &mut GameState, mut slot: i32) {
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SaveSelect(state: &mut GameState, mut choice: i32) {
+pub unsafe fn M_SaveSelect(state: &mut GameState, mut choice: i32) {
     state.m_menu.saveStringEnter = 1 as i32;
     state.m_menu.saveSlot = choice;
     state.m_menu.saveOldString = state.m_menu.savegamestrings[choice as usize].clone();
@@ -847,12 +847,12 @@ pub unsafe extern "C" fn M_SaveSelect(state: &mut GameState, mut choice: i32) {
     state.m_menu.saveCharIndex = state.m_menu.savegamestrings[choice as usize].len() as i32;
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SaveGame(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_SaveGame(state: &mut GameState, _choice: i32) {
     if !state.g_game.usergame {
         M_StartMessage(
             state,
             "you can't save if you aren't playing!\n\npress a key.",
-            NULL,
+            None,
             false,
         );
         return;
@@ -865,7 +865,7 @@ pub unsafe extern "C" fn M_SaveGame(state: &mut GameState, _choice: i32) {
     M_ReadSaveStrings(state);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_QuickSaveResponse(state: &mut GameState, mut key: i32) {
+pub unsafe fn M_QuickSaveResponse(state: &mut GameState, mut key: i32) {
     if key == state.m_controls.key_menu_confirm {
         let quick_save_slot = state.m_menu.quickSaveSlot;
         M_DoSave(state, quick_save_slot);
@@ -892,16 +892,11 @@ pub unsafe fn M_QuickSave(state: &mut GameState) {
         "quicksave over your game named\n\n'{}'?\n\npress y or n.",
         state.m_menu.savegamestrings[state.m_menu.quickSaveSlot as usize],
     );
-    let routine = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
-        *mut ::core::ffi::c_void,
-    >(Some(
-        M_QuickSaveResponse as unsafe extern "C" fn(&mut GameState, i32) -> (),
-    ));
+    let routine = Some(M_QuickSaveResponse as unsafe fn(&mut GameState, i32) -> ());
     M_StartMessage(state, &msg, routine, true);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_QuickLoadResponse(state: &mut GameState, mut key: i32) {
+pub unsafe fn M_QuickLoadResponse(state: &mut GameState, mut key: i32) {
     if key == state.m_controls.key_menu_confirm {
         let quick_save_slot = state.m_menu.quickSaveSlot;
         M_LoadSelect(state, quick_save_slot);
@@ -913,7 +908,7 @@ pub unsafe fn M_QuickLoad(state: &mut GameState) {
         M_StartMessage(
             state,
             "you can't quickload during a netgame!\n\npress a key.",
-            NULL,
+            None,
             false,
         );
         return;
@@ -922,7 +917,7 @@ pub unsafe fn M_QuickLoad(state: &mut GameState) {
         M_StartMessage(
             state,
             "you haven't picked a quicksave slot yet!\n\npress a key.",
-            NULL,
+            None,
             false,
         );
         return;
@@ -931,16 +926,11 @@ pub unsafe fn M_QuickLoad(state: &mut GameState) {
         "do you want to quickload the game named\n\n'{}'?\n\npress y or n.",
         state.m_menu.savegamestrings[state.m_menu.quickSaveSlot as usize],
     );
-    let routine = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
-        *mut ::core::ffi::c_void,
-    >(Some(
-        M_QuickLoadResponse as unsafe extern "C" fn(&mut GameState, i32) -> (),
-    ));
+    let routine = Some(M_QuickLoadResponse as unsafe fn(&mut GameState, i32) -> ());
     M_StartMessage(state, &msg, routine, true);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawReadThis1(state: &mut GameState) {
+pub unsafe fn M_DrawReadThis1(state: &mut GameState) {
     let mut lumpname: &str = "CREDIT";
     let mut skullx: i32 = 330 as i32;
     let mut skully: i32 = 175 as i32;
@@ -973,13 +963,13 @@ pub unsafe extern "C" fn M_DrawReadThis1(state: &mut GameState) {
     state.m_menu.defs.ReadDef1.y = skully as i16;
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawReadThis2(state: &mut GameState) {
+pub unsafe fn M_DrawReadThis2(state: &mut GameState) {
     state.m_menu.inhelpscreens = true;
     let __wcache1170_18 = W_CacheLumpName(state, "HELP1", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 0 as i32, 0 as i32, __wcache1170_18);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawSound(state: &mut GameState) {
+pub unsafe fn M_DrawSound(state: &mut GameState) {
     let __wcache1179_17 = W_CacheLumpName(state, "M_SVOL", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 60 as i32, 38 as i32, __wcache1179_17);
     let (x, y, vol) = (
@@ -996,12 +986,12 @@ pub unsafe extern "C" fn M_DrawSound(state: &mut GameState) {
     M_DrawThermo(state, x, y, 16 as i32, vol);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_Sound(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_Sound(state: &mut GameState, _choice: i32) {
     let menudef = &raw mut state.m_menu.defs.SoundDef;
     M_SetupNextMenu(state, menudef);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SfxVol(state: &mut GameState, mut choice: i32) {
+pub unsafe fn M_SfxVol(state: &mut GameState, mut choice: i32) {
     match choice {
         0 => {
             if state.s_sound.sfxVolume != 0 {
@@ -1019,7 +1009,7 @@ pub unsafe extern "C" fn M_SfxVol(state: &mut GameState, mut choice: i32) {
     S_SetSfxVolume(state, sfx_volume);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_MusicVol(state: &mut GameState, mut choice: i32) {
+pub unsafe fn M_MusicVol(state: &mut GameState, mut choice: i32) {
     match choice {
         0 => {
             if state.s_sound.musicVolume != 0 {
@@ -1037,24 +1027,24 @@ pub unsafe extern "C" fn M_MusicVol(state: &mut GameState, mut choice: i32) {
     S_SetMusicVolume(state, music_volume);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawMainMenu(state: &mut GameState) {
+pub unsafe fn M_DrawMainMenu(state: &mut GameState) {
     let __wcache1241_16 = W_CacheLumpName(state, "M_DOOM", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 94 as i32, 2 as i32, __wcache1241_16);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawNewGame(state: &mut GameState) {
+pub unsafe fn M_DrawNewGame(state: &mut GameState) {
     let __wcache1250_15 = W_CacheLumpName(state, "M_NEWG", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 96 as i32, 14 as i32, __wcache1250_15);
     let __wcache1256_14 = W_CacheLumpName(state, "M_SKILL", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 54 as i32, 38 as i32, __wcache1256_14);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_NewGame(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_NewGame(state: &mut GameState, _choice: i32) {
     if state.g_game.netgame && !state.g_game.demoplayback {
         M_StartMessage(
             state,
             "you can't start a new game\nwhile in a network game.\n\npress a key.",
-            NULL,
+            None,
             false,
         );
         return;
@@ -1070,12 +1060,12 @@ pub unsafe extern "C" fn M_NewGame(state: &mut GameState, _choice: i32) {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawEpisode(state: &mut GameState) {
+pub unsafe fn M_DrawEpisode(state: &mut GameState) {
     let __wcache1286_13 = W_CacheLumpName(state, "M_EPISOD", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 54 as i32, 38 as i32, __wcache1286_13);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_VerifyNightmare(state: &mut GameState, mut key: i32) {
+pub unsafe fn M_VerifyNightmare(state: &mut GameState, mut key: i32) {
     if key != state.m_controls.key_menu_confirm {
         return;
     }
@@ -1088,17 +1078,12 @@ pub unsafe extern "C" fn M_VerifyNightmare(state: &mut GameState, mut key: i32) 
     M_ClearMenus(state);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChooseSkill(state: &mut GameState, mut choice: i32) {
+pub unsafe fn M_ChooseSkill(state: &mut GameState, mut choice: i32) {
     if choice == nightmare as i32 {
         M_StartMessage(
             state,
             "are you sure? this skill level\nisn't even remotely fair.\n\npress y or n.",
-            ::core::mem::transmute::<
-                Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
-                *mut ::core::ffi::c_void,
-            >(Some(
-                M_VerifyNightmare as unsafe extern "C" fn(&mut GameState, i32) -> (),
-            )),
+            Some(M_VerifyNightmare as unsafe fn(&mut GameState, i32) -> ()),
             true,
         );
         return;
@@ -1112,11 +1097,11 @@ pub unsafe extern "C" fn M_ChooseSkill(state: &mut GameState, mut choice: i32) {
     M_ClearMenus(state);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_Episode(state: &mut GameState, mut choice: i32) {
+pub unsafe fn M_Episode(state: &mut GameState, mut choice: i32) {
     if state.doomstat.gamemode as u32 == shareware as i32 as u32 && choice != 0 {
         M_StartMessage(state, 
             "this is the shareware version of doom.\n\nyou need to order the entire trilogy.\n\npress a key.",
-            NULL,
+            None,
             false,
         );
         let menudef = &raw mut state.m_menu.defs.ReadDef1;
@@ -1134,7 +1119,7 @@ pub unsafe extern "C" fn M_Episode(state: &mut GameState, mut choice: i32) {
 static detailNames: [&str; 2] = ["M_GDHIGH", "M_GDLOW"];
 static msgNames: [&str; 2] = ["M_MSGOFF", "M_MSGON"];
 #[no_mangle]
-pub unsafe extern "C" fn M_DrawOptions(state: &mut GameState) {
+pub unsafe fn M_DrawOptions(state: &mut GameState) {
     let __wcache1358_12 = W_CacheLumpName(state, "M_OPTTTL", PU_CACHE as i32) as *mut patch_t;
     V_DrawPatchDirect(state, 108 as i32, 15 as i32, __wcache1358_12);
     let __wcache1364_11 = W_CacheLumpName(
@@ -1173,12 +1158,12 @@ pub unsafe extern "C" fn M_DrawOptions(state: &mut GameState) {
     M_DrawThermo(state, x, y, 9 as i32, sz);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_Options(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_Options(state: &mut GameState, _choice: i32) {
     let menudef = &raw mut state.m_menu.defs.OptionsDef;
     M_SetupNextMenu(state, menudef);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChangeMessages(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_ChangeMessages(state: &mut GameState, _choice: i32) {
     state.m_menu.showMessages = 1 as i32 - state.m_menu.showMessages;
     if state.m_menu.showMessages == 0 {
         state.g_game.players[state.g_game.consoleplayer as usize].message =
@@ -1190,7 +1175,7 @@ pub unsafe extern "C" fn M_ChangeMessages(state: &mut GameState, _choice: i32) {
     state.hu_stuff.message_dontfuckwithme = true;
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_EndGameResponse(state: &mut GameState, mut key: i32) {
+pub unsafe fn M_EndGameResponse(state: &mut GameState, mut key: i32) {
     if key != state.m_controls.key_menu_confirm {
         return;
     }
@@ -1199,7 +1184,7 @@ pub unsafe extern "C" fn M_EndGameResponse(state: &mut GameState, mut key: i32) 
     D_StartTitle(state);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_EndGame(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_EndGame(state: &mut GameState, _choice: i32) {
     if !state.g_game.usergame {
         S_StartSound(state, NULL, sfx_oof as i32);
         return;
@@ -1208,7 +1193,7 @@ pub unsafe extern "C" fn M_EndGame(state: &mut GameState, _choice: i32) {
         M_StartMessage(
             state,
             "you can't end a netgame!\n\npress a key.",
-            NULL,
+            None,
             false,
         );
         return;
@@ -1216,22 +1201,17 @@ pub unsafe extern "C" fn M_EndGame(state: &mut GameState, _choice: i32) {
     M_StartMessage(
         state,
         "are you sure you want to end the game?\n\npress y or n.",
-        ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
-            *mut ::core::ffi::c_void,
-        >(Some(
-            M_EndGameResponse as unsafe extern "C" fn(&mut GameState, i32) -> (),
-        )),
+        Some(M_EndGameResponse as unsafe fn(&mut GameState, i32) -> ()),
         true,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ReadThis(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_ReadThis(state: &mut GameState, _choice: i32) {
     let menudef = &raw mut state.m_menu.defs.ReadDef1;
     M_SetupNextMenu(state, menudef);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ReadThis2(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_ReadThis2(state: &mut GameState, _choice: i32) {
     if state.doomstat.gameversion.below_1_9()
         && state.doomstat.gamemode as u32 != commercial as i32 as u32
     {
@@ -1242,7 +1222,7 @@ pub unsafe extern "C" fn M_ReadThis2(state: &mut GameState, _choice: i32) {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_FinishReadThis(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_FinishReadThis(state: &mut GameState, _choice: i32) {
     let menudef = &raw mut state.m_menu.defs.MainDef;
     M_SetupNextMenu(state, menudef);
 }
@@ -1269,7 +1249,7 @@ pub static quitsounds2: [i32; 8] = [
     sfx_sgtatk as i32,
 ];
 #[no_mangle]
-pub unsafe extern "C" fn M_QuitResponse(state: &mut GameState, mut key: i32) {
+pub unsafe fn M_QuitResponse(state: &mut GameState, mut key: i32) {
     if key != state.m_controls.key_menu_confirm {
         return;
     }
@@ -1309,21 +1289,16 @@ unsafe fn M_SelectEndMessage(state: &mut GameState) -> &'static str {
     endmsg[(state.d_loop.gametic % NUM_QUITMESSAGES) as usize]
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_QuitDOOM(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_QuitDOOM(state: &mut GameState, _choice: i32) {
     let msg = format!(
         "{}\n\n(press y to quit to dos.)",
         M_SelectEndMessage(state)
     );
-    let routine = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
-        *mut ::core::ffi::c_void,
-    >(Some(
-        M_QuitResponse as unsafe extern "C" fn(&mut GameState, i32) -> (),
-    ));
+    let routine = Some(M_QuitResponse as unsafe fn(&mut GameState, i32) -> ());
     M_StartMessage(state, &msg, routine, true);
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChangeSensitivity(state: &mut GameState, mut choice: i32) {
+pub unsafe fn M_ChangeSensitivity(state: &mut GameState, mut choice: i32) {
     match choice {
         0 => {
             if state.m_menu.mouseSensitivity != 0 {
@@ -1339,7 +1314,7 @@ pub unsafe extern "C" fn M_ChangeSensitivity(state: &mut GameState, mut choice: 
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_ChangeDetail(state: &mut GameState, _choice: i32) {
+pub unsafe fn M_ChangeDetail(state: &mut GameState, _choice: i32) {
     state.m_menu.detailLevel = 1 as i32 - state.m_menu.detailLevel;
     let (screenblocks, detail_level) = (state.m_menu.screenblocks, state.m_menu.detailLevel);
     R_SetViewSize(state, screenblocks, detail_level);
@@ -1352,7 +1327,7 @@ pub unsafe extern "C" fn M_ChangeDetail(state: &mut GameState, _choice: i32) {
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn M_SizeDisplay(state: &mut GameState, mut choice: i32) {
+pub unsafe fn M_SizeDisplay(state: &mut GameState, mut choice: i32) {
     match choice {
         0 => {
             if state.m_menu.screenSize > 0 as i32 {
@@ -1417,16 +1392,13 @@ pub unsafe fn M_DrawSelCell(state: &mut GameState, mut menu: *mut menu_t, mut it
 pub unsafe fn M_StartMessage(
     state: &mut GameState,
     string: &str,
-    mut routine: *mut ::core::ffi::c_void,
+    routine: Option<unsafe fn(&mut GameState, i32) -> ()>,
     mut input: bool,
 ) {
     state.m_menu.messageLastMenuActive = state.m_menu.menuactive as i32;
     state.m_menu.messageToPrint = 1 as i32;
     state.m_menu.messageString = string.to_string();
-    state.m_menu.messageRoutine = ::core::mem::transmute::<
-        *mut ::core::ffi::c_void,
-        Option<unsafe extern "C" fn(&mut GameState, i32) -> ()>,
-    >(routine);
+    state.m_menu.messageRoutine = routine;
     state.m_menu.messageNeedsInput = input;
     state.m_menu.menuactive = true;
 }
@@ -1507,7 +1479,7 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
         if state.m_menu.menuactive
             && state.m_menu.messageToPrint != 0
             && state.m_menu.messageRoutine
-                == Some(M_QuitResponse as unsafe extern "C" fn(&mut GameState, i32) -> ())
+                == Some(M_QuitResponse as unsafe fn(&mut GameState, i32) -> ())
         {
             let key_menu_confirm = state.m_controls.key_menu_confirm;
             M_QuitResponse(state, key_menu_confirm);
