@@ -615,12 +615,19 @@ const INITIAL_S_MUSIC: [musicinfo_t; 68] = [
     },
 ];
 
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct SfxId(pub u32);
+
 pub struct SoundsState {
     pub S_music: [musicinfo_t; 68],
     pub S_sfx: [sfxinfo_t; 109],
 }
 
 impl SoundsState {
+    pub fn sfx_mut(&mut self, id: SfxId) -> *mut sfxinfo_t {
+        &mut self.S_sfx[id.0 as usize] as *mut sfxinfo_t
+    }
+
     pub fn new() -> Self {
         SoundsState {
             S_music: INITIAL_S_MUSIC,
