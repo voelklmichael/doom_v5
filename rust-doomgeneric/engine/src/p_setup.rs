@@ -54,6 +54,8 @@ pub struct SubsectorId(pub u32);
 pub struct VertexId(pub u32);
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct LineId(pub u32);
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct SegId(pub u32);
 
 pub const ZERO_LINE: line_s = line_s {
     v1: VertexId(0),
@@ -104,7 +106,7 @@ pub struct PSetupState {
     pub numvertexes: i32,
     pub vertexes: Vec<vertex_t>,
     pub numsegs: i32,
-    pub segs: *mut seg_t,
+    pub segs: Vec<seg_t>,
     pub numsectors: i32,
     pub sectors: Vec<sector_t>,
     pub numsubsectors: i32,
@@ -136,7 +138,7 @@ impl PSetupState {
             numvertexes: 0,
             vertexes: Vec::new(),
             numsegs: 0,
-            segs: ::core::ptr::null::<seg_t>() as *mut seg_t,
+            segs: Vec::new(),
             numsectors: 0,
             sectors: Vec::new(),
             numsubsectors: 0,
@@ -189,6 +191,9 @@ impl PSetupState {
     }
     pub fn line_mut(&mut self, id: LineId) -> *mut line_t {
         &mut self.lines[id.0 as usize] as *mut line_t
+    }
+    pub fn seg_mut(&mut self, id: SegId) -> *mut seg_t {
+        &mut self.segs[id.0 as usize] as *mut seg_t
     }
 }
 
@@ -314,54 +319,50 @@ pub unsafe fn P_LoadSegs(state: &mut GameState, mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut ml: *mut mapseg_t = ::core::ptr::null_mut::<mapseg_t>();
-    let mut li: *mut seg_t = ::core::ptr::null_mut::<seg_t>();
     let mut ldef: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut linedef: i32 = 0;
     let mut side: i32 = 0;
     let mut sidenum: i32 = 0;
-    state.p_setup.numsegs = (W_LumpLength(&mut state.w_wad, lump as u32) as usize)
+    let numsegs = (W_LumpLength(&mut state.w_wad, lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapseg_t>() as usize)
         as i32;
-    state.p_setup.segs = Z_Malloc(
-        &mut state.z_zone,
-        (state.p_setup.numsegs as usize).wrapping_mul(::core::mem::size_of::<seg_t>() as usize)
-            as i32,
-        PU_LEVEL as i32,
-        ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut seg_t;
-    memset(
-        state.p_setup.segs as *mut ::core::ffi::c_void,
-        0 as i32,
-        (state.p_setup.numsegs as size_t).wrapping_mul(::core::mem::size_of::<seg_t>() as size_t),
-    );
+    state.p_setup.numsegs = numsegs;
+    state.p_setup.segs = Vec::with_capacity(numsegs as usize);
     data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     ml = data as *mut mapseg_t;
-    li = state.p_setup.segs;
     i = 0 as i32;
-    while i < state.p_setup.numsegs {
-        (*li).v1 = VertexId((*ml).v1 as u32);
-        (*li).v2 = VertexId((*ml).v2 as u32);
-        (*li).angle = (((*ml).angle as i32) << 16 as i32) as angle_t;
-        (*li).offset = (((*ml).offset as i32) << 16 as i32) as fixed_t;
+    while i < numsegs {
+        let v1 = VertexId((*ml).v1 as u32);
+        let v2 = VertexId((*ml).v2 as u32);
+        let seg_angle = (((*ml).angle as i32) << 16 as i32) as angle_t;
+        let seg_offset = (((*ml).offset as i32) << 16 as i32) as fixed_t;
         linedef = (*ml).linedef as i32;
-        (*li).linedef = LineId(linedef as u32);
-        ldef = state.p_setup.line_mut((*li).linedef);
+        let seg_linedef = LineId(linedef as u32);
+        ldef = state.p_setup.line_mut(seg_linedef);
         side = (*ml).side as i32;
         let seg_sidenum = *(&raw mut (*ldef).sidenum as *mut i16).offset(side as isize) as u32;
-        (*li).sidedef = SideId(seg_sidenum);
-        (*li).frontsector = Some(state.p_setup.sides[seg_sidenum as usize].sector);
-        if (*ldef).flags as i32 & ML_TWOSIDED != 0 {
+        let frontsector = Some(state.p_setup.sides[seg_sidenum as usize].sector);
+        let backsector = if (*ldef).flags as i32 & ML_TWOSIDED != 0 {
             sidenum = (*ldef).sidenum[(side ^ 1 as i32) as usize] as i32;
             if sidenum < 0 as i32 || sidenum >= state.p_setup.numsides {
-                (*li).backsector = Some(GetSectorAtNullAddress(state));
+                Some(GetSectorAtNullAddress(state))
             } else {
-                (*li).backsector = Some(state.p_setup.sides[sidenum as usize].sector);
+                Some(state.p_setup.sides[sidenum as usize].sector)
             }
         } else {
-            (*li).backsector = None;
-        }
+            None
+        };
+        state.p_setup.segs.push(seg_t {
+            v1,
+            v2,
+            offset: seg_offset,
+            angle: seg_angle,
+            sidedef: SideId(seg_sidenum),
+            linedef: seg_linedef,
+            frontsector,
+            backsector,
+        });
         i += 1;
-        li = li.offset(1);
         ml = ml.offset(1);
     }
     W_ReleaseLumpNum(&mut state.w_wad, lump);
@@ -725,7 +726,7 @@ pub unsafe fn P_GroupLines(state: &mut GameState) {
     i = 0 as i32;
     while i < state.p_setup.numsubsectors {
         let firstline = state.p_setup.subsectors[i as usize].firstline;
-        seg = state.p_setup.segs.offset(firstline as isize) as *mut seg_t;
+        seg = state.p_setup.segs.as_mut_ptr().offset(firstline as isize);
         let seg_sidedef = (*seg).sidedef;
         state.p_setup.subsectors[i as usize].sector =
             state.p_setup.sides[seg_sidedef.0 as usize].sector;
