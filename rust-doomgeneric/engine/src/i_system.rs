@@ -23,7 +23,7 @@ impl ISystemState {
     }
 }
 
-pub type atexit_func_t = Option<unsafe extern "C" fn(&mut GameState) -> ()>;
+pub type atexit_func_t = Option<unsafe fn(&mut GameState) -> ()>;
 pub type atexit_listentry_t = atexit_listentry_s;
 #[derive(Copy, Clone)]
 #[repr(C)]

@@ -2078,7 +2078,7 @@ pub unsafe fn G_TimeDemo(state: &mut GameState, mut name: *mut ::core::ffi::c_ch
     state.g_game.gameaction = ga_playdemo;
 }
 #[no_mangle]
-pub unsafe extern "C" fn G_CheckDemoStatus(state: &mut GameState) -> boolean {
+pub unsafe fn G_CheckDemoStatus(state: &mut GameState) -> boolean {
     let mut endtime: i32 = 0;
     if state.g_game.timingdemo {
         let mut fps: f32 = 0.;

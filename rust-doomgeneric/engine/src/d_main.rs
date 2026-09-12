@@ -46,7 +46,6 @@ use crate::src::i_joystick::I_BindJoystickVariables;
 use crate::src::i_sound::I_BindSoundVariables;
 use crate::src::i_sound::I_InitMusic;
 use crate::src::i_sound::I_InitSound;
-use crate::src::i_system::atexit_func_t;
 use crate::src::i_system::I_AtExit;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_PrintBanner;
@@ -862,7 +861,7 @@ pub unsafe fn PrintGameVersion(state: &mut GameState) {
         );
     }
 }
-unsafe extern "C" fn D_Endoom(state: &mut GameState) {
+unsafe fn D_Endoom(state: &mut GameState) {
     if state.d_main.show_endoom == 0
         || !state.d_main.main_loop_started
         || state.i_video.screensaver_mode
@@ -872,13 +871,16 @@ unsafe extern "C" fn D_Endoom(state: &mut GameState) {
     }
     std::process::exit(0);
 }
+unsafe fn D_QuitCheckDemoStatus(state: &mut GameState) {
+    G_CheckDemoStatus(state);
+}
 pub unsafe fn D_DoomMain(state: &mut GameState) {
     let mut p: i32 = 0;
     let mut file: String = String::new();
     let mut demolumpname: [::core::ffi::c_char; 9] = [0; 9];
     I_AtExit(
         &mut state.i_system,
-        Some(D_Endoom as unsafe extern "C" fn(&mut GameState) -> ()),
+        Some(D_Endoom as unsafe fn(&mut GameState) -> ()),
         false,
     );
     I_PrintBanner(&PACKAGE_STRING.as_str());
@@ -927,7 +929,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     M_LoadDefaults(state);
     I_AtExit(
         &mut state.i_system,
-        Some(M_SaveDefaults as unsafe extern "C" fn(&mut GameState) -> ()),
+        Some(M_SaveDefaults as unsafe fn(&mut GameState) -> ()),
         false,
     );
     let mut gamemission_out = state.doomstat.gamemission;
@@ -994,12 +996,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     }
     I_AtExit(
         &mut state.i_system,
-        ::core::mem::transmute::<
-            Option<unsafe extern "C" fn(&mut GameState) -> boolean>,
-            atexit_func_t,
-        >(Some(
-            G_CheckDemoStatus as unsafe extern "C" fn(&mut GameState) -> boolean,
-        )),
+        Some(D_QuitCheckDemoStatus as unsafe fn(&mut GameState) -> ()),
         true,
     );
     W_GenerateHashTable(state);
@@ -1165,7 +1162,7 @@ pub unsafe fn D_DoomMain(state: &mut GameState) {
     if M_CheckParmWithArgs(state, "-statdump", 1 as i32) != 0 {
         I_AtExit(
             &mut state.i_system,
-            Some(StatDump as unsafe extern "C" fn(&mut GameState) -> ()),
+            Some(StatDump as unsafe fn(&mut GameState) -> ()),
             true,
         );
         println!("External statistics registered.");
