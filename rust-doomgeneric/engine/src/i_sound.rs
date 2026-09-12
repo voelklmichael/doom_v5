@@ -22,33 +22,33 @@ pub const SNDDEVICE_NONE: snddevice_t = 0;
 pub struct sound_module_t {
     pub sound_devices: *mut snddevice_t,
     pub num_sound_devices: i32,
-    pub Init: Option<unsafe extern "C" fn(boolean) -> boolean>,
-    pub Shutdown: Option<unsafe extern "C" fn() -> ()>,
-    pub GetSfxLumpNum: Option<unsafe extern "C" fn(*mut sfxinfo_t) -> i32>,
-    pub Update: Option<unsafe extern "C" fn() -> ()>,
-    pub UpdateSoundParams: Option<unsafe extern "C" fn(i32, i32, i32) -> ()>,
-    pub StartSound: Option<unsafe extern "C" fn(*mut sfxinfo_t, i32, i32, i32) -> i32>,
-    pub StopSound: Option<unsafe extern "C" fn(i32) -> ()>,
-    pub SoundIsPlaying: Option<unsafe extern "C" fn(i32) -> boolean>,
-    pub CacheSounds: Option<unsafe extern "C" fn(*mut sfxinfo_t, i32) -> ()>,
+    pub Init: Option<unsafe fn(boolean) -> boolean>,
+    pub Shutdown: Option<unsafe fn() -> ()>,
+    pub GetSfxLumpNum: Option<unsafe fn(*mut sfxinfo_t) -> i32>,
+    pub Update: Option<unsafe fn() -> ()>,
+    pub UpdateSoundParams: Option<unsafe fn(i32, i32, i32) -> ()>,
+    pub StartSound: Option<unsafe fn(*mut sfxinfo_t, i32, i32, i32) -> i32>,
+    pub StopSound: Option<unsafe fn(i32) -> ()>,
+    pub SoundIsPlaying: Option<unsafe fn(i32) -> boolean>,
+    pub CacheSounds: Option<unsafe fn(*mut sfxinfo_t, i32) -> ()>,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct music_module_t {
     pub sound_devices: *mut snddevice_t,
     pub num_sound_devices: i32,
-    pub Init: Option<unsafe extern "C" fn() -> boolean>,
-    pub Shutdown: Option<unsafe extern "C" fn() -> ()>,
-    pub SetMusicVolume: Option<unsafe extern "C" fn(i32) -> ()>,
-    pub PauseMusic: Option<unsafe extern "C" fn() -> ()>,
-    pub ResumeMusic: Option<unsafe extern "C" fn() -> ()>,
+    pub Init: Option<unsafe fn() -> boolean>,
+    pub Shutdown: Option<unsafe fn() -> ()>,
+    pub SetMusicVolume: Option<unsafe fn(i32) -> ()>,
+    pub PauseMusic: Option<unsafe fn() -> ()>,
+    pub ResumeMusic: Option<unsafe fn() -> ()>,
     pub RegisterSong:
-        Option<unsafe extern "C" fn(*mut ::core::ffi::c_void, i32) -> *mut ::core::ffi::c_void>,
-    pub UnRegisterSong: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> ()>,
-    pub PlaySong: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void, boolean) -> ()>,
-    pub StopSong: Option<unsafe extern "C" fn() -> ()>,
-    pub MusicIsPlaying: Option<unsafe extern "C" fn() -> boolean>,
-    pub Poll: Option<unsafe extern "C" fn() -> ()>,
+        Option<unsafe fn(*mut ::core::ffi::c_void, i32) -> *mut ::core::ffi::c_void>,
+    pub UnRegisterSong: Option<unsafe fn(*mut ::core::ffi::c_void) -> ()>,
+    pub PlaySong: Option<unsafe fn(*mut ::core::ffi::c_void, boolean) -> ()>,
+    pub StopSong: Option<unsafe fn() -> ()>,
+    pub MusicIsPlaying: Option<unsafe fn() -> boolean>,
+    pub Poll: Option<unsafe fn() -> ()>,
 }
 static mut sound_modules: [*mut sound_module_t; 1] =
     [::core::ptr::null::<sound_module_t>() as *mut sound_module_t];
