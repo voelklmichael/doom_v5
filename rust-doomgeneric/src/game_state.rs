@@ -50,6 +50,7 @@ use crate::src::p_spec::PSpecState;
 use crate::src::p_switch::PSwitchState;
 use crate::src::p_tick::PTickState;
 use crate::src::p_user::PUserState;
+use crate::src::platform::DoomPlatform;
 use crate::src::r_bsp::RBspState;
 use crate::src::r_data::RDataState;
 use crate::src::r_draw::RDrawState;
@@ -61,13 +62,13 @@ use crate::src::r_things::RThingsState;
 use crate::src::s_sound::SSoundState;
 use crate::src::sounds::SoundsState;
 use crate::src::st_lib::StLibState;
-use crate::src::st_stuff::StStuffState;
+use crate::src::st_stuff::{fixup_cheat_sequences, StStuffState};
 use crate::src::statdump::StatDumpState;
 use crate::src::v_video::VVideoState;
 use crate::src::w_checksum::WChecksumState;
 use crate::src::w_file::WFileState;
 use crate::src::w_wad::WWadState;
-use crate::src::wi_stuff::WiStuffState;
+use crate::src::wi_stuff::{fixup_numanims, WiStuffState};
 use crate::src::z_zone::ZZoneState;
 
 pub struct GameState {
@@ -129,10 +130,11 @@ pub struct GameState {
     pub w_wad: WWadState,
     pub wi_stuff: WiStuffState,
     pub z_zone: ZZoneState,
+    pub platform: Box<dyn DoomPlatform>,
 }
 
 impl GameState {
-    fn new() -> Self {
+    fn new(platform: Box<dyn DoomPlatform>) -> Self {
         GameState {
             am_map: AmMapState::new(),
             d_event: DEventState::new(),
@@ -192,6 +194,7 @@ impl GameState {
             w_wad: WWadState::new(),
             wi_stuff: WiStuffState::new(),
             z_zone: ZZoneState::new(),
+            platform,
         }
     }
 }
@@ -212,16 +215,25 @@ pub fn finish_init(state: &mut GameState) {
         state.m_menu.fixup_menu_links();
         state.m_menu.fixup_menu_routines();
         state.wi_stuff.fixup_anims();
+        state.g_game.fixup_button_pointers();
+        fixup_cheat_sequences(state);
+        fixup_numanims(state);
     }
+}
+
+/// Constructs the single `GameState`, wired to the given platform backend.
+/// Must be called exactly once, before any call to `game_state()`.
+pub fn init_game_state(platform: Box<dyn DoomPlatform>) -> &'static mut GameState {
+    let cell: &'static mut OnceLock<GameState> = unsafe { &mut GAME_STATE };
+    cell.set(GameState::new(platform))
+        .unwrap_or_else(|_| panic!("init_game_state() called more than once"));
+    let state = cell.get_mut().unwrap();
+    finish_init(state);
+    state
 }
 
 pub unsafe fn game_state() -> &'static mut GameState {
     let cell: &'static mut OnceLock<GameState> = &mut GAME_STATE;
-    let just_initialized = cell.get().is_none();
-    cell.get_or_init(GameState::new);
-    let state = cell.get_mut().unwrap();
-    if just_initialized {
-        finish_init(state);
-    }
-    state
+    cell.get_mut()
+        .expect("game_state() called before init_game_state()")
 }

@@ -5,9 +5,6 @@ use crate::src::m_argv::M_FindResponseFile;
 use crate::src::stdint_types::size_t;
 use libc::malloc;
 
-extern "C" {
-    fn DG_Init();
-}
 pub const DOOMGENERIC_RESX: i32 = 640;
 pub const DOOMGENERIC_RESY: i32 = 400;
 #[no_mangle]
@@ -20,6 +17,6 @@ pub unsafe fn doomgeneric_Create(state: &mut GameState, args: Vec<String>) {
     M_FindResponseFile(state);
     DG_ScreenBuffer =
         malloc((DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4 as i32) as size_t) as *mut pixel_t;
-    DG_Init();
+    state.platform.init(DG_ScreenBuffer, DOOMGENERIC_RESX, DOOMGENERIC_RESY);
     D_DoomMain(state);
 }

@@ -1520,70 +1520,70 @@ pub unsafe fn M_Responder(state: &mut GameState, ev: &mut event_t) -> bool {
     ch = 0 as i32;
     key = -(1 as i32);
     if (*ev).type_0 as u32 == ev_joystick as i32 as u32
-        && state.m_menu.responder_joywait < I_GetTime(&mut state.i_timer)
+        && state.m_menu.responder_joywait < I_GetTime(state)
     {
         if (*ev).data3 < 0 as i32 {
             key = state.m_controls.key_menu_up;
-            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(state) + 5 as i32;
         } else if (*ev).data3 > 0 as i32 {
             key = state.m_controls.key_menu_down;
-            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(state) + 5 as i32;
         }
         if (*ev).data2 < 0 as i32 {
             key = state.m_controls.key_menu_left;
-            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 2 as i32;
+            state.m_menu.responder_joywait = I_GetTime(state) + 2 as i32;
         } else if (*ev).data2 > 0 as i32 {
             key = state.m_controls.key_menu_right;
-            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 2 as i32;
+            state.m_menu.responder_joywait = I_GetTime(state) + 2 as i32;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = state.m_controls.key_menu_forward;
-            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(state) + 5 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
             key = state.m_controls.key_menu_back;
-            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(state) + 5 as i32;
         }
         if state.m_controls.joybmenu >= 0 as i32
             && (*ev).data1 & (1 as i32) << state.m_controls.joybmenu != 0 as i32
         {
             key = state.m_controls.key_menu_activate;
-            state.m_menu.responder_joywait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_joywait = I_GetTime(state) + 5 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_mouse as i32 as u32
-        && state.m_menu.responder_mousewait < I_GetTime(&mut state.i_timer)
+        && state.m_menu.responder_mousewait < I_GetTime(state)
     {
         state.m_menu.responder_mousey += (*ev).data3;
         if state.m_menu.responder_mousey < state.m_menu.responder_lasty - 30 as i32 {
             key = state.m_controls.key_menu_down;
-            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(state) + 5 as i32;
             state.m_menu.responder_lasty -= 30 as i32;
             state.m_menu.responder_mousey = state.m_menu.responder_lasty;
         } else if state.m_menu.responder_mousey > state.m_menu.responder_lasty + 30 as i32 {
             key = state.m_controls.key_menu_up;
-            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(state) + 5 as i32;
             state.m_menu.responder_lasty += 30 as i32;
             state.m_menu.responder_mousey = state.m_menu.responder_lasty;
         }
         state.m_menu.responder_mousex += (*ev).data2;
         if state.m_menu.responder_mousex < state.m_menu.responder_lastx - 30 as i32 {
             key = state.m_controls.key_menu_left;
-            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(state) + 5 as i32;
             state.m_menu.responder_lastx -= 30 as i32;
             state.m_menu.responder_mousex = state.m_menu.responder_lastx;
         } else if state.m_menu.responder_mousex > state.m_menu.responder_lastx + 30 as i32 {
             key = state.m_controls.key_menu_right;
-            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 5 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(state) + 5 as i32;
             state.m_menu.responder_lastx += 30 as i32;
             state.m_menu.responder_mousex = state.m_menu.responder_lastx;
         }
         if (*ev).data1 & 1 as i32 != 0 {
             key = state.m_controls.key_menu_forward;
-            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 15 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(state) + 15 as i32;
         }
         if (*ev).data1 & 2 as i32 != 0 {
             key = state.m_controls.key_menu_back;
-            state.m_menu.responder_mousewait = I_GetTime(&mut state.i_timer) + 15 as i32;
+            state.m_menu.responder_mousewait = I_GetTime(state) + 15 as i32;
         }
     } else if (*ev).type_0 as u32 == ev_keydown as i32 as u32 {
         key = (*ev).data1;

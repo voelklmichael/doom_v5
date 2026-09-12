@@ -9,15 +9,15 @@
 #![feature(extern_types, raw_ref_op)]
 #[allow(unused_imports)]
 use ::rust_doomgeneric;
-use ::rust_doomgeneric::src::game_state::{game_state, GameState};
+use ::rust_doomgeneric::src::d_main::doomgeneric_Tick;
+use ::rust_doomgeneric::src::game_state::init_game_state;
+use ::rust_doomgeneric::src::platform::DoomPlatform;
 use libc::memset;
 extern "C" {
     pub type _XDisplay;
     pub type _XGC;
     pub type _XrmHashBucketRec;
     pub type _XPrivate;
-    static mut DG_ScreenBuffer: *mut pixel_t;
-    fn doomgeneric_Tick(state: *mut ::core::ffi::c_void);
     fn usleep(__useconds: __useconds_t) -> i32;
     fn gettimeofday(__tv: *mut timeval, __tz: *mut ::core::ffi::c_void) -> i32;
     fn XCreateImage(
@@ -821,15 +821,42 @@ pub const XK_Control_R: u32 = 65508;
 pub const XK_space: u32 = 32;
 pub const XA_STRING: Atom = 31_i32 as Atom;
 pub const XA_WM_NAME: Atom = 39_i32 as Atom;
-static mut s_Display: *mut Display = ::core::ptr::null::<Display>() as *mut Display;
-static mut s_Window: Window = 0;
-static mut s_Screen: i32 = 0;
-static mut s_Gc: GC = ::core::ptr::null::<_XGC>() as *mut _XGC;
-static mut s_Image: *mut XImage = ::core::ptr::null::<XImage>() as *mut XImage;
 pub const KEYQUEUE_SIZE: i32 = 16;
-static mut s_KeyQueue: [u16; 16] = [0; 16];
-static mut s_KeyQueueWriteIndex: u32 = 0;
-static mut s_KeyQueueReadIndex: u32 = 0;
+
+struct X11Platform {
+    s_Display: *mut Display,
+    s_Window: Window,
+    s_Screen: i32,
+    s_Gc: GC,
+    s_Image: *mut XImage,
+    s_KeyQueue: [u16; KEYQUEUE_SIZE as usize],
+    s_KeyQueueWriteIndex: u32,
+    s_KeyQueueReadIndex: u32,
+}
+
+impl X11Platform {
+    fn new() -> Self {
+        X11Platform {
+            s_Display: ::core::ptr::null::<Display>() as *mut Display,
+            s_Window: 0,
+            s_Screen: 0,
+            s_Gc: ::core::ptr::null::<_XGC>() as *mut _XGC,
+            s_Image: ::core::ptr::null::<XImage>() as *mut XImage,
+            s_KeyQueue: [0; KEYQUEUE_SIZE as usize],
+            s_KeyQueueWriteIndex: 0,
+            s_KeyQueueReadIndex: 0,
+        }
+    }
+
+    unsafe fn addKeyToQueue(&mut self, mut pressed: i32, mut keyCode: u32) {
+        let mut key: u8 = convertToDoomKey(keyCode);
+        let mut keyData: u16 = (pressed << 8_i32 | key as i32) as u16;
+        self.s_KeyQueue[self.s_KeyQueueWriteIndex as usize] = keyData;
+        self.s_KeyQueueWriteIndex = self.s_KeyQueueWriteIndex.wrapping_add(1);
+        self.s_KeyQueueWriteIndex = self.s_KeyQueueWriteIndex.wrapping_rem(KEYQUEUE_SIZE as u32);
+    }
+}
+
 unsafe extern "C" fn convertToDoomKey(mut key: u32) -> u8 {
     match key {
         65293 => {
@@ -865,197 +892,211 @@ unsafe extern "C" fn convertToDoomKey(mut key: u32) -> u8 {
     }
     key as u8
 }
-unsafe extern "C" fn addKeyToQueue(mut pressed: i32, mut keyCode: u32) {
-    let mut key: u8 = convertToDoomKey(keyCode);
-    let mut keyData: u16 = (pressed << 8_i32 | key as i32) as u16;
-    s_KeyQueue[s_KeyQueueWriteIndex as usize] = keyData;
-    s_KeyQueueWriteIndex = s_KeyQueueWriteIndex.wrapping_add(1);
-    s_KeyQueueWriteIndex = s_KeyQueueWriteIndex.wrapping_rem(KEYQUEUE_SIZE as u32);
-}
-#[no_mangle]
-pub unsafe extern "C" fn DG_Init() {
-    memset(
-        &raw mut s_KeyQueue as *mut u16 as *mut ::core::ffi::c_void,
-        0_i32,
-        (KEYQUEUE_SIZE as size_t).wrapping_mul(::core::mem::size_of::<u16>() as size_t),
-    );
-    s_Display = XOpenDisplay(::core::ptr::null::<::core::ffi::c_char>());
-    s_Screen = (*(s_Display as _XPrivDisplay)).default_screen;
-    let mut blackColor: i32 = (*(*(s_Display as _XPrivDisplay))
-        .screens
-        .offset(s_Screen as isize))
-    .black_pixel as i32;
-    let mut whiteColor: i32 = (*(*(s_Display as _XPrivDisplay))
-        .screens
-        .offset(s_Screen as isize))
-    .white_pixel as i32;
-    let mut attr: XSetWindowAttributes = XSetWindowAttributes {
-        background_pixmap: 0,
-        background_pixel: 0,
-        border_pixmap: 0,
-        border_pixel: 0,
-        bit_gravity: 0,
-        win_gravity: 0,
-        backing_store: 0,
-        backing_planes: 0,
-        backing_pixel: 0,
-        save_under: 0,
-        event_mask: 0,
-        do_not_propagate_mask: 0,
-        override_redirect: 0,
-        colormap: 0,
-        cursor: 0,
-    };
-    memset(
-        &raw mut attr as *mut ::core::ffi::c_void,
-        0_i32,
-        ::core::mem::size_of::<XSetWindowAttributes>() as size_t,
-    );
-    attr.event_mask = ExposureMask | KeyPressMask;
-    attr.background_pixel = (*(*(s_Display as _XPrivDisplay))
-        .screens
-        .offset(s_Screen as isize))
-    .black_pixel;
-    let mut depth: i32 = (*(*(s_Display as _XPrivDisplay))
-        .screens
-        .offset(s_Screen as isize))
-    .root_depth;
-    s_Window = XCreateSimpleWindow(
-        s_Display,
-        (*(*(s_Display as _XPrivDisplay))
-            .screens
-            .offset((*(s_Display as _XPrivDisplay)).default_screen as isize))
-        .root,
-        0_i32,
-        0_i32,
-        DOOMGENERIC_RESX as u32,
-        DOOMGENERIC_RESY as u32,
-        0_u32,
-        blackColor as u64,
-        blackColor as u64,
-    );
-    XSelectInput(
-        s_Display,
-        s_Window,
-        StructureNotifyMask | KeyPressMask | KeyReleaseMask,
-    );
-    XMapWindow(s_Display, s_Window);
-    s_Gc = XCreateGC(
-        s_Display,
-        s_Window as Drawable,
-        0_u64,
-        ::core::ptr::null_mut::<XGCValues>(),
-    );
-    XSetForeground(s_Display, s_Gc, whiteColor as u64);
-    XkbSetDetectableAutoRepeat(s_Display, 1_i32, ::core::ptr::null_mut::<i32>());
-    loop {
-        let mut e: XEvent = _XEvent { type_0: 0 };
-        XNextEvent(s_Display, &raw mut e);
-        if e.type_0 == MapNotify {
-            break;
+impl DoomPlatform for X11Platform {
+    fn init(&mut self, screen_buffer: *mut pixel_t, resx: i32, resy: i32) {
+        unsafe {
+            memset(
+                &raw mut self.s_KeyQueue as *mut u16 as *mut ::core::ffi::c_void,
+                0_i32,
+                (KEYQUEUE_SIZE as size_t).wrapping_mul(::core::mem::size_of::<u16>() as size_t),
+            );
+            self.s_Display = XOpenDisplay(::core::ptr::null::<::core::ffi::c_char>());
+            self.s_Screen = (*(self.s_Display as _XPrivDisplay)).default_screen;
+            let mut blackColor: i32 = (*(*(self.s_Display as _XPrivDisplay))
+                .screens
+                .offset(self.s_Screen as isize))
+            .black_pixel as i32;
+            let mut whiteColor: i32 = (*(*(self.s_Display as _XPrivDisplay))
+                .screens
+                .offset(self.s_Screen as isize))
+            .white_pixel as i32;
+            let mut attr: XSetWindowAttributes = XSetWindowAttributes {
+                background_pixmap: 0,
+                background_pixel: 0,
+                border_pixmap: 0,
+                border_pixel: 0,
+                bit_gravity: 0,
+                win_gravity: 0,
+                backing_store: 0,
+                backing_planes: 0,
+                backing_pixel: 0,
+                save_under: 0,
+                event_mask: 0,
+                do_not_propagate_mask: 0,
+                override_redirect: 0,
+                colormap: 0,
+                cursor: 0,
+            };
+            memset(
+                &raw mut attr as *mut ::core::ffi::c_void,
+                0_i32,
+                ::core::mem::size_of::<XSetWindowAttributes>() as size_t,
+            );
+            attr.event_mask = ExposureMask | KeyPressMask;
+            attr.background_pixel = (*(*(self.s_Display as _XPrivDisplay))
+                .screens
+                .offset(self.s_Screen as isize))
+            .black_pixel;
+            let mut depth: i32 = (*(*(self.s_Display as _XPrivDisplay))
+                .screens
+                .offset(self.s_Screen as isize))
+            .root_depth;
+            self.s_Window = XCreateSimpleWindow(
+                self.s_Display,
+                (*(*(self.s_Display as _XPrivDisplay))
+                    .screens
+                    .offset((*(self.s_Display as _XPrivDisplay)).default_screen as isize))
+                .root,
+                0_i32,
+                0_i32,
+                resx as u32,
+                resy as u32,
+                0_u32,
+                blackColor as u64,
+                blackColor as u64,
+            );
+            XSelectInput(
+                self.s_Display,
+                self.s_Window,
+                StructureNotifyMask | KeyPressMask | KeyReleaseMask,
+            );
+            XMapWindow(self.s_Display, self.s_Window);
+            self.s_Gc = XCreateGC(
+                self.s_Display,
+                self.s_Window as Drawable,
+                0_u64,
+                ::core::ptr::null_mut::<XGCValues>(),
+            );
+            XSetForeground(self.s_Display, self.s_Gc, whiteColor as u64);
+            XkbSetDetectableAutoRepeat(self.s_Display, 1_i32, ::core::ptr::null_mut::<i32>());
+            loop {
+                let mut e: XEvent = _XEvent { type_0: 0 };
+                XNextEvent(self.s_Display, &raw mut e);
+                if e.type_0 == MapNotify {
+                    break;
+                }
+            }
+            self.s_Image = XCreateImage(
+                self.s_Display,
+                (*(*(self.s_Display as _XPrivDisplay))
+                    .screens
+                    .offset(self.s_Screen as isize))
+                .root_visual,
+                depth as u32,
+                ZPixmap,
+                0_i32,
+                screen_buffer as *mut ::core::ffi::c_char,
+                resx as u32,
+                resx as u32,
+                32_i32,
+                0_i32,
+            );
         }
     }
-    s_Image = XCreateImage(
-        s_Display,
-        (*(*(s_Display as _XPrivDisplay))
-            .screens
-            .offset(s_Screen as isize))
-        .root_visual,
-        depth as u32,
-        ZPixmap,
-        0_i32,
-        DG_ScreenBuffer as *mut ::core::ffi::c_char,
-        DOOMGENERIC_RESX as u32,
-        DOOMGENERIC_RESX as u32,
-        32_i32,
-        0_i32,
-    );
-}
-#[no_mangle]
-pub unsafe extern "C" fn DG_DrawFrame() {
-    if !s_Display.is_null() {
-        while XPending(s_Display) > 0_i32 {
-            let mut e: XEvent = _XEvent { type_0: 0 };
-            XNextEvent(s_Display, &raw mut e);
-            if e.type_0 == KeyPress {
-                let mut sym: KeySym =
-                    XkbKeycodeToKeysym(s_Display, e.xkey.keycode as KeyCode, 0_i32, 0_i32);
-                addKeyToQueue(1_i32, sym as u32);
-            } else if e.type_0 == KeyRelease {
-                let mut sym_0: KeySym =
-                    XkbKeycodeToKeysym(s_Display, e.xkey.keycode as KeyCode, 0_i32, 0_i32);
-                addKeyToQueue(0_i32, sym_0 as u32);
+
+    fn draw_frame(&mut self) {
+        unsafe {
+            if !self.s_Display.is_null() {
+                while XPending(self.s_Display) > 0_i32 {
+                    let mut e: XEvent = _XEvent { type_0: 0 };
+                    XNextEvent(self.s_Display, &raw mut e);
+                    if e.type_0 == KeyPress {
+                        let mut sym: KeySym = XkbKeycodeToKeysym(
+                            self.s_Display,
+                            e.xkey.keycode as KeyCode,
+                            0_i32,
+                            0_i32,
+                        );
+                        self.addKeyToQueue(1_i32, sym as u32);
+                    } else if e.type_0 == KeyRelease {
+                        let mut sym_0: KeySym = XkbKeycodeToKeysym(
+                            self.s_Display,
+                            e.xkey.keycode as KeyCode,
+                            0_i32,
+                            0_i32,
+                        );
+                        self.addKeyToQueue(0_i32, sym_0 as u32);
+                    }
+                }
+                XPutImage(
+                    self.s_Display,
+                    self.s_Window as Drawable,
+                    self.s_Gc,
+                    self.s_Image,
+                    0_i32,
+                    0_i32,
+                    0_i32,
+                    0_i32,
+                    DOOMGENERIC_RESX as u32,
+                    DOOMGENERIC_RESY as u32,
+                );
             }
         }
-        XPutImage(
-            s_Display,
-            s_Window as Drawable,
-            s_Gc,
-            s_Image,
-            0_i32,
-            0_i32,
-            0_i32,
-            0_i32,
-            DOOMGENERIC_RESX as u32,
-            DOOMGENERIC_RESY as u32,
-        );
+    }
+
+    fn sleep_ms(&mut self, ms: u32) {
+        unsafe {
+            usleep((ms as __useconds_t).wrapping_mul(1000 as __useconds_t));
+        }
+    }
+
+    fn get_ticks_ms(&mut self) -> u32 {
+        unsafe {
+            let mut tp: timeval = timeval {
+                tv_sec: 0,
+                tv_usec: 0,
+            };
+            let mut tzp: timezone = timezone {
+                tz_minuteswest: 0,
+                tz_dsttime: 0,
+            };
+            gettimeofday(&raw mut tp, &raw mut tzp as *mut ::core::ffi::c_void);
+            (tp.tv_sec as __suseconds_t * 1000 as __suseconds_t
+                + tp.tv_usec / 1000 as __suseconds_t) as uint32_t
+        }
+    }
+
+    fn get_key(&mut self) -> Option<(bool, u8)> {
+        if self.s_KeyQueueReadIndex == self.s_KeyQueueWriteIndex {
+            None
+        } else {
+            let keyData: u16 = self.s_KeyQueue[self.s_KeyQueueReadIndex as usize];
+            self.s_KeyQueueReadIndex = self.s_KeyQueueReadIndex.wrapping_add(1);
+            self.s_KeyQueueReadIndex = self.s_KeyQueueReadIndex.wrapping_rem(KEYQUEUE_SIZE as u32);
+            let pressed = keyData as i32 >> 8_i32 != 0;
+            let key = (keyData as i32 & 0xff_i32) as u8;
+            Some((pressed, key))
+        }
+    }
+
+    fn set_window_title(&mut self, title: &str) {
+        unsafe {
+            if self.s_Window != 0 {
+                let title_cstring = ::std::ffi::CString::new(title).unwrap();
+                XChangeProperty(
+                    self.s_Display,
+                    self.s_Window,
+                    XA_WM_NAME,
+                    XA_STRING,
+                    8_i32,
+                    PropModeReplace,
+                    title_cstring.as_ptr() as *const u8,
+                    title_cstring.as_bytes().len() as i32,
+                );
+            }
+        }
     }
 }
-#[no_mangle]
-pub unsafe extern "C" fn DG_SleepMs(mut ms: uint32_t) {
-    usleep((ms as __useconds_t).wrapping_mul(1000 as __useconds_t));
-}
-#[no_mangle]
-pub unsafe extern "C" fn DG_GetTicksMs() -> uint32_t {
-    let mut tp: timeval = timeval {
-        tv_sec: 0,
-        tv_usec: 0,
-    };
-    let mut tzp: timezone = timezone {
-        tz_minuteswest: 0,
-        tz_dsttime: 0,
-    };
-    gettimeofday(&raw mut tp, &raw mut tzp as *mut ::core::ffi::c_void);
-    (tp.tv_sec as __suseconds_t * 1000 as __suseconds_t + tp.tv_usec / 1000 as __suseconds_t)
-        as uint32_t
-}
-#[no_mangle]
-pub unsafe extern "C" fn DG_GetKey(mut pressed: *mut i32, mut doomKey: *mut u8) -> i32 {
-    if s_KeyQueueReadIndex == s_KeyQueueWriteIndex {
-        0_i32
-    } else {
-        let mut keyData: u16 = s_KeyQueue[s_KeyQueueReadIndex as usize];
-        s_KeyQueueReadIndex = s_KeyQueueReadIndex.wrapping_add(1);
-        s_KeyQueueReadIndex = s_KeyQueueReadIndex.wrapping_rem(KEYQUEUE_SIZE as u32);
-        *pressed = keyData as i32 >> 8_i32;
-        *doomKey = (keyData as i32 & 0xff_i32) as u8;
-        1_i32
-    }
-}
-#[no_mangle]
-pub unsafe extern "C" fn DG_SetWindowTitle(mut title: *const ::core::ffi::c_char) {
-    if s_Window != 0 {
-        XChangeProperty(
-            s_Display,
-            s_Window,
-            XA_WM_NAME,
-            XA_STRING,
-            8_i32,
-            PropModeReplace,
-            title as *const u8,
-            ::std::ffi::CStr::from_ptr(title as *const ::core::ffi::c_char).to_bytes().len() as i32,
-        );
-    }
-}
+
 pub fn main() {
+    let state = init_game_state(Box::new(X11Platform::new()));
     unsafe {
-        let state: *mut GameState = game_state() as *mut GameState;
         ::rust_doomgeneric::src::doomgeneric::doomgeneric_Create(
-            &mut *state,
+            state,
             ::std::env::args().collect(),
         );
         loop {
-            doomgeneric_Tick(state as *mut ::core::ffi::c_void);
+            doomgeneric_Tick(state);
         }
     }
 }

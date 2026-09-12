@@ -135,12 +135,19 @@ impl AmMapState {
             markpointnum: 0,
             followplayer: 1,
             cheat_amap: cheatseq_t {
-                sequence: [0; 25],
-                sequence_len: 0,
+                sequence: unsafe {
+                    ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
+                        *b"iddt\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                    )
+                },
+                sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 5]>() as size_t)
+                    .wrapping_sub(1 as size_t),
                 parameter_chars: 0,
                 chars_read: 0,
                 param_chars_read: 0,
-                parameter_buf: [0; 5],
+                parameter_buf: unsafe {
+                    ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0")
+                },
             },
             stopped: true,
             am_start_lastlevel: -1,
@@ -1503,21 +1510,3 @@ pub unsafe fn AM_Drawer(state: &mut GameState) {
     );
     V_MarkRect(state, f_x, f_y, f_w, f_h);
 }
-unsafe extern "C" fn run_static_initializers() {
-    unsafe { game_state() }.am_map.cheat_amap = cheatseq_t {
-        sequence: ::core::mem::transmute::<[u8; 25], [::core::ffi::c_char; 25]>(
-            *b"iddt\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-        ),
-        sequence_len: (::core::mem::size_of::<[::core::ffi::c_char; 5]>() as size_t)
-            .wrapping_sub(1 as size_t),
-        parameter_chars: 0 as i32,
-        chars_read: 0 as size_t,
-        param_chars_read: 0 as i32,
-        parameter_buf: ::core::mem::transmute::<[u8; 5], [::core::ffi::c_char; 5]>(*b"\0\0\0\0\0"),
-    };
-}
-#[used]
-#[cfg_attr(target_os = "linux", link_section = ".init_array")]
-#[cfg_attr(target_os = "windows", link_section = ".CRT$XIB")]
-#[cfg_attr(target_os = "macos", link_section = "__DATA,__mod_init_func")]
-static INIT_ARRAY: [unsafe extern "C" fn(); 1] = [run_static_initializers];

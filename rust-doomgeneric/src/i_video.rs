@@ -1,8 +1,8 @@
 use crate::src::doomdef::boolean;
-use crate::src::doomdef::pixel_t;
 use crate::src::doomdef::NULL;
 use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
+use crate::src::doomgeneric::DG_ScreenBuffer;
 use crate::src::doomgeneric::DOOMGENERIC_RESX;
 use crate::src::doomgeneric::DOOMGENERIC_RESY;
 use crate::src::game_state::GameState;
@@ -72,11 +72,6 @@ impl IVideoState {
     }
 }
 
-extern "C" {
-    static mut DG_ScreenBuffer: *mut pixel_t;
-    fn DG_DrawFrame();
-    fn DG_SetWindowTitle(title: *const ::core::ffi::c_char);
-}
 pub type __uint16_t = u16;
 pub type uint16_t = __uint16_t;
 pub type grabmouse_callback_t = Option<unsafe fn() -> boolean>;
@@ -354,7 +349,7 @@ pub unsafe fn I_FinishUpdate(state: &mut GameState) {
         }
         line_in = line_in.offset(SCREENWIDTH as isize);
     }
-    DG_DrawFrame();
+    state.platform.draw_frame();
 }
 pub unsafe fn I_ReadScreen(state: &mut GameState, mut scr: *mut byte) {
     memcpy(
@@ -417,8 +412,7 @@ pub unsafe fn I_GetPaletteIndex(mut r: i32, mut g: i32, mut b: i32) -> i32 {
     }
     return best;
 }
-pub unsafe fn I_SetWindowTitle(title: &str) {
-    let title_cstring = ::std::ffi::CString::new(title).unwrap();
-    DG_SetWindowTitle(title_cstring.as_ptr());
+pub unsafe fn I_SetWindowTitle(state: &mut GameState, title: &str) {
+    state.platform.set_window_title(title);
 }
 pub unsafe fn I_SetGrabMouseCallback() {}
