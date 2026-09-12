@@ -8,6 +8,7 @@ use crate::src::game_state::GameState;
 use crate::src::hu_stuff::HU_Start;
 use crate::src::i_system::I_Error;
 use crate::src::info::{S_BLOOD2, S_BLOOD3, S_NULL, S_PLAY, S_PLAY_RUN1, S_PUFF3};
+use crate::src::info::StateId;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACBITS;
@@ -460,7 +461,7 @@ pub struct mobj_s {
     pub type_0: mobjtype_t,
     pub info: *mut mobjinfo_t,
     pub tics: i32,
-    pub state: *mut state_t,
+    pub state: Option<StateId>,
     pub flags: i32,
     pub health: i32,
     pub movedir: i32,
@@ -477,7 +478,7 @@ pub struct mobj_s {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct pspdef_t {
-    pub state: *mut state_t,
+    pub state: Option<StateId>,
     pub tics: i32,
     pub sx: fixed_t,
     pub sy: fixed_t,
@@ -567,12 +568,13 @@ pub unsafe fn P_SetMobjState(
     let mut st: *mut state_t = ::core::ptr::null_mut::<state_t>();
     loop {
         if statenum as u32 == S_NULL as i32 as u32 {
-            (*mobj).state = ::core::ptr::null_mut::<state_t>();
+            (*mobj).state = None;
             P_RemoveMobj(state, mobj);
             return false;
         }
-        st = (&raw mut state.info.states as *mut state_t).offset(statenum as isize) as *mut state_t;
-        (*mobj).state = st;
+        let state_id = StateId(statenum);
+        st = state.info.state_mut(state_id);
+        (*mobj).state = Some(state_id);
         (*mobj).tics = (*st).tics;
         (*mobj).sprite = (*st).sprite;
         (*mobj).frame = (*st).frame;
@@ -716,11 +718,7 @@ pub unsafe fn P_XYMovement(state: &mut GameState, mut mo: *mut mobj_t) {
                 && (*player).cmd.sidemove as i32 == 0 as i32)
     {
         if !player.is_null()
-            && (((*(*player).mo)
-                .state
-                .offset_from(&raw mut state.info.states as *mut state_t) as i64
-                - S_PLAY_RUN1 as i32 as i64) as u32)
-                < 4 as u32
+            && ((*(*player).mo).state.unwrap().0.wrapping_sub(S_PLAY_RUN1)) < 4 as u32
         {
             P_SetMobjState(state, (*player).mo, S_PLAY);
         }
@@ -863,7 +861,8 @@ pub unsafe fn P_MobjThinker(state: &mut GameState, id: MobjId) {
     if (*mobj).tics != -(1 as i32) {
         (*mobj).tics -= 1;
         if (*mobj).tics == 0 {
-            if !P_SetMobjState(state, mobj, (*(*mobj).state).nextstate) {
+            let nextstate = (*state.info.state_mut((*mobj).state.unwrap())).nextstate;
+            if !P_SetMobjState(state, mobj, nextstate) {
                 return;
             }
         }
@@ -922,9 +921,9 @@ pub unsafe fn P_SpawnMobj(
         (*mobj).reactiontime = (*info).reactiontime;
     }
     (*mobj).lastlook = P_Random(&mut state.m_random) % MAXPLAYERS;
-    st = (&raw mut state.info.states as *mut state_t).offset((*info).spawnstate as isize)
-        as *mut state_t;
-    (*mobj).state = st;
+    let spawnstate_id = StateId((*info).spawnstate as u32);
+    st = state.info.state_mut(spawnstate_id);
+    (*mobj).state = Some(spawnstate_id);
     (*mobj).tics = (*st).tics;
     (*mobj).sprite = (*st).sprite;
     (*mobj).frame = (*st).frame;
@@ -1068,7 +1067,7 @@ impl PMobjState {
                 type_0: MT_PLAYER,
                 info: ::core::ptr::null::<mobjinfo_t>() as *mut mobjinfo_t,
                 tics: 0,
-                state: ::core::ptr::null::<state_t>() as *mut state_t,
+                state: None,
                 flags: 0,
                 health: 0,
                 movedir: 0,

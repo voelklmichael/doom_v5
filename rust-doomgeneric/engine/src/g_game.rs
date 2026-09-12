@@ -61,7 +61,7 @@ use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::P_SpawnPlayer;
 use crate::src::p_mobj::MF_SHADOW;
-use crate::src::p_mobj::{mapthing_t, state_t};
+use crate::src::p_mobj::mapthing_t;
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::p_mobj::{MT_BRUISERSHOT, MT_HEADSHOT, MT_TFOG, MT_TROOPSHOT};
 use crate::src::p_saveg::P_ArchivePlayers;
@@ -239,7 +239,7 @@ const NEW_PLAYER: player_s = player_s {
     fixedcolormap: 0,
     colormap: 0,
     psprites: [pspdef_t {
-        state: ::core::ptr::null::<state_t>() as *mut state_t,
+        state: None,
         tics: 0,
         sx: 0,
         sy: 0,

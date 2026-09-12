@@ -13,6 +13,7 @@ use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
 use crate::src::game_state::GameState;
 use crate::src::info::{S_CHAIN1, S_NULL, S_PLAY, S_PLAY_ATK1, S_PLAY_ATK2, S_SAW};
+use crate::src::info::StateId;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACBITS;
@@ -60,12 +61,12 @@ pub unsafe fn P_SetPsprite(
     psp = (&raw mut (*player).psprites as *mut pspdef_t).offset(position as isize) as *mut pspdef_t;
     loop {
         if stnum as u64 == 0 {
-            (*psp).state = ::core::ptr::null_mut::<state_t>();
+            (*psp).state = None;
             break;
         } else {
-            st =
-                (&raw mut state.info.states as *mut state_t).offset(stnum as isize) as *mut state_t;
-            (*psp).state = st;
+            let state_id = StateId(stnum);
+            st = state.info.state_mut(state_id);
+            (*psp).state = Some(state_id);
             (*psp).tics = (*st).tics;
             if (*st).misc1 != 0 {
                 (*psp).sx = ((*st).misc1 << FRACBITS) as fixed_t;
@@ -73,11 +74,11 @@ pub unsafe fn P_SetPsprite(
             }
             if let StateAction::Weapon(f) = (*st).action {
                 f(state, player, psp);
-                if (*psp).state.is_null() {
+                if (*psp).state.is_none() {
                     break;
                 }
             }
-            stnum = (*(*psp).state).nextstate;
+            stnum = (*state.info.state_mut((*psp).state.unwrap())).nextstate;
             if !((*psp).tics == 0) {
                 break;
             }
@@ -212,19 +213,13 @@ pub unsafe fn A_WeaponReady(
 ) {
     let mut newstate: statenum_t = S_NULL;
     let mut angle: i32 = 0;
-    if (*(*player).mo).state
-        == (&raw mut state.info.states as *mut state_t).offset(S_PLAY_ATK1 as i32 as isize)
-            as *mut state_t
-        || (*(*player).mo).state
-            == (&raw mut state.info.states as *mut state_t).offset(S_PLAY_ATK2 as i32 as isize)
-                as *mut state_t
+    if (*(*player).mo).state == Some(StateId(S_PLAY_ATK1))
+        || (*(*player).mo).state == Some(StateId(S_PLAY_ATK2))
     {
         P_SetMobjState(state, (*player).mo, S_PLAY);
     }
     if (*player).readyweapon as u32 == wp_chainsaw as i32 as u32
-        && (*psp).state
-            == (&raw mut state.info.states as *mut state_t).offset(S_SAW as i32 as isize)
-                as *mut state_t
+        && (*psp).state == Some(StateId(S_SAW))
     {
         S_StartSound(
             state,
@@ -581,16 +576,13 @@ pub unsafe fn A_FireCGun(state: &mut GameState, mut player: *mut player_t, mut p
         weaponinfo[(*player).readyweapon as usize].ammo as i32,
         1 as i32,
     );
-    let chain1_base = (&raw mut state.info.states as *mut state_t).offset(S_CHAIN1 as i32 as isize)
-        as *mut state_t;
     P_SetPsprite(
         state,
         player,
         ps_flash as i32,
-        (*psp)
-            .state
-            .offset(weaponinfo[(*player).readyweapon as usize].flashstate as isize)
-            .offset_from(chain1_base) as i64 as statenum_t,
+        (weaponinfo[(*player).readyweapon as usize].flashstate as i64
+            + (*psp).state.unwrap().0 as i64
+            - S_CHAIN1 as i64) as statenum_t,
     );
     P_BulletSlope(state, (*player).mo);
     P_GunShot(state, (*player).mo, (*player).refire == 0);
@@ -656,7 +648,7 @@ pub unsafe fn P_SetupPsprites(state: &mut GameState, mut player: *mut player_t) 
     let mut i: i32 = 0;
     i = 0 as i32;
     while i < NUMPSPRITES as i32 {
-        (*player).psprites[i as usize].state = ::core::ptr::null_mut::<state_t>();
+        (*player).psprites[i as usize].state = None;
         i += 1;
     }
     (*player).pendingweapon = (*player).readyweapon;
@@ -665,16 +657,16 @@ pub unsafe fn P_SetupPsprites(state: &mut GameState, mut player: *mut player_t) 
 pub unsafe fn P_MovePsprites(state: &mut GameState, mut player: *mut player_t) {
     let mut i: i32 = 0;
     let mut psp: *mut pspdef_t = ::core::ptr::null_mut::<pspdef_t>();
-    let mut psp_state: *mut state_t = ::core::ptr::null_mut::<state_t>();
+    let mut psp_state: Option<StateId> = None;
     psp = (&raw mut (*player).psprites as *mut pspdef_t).offset(0 as i32 as isize) as *mut pspdef_t;
     i = 0 as i32;
     while i < NUMPSPRITES as i32 {
         psp_state = (*psp).state;
-        if !psp_state.is_null() {
+        if psp_state.is_some() {
             if (*psp).tics != -(1 as i32) {
                 (*psp).tics -= 1;
                 if (*psp).tics == 0 {
-                    let nextstate = (*(*psp).state).nextstate;
+                    let nextstate = (*state.info.state_mut(psp_state.unwrap())).nextstate;
                     P_SetPsprite(state, player, i, nextstate);
                 }
             }

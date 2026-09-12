@@ -17,12 +17,12 @@ use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::i_system::I_Tactile;
 use crate::src::info::S_NULL;
+use crate::src::info::StateId;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FixedMul;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_random::P_Random;
 use crate::src::p_mobj::mobj_t;
-use crate::src::p_mobj::state_t;
 use crate::src::p_mobj::statenum_t;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::P_SetMobjState;
@@ -765,9 +765,7 @@ pub unsafe fn P_DamageMobj(
     {
         (*target).target = Some((*source).id);
         (*target).threshold = BASETHRESHOLD;
-        if (*target).state
-            == (&raw mut state.info.states as *mut state_t)
-                .offset((*(*target).info).spawnstate as isize) as *mut state_t
+        if (*target).state == Some(StateId((*(*target).info).spawnstate as u32))
             && (*(*target).info).seestate != S_NULL as i32
         {
             P_SetMobjState(state, target, (*(*target).info).seestate as statenum_t);
