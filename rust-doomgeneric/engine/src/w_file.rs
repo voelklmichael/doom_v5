@@ -3,6 +3,7 @@ use crate::src::m_argv::M_CheckParm;
 use crate::src::stdint_types::byte;
 use crate::src::stdint_types::size_t;
 use crate::src::w_file_stdc::stdc_wad_file;
+use crate::src::z_zone::ZZoneState;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -14,8 +15,8 @@ pub struct _wad_file_s {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct wad_file_class_t {
-    pub OpenFile: Option<unsafe fn(&str) -> *mut wad_file_t>,
-    pub CloseFile: Option<unsafe fn(*mut wad_file_t) -> ()>,
+    pub OpenFile: Option<unsafe fn(&mut ZZoneState, &str) -> *mut wad_file_t>,
+    pub CloseFile: Option<unsafe fn(&mut ZZoneState, *mut wad_file_t) -> ()>,
     pub Read: Option<unsafe fn(*mut wad_file_t, u32, *mut ::core::ffi::c_void, size_t) -> size_t>,
 }
 pub type wad_file_t = _wad_file_s;
@@ -36,7 +37,10 @@ pub unsafe fn W_OpenFile(state: &mut GameState, path: &str) -> *mut wad_file_t {
     let mut result: *mut wad_file_t = ::core::ptr::null_mut::<wad_file_t>();
     let mut i: i32 = 0;
     if M_CheckParm(state, "-mmap") == 0 {
-        return stdc_wad_file.OpenFile.expect("non-null function pointer")(path);
+        return stdc_wad_file.OpenFile.expect("non-null function pointer")(
+            &mut state.z_zone,
+            path,
+        );
     }
     result = ::core::ptr::null_mut::<wad_file_t>();
     i = 0 as i32;
@@ -46,7 +50,7 @@ pub unsafe fn W_OpenFile(state: &mut GameState, path: &str) -> *mut wad_file_t {
     {
         result = (*state.w_file.wad_file_classes[i as usize])
             .OpenFile
-            .expect("non-null function pointer")(path);
+            .expect("non-null function pointer")(&mut state.z_zone, path);
         if !result.is_null() {
             break;
         }
@@ -54,10 +58,10 @@ pub unsafe fn W_OpenFile(state: &mut GameState, path: &str) -> *mut wad_file_t {
     }
     return result;
 }
-pub unsafe fn W_CloseFile(mut wad: *mut wad_file_t) {
+pub unsafe fn W_CloseFile(zone: &mut ZZoneState, mut wad: *mut wad_file_t) {
     (*(*wad).file_class)
         .CloseFile
-        .expect("non-null function pointer")(wad);
+        .expect("non-null function pointer")(zone, wad);
 }
 pub unsafe fn W_Read(
     mut wad: *mut wad_file_t,

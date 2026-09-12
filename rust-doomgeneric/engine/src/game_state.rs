@@ -24,7 +24,6 @@ use crate::src::hu_stuff::HuStuffState;
 use crate::src::i_cdmus::ICdMusState;
 use crate::src::i_input::IInputState;
 use crate::src::i_joystick::IJoystickState;
-use crate::src::i_scale::IScaleState;
 use crate::src::i_sound::ISoundState;
 use crate::src::i_system::ISystemState;
 use crate::src::i_timer::ITimerState;
@@ -86,7 +85,6 @@ pub struct GameState {
     pub i_cdmus: ICdMusState,
     pub i_input: IInputState,
     pub i_joystick: IJoystickState,
-    pub i_scale: IScaleState,
     pub i_sound: ISoundState,
     pub i_video: IVideoState,
     pub i_system: ISystemState,
@@ -150,7 +148,6 @@ impl GameState {
             i_cdmus: ICdMusState::new(),
             i_input: IInputState::new(),
             i_joystick: IJoystickState::new(),
-            i_scale: IScaleState::new(),
             i_sound: ISoundState::new(),
             i_video: IVideoState::new(),
             i_system: ISystemState::new(),

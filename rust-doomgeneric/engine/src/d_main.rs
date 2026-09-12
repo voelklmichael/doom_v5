@@ -37,7 +37,6 @@ use crate::src::g_game::G_LoadGame;
 use crate::src::g_game::G_RecordDemo;
 use crate::src::g_game::G_Responder;
 use crate::src::g_game::G_TimeDemo;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::hu_stuff::HU_Drawer;
@@ -480,16 +479,16 @@ pub unsafe fn D_BindVariables(state: &mut GameState) {
         i += 1;
     }
 }
-pub unsafe fn D_GrabMouseCallback() -> boolean {
+pub unsafe fn D_GrabMouseCallback(state: &mut GameState) -> boolean {
     if drone {
         return false_0 as boolean;
     }
-    if unsafe { game_state() }.m_menu.menuactive || unsafe { game_state() }.g_game.paused {
+    if state.m_menu.menuactive || state.g_game.paused {
         return false_0 as boolean;
     }
-    return (unsafe { game_state() }.g_game.gamestate == GameScreenState::GS_LEVEL
-        && !unsafe { game_state() }.g_game.demoplayback
-        && !unsafe { game_state() }.d_main.advancedemo) as i32 as boolean;
+    return (state.g_game.gamestate == GameScreenState::GS_LEVEL
+        && !state.g_game.demoplayback
+        && !state.d_main.advancedemo) as i32 as boolean;
 }
 pub unsafe fn doomgeneric_Tick(state: &mut GameState) {
     TryRunTics(state);

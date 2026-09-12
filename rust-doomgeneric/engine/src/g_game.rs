@@ -37,7 +37,6 @@ use crate::src::doomstat::DoomstatState;
 use crate::src::f_finale::F_Responder;
 use crate::src::f_finale::F_StartFinale;
 use crate::src::f_finale::F_Ticker;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_stuff::player_names;
 use crate::src::hu_stuff::HU_Responder;
@@ -1140,8 +1139,8 @@ pub unsafe fn G_Ticker(state: &mut GameState) {
         _ => {}
     };
 }
-pub unsafe fn G_InitPlayer(mut player: i32) {
-    G_PlayerReborn(&mut unsafe { game_state() }.g_game, player);
+pub unsafe fn G_InitPlayer(state: &mut GGameState, mut player: i32) {
+    G_PlayerReborn(state, player);
 }
 pub unsafe fn G_PlayerFinishLevel(state: &mut GGameState, mut player: i32) {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
@@ -1524,8 +1523,8 @@ pub unsafe fn G_DoCompleted(state: &mut GameState) {
     state.g_game.gamestate = GameScreenState::GS_INTERMISSION;
     state.g_game.viewactive = false;
     state.am_map.automapactive = false;
-    StatCopy(&mut state.statdump, &raw mut state.g_game.wminfo);
     let wminfo = &raw mut state.g_game.wminfo;
+    StatCopy(state, wminfo);
     WI_Start(state, wminfo);
 }
 pub unsafe fn G_WorldDone(state: &mut GameState) {

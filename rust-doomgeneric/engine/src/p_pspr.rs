@@ -11,7 +11,6 @@ use crate::src::d_player::{
 use crate::src::d_ticcmd::BT_ATTACK;
 use crate::src::doomdef::false_0;
 use crate::src::doomdef::true_0;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::info::{S_CHAIN1, S_NULL, S_PLAY, S_PLAY_ATK1, S_PLAY_ATK2, S_SAW};
 use crate::src::m_fixed::fixed_t;
@@ -101,16 +100,14 @@ impl PPsprState {
     }
 }
 
-pub unsafe fn P_CalcSwing(state: &mut PPsprState, mut player: *mut player_t) {
+pub unsafe fn P_CalcSwing(state: &mut GameState, mut player: *mut player_t) {
     let mut swing: fixed_t = 0;
     let mut angle: i32 = 0;
     swing = (*player).bob;
-    angle = FINEANGLES / 70 as i32 * unsafe { game_state() }.p_tick.leveltime & FINEMASK;
-    state.swingx = FixedMul(swing, finesine[angle as usize]);
-    angle = FINEANGLES / 70 as i32 * unsafe { game_state() }.p_tick.leveltime
-        + FINEANGLES / 2 as i32
-        & FINEMASK;
-    state.swingy = -FixedMul(state.swingx, finesine[angle as usize]);
+    angle = FINEANGLES / 70 as i32 * state.p_tick.leveltime & FINEMASK;
+    state.p_pspr.swingx = FixedMul(swing, finesine[angle as usize]);
+    angle = FINEANGLES / 70 as i32 * state.p_tick.leveltime + FINEANGLES / 2 as i32 & FINEMASK;
+    state.p_pspr.swingy = -FixedMul(state.p_pspr.swingx, finesine[angle as usize]);
 }
 pub unsafe fn P_BringUpWeapon(state: &mut GameState, mut player: *mut player_t) {
     let mut newstate: statenum_t = S_NULL;

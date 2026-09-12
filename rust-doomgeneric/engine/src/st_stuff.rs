@@ -16,7 +16,6 @@ use crate::src::doomdef::SCREENHEIGHT;
 use crate::src::doomdef::SCREENWIDTH;
 use crate::src::doomdef::TICRATE;
 use crate::src::g_game::G_DeferedInitNew;
-use crate::src::game_state::game_state;
 use crate::src::game_state::GameState;
 use crate::src::hu_lib::patch_t;
 use crate::src::i_video::I_SetPalette;
@@ -350,7 +349,7 @@ pub type st_chatstateenum_t = u32;
 pub const GetChatState: st_chatstateenum_t = 2;
 pub const WaitDestState: st_chatstateenum_t = 1;
 pub const StartChatState: st_chatstateenum_t = 0;
-pub type load_callback_t = Option<unsafe fn(&str, *mut *mut patch_t) -> ()>;
+pub type load_callback_t = Option<unsafe fn(&mut GameState, &str, *mut *mut patch_t) -> ()>;
 pub const DEH_DEFAULT_GOD_MODE_HEALTH: i32 = 100;
 pub const DEH_DEFAULT_IDFA_ARMOR: i32 = 200;
 pub const DEH_DEFAULT_IDFA_ARMOR_CLASS: i32 = 2;
@@ -1015,87 +1014,103 @@ unsafe fn ST_loadUnloadGraphics(state: &mut GameState, mut callback: load_callba
     let mut facenum: i32 = 0;
     i = 0 as i32;
     while i < 10 as i32 {
-        callback.expect("non-null function pointer")(&format!("STTNUM{}", i,), (&raw mut state.st_stuff.tallnum as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,);
-        callback.expect("non-null function pointer")(&format!("STYSNUM{}", i,), (&raw mut state.st_stuff.shortnum as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,);
+        let cb_ptr = (&raw mut state.st_stuff.tallnum as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STTNUM{}", i,), cb_ptr);
+        let cb_ptr = (&raw mut state.st_stuff.shortnum as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STYSNUM{}", i,), cb_ptr);
         i += 1;
     }
-    callback.expect("non-null function pointer")("STTPRCNT", &raw mut state.st_stuff.tallpercent,);
+    let cb_ptr = &raw mut state.st_stuff.tallpercent;
+    callback.expect("non-null function pointer")(state, "STTPRCNT", cb_ptr);
     i = 0 as i32;
     while i < NUMCARDS as i32 {
-        callback.expect("non-null function pointer")(&format!("STKEYS{}", i,), (&raw mut state.st_stuff.keys as *mut *mut patch_t).offset(i as isize)
-                as *mut *mut patch_t,);
+        let cb_ptr = (&raw mut state.st_stuff.keys as *mut *mut patch_t).offset(i as isize)
+                as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STKEYS{}", i,), cb_ptr);
         i += 1;
     }
-    callback.expect("non-null function pointer")("STARMS", &raw mut state.st_stuff.armsbg,);
+    let cb_ptr = &raw mut state.st_stuff.armsbg;
+    callback.expect("non-null function pointer")(state, "STARMS", cb_ptr);
     i = 0 as i32;
     while i < 6 as i32 {
-        callback.expect("non-null function pointer")(&format!("STGNUM{}", i + 2 as i32,), (&raw mut *(&raw mut state.st_stuff.arms as *mut [*mut patch_t; 2]).offset(i as isize)
+        let cb_ptr = (&raw mut *(&raw mut state.st_stuff.arms as *mut [*mut patch_t; 2]).offset(i as isize)
                 as *mut *mut patch_t)
-                .offset(0 as i32 as isize) as *mut *mut patch_t,);
+                .offset(0 as i32 as isize) as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STGNUM{}", i + 2 as i32,), cb_ptr);
         state.st_stuff.arms[i as usize][1 as i32 as usize] =
             state.st_stuff.shortnum[(i + 2 as i32) as usize];
         i += 1;
     }
-    callback.expect("non-null function pointer")(&format!("STFB{}", state.g_game.consoleplayer,), &raw mut state.st_stuff.faceback,);
-    callback.expect("non-null function pointer")("STBAR", &raw mut state.st_stuff.sbar,);
+    let cb_ptr = &raw mut state.st_stuff.faceback;
+    callback.expect("non-null function pointer")(state, &format!("STFB{}", state.g_game.consoleplayer,), cb_ptr);
+    let cb_ptr = &raw mut state.st_stuff.sbar;
+    callback.expect("non-null function pointer")(state, "STBAR", cb_ptr);
     facenum = 0 as i32;
     i = 0 as i32;
     while i < ST_NUMPAINFACES {
         j = 0 as i32;
         while j < ST_NUMSTRAIGHTFACES {
-            callback.expect("non-null function pointer")(&format!("STFST{}{}", i,
-                j,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                    as *mut *mut patch_t,);
+            let cb_ptr = (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                    as *mut *mut patch_t;
+            callback.expect("non-null function pointer")(state, &format!("STFST{}{}", i,
+                j,), cb_ptr);
             facenum += 1;
             j += 1;
         }
-        callback.expect("non-null function pointer")(&format!("STFTR{}0", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,);
+        let cb_ptr = (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STFTR{}0", i,), cb_ptr);
         facenum += 1;
-        callback.expect("non-null function pointer")(&format!("STFTL{}0", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,);
+        let cb_ptr = (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STFTL{}0", i,), cb_ptr);
         facenum += 1;
-        callback.expect("non-null function pointer")(&format!("STFOUCH{}", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,);
+        let cb_ptr = (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STFOUCH{}", i,), cb_ptr);
         facenum += 1;
-        callback.expect("non-null function pointer")(&format!("STFEVL{}", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,);
+        let cb_ptr = (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STFEVL{}", i,), cb_ptr);
         facenum += 1;
-        callback.expect("non-null function pointer")(&format!("STFKILL{}", i,), (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-                as *mut *mut patch_t,);
+        let cb_ptr = (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+                as *mut *mut patch_t;
+        callback.expect("non-null function pointer")(state, &format!("STFKILL{}", i,), cb_ptr);
         facenum += 1;
         i += 1;
     }
-    callback.expect("non-null function pointer")("STFGOD0", (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-            as *mut *mut patch_t,);
+    let cb_ptr = (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+            as *mut *mut patch_t;
+    callback.expect("non-null function pointer")(state, "STFGOD0", cb_ptr);
     facenum += 1;
-    callback.expect("non-null function pointer")("STFDEAD0", (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
-            as *mut *mut patch_t,);
+    let cb_ptr = (&raw mut state.st_stuff.faces as *mut *mut patch_t).offset(facenum as isize)
+            as *mut *mut patch_t;
+    callback.expect("non-null function pointer")(state, "STFDEAD0", cb_ptr);
     facenum += 1;
 }
-unsafe fn ST_loadCallback(lumpname: &str, variable: *mut *mut patch_t) {
-    *variable = W_CacheLumpName(unsafe { game_state() }, lumpname, PU_STATIC as i32) as *mut patch_t;
+unsafe fn ST_loadCallback(state: &mut GameState, lumpname: &str, variable: *mut *mut patch_t) {
+    *variable = W_CacheLumpName(state, lumpname, PU_STATIC as i32) as *mut patch_t;
 }
 pub unsafe fn ST_loadGraphics(state: &mut GameState) {
     ST_loadUnloadGraphics(
         state,
-        Some(ST_loadCallback as unsafe fn(&str, *mut *mut patch_t) -> ()),
+        Some(ST_loadCallback as unsafe fn(&mut GameState, &str, *mut *mut patch_t) -> ()),
     );
 }
 pub unsafe fn ST_loadData(state: &mut GameState) {
     state.st_stuff.lu_palette = W_GetNumForName("PLAYPAL");
     ST_loadGraphics(state);
 }
-unsafe fn ST_unloadCallback(lumpname: &str, variable: *mut *mut patch_t) {
+unsafe fn ST_unloadCallback(_state: &mut GameState, lumpname: &str, variable: *mut *mut patch_t) {
     W_ReleaseLumpName(lumpname);
     *variable = ::core::ptr::null_mut::<patch_t>();
 }
 pub unsafe fn ST_unloadGraphics(state: &mut GameState) {
     ST_loadUnloadGraphics(
         state,
-        Some(ST_unloadCallback as unsafe fn(&str, *mut *mut patch_t) -> ()),
+        Some(ST_unloadCallback as unsafe fn(&mut GameState, &str, *mut *mut patch_t) -> ()),
     );
 }
 pub unsafe fn ST_unloadData(state: &mut GameState) {
@@ -1126,7 +1141,7 @@ pub unsafe fn ST_initData(state: &mut GameState) {
         state.st_stuff.keyboxes[i as usize] = -(1 as i32);
         i += 1;
     }
-    STlib_init(&mut state.st_lib);
+    STlib_init(state);
 }
 pub unsafe fn ST_createWidgets(state: &mut GameState) {
     let mut i: i32 = 0;
