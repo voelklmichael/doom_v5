@@ -306,11 +306,11 @@ pub unsafe fn F_StartFinale(state: &mut GameState) {
     if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+        if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
             state.doomstat.gamemission as u32
-        })
+        }
     }) == doom as i32 as u32
     {
         S_ChangeMusic(state, mus_victor as i32, true_0);
@@ -333,20 +333,20 @@ pub unsafe fn F_StartFinale(state: &mut GameState) {
         if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
             doom as i32 as u32
         } else {
-            (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+            if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                 doom2 as i32 as u32
             } else {
                 state.doomstat.gamemission as u32
-            })
+            }
         }) == (*screen).mission as u32
             && ((if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
                 doom as i32 as u32
             } else {
-                (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+                if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                     doom2 as i32 as u32
                 } else {
                     state.doomstat.gamemission as u32
-                })
+                }
             }) != doom as i32 as u32
                 || state.g_game.gameepisode == (*screen).episode)
             && state.g_game.gamemap == (*screen).level

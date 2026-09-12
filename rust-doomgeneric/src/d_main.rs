@@ -680,11 +680,11 @@ pub unsafe fn D_IdentifyVersion(state: &mut GameState) {
     if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+        if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
             state.doomstat.gamemission as u32
-        })
+        }
     }) == doom as i32 as u32
     {
         if W_CheckNumForName("E4M1") > 0 as i32 {
@@ -714,11 +714,11 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
     if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+        if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
             state.doomstat.gamemission as u32
-        })
+        }
     }) == doom as i32 as u32
     {
         if is_freedoom {
@@ -739,33 +739,33 @@ pub unsafe fn D_SetGameDescription(state: &mut GameState) {
     } else if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+        if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
             state.doomstat.gamemission as u32
-        })
+        }
     }) == doom2 as i32 as u32
     {
         state.doomstat.gamedescription = "DOOM 2: Hell on Earth";
     } else if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+        if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
             state.doomstat.gamemission as u32
-        })
+        }
     }) == pack_plut as i32 as u32
     {
         state.doomstat.gamedescription = "DOOM 2: Plutonia Experiment";
     } else if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
         doom as i32 as u32
     } else {
-        (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+        if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
             doom2 as i32 as u32
         } else {
             state.doomstat.gamemission as u32
-        })
+        }
     }) == pack_tnt as i32 as u32
     {
         state.doomstat.gamedescription = "DOOM 2: TNT - Evilution";

@@ -1295,11 +1295,11 @@ unsafe fn M_SelectEndMessage(state: &mut GameState) -> &'static str {
         if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
             doom as i32 as u32
         } else {
-            (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+            if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                 doom2 as i32 as u32
             } else {
                 state.doomstat.gamemission as u32
-            })
+            }
         }) == doom as i32 as u32
         {
             &doom1_endmsg

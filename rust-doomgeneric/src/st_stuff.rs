@@ -575,11 +575,11 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
             } else if (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
                 doom as i32 as u32
             } else {
-                (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+                if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                     doom2 as i32 as u32
                 } else {
                     state.doomstat.gamemission as u32
-                })
+                }
             }) == doom as i32 as u32
                 && cht_CheckCheat(
                     &raw mut state.st_stuff.cheat_noclip,
@@ -588,11 +588,11 @@ pub unsafe fn ST_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
                 || (if state.doomstat.gamemission as u32 == pack_chex as i32 as u32 {
                     doom as i32 as u32
                 } else {
-                    (if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
+                    if state.doomstat.gamemission as u32 == pack_hacx as i32 as u32 {
                         doom2 as i32 as u32
                     } else {
                         state.doomstat.gamemission as u32
-                    })
+                    }
                 }) != doom as i32 as u32
                     && cht_CheckCheat(
                         &raw mut state.st_stuff.cheat_commercial_noclip,

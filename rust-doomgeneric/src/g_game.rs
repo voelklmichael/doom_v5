@@ -425,11 +425,11 @@ unsafe fn WeaponSelectable(state: &mut GameState, mut weapon: weapontype_t) -> b
         && (if state.doomstat.gamemission as u32 == pack_chex as u32 {
             doom as u32
         } else {
-            (if state.doomstat.gamemission as u32 == pack_hacx as u32 {
+            if state.doomstat.gamemission as u32 == pack_hacx as u32 {
                 doom2 as u32
             } else {
                 state.doomstat.gamemission as u32
-            })
+            }
         }) == doom as u32
     {
         return false;

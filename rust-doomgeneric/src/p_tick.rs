@@ -9,7 +9,6 @@ use crate::src::p_spec::P_UpdateSpecials;
 use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
 use crate::src::p_user::P_PlayerThink;
 use crate::src::z_zone::Z_Free;
-use ::libc;
 
 pub struct PTickState {
     pub leveltime: i32,
