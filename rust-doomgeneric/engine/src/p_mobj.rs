@@ -468,7 +468,7 @@ pub struct mobj_s {
     pub target: Option<MobjId>,
     pub reactiontime: i32,
     pub threshold: i32,
-    pub player: *mut player_s,
+    pub player: Option<PlayerId>,
     pub lastlook: i32,
     pub spawnpoint: mapthing_t,
     pub tracer: Option<MobjId>,
@@ -483,7 +483,9 @@ pub struct pspdef_t {
     pub sy: fixed_t,
 }
 pub type mobj_t = mobj_s;
-pub use crate::src::d_player::{player_s, player_t, playerstate_t, PST_DEAD, PST_LIVE, PST_REBORN};
+pub use crate::src::d_player::{
+    player_s, player_t, playerstate_t, PlayerId, PST_DEAD, PST_LIVE, PST_REBORN,
+};
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct subsector_s {
@@ -625,7 +627,10 @@ pub unsafe fn P_XYMovement(state: &mut GameState, mut mo: *mut mobj_t) {
         }
         return;
     }
-    player = (*mo).player as *mut player_t;
+    player = match (*mo).player {
+        Some(id) => state.g_game.player_mut(id),
+        None => ::core::ptr::null_mut::<player_t>(),
+    };
     if (*mo).momx > MAXMOVE {
         (*mo).momx = MAXMOVE as fixed_t;
     } else if (*mo).momx < -MAXMOVE {
@@ -651,7 +656,7 @@ pub unsafe fn P_XYMovement(state: &mut GameState, mut mo: *mut mobj_t) {
             xmove = ymove;
         }
         if !P_TryMove(state, mo, ptryx, ptryy) {
-            if !(*mo).player.is_null() {
+            if (*mo).player.is_some() {
                 P_SlideMove(state, mo);
             } else if (*mo).flags & MF_MISSILE as i32 != 0 {
                 if !state.p_map.ceilingline.is_null()
@@ -729,9 +734,10 @@ pub unsafe fn P_XYMovement(state: &mut GameState, mut mo: *mut mobj_t) {
 pub unsafe fn P_ZMovement(state: &mut GameState, mut mo: *mut mobj_t) {
     let mut dist: fixed_t = 0;
     let mut delta: fixed_t = 0;
-    if !(*mo).player.is_null() && (*mo).z < (*mo).floorz {
-        (*(*mo).player).viewheight -= (*mo).floorz - (*mo).z;
-        (*(*mo).player).deltaviewheight = VIEWHEIGHT - (*(*mo).player).viewheight >> 3 as i32;
+    if (*mo).player.is_some() && (*mo).z < (*mo).floorz {
+        let mo_player = state.g_game.player_mut((*mo).player.unwrap());
+        (*mo_player).viewheight -= (*mo).floorz - (*mo).z;
+        (*mo_player).deltaviewheight = VIEWHEIGHT - (*mo_player).viewheight >> 3 as i32;
     }
     (*mo).z += (*mo).momz;
     let mo_target = (*mo).target.and_then(|id| state.p_mobj.mobj_get(id));
@@ -754,8 +760,9 @@ pub unsafe fn P_ZMovement(state: &mut GameState, mut mo: *mut mobj_t) {
             (*mo).momz = -(*mo).momz;
         }
         if (*mo).momz < 0 as i32 {
-            if !(*mo).player.is_null() && (*mo).momz < -GRAVITY * 8 as i32 {
-                (*(*mo).player).deltaviewheight = (*mo).momz >> 3 as i32;
+            if (*mo).player.is_some() && (*mo).momz < -GRAVITY * 8 as i32 {
+                (*state.g_game.player_mut((*mo).player.unwrap())).deltaviewheight =
+                    (*mo).momz >> 3 as i32;
                 S_StartSound(
                     state,
                     mo as *mut ::core::ffi::c_void,
@@ -1069,7 +1076,7 @@ impl PMobjState {
                 target: None,
                 reactiontime: 0,
                 threshold: 0,
-                player: ::core::ptr::null::<player_s>() as *mut player_s,
+                player: None,
                 lastlook: 0,
                 spawnpoint: mapthing_t {
                     x: 0,
@@ -1181,7 +1188,7 @@ pub unsafe fn P_SpawnPlayer(state: &mut GameState, mut mthing: *mut mapthing_t) 
         (*mobj).flags |= ((*mthing).type_0 as i32 - 1 as i32) << MF_TRANSSHIFT as i32;
     }
     (*mobj).angle = (ANG45 * ((*mthing).angle as i32 / 45 as i32)) as angle_t;
-    (*mobj).player = p as *mut player_s;
+    (*mobj).player = Some(PlayerId(((*mthing).type_0 as i32 - 1 as i32) as u8));
     (*mobj).health = (*p).health;
     (*p).mo = mobj;
     (*p).playerstate = PST_LIVE;

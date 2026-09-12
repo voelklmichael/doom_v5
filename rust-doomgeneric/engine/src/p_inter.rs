@@ -4,7 +4,7 @@ use crate::src::d_mode::{commercial, GameVersion};
 use crate::src::d_mode::{sk_baby, sk_nightmare};
 use crate::src::d_player::CF_GODMODE;
 use crate::src::d_player::{am_cell, am_clip, am_misl, am_noammo, am_shell, ammotype_t, NUMAMMO};
-use crate::src::d_player::{player_t, PST_DEAD};
+use crate::src::d_player::{player_t, PlayerId, PST_DEAD};
 use crate::src::d_player::{
     pw_allmap, pw_infrared, pw_invisibility, pw_invulnerability, pw_ironfeet, pw_strength,
 };
@@ -267,7 +267,7 @@ pub unsafe fn P_TouchSpecialThing(
         return;
     }
     sound = sfx_itemup as i32;
-    player = (*toucher).player as *mut player_t;
+    player = state.g_game.player_mut((*toucher).player.unwrap());
     if (*toucher).health <= 0 as i32 {
         return;
     }
@@ -593,34 +593,26 @@ pub unsafe fn P_KillMobj(state: &mut GameState, mut source: *mut mobj_t, mut tar
     }
     (*target).flags |= MF_CORPSE as i32 | MF_DROPOFF as i32;
     (*target).height >>= 2 as i32;
-    if !source.is_null() && !(*source).player.is_null() {
+    if !source.is_null() && (*source).player.is_some() {
+        let source_player = state.g_game.player_mut((*source).player.unwrap());
         if (*target).flags & MF_COUNTKILL as i32 != 0 {
-            (*(*source).player).killcount += 1;
+            (*source_player).killcount += 1;
         }
-        if !(*target).player.is_null() {
-            (*(*source).player).frags[(*target)
-                .player
-                .offset_from(&raw mut state.g_game.players as *mut player_t)
-                as i64 as usize] += 1;
+        if let Some(target_player_id) = (*target).player {
+            (*source_player).frags[target_player_id.0 as usize] += 1;
         }
     } else if !state.g_game.netgame && (*target).flags & MF_COUNTKILL as i32 != 0 {
         state.g_game.players[0 as i32 as usize].killcount += 1;
     }
-    if !(*target).player.is_null() {
+    if let Some(target_player_id) = (*target).player {
+        let target_player = state.g_game.player_mut(target_player_id);
         if source.is_null() {
-            (*(*target).player).frags[(*target)
-                .player
-                .offset_from(&raw mut state.g_game.players as *mut player_t)
-                as i64 as usize] += 1;
+            (*target_player).frags[target_player_id.0 as usize] += 1;
         }
         (*target).flags &= !(MF_SOLID as i32);
-        (*(*target).player).playerstate = PST_DEAD;
-        P_DropWeapon(state, (*target).player as *mut player_t);
-        if (*target).player
-            == (&raw mut state.g_game.players as *mut player_t)
-                .offset(state.g_game.consoleplayer as isize) as *mut player_t
-            && state.am_map.automapactive
-        {
+        (*target_player).playerstate = PST_DEAD;
+        P_DropWeapon(state, target_player);
+        if target_player_id.0 as i32 == state.g_game.consoleplayer && state.am_map.automapactive {
             AM_Stop(state);
         }
     }
@@ -673,15 +665,20 @@ pub unsafe fn P_DamageMobj(
         (*target).momy = (*target).momz;
         (*target).momx = (*target).momy;
     }
-    player = (*target).player as *mut player_t;
+    let target_player_id = (*target).player;
+    player = match target_player_id {
+        Some(id) => state.g_game.player_mut(id),
+        None => ::core::ptr::null_mut::<player_t>(),
+    };
     if !player.is_null() && state.g_game.gameskill as i32 == sk_baby as i32 {
         damage >>= 1 as i32;
     }
     if !inflictor.is_null()
         && (*target).flags & MF_NOCLIP as i32 == 0
         && (source.is_null()
-            || (*source).player.is_null()
-            || (*(*source).player).readyweapon as u32 != wp_chainsaw as i32 as u32)
+            || (*source).player.is_none()
+            || (*state.g_game.player_mut((*source).player.unwrap())).readyweapon as u32
+                != wp_chainsaw as i32 as u32)
     {
         ang = R_PointToAngle2(
             state,
@@ -745,10 +742,7 @@ pub unsafe fn P_DamageMobj(
         if (*player).damagecount > 100 as i32 {
             (*player).damagecount = 100 as i32;
         }
-        if player
-            == (&raw mut state.g_game.players as *mut player_t)
-                .offset(state.g_game.consoleplayer as isize) as *mut player_t
-        {
+        if target_player_id == Some(PlayerId(state.g_game.consoleplayer as u8)) {
             I_Tactile();
         }
     }

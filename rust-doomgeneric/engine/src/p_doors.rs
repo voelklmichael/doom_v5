@@ -176,10 +176,11 @@ pub unsafe fn EV_DoLockedDoor(
     mut thing: *mut mobj_t,
 ) -> i32 {
     let mut p: *mut player_t = ::core::ptr::null_mut::<player_t>();
-    p = (*thing).player as *mut player_t;
-    if p.is_null() {
+    let thing_player = (*thing).player;
+    if thing_player.is_none() {
         return 0 as i32;
     }
+    p = state.g_game.player_mut(thing_player.unwrap());
     match (*line).special as i32 {
         99 | 133 => {
             if p.is_null() {
@@ -319,7 +320,10 @@ pub unsafe fn EV_VerticalDoor(
     let mut door: *mut vldoor_t = ::core::ptr::null_mut::<vldoor_t>();
     let mut side: i32 = 0;
     side = 0 as i32;
-    player = (*thing).player as *mut player_t;
+    player = match (*thing).player {
+        Some(id) => state.g_game.player_mut(id),
+        None => ::core::ptr::null_mut::<player_t>(),
+    };
     match (*line).special as i32 {
         26 | 32 => {
             if player.is_null() {
@@ -369,7 +373,7 @@ pub unsafe fn EV_VerticalDoor(
                 if (*door).direction == -(1 as i32) {
                     (*door).direction = 1 as i32;
                 } else {
-                    if (*thing).player.is_null() {
+                    if (*thing).player.is_none() {
                         return;
                     }
                     if matches!((*door).thinker.function, ThinkerFn::Door(_)) {

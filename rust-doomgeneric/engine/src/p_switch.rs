@@ -436,7 +436,7 @@ pub unsafe fn P_UseSpecialLine(
             _ => return false,
         }
     }
-    if (*thing).player.is_null() {
+    if (*thing).player.is_none() {
         if (*line).flags as i32 & ML_SECRET != 0 {
             return false;
         }

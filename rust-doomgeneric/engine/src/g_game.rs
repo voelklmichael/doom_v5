@@ -1332,7 +1332,7 @@ pub unsafe fn G_DoReborn(state: &mut GameState, mut playernum: i32) {
     if !state.g_game.netgame {
         state.g_game.gameaction = ga_loadlevel;
     } else {
-        (*state.g_game.players[playernum as usize].mo).player = ::core::ptr::null_mut::<player_s>();
+        (*state.g_game.players[playernum as usize].mo).player = None;
         if state.g_game.deathmatch != 0 {
             G_DeathMatchSpawnPlayer(state, playernum);
             return;
