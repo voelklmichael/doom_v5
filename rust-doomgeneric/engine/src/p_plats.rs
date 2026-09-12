@@ -1,4 +1,3 @@
-use crate::src::doomdef::NULL;
 use crate::src::doomdef::TICRATE;
 use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
@@ -7,6 +6,7 @@ use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_random::P_Random;
 use crate::src::p_floor::T_MovePlane;
 use crate::src::p_floor::{crushed, ok, pastdest, result_e};
+use crate::src::p_mobj::SectorSpecial;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
 use crate::src::p_setup::SectorId;
@@ -162,7 +162,7 @@ pub unsafe fn EV_DoPlat(
             break;
         }
         sec = state.p_setup.sector_mut(SectorId(secnum as u32));
-        if !(*sec).specialdata.is_null() {
+        if (*sec).specialdata.is_some() {
             continue;
         }
         rtn = 1 as i32;
@@ -175,7 +175,7 @@ pub unsafe fn EV_DoPlat(
         P_AddThinker(state, &raw mut (*plat).thinker);
         (*plat).type_0 = type_0;
         (*plat).sector = SectorId(secnum as u32);
-        (*sec).specialdata = plat as *mut ::core::ffi::c_void;
+        (*sec).specialdata = Some(SectorSpecial::Plat(plat));
         (*plat).thinker.function = ThinkerFn::Plat(T_PlatRaise);
         (*plat).crush = false;
         (*plat).tag = (*line).tag as i32;
@@ -312,7 +312,7 @@ pub unsafe fn P_RemoveActivePlat(state: &mut GameState, mut plat: *mut plat_t) {
             (*state
                 .p_setup
                 .sector_mut((*state.p_plats.activeplats[i as usize]).sector))
-            .specialdata = NULL;
+            .specialdata = None;
             P_RemoveThinker(
                 &raw mut (**(&raw mut state.p_plats.activeplats as *mut *mut plat_t)
                     .offset(i as isize))

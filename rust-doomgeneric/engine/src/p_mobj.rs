@@ -72,6 +72,13 @@ pub enum ThinkerFn {
     Glow(unsafe fn(&mut GameState, *mut glow_t)),
 }
 #[derive(Copy, Clone)]
+pub enum SectorSpecial {
+    Door(*mut vldoor_t),
+    Ceiling(*mut ceiling_t),
+    Floor(*mut floormove_t),
+    Plat(*mut plat_t),
+}
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct thinker_s {
     pub prev: *mut thinker_s,
@@ -509,7 +516,7 @@ pub struct sector_t {
     pub soundorg: degenmobj_t,
     pub validcount: i32,
     pub thinglist: *mut mobj_t,
-    pub specialdata: *mut ::core::ffi::c_void,
+    pub specialdata: Option<SectorSpecial>,
     pub linecount: i32,
     pub lines: *mut *mut line_s,
 }
@@ -529,7 +536,6 @@ pub struct line_s {
     pub frontsector: Option<SectorId>,
     pub backsector: Option<SectorId>,
     pub validcount: i32,
-    pub specialdata: *mut ::core::ffi::c_void,
 }
 pub type slopetype_t = u32;
 pub const ST_NEGATIVE: slopetype_t = 3;

@@ -1,9 +1,9 @@
-use crate::src::doomdef::NULL;
 use crate::src::game_state::GameState;
 use crate::src::m_fixed::fixed_t;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::p_map::P_ChangeSector;
+use crate::src::p_mobj::SectorSpecial;
 use crate::src::p_mobj::ThinkerFn;
 use crate::src::p_mobj::{line_t, sector_t};
 use crate::src::p_setup::SectorId;
@@ -174,7 +174,7 @@ pub unsafe fn T_MoveFloor(state: &mut GameState, mut floor: *mut floormove_t) {
         );
     }
     if res as u32 == pastdest as i32 as u32 {
-        (*sec).specialdata = NULL;
+        (*sec).specialdata = None;
         if (*floor).direction == 1 as i32 {
             match (*floor).type_0 as u32 {
                 11 => {
@@ -218,7 +218,7 @@ pub unsafe fn EV_DoFloor(
             break;
         }
         sec = state.p_setup.sector_mut(SectorId(secnum as u32));
-        if !(*sec).specialdata.is_null() {
+        if (*sec).specialdata.is_some() {
             continue;
         }
         rtn = 1 as i32;
@@ -229,7 +229,7 @@ pub unsafe fn EV_DoFloor(
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut floormove_t;
         P_AddThinker(state, &raw mut (*floor).thinker);
-        (*sec).specialdata = floor as *mut ::core::ffi::c_void;
+        (*sec).specialdata = Some(SectorSpecial::Floor(floor));
         (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
         (*floor).type_0 = floortype;
         (*floor).crush = false;
@@ -416,7 +416,7 @@ pub unsafe fn EV_BuildStairs(
             break;
         }
         sec = state.p_setup.sector_mut(SectorId(secnum as u32));
-        if !(*sec).specialdata.is_null() {
+        if (*sec).specialdata.is_some() {
             continue;
         }
         rtn = 1 as i32;
@@ -427,7 +427,7 @@ pub unsafe fn EV_BuildStairs(
             ::core::ptr::null_mut::<::core::ffi::c_void>(),
         ) as *mut floormove_t;
         P_AddThinker(state, &raw mut (*floor).thinker);
-        (*sec).specialdata = floor as *mut ::core::ffi::c_void;
+        (*sec).specialdata = Some(SectorSpecial::Floor(floor));
         (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
         (*floor).direction = 1 as i32;
         (*floor).sector = SectorId(secnum as u32);
@@ -459,7 +459,7 @@ pub unsafe fn EV_BuildStairs(
                         tsec = state.p_setup.sector_mut(back_id);
                         if !((*tsec).floorpic as i32 != texture) {
                             height += stairsize as i32;
-                            if (*tsec).specialdata.is_null() {
+                            if (*tsec).specialdata.is_none() {
                                 sec = tsec;
                                 secnum = newsecnum;
                                 floor = Z_Malloc(
@@ -469,7 +469,7 @@ pub unsafe fn EV_BuildStairs(
                                     ::core::ptr::null_mut::<::core::ffi::c_void>(),
                                 ) as *mut floormove_t;
                                 P_AddThinker(state, &raw mut (*floor).thinker);
-                                (*sec).specialdata = floor as *mut ::core::ffi::c_void;
+                                (*sec).specialdata = Some(SectorSpecial::Floor(floor));
                                 (*floor).thinker.function = ThinkerFn::Floor(T_MoveFloor);
                                 (*floor).direction = 1 as i32;
                                 (*floor).sector = SectorId(secnum as u32);

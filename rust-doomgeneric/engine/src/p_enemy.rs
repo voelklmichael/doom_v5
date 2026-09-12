@@ -519,7 +519,6 @@ pub unsafe fn A_KeenDie(state: &mut GameState, id: MobjId) {
         frontsector: None,
         backsector: None,
         validcount: 0,
-        specialdata: ::core::ptr::null_mut::<::core::ffi::c_void>(),
     };
     A_Fall(state, (*mo).id);
     th = state.p_tick.thinkercap.next as *mut thinker_t;
@@ -1454,7 +1453,6 @@ pub unsafe fn A_BossDeath(state: &mut GameState, id: MobjId) {
         frontsector: None,
         backsector: None,
         validcount: 0,
-        specialdata: ::core::ptr::null_mut::<::core::ffi::c_void>(),
     };
     let mut i: i32 = 0;
     if state.doomstat.gamemode as u32 == commercial as i32 as u32 {
