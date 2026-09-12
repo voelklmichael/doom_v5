@@ -80,7 +80,7 @@ pub unsafe fn STlib_initNum(
     (*n).on = on;
     (*n).p = pl;
 }
-pub unsafe fn STlib_drawNum(state: &mut GameState, mut n: *mut st_number_t, _refresh: bool) {
+pub unsafe fn STlib_drawNum(state: &mut GameState, mut n: *mut st_number_t) {
     let mut numdigits: i32 = (*n).width;
     let mut num: i32 = *(*n).num;
     let mut w: i32 = (**(*n).p.offset(0 as i32 as isize)).width as i32;
@@ -142,9 +142,9 @@ pub unsafe fn STlib_drawNum(state: &mut GameState, mut n: *mut st_number_t, _ref
         );
     }
 }
-pub unsafe fn STlib_updateNum(state: &mut GameState, mut n: *mut st_number_t, mut refresh: bool) {
+pub unsafe fn STlib_updateNum(state: &mut GameState, mut n: *mut st_number_t) {
     if *(*n).on {
-        STlib_drawNum(state, n, refresh);
+        STlib_drawNum(state, n);
     }
 }
 pub unsafe fn STlib_initPercent(
@@ -167,7 +167,7 @@ pub unsafe fn STlib_updatePercent(
     if refresh != 0 && *(*per).n.on {
         V_DrawPatch(state, (*per).n.x, (*per).n.y, (*per).p);
     }
-    STlib_updateNum(state, &raw mut (*per).n, refresh != 0);
+    STlib_updateNum(state, &raw mut (*per).n);
 }
 pub unsafe fn STlib_initMultIcon(
     mut i: *mut st_multicon_t,

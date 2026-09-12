@@ -955,15 +955,15 @@ pub unsafe fn ST_drawWidgets(state: &mut GameState, mut refresh: bool) {
     state.st_stuff.st_armson = state.st_stuff.st_statusbaron && state.g_game.deathmatch == 0;
     state.st_stuff.st_fragson = state.g_game.deathmatch != 0 && state.st_stuff.st_statusbaron;
     let w_ready = &raw mut state.st_stuff.w_ready;
-    STlib_updateNum(state, w_ready, refresh);
+    STlib_updateNum(state, w_ready);
     i = 0 as i32;
     while i < 4 as i32 {
         let w_ammo = (&raw mut state.st_stuff.w_ammo as *mut st_number_t).offset(i as isize)
             as *mut st_number_t;
-        STlib_updateNum(state, w_ammo, refresh);
+        STlib_updateNum(state, w_ammo);
         let w_maxammo = (&raw mut state.st_stuff.w_maxammo as *mut st_number_t).offset(i as isize)
             as *mut st_number_t;
-        STlib_updateNum(state, w_maxammo, refresh);
+        STlib_updateNum(state, w_maxammo);
         i += 1;
     }
     let w_health = &raw mut state.st_stuff.w_health;
@@ -989,7 +989,7 @@ pub unsafe fn ST_drawWidgets(state: &mut GameState, mut refresh: bool) {
         i += 1;
     }
     let w_frags = &raw mut state.st_stuff.w_frags;
-    STlib_updateNum(state, w_frags, refresh);
+    STlib_updateNum(state, w_frags);
 }
 pub unsafe fn ST_doRefresh(state: &mut GameState) {
     state.st_stuff.st_firsttime = false;
