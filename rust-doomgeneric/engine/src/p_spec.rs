@@ -46,6 +46,7 @@ use crate::src::p_plats::EV_StopPlat;
 use crate::src::p_plats::{
     blazeDWUS, downWaitUpStay, perpetualRaise, plattype_e, raiseToNearestAndChange,
 };
+use crate::src::p_setup::LineId;
 use crate::src::p_setup::SectorId;
 use crate::src::p_setup::SideId;
 use crate::src::p_switch::bwhere_e;
@@ -131,7 +132,7 @@ pub struct animdef_t {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct button_t {
-    pub line: *mut line_t,
+    pub line: LineId,
     pub where_0: bwhere_e,
     pub btexture: i32,
     pub btimer: i32,
@@ -585,7 +586,7 @@ pub unsafe fn P_CrossSpecialLine(
 ) {
     let mut line: *mut line_t = ::core::ptr::null_mut::<line_t>();
     let mut ok: i32 = 0;
-    line = state.p_setup.lines.offset(linenum as isize) as *mut line_t;
+    line = state.p_setup.lines.as_mut_ptr().offset(linenum as isize);
     if (*thing).player.is_none() {
         match (*thing).type_0 as u32 {
             33 | 34 | 35 | 31 | 32 | 16 => return,
@@ -1019,21 +1020,22 @@ pub unsafe fn P_UpdateSpecials(state: &mut GameState) {
         if state.p_switch.buttonlist[i as usize].btimer != 0 {
             state.p_switch.buttonlist[i as usize].btimer -= 1;
             if state.p_switch.buttonlist[i as usize].btimer == 0 {
+                let button_line_id = state.p_switch.buttonlist[i as usize].line;
                 match state.p_switch.buttonlist[i as usize].where_0 as u32 {
                     0 => {
-                        state.p_setup.sides[(*state.p_switch.buttonlist[i as usize].line).sidenum
+                        state.p_setup.sides[state.p_setup.lines[button_line_id.0 as usize].sidenum
                             [0 as i32 as usize]
                             as usize]
                             .toptexture = state.p_switch.buttonlist[i as usize].btexture as i16;
                     }
                     1 => {
-                        state.p_setup.sides[(*state.p_switch.buttonlist[i as usize].line).sidenum
+                        state.p_setup.sides[state.p_setup.lines[button_line_id.0 as usize].sidenum
                             [0 as i32 as usize]
                             as usize]
                             .midtexture = state.p_switch.buttonlist[i as usize].btexture as i16;
                     }
                     2 => {
-                        state.p_setup.sides[(*state.p_switch.buttonlist[i as usize].line).sidenum
+                        state.p_setup.sides[state.p_setup.lines[button_line_id.0 as usize].sidenum
                             [0 as i32 as usize]
                             as usize]
                             .bottomtexture = state.p_switch.buttonlist[i as usize].btexture as i16;
@@ -1240,13 +1242,13 @@ pub unsafe fn P_SpawnSpecials(state: &mut GameState) {
     state.p_spec.numlinespecials = 0 as i16;
     i = 0 as i32;
     while i < state.p_setup.numlines {
-        match (*state.p_setup.lines.offset(i as isize)).special as i32 {
+        match (*state.p_setup.lines.as_mut_ptr().offset(i as isize)).special as i32 {
             48 => {
                 if state.p_spec.numlinespecials as i32 >= MAXLINEANIMS {
                     I_Error("Too many scrolling wall linedefs! (Vanilla limit is 64)");
                 }
                 state.p_spec.linespeciallist[state.p_spec.numlinespecials as usize] =
-                    state.p_setup.lines.offset(i as isize) as *mut line_t;
+                    state.p_setup.lines.as_mut_ptr().offset(i as isize);
                 state.p_spec.numlinespecials += 1;
             }
             _ => {}

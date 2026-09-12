@@ -52,6 +52,25 @@ pub struct SideId(pub u32);
 pub struct SubsectorId(pub u32);
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct VertexId(pub u32);
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct LineId(pub u32);
+
+pub const ZERO_LINE: line_s = line_s {
+    v1: VertexId(0),
+    v2: VertexId(0),
+    dx: 0,
+    dy: 0,
+    flags: 0,
+    special: 0,
+    tag: 0,
+    sidenum: [0; 2],
+    bbox: [0; 4],
+    slopetype: ST_HORIZONTAL,
+    frontsector: None,
+    backsector: None,
+    validcount: 0,
+    specialdata: ::core::ptr::null::<::core::ffi::c_void>() as *mut ::core::ffi::c_void,
+};
 
 pub const ZERO_SECTOR: sector_t = sector_t {
     floorheight: 0,
@@ -93,7 +112,7 @@ pub struct PSetupState {
     pub numnodes: i32,
     pub nodes: *mut node_t,
     pub numlines: i32,
-    pub lines: *mut line_t,
+    pub lines: Vec<line_t>,
     pub numsides: i32,
     pub sides: Vec<side_t>,
     pub totallines: i32,
@@ -125,7 +144,7 @@ impl PSetupState {
             numnodes: 0,
             nodes: ::core::ptr::null::<node_t>() as *mut node_t,
             numlines: 0,
-            lines: ::core::ptr::null::<line_t>() as *mut line_t,
+            lines: Vec::new(),
             numsides: 0,
             sides: Vec::new(),
             totallines: 0,
@@ -167,6 +186,9 @@ impl PSetupState {
     }
     pub fn vertex_mut(&mut self, id: VertexId) -> *mut vertex_t {
         &mut self.vertexes[id.0 as usize] as *mut vertex_t
+    }
+    pub fn line_mut(&mut self, id: LineId) -> *mut line_t {
+        &mut self.lines[id.0 as usize] as *mut line_t
     }
 }
 
@@ -322,8 +344,8 @@ pub unsafe fn P_LoadSegs(state: &mut GameState, mut lump: i32) {
         (*li).angle = (((*ml).angle as i32) << 16 as i32) as angle_t;
         (*li).offset = (((*ml).offset as i32) << 16 as i32) as fixed_t;
         linedef = (*ml).linedef as i32;
-        ldef = state.p_setup.lines.offset(linedef as isize) as *mut line_t;
-        (*li).linedef = ldef;
+        (*li).linedef = LineId(linedef as u32);
+        ldef = state.p_setup.line_mut((*li).linedef);
         side = (*ml).side as i32;
         let seg_sidenum = *(&raw mut (*ldef).sidenum as *mut i16).offset(side as isize) as u32;
         (*li).sidedef = SideId(seg_sidenum);
@@ -565,23 +587,12 @@ pub unsafe fn P_LoadLineDefs(state: &mut GameState, mut lump: i32) {
     state.p_setup.numlines = (W_LumpLength(&mut state.w_wad, lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<maplinedef_t>() as usize)
         as i32;
-    state.p_setup.lines = Z_Malloc(
-        &mut state.z_zone,
-        (state.p_setup.numlines as usize).wrapping_mul(::core::mem::size_of::<line_t>() as usize)
-            as i32,
-        PU_LEVEL as i32,
-        ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut line_t;
-    memset(
-        state.p_setup.lines as *mut ::core::ffi::c_void,
-        0 as i32,
-        (state.p_setup.numlines as size_t).wrapping_mul(::core::mem::size_of::<line_t>() as size_t),
-    );
+    state.p_setup.lines = vec![ZERO_LINE; state.p_setup.numlines as usize];
     data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     mld = data as *mut maplinedef_t;
-    ld = state.p_setup.lines;
     i = 0 as i32;
     while i < state.p_setup.numlines {
+        ld = &mut state.p_setup.lines[i as usize] as *mut line_t;
         (*ld).flags = (*mld).flags;
         (*ld).special = (*mld).special;
         (*ld).tag = (*mld).tag;
@@ -630,7 +641,6 @@ pub unsafe fn P_LoadLineDefs(state: &mut GameState, mut lump: i32) {
         }
         i += 1;
         mld = mld.offset(1);
-        ld = ld.offset(1);
     }
     W_ReleaseLumpNum(&mut state.w_wad, lump);
 }
@@ -721,7 +731,7 @@ pub unsafe fn P_GroupLines(state: &mut GameState) {
             state.p_setup.sides[seg_sidedef.0 as usize].sector;
         i += 1;
     }
-    li = state.p_setup.lines;
+    li = state.p_setup.lines.as_mut_ptr();
     state.p_setup.totallines = 0 as i32;
     i = 0 as i32;
     while i < state.p_setup.numlines {
@@ -753,7 +763,7 @@ pub unsafe fn P_GroupLines(state: &mut GameState) {
     }
     i = 0 as i32;
     while i < state.p_setup.numlines {
-        li = state.p_setup.lines.offset(i as isize) as *mut line_t;
+        li = state.p_setup.lines.as_mut_ptr().offset(i as isize);
         if let Some(front_id) = (*li).frontsector {
             sector = state.p_setup.sector_mut(front_id);
             let ref mut fresh1 = *(*sector).lines.offset((*sector).linecount as isize);

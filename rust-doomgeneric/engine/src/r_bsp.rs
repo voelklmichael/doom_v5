@@ -2,7 +2,8 @@ use crate::src::game_state::GameState;
 use crate::src::i_system::I_Error;
 use crate::src::m_bbox::{BOXBOTTOM, BOXLEFT, BOXRIGHT, BOXTOP};
 use crate::src::m_fixed::fixed_t;
-use crate::src::p_mobj::{line_t, subsector_t};
+use crate::src::p_mobj::subsector_t;
+use crate::src::p_setup::LineId;
 use crate::src::p_setup::SectorId;
 use crate::src::p_setup::SideId;
 use crate::src::p_setup::SubsectorId;
@@ -20,7 +21,7 @@ use crate::src::tables::ANGLETOFINESHIFT;
 pub struct RBspState {
     pub curline: *mut seg_t,
     pub sidedef: SideId,
-    pub linedef: *mut line_t,
+    pub linedef: LineId,
     pub frontsector: Option<SectorId>,
     pub backsector: Option<SectorId>,
     pub drawsegs: [drawseg_t; 256],
@@ -34,7 +35,7 @@ impl RBspState {
         RBspState {
             curline: ::core::ptr::null::<seg_t>() as *mut seg_t,
             sidedef: SideId(0),
-            linedef: ::core::ptr::null::<line_t>() as *mut line_t,
+            linedef: LineId(0),
             frontsector: None,
             backsector: None,
             drawsegs: [drawseg_s {

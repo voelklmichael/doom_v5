@@ -1,6 +1,6 @@
 use crate::src::doomdef::boolean;
 use crate::src::m_fixed::fixed_t;
-use crate::src::p_mobj::line_t;
+use crate::src::p_setup::LineId;
 use crate::src::p_setup::SectorId;
 use crate::src::p_setup::SideId;
 use crate::src::p_setup::VertexId;
@@ -27,7 +27,7 @@ pub struct seg_t {
     pub offset: fixed_t,
     pub angle: angle_t,
     pub sidedef: SideId,
-    pub linedef: *mut line_t,
+    pub linedef: LineId,
     pub frontsector: Option<SectorId>,
     pub backsector: Option<SectorId>,
 }

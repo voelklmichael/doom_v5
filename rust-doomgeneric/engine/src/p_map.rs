@@ -526,7 +526,7 @@ pub unsafe fn P_TryMove(
                 if (*ld).special != 0 {
                     P_CrossSpecialLine(
                         state,
-                        ld.offset_from(state.p_setup.lines) as i64 as i32,
+                        ld.offset_from(state.p_setup.lines.as_ptr()) as i64 as i32,
                         oldside,
                         thing,
                     );
@@ -1208,7 +1208,7 @@ unsafe fn SpechitOverrun(state: &mut GameState, mut ld: *mut line_t) {
             state.p_map.baseaddr = DEFAULT_SPECHIT_MAGIC as u32;
         }
     }
-    addr = (state.p_map.baseaddr as i64 + ld.offset_from(state.p_setup.lines) as i64 * 0x3e as i64)
+    addr = (state.p_map.baseaddr as i64 + ld.offset_from(state.p_setup.lines.as_ptr()) as i64 * 0x3e as i64)
         as u32;
     match state.p_map.numspechit {
         9 | 10 | 11 | 12 => {

@@ -22,6 +22,7 @@ use crate::src::p_floor::{
 use crate::src::p_lights::EV_LightTurnOn;
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_mobj::line_t;
+use crate::src::p_setup::LineId;
 use crate::src::p_setup::SectorId;
 use crate::src::p_plats::EV_DoPlat;
 use crate::src::p_plats::{blazeDWUS, downWaitUpStay, raiseAndChange, raiseToNearestAndChange};
@@ -265,7 +266,7 @@ impl PSwitchState {
             switchlist: [0; 100],
             numswitches: 0,
             buttonlist: [button_t {
-                line: ::core::ptr::null::<line_t>() as *mut line_t,
+                line: LineId(0),
                 where_0: top,
                 btexture: 0,
                 btimer: 0,
@@ -321,10 +322,11 @@ pub unsafe fn P_StartButton(
     mut time: i32,
 ) {
     let mut i: i32 = 0;
+    let line_id = LineId(line.offset_from(state.p_setup.lines.as_ptr()) as u32);
     i = 0 as i32;
     while i < MAXBUTTONS {
         if state.p_switch.buttonlist[i as usize].btimer != 0
-            && state.p_switch.buttonlist[i as usize].line == line
+            && state.p_switch.buttonlist[i as usize].line == line_id
         {
             return;
         }
@@ -333,7 +335,7 @@ pub unsafe fn P_StartButton(
     i = 0 as i32;
     while i < MAXBUTTONS {
         if state.p_switch.buttonlist[i as usize].btimer == 0 {
-            state.p_switch.buttonlist[i as usize].line = line;
+            state.p_switch.buttonlist[i as usize].line = line_id;
             state.p_switch.buttonlist[i as usize].where_0 = w;
             state.p_switch.buttonlist[i as usize].btexture = texture;
             state.p_switch.buttonlist[i as usize].btimer = time;
