@@ -267,12 +267,11 @@ pub unsafe fn D_InitNetGame(
     mut connect_data: *mut net_connect_data_t,
 ) -> bool {
     let mut result: bool = false;
-    I_AtExit(&mut state.i_system, Some(D_QuitNetGame as unsafe extern "C" fn(&mut GameState) -> ()), true);
+    I_AtExit(&mut state.i_system, Some(D_QuitNetGame as unsafe fn(&mut GameState) -> ()), true);
     state.d_loop.player_class = (*connect_data).player_class;
     return result;
 }
-#[no_mangle]
-pub unsafe extern "C" fn D_QuitNetGame(_state: &mut GameState) {}
+pub unsafe fn D_QuitNetGame(_state: &mut GameState) {}
 unsafe fn GetLowTic(state: &mut GameState) -> i32 {
     let mut lowtic: i32 = 0;
     lowtic = state.d_loop.maketic;
