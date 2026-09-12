@@ -468,8 +468,7 @@ pub unsafe fn D_BindVariables(state: &mut GameState) {
         M_BindVariable(
             &mut state.m_config,
             &name,
-            (&raw mut state.hu_stuff.chat_macros as *mut *mut ::core::ffi::c_char)
-                .offset(i as isize) as *mut *mut ::core::ffi::c_char
+            &raw mut state.hu_stuff.chat_macros[i as usize] as *mut &'static str
                 as *mut ::core::ffi::c_void,
         );
         i += 1;

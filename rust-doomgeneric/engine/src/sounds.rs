@@ -82,7 +82,6 @@ pub struct sfxinfo_struct {
     pub usefulness: i32,
     pub lumpnum: i32,
     pub numchannels: i32,
-    pub driver_data: *mut ::core::ffi::c_void,
 }
 pub type sfxinfo_t = sfxinfo_struct;
 #[derive(Copy, Clone)]
@@ -642,7 +641,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -654,7 +652,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -666,7 +663,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -678,7 +674,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -690,7 +685,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -702,7 +696,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -714,7 +707,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -726,7 +718,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -738,7 +729,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -750,7 +740,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -762,7 +751,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -774,7 +762,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -786,7 +773,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -798,7 +784,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -810,7 +795,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -822,7 +806,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -834,7 +817,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -846,7 +828,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -858,7 +839,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -870,7 +850,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -882,7 +861,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -894,7 +872,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -906,7 +883,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -918,7 +894,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -930,7 +905,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -942,7 +916,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -954,7 +927,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -966,7 +938,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -978,7 +949,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -990,7 +960,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1002,7 +971,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1014,7 +982,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1026,7 +993,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1038,7 +1004,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1050,7 +1015,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1062,7 +1026,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1074,7 +1037,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1086,7 +1048,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1098,7 +1059,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1110,7 +1070,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1122,7 +1081,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1134,7 +1092,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1146,7 +1103,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1158,7 +1114,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1170,7 +1125,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1182,7 +1136,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1194,7 +1147,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1206,7 +1158,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1218,7 +1169,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1230,7 +1180,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1242,7 +1191,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1254,7 +1202,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1266,7 +1213,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1278,7 +1224,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1290,7 +1235,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1302,7 +1246,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1314,7 +1257,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1326,7 +1268,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1338,7 +1279,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1350,7 +1290,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1362,7 +1301,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1374,7 +1312,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1386,7 +1323,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1398,7 +1334,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1410,7 +1345,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1422,7 +1356,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1434,7 +1367,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1446,7 +1378,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1458,7 +1389,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1470,7 +1400,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1482,7 +1411,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1494,7 +1422,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1506,7 +1433,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1518,7 +1444,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1530,7 +1455,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1542,7 +1466,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1554,7 +1477,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1566,7 +1488,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1578,7 +1499,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1590,7 +1510,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1602,7 +1521,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1614,7 +1532,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1626,7 +1543,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1638,7 +1554,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1650,7 +1565,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1662,7 +1576,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1674,7 +1587,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1686,7 +1598,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1698,7 +1609,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1710,7 +1620,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1722,7 +1631,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1734,7 +1642,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1746,7 +1653,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1758,7 +1664,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1770,7 +1675,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1782,7 +1686,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1794,7 +1697,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1806,7 +1708,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1818,7 +1719,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1830,7 +1730,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1842,7 +1741,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1854,7 +1752,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1866,7 +1763,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1878,7 +1774,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1890,7 +1785,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1902,7 +1796,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1914,7 +1807,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1926,7 +1818,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
                 sfxinfo_struct {
                     tagname: None,
@@ -1938,7 +1829,6 @@ impl SoundsState {
                     usefulness: 0 as i32,
                     lumpnum: 0 as i32,
                     numchannels: -(1 as i32),
-                    driver_data: NULL,
                 },
             ],
         }
