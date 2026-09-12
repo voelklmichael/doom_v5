@@ -1,0 +1,14 @@
+[package]
+name = "doomgeneric_xlib"
+authors = ["C2Rust"]
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[[bin]]
+name = "doomgeneric_xlib"
+path = "src/main.rs"
+
+[dependencies]
+libc = "0.2"
+rust_doomgeneric = { path = "../engine" }

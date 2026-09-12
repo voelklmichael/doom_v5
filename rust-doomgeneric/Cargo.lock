@@ -24,6 +24,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "doomgeneric_xlib"
+version = "0.0.0"
+dependencies = [
+ "libc",
+ "rust_doomgeneric",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
