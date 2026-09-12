@@ -31,7 +31,7 @@ use crate::src::p_mobj::P_SpawnMobj;
 use crate::src::p_mobj::P_SpawnPuff;
 use crate::src::p_mobj::P_SubstNullMobj;
 use crate::src::p_mobj::{
-    line_s, line_t, mobjinfo_t, sector_t, thinker_t, vertex_t, ST_HORIZONTAL,
+    line_s, line_t, mobjinfo_t, sector_t, thinker_t, ST_HORIZONTAL,
 };
 use crate::src::p_mobj::{mobj_t, pspdef_t};
 use crate::src::p_mobj::{
@@ -46,6 +46,7 @@ use crate::src::p_mobj::{
     MF_SHOOTABLE, MF_SKULLFLY, MF_SOLID,
 };
 use crate::src::p_setup::SectorId;
+use crate::src::p_setup::VertexId;
 use crate::src::p_sight::P_CheckSight;
 use crate::src::p_switch::P_UseSpecialLine;
 use crate::src::r_main::R_PointToAngle2;
@@ -505,8 +506,8 @@ pub unsafe fn A_KeenDie(state: &mut GameState, id: MobjId) {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut mo2: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut junk: line_t = line_s {
-        v1: ::core::ptr::null_mut::<vertex_t>(),
-        v2: ::core::ptr::null_mut::<vertex_t>(),
+        v1: VertexId(0),
+        v2: VertexId(0),
         dx: 0,
         dy: 0,
         flags: 0,
@@ -1445,8 +1446,8 @@ pub unsafe fn A_BossDeath(state: &mut GameState, id: MobjId) {
     let mut th: *mut thinker_t = ::core::ptr::null_mut::<thinker_t>();
     let mut mo2: *mut mobj_t = ::core::ptr::null_mut::<mobj_t>();
     let mut junk: line_t = line_s {
-        v1: ::core::ptr::null_mut::<vertex_t>(),
-        v2: ::core::ptr::null_mut::<vertex_t>(),
+        v1: VertexId(0),
+        v2: VertexId(0),
         dx: 0,
         dy: 0,
         flags: 0,

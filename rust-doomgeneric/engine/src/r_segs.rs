@@ -131,9 +131,11 @@ pub unsafe fn R_RenderMaskedSegRange(
     lightnum = ((*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).lightlevel as i32
         >> LIGHTSEGSHIFT)
         + state.r_main.extralight;
-    if (*(*state.r_bsp.curline).v1).y == (*(*state.r_bsp.curline).v2).y {
+    let curline_v1 = state.p_setup.vertexes[(*state.r_bsp.curline).v1.0 as usize];
+    let curline_v2 = state.p_setup.vertexes[(*state.r_bsp.curline).v2.0 as usize];
+    if curline_v1.y == curline_v2.y {
         lightnum -= 1;
-    } else if (*(*state.r_bsp.curline).v1).x == (*(*state.r_bsp.curline).v2).x {
+    } else if curline_v1.x == curline_v2.x {
         lightnum += 1;
     }
     if lightnum < 0 as i32 {
@@ -375,10 +377,8 @@ pub unsafe fn R_StoreWallRange(state: &mut GameState, mut start: i32, mut stop: 
         offsetangle = ANG90 as angle_t;
     }
     distangle = (ANG90 as angle_t).wrapping_sub(offsetangle);
-    let (v1x, v1y) = (
-        (*(*state.r_bsp.curline).v1).x,
-        (*(*state.r_bsp.curline).v1).y,
-    );
+    let curline_v1 = state.p_setup.vertexes[(*state.r_bsp.curline).v1.0 as usize];
+    let (v1x, v1y) = (curline_v1.x, curline_v1.y);
     hyp = R_PointToDist(state, v1x, v1y);
     sineval = finesine[(distangle >> ANGLETOFINESHIFT) as usize];
     state.r_segs.rw_distance = FixedMul(hyp, sineval);
@@ -602,9 +602,11 @@ pub unsafe fn R_StoreWallRange(state: &mut GameState, mut start: i32, mut stop: 
                 as i32
                 >> LIGHTSEGSHIFT)
                 + state.r_main.extralight;
-            if (*(*state.r_bsp.curline).v1).y == (*(*state.r_bsp.curline).v2).y {
+            let curline_v1 = state.p_setup.vertexes[(*state.r_bsp.curline).v1.0 as usize];
+            let curline_v2 = state.p_setup.vertexes[(*state.r_bsp.curline).v2.0 as usize];
+            if curline_v1.y == curline_v2.y {
                 lightnum -= 1;
-            } else if (*(*state.r_bsp.curline).v1).x == (*(*state.r_bsp.curline).v2).x {
+            } else if curline_v1.x == curline_v2.x {
                 lightnum += 1;
             }
             if lightnum < 0 as i32 {

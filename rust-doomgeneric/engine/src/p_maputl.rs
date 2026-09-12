@@ -240,25 +240,31 @@ pub unsafe fn P_AproxDistance(mut dx: fixed_t, mut dy: fixed_t) -> fixed_t {
     }
     return dx + dy - (dy >> 1 as i32);
 }
-pub unsafe fn P_PointOnLineSide(mut x: fixed_t, mut y: fixed_t, mut line: *mut line_t) -> i32 {
+pub unsafe fn P_PointOnLineSide(
+    state: &mut GameState,
+    mut x: fixed_t,
+    mut y: fixed_t,
+    mut line: *mut line_t,
+) -> i32 {
     let mut dx: fixed_t = 0;
     let mut dy: fixed_t = 0;
     let mut left: fixed_t = 0;
     let mut right: fixed_t = 0;
+    let line_v1 = state.p_setup.vertexes[(*line).v1.0 as usize];
     if (*line).dx == 0 {
-        if x <= (*(*line).v1).x {
+        if x <= line_v1.x {
             return ((*line).dy > 0 as i32) as i32;
         }
         return ((*line).dy < 0 as i32) as i32;
     }
     if (*line).dy == 0 {
-        if y <= (*(*line).v1).y {
+        if y <= line_v1.y {
             return ((*line).dx < 0 as i32) as i32;
         }
         return ((*line).dx > 0 as i32) as i32;
     }
-    dx = x - (*(*line).v1).x;
-    dy = y - (*(*line).v1).y;
+    dx = x - line_v1.x;
+    dy = y - line_v1.y;
     left = FixedMul((*line).dy >> FRACBITS, dx);
     right = FixedMul(dy, (*line).dx >> FRACBITS);
     if right < left {
@@ -266,21 +272,27 @@ pub unsafe fn P_PointOnLineSide(mut x: fixed_t, mut y: fixed_t, mut line: *mut l
     }
     return 1 as i32;
 }
-pub unsafe fn P_BoxOnLineSide(mut tmbox: *mut fixed_t, mut ld: *mut line_t) -> i32 {
+pub unsafe fn P_BoxOnLineSide(
+    state: &mut GameState,
+    mut tmbox: *mut fixed_t,
+    mut ld: *mut line_t,
+) -> i32 {
     let mut p1: i32 = 0 as i32;
     let mut p2: i32 = 0 as i32;
     match (*ld).slopetype as u32 {
         0 => {
-            p1 = (*tmbox.offset(BOXTOP as i32 as isize) > (*(*ld).v1).y) as i32;
-            p2 = (*tmbox.offset(BOXBOTTOM as i32 as isize) > (*(*ld).v1).y) as i32;
+            let ld_v1 = state.p_setup.vertexes[(*ld).v1.0 as usize];
+            p1 = (*tmbox.offset(BOXTOP as i32 as isize) > ld_v1.y) as i32;
+            p2 = (*tmbox.offset(BOXBOTTOM as i32 as isize) > ld_v1.y) as i32;
             if (*ld).dx < 0 as i32 {
                 p1 ^= 1 as i32;
                 p2 ^= 1 as i32;
             }
         }
         1 => {
-            p1 = (*tmbox.offset(BOXRIGHT as i32 as isize) < (*(*ld).v1).x) as i32;
-            p2 = (*tmbox.offset(BOXLEFT as i32 as isize) < (*(*ld).v1).x) as i32;
+            let ld_v1 = state.p_setup.vertexes[(*ld).v1.0 as usize];
+            p1 = (*tmbox.offset(BOXRIGHT as i32 as isize) < ld_v1.x) as i32;
+            p2 = (*tmbox.offset(BOXLEFT as i32 as isize) < ld_v1.x) as i32;
             if (*ld).dy < 0 as i32 {
                 p1 ^= 1 as i32;
                 p2 ^= 1 as i32;
@@ -288,11 +300,13 @@ pub unsafe fn P_BoxOnLineSide(mut tmbox: *mut fixed_t, mut ld: *mut line_t) -> i
         }
         2 => {
             p1 = P_PointOnLineSide(
+                state,
                 *tmbox.offset(BOXLEFT as i32 as isize),
                 *tmbox.offset(BOXTOP as i32 as isize),
                 ld,
             );
             p2 = P_PointOnLineSide(
+                state,
                 *tmbox.offset(BOXRIGHT as i32 as isize),
                 *tmbox.offset(BOXBOTTOM as i32 as isize),
                 ld,
@@ -300,11 +314,13 @@ pub unsafe fn P_BoxOnLineSide(mut tmbox: *mut fixed_t, mut ld: *mut line_t) -> i
         }
         3 => {
             p1 = P_PointOnLineSide(
+                state,
                 *tmbox.offset(BOXRIGHT as i32 as isize),
                 *tmbox.offset(BOXTOP as i32 as isize),
                 ld,
             );
             p2 = P_PointOnLineSide(
+                state,
                 *tmbox.offset(BOXLEFT as i32 as isize),
                 *tmbox.offset(BOXBOTTOM as i32 as isize),
                 ld,
@@ -353,9 +369,10 @@ pub unsafe fn P_PointOnDivlineSide(
     }
     return 1 as i32;
 }
-pub unsafe fn P_MakeDivline(mut li: *mut line_t, mut dl: *mut divline_t) {
-    (*dl).x = (*(*li).v1).x;
-    (*dl).y = (*(*li).v1).y;
+pub unsafe fn P_MakeDivline(state: &mut GameState, mut li: *mut line_t, mut dl: *mut divline_t) {
+    let li_v1 = state.p_setup.vertexes[(*li).v1.0 as usize];
+    (*dl).x = li_v1.x;
+    (*dl).y = li_v1.y;
     (*dl).dx = (*li).dx;
     (*dl).dy = (*li).dy;
 }
@@ -547,11 +564,14 @@ pub unsafe fn PIT_AddLineIntercepts(
         || state.p_maputl.trace.dx < -FRACUNIT * 16 as i32
         || state.p_maputl.trace.dy < -FRACUNIT * 16 as i32
     {
-        s1 = P_PointOnDivlineSide((*(*ld).v1).x, (*(*ld).v1).y, &raw mut state.p_maputl.trace);
-        s2 = P_PointOnDivlineSide((*(*ld).v2).x, (*(*ld).v2).y, &raw mut state.p_maputl.trace);
+        let ld_v1 = state.p_setup.vertexes[(*ld).v1.0 as usize];
+        let ld_v2 = state.p_setup.vertexes[(*ld).v2.0 as usize];
+        s1 = P_PointOnDivlineSide(ld_v1.x, ld_v1.y, &raw mut state.p_maputl.trace);
+        s2 = P_PointOnDivlineSide(ld_v2.x, ld_v2.y, &raw mut state.p_maputl.trace);
     } else {
-        s1 = P_PointOnLineSide(state.p_maputl.trace.x, state.p_maputl.trace.y, ld);
+        s1 = P_PointOnLineSide(state, state.p_maputl.trace.x, state.p_maputl.trace.y, ld);
         s2 = P_PointOnLineSide(
+            state,
             state.p_maputl.trace.x + state.p_maputl.trace.dx,
             state.p_maputl.trace.y + state.p_maputl.trace.dy,
             ld,
@@ -560,7 +580,7 @@ pub unsafe fn PIT_AddLineIntercepts(
     if s1 == s2 {
         return true_0 as boolean;
     }
-    P_MakeDivline(ld, &raw mut dl);
+    P_MakeDivline(state, ld, &raw mut dl);
     frac = P_InterceptVector(&raw mut state.p_maputl.trace, &raw mut dl);
     if frac < 0 as i32 {
         return true_0 as boolean;

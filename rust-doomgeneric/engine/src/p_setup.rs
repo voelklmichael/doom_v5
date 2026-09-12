@@ -50,6 +50,8 @@ pub struct SectorId(pub u32);
 pub struct SideId(pub u32);
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct SubsectorId(pub u32);
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct VertexId(pub u32);
 
 pub const ZERO_SECTOR: sector_t = sector_t {
     floorheight: 0,
@@ -81,7 +83,7 @@ pub const ZERO_SECTOR: sector_t = sector_t {
 
 pub struct PSetupState {
     pub numvertexes: i32,
-    pub vertexes: *mut vertex_t,
+    pub vertexes: Vec<vertex_t>,
     pub numsegs: i32,
     pub segs: *mut seg_t,
     pub numsectors: i32,
@@ -113,7 +115,7 @@ impl PSetupState {
     pub const fn new() -> Self {
         PSetupState {
             numvertexes: 0,
-            vertexes: ::core::ptr::null::<vertex_t>() as *mut vertex_t,
+            vertexes: Vec::new(),
             numsegs: 0,
             segs: ::core::ptr::null::<seg_t>() as *mut seg_t,
             numsectors: 0,
@@ -162,6 +164,9 @@ impl PSetupState {
     }
     pub fn subsector_mut(&mut self, id: SubsectorId) -> *mut subsector_t {
         &mut self.subsectors[id.0 as usize] as *mut subsector_t
+    }
+    pub fn vertex_mut(&mut self, id: VertexId) -> *mut vertex_t {
+        &mut self.vertexes[id.0 as usize] as *mut vertex_t
     }
 }
 
@@ -244,26 +249,20 @@ pub unsafe fn P_LoadVertexes(state: &mut GameState, mut lump: i32) {
     let mut data: *mut byte = ::core::ptr::null_mut::<byte>();
     let mut i: i32 = 0;
     let mut ml: *mut mapvertex_t = ::core::ptr::null_mut::<mapvertex_t>();
-    let mut li: *mut vertex_t = ::core::ptr::null_mut::<vertex_t>();
-    state.p_setup.numvertexes = (W_LumpLength(&mut state.w_wad, lump as u32) as usize)
+    let numvertexes = (W_LumpLength(&mut state.w_wad, lump as u32) as usize)
         .wrapping_div(::core::mem::size_of::<mapvertex_t>() as usize)
         as i32;
-    state.p_setup.vertexes = Z_Malloc(
-        &mut state.z_zone,
-        (state.p_setup.numvertexes as usize)
-            .wrapping_mul(::core::mem::size_of::<vertex_t>() as usize) as i32,
-        PU_LEVEL as i32,
-        ::core::ptr::null_mut::<::core::ffi::c_void>(),
-    ) as *mut vertex_t;
+    state.p_setup.numvertexes = numvertexes;
+    state.p_setup.vertexes = Vec::with_capacity(numvertexes as usize);
     data = W_CacheLumpNum(state, lump, PU_STATIC as i32) as *mut byte;
     ml = data as *mut mapvertex_t;
-    li = state.p_setup.vertexes;
     i = 0 as i32;
-    while i < state.p_setup.numvertexes {
-        (*li).x = (((*ml).x as i32) << FRACBITS) as fixed_t;
-        (*li).y = (((*ml).y as i32) << FRACBITS) as fixed_t;
+    while i < numvertexes {
+        state.p_setup.vertexes.push(vertex_t {
+            x: (((*ml).x as i32) << FRACBITS) as fixed_t,
+            y: (((*ml).y as i32) << FRACBITS) as fixed_t,
+        });
         i += 1;
-        li = li.offset(1);
         ml = ml.offset(1);
     }
     W_ReleaseLumpNum(&mut state.w_wad, lump);
@@ -318,8 +317,8 @@ pub unsafe fn P_LoadSegs(state: &mut GameState, mut lump: i32) {
     li = state.p_setup.segs;
     i = 0 as i32;
     while i < state.p_setup.numsegs {
-        (*li).v1 = state.p_setup.vertexes.offset((*ml).v1 as isize) as *mut vertex_t;
-        (*li).v2 = state.p_setup.vertexes.offset((*ml).v2 as isize) as *mut vertex_t;
+        (*li).v1 = VertexId((*ml).v1 as u32);
+        (*li).v2 = VertexId((*ml).v2 as u32);
         (*li).angle = (((*ml).angle as i32) << 16 as i32) as angle_t;
         (*li).offset = (((*ml).offset as i32) << 16 as i32) as fixed_t;
         linedef = (*ml).linedef as i32;
@@ -586,10 +585,10 @@ pub unsafe fn P_LoadLineDefs(state: &mut GameState, mut lump: i32) {
         (*ld).flags = (*mld).flags;
         (*ld).special = (*mld).special;
         (*ld).tag = (*mld).tag;
-        (*ld).v1 = state.p_setup.vertexes.offset((*mld).v1 as isize) as *mut vertex_t;
-        v1 = (*ld).v1;
-        (*ld).v2 = state.p_setup.vertexes.offset((*mld).v2 as isize) as *mut vertex_t;
-        v2 = (*ld).v2;
+        (*ld).v1 = VertexId((*mld).v1 as u32);
+        v1 = state.p_setup.vertex_mut((*ld).v1);
+        (*ld).v2 = VertexId((*mld).v2 as u32);
+        v2 = state.p_setup.vertex_mut((*ld).v2);
         (*ld).dx = (*v2).x - (*v1).x;
         (*ld).dy = (*v2).y - (*v1).y;
         if (*ld).dx == 0 {
@@ -778,8 +777,10 @@ pub unsafe fn P_GroupLines(state: &mut GameState) {
         j = 0 as i32;
         while j < (*sector).linecount {
             li = *(*sector).lines.offset(j as isize) as *mut line_t;
-            M_AddToBox(&raw mut bbox as *mut fixed_t, (*(*li).v1).x, (*(*li).v1).y);
-            M_AddToBox(&raw mut bbox as *mut fixed_t, (*(*li).v2).x, (*(*li).v2).y);
+            let li_v1 = state.p_setup.vertexes[(*li).v1.0 as usize];
+            let li_v2 = state.p_setup.vertexes[(*li).v2.0 as usize];
+            M_AddToBox(&raw mut bbox as *mut fixed_t, li_v1.x, li_v1.y);
+            M_AddToBox(&raw mut bbox as *mut fixed_t, li_v2.x, li_v2.y);
             j += 1;
         }
         (*sector).soundorg.x = ((bbox[BOXRIGHT as i32 as usize] + bbox[BOXLEFT as i32 as usize])
