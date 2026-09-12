@@ -180,8 +180,10 @@ pub unsafe fn R_AddLine(state: &mut GameState, mut line: *mut seg_t) {
     let mut span: angle_t = 0;
     let mut tspan: angle_t = 0;
     state.r_bsp.curline = line;
-    angle1 = R_PointToAngle(state, (*(*line).v1).x, (*(*line).v1).y);
-    angle2 = R_PointToAngle(state, (*(*line).v2).x, (*(*line).v2).y);
+    let line_v1 = state.p_setup.vertexes[(*line).v1.0 as usize];
+    let line_v2 = state.p_setup.vertexes[(*line).v2.0 as usize];
+    angle1 = R_PointToAngle(state, line_v1.x, line_v1.y);
+    angle2 = R_PointToAngle(state, line_v2.x, line_v2.y);
     span = angle1.wrapping_sub(angle2);
     if span >= ANG180 {
         return;

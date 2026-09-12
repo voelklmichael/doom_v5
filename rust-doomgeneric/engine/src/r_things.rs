@@ -833,7 +833,7 @@ pub unsafe fn R_DrawSprite(state: &mut GameState, mut spr: *mut vissprite_t) {
             }
             if scale < (*spr).scale
                 || lowscale < (*spr).scale
-                    && R_PointOnSegSide((*spr).gx, (*spr).gy, (*ds).curline) == 0
+                    && R_PointOnSegSide(state, (*spr).gx, (*spr).gy, (*ds).curline) == 0
             {
                 if !(*ds).maskedtexturecol.is_null() {
                     R_RenderMaskedSegRange(state, ds, r1, r2);

@@ -28,7 +28,7 @@ use crate::src::p_maputl::P_AproxDistance;
 use crate::src::p_maputl::P_SetThingPosition;
 use crate::src::p_maputl::P_UnsetThingPosition;
 use crate::src::p_pspr::P_SetupPsprites;
-use crate::src::p_setup::{SectorId, SubsectorId};
+use crate::src::p_setup::{SectorId, SubsectorId, VertexId};
 use crate::src::p_spec::{ceiling_t, floormove_t, plat_t};
 use crate::src::p_tick::P_AddThinker;
 use crate::src::p_tick::P_RemoveThinker;
@@ -517,8 +517,8 @@ pub struct sector_t {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct line_s {
-    pub v1: *mut vertex_t,
-    pub v2: *mut vertex_t,
+    pub v1: VertexId,
+    pub v2: VertexId,
     pub dx: fixed_t,
     pub dy: fixed_t,
     pub flags: i16,

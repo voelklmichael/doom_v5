@@ -122,8 +122,8 @@ pub unsafe fn P_CrossSubsector(state: &mut GameState, mut num: i32) -> bool {
         line = (*seg).linedef;
         if !((*line).validcount == state.r_main.validcount) {
             (*line).validcount = state.r_main.validcount;
-            v1 = (*line).v1;
-            v2 = (*line).v2;
+            v1 = state.p_setup.vertex_mut((*line).v1);
+            v2 = state.p_setup.vertex_mut((*line).v2);
             s1 = P_DivlineSide((*v1).x, (*v1).y, &raw mut state.p_sight.strace);
             s2 = P_DivlineSide((*v2).x, (*v2).y, &raw mut state.p_sight.strace);
             if !(s1 == s2) {

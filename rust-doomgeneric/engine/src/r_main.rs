@@ -169,7 +169,12 @@ pub unsafe fn R_PointOnSide(mut x: fixed_t, mut y: fixed_t, mut node: *mut node_
     }
     return 1 as i32;
 }
-pub unsafe fn R_PointOnSegSide(mut x: fixed_t, mut y: fixed_t, mut line: *mut seg_t) -> i32 {
+pub unsafe fn R_PointOnSegSide(
+    state: &mut GameState,
+    mut x: fixed_t,
+    mut y: fixed_t,
+    mut line: *mut seg_t,
+) -> i32 {
     let mut lx: fixed_t = 0;
     let mut ly: fixed_t = 0;
     let mut ldx: fixed_t = 0;
@@ -178,10 +183,12 @@ pub unsafe fn R_PointOnSegSide(mut x: fixed_t, mut y: fixed_t, mut line: *mut se
     let mut dy: fixed_t = 0;
     let mut left: fixed_t = 0;
     let mut right: fixed_t = 0;
-    lx = (*(*line).v1).x;
-    ly = (*(*line).v1).y;
-    ldx = (*(*line).v2).x - lx;
-    ldy = (*(*line).v2).y - ly;
+    let line_v1 = state.p_setup.vertexes[(*line).v1.0 as usize];
+    let line_v2 = state.p_setup.vertexes[(*line).v2.0 as usize];
+    lx = line_v1.x;
+    ly = line_v1.y;
+    ldx = line_v2.x - lx;
+    ldy = line_v2.y - ly;
     if ldx == 0 {
         if x <= lx {
             return (ldy > 0 as i32) as i32;

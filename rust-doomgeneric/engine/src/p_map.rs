@@ -252,7 +252,8 @@ pub unsafe fn PIT_CheckLine(state: &mut GameState, mut ld: *mut line_t) -> boole
     {
         return true_0 as boolean;
     }
-    if P_BoxOnLineSide(&raw mut state.p_map.tmbbox as *mut fixed_t, ld) != -(1 as i32) {
+    let tmbbox = &raw mut state.p_map.tmbbox as *mut fixed_t;
+    if P_BoxOnLineSide(state, tmbbox, ld) != -(1 as i32) {
         return true_0 as boolean;
     }
     if (*ld).backsector.is_none() {
@@ -519,8 +520,8 @@ pub unsafe fn P_TryMove(
                 break;
             }
             ld = state.p_map.spechit[state.p_map.numspechit as usize];
-            side = P_PointOnLineSide((*thing).x, (*thing).y, ld);
-            oldside = P_PointOnLineSide(oldx, oldy, ld);
+            side = P_PointOnLineSide(state, (*thing).x, (*thing).y, ld);
+            oldside = P_PointOnLineSide(state, oldx, oldy, ld);
             if side != oldside {
                 if (*ld).special != 0 {
                     P_CrossSpecialLine(
@@ -566,7 +567,7 @@ pub unsafe fn P_HitSlideLine(state: &mut GameState, mut ld: *mut line_t) {
         state.p_map.tmxmove = 0 as i32 as fixed_t;
         return;
     }
-    side = P_PointOnLineSide((*state.p_map.slidemo).x, (*state.p_map.slidemo).y, ld);
+    side = P_PointOnLineSide(state, (*state.p_map.slidemo).x, (*state.p_map.slidemo).y, ld);
     lineangle = R_PointToAngle2(state, 0 as fixed_t, 0 as fixed_t, (*ld).dx, (*ld).dy);
     if side == 1 as i32 {
         lineangle = (lineangle as u32).wrapping_add(ANG180) as angle_t as angle_t;
@@ -600,7 +601,7 @@ pub unsafe fn PTR_SlideTraverse(
     }
     li = (*in_0).d.line;
     if (*li).flags as i32 & ML_TWOSIDED == 0 {
-        if P_PointOnLineSide((*state.p_map.slidemo).x, (*state.p_map.slidemo).y, li) != 0 {
+        if P_PointOnLineSide(state, (*state.p_map.slidemo).x, (*state.p_map.slidemo).y, li) != 0 {
             return true_0 as boolean;
         }
     } else {
@@ -1017,6 +1018,7 @@ pub unsafe fn PTR_UseTraverse(
     }
     side = 0 as i32;
     if P_PointOnLineSide(
+        state,
         (*state.p_map.usething).x,
         (*state.p_map.usething).y,
         (*in_0).d.line,

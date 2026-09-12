@@ -605,15 +605,16 @@ pub unsafe fn AM_findMinMaxBoundaries(state: &mut GameState) {
     state.am_map.max_x = state.am_map.max_y;
     i = 0 as i32;
     while i < state.p_setup.numvertexes {
-        if (*state.p_setup.vertexes.offset(i as isize)).x < state.am_map.min_x {
-            state.am_map.min_x = (*state.p_setup.vertexes.offset(i as isize)).x;
-        } else if (*state.p_setup.vertexes.offset(i as isize)).x > state.am_map.max_x {
-            state.am_map.max_x = (*state.p_setup.vertexes.offset(i as isize)).x;
+        let v = state.p_setup.vertexes[i as usize];
+        if v.x < state.am_map.min_x {
+            state.am_map.min_x = v.x;
+        } else if v.x > state.am_map.max_x {
+            state.am_map.max_x = v.x;
         }
-        if (*state.p_setup.vertexes.offset(i as isize)).y < state.am_map.min_y {
-            state.am_map.min_y = (*state.p_setup.vertexes.offset(i as isize)).y;
-        } else if (*state.p_setup.vertexes.offset(i as isize)).y > state.am_map.max_y {
-            state.am_map.max_y = (*state.p_setup.vertexes.offset(i as isize)).y;
+        if v.y < state.am_map.min_y {
+            state.am_map.min_y = v.y;
+        } else if v.y > state.am_map.max_y {
+            state.am_map.max_y = v.y;
         }
         i += 1;
     }
@@ -1246,10 +1247,12 @@ pub unsafe fn AM_drawWalls(state: &mut GameState) {
     i = 0 as i32;
     while i < state.p_setup.numlines {
         let li = state.p_setup.lines.offset(i as isize) as *mut line_t;
-        l.a.x = (*(*li).v1).x;
-        l.a.y = (*(*li).v1).y;
-        l.b.x = (*(*li).v2).x;
-        l.b.y = (*(*li).v2).y;
+        let li_v1 = state.p_setup.vertexes[(*li).v1.0 as usize];
+        let li_v2 = state.p_setup.vertexes[(*li).v2.0 as usize];
+        l.a.x = li_v1.x;
+        l.a.y = li_v1.y;
+        l.b.x = li_v2.x;
+        l.b.y = li_v2.y;
         let lightlev = state.am_map.lightlev;
         if state.am_map.cheating != 0 || (*li).flags as i32 & ML_MAPPED != 0 {
             if !((*li).flags as i32 & LINE_NEVERSEE != 0 && state.am_map.cheating == 0) {
