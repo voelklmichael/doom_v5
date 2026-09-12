@@ -10,7 +10,7 @@ use crate::src::p_enemy::{
     A_VileChase, A_VileStart, A_VileTarget, A_XScream,
 };
 use crate::src::p_mobj::statenum_t;
-use crate::src::p_mobj::{mobjinfo_t, state_t, StateAction};
+use crate::src::p_mobj::{mobjinfo_t, mobjtype_t, state_t, StateAction};
 use crate::src::p_mobj::{
     MF_COUNTITEM, MF_COUNTKILL, MF_DROPOFF, MF_FLOAT, MF_MISSILE, MF_NOBLOCKMAP, MF_NOBLOOD,
     MF_NOCLIP, MF_NOGRAVITY, MF_NOSECTOR, MF_NOTDMATCH, MF_PICKUP, MF_SHADOW, MF_SHOOTABLE,
@@ -62,6 +62,10 @@ pub struct InfoState {
 impl InfoState {
     pub fn state_mut(&mut self, id: StateId) -> *mut state_t {
         &mut self.states[id.0 as usize] as *mut state_t
+    }
+
+    pub fn mobjinfo_mut(&mut self, t: mobjtype_t) -> *mut mobjinfo_t {
+        &mut self.mobjinfo[t as usize] as *mut mobjinfo_t
     }
 
     pub fn new() -> Self {

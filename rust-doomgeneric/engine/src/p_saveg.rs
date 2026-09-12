@@ -21,7 +21,7 @@ use crate::src::p_mobj::mobjtype_t;
 use crate::src::p_mobj::spritenum_t;
 use crate::src::p_mobj::P_RemoveMobj;
 use crate::src::p_mobj::{
-    line_t, mapthing_t, mobjinfo_t, sector_t, thinker_s, thinker_t, ThinkerFn,
+    line_t, mapthing_t, sector_t, thinker_s, thinker_t, ThinkerFn,
 };
 use crate::src::p_mobj::{mobj_s, mobj_t, pspdef_t};
 use crate::src::p_plats::plat_e;
@@ -260,7 +260,7 @@ unsafe fn saveg_read_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     (*str).momz = saveg_read32(state) as fixed_t;
     (*str).validcount = saveg_read32(state);
     (*str).type_0 = saveg_read32(state) as mobjtype_t;
-    (*str).info = saveg_readp(state) as *mut mobjinfo_t;
+    saveg_read32(state);
     (*str).tics = saveg_read32(state);
     (*str).state = Some(StateId(saveg_read32(state) as u32));
     (*str).flags = saveg_read32(state);
@@ -306,7 +306,7 @@ unsafe fn saveg_write_mobj_t(state: &mut GameState, mut str: *mut mobj_t) {
     saveg_write32(state, (*str).momz as i32);
     saveg_write32(state, (*str).validcount);
     saveg_write32(state, (*str).type_0 as i32);
-    saveg_writep(state, (*str).info as *mut ::core::ffi::c_void);
+    saveg_write32(state, 0);
     saveg_write32(state, (*str).tics);
     saveg_write32(state, (*str).state.unwrap().0 as i32);
     saveg_write32(state, (*str).flags);
@@ -918,9 +918,6 @@ pub unsafe fn P_UnArchiveThinkers(state: &mut GameState) {
                 (*mobj).target = None;
                 (*mobj).tracer = None;
                 P_SetThingPosition(state, mobj);
-                (*mobj).info = (&raw mut state.info.mobjinfo as *mut mobjinfo_t)
-                    .offset((*mobj).type_0 as isize)
-                    as *mut mobjinfo_t;
                 (*mobj).floorz = (*state
                     .p_setup
                     .sector_mut(state.p_setup.subsectors[(*mobj).subsector.0 as usize].sector))
