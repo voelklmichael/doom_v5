@@ -511,7 +511,7 @@ pub unsafe fn P_BlockLinesIterator(
     offset = *state.p_setup.blockmap.offset(offset as isize) as i32;
     list = state.p_setup.blockmaplump.offset(offset as isize);
     while *list as i32 != -(1 as i32) {
-        ld = state.p_setup.lines.offset(*list as isize) as *mut line_t;
+        ld = state.p_setup.lines.as_mut_ptr().offset(*list as isize);
         if !((*ld).validcount == state.r_main.validcount) {
             (*ld).validcount = state.r_main.validcount;
             if func.expect("non-null function pointer")(state, ld) == 0 {

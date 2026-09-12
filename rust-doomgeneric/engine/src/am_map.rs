@@ -19,7 +19,6 @@ use crate::src::m_fixed::FRACBITS;
 use crate::src::m_fixed::FRACUNIT;
 use crate::src::m_fixed::INT_MAX;
 use crate::src::p_maputl::MAPBLOCKUNITS;
-use crate::src::p_mobj::line_t;
 use crate::src::p_mobj::mobj_t;
 use crate::src::p_spec::ML_MAPPED;
 use crate::src::p_spec::ML_SECRET;
@@ -1246,7 +1245,7 @@ pub unsafe fn AM_drawWalls(state: &mut GameState) {
     };
     i = 0 as i32;
     while i < state.p_setup.numlines {
-        let li = state.p_setup.lines.offset(i as isize) as *mut line_t;
+        let li = state.p_setup.lines.as_mut_ptr().offset(i as isize);
         let li_v1 = state.p_setup.vertexes[(*li).v1.0 as usize];
         let li_v2 = state.p_setup.vertexes[(*li).v2.0 as usize];
         l.a.x = li_v1.x;

@@ -802,7 +802,7 @@ pub unsafe fn P_ArchiveWorld(state: &mut GameState) {
         i += 1;
     }
     i = 0 as i32;
-    li = state.p_setup.lines;
+    li = state.p_setup.lines.as_mut_ptr();
     while i < state.p_setup.numlines {
         saveg_write16(state, (*li).flags);
         saveg_write16(state, (*li).special);
@@ -846,7 +846,7 @@ pub unsafe fn P_UnArchiveWorld(state: &mut GameState) {
         i += 1;
     }
     i = 0 as i32;
-    li = state.p_setup.lines;
+    li = state.p_setup.lines.as_mut_ptr();
     while i < state.p_setup.numlines {
         (*li).flags = saveg_read16(state);
         (*li).special = saveg_read16(state);

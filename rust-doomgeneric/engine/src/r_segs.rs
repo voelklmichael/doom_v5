@@ -157,7 +157,8 @@ pub unsafe fn R_RenderMaskedSegRange(
         (*ds).scale1 + (x1 as fixed_t - (*ds).x1 as fixed_t) * state.r_segs.rw_scalestep;
     state.r_things.mfloorclip = (*ds).sprbottomclip;
     state.r_things.mceilingclip = (*ds).sprtopclip;
-    if (*(*state.r_bsp.curline).linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
+    if (*state.p_setup.line_mut((*state.r_bsp.curline).linedef)).flags as i32 & ML_DONTPEGBOTTOM != 0
+    {
         state.r_draw.dc_texturemid =
             if (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight
                 > (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).floorheight
@@ -366,7 +367,8 @@ pub unsafe fn R_StoreWallRange(state: &mut GameState, mut start: i32, mut stop: 
     }
     state.r_bsp.sidedef = (*state.r_bsp.curline).sidedef;
     state.r_bsp.linedef = (*state.r_bsp.curline).linedef;
-    (*state.r_bsp.linedef).flags = ((*state.r_bsp.linedef).flags as i32 | ML_MAPPED) as i16;
+    (*state.p_setup.line_mut(state.r_bsp.linedef)).flags =
+        ((*state.p_setup.line_mut(state.r_bsp.linedef)).flags as i32 | ML_MAPPED) as i16;
     state.r_segs.rw_normalangle = (*state.r_bsp.curline).angle.wrapping_add(ANG90 as angle_t);
     offsetangle = (state
         .r_segs
@@ -426,7 +428,7 @@ pub unsafe fn R_StoreWallRange(state: &mut GameState, mut start: i32, mut stop: 
             .offset((*state.p_setup.side_mut(state.r_bsp.sidedef)).midtexture as isize);
         state.r_segs.markceiling = true;
         state.r_segs.markfloor = state.r_segs.markceiling;
-        if (*state.r_bsp.linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
+        if (*state.p_setup.line_mut(state.r_bsp.linedef)).flags as i32 & ML_DONTPEGBOTTOM != 0 {
             vtop = (*state.p_setup.sector_mut(state.r_bsp.frontsector.unwrap())).floorheight
                 + *state
                     .r_data
@@ -530,7 +532,7 @@ pub unsafe fn R_StoreWallRange(state: &mut GameState, mut start: i32, mut stop: 
                 .r_data
                 .texturetranslation
                 .offset((*state.p_setup.side_mut(state.r_bsp.sidedef)).toptexture as isize);
-            if (*state.r_bsp.linedef).flags as i32 & ML_DONTPEGTOP != 0 {
+            if (*state.p_setup.line_mut(state.r_bsp.linedef)).flags as i32 & ML_DONTPEGTOP != 0 {
                 state.r_segs.rw_toptexturemid = state.r_segs.worldtop as fixed_t;
             } else {
                 vtop = (*state.p_setup.sector_mut(state.r_bsp.backsector.unwrap())).ceilingheight
@@ -546,7 +548,7 @@ pub unsafe fn R_StoreWallRange(state: &mut GameState, mut start: i32, mut stop: 
                 .r_data
                 .texturetranslation
                 .offset((*state.p_setup.side_mut(state.r_bsp.sidedef)).bottomtexture as isize);
-            if (*state.r_bsp.linedef).flags as i32 & ML_DONTPEGBOTTOM != 0 {
+            if (*state.p_setup.line_mut(state.r_bsp.linedef)).flags as i32 & ML_DONTPEGBOTTOM != 0 {
                 state.r_segs.rw_bottomtexturemid = state.r_segs.worldtop as fixed_t;
             } else {
                 state.r_segs.rw_bottomtexturemid = state.r_segs.worldlow as fixed_t;
