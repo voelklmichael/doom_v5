@@ -1036,10 +1036,11 @@ pub unsafe fn P_UseLines(state: &mut GameState, mut player: *mut player_t) {
     let mut y1: fixed_t = 0;
     let mut x2: fixed_t = 0;
     let mut y2: fixed_t = 0;
-    state.p_map.usething = Some((*(*player).mo).id);
-    angle = ((*(*player).mo).angle >> ANGLETOFINESHIFT) as i32;
-    x1 = (*(*player).mo).x;
-    y1 = (*(*player).mo).y;
+    state.p_map.usething = (*player).mo;
+    let player_mo = state.p_mobj.mobj_get((*player).mo.unwrap()).unwrap();
+    angle = ((*player_mo).angle >> ANGLETOFINESHIFT) as i32;
+    x1 = (*player_mo).x;
+    y1 = (*player_mo).y;
     x2 = x1 + (USERANGE >> FRACBITS) * finecosine[angle as isize];
     y2 = y1 + (USERANGE >> FRACBITS) * finesine[angle as usize];
     P_PathTraverse(
@@ -1067,7 +1068,11 @@ pub unsafe fn PIT_RadiusAttack(state: &mut GameState, mut thing_id: MobjId) -> b
         return true_0 as boolean;
     }
     let bombspot = state.p_mobj.mobj_get(state.p_map.bombspot.unwrap()).unwrap();
-    let bombsource = state.p_mobj.mobj_get(state.p_map.bombsource.unwrap()).unwrap();
+    let bombsource = state
+        .p_map
+        .bombsource
+        .and_then(|id| state.p_mobj.mobj_get(id))
+        .unwrap_or(::core::ptr::null_mut());
     dx = ((*thing).x as i32 - (*bombspot).x as i32).abs() as fixed_t;
     dy = ((*thing).y as i32 - (*bombspot).y as i32).abs() as fixed_t;
     dist = if dx > dy { dx } else { dy };
@@ -1108,7 +1113,11 @@ pub unsafe fn P_RadiusAttack(
     xh = ((*spot).x + dist - state.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
     xl = ((*spot).x - dist - state.p_setup.bmaporgx >> MAPBLOCKSHIFT) as i32;
     state.p_map.bombspot = Some((*spot).id);
-    state.p_map.bombsource = Some((*source).id);
+    state.p_map.bombsource = if source.is_null() {
+        None
+    } else {
+        Some((*source).id)
+    };
     state.p_map.bombdamage = damage;
     y = yl;
     while y <= yh {
