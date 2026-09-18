@@ -73,6 +73,12 @@ pub struct WiStuffState {
     pub sp_state: i32,
 }
 
+impl Default for WiStuffState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl WiStuffState {
     pub const fn new() -> Self {
         WiStuffState {
@@ -894,17 +900,16 @@ pub fn WI_updateAnimatedBack(state: &mut GameState) {
                         a.nexttic = state.wi_stuff.bcnt + a.period;
                     }
                 }
-                2 => {
+                2
                     if !(state.wi_stuff.state == StateEnum::StatCount && i == 7_i32)
                         && state.wbs().next == a.data1
-                    {
+                    => {
                         a.ctr += 1;
                         if a.ctr == a.nanims {
                             a.ctr -= 1;
                         }
                         a.nexttic = state.wi_stuff.bcnt + a.period;
                     }
-                }
                 _ => {}
             }
         }
@@ -1175,23 +1180,15 @@ pub fn WI_updateDeathmatchStats(state: &mut GameState) {
                         } else {
                             state.wi_stuff.dm_frags[i as usize][j as usize] += 1;
                         }
-                        if state.wi_stuff.dm_frags[i as usize][j as usize] > 99_i32 {
-                            state.wi_stuff.dm_frags[i as usize][j as usize] = 99_i32;
-                        }
-                        if state.wi_stuff.dm_frags[i as usize][j as usize] < -99_i32 {
-                            state.wi_stuff.dm_frags[i as usize][j as usize] = -99_i32;
-                        }
+                        let frag = &mut state.wi_stuff.dm_frags[i as usize][j as usize];
+                        *frag = (*frag).clamp(-99_i32, 99_i32);
                         stillticking = true;
                     }
                     j += 1;
                 }
                 state.wi_stuff.dm_totals[i as usize] = WI_fragSum(state, i);
-                if state.wi_stuff.dm_totals[i as usize] > 99_i32 {
-                    state.wi_stuff.dm_totals[i as usize] = 99_i32;
-                }
-                if state.wi_stuff.dm_totals[i as usize] < -99_i32 {
-                    state.wi_stuff.dm_totals[i as usize] = -99_i32;
-                }
+                let total = &mut state.wi_stuff.dm_totals[i as usize];
+                *total = (*total).clamp(-99_i32, 99_i32);
             }
             i += 1;
         }
@@ -1831,9 +1828,9 @@ fn WI_loadUnloadData(state: &mut GameState, callback: load_callback_t) {
         state.wi_stuff.p[i] = callback(state, &format!("STPB{}", i));
         state.wi_stuff.bp[i] = callback(state, &format!("WIBP{}", i + 1));
     }
-    let name = if state.doomstat.gamemode == GameMode_t::commercial {
-        "INTERPIC".to_string()
-    } else if state.doomstat.gamemode == GameMode_t::retail && state.wbs().epsd == 3_i32 {
+    let name = if state.doomstat.gamemode == GameMode_t::commercial
+        || state.doomstat.gamemode == GameMode_t::retail && state.wbs().epsd == 3_i32
+    {
         "INTERPIC".to_string()
     } else {
         format!("WIMAP{}", state.wbs().epsd)

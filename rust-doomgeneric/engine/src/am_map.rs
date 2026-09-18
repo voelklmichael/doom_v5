@@ -86,6 +86,12 @@ pub struct AmMapState {
     pub am_updatelightlev_litelevelscnt: i32,
 }
 
+impl Default for AmMapState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AmMapState {
     pub const fn new() -> Self {
         AmMapState {
@@ -651,7 +657,7 @@ pub fn AM_initVariables(state: &mut GameState) {
             }
         }
     }
-    let plr_mo_id = (*state.g_game.player_mut(state.am_map.plr)).mo.unwrap();
+    let plr_mo_id = state.g_game.player_mut(state.am_map.plr).mo.unwrap();
     let plr_mo = state.p_mobj.mo(plr_mo_id);
     state.am_map.m_x = (plr_mo.x - state.am_map.m_w / 2_i32) as fixed_t;
     state.am_map.m_y = (plr_mo.y - state.am_map.m_h / 2_i32) as fixed_t;
@@ -808,26 +814,26 @@ pub fn AM_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
             state.am_map.followplayer = (state.am_map.followplayer == 0) as i32;
             state.am_map.f_oldloc.x = INT_MAX as fixed_t;
             if state.am_map.followplayer != 0 {
-                (*state.g_game.player_mut(state.am_map.plr)).message =
+                state.g_game.player_mut(state.am_map.plr).message =
                     Some("Follow Mode ON".to_string());
             } else {
-                (*state.g_game.player_mut(state.am_map.plr)).message =
+                state.g_game.player_mut(state.am_map.plr).message =
                     Some("Follow Mode OFF".to_string());
             }
         } else if key == state.m_controls.key_map_grid {
             state.am_map.grid = (state.am_map.grid == 0) as i32;
             if state.am_map.grid != 0 {
-                (*state.g_game.player_mut(state.am_map.plr)).message = Some("Grid ON".to_string());
+                state.g_game.player_mut(state.am_map.plr).message = Some("Grid ON".to_string());
             } else {
-                (*state.g_game.player_mut(state.am_map.plr)).message = Some("Grid OFF".to_string());
+                state.g_game.player_mut(state.am_map.plr).message = Some("Grid OFF".to_string());
             }
         } else if key == state.m_controls.key_map_mark {
-            (*state.g_game.player_mut(state.am_map.plr)).message =
+            state.g_game.player_mut(state.am_map.plr).message =
                 Some(format!("Marked Spot {}", state.am_map.markpointnum));
             AM_addMark(state);
         } else if key == state.m_controls.key_map_clearmark {
             AM_clearMarks(state);
-            (*state.g_game.player_mut(state.am_map.plr)).message =
+            state.g_game.player_mut(state.am_map.plr).message =
                 Some("All Marks Cleared".to_string());
         } else {
             rc = false_0;
@@ -841,19 +847,11 @@ pub fn AM_Responder(state: &mut GameState, mut ev: &event_t) -> bool {
     } else if ev.type_0 == EvType::ev_keyup {
         rc = false_0;
         key = ev.data1;
-        if key == state.m_controls.key_map_east {
+        if key == state.m_controls.key_map_east || key == state.m_controls.key_map_west {
             if state.am_map.followplayer == 0 {
                 state.am_map.m_paninc.x = 0_i32 as fixed_t;
             }
-        } else if key == state.m_controls.key_map_west {
-            if state.am_map.followplayer == 0 {
-                state.am_map.m_paninc.x = 0_i32 as fixed_t;
-            }
-        } else if key == state.m_controls.key_map_north {
-            if state.am_map.followplayer == 0 {
-                state.am_map.m_paninc.y = 0_i32 as fixed_t;
-            }
-        } else if key == state.m_controls.key_map_south {
+        } else if key == state.m_controls.key_map_north || key == state.m_controls.key_map_south {
             if state.am_map.followplayer == 0 {
                 state.am_map.m_paninc.y = 0_i32 as fixed_t;
             }
@@ -877,7 +875,7 @@ pub fn AM_changeWindowScale(state: &mut GameState) {
     };
 }
 pub fn AM_doFollowPlayer(state: &mut GameState) {
-    let plr_mo_id = (*state.g_game.player_mut(state.am_map.plr)).mo.unwrap();
+    let plr_mo_id = state.g_game.player_mut(state.am_map.plr).mo.unwrap();
     let plr_mo = state.p_mobj.mo(plr_mo_id);
     let (plr_x, plr_y) = (plr_mo.x, plr_mo.y);
     if state.am_map.f_oldloc.x != plr_x || state.am_map.f_oldloc.y != plr_y {
@@ -1194,41 +1192,46 @@ pub fn AM_drawWalls(state: &mut GameState) {
         let lightlev = state.am_map.lightlev;
         if state.am_map.cheating != 0 || li_flags & ML_MAPPED != 0 {
             if !(li_flags & LINE_NEVERSEE != 0 && state.am_map.cheating == 0) {
-                if li_backsector.is_none() {
-                    AM_drawMline(state, &l, WALLCOLORS + lightlev);
-                } else if li_special == 39_i32 {
-                    AM_drawMline(state, &l, WALLCOLORS + WALLRANGE / 2_i32);
-                } else if li_flags & ML_SECRET != 0 {
-                    if state.am_map.cheating != 0 {
-                        AM_drawMline(state, &l, SECRETWALLCOLORS + lightlev);
-                    } else {
+                match li_backsector {
+                    None => {
                         AM_drawMline(state, &l, WALLCOLORS + lightlev);
                     }
-                } else if state
-                    .p_setup
-                    .sector_mut(li_backsector.unwrap())
-                    .floorheight
-                    != state
-                        .p_setup
-                        .sector_mut(li_frontsector.unwrap())
-                        .floorheight
-                {
-                    AM_drawMline(state, &l, FDWALLCOLORS + lightlev);
-                } else if state
-                    .p_setup
-                    .sector_mut(li_backsector.unwrap())
-                    .ceilingheight
-                    != state
-                        .p_setup
-                        .sector_mut(li_frontsector.unwrap())
-                        .ceilingheight
-                {
-                    AM_drawMline(state, &l, CDWALLCOLORS + lightlev);
-                } else if state.am_map.cheating != 0 {
-                    AM_drawMline(state, &l, TSWALLCOLORS + lightlev);
+                    Some(li_backsector) => {
+                        if li_special == 39_i32 {
+                            AM_drawMline(state, &l, WALLCOLORS + WALLRANGE / 2_i32);
+                        } else if li_flags & ML_SECRET != 0 {
+                            if state.am_map.cheating != 0 {
+                                AM_drawMline(state, &l, SECRETWALLCOLORS + lightlev);
+                            } else {
+                                AM_drawMline(state, &l, WALLCOLORS + lightlev);
+                            }
+                        } else if state
+                            .p_setup
+                            .sector_mut(li_backsector)
+                            .floorheight
+                            != state
+                                .p_setup
+                                .sector_mut(li_frontsector.unwrap())
+                                .floorheight
+                        {
+                            AM_drawMline(state, &l, FDWALLCOLORS + lightlev);
+                        } else if state
+                            .p_setup
+                            .sector_mut(li_backsector)
+                            .ceilingheight
+                            != state
+                                .p_setup
+                                .sector_mut(li_frontsector.unwrap())
+                                .ceilingheight
+                        {
+                            AM_drawMline(state, &l, CDWALLCOLORS + lightlev);
+                        } else if state.am_map.cheating != 0 {
+                            AM_drawMline(state, &l, TSWALLCOLORS + lightlev);
+                        }
+                    }
                 }
             }
-        } else if (*state.g_game.player_mut(state.am_map.plr)).powers[PowerType::pw_allmap as usize]
+        } else if state.g_game.player_mut(state.am_map.plr).powers[PowerType::pw_allmap as usize]
             != 0
             && li_flags & LINE_NEVERSEE == 0
         {
@@ -1293,7 +1296,7 @@ pub fn AM_drawPlayers(state: &mut GameState) {
     let mut their_color: i32 = -1_i32;
     let mut color: i32 = 0;
     if !state.g_game.netgame {
-        let plr_mo_id = (*state.g_game.player_mut(state.am_map.plr)).mo.unwrap();
+        let plr_mo_id = state.g_game.player_mut(state.am_map.plr).mo.unwrap();
         let plr_mo = state.p_mobj.mo(plr_mo_id);
         let (plr_angle, plr_x, plr_y) = (plr_mo.angle, plr_mo.x, plr_mo.y);
         if state.am_map.cheating != 0 {

@@ -46,6 +46,12 @@ pub struct RDataState {
     pub spritememory: i32,
 }
 
+impl Default for RDataState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RDataState {
     pub const fn new() -> Self {
         RDataState {
@@ -301,10 +307,10 @@ pub fn R_GetColumn(state: &mut GameState, mut tex: i32, mut col: i32) -> ColumnS
     if state.r_data.texturecomposite[tex as usize].is_none() {
         R_GenerateComposite(state, tex);
     }
-    return ColumnSource::Composite {
+    ColumnSource::Composite {
         tex,
         offset: ofs as usize,
-    };
+    }
 }
 fn GenerateTextureHashTable(state: &mut GameState) {
     let mut i: i32 = 0;
@@ -323,11 +329,8 @@ fn GenerateTextureHashTable(state: &mut GameState) {
                 state.r_data.textures_hashtable[key as usize] = Some(TextureId(i as u32));
             }
             Some(mut cursor) => {
-                loop {
-                    match state.r_data.textures[cursor.0 as usize].next {
-                        Some(next) => cursor = next,
-                        None => break,
-                    }
+                while let Some(next) = state.r_data.textures[cursor.0 as usize].next {
+                    cursor = next;
                 }
                 state.r_data.textures[cursor.0 as usize].next = Some(TextureId(i as u32));
             }

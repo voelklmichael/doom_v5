@@ -53,6 +53,12 @@ impl GameState {
 pub struct VVideoState {
     pub dirtybox: [i32; 4],
 }
+impl Default for VVideoState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl VVideoState {
     pub const fn new() -> Self {
         VVideoState { dirtybox: [0; 4] }
@@ -68,6 +74,7 @@ pub fn V_MarkRect(state: &mut GameState, dest: Screen, x: i32, y: i32, width: i3
         );
     }
 }
+#[allow(clippy::too_many_arguments)]
 pub fn V_CopyRect(
     state: &mut GameState,
     dest: Screen,

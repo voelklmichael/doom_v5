@@ -2947,10 +2947,8 @@ pub fn P_XYMovement(state: &mut GameState, mo: MobjId) {
         return;
     }
     if flags & MF_CORPSE as i32 != 0
-        && (momx > FRACUNIT / 4_i32
-            || momx < -FRACUNIT / 4_i32
-            || momy > FRACUNIT / 4_i32
-            || momy < -FRACUNIT / 4_i32)
+        && (!(-FRACUNIT / 4_i32..=FRACUNIT / 4_i32).contains(&momx)
+            || !(-FRACUNIT / 4_i32..=FRACUNIT / 4_i32).contains(&momy))
         && floorz
             != state
                 .p_setup
@@ -3003,8 +3001,8 @@ pub fn P_ZMovement(state: &mut GameState, mo: MobjId) {
     }
     state.p_mobj.mo_mut(mo).z += state.p_mobj.mo(mo).momz;
     let mo_target = state.p_mobj.mo(mo).target.filter(|&id| state.p_mobj.is_live(id));
-    if state.p_mobj.mo(mo).flags & MF_FLOAT as i32 != 0 && mo_target.is_some() && state.p_mobj.mo(mo).flags & MF_SKULLFLY as i32 == 0 && state.p_mobj.mo(mo).flags & MF_INFLOAT as i32 == 0 {
-        let target = mo_target.unwrap();
+    let mo_flags = state.p_mobj.mo(mo).flags;
+    if let Some(target) = mo_target.filter(|_| mo_flags & MF_FLOAT as i32 != 0 && mo_flags & MF_SKULLFLY as i32 == 0 && mo_flags & MF_INFLOAT as i32 == 0) {
         dist = P_AproxDistance(state.p_mobj.mo(mo).x - state.p_mobj.mo(target).x, state.p_mobj.mo(mo).y - state.p_mobj.mo(target).y);
         delta = state.p_mobj.mo(target).z + (state.p_mobj.mo(mo).height >> 1_i32) - state.p_mobj.mo(mo).z;
         if delta < 0_i32 && dist < -(delta * 3_i32) {
@@ -3021,7 +3019,7 @@ pub fn P_ZMovement(state: &mut GameState, mo: MobjId) {
         }
         if state.p_mobj.mo(mo).momz < 0_i32 {
             if state.p_mobj.mo(mo).player.is_some() && state.p_mobj.mo(mo).momz < -GRAVITY * 8_i32 {
-                (*state.g_game.player_mut(state.p_mobj.mo(mo).player.unwrap())).deltaviewheight =
+                state.g_game.player_mut(state.p_mobj.mo(mo).player.unwrap()).deltaviewheight =
                     state.p_mobj.mo(mo).momz >> 3_i32;
                 S_StartSound(state, SoundOrigin::Mobj(mo), sfx_oof as i32);
             }
@@ -3253,6 +3251,12 @@ pub struct PMobjState {
     dummy_id: Option<MobjId>,
     mobjs: Vec<MobjSlot>,
     free_list: Vec<u32>,
+}
+
+impl Default for PMobjState {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl PMobjState {

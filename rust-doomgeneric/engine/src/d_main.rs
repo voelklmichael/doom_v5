@@ -129,6 +129,12 @@ pub struct DMainState {
     pub gameversions: [C2RustUnnamed_4; 9],
 }
 
+impl Default for DMainState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DMainState {
     pub const fn new() -> Self {
         DMainState {
@@ -238,10 +244,7 @@ pub fn D_ProcessEvents(state: &mut GameState) {
     if state.d_main.storedemo {
         return;
     }
-    loop {
-        let Some(mut ev) = D_PopEvent(&mut state.d_event) else {
-            break;
-        };
+    while let Some(mut ev) = D_PopEvent(&mut state.d_event) {
         if M_Responder(state, &mut ev) {
             continue;
         }
@@ -274,8 +277,8 @@ pub fn D_Display(state: &mut GameState) {
     if state.g_game.gamestate == GameScreenState::GS_LEVEL && state.d_loop.gametic != 0 {
         HU_Erase(state);
     }
-    match state.g_game.gamestate as u32 {
-        0 => {
+    match state.g_game.gamestate {
+        GameScreenState::GS_LEVEL => {
             if state.d_loop.gametic != 0 {
                 if state.am_map.automapactive {
                     AM_Drawer(state);
@@ -291,16 +294,16 @@ pub fn D_Display(state: &mut GameState) {
                 state.d_main.d_display_fullscreen = state.r_draw.viewheight == 200_i32;
             }
         }
-        1 => {
+        GameScreenState::GS_INTERMISSION => {
             WI_Drawer(state);
         }
-        2 => {
+        GameScreenState::GS_FINALE => {
             F_Drawer(state);
         }
-        3 => {
+        GameScreenState::GS_DEMOSCREEN => {
             D_PageDrawer(state);
         }
-        _ => {}
+        GameScreenState::GS_WIPPED => {}
     }
     if state.g_game.gamestate == GameScreenState::GS_LEVEL
         && !state.am_map.automapactive
@@ -311,7 +314,7 @@ pub fn D_Display(state: &mut GameState) {
     if state.g_game.gamestate == GameScreenState::GS_LEVEL && state.d_loop.gametic != 0 {
         HU_Drawer(state);
     }
-    if state.g_game.gamestate as u32 != state.d_main.d_display_oldgamestate as u32
+    if state.g_game.gamestate != state.d_main.d_display_oldgamestate
         && state.g_game.gamestate != GameScreenState::GS_LEVEL
     {
         let pal = W_LumpBytesName(state, "PLAYPAL");
@@ -860,12 +863,7 @@ pub fn D_DoomMain(state: &mut GameState) {
         if p < state.m_argv.myargv.len() as i32 - 1_i32 {
             scale = M_ArgvAtoi(&state.m_argv.myargv[(p + 1_i32) as usize]);
         }
-        if scale < 10_i32 {
-            scale = 10_i32;
-        }
-        if scale > 400_i32 {
-            scale = 400_i32;
-        }
+        scale = scale.clamp(10_i32, 400_i32);
         println!("turbo scale: {}%", scale);
         state.g_game.forwardmove[0] = state.g_game.forwardmove[0] * scale / 100_i32;
         state.g_game.forwardmove[1] = state.g_game.forwardmove[1] * scale / 100_i32;

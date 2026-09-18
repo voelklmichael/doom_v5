@@ -84,6 +84,12 @@ pub struct PEnemyState {
     pub easy: i32,
 }
 
+impl Default for PEnemyState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PEnemyState {
     pub const fn new() -> Self {
         PEnemyState {
@@ -510,10 +516,10 @@ pub fn A_Look(state: &mut GameState, id: MobjId) {
             .soundtarget
             .filter(|&id| state.p_mobj.is_live(id))
             ;
-        if targ.is_some() && state.p_mobj.mo(targ.unwrap()).flags & MF_SHOOTABLE as i32 != 0 {
-            state.p_mobj.mo_mut(actor).target = Some(targ.unwrap());
+        if let Some(targ) = targ.filter(|&t| state.p_mobj.mo(t).flags & MF_SHOOTABLE as i32 != 0) {
+            state.p_mobj.mo_mut(actor).target = Some(targ);
             if state.p_mobj.mo(actor).flags & MF_AMBUSH as i32 != 0 {
-                if P_CheckSight(state, actor, targ.unwrap()) {
+                if P_CheckSight(state, actor, targ) {
                     current_block = 10571674169298881693;
                 } else {
                     current_block = 15619007995458559411;
@@ -524,18 +530,14 @@ pub fn A_Look(state: &mut GameState, id: MobjId) {
         } else {
             current_block = 15619007995458559411;
         }
-        match current_block {
-            15619007995458559411 => {
-                if !P_LookForPlayers(state, actor, false) {
-                    return;
-                }
+        if current_block == 15619007995458559411
+            && !P_LookForPlayers(state, actor, false) {
+                return;
             }
-            _ => {}
-        }
         if state.info.mobjinfo_mut(state.p_mobj.mo(actor).type_0).seesound != 0 {
             let mut sound: i32 = 0;
             match state.info.mobjinfo_mut(state.p_mobj.mo(actor).type_0).seesound {
-                36 | 37 | 38 => {
+                36..=38 => {
                     sound = sfx_posit1 as i32 + P_Random(&mut state.m_random) % 3_i32;
                 }
                 39 | 40 => {
@@ -599,7 +601,7 @@ pub fn A_Chase(state: &mut GameState, id: MobjId) {
             return;
         }
         let actor_info = state.info.mobjinfo_mut(state.p_mobj.mo(actor).type_0);
-        if (*actor_info).meleestate != StateNum::S_NULL && P_CheckMeleeRange(state, actor) {
+        if actor_info.meleestate != StateNum::S_NULL && P_CheckMeleeRange(state, actor) {
             let attacksound = state.info.mobjinfo_mut(state.p_mobj.mo(actor).type_0).attacksound;
             if attacksound != 0 {
                 S_StartSound(state, SoundOrigin::Mobj(actor), attacksound);
@@ -1025,7 +1027,7 @@ pub fn A_VileChase(state: &mut GameState, id: MobjId) {
                     state,
                     bx,
                     by,
-                    |s, id| PIT_VileCheck(s, id),
+                    PIT_VileCheck,
                 ) {
                     let corpsehit_id = state.p_enemy.corpsehit.unwrap();
                     let corpsehit = corpsehit_id;
@@ -1089,7 +1091,7 @@ pub fn A_Fire(state: &mut GameState, id: MobjId) {
             .target
             .filter(|&id| state.p_mobj.is_live(id))
             ;
-        let target_id = P_SubstNullMobj(&mut state.p_mobj, if target_subst.is_none() { None } else { Some(target_subst.unwrap()) });
+        let target_id = P_SubstNullMobj(&mut state.p_mobj, target_subst);
         target = target_id;
         if !P_CheckSight(state, target, dest.unwrap()) {
             return;
@@ -1174,7 +1176,7 @@ pub fn A_FatAttack1(state: &mut GameState, id: MobjId) {
             .target
             .filter(|&id| state.p_mobj.is_live(id))
             ;
-        let target_id = P_SubstNullMobj(&mut state.p_mobj, if target_subst.is_none() { None } else { Some(target_subst.unwrap()) });
+        let target_id = P_SubstNullMobj(&mut state.p_mobj, target_subst);
         target = target_id;
         P_SpawnMissile(state, actor, target, MobjType::MT_FATSHOT);
         mo = P_SpawnMissile(state, actor, target, MobjType::MT_FATSHOT);
@@ -1202,7 +1204,7 @@ pub fn A_FatAttack2(state: &mut GameState, id: MobjId) {
             .target
             .filter(|&id| state.p_mobj.is_live(id))
             ;
-        let target_id = P_SubstNullMobj(&mut state.p_mobj, if target_subst.is_none() { None } else { Some(target_subst.unwrap()) });
+        let target_id = P_SubstNullMobj(&mut state.p_mobj, target_subst);
         target = target_id;
         P_SpawnMissile(state, actor, target, MobjType::MT_FATSHOT);
         mo = P_SpawnMissile(state, actor, target, MobjType::MT_FATSHOT);
@@ -1229,7 +1231,7 @@ pub fn A_FatAttack3(state: &mut GameState, id: MobjId) {
             .target
             .filter(|&id| state.p_mobj.is_live(id))
             ;
-        let target_id = P_SubstNullMobj(&mut state.p_mobj, if target_subst.is_none() { None } else { Some(target_subst.unwrap()) });
+        let target_id = P_SubstNullMobj(&mut state.p_mobj, target_subst);
         target = target_id;
         mo = P_SpawnMissile(state, actor, target, MobjType::MT_FATSHOT);
         state.p_mobj.mo_mut(mo).angle = state.p_mobj.mo(mo).angle.wrapping_sub((FATSPREAD / 2_i32) as angle_t);
@@ -1342,7 +1344,7 @@ pub fn A_Scream(state: &mut GameState, id: MobjId) {
         let mut sound: i32 = 0;
         match state.info.mobjinfo_mut(state.p_mobj.mo(actor).type_0).deathsound {
             0 => return,
-            59 | 60 | 61 => {
+            59..=61 => {
                 sound = sfx_podth1 as i32 + P_Random(&mut state.m_random) % 3_i32;
             }
             62 | 63 => {
@@ -1631,7 +1633,6 @@ pub fn A_BrainSpit(state: &mut GameState, id: MobjId) {
         let mo = id;
         let mut targ: MobjId;
         let mut newmobj: MobjId;
-        let state = state;
         state.p_enemy.easy ^= 1_i32;
         if state.g_game.gameskill <= SkillType::sk_easy && state.p_enemy.easy == 0 {
             return;
@@ -1671,7 +1672,7 @@ pub fn A_SpawnFly(state: &mut GameState, id: MobjId) {
             .target
             .filter(|&id| state.p_mobj.is_live(id))
             ;
-        let targ_id = P_SubstNullMobj(&mut state.p_mobj, if targ_subst.is_none() { None } else { Some(targ_subst.unwrap()) });
+        let targ_id = P_SubstNullMobj(&mut state.p_mobj, targ_subst);
         targ = targ_id;
         fog = P_SpawnMobj(
             state,

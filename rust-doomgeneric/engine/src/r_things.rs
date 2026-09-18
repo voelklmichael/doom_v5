@@ -59,6 +59,12 @@ pub struct RThingsState {
     pub cliptop: [i16; 320],
 }
 
+impl Default for RThingsState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RThingsState {
     pub const fn new() -> Self {
         RThingsState {
@@ -283,7 +289,7 @@ pub fn R_InitSpriteDefs(state: &mut GameState, namelist: &[&'static str]) {
                             rotation += 1;
                         }
                     }
-                    0 | _ => {}
+                    _ => {}
                 }
                 frame += 1;
             }
